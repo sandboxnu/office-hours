@@ -1,24 +1,37 @@
-# README
+# Motivation
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Many of us are familiar with that sense of dread walking into office hours the day the homework is due to see the board is filled with about a million names for people queued up to get help. We all love office hours but there are some things we’ve noticed could be improved. That’s why we set out to build this app. 
 
-Things you may want to cover:
+# Goals / Benefits
 
-* Ruby version
+Students
+* Improve UI and UX for viewing the office hours schedule 
+* Estimate wait times for students waiting to get help
 
-* System dependencies
+TAs
+* Create easy interface for a TA to see their own schedule  
+* Improve efficiency by allowing TAs to group students who have similar questions 
 
-* Configuration
+Professors
+* Generate insights by displaying most frequently asked questions for a given assignment 
+* Provide dashboard to view total office hours load to allow for more efficient use of TA resources   
 
-* Database creation
+# Docs
 
-* Database initialization
+See api documentation [here](https://documenter.getpostman.com/view/7402671/SVfWKk2E?version=latest)  
 
-* How to run the test suite
+# Setup
+``` bash
+bundle install
+```
+``` bash
+./bin/setup
+```
+``` bash
+foreman start  
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+**Congrats!**  
+The front end should showing be at `localhost:5000`  
+The back end server should be accessible at `localhost:3035`  
 
-* Deployment instructions
-
-* ...
