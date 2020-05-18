@@ -1,0 +1,53 @@
+{
+  "name": "@template/app",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "next -p 3001",
+    "build": "next build",
+    "start": "next start -p 3001",
+    "test": "jest"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "next": "^9.4.0",
+    "next-compose-plugins": "^2.2.0",
+    "next-transpile-modules": "^3.3.0",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "socket.io-client": "^2.3.0"
+  },
+  "devDependencies": {
+    "@babel/preset-react": "^7.9.4",
+    "@template/api-client": "*",
+    "@template/common": "*",
+    "@testing-library/jest-dom": "^5.7.0",
+    "@testing-library/react": "^10.0.4",
+    "@types/jest": "^25.2.2",
+    "@types/node": "^13.13.2",
+    "@types/react": "^16.9.34",
+    "@types/socket.io-client": "^1.4.32",
+    "jest": "^26.0.1",
+    "typescript": "^3.8.3"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": [
+        "babel-jest",
+        {
+          "rootMode": "upward"
+        }
+      ]
+    },
+    "setupFilesAfterEnv": [
+      "@testing-library/jest-dom/extend-expect"
+    ],
+    "modulePathIgnorePatterns": [
+      ".next"
+    ]
+  },
+  "babel": {
+    "presets": [
+      "next/babel"
+    ]
+  }
+}

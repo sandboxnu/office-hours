@@ -1,0 +1,12 @@
+{
+  "name": "@template/common",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "yarn build -w",
+    "build": "babel --root-mode upward -d dist -x '.ts' *.ts"
+  },
+  "dependencies": {
+    "typescript": "^3.8.3"
+  }
+}

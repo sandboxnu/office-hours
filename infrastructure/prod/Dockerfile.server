@@ -1,0 +1,46 @@
+FROM node:12-alpine as build
+
+WORKDIR /
+
+# package.json of root and of needed packages
+COPY package.json .
+COPY yarn.lock .
+COPY babel.config.js .
+COPY packages/server/package.json packages/server/package.json
+COPY packages/common/package.json packages/common/package.json
+
+
+# Install at root level
+RUN yarn install --pure-lockfile --non-interactive
+
+# Get src files
+COPY packages/server/src packages/server/src
+COPY packages/common packages/common
+
+# Build server and common dependency
+RUN yarn workspaces run build
+
+
+# LINES COMMENTED OUT ENABLE SMALLER FINAL IMAGE SIZE
+# Production container.
+# FROM node:12-alpine
+
+# WORKDIR /
+
+# COPY package.json .
+# COPY yarn.lock .
+
+# COPY --from=build /packages/server/package.json /packages/server/package.json
+# COPY --from=build /packages/server/dist /packages/server/dist
+# COPY --from=build /packages/common/package.json /packages/common/package.json
+# COPY --from=build /packages/common/dist /packages/common/dist
+
+ENV NODE_ENV production
+
+# RUN yarn install --pure-lockfile --non-interactive --production
+
+WORKDIR /packages/server
+
+EXPOSE 3002
+
+CMD ["npm", "start"]
