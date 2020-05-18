@@ -13,8 +13,9 @@ const proxy = createProxyMiddleware({
     "/socket.io": "http://localhost:3002",
   },
   ws: true,
-  logLevel: 'warn'
+  logLevel: "warn",
 });
 
 app.use("/", proxy);
 app.listen(3000);
+console.log("Proxy up on http://localhost:3000");
