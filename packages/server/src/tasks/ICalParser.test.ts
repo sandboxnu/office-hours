@@ -1,9 +1,9 @@
 import { parseIcal } from "./ICalParser";
 import { parseICS } from "node-ical";
+import { setupDBTest } from "../testUtils";
+import {CourseModel} from "../entity/CourseModel";
 
-describe("ICalParser test", () => {
-  it("test Ical stuff", async () => {
-    const rawICal = `BEGIN:VCALENDAR
+const rawICal = `BEGIN:VCALENDAR
 PRODID:-//Google Inc//Google Calendar 70.9054//EN
 VERSION:2.0
 CALSCALE:GREGORIAN
@@ -75,7 +75,9 @@ TRANSP:OPAQUE
 END:VEVENT
 END:VCALENDAR`;
 
-    const endData = await parseIcal(parseICS(rawICal));
+describe("parseIcal", () => {
+  it("handles a pre-generated subset of CS2510 classes", async () => {
+    const endData = await parseIcal(parseICS(rawICal), "CS 2510");
     expect(endData).toStrictEqual([
       {
         id: 69420,
@@ -96,5 +98,17 @@ END:VCALENDAR`;
         endTime: 1589482800,
       },
     ]);
+  });
+});
+
+describe("updateCalendarForCourse", () => {
+  setupDBTest();
+  it("fuck", () => {
+    // TODO: whenever we get CourseModels working, make a fake course and then point it at some fake data :D
+    CourseModel.create({
+      name: "CS 2510",
+      icalUrl: "your mom"
+    });
+
   });
 });

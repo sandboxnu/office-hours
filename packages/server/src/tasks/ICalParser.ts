@@ -1,5 +1,6 @@
 import ical, { CalendarComponent, CalendarResponse, VEvent } from "node-ical";
 import { OfficeHourModel } from "../entity/OfficeHourModel";
+import {CourseModel} from "../entity/CourseModel";
 
 /**
  * Represents an Office Hour block as assigned on the course calendar.
@@ -48,11 +49,11 @@ export async function parseIcal(
 
 /**
  * Parses an ical file.
- * @param url url which to grab ical file
+ * @param course to parse
  */
 // TODO: update url to use course model instead of url itself
-export async function updateCalendarForCourse(url: string) {
-  const officeHours = await parseIcal(await ical.fromURL(url), "CS2510");
+export async function updateCalendarForCourse(course : CourseModel) {
+  const officeHours = await parseIcal(await ical.fromURL(course.icalUrl), course.name);
   for (const officeHour of officeHours) {
     OfficeHourModel.create(officeHour);
   }

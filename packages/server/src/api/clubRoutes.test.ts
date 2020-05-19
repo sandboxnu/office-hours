@@ -1,9 +1,9 @@
-import { setup } from "../testUtils";
+import { setupDBTest, setupServerTest } from "../testUtils";
 import { ClubModel } from "../entity/ClubModel";
 
 describe("/api/club", () => {
-  const getServer = setup();
-
+  setupDBTest();
+  const getServer = setupServerTest();
   it("adds club", async () => {
     const res = await getServer().inject({
       method: "post",
