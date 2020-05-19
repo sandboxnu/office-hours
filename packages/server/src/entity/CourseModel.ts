@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from "typeorm";
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  BaseEntity,
+  OneToMany,
+} from "typeorm";
+import { OfficeHourModel } from "./OfficeHourModel";
 
 /**
  * Represents a course in the context of office hours.
@@ -14,18 +21,19 @@ import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from "typeorm";
     users: UserCourse[]
 }*/
 
-
 @Entity("course_model")
 export class CourseModel extends BaseEntity {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column("text")
-    name: string;
+  @OneToMany((type) => OfficeHourModel, (oh) => oh.course)
+  officeHours: Promise<OfficeHourModel[]>;
 
-    @Column("text")
-    icalUrl: string;
+  @Column("text")
+  name: string;
 
-    //todo: add semester + userCourse
+  @Column("text")
+  icalUrl: string;
 
+  //todo: add semester + userCourse
 }

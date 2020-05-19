@@ -1,9 +1,10 @@
-import { parseIcal } from "./ICalParser";
-import { parseICS } from "node-ical";
+import { parseIcal, updateCalendarForCourse } from "./ICalParser";
+import iCal from "node-ical";
 import { setupDBTest } from "../testUtils";
-import {CourseModel} from "../entity/CourseModel";
+import { CourseModel } from "../entity/CourseModel";
+import { OfficeHourModel } from "../entity/OfficeHourModel";
 
-const rawICal = `BEGIN:VCALENDAR
+const parsedICS = iCal.parseICS(`BEGIN:VCALENDAR
 PRODID:-//Google Inc//Google Calendar 70.9054//EN
 VERSION:2.0
 CALSCALE:GREGORIAN
@@ -73,29 +74,27 @@ STATUS:CONFIRMED
 SUMMARY:HW 7 P2 DUE
 TRANSP:OPAQUE
 END:VEVENT
-END:VCALENDAR`;
+END:VCALENDAR`);
+
+jest.spyOn(iCal, "fromURL").mockResolvedValue(parsedICS);
 
 describe("parseIcal", () => {
-  it("handles a pre-generated subset of CS2510 classes", async () => {
-    const endData = await parseIcal(parseICS(rawICal), "CS 2510");
+  it("handles a pre-generated subset of CS 2510 classes", async () => {
+    const endData = await parseIcal(parsedICS, 123);
     expect(endData).toStrictEqual([
       {
-        id: 69420,
         title: "OH- Ameya, Julia",
-        course: "CS 2510",
+        course: { id: 123 },
         room: "",
-        campusId: 116,
-        startTime: 1589317200,
-        endTime: 1589324400,
+        startTime: new Date(1589317200000),
+        endTime: new Date(1589324400000),
       },
       {
-        id: 69420,
         title: "OH-Elaina",
-        course: "CS 2510",
+        course: { id: 123 },
         room: "",
-        campusId: 116,
-        startTime: 1589475600,
-        endTime: 1589482800,
+        startTime: new Date(1589475600000),
+        endTime: new Date(1589482800000),
       },
     ]);
   });
@@ -103,12 +102,31 @@ describe("parseIcal", () => {
 
 describe("updateCalendarForCourse", () => {
   setupDBTest();
-  it("fuck", () => {
+  it("adds office hour rows for the course", async () => {
     // TODO: whenever we get CourseModels working, make a fake course and then point it at some fake data :D
-    CourseModel.create({
+    const course = await CourseModel.create({
       name: "CS 2510",
-      icalUrl: "your mom"
-    });
+      icalUrl: "your mom",
+    }).save();
+    await updateCalendarForCourse(course);
 
+    // const ohs = (await CourseModel.findOne({where: {id: course.id}, relations: ["officeHours"]})).officeHours
+    await course.reload();
+    const ohs = await course.officeHours;
+    ohs.map(async (oh) => console.log(await oh.course));
+    expect(ohs).toMatchObject([
+      {
+        title: "OH- Ameya, Julia",
+        room: "",
+        startTime: new Date(1589317200000),
+        endTime: new Date(1589324400000),
+      },
+      {
+        title: "OH-Elaina",
+        room: "",
+        startTime: new Date(1589475600000),
+        endTime: new Date(1589482800000),
+      },
+    ]);
   });
 });

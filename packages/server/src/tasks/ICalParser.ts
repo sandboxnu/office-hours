@@ -1,6 +1,6 @@
 import ical, { CalendarComponent, CalendarResponse, VEvent } from "node-ical";
 import { OfficeHourModel } from "../entity/OfficeHourModel";
-import {CourseModel} from "../entity/CourseModel";
+import { CourseModel } from "../entity/CourseModel";
 
 /**
  * Represents an Office Hour block as assigned on the course calendar.
@@ -8,17 +8,15 @@ import {CourseModel} from "../entity/CourseModel";
  * @param title - The title string of this office hour event Ex: "OH: Leena Razzaq"
  * @param course - The course this office hour supports.
  * @param room - The room string where this office hour is taking place. Ex: "RY 154"
- * @param campusId - The campus number id where this office hour takes place. Ex: 116 for Boston(?)
  * @param startTime - The date string for the start time of this office hour block. Ex: "2019-09-21T12:00:00-04:00"
  * @param endTime - The date string for the end time of this office hour block.
  */
 export interface OfficeHour {
   title: string;
-  course: any; //Course; this can be ignored for now
+  course: Partial<CourseModel>;
   room: string;
-  campusId: number;
-  startTime: number;
-  endTime: number;
+  startTime: Date;
+  endTime: Date;
 }
 
 /**
@@ -28,7 +26,7 @@ export interface OfficeHour {
  */
 export async function parseIcal(
   icalData: CalendarResponse,
-  course: string
+  courseId: number
 ): Promise<OfficeHour[]> {
   const icalDataValues: Array<CalendarComponent> = Object.values(icalData);
   const officeHours = icalDataValues.filter(
@@ -39,23 +37,25 @@ export async function parseIcal(
   );
   return officeHours.map((event) => ({
     title: event.summary,
-    course: course,
+    course: { id: courseId },
     room: event.location,
-    campusId: 116, // TODO: course coordinator grabs this
-    startTime: event.start.getTime() / 1000,
-    endTime: event.end.getTime() / 1000,
+    startTime: event.start,
+    endTime: event.end,
   }));
 }
 
 /**
- * Parses an ical file.
+ * Updates the OfficeHours for a given Course by rescraping ical
  * @param course to parse
  */
 // TODO: update url to use course model instead of url itself
-export async function updateCalendarForCourse(course : CourseModel) {
-  const officeHours = await parseIcal(await ical.fromURL(course.icalUrl), course.name);
+export async function updateCalendarForCourse(course: CourseModel) {
+  const officeHours = await parseIcal(
+    await ical.fromURL(course.icalUrl),
+    course.id
+  );
   for (const officeHour of officeHours) {
-    OfficeHourModel.create(officeHour);
+    await OfficeHourModel.create(officeHour).save();
   }
   console.log("finished parsing ical bruv");
 }
