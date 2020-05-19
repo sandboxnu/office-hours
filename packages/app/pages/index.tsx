@@ -7,6 +7,15 @@ import { socket } from "../utils/socket";
 import { API } from "@template/api-client";
 import { Club, WSMessageType } from "@template/common";
 import { Space, Button } from "antd";
+import styled from "styled-components";
+
+const Title = styled.h1`
+  color: red;
+`;
+
+const AddButton = styled(Button)`
+  margin-left: 24px;
+`;
 
 interface HomeProps {
   clubs: Club[];
@@ -39,9 +48,8 @@ export default function Home({ clubs }: HomeProps) {
       <br />
       <div>Client side fetch:</div>
       <ClubList clubs={other} />
-      <Button
+      <AddButton
         type="primary"
-        style={{ marginLeft: "8px" }}
         onClick={() =>
           API.club.create({
             name: "Sandbox",
@@ -50,9 +58,9 @@ export default function Home({ clubs }: HomeProps) {
         }
       >
         Add a club
-      </Button>
+      </AddButton>
       <br />
-      Websocket Demo:
+      <Title>Websocket Demo:</Title>
       <br />
       <WebsocketDemo />
       Try opening this page in another tab

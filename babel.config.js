@@ -13,7 +13,16 @@ module.exports = function (api) {
       ],
       "@babel/preset-typescript",
     ],
-    plugins: [],
+    plugins: [
+      [
+        "styled-components",
+        {
+          ssr: true,
+          displayName: true,
+          preprocess: false,
+        },
+      ],
+    ],
     babelrcRoots: [".", "packages/*"],
   };
 };
