@@ -6,6 +6,7 @@ import ClubList from "../components/ClubList";
 import { socket } from "../utils/socket";
 import { API } from "@template/api-client";
 import { Club, WSMessageType } from "@template/common";
+import { Space, Button } from "antd";
 
 interface HomeProps {
   clubs: Club[];
@@ -38,7 +39,9 @@ export default function Home({ clubs }: HomeProps) {
       <br />
       <div>Client side fetch:</div>
       <ClubList clubs={other} />
-      <button
+      <Button
+        type="primary"
+        style={{ marginLeft: "8px" }}
         onClick={() =>
           API.club.create({
             name: "Sandbox",
@@ -47,7 +50,7 @@ export default function Home({ clubs }: HomeProps) {
         }
       >
         Add a club
-      </button>
+      </Button>
       <br />
       Websocket Demo:
       <br />

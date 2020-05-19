@@ -8,6 +8,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "antd": "^4.2.4",
     "axios": "^0.19.2",
     "next": "^9.4.0",
     "next-compose-plugins": "^2.2.0",
