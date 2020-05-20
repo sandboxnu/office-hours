@@ -2,8 +2,8 @@ import { parseIcal, updateCalendarForCourse } from "./ICalParser";
 import iCal from "node-ical";
 import { setupDBTest } from "../testUtils";
 import { CourseModel } from "../entity/CourseModel";
-import { OfficeHourModel } from "../entity/OfficeHourModel";
 
+// oopsah
 const parsedICS = iCal.parseICS(`BEGIN:VCALENDAR
 PRODID:-//Google Inc//Google Calendar 70.9054//EN
 VERSION:2.0
@@ -40,7 +40,7 @@ UID:6l8vlk6bfr18lkgdqpm4m76ff2@google.com
 CREATED:20200512T192938Z
 DESCRIPTION:
 LAST-MODIFIED:20200515T190535Z
-LOCATION:
+LOCATION:308b WVH
 SEQUENCE:0
 STATUS:CONFIRMED
 SUMMARY:OH- Ameya\\, Julia
@@ -79,13 +79,13 @@ END:VCALENDAR`);
 jest.spyOn(iCal, "fromURL").mockResolvedValue(parsedICS);
 
 describe("parseIcal", () => {
-  it("handles a pre-generated subset of CS 2510 classes", async () => {
-    const endData = await parseIcal(parsedICS, 123);
+  it("handles a pre-generated subset of CS 2510 classes", () => {
+    const endData = parseIcal(parsedICS, 123);
     expect(endData).toStrictEqual([
       {
         title: "OH- Ameya, Julia",
         courseId: 123,
-        room: "",
+        room: "308b WVH",
         startTime: new Date(1589317200000),
         endTime: new Date(1589324400000),
       },
@@ -103,7 +103,6 @@ describe("parseIcal", () => {
 describe("updateCalendarForCourse", () => {
   setupDBTest();
   it("adds office hour rows for the course", async () => {
-    // TODO: whenever we get CourseModels working, make a fake course and then point it at some fake data :D
     const course = await CourseModel.create({
       name: "CS 2510",
       icalUrl: "your mom",
@@ -112,11 +111,11 @@ describe("updateCalendarForCourse", () => {
 
     await course.reload();
     const ohs = await course.officeHours;
-    ohs.map(async (oh) => console.log(await oh.course));
+
     expect(ohs).toMatchObject([
       {
         title: "OH- Ameya, Julia",
-        room: "",
+        room: "308b WVH",
         startTime: new Date(1589317200000),
         endTime: new Date(1589324400000),
       },
