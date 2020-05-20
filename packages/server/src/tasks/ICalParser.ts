@@ -1,23 +1,7 @@
 import ical, { CalendarComponent, CalendarResponse, VEvent } from "node-ical";
 import { OfficeHourModel } from "../entity/OfficeHourModel";
 import { CourseModel } from "../entity/CourseModel";
-
-/**
- * Represents an Office Hour block as assigned on the course calendar.
- * @param id - The id number of this office hour.
- * @param title - The title string of this office hour event Ex: "OH: Leena Razzaq"
- * @param course - The course this office hour supports.
- * @param room - The room string where this office hour is taking place. Ex: "RY 154"
- * @param startTime - The date string for the start time of this office hour block. Ex: "2019-09-21T12:00:00-04:00"
- * @param endTime - The date string for the end time of this office hour block.
- */
-export interface OfficeHour {
-  title: string;
-  course: Partial<CourseModel>;
-  room: string;
-  startTime: Date;
-  endTime: Date;
-}
+import { DeepPartial } from "typeorm";
 
 /**
  * Takes parsed information of ical file and stuffs it into an OfficeHour
@@ -27,7 +11,7 @@ export interface OfficeHour {
 export async function parseIcal(
   icalData: CalendarResponse,
   courseId: number
-): Promise<OfficeHour[]> {
+): Promise<DeepPartial<OfficeHourModel>[]> {
   const icalDataValues: Array<CalendarComponent> = Object.values(icalData);
   const officeHours = icalDataValues.filter(
     (iCalElement): iCalElement is VEvent =>
@@ -37,7 +21,8 @@ export async function parseIcal(
   );
   return officeHours.map((event) => ({
     title: event.summary,
-    course: { id: courseId },
+    // course: { id: courseId },
+    courseId,
     room: event.location,
     startTime: event.start,
     endTime: event.end,

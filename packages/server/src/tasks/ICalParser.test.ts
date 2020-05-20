@@ -84,14 +84,14 @@ describe("parseIcal", () => {
     expect(endData).toStrictEqual([
       {
         title: "OH- Ameya, Julia",
-        course: { id: 123 },
+        courseId: 123,
         room: "",
         startTime: new Date(1589317200000),
         endTime: new Date(1589324400000),
       },
       {
         title: "OH-Elaina",
-        course: { id: 123 },
+        courseId: 123,
         room: "",
         startTime: new Date(1589475600000),
         endTime: new Date(1589482800000),
@@ -110,7 +110,6 @@ describe("updateCalendarForCourse", () => {
     }).save();
     await updateCalendarForCourse(course);
 
-    // const ohs = (await CourseModel.findOne({where: {id: course.id}, relations: ["officeHours"]})).officeHours
     await course.reload();
     const ohs = await course.officeHours;
     ohs.map(async (oh) => console.log(await oh.course));
