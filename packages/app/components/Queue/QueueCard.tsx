@@ -1,9 +1,11 @@
-import { Card, Row, Avatar, Tag } from "antd";
+import { Card, Row, Col, Avatar, Tag } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
 const HorizontalCard = styled(Card)`
   margin-bottom: 8px;
+  padding-left: 8px;
+  padding-right: 8px;
 `;
 
 const Text = styled.div`
@@ -43,11 +45,12 @@ const StatusContainer = styled.div`
 const StatusTag = styled(Tag)`
   width: 96px;
   text-align: center;
+  float: right;
+  margin-right: 0;
 `;
 
 const CenterRow = styled(Row)`
   align-items: center;
-  justify-content: space-between;
 `;
 
 interface QueueCardProps {
@@ -67,35 +70,27 @@ export default function QueueCard({
 }: QueueCardProps) {
   return (
     <HorizontalCard>
-      <CenterRow>
-        <div>
+      <CenterRow justify="space-between">
+        <Col span={1}>
+          <Text>{rank}</Text>
+        </Col>
+        <Col span={6}>
           <CenterRow>
-            <RankContainer>
-              <Text>{rank}</Text>
-            </RankContainer>
-            <ProfileContainer>
-              <CenterRow>
-                <Avatar icon={<UserOutlined />} />
-                <NameContainer>
-                  <Text>{name}</Text>
-                </NameContainer>
-              </CenterRow>
-            </ProfileContainer>
-            <TypeContainer>
-              <Text>{questionType}</Text>
-            </TypeContainer>
+            <Avatar icon={<UserOutlined />} />
+            <NameContainer>
+              <Text>{name}</Text>
+            </NameContainer>
           </CenterRow>
-        </div>
-        <div>
-          <CenterRow>
-            <WaitContainer>
-              <Text>{waitTime}</Text>
-            </WaitContainer>
-            <StatusContainer>
-              <StatusTag color="purple">{status}</StatusTag>
-            </StatusContainer>
-          </CenterRow>
-        </div>
+        </Col>
+        <Col span={2}>
+          <Text>{questionType}</Text>
+        </Col>
+        <Col span={2}>
+          <Text>{waitTime}</Text>
+        </Col>
+        <Col span={3}>
+          <StatusTag color="purple">{status}</StatusTag>
+        </Col>
       </CenterRow>
     </HorizontalCard>
   );
