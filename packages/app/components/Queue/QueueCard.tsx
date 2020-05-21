@@ -14,32 +14,8 @@ const Text = styled.div`
   color: #595959;
 `;
 
-const RankContainer = styled.div`
-  margin-left: 32px;
-`;
-
-const ProfileContainer = styled.div`
-  position: absolute;
-  left: 128px;
-`;
-
 const NameContainer = styled.div`
   margin-left: 16px;
-`;
-
-const TypeContainer = styled.div`
-  position: absolute;
-  left: 440px;
-`;
-
-const WaitContainer = styled.div`
-  position: absolute;
-  right: 272px;
-  width: 26.8px;
-`;
-
-const StatusContainer = styled.div`
-  margin-right: 32px;
 `;
 
 const StatusTag = styled(Tag)`
@@ -74,7 +50,7 @@ export default function QueueCard({
         <Col span={1}>
           <Text>{rank}</Text>
         </Col>
-        <Col span={6}>
+        <Col xs={16} sm={11} lg={6}>
           <CenterRow>
             <Avatar icon={<UserOutlined />} />
             <NameContainer>
@@ -82,13 +58,13 @@ export default function QueueCard({
             </NameContainer>
           </CenterRow>
         </Col>
-        <Col span={2}>
+        <Col xs={0} lg={2}>
           <Text>{questionType}</Text>
         </Col>
         <Col span={2}>
           <Text>{waitTime}</Text>
         </Col>
-        <Col span={3}>
+        <Col xs={0} lg={2}>
           <StatusTag color="purple">{status}</StatusTag>
         </Col>
       </CenterRow>

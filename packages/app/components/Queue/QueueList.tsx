@@ -1,37 +1,22 @@
-import { Button, Row, Card } from "antd";
+import { Button, Row, Card, Col } from "antd";
 import styled from "styled-components";
 import QueueCard from "./QueueCard";
 
-const RankContainer = styled.div`
-  margin-left: 32px;
-`;
-
-const ProfileContainer = styled.div`
-  position: absolute;
-  left: 128px;
-`;
-
-const NameContainer = styled.div`
-  margin-left: 16px;
-`;
-
-const TypeContainer = styled.div`
-  position: absolute;
-  left: 440px;
-`;
-
-const WaitContainer = styled.div`
-  position: absolute;
-  right: 272px;
-  width: 26.8px;
-`;
-
-const StatusContainer = styled.div`
-  margin-right: 88px;
+const StatusText = styled.div`
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 600;
+  color: #bfbfbf;
+  font-variant: small-caps;
+  width: 96px;
+  float: right;
+  margin-right: 0;
 `;
 
 const HeaderCard = styled(Card)`
   height: 64px;
+  padding-left: 8px;
+  padding-right: 8px;
 `;
 
 const HeaderText = styled.div`
@@ -66,35 +51,27 @@ export default function QueueList({}: QueueListProps) {
       </Row>
 
       <HeaderCard bordered={false}>
-        <CenterRow>
-          <div>
-            <CenterRow>
-              <RankContainer>
-                <HeaderText>#</HeaderText>
-              </RankContainer>
-              <ProfileContainer>
-                <HeaderText>name</HeaderText>
-              </ProfileContainer>
-              <TypeContainer>
-                <HeaderText>type</HeaderText>
-              </TypeContainer>
-            </CenterRow>
-          </div>
-          <div>
-            <CenterRow>
-              <WaitContainer>
-                <HeaderText>wait</HeaderText>
-              </WaitContainer>
-              <StatusContainer>
-                <HeaderText>status</HeaderText>
-              </StatusContainer>
-            </CenterRow>
-          </div>
+        <CenterRow justify="space-between">
+          <Col span={1}>
+            <HeaderText>#</HeaderText>
+          </Col>
+          <Col xs={16} sm={11} lg={6}>
+            <HeaderText>name</HeaderText>
+          </Col>
+          <Col xs={0} lg={2}>
+            <HeaderText>type</HeaderText>
+          </Col>
+          <Col span={2}>
+            <HeaderText>wait</HeaderText>
+          </Col>
+          <Col xs={0} lg={2}>
+            <StatusText>status</StatusText>
+          </Col>
         </CenterRow>
       </HeaderCard>
 
       <QueueCard
-        rank={1324}
+        rank={99}
         name="Alex Takayama"
         questionType="Bug"
         waitTime={30}
