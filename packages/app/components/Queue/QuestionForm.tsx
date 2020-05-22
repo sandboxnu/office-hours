@@ -1,5 +1,7 @@
 import { Button, Input, Radio, Alert } from "antd";
 import styled from "styled-components";
+import { useState } from "react";
+import { RadioChangeEvent } from "antd/lib/radio";
 
 const Container = styled.div`
   max-width: 960px;
@@ -37,9 +39,31 @@ const FormButton = styled(Button)`
   margin-left: 8px;
 `;
 
-interface QuestionFormProps {}
+interface QuestionFormProps {
+  rank: number;
+  name: string;
+  questionType: string;
+  waitTime: number;
+  status: string;
+}
+
+enum QuestionType {
+  Concept = "concept",
+  Testing = "testing",
+  Bug = "bug",
+  Dev_Environment = "dev-environment",
+  Other = "other",
+}
 
 export default function QuestionForm({}: QuestionFormProps) {
+  const [questionType, setQuestionType] = useState<QuestionType | undefined>(
+    undefined
+  );
+
+  const onCategoryChange = (e: RadioChangeEvent) => {
+    setQuestionType(e.target.value);
+  };
+
   return (
     <Container>
       <Alert
@@ -52,12 +76,18 @@ export default function QuestionForm({}: QuestionFormProps) {
       <Title>Describe your question</Title>
 
       <QuestionText>What category does your question fall under?</QuestionText>
-      <Radio.Group buttonStyle="solid" style={{ marginBottom: 48 }}>
-        <Radio.Button value="a">Concept</Radio.Button>
-        <Radio.Button value="b">Testing</Radio.Button>
-        <Radio.Button value="c">Bug</Radio.Button>
-        <Radio.Button value="d">Dev Environment</Radio.Button>
-        <Radio.Button value="e">Other</Radio.Button>
+      <Radio.Group
+        onChange={onCategoryChange}
+        buttonStyle="solid"
+        style={{ marginBottom: 48 }}
+      >
+        <Radio.Button value={QuestionType.Concept}>Concept</Radio.Button>
+        <Radio.Button value={QuestionType.Testing}>Testing</Radio.Button>
+        <Radio.Button value={QuestionType.Bug}>Bug</Radio.Button>
+        <Radio.Button value={QuestionType.Dev_Environment}>
+          Dev Environment
+        </Radio.Button>
+        <Radio.Button value={QuestionType.Other}>Other</Radio.Button>
       </Radio.Group>
 
       <QuestionText>What do you need help with?</QuestionText>
