@@ -3,6 +3,9 @@ import QuestionForm from "../../components/Queue/QuestionForm";
 
 const Container = styled.div`
   margin: 32px 64px;
+  @media (max-width: 768px) {
+    margin: 32px 32px;
+  }
 `;
 
 interface JoinProps {}
