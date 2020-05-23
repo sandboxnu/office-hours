@@ -1,7 +1,9 @@
 import { Button, Input, Radio, Alert } from "antd";
 import styled from "styled-components";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { RadioChangeEvent } from "antd/lib/radio";
+import Router from "next/router";
+import Link from "next/link";
 
 const Container = styled.div`
   max-width: 960px;
@@ -55,10 +57,58 @@ enum QuestionType {
   Other = "other",
 }
 
+const EXIT_MESSAGE =
+  "Leaving this page without submitting will remove you from the queue. Are you sure you want to leave?";
+
 export default function QuestionForm({}: QuestionFormProps) {
   const [questionType, setQuestionType] = useState<QuestionType | undefined>(
     undefined
   );
+  const [didSubmit, setDidSubmit] = useState(false);
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", confirmExit);
+    Router.events.on("routeChangeStart", confirmRouteChange);
+
+    return () => {
+      if (!didSubmit) {
+        // TODO: Send request to server to delete temporary queue card.
+      }
+
+      window.removeEventListener("beforeunload", confirmExit);
+      Router.events.off("routeChangeStart", confirmRouteChange);
+    };
+  }, []);
+
+  const confirmExit = (e: BeforeUnloadEvent) => {
+    e.preventDefault();
+    e.returnValue = EXIT_MESSAGE;
+    return EXIT_MESSAGE;
+  };
+
+  const confirmRouteChange = (url: string) => {
+    const { router } = Router;
+
+    /**
+     * One potential bug exists if users try and click the back button or close the tab while the confirm dialog is open,
+     * it actually lets them leave the page and might not trigger useEffect unmount.
+     * TODO: Verify that useEffect unmount is triggering in these cases, and if not figure out a solution.
+     *
+     * Note: I couldn't find a way to listen for browser back/close events, and Next.js doesn't support preventing navigation in the first place.
+     *
+     * This bug seems pretty unlikely to happen, but we should still enforce some kind of safety net because it could cause
+     * some confusion in the queue regarding "ghost" question drafts. Maybe, when a student exits in this way, their
+     * question draft remains for 5 minutes (counter on the backend), but before it expires,
+     * when they navigate back to /queue they'll be alerted that they have X amount of time left to finish their question.
+     */
+    if (!confirm(EXIT_MESSAGE)) {
+      router.abortComponentLoad(url);
+      router.events.emit("routeChangeError");
+
+      // I know this is janky, but there's no other way to prevent navigation in Next.js
+      throw "Abort link navigation - ignore this error."; // eslint-disable-line
+    }
+  };
 
   const onCategoryChange = (e: RadioChangeEvent) => {
     setQuestionType(e.target.value);
@@ -103,7 +153,9 @@ export default function QuestionForm({}: QuestionFormProps) {
 
       <div>
         <FormButton type="primary">Finish</FormButton>
-        <FormButton danger>Leave Queue</FormButton>
+        <Link href="/queue">
+          <FormButton danger>Leave Queue</FormButton>
+        </Link>
       </div>
     </Container>
   );
