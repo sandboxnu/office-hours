@@ -1,3 +1,4 @@
+import { QuestionType } from "@template/common";
 import { Button, Row, Card, Col } from "antd";
 import styled from "styled-components";
 import QueueCard from "./QueueCard";
@@ -73,35 +74,35 @@ export default function QueueList({}: QueueListProps) {
       <QueueCard
         rank={99}
         name="Alex Takayama"
-        questionType="Bug"
+        questionType={QuestionType.Bug}
         waitTime={30}
         status="WAITING"
       />
       <QueueCard
         rank={2}
         name="Supercalifragilistic"
-        questionType="Question"
+        questionType={QuestionType.Concept}
         waitTime={30}
         status="WAITING"
       />
       <QueueCard
         rank={1}
         name="Stanley Liu"
-        questionType="urmom"
+        questionType={QuestionType.Setup}
         waitTime={100}
         status="IN PROGRESS"
       />
       <QueueCard
         rank={1}
         name="Alex Takayama"
-        questionType="Bug"
+        questionType={QuestionType.Other}
         waitTime={30}
         status="WAITING"
       />
       <QueueCard
         rank={1}
         name="Alex Takayama"
-        questionType="Bug"
+        questionType={QuestionType.Testing}
         waitTime={30}
         status="WAITING"
       />

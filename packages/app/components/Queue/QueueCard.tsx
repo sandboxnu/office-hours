@@ -1,3 +1,4 @@
+import { QuestionType } from "@template/common";
 import { Card, Row, Col, Avatar, Tag } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import styled from "styled-components";
@@ -32,7 +33,7 @@ const CenterRow = styled(Row)`
 interface QueueCardProps {
   rank: number;
   name: string;
-  questionType: string;
+  questionType: QuestionType;
   waitTime: number;
   status: string;
 }
@@ -59,7 +60,10 @@ export default function QueueCard({
           </CenterRow>
         </Col>
         <Col xs={0} lg={2}>
-          <Text>{questionType}</Text>
+          <Text>
+            {questionType.charAt(0).toUpperCase() +
+              questionType.substr(1).toLowerCase()}
+          </Text>
         </Col>
         <Col span={2}>
           <Text>{waitTime}</Text>

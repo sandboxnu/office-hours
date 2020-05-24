@@ -11,3 +11,12 @@ export type GetClubResponse = Club[];
 
 export type CreateClubParams = { name: string; rating: number };
 export type CreateClubResponse = Club;
+
+// Queue types
+export enum QuestionType {
+  Concept = "concept",
+  Testing = "testing",
+  Bug = "bug",
+  Setup = "setup",
+  Other = "other",
+}
