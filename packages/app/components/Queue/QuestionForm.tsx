@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { RadioChangeEvent } from "antd/lib/radio";
 import Router from "next/router";
 import Link from "next/link";
+import React from "react";
 
 const Container = styled.div`
   max-width: 960px;
@@ -64,8 +65,12 @@ export default function QuestionForm({}: QuestionFormProps) {
   const [questionType, setQuestionType] = useState<QuestionType | undefined>(
     undefined
   );
+  const [questionText, setQuestionText] = useState<string | undefined>(
+    undefined
+  );
   const [didSubmit, setDidSubmit] = useState(false);
 
+  // when attempting to navigate off form page, alert the user
   useEffect(() => {
     window.addEventListener("beforeunload", confirmExit);
     Router.events.on("routeChangeStart", confirmRouteChange);
@@ -81,9 +86,12 @@ export default function QuestionForm({}: QuestionFormProps) {
   }, []);
 
   const confirmExit = (e: BeforeUnloadEvent) => {
-    e.preventDefault();
-    e.returnValue = EXIT_MESSAGE;
-    return EXIT_MESSAGE;
+    // if the user already submitted, then don't warn
+    if (!didSubmit) {
+      e.preventDefault();
+      e.returnValue = EXIT_MESSAGE;
+      return EXIT_MESSAGE;
+    }
   };
 
   const confirmRouteChange = (url: string) => {
@@ -101,7 +109,8 @@ export default function QuestionForm({}: QuestionFormProps) {
      * question draft remains for 5 minutes (counter on the backend), but before it expires,
      * when they navigate back to /queue they'll be alerted that they have X amount of time left to finish their question.
      */
-    if (!confirm(EXIT_MESSAGE)) {
+    if (!didSubmit && !confirm(EXIT_MESSAGE)) {
+      // only warn if the user hasn't submitted yet
       router.abortComponentLoad(url);
       router.events.emit("routeChangeError");
 
@@ -110,6 +119,35 @@ export default function QuestionForm({}: QuestionFormProps) {
     }
   };
 
+  // on question text change, update the question text state
+  const onQuestionTextChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setQuestionText(event.target.value);
+  };
+
+  // on button submit click, conditionally choose to go back to the queue
+  const onClickSubmit = () => {
+    if (!!questionType && questionText && questionText !== "") {
+      // todo: submit question (send http server whatnot)
+      // bring the user back to the queue page, assuming it was successful
+      setDidSubmit(true);
+      Router.push("/queue");
+    } else {
+      // student hasn't finished filling out the forms
+    }
+  };
+
+  // compute the button-type of the submit button, based on if everything is filled out
+  const computeQuestionType = () => {
+    if (!!questionType && questionText && questionText !== "") {
+      return "primary";
+    } else {
+      return "disabled";
+    }
+  };
+
+  // on question type change, update the question type state
   const onCategoryChange = (e: RadioChangeEvent) => {
     setQuestionType(e.target.value);
   };
@@ -145,6 +183,7 @@ export default function QuestionForm({}: QuestionFormProps) {
         placeholder="I’m having trouble understanding list abstractions, particularly in the
         context of Assignment 5."
         autoSize={{ minRows: 3 }}
+        onChange={onQuestionTextChange}
       />
       <QuestionCaption>
         Be as descriptive and specific as possible in your answer. If your
@@ -152,7 +191,9 @@ export default function QuestionForm({}: QuestionFormProps) {
       </QuestionCaption>
 
       <div>
-        <FormButton type="primary">Finish</FormButton>
+        <FormButton type={computeQuestionType()} onClick={onClickSubmit}>
+          Finish
+        </FormButton>
         <Link href="/queue">
           <FormButton danger>Leave Queue</FormButton>
         </Link>
