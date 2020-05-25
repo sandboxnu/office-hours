@@ -1,6 +1,7 @@
+import { QuestionType } from "@template/common";
 import { Button, Input, Radio, Alert } from "antd";
 import styled from "styled-components";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { RadioChangeEvent } from "antd/lib/radio";
 import Router from "next/router";
 import Link from "next/link";
@@ -9,8 +10,6 @@ import React from "react";
 const Container = styled.div`
   max-width: 960px;
   margin: 0 auto;
-  padding-top: 32px;
-  padding-bottom: 32px;
 `;
 
 const Title = styled.div`
@@ -45,78 +44,22 @@ const FormButton = styled(Button)`
 interface QuestionFormProps {
   rank: number;
   name: string;
-  questionType: string;
+  questionType: QuestionType;
   waitTime: number;
   status: string;
 }
 
-enum QuestionType {
-  Concept = "concept",
-  Testing = "testing",
-  Bug = "bug",
-  Dev_Environment = "dev-environment",
-  Other = "other",
-}
-
-const EXIT_MESSAGE =
-  "Leaving this page without submitting will remove you from the queue. Are you sure you want to leave?";
-
-export default function QuestionForm({}: QuestionFormProps) {
+export default function QuestionForm() {
   const [questionType, setQuestionType] = useState<QuestionType | undefined>(
     undefined
   );
   const [questionText, setQuestionText] = useState<string | undefined>(
     undefined
   );
-  const [didSubmit, setDidSubmit] = useState(false);
 
-  // when attempting to navigate off form page, alert the user
-  useEffect(() => {
-    window.addEventListener("beforeunload", confirmExit);
-    Router.events.on("routeChangeStart", confirmRouteChange);
-
-    return () => {
-      if (!didSubmit) {
-        // TODO: Send request to server to delete temporary queue card.
-      }
-
-      window.removeEventListener("beforeunload", confirmExit);
-      Router.events.off("routeChangeStart", confirmRouteChange);
-    };
-  }, []);
-
-  const confirmExit = (e: BeforeUnloadEvent) => {
-    // if the user already submitted, then don't warn
-    if (!didSubmit) {
-      e.preventDefault();
-      e.returnValue = EXIT_MESSAGE;
-      return EXIT_MESSAGE;
-    }
-  };
-
-  const confirmRouteChange = (url: string) => {
-    const { router } = Router;
-
-    /**
-     * One potential bug exists if users try and click the back button or close the tab while the confirm dialog is open,
-     * it actually lets them leave the page and might not trigger useEffect unmount.
-     * TODO: Verify that useEffect unmount is triggering in these cases, and if not figure out a solution.
-     *
-     * Note: I couldn't find a way to listen for browser back/close events, and Next.js doesn't support preventing navigation in the first place.
-     *
-     * This bug seems pretty unlikely to happen, but we should still enforce some kind of safety net because it could cause
-     * some confusion in the queue regarding "ghost" question drafts. Maybe, when a student exits in this way, their
-     * question draft remains for 5 minutes (counter on the backend), but before it expires,
-     * when they navigate back to /queue they'll be alerted that they have X amount of time left to finish their question.
-     */
-    if (!didSubmit && !confirm(EXIT_MESSAGE)) {
-      // only warn if the user hasn't submitted yet
-      router.abortComponentLoad(url);
-      router.events.emit("routeChangeError");
-
-      // I know this is janky, but there's no other way to prevent navigation in Next.js
-      throw "Abort link navigation - ignore this error."; // eslint-disable-line
-    }
+  // on question type change, update the question type state
+  const onCategoryChange = (e: RadioChangeEvent) => {
+    setQuestionType(e.target.value);
   };
 
   // on question text change, update the question text state
@@ -131,11 +74,13 @@ export default function QuestionForm({}: QuestionFormProps) {
     if (!!questionType && questionText && questionText !== "") {
       // todo: submit question (send http server whatnot)
       // bring the user back to the queue page, assuming it was successful
-      setDidSubmit(true);
       Router.push("/queue");
-    } else {
-      // student hasn't finished filling out the forms
     }
+  };
+
+  // on button leave queue click, delete question draft
+  const onClickLeave = () => {
+    // TODO: delete question (send http request)
   };
 
   // compute the button-type of the submit button, based on if everything is filled out
@@ -145,11 +90,6 @@ export default function QuestionForm({}: QuestionFormProps) {
     } else {
       return "disabled";
     }
-  };
-
-  // on question type change, update the question type state
-  const onCategoryChange = (e: RadioChangeEvent) => {
-    setQuestionType(e.target.value);
   };
 
   return (
@@ -172,9 +112,7 @@ export default function QuestionForm({}: QuestionFormProps) {
         <Radio.Button value={QuestionType.Concept}>Concept</Radio.Button>
         <Radio.Button value={QuestionType.Testing}>Testing</Radio.Button>
         <Radio.Button value={QuestionType.Bug}>Bug</Radio.Button>
-        <Radio.Button value={QuestionType.Dev_Environment}>
-          Dev Environment
-        </Radio.Button>
+        <Radio.Button value={QuestionType.Setup}>Setup</Radio.Button>
         <Radio.Button value={QuestionType.Other}>Other</Radio.Button>
       </Radio.Group>
 
@@ -195,7 +133,9 @@ export default function QuestionForm({}: QuestionFormProps) {
           Finish
         </FormButton>
         <Link href="/queue">
-          <FormButton danger>Leave Queue</FormButton>
+          <FormButton danger onClick={onClickLeave}>
+            Leave Queue
+          </FormButton>
         </Link>
       </div>
     </Container>
