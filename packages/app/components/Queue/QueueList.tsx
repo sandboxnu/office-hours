@@ -2,6 +2,7 @@ import { QuestionType } from "@template/common";
 import { Button, Row, Card, Col } from "antd";
 import styled from "styled-components";
 import QueueCard from "./QueueCard";
+import Link from "next/link";
 
 const StatusText = styled.div`
   font-size: 14px;
@@ -18,6 +19,7 @@ const HeaderCard = styled(Card)`
   height: 64px;
   padding-left: 8px;
   padding-right: 8px;
+  background: inherit;
 `;
 
 const HeaderText = styled.div`
@@ -32,6 +34,7 @@ const QueueTitle = styled.h1`
   font-weight: 600;
   font-size: 30px;
   line-height: 38px;
+  color: #262626;
 `;
 
 const CenterRow = styled(Row)`
@@ -46,9 +49,11 @@ export default function QueueList({}: QueueListProps) {
     <div>
       <Row justify="space-between">
         <QueueTitle>Queue 1</QueueTitle>
-        <Button type="primary" size="large">
-          Join Queue
-        </Button>
+        <Link href="/queue/join">
+          <Button type="primary" size="large">
+            Join Queue
+          </Button>
+        </Link>
       </Row>
 
       <HeaderCard bordered={false}>
