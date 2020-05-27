@@ -83,15 +83,6 @@ export default function QuestionForm() {
     // TODO: delete question (send http request)
   };
 
-  // compute the button-type of the submit button, based on if everything is filled out
-  const computeQuestionType = () => {
-    if (!!questionType && questionText && questionText !== "") {
-      return "primary";
-    } else {
-      return "disabled";
-    }
-  };
-
   return (
     <Container>
       <Alert
@@ -129,7 +120,11 @@ export default function QuestionForm() {
       </QuestionCaption>
 
       <div>
-        <FormButton type={computeQuestionType()} onClick={onClickSubmit}>
+        <FormButton
+          type="primary"
+          disabled={!questionType || !questionText || questionText === ""}
+          onClick={onClickSubmit}
+        >
           Finish
         </FormButton>
         <Link href="/queue">
