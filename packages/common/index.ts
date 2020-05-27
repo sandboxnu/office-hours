@@ -46,7 +46,7 @@ interface UserCourse {
  * @param semester - The semester of this course.
  * @param users - The users that are related with a given course (as either a 'student', 'ta' or 'professor')
  */
-interface Course {
+export interface Course {
   id: number;
   name: string;
   icalUrl: string;

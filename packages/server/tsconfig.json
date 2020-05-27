@@ -5,7 +5,8 @@
     "target": "es2017",
     "experimentalDecorators": true,
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+    "resolveJsonModule": true
   },
   "exclude": ["node_modules", "dist"],
   "include": ["src/**/*.ts"]
