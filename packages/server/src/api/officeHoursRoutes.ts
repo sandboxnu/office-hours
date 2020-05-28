@@ -1,16 +1,9 @@
-const PROFILE = require("../mocks/profile.json");
-const COURSE = require("../mocks/course.json");
-import {
-  User,
-  Course,
-  // CreateClubResponse,
-  // WSMessageType,
-} from "@template/common";
-
+import { User, Course } from "@template/common";
 import { ServerRoute } from "@hapi/hapi";
 import Joi from "@hapi/joi";
 
-// import websocketManager from "../websocketManager";
+const PROFILE = require("../mocks/profile.json");
+const COURSE = require("../mocks/course.json");
 
 export const officeHoursRoutes: ServerRoute[] = [
   {
