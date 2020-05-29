@@ -1,6 +1,6 @@
 import { setupServerTest } from "../testUtils";
-import PROFILE from "../mocks/profile.json";
-import COURSE from "../mocks/course.json";
+import { MOCK_GET_PROFILE_RESPONSE } from "../mocks/getProfile";
+import { MOCK_GET_COURSE_RESPONSE } from "../mocks/getCourse";
 
 describe("/v1/profile", () => {
   const getServer = setupServerTest();
@@ -10,7 +10,7 @@ describe("/v1/profile", () => {
       url: "/v1/profile",
     });
     expect(get.statusCode).toEqual(200);
-    expect(get.result).toEqual(PROFILE);
+    expect(get.result).toEqual(MOCK_GET_PROFILE_RESPONSE);
   });
 });
 
@@ -22,7 +22,7 @@ describe("/v1/courses/:course_id", () => {
       url: "/v1/courses/169",
     });
     expect(get.statusCode).toEqual(200);
-    expect(get.result).toEqual(COURSE);
+    expect(get.result).toEqual(MOCK_GET_COURSE_RESPONSE);
   });
   it("GET unknown course => fails", async () => {
     const get = await getServer().inject({
