@@ -14,6 +14,7 @@ export const MOCK_STUDENT_LIST_QUESTIONS_RESPONSE: ListQuestionsResponse = [
     createdAt: "2019-08-08T00:57:06.959226-04:00",
     helpedAt: null,
     closedAt: null,
+    questionType: "Concept",
     status: "Queued",
   },
   {
@@ -33,6 +34,7 @@ export const MOCK_STUDENT_LIST_QUESTIONS_RESPONSE: ListQuestionsResponse = [
     createdAt: "2019-08-08T00:57:47.149211-04:00",
     helpedAt: "2019-08-08T00:57:30.470570-04:00",
     closedAt: "2019-08-08T00:57:47.149107-04:00",
+    questionType: "Bug",
     status: "Resolved",
   },
   {
@@ -52,6 +54,7 @@ export const MOCK_STUDENT_LIST_QUESTIONS_RESPONSE: ListQuestionsResponse = [
     createdAt: "2019-08-08T15:24:10.156893-04:00",
     helpedAt: "2019-08-08T15:23:49.440087-04:00",
     closedAt: "2019-08-08T15:24:10.156755-04:00",
+    questionType: "Concept",
     status: "Resolved",
   },
   {
@@ -71,6 +74,7 @@ export const MOCK_STUDENT_LIST_QUESTIONS_RESPONSE: ListQuestionsResponse = [
     createdAt: "2019-08-08T15:24:16.651921-04:00",
     helpedAt: "2019-08-08T15:24:16.651827-04:00",
     closedAt: null,
+    questionType: "Testing",
     status: "Helping",
   },
 ];
