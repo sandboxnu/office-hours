@@ -25,7 +25,7 @@ export function parseIcal(
 
   return officeHours.map((event) => ({
     title: event.summary,
-    courseId: courseId,
+    course: { id: courseId },
     room: event.location,
     startTime: event.start,
     endTime: event.end,

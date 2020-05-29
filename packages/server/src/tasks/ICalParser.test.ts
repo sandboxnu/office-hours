@@ -84,14 +84,14 @@ describe("parseIcal", () => {
     expect(endData).toStrictEqual([
       {
         title: "OH- Ameya, Julia",
-        courseId: 123,
+        course: { id: 123},
         room: "308b WVH",
         startTime: new Date(1589317200000),
         endTime: new Date(1589324400000),
       },
       {
         title: "OH-Elaina",
-        courseId: 123,
+        course: { id: 123},
         room: "",
         startTime: new Date(1589475600000),
         endTime: new Date(1589482800000),

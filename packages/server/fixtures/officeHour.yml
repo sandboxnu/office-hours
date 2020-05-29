@@ -5,4 +5,4 @@ items:
     title: "Matthias's special OH"
     room: "WVH 138"
     startTime: "{{date.recent}}"
-    endTime: "{{date.soon}}"
+    endTime: "{{date.past}}"

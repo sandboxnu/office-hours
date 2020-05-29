@@ -5,6 +5,7 @@
     "target": "es2017",
     "experimentalDecorators": true,
     "isolatedModules": true,
+    "emitDecoratorMetadata": true,
     "noEmit": true
   },
   "exclude": ["node_modules", "dist"],
