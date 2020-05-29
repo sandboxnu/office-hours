@@ -1,4 +1,4 @@
-import { createConnection, Connection } from "typeorm";
+import { createConnection, Connection } from "../../ormconfig";
 import { init } from "./server";
 import path from "path";
 import { Server } from "@hapi/hapi";

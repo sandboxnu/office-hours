@@ -2,6 +2,7 @@ import "reflect-metadata";
 import Hapi from "@hapi/hapi";
 import io from "socket.io";
 import { clubRoutes } from "./api/clubRoutes";
+import { courseRoutes } from "./api/courseRoutes";
 import websocketManager from "./websocketManager";
 
 const server = Hapi.server({
@@ -10,6 +11,7 @@ const server = Hapi.server({
 });
 // Add routes
 server.route(clubRoutes);
+server.route(courseRoutes);
 
 // Bind socketio to http server
 websocketManager.bindSocketIO(io(server.listener));
@@ -22,6 +24,13 @@ export async function init() {
 
 // Actually start the server and listen on the port
 export async function start() {
+  await server.register({
+    plugin: require("hapi-dev-errors"),
+    options: {
+      showErrors: process.env.NODE_ENV !== "production",
+    },
+  });
+
   await server.start();
   console.log("> Server up");
   return server;

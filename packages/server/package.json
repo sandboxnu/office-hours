@@ -12,6 +12,7 @@
     "@hapi/joi": "^17.1.1",
     "@template/common": "*",
     "axios": "^0.19.2",
+    "hapi-dev-errors": "^4.0.0",
     "node-ical": "^0.11.3",
     "nodemon": "^2.0.3",
     "pg": "^8.0.3",
@@ -27,6 +28,7 @@
     "@types/socket.io": "^2.1.4",
     "babel-plugin-transform-typescript-metadata": "^0.3.0",
     "jest": "^26.0.1",
+    "typeorm-fixtures-cli": "^1.6.0",
     "typescript": "^3.8.3"
   },
   "babel": {

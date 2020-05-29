@@ -61,6 +61,8 @@ Integration and unit test files should be colocated with the file they test. One
 
 End to end (E2E) testing is in it's own folder and done with Cypress. These should be used to test core user flows.
 
+If your tests are failing with a message about "deadlock something whatever", do `yarn test --run-in-band`. This makes the tests run sequentially.
+
 ### Installing new packages
 
 Install packages from `cd` into the project you , then run `yarn add <PACKAGE>`

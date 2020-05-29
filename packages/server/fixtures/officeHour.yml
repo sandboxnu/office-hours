@@ -1,0 +1,8 @@
+entity: OfficeHourModel
+items:
+  oh0:
+    course: "@course0"
+    title: "Matthias's special OH"
+    room: "WVH 138"
+    startTime: "{{date.recent}}"
+    endTime: "{{date.soon}}"
