@@ -6,6 +6,10 @@ import {
   CreateQuestionParams,
   CreateQuestionResponse,
   UpdateQuestionParams,
+  User,
+  Course,
+  ListQuestionsResponse,
+  GetQuestionResponse,
 } from "@template/common";
 import { ServerRoute, ResponseObject } from "@hapi/hapi";
 import Joi from "@hapi/joi";
@@ -21,6 +25,8 @@ import {
   MOCK_STUDENT_UPDATE_QUESTION_RESPONSE,
   MOCK_TA_UPDATE_QUESTION,
 } from "../mocks/updateQuestion";
+import { MOCK_STUDENT_LIST_QUESTIONS_RESPONSE } from "../mocks/listQuestions";
+import { MOCK_GET_QUESTION_RESPONSE } from "../mocks/getQuestion";
 
 export const officeHoursRoutes: ServerRoute[] = [
   {
@@ -33,16 +39,10 @@ export const officeHoursRoutes: ServerRoute[] = [
   {
     method: "GET",
     path: "/v1/courses/{course_id}",
-    handler: async (
-      request,
-      h
-    ): Promise<GetCourseResponse | ResponseObject> => {
-      if (request.params.course_id === "169") {
-        // coures_id 169 = Fundies 1
-        return MOCK_GET_COURSE_RESPONSE;
-      } else {
-        return h.response("The course did not exist").code(404);
-      }
+    handler: async (request, h): Promise<Course | ResponseObject> => {
+      const course_id = request.params["course_id"];
+      if (course_id === "169") return MOCK_GET_COURSE_RESPONSE;
+      else return h.response("The course did not exist").code(404);
     },
   },
   {
@@ -64,6 +64,22 @@ export const officeHoursRoutes: ServerRoute[] = [
     },
   },
   {
+    method: "GET",
+    path: "/v1/queues/{queue_id}/questions",
+    handler: async (
+      request,
+      h
+    ): Promise<ListQuestionsResponse | ResponseObject> => {
+      // todo: use JOI for validation with url params?
+      // todo: need a way to return different data, if TA vs. student hits endpoint.
+
+      // for now, just return the student response
+      const queue_id = request.params["queue_id"];
+      if (queue_id === "169") return MOCK_STUDENT_LIST_QUESTIONS_RESPONSE;
+      else return h.response("unknown course").code(404);
+    },
+  },
+  {
     method: "POST",
     path: "/v1/queues/{queue_id}/questions",
     handler: async (
@@ -73,6 +89,21 @@ export const officeHoursRoutes: ServerRoute[] = [
       const { text, questionType } = request.payload as CreateQuestionParams;
       // TODO: Add request validations
       return MOCK_CREATE_QUESTION_RESPONSE;
+    },
+  },
+  {
+    method: "GET",
+    path: "/v1/queues/{queue_id}/questions/{question_id}",
+    handler: async (
+      request,
+      h
+    ): Promise<GetQuestionResponse | ResponseObject> => {
+      const queue_id = request.params["queue_id"];
+      const question_id = request.params["question_id"];
+      if (queue_id === "169") {
+        if (question_id === "1") return MOCK_GET_QUESTION_RESPONSE;
+        else return h.response("unknown question number").code(404);
+      } else return h.response("unknown queue number").code(404);
     },
   },
   {
