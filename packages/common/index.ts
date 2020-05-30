@@ -22,3 +22,12 @@ export type GetCourseResponse = {
     endTime: Date;
   }>;
 };
+
+// Queue types
+export enum QuestionType {
+  Concept = "concept",
+  Testing = "testing",
+  Bug = "bug",
+  Setup = "setup",
+  Other = "other",
+}

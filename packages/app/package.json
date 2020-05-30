@@ -16,7 +16,8 @@
     "react": "16.13.1",
     "react-big-calendar": "^0.24.6",
     "react-dom": "16.13.1",
-    "socket.io-client": "^2.3.0"
+    "socket.io-client": "^2.3.0",
+    "styled-components": "^5.1.0"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.9.4",
@@ -28,6 +29,7 @@
     "@types/node": "^13.13.2",
     "@types/react": "^16.9.34",
     "@types/socket.io-client": "^1.4.32",
+    "babel-plugin-styled-components": "^1.10.7",
     "jest": "^26.0.1",
     "typescript": "^3.8.3"
   },
@@ -50,6 +52,16 @@
   "babel": {
     "presets": [
       "next/babel"
+    ],
+    "plugins": [
+      [
+        "styled-components",
+        {
+          "ssr": true,
+          "displayName": true,
+          "preprocess": false
+        }
+      ]
     ]
   }
 }
