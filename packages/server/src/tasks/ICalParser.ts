@@ -1,7 +1,8 @@
 import ical, { CalendarComponent, CalendarResponse, VEvent } from "node-ical";
 import { OfficeHourModel } from "../entity/OfficeHourModel";
 import { CourseModel } from "../entity/CourseModel";
-import { DeepPartial, getConnection, getManager } from "../../../../ormconfig";
+import { DeepPartial, getConnection, getManager } from "typeorm";
+import { flatten } from "lodash";
 
 type CreateOfficeHour = DeepPartial<OfficeHourModel>[];
 
@@ -25,7 +26,7 @@ export function parseIcal(
 
   return officeHours.map((event) => ({
     title: event.summary,
-    course: { id: courseId },
+    courseId: courseId,
     room: event.location,
     startTime: event.start,
     endTime: event.end,
@@ -38,6 +39,5 @@ export function parseIcal(
  */
 export async function updateCalendarForCourse(course: CourseModel) {
   const officeHours = parseIcal(await ical.fromURL(course.icalUrl), course.id);
-
   await OfficeHourModel.save(officeHours.map((e) => OfficeHourModel.create(e)));
 }
