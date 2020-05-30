@@ -23,14 +23,18 @@ export type CreateQuestionParams = { text: string; questionType: QuestionType };
 export type CreateQuestionResponse = Question;
 
 export type UpdateQuestionParams = {
-  text: string;
-  questionType: QuestionType;
-  status: QuestionStatus;
+  text?: string;
+  questionType?: QuestionType;
+  status?: QuestionStatus;
 };
 export type UpdateQuestionResponse = Question;
 
 export type ListQuestionsResponse = Question[];
 
+export type TAUpdateStatusParams = {
+  room: string;
+  status: "arrived" | "departed";
+}; // Note: Room might become an ID
 export type TAUpdateStatusResponse = Queue;
 
 /////////////////////////
