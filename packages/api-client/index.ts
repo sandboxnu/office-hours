@@ -24,6 +24,7 @@ class APIClient {
         e.startTime = new Date(e.startTime);
         e.endTime = new Date(e.endTime);
       });
+      throw Error();
       return data;
     },
   };
