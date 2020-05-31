@@ -1,4 +1,4 @@
-import { UpdateQuestionResponse } from "@template/common";
+import { UpdateQuestionResponse, QuestionType } from "@template/common";
 
 export const MOCK_STUDENT_UPDATE_QUESTION_RESPONSE: UpdateQuestionResponse = {
   id: 83,
@@ -13,7 +13,7 @@ export const MOCK_STUDENT_UPDATE_QUESTION_RESPONSE: UpdateQuestionResponse = {
   createdAt: "2019-11-05T09:12:41.856308-05:00",
   helpedAt: null,
   closedAt: null,
-  questionType: "Concept",
+  questionType: QuestionType.Concept,
   status: "Queued",
 };
 
@@ -34,6 +34,6 @@ export const MOCK_TA_UPDATE_QUESTION: UpdateQuestionResponse = {
   createdAt: "2019-11-05T09:10:46.922147-05:00",
   helpedAt: "2019-11-05T09:10:46.922055-05:00",
   closedAt: null,
-  questionType: "Concept",
+  questionType: QuestionType.Concept,
   status: "Helping",
 };

@@ -1,4 +1,4 @@
-import { CreateQuestionResponse } from "@template/common";
+import { CreateQuestionResponse, QuestionType } from "@template/common";
 
 export const MOCK_CREATE_QUESTION_RESPONSE: CreateQuestionResponse = {
   id: 55,
@@ -13,6 +13,6 @@ export const MOCK_CREATE_QUESTION_RESPONSE: CreateQuestionResponse = {
   createdAt: "2019-09-05T09:44:46.058327-04:00",
   helpedAt: null,
   closedAt: null,
-  questionType: "Concept",
+  questionType: QuestionType.Concept,
   status: "Queued",
 };

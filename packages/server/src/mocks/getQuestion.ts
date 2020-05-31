@@ -1,4 +1,4 @@
-import { GetQuestionResponse } from "@template/common";
+import { GetQuestionResponse, QuestionType } from "@template/common";
 
 export const MOCK_GET_QUESTION_RESPONSE: GetQuestionResponse = {
   id: 28,
@@ -13,6 +13,6 @@ export const MOCK_GET_QUESTION_RESPONSE: GetQuestionResponse = {
   createdAt: "2019-07-18T00:56:30.254545-04:00",
   helpedAt: null,
   closedAt: null,
-  questionType: "Other",
+  questionType: QuestionType.Other,
   status: "Queued",
 };

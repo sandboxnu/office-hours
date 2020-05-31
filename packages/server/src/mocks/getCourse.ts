@@ -1,4 +1,4 @@
-import { GetCourseResponse } from "@template/common";
+import { GetCourseResponse, QuestionType } from "@template/common";
 
 export const MOCK_GET_COURSE_RESPONSE: GetCourseResponse = {
   id: 169,
@@ -89,7 +89,7 @@ export const MOCK_GET_COURSE_RESPONSE: GetCourseResponse = {
           createdAt: "2019-08-08T00:57:47.149211-04:00",
           helpedAt: "2019-08-08T00:57:30.470570-04:00",
           closedAt: "2019-08-08T00:57:47.149107-04:00",
-          questionType: "Bug",
+          questionType: QuestionType.Bug,
           status: "Resolved",
         },
       ],

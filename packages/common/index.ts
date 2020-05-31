@@ -169,7 +169,13 @@ export type Question = {
 };
 
 // Question Types
-export type QuestionType = "Concept" | "Testing" | "Bug" | "Setup" | "Other";
+export enum QuestionType {
+  Concept = "Concept",
+  Testing = "Testing",
+  Bug = "Bug",
+  Setup = "Setup",
+  Other = "Other",
+}
 
 // Ticket Status - Represents a given status of as student's ticket
 type QuestionStatus =
