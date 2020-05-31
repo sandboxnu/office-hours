@@ -2,7 +2,9 @@ import "reflect-metadata";
 import Hapi from "@hapi/hapi";
 import io from "socket.io";
 import { clubRoutes } from "./api/clubRoutes";
-import { officeHoursRoutes } from "./api/officeHoursRoutes";
+import { profileRoutes } from "./api/profileRoutes";
+import { courseRoutes } from "./api/courseRoutes";
+import { queueRoutes } from "./api/queueRoutes";
 import websocketManager from "./websocketManager";
 
 const server = Hapi.server({
@@ -12,7 +14,9 @@ const server = Hapi.server({
 
 // Add routes
 server.route(clubRoutes);
-server.route(officeHoursRoutes);
+server.route(profileRoutes);
+server.route(courseRoutes);
+server.route(queueRoutes);
 
 // Bind socketio to http server
 websocketManager.bindSocketIO(io(server.listener));

@@ -1,25 +1,12 @@
+import { ServerRoute, ResponseObject } from "@hapi/hapi";
 import {
-  GetProfileResponse,
-  GetCourseResponse,
-  TAUpdateStatusParams,
-  TAUpdateStatusResponse,
+  ListQuestionsResponse,
   CreateQuestionParams,
   CreateQuestionResponse,
   UpdateQuestionParams,
-  User,
-  Course,
-  ListQuestionsResponse,
   GetQuestionResponse,
+  UpdateQuestionResponse,
 } from "@template/common";
-import { ServerRoute, ResponseObject } from "@hapi/hapi";
-import Joi from "@hapi/joi";
-
-import { MOCK_GET_PROFILE_RESPONSE } from "../mocks/getProfile";
-import { MOCK_GET_COURSE_RESPONSE } from "../mocks/getCourse";
-import {
-  MOCK_TA_UPDATE_STATUS_ARRIVED_RESPONSE,
-  MOCK_TA_UPDATE_STATUS_DEPARTED_RESPONSE,
-} from "../mocks/taUpdateStatus";
 import { MOCK_CREATE_QUESTION_RESPONSE } from "../mocks/createQuestion";
 import {
   MOCK_STUDENT_UPDATE_QUESTION_RESPONSE,
@@ -28,41 +15,7 @@ import {
 import { MOCK_STUDENT_LIST_QUESTIONS_RESPONSE } from "../mocks/listQuestions";
 import { MOCK_GET_QUESTION_RESPONSE } from "../mocks/getQuestion";
 
-export const officeHoursRoutes: ServerRoute[] = [
-  {
-    method: "GET",
-    path: "/v1/profile",
-    handler: async (request, h): Promise<GetProfileResponse> => {
-      return MOCK_GET_PROFILE_RESPONSE;
-    },
-  },
-  {
-    method: "GET",
-    path: "/v1/courses/{course_id}",
-    handler: async (request, h): Promise<Course | ResponseObject> => {
-      const course_id = request.params["course_id"];
-      if (course_id === "169") return MOCK_GET_COURSE_RESPONSE;
-      else return h.response("The course did not exist").code(404);
-    },
-  },
-  {
-    method: "PATCH",
-    path: "/v1/courses/{course_id}/ta/change_status",
-    handler: async (
-      request,
-      h
-    ): Promise<TAUpdateStatusResponse | ResponseObject> => {
-      // TODO: Check that the TA user is enrolled in the given course_id
-      const { room, status } = request.payload as TAUpdateStatusParams;
-      if (status === "arrived") {
-        return MOCK_TA_UPDATE_STATUS_ARRIVED_RESPONSE;
-      } else if (status === "departed") {
-        return MOCK_TA_UPDATE_STATUS_DEPARTED_RESPONSE;
-      } else {
-        return h.response("Bad request").code(404); // This we could probably be more descriptive. We'll want to see what might pass through type checks
-      }
-    },
-  },
+export const queueRoutes: ServerRoute[] = [
   {
     method: "GET",
     path: "/v1/queues/{queue_id}/questions",
@@ -112,7 +65,7 @@ export const officeHoursRoutes: ServerRoute[] = [
     handler: async (
       request,
       h
-    ): Promise<CreateQuestionResponse | ResponseObject> => {
+    ): Promise<UpdateQuestionResponse | ResponseObject> => {
       const {
         text,
         questionType,

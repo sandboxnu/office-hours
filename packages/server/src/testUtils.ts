@@ -39,3 +39,22 @@ export function setupDBTest() {
     await connection.close();
   });
 }
+
+// An abstraction for testing server request responsese
+export function withServer(server) {
+  return async ({
+    method,
+    url,
+    statusCode = 200,
+    result,
+  }: {
+    method: "get" | "post";
+    url: string;
+    statusCode?: number;
+    result;
+  }) => {
+    const request = await server().inject({ method, url });
+    expect(request.statusCode).toEqual(statusCode);
+    expect(request.result).toStrictEqual(result);
+  };
+}
