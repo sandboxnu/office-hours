@@ -46,7 +46,7 @@ export const officeHoursRoutes: ServerRoute[] = [
     },
   },
   {
-    method: "GET",
+    method: "PATCH",
     path: "/v1/courses/{course_id}/ta/change_status",
     handler: async (
       request,
