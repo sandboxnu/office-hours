@@ -5,6 +5,13 @@ import {
   CreateClubResponse,
   GetProfileResponse,
   GetCourseResponse,
+  TAUpdateStatusResponse,
+  GetQuestionResponse,
+  CreateQuestionResponse,
+  CreateQuestionParams,
+  UpdateQuestionParams,
+  ListQuestionsResponse,
+  UpdateQuestionResponse,
 } from "@template/common";
 
 class APIClient {
@@ -13,8 +20,8 @@ class APIClient {
     index: async (): Promise<GetClubResponse> => {
       return (await this.axios.get("/api/club")).data;
     },
-    create: async (p: CreateClubParams): Promise<CreateClubResponse> => {
-      return (await this.axios.post("/api/club", p)).data;
+    create: async (params: CreateClubParams): Promise<CreateClubResponse> => {
+      return (await this.axios.post("/api/club", params)).data;
     },
   };
   profile = {
@@ -23,8 +30,47 @@ class APIClient {
     },
   };
   course = {
-    index: async (courseId: number): Promise<GetCourseResponse> => {
+    get: async (courseId: number): Promise<GetCourseResponse> => {
       return (await this.axios.get(`/v1/courses/${courseId}`)).data;
+    },
+  };
+  taStatus = {
+    update: async (courseId: number): Promise<TAUpdateStatusResponse> => {
+      return (
+        await this.axios.patch(`/v1/courses/${courseId}/ta/change_status`)
+      ).data;
+    },
+  };
+  questions = {
+    index: async (queueId: number): Promise<ListQuestionsResponse> => {
+      return (await this.axios.get(`/v1/queues/${queueId}/questions`)).data;
+    },
+    create: async (
+      queueId: number,
+      params: CreateQuestionParams
+    ): Promise<CreateQuestionResponse> => {
+      return (await this.axios.post(`/v1/queues/${queueId}/questions`, params))
+        .data;
+    },
+    get: async (
+      queueId: number,
+      questionId: number
+    ): Promise<GetQuestionResponse> => {
+      return (
+        await this.axios.get(`/v1/queues/${queueId}/questions/${questionId}`)
+      ).data;
+    },
+    update: async (
+      queueId: number,
+      questionId: number,
+      params: UpdateQuestionParams
+    ): Promise<UpdateQuestionResponse> => {
+      return (
+        await this.axios.patch(
+          `/v1/queues/${queueId}/questions/${questionId}`,
+          params
+        )
+      ).data;
     },
   };
   constructor(baseURL: string = "") {
