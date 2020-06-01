@@ -32,6 +32,31 @@ export const queueRoutes: ServerRoute[] = [
       if (queue_id === "169") return MOCK_STUDENT_LIST_QUESTIONS_RESPONSE;
       else return h.response("unknown course").code(404);
     },
+    options: {
+      response: {
+        schema: Joi.array().items(
+          Joi.object({
+            id: Joi.number(),
+            creator: Joi.object({
+              id: Joi.number(),
+              name: Joi.string(),
+              photoURL: Joi.string(),
+            }),
+            text: Joi.string(),
+            taHelped: Joi.object({
+              id: Joi.number(),
+              name: Joi.string(),
+              photoURL: Joi.string(),
+            }),
+            createdAt: Joi.date(),
+            helpedAt: Joi.date(),
+            closedAt: Joi.date(),
+            questionType: Joi.string(),
+            status: Joi.string(),
+          })
+        ),
+      },
+    },
   },
   {
     method: "POST",
@@ -45,6 +70,27 @@ export const queueRoutes: ServerRoute[] = [
       return MOCK_CREATE_QUESTION_RESPONSE;
     },
     options: {
+      response: {
+        schema: Joi.object({
+          id: Joi.number(),
+          creator: Joi.object({
+            id: Joi.number(),
+            name: Joi.string(),
+            photoURL: Joi.string(),
+          }),
+          text: Joi.string(),
+          taHelped: Joi.object({
+            id: Joi.number(),
+            name: Joi.string(),
+            photoURL: Joi.string(),
+          }),
+          createdAt: Joi.date(),
+          helpedAt: Joi.date(),
+          closedAt: Joi.date(),
+          questionType: Joi.string(),
+          status: Joi.string(),
+        }),
+      },
       validate: {
         payload: Joi.object({
           text: Joi.string().required(),
@@ -66,6 +112,29 @@ export const queueRoutes: ServerRoute[] = [
         if (question_id === "1") return MOCK_GET_QUESTION_RESPONSE;
         else return h.response("unknown question number").code(404);
       } else return h.response("unknown queue number").code(404);
+    },
+    options: {
+      response: {
+        schema: Joi.object({
+          id: Joi.number(),
+          creator: Joi.object({
+            id: Joi.number(),
+            name: Joi.string(),
+            photoURL: Joi.string(),
+          }),
+          text: Joi.string(),
+          taHelped: Joi.object({
+            id: Joi.number(),
+            name: Joi.string(),
+            photoURL: Joi.string(),
+          }),
+          createdAt: Joi.date(),
+          helpedAt: Joi.date(),
+          closedAt: Joi.date(),
+          questionType: Joi.string(),
+          status: Joi.string(),
+        }),
+      },
     },
   },
   {
@@ -90,6 +159,27 @@ export const queueRoutes: ServerRoute[] = [
       }
     },
     options: {
+      response: {
+        schema: Joi.object({
+          id: Joi.number(),
+          creator: Joi.object({
+            id: Joi.number(),
+            name: Joi.string(),
+            photoURL: Joi.string(),
+          }),
+          text: Joi.string(),
+          taHelped: Joi.object({
+            id: Joi.number(),
+            name: Joi.string(),
+            photoURL: Joi.string(),
+          }),
+          createdAt: Joi.date(),
+          helpedAt: Joi.date(),
+          closedAt: Joi.date(),
+          questionType: Joi.string(),
+          status: Joi.string(),
+        }),
+      },
       validate: {
         payload: Joi.object({
           text: Joi.string(),

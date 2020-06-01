@@ -23,6 +23,63 @@ export const courseRoutes: ServerRoute[] = [
       if (course_id === "169") return MOCK_GET_COURSE_RESPONSE;
       else return h.response("The course did not exist").code(404);
     },
+    options: {
+      response: {
+        schema: Joi.object({
+          id: Joi.number(),
+          name: Joi.string(),
+          officeHours: Joi.array().items(
+            Joi.object({
+              id: Joi.number(),
+              title: Joi.string(),
+              room: Joi.string(),
+              startTime: Joi.date(),
+              endTime: Joi.date(),
+            })
+          ),
+          queues: Joi.array().items(
+            Joi.object({
+              id: Joi.number(),
+              course: Joi.object({
+                id: Joi.number(),
+                name: Joi.string(),
+              }),
+              room: Joi.string(),
+              createdAt: Joi.date(),
+              closedAt: Joi.date(),
+              staffList: Joi.array().items(
+                Joi.object({
+                  id: Joi.number(),
+                  name: Joi.string(),
+                  photoURL: Joi.string(),
+                })
+              ),
+              questions: Joi.array().items(
+                Joi.object({
+                  id: Joi.number(),
+                  creator: Joi.object({
+                    id: Joi.number(),
+                    name: Joi.string(),
+                    photoURL: Joi.string(),
+                  }),
+                  text: Joi.string(),
+                  taHelped: Joi.object({
+                    id: Joi.number(),
+                    name: Joi.string(),
+                    photoURL: Joi.string(),
+                  }),
+                  createdAt: Joi.date(),
+                  helpedAt: Joi.date(),
+                  closedAt: Joi.date(),
+                  questionType: Joi.string(),
+                  status: Joi.string(),
+                })
+              ),
+            })
+          ),
+        }).options({ presence: "required" }),
+      },
+    },
   },
   {
     method: "PATCH",
@@ -42,6 +99,44 @@ export const courseRoutes: ServerRoute[] = [
       }
     },
     options: {
+      response: {
+        schema: Joi.object({
+          id: Joi.number(),
+          course: Joi.object({
+            id: Joi.number(),
+            name: Joi.string(),
+          }),
+          room: Joi.string(),
+          createdAt: Joi.date(),
+          closedAt: Joi.date(),
+          staffList: Joi.array().items(
+            Joi.object({
+              id: Joi.number(),
+              name: Joi.string(),
+              photoURL: Joi.string(),
+            })
+          ),
+          questions: Joi.object({
+            id: Joi.number(),
+            creator: Joi.object({
+              id: Joi.number(),
+              name: Joi.string(),
+              photoURL: Joi.string(),
+            }),
+            text: Joi.string(),
+            taHelped: Joi.object({
+              id: Joi.number(),
+              name: Joi.string(),
+              photoURL: Joi.string(),
+            }),
+            createdAt: Joi.string(),
+            helpedAt: Joi.string(),
+            closedAt: Joi.string(),
+            questionType: Joi.string(),
+            status: Joi.string(),
+          }),
+        }).options({ presence: "required" }),
+      },
       validate: {
         payload: Joi.object({
           room: Joi.string().required(),
