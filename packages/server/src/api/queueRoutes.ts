@@ -1,4 +1,5 @@
 import { ServerRoute, ResponseObject } from "@hapi/hapi";
+import Joi from "@hapi/joi";
 import {
   ListQuestionsResponse,
   CreateQuestionParams,
@@ -43,6 +44,14 @@ export const queueRoutes: ServerRoute[] = [
       // TODO: Add request validations
       return MOCK_CREATE_QUESTION_RESPONSE;
     },
+    options: {
+      validate: {
+        payload: Joi.object({
+          text: Joi.string().required(),
+          questionType: Joi.string().required(),
+        }).required(),
+      },
+    },
   },
   {
     method: "GET",
@@ -79,6 +88,15 @@ export const queueRoutes: ServerRoute[] = [
       } else {
         return MOCK_TA_UPDATE_QUESTION;
       }
+    },
+    options: {
+      validate: {
+        payload: Joi.object({
+          text: Joi.string(),
+          questionType: Joi.string(),
+          status: Joi.string(),
+        }).required(),
+      },
     },
   },
 ];

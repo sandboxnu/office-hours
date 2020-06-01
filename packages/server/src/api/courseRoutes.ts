@@ -1,4 +1,5 @@
 import { ServerRoute, ResponseObject } from "@hapi/hapi";
+import Joi from "@hapi/joi";
 import {
   TAUpdateStatusParams,
   TAUpdateStatusResponse,
@@ -39,6 +40,14 @@ export const courseRoutes: ServerRoute[] = [
       } else {
         return h.response("Bad request").code(404); // This we could probably be more descriptive. We'll want to see what might pass through type checks
       }
+    },
+    options: {
+      validate: {
+        payload: Joi.object({
+          room: Joi.string().required(),
+          status: Joi.string().required(),
+        }).required(),
+      },
     },
   },
 ];
