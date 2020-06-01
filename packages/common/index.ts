@@ -17,6 +17,8 @@ export type GetProfileResponse = User;
 
 export type GetCourseResponse = Course;
 
+export type ListQuestionsResponse = Question[];
+
 export type GetQuestionResponse = Question;
 
 export type CreateQuestionParams = { text: string; questionType: QuestionType };
@@ -28,8 +30,6 @@ export type UpdateQuestionParams = {
   status?: QuestionStatus;
 };
 export type UpdateQuestionResponse = Question;
-
-export type ListQuestionsResponse = Question[];
 
 export type TAUpdateStatusParams = {
   room: string;
@@ -143,6 +143,24 @@ interface Queue {
   closedAt: string;
   staffList: UserPartial[];
   questions: Question[];
+}
+
+/**
+ * A Queue summary to be used in the CourseResonse.
+ * @param id - The unique id number for a Queue.
+ * @param room - The full name of the building + room # that the current office hours queue is in.
+ * @param createdAt - The date string for the opened on time (aka created on time) of this queue of this queue. Ex: "2019-09-21T12:00:00-04:00"
+ * @param closedAt - The date string for the the closed on time for the queue.
+ * @param staffList - The list of TA user's that are currently helping at office hours.
+ * @param queueSize - The total number of open questions in the queue.
+ */
+interface QueuePartial {
+  id: number;
+  room: string;
+  createdAt: string;
+  closedAt: string;
+  staffList: UserPartial[];
+  queueSize: number;
 }
 
 /**
