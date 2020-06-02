@@ -1,5 +1,6 @@
 import { ServerRoute, ResponseObject } from "@hapi/hapi";
 import Joi from "@hapi/joi";
+import { CourseSchema, QueueSchema, QuestionSchema } from "../joi";
 import {
   ListQuestionsResponse,
   CreateQuestionParams,
@@ -34,27 +35,7 @@ export const queueRoutes: ServerRoute[] = [
     },
     options: {
       response: {
-        schema: Joi.array().items(
-          Joi.object({
-            id: Joi.number(),
-            creator: Joi.object({
-              id: Joi.number(),
-              name: Joi.string(),
-              photoURL: Joi.string(),
-            }),
-            text: Joi.string(),
-            taHelped: Joi.object({
-              id: Joi.number(),
-              name: Joi.string(),
-              photoURL: Joi.string(),
-            }),
-            createdAt: Joi.date(),
-            helpedAt: Joi.date(),
-            closedAt: Joi.date(),
-            questionType: Joi.string(),
-            status: Joi.string(),
-          })
-        ),
+        schema: Joi.array().items(QuestionSchema),
       },
     },
   },
@@ -71,25 +52,7 @@ export const queueRoutes: ServerRoute[] = [
     },
     options: {
       response: {
-        schema: Joi.object({
-          id: Joi.number(),
-          creator: Joi.object({
-            id: Joi.number(),
-            name: Joi.string(),
-            photoURL: Joi.string(),
-          }),
-          text: Joi.string(),
-          taHelped: Joi.object({
-            id: Joi.number(),
-            name: Joi.string(),
-            photoURL: Joi.string(),
-          }),
-          createdAt: Joi.date(),
-          helpedAt: Joi.date(),
-          closedAt: Joi.date(),
-          questionType: Joi.string(),
-          status: Joi.string(),
-        }),
+        schema: QuestionSchema,
       },
       validate: {
         payload: Joi.object({
@@ -115,25 +78,7 @@ export const queueRoutes: ServerRoute[] = [
     },
     options: {
       response: {
-        schema: Joi.object({
-          id: Joi.number(),
-          creator: Joi.object({
-            id: Joi.number(),
-            name: Joi.string(),
-            photoURL: Joi.string(),
-          }),
-          text: Joi.string(),
-          taHelped: Joi.object({
-            id: Joi.number(),
-            name: Joi.string(),
-            photoURL: Joi.string(),
-          }),
-          createdAt: Joi.date(),
-          helpedAt: Joi.date(),
-          closedAt: Joi.date(),
-          questionType: Joi.string(),
-          status: Joi.string(),
-        }),
+        schema: QuestionSchema.options({ presence: "required" }),
       },
     },
   },
@@ -160,25 +105,7 @@ export const queueRoutes: ServerRoute[] = [
     },
     options: {
       response: {
-        schema: Joi.object({
-          id: Joi.number(),
-          creator: Joi.object({
-            id: Joi.number(),
-            name: Joi.string(),
-            photoURL: Joi.string(),
-          }),
-          text: Joi.string(),
-          taHelped: Joi.object({
-            id: Joi.number(),
-            name: Joi.string(),
-            photoURL: Joi.string(),
-          }),
-          createdAt: Joi.date(),
-          helpedAt: Joi.date(),
-          closedAt: Joi.date(),
-          questionType: Joi.string(),
-          status: Joi.string(),
-        }),
+        schema: QuestionSchema.options({ presence: "required" }),
       },
       validate: {
         payload: Joi.object({

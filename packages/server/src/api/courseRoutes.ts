@@ -1,5 +1,6 @@
 import { ServerRoute, ResponseObject } from "@hapi/hapi";
 import Joi from "@hapi/joi";
+import { CourseSchema, QueueSchema } from "../joi";
 import {
   TAUpdateStatusParams,
   TAUpdateStatusResponse,
@@ -25,59 +26,7 @@ export const courseRoutes: ServerRoute[] = [
     },
     options: {
       response: {
-        schema: Joi.object({
-          id: Joi.number(),
-          name: Joi.string(),
-          officeHours: Joi.array().items(
-            Joi.object({
-              id: Joi.number(),
-              title: Joi.string(),
-              room: Joi.string(),
-              startTime: Joi.date(),
-              endTime: Joi.date(),
-            })
-          ),
-          queues: Joi.array().items(
-            Joi.object({
-              id: Joi.number(),
-              course: Joi.object({
-                id: Joi.number(),
-                name: Joi.string(),
-              }),
-              room: Joi.string(),
-              createdAt: Joi.date(),
-              closedAt: Joi.date(),
-              staffList: Joi.array().items(
-                Joi.object({
-                  id: Joi.number(),
-                  name: Joi.string(),
-                  photoURL: Joi.string(),
-                })
-              ),
-              questions: Joi.array().items(
-                Joi.object({
-                  id: Joi.number(),
-                  creator: Joi.object({
-                    id: Joi.number(),
-                    name: Joi.string(),
-                    photoURL: Joi.string(),
-                  }),
-                  text: Joi.string(),
-                  taHelped: Joi.object({
-                    id: Joi.number(),
-                    name: Joi.string(),
-                    photoURL: Joi.string(),
-                  }),
-                  createdAt: Joi.date(),
-                  helpedAt: Joi.date(),
-                  closedAt: Joi.date(),
-                  questionType: Joi.string(),
-                  status: Joi.string(),
-                })
-              ),
-            })
-          ),
-        }).options({ presence: "required" }),
+        schema: CourseSchema.options({ presence: "required" }),
       },
     },
   },
@@ -100,42 +49,7 @@ export const courseRoutes: ServerRoute[] = [
     },
     options: {
       response: {
-        schema: Joi.object({
-          id: Joi.number(),
-          course: Joi.object({
-            id: Joi.number(),
-            name: Joi.string(),
-          }),
-          room: Joi.string(),
-          createdAt: Joi.date(),
-          closedAt: Joi.date(),
-          staffList: Joi.array().items(
-            Joi.object({
-              id: Joi.number(),
-              name: Joi.string(),
-              photoURL: Joi.string(),
-            })
-          ),
-          questions: Joi.object({
-            id: Joi.number(),
-            creator: Joi.object({
-              id: Joi.number(),
-              name: Joi.string(),
-              photoURL: Joi.string(),
-            }),
-            text: Joi.string(),
-            taHelped: Joi.object({
-              id: Joi.number(),
-              name: Joi.string(),
-              photoURL: Joi.string(),
-            }),
-            createdAt: Joi.string(),
-            helpedAt: Joi.string(),
-            closedAt: Joi.string(),
-            questionType: Joi.string(),
-            status: Joi.string(),
-          }),
-        }).options({ presence: "required" }),
+        schema: QueueSchema.options({ presence: "required" }),
       },
       validate: {
         payload: Joi.object({
