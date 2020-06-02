@@ -51,7 +51,9 @@ export const QuestionSchema = Joi.object({
   createdAt: Joi.date(),
   helpedAt: Joi.date().allow(null),
   closedAt: Joi.date().allow(null),
-  questionType: Joi.string().valid(Object.values(QuestionType)).allow(null),
+  questionType: Joi.string()
+    .valid(...Object.values(QuestionType))
+    .allow(null),
   status: Joi.string().valid(
     "Drafting",
     "Queued",
