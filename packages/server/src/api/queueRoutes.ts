@@ -25,9 +25,7 @@ export const queueRoutes: ServerRoute[] = [
       request,
       h
     ): Promise<ListQuestionsResponse | ResponseObject> => {
-      // todo: use JOI for validation with url params?
       // todo: need a way to return different data, if TA vs. student hits endpoint.
-
       // for now, just return the student response
       const queue_id = request.params["queue_id"];
       if (queue_id === "169") return MOCK_STUDENT_LIST_QUESTIONS_RESPONSE;
@@ -71,10 +69,7 @@ export const queueRoutes: ServerRoute[] = [
     ): Promise<GetQuestionResponse | ResponseObject> => {
       const queue_id = request.params["queue_id"];
       const question_id = request.params["question_id"];
-      if (queue_id === "169") {
-        if (question_id === "1") return MOCK_GET_QUESTION_RESPONSE;
-        else return h.response("unknown question number").code(404);
-      } else return h.response("unknown queue number").code(404);
+      return MOCK_GET_QUESTION_RESPONSE;
     },
     options: {
       response: {
