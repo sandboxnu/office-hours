@@ -4,24 +4,31 @@ import io from "socket.io";
 import { clubRoutes } from "./api/clubRoutes";
 import websocketManager from "./websocketManager";
 
-const server = Hapi.server({
-  port: 3002,
-  host: "localhost",
-});
-// Add routes
-server.route(clubRoutes);
-
-// Bind socketio to http server
-websocketManager.bindSocketIO(io(server.listener));
-
-// Good for testing
+// Just initialize, don't start
 export async function init() {
+  const server = Hapi.server({
+    port: 3002,
+    host: "localhost",
+  });
+  // Add routes
+  server.route(clubRoutes);
+
+  // Bind socketio to http server
+  websocketManager.bindSocketIO(io(server.listener));
+
+  await server.register({
+    plugin: require("hapi-dev-errors"),
+    options: {
+      showErrors: process.env.NODE_ENV !== "production",
+    },
+  });
   await server.initialize();
   return server;
 }
 
 // Actually start the server and listen on the port
 export async function start() {
+  const server = await init();
   await server.start();
   console.log("> Server up");
   return server;
