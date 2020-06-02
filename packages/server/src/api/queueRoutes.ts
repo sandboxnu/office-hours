@@ -33,7 +33,9 @@ export const queueRoutes: ServerRoute[] = [
     },
     options: {
       response: {
-        schema: Joi.array().items(QuestionSchema),
+        schema: Joi.array().items(
+          QuestionSchema.options({ presence: "required" })
+        ),
       },
     },
   },
@@ -50,7 +52,7 @@ export const queueRoutes: ServerRoute[] = [
     },
     options: {
       response: {
-        schema: QuestionSchema,
+        schema: QuestionSchema.options({ presence: "required" }),
       },
       validate: {
         payload: Joi.object({
