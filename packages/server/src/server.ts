@@ -19,6 +19,7 @@ export async function init() {
   server.route(courseRoutes);
   server.route(queueRoutes);
 
+
   // Bind socketio to http server
   websocketManager.bindSocketIO(io(server.listener));
 
