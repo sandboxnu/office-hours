@@ -68,7 +68,7 @@ export type User = {
 export type UserPartial = {
   id: number;
   name: string;
-  photoURL: string;
+  photoURL?: string;
 };
 
 /**
@@ -92,7 +92,7 @@ export type Course = {
  * @param id - The id number of this Course.
  * @param name - The subject and course number of this course. Ex: "CS 2500"
  */
-export type CourseParial = {
+export type CoursePartial = {
   id: number;
   name: string;
 };
@@ -103,7 +103,7 @@ export type CourseParial = {
  * @param role - The user's role in the course.
  */
 export type UserCourse = {
-  course: CourseParial;
+  course: CoursePartial;
   role: "student" | "ta" | "professor";
 };
 
@@ -119,7 +119,7 @@ export type UserCourse = {
 interface OfficeHourBlock {
   id: number;
   title: string;
-  course: CourseParial;
+  course: CoursePartial;
   room: string; // if not in person set to string "online"
   startTime: string;
   endTime: string;
@@ -137,30 +137,12 @@ interface OfficeHourBlock {
  */
 interface Queue {
   id: number;
-  course: CourseParial;
+  course: CoursePartial;
   room: string;
   createdAt: string;
-  closedAt: string;
+  closedAt?: string;
   staffList: UserPartial[];
   questions: Question[];
-}
-
-/**
- * A Queue summary to be used in the CourseResonse.
- * @param id - The unique id number for a Queue.
- * @param room - The full name of the building + room # that the current office hours queue is in.
- * @param createdAt - The date string for the opened on time (aka created on time) of this queue of this queue. Ex: "2019-09-21T12:00:00-04:00"
- * @param closedAt - The date string for the the closed on time for the queue.
- * @param staffList - The list of TA user's that are currently helping at office hours.
- * @param queueSize - The total number of open questions in the queue.
- */
-interface QueuePartial {
-  id: number;
-  room: string;
-  createdAt: string;
-  closedAt: string;
-  staffList: UserPartial[];
-  queueSize: number;
 }
 
 /**
