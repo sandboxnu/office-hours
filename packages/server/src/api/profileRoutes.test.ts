@@ -9,7 +9,7 @@ describe("Profile Routes", () => {
     it("GET profile", async () => {
       const get = await getServer().inject({
         method: "get",
-        url: "/v1/profile",
+        url: "/api/v1/profile",
       });
       expect(get.statusCode).toEqual(200);
       expect(get.result).toEqual(MOCK_GET_PROFILE_RESPONSE);

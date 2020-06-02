@@ -20,7 +20,7 @@ import { MOCK_GET_QUESTION_RESPONSE } from "../mocks/getQuestion";
 export const queueRoutes: ServerRoute[] = [
   {
     method: "GET",
-    path: "/v1/queues/{queue_id}/questions",
+    path: "/api/v1/queues/{queue_id}/questions",
     handler: async (
       request,
       h
@@ -39,7 +39,7 @@ export const queueRoutes: ServerRoute[] = [
   },
   {
     method: "POST",
-    path: "/v1/queues/{queue_id}/questions",
+    path: "/api/v1/queues/{queue_id}/questions",
     handler: async (
       request,
       h
@@ -62,7 +62,7 @@ export const queueRoutes: ServerRoute[] = [
   },
   {
     method: "GET",
-    path: "/v1/queues/{queue_id}/questions/{question_id}",
+    path: "/api/v1/queues/{queue_id}/questions/{question_id}",
     handler: async (
       request,
       h
@@ -79,7 +79,7 @@ export const queueRoutes: ServerRoute[] = [
   },
   {
     method: "PATCH",
-    path: "/v1/queues/{queue_id}/questions/{question_id}",
+    path: "/api/v1/queues/{queue_id}/questions/{question_id}",
     handler: async (
       request,
       h

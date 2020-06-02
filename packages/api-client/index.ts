@@ -26,7 +26,7 @@ class APIClient {
   };
   profile = {
     index: async (): Promise<GetProfileResponse> => {
-      return (await this.axios.get(`/v1/profile`)).data;
+      return (await this.axios.get(`/api/v1/profile`)).data;
     },
   };
   course = {
@@ -41,7 +41,7 @@ class APIClient {
   taStatus = {
     update: async (courseId: number): Promise<TAUpdateStatusResponse> => {
       const queue = (
-        await this.axios.patch(`/v1/courses/${courseId}/ta/change_status`)
+        await this.axios.patch(`/api/v1/courses/${courseId}/ta/change_status`)
       ).data;
       parseQueueDates(queue);
       queue.questions.forEach((question: any) => parseQuestionDates(question));
@@ -51,7 +51,7 @@ class APIClient {
   questions = {
     index: async (queueId: number): Promise<ListQuestionsResponse> => {
       const questions = (
-        await this.axios.get(`/v1/queues/${queueId}/questions`)
+        await this.axios.get(`/api/v1/queues/${queueId}/questions`)
       ).data;
       questions.forEach((question: any) => parseQuestionDates(question));
       return questions;
@@ -61,7 +61,7 @@ class APIClient {
       params: CreateQuestionParams
     ): Promise<CreateQuestionResponse> => {
       const question = (
-        await this.axios.post(`/v1/queues/${queueId}/questions`, params)
+        await this.axios.post(`/api/v1/queues/${queueId}/questions`, params)
       ).data;
       parseQuestionDates(question);
       return question;
@@ -71,7 +71,9 @@ class APIClient {
       questionId: number
     ): Promise<GetQuestionResponse> => {
       return (
-        await this.axios.get(`/v1/queues/${queueId}/questions/${questionId}`)
+        await this.axios.get(
+          `/api/v1/queues/${queueId}/questions/${questionId}`
+        )
       ).data;
     },
     update: async (
@@ -81,7 +83,7 @@ class APIClient {
     ): Promise<UpdateQuestionResponse> => {
       const question = (
         await this.axios.patch(
-          `/v1/queues/${queueId}/questions/${questionId}`,
+          `/api/v1/queues/${queueId}/questions/${questionId}`,
           params
         )
       ).data;

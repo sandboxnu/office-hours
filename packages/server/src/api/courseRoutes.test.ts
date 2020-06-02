@@ -13,14 +13,14 @@ describe("Course Routes", () => {
     it("GET fundies", async () => {
       await expectWithServer({
         method: "get",
-        url: "/v1/courses/169",
+        url: "/api/v1/courses/169",
         result: MOCK_GET_COURSE_RESPONSE,
       });
     });
     it("GET fails on unknown course", async () => {
       await expectWithServer({
         method: "get",
-        url: "/v1/courses/999",
+        url: "/api/v1/courses/999",
         statusCode: 404,
         result: "The course did not exist",
       });
@@ -31,7 +31,7 @@ describe("Course Routes", () => {
     it("TA has arrived", async () => {
       await expectWithServer({
         method: "patch",
-        url: "/v1/courses/169/ta/change_status",
+        url: "/api/v1/courses/169/ta/change_status",
         payload: {
           room: "WVH 650",
           status: "arrived",
@@ -43,7 +43,7 @@ describe("Course Routes", () => {
     it("TA has departed", async () => {
       await expectWithServer({
         method: "patch",
-        url: "/v1/courses/169/ta/change_status",
+        url: "/api/v1/courses/169/ta/change_status",
         payload: {
           room: "WVH 650",
           status: "departed",
@@ -55,7 +55,7 @@ describe("Course Routes", () => {
     it("Fails on unexpected payload", async () => {
       await expectWithServer({
         method: "patch",
-        url: "/v1/courses/169/ta/change_status",
+        url: "/api/v1/courses/169/ta/change_status",
         payload: {
           text: "I'm here!",
           status: "arrived",

@@ -15,7 +15,7 @@ import {
 export const courseRoutes: ServerRoute[] = [
   {
     method: "GET",
-    path: "/v1/courses/{course_id}",
+    path: "/api/v1/courses/{course_id}",
     handler: async (
       request,
       h
@@ -32,7 +32,7 @@ export const courseRoutes: ServerRoute[] = [
   },
   {
     method: "PATCH",
-    path: "/v1/courses/{course_id}/ta/change_status",
+    path: "/api/v1/courses/{course_id}/ta/change_status",
     handler: async (
       request,
       h
