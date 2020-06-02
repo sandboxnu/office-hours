@@ -1,6 +1,8 @@
 import { setupServerTest, withServer } from "../testUtils";
 import { MOCK_STUDENT_LIST_QUESTIONS_RESPONSE } from "../mocks/listQuestions";
 import { MOCK_GET_QUESTION_RESPONSE } from "../mocks/getQuestion";
+import { MOCK_CREATE_QUESTION_RESPONSE } from "../mocks/createQuestion";
+import { QuestionType } from "@template/common";
 
 describe("Queue Routes", () => {
   const getServer = setupServerTest();
@@ -22,6 +24,31 @@ describe("Queue Routes", () => {
         result: "unknown course",
       });
     });
+    it("POST new question", async () => {
+      await expectWithServer({
+        method: "post",
+        url: "/v1/queues/45/questions",
+        payload: {
+          text: "Don't know recursion",
+          questionType: "Concept",
+        },
+        statusCode: 200,
+        result: MOCK_CREATE_QUESTION_RESPONSE,
+      });
+    });
+    it("POST new question fails with bad params", async () => {
+      await expectWithServer({
+        method: "post",
+        url: "/v1/queues/45/questions",
+        payload: { question: "I need help" },
+        statusCode: 400,
+        result: {
+          error: "Bad Request",
+          message: "Invalid request payload input",
+          statusCode: 400,
+        },
+      });
+    });
   });
 
   describe("/queues/{queue_id}/questions/:question_id", () => {
@@ -30,22 +57,6 @@ describe("Queue Routes", () => {
         method: "get",
         url: "/v1/queues/169/questions/1",
         result: MOCK_GET_QUESTION_RESPONSE,
-      });
-    });
-    it("GET fails on queue that doesn't exist", async () => {
-      await expectWithServer({
-        method: "get",
-        url: "/v1/queues/000/questions/1",
-        result: "unknown queue number",
-        statusCode: 404,
-      });
-    });
-    it("GET fails with ok queue but unknown question", async () => {
-      await expectWithServer({
-        method: "get",
-        url: "/v1/queues/169/questions/0",
-        result: "unknown question number",
-        statusCode: 404,
       });
     });
   });
