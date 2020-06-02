@@ -1,5 +1,6 @@
 import Joi from "@hapi/joi";
 import { courseRoutes } from "./api/courseRoutes";
+import { QuestionType } from "@template/common";
 
 // type CoursePartial
 export const CoursePartialSchema = Joi.object({
@@ -29,7 +30,7 @@ export const UserSchema = Joi.object({
         id: Joi.number(),
         name: Joi.string(),
       }),
-      role: Joi.string(),
+      role: Joi.string().valid("student", "ta", "professor"),
     })
   ),
 });
@@ -50,8 +51,16 @@ export const QuestionSchema = Joi.object({
   createdAt: Joi.date(),
   helpedAt: Joi.date().allow(null),
   closedAt: Joi.date().allow(null),
-  questionType: Joi.string().allow(null),
-  status: Joi.string(),
+  questionType: Joi.string().valid(Object.values(QuestionType)).allow(null),
+  status: Joi.string().valid(
+    "Drafting",
+    "Queued",
+    "Helping",
+    "Resolved",
+    "Deferred",
+    "No Show",
+    "Deleted"
+  ),
 });
 
 // type Queue
@@ -70,7 +79,7 @@ export const CourseSchema = Joi.object({
   id: Joi.number(),
   name: Joi.string(),
   semester: Joi.object({
-    season: Joi.string(),
+    season: Joi.string().valid("Fall", "Spring", "Summer 1", "Summer 2"),
     year: Joi.number(),
   }),
   officeHours: Joi.array().items(OfficeHourBlockSchema),
