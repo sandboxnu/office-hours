@@ -139,8 +139,8 @@ interface Queue {
   id: number;
   course: CoursePartial;
   room: string;
-  createdAt: string;
-  closedAt?: string;
+  createdAt: Date;
+  closedAt?: Date;
   staffList: UserPartial[];
   questions: Question[];
 }
@@ -161,9 +161,9 @@ export type Question = {
   creator: UserPartial;
   text?: string;
   taHelped?: UserPartial;
-  createdAt: string;
-  helpedAt?: string;
-  closedAt?: string;
+  createdAt: Date;
+  helpedAt?: Date;
+  closedAt?: Date;
   questionType?: QuestionType;
   status: QuestionStatus;
 };

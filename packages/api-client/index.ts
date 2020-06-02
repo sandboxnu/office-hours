@@ -31,26 +31,40 @@ class APIClient {
   };
   course = {
     get: async (courseId: number): Promise<GetCourseResponse> => {
-      return (await this.axios.get(`/v1/courses/${courseId}`)).data;
+      const course = (await this.axios.get(`/api/v1/courses/${courseId}`)).data;
+      course.officeHours.forEach((officeHour: any) =>
+        parseOfficeHourDates(officeHour)
+      );
+      return course;
     },
   };
   taStatus = {
     update: async (courseId: number): Promise<TAUpdateStatusResponse> => {
-      return (
+      const queue = (
         await this.axios.patch(`/v1/courses/${courseId}/ta/change_status`)
       ).data;
+      parseQueueDates(queue);
+      queue.questions.forEach((question: any) => parseQuestionDates(question));
+      return queue;
     },
   };
   questions = {
     index: async (queueId: number): Promise<ListQuestionsResponse> => {
-      return (await this.axios.get(`/v1/queues/${queueId}/questions`)).data;
+      const questions = (
+        await this.axios.get(`/v1/queues/${queueId}/questions`)
+      ).data;
+      questions.forEach((question: any) => parseQuestionDates(question));
+      return questions;
     },
     create: async (
       queueId: number,
       params: CreateQuestionParams
     ): Promise<CreateQuestionResponse> => {
-      return (await this.axios.post(`/v1/queues/${queueId}/questions`, params))
-        .data;
+      const question = (
+        await this.axios.post(`/v1/queues/${queueId}/questions`, params)
+      ).data;
+      parseQuestionDates(question);
+      return question;
     },
     get: async (
       queueId: number,
@@ -65,17 +79,35 @@ class APIClient {
       questionId: number,
       params: UpdateQuestionParams
     ): Promise<UpdateQuestionResponse> => {
-      return (
+      const question = (
         await this.axios.patch(
           `/v1/queues/${queueId}/questions/${questionId}`,
           params
         )
       ).data;
+      parseQuestionDates(question);
+      return question;
     },
   };
   constructor(baseURL: string = "") {
     this.axios = Axios.create({ baseURL: baseURL });
   }
+}
+
+function parseOfficeHourDates(officeHour: any): void {
+  officeHour.startTime = new Date(officeHour.startTime);
+  officeHour.endTime = new Date(officeHour.endTime);
+}
+
+function parseQueueDates(queue: any): void {
+  queue.createdAt = new Date(queue.createdAt);
+  queue.closedAt = new Date(queue.closedAt);
+}
+
+function parseQuestionDates(question: any): void {
+  question.createdAt = new Date(question.createdAt);
+  question.helpedAt ? (question.helpedAt = new Date(question.helpedAt)) : null;
+  question.closedAt ? (question.closedAt = new Date(question.closedAtt)) : null;
 }
 
 export const API = new APIClient(process.env.API_URL);
