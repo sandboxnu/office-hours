@@ -84,7 +84,7 @@ export const MOCK_GET_COURSE_RESPONSE: GetCourseResponse = {
           taHelped: {
             id: 589,
             name: "Josh Rosenberg",
-            photoURL: "",
+            photoURL: null,
           },
           createdAt: "2019-08-08T00:57:47.149211-04:00",
           helpedAt: "2019-08-08T00:57:30.470570-04:00",

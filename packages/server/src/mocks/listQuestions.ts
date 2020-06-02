@@ -29,7 +29,7 @@ export const MOCK_STUDENT_LIST_QUESTIONS_RESPONSE: ListQuestionsResponse = [
     taHelped: {
       id: 589,
       name: "Josh Rosenberg",
-      photoURL: "",
+      photoURL: null,
     },
     createdAt: "2019-08-08T00:57:47.149211-04:00",
     helpedAt: "2019-08-08T00:57:30.470570-04:00",
@@ -49,7 +49,7 @@ export const MOCK_STUDENT_LIST_QUESTIONS_RESPONSE: ListQuestionsResponse = [
     taHelped: {
       id: 589,
       name: "Josh Rosenberg",
-      photoURL: "",
+      photoURL: null,
     },
     createdAt: "2019-08-08T15:24:10.156893-04:00",
     helpedAt: "2019-08-08T15:23:49.440087-04:00",
@@ -69,7 +69,7 @@ export const MOCK_STUDENT_LIST_QUESTIONS_RESPONSE: ListQuestionsResponse = [
     taHelped: {
       id: 589,
       name: "Josh Rosenberg",
-      photoURL: "",
+      photoURL: null,
     },
     createdAt: "2019-08-08T15:24:16.651921-04:00",
     helpedAt: "2019-08-08T15:24:16.651827-04:00",
@@ -108,7 +108,7 @@ export const MOCK_TA_LIST_QUESTIONS_RESPONSE: ListQuestionsResponse = [
     taHelped: {
       id: 589,
       name: "Josh Rosenberg",
-      photoURL: "",
+      photoURL: null,
     },
     createdAt: "2019-08-08T00:57:47.149211-04:00",
     helpedAt: "2019-08-08T00:57:30.470570-04:00",
@@ -128,7 +128,7 @@ export const MOCK_TA_LIST_QUESTIONS_RESPONSE: ListQuestionsResponse = [
     taHelped: {
       id: 589,
       name: "Josh Rosenberg",
-      photoURL: "",
+      photoURL: null,
     },
     createdAt: "2019-08-08T15:24:10.156893-04:00",
     helpedAt: "2019-08-08T15:23:49.440087-04:00",
@@ -148,7 +148,7 @@ export const MOCK_TA_LIST_QUESTIONS_RESPONSE: ListQuestionsResponse = [
     taHelped: {
       id: 589,
       name: "Josh Rosenberg",
-      photoURL: "",
+      photoURL: null,
     },
     createdAt: "2019-08-08T15:24:16.651921-04:00",
     helpedAt: "2019-08-08T15:24:16.651827-04:00",

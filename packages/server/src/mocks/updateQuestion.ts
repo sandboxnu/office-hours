@@ -29,7 +29,7 @@ export const MOCK_TA_UPDATE_QUESTION: UpdateQuestionResponse = {
   taHelped: {
     id: 132,
     name: "Eddie Li",
-    photoURL: "",
+    photoURL: null,
   },
   createdAt: "2019-11-05T09:10:46.922147-05:00",
   helpedAt: "2019-11-05T09:10:46.922055-05:00",
