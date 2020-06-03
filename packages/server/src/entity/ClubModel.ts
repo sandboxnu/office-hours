@@ -1,11 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  BaseEntity,
-  OneToMany,
-} from "typeorm";
-import { OfficeHourModel } from "./OfficeHourModel";
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("club")
 export class ClubModel extends BaseEntity {

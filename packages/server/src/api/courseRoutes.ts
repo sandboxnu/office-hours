@@ -1,12 +1,13 @@
 import { ServerRoute, ResponseObject } from "@hapi/hapi";
 import Joi from "@hapi/joi";
 import { CourseSchema, QueueSchema } from "../joi";
+import { CourseModel } from "../entity/CourseModel";
+import { pick } from "lodash";
 import {
   TAUpdateStatusParams,
   TAUpdateStatusResponse,
   GetCourseResponse,
 } from "@template/common";
-import { MOCK_GET_COURSE_RESPONSE } from "../mocks/getCourse";
 import {
   MOCK_TA_UPDATE_STATUS_ARRIVED_RESPONSE,
   MOCK_TA_UPDATE_STATUS_DEPARTED_RESPONSE,
@@ -16,13 +17,16 @@ export const courseRoutes: ServerRoute[] = [
   {
     method: "GET",
     path: "/api/v1/courses/{course_id}",
-    handler: async (
-      request,
-      h
-    ): Promise<GetCourseResponse | ResponseObject> => {
-      const course_id = request.params["course_id"];
-      if (course_id === "169") return MOCK_GET_COURSE_RESPONSE;
-      else return h.response("The course did not exist").code(404);
+    handler: async (request, h): Promise<GetCourseResponse> => {
+      const course = await CourseModel.findOne(request.params.course_id, {
+        relations: ["officeHours"],
+      });
+      return {
+        name: course.name,
+        officeHours: (await course.officeHours).map((e) =>
+          pick(e, ["id", "title", "room", "startTime", "endTime"])
+        ),
+      };
     },
     options: {
       response: {

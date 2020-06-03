@@ -41,8 +41,6 @@ The `infrastructure` folder is for docker and other deployment files. You can mo
 
 Run `yarn dev` at root level to get everything running and hot-reloading. `yarn test` at root level runs all tests, but you can also selectively run tests by running `yarn test` while inside a package. Be sure to have the db running with `yarn dev:db:up` before running dev or tests.
 
-You can run the database detached with `yarn dev:db:up -d`.
-
 Your IDE should do type-checking for you. You can run type-checks manually with `yarn tsc`.
 
 ### Adding an API Route
@@ -60,6 +58,8 @@ Every component in `pages` is served publicly. See https://nextjs.org/docs/routi
 Integration and unit test files should be colocated with the file they test. One exception is app page tests (page folder is public, so tests can't go in there)
 
 End to end (E2E) testing is in it's own folder and done with Cypress. These should be used to test core user flows.
+
+If your tests are failing with a message about "deadlock something whatever", do `yarn test --run-in-band`. This makes the tests run sequentially.
 
 ### Installing new packages
 

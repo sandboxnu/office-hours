@@ -15,7 +15,19 @@ export type CreateClubResponse = Club;
 // Office Hours Response Types
 export type GetProfileResponse = User;
 
-export type GetCourseResponse = Course;
+// export type GetCourseResponse = Course;
+
+export interface GetCourseResponse {
+  name: string;
+  officeHours: Array<{
+    id: number;
+    title: string;
+    room: string;
+    startTime: Date;
+    endTime: Date;
+  }>;
+  queues?: Queue[];
+}
 
 export type ListQuestionsResponse = Question[];
 

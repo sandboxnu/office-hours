@@ -6,7 +6,6 @@ import { profileRoutes } from "./api/profileRoutes";
 import { courseRoutes } from "./api/courseRoutes";
 import { queueRoutes } from "./api/queueRoutes";
 import websocketManager from "./websocketManager";
-import HapiDevErrors from "hapi-dev-errors";
 
 // Just initialize, don't start
 export async function init() {
@@ -24,7 +23,7 @@ export async function init() {
   websocketManager.bindSocketIO(io(server.listener));
 
   await server.register({
-    plugin: HapiDevErrors,
+    plugin: require("hapi-dev-errors"),
     options: {
       showErrors: process.env.NODE_ENV !== "production",
     },
