@@ -68,4 +68,3 @@ Install packages from `cd` into the project you , then run `yarn add <PACKAGE>`
 ## Style
 
 [Prettier](https://prettier.io/), a highly opinionated code formatter, runs right before you commit to git. So don't worry about formatting your code! Prettier will clean it all up. You can also get the Prettier extension in most IDEs, or run `yarn pretty-quick` if you want to.
-
