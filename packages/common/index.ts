@@ -147,7 +147,7 @@ interface OfficeHourBlock {
  * @param staffList - The list of TA user's that are currently helping at office hours.
  * @param questions - The list of the students questions assocaited with the queue.
  */
-interface Queue {
+export interface Queue {
   id: number;
   course: CoursePartial;
   room: string;

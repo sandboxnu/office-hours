@@ -4,7 +4,11 @@ import useSWR from "swr";
 import { API } from "@template/api-client";
 import { Result } from "antd";
 
-export default function Schedule() {
+type ScheduleProps = {
+  viewType: Calendar.Views; // TODO: debug this, hwy isn't it finding the types?
+};
+
+export default function Schedule({ viewType }: ScheduleProps) {
   const { data, error } = useSWR(`api/v1/courses/1`, async () =>
     API.course.get(1)
   );
@@ -27,7 +31,11 @@ export default function Schedule() {
   return (
     <div style={{ height: "400px" }}>
       <h1>{data?.name ?? ""}</h1>
-      <Calendar localizer={momentLocalizer(moment)} events={myEvents} />
+      <Calendar
+        localizer={momentLocalizer(moment)}
+        events={myEvents}
+        defaultView={viewType}
+      />
     </div>
   );
 }
