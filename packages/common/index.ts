@@ -12,7 +12,7 @@ export type GetClubResponse = Club[];
 export type CreateClubParams = { name: string; rating: number };
 export type CreateClubResponse = Club;
 
-export type GetCourseResponse = {
+export interface GetCourseResponse {
   name: string;
   officeHours: Array<{
     id: number;
@@ -21,7 +21,7 @@ export type GetCourseResponse = {
     startTime: Date;
     endTime: Date;
   }>;
-};
+}
 
 // Queue types
 export enum QuestionType {

@@ -3,8 +3,8 @@ import {
   GetClubResponse,
   CreateClubParams,
   CreateClubResponse,
-  GetCourseResponse,
 } from "@template/common";
+import { GetCourseResponse } from "../common";
 
 class APIClient {
   private axios: AxiosInstance;
@@ -20,9 +20,9 @@ class APIClient {
   course = {
     get: async (courseId: number): Promise<GetCourseResponse> => {
       const data = (await this.axios.get(`/api/v1/courses/${courseId}`)).data;
-      data.officeHours.forEach((e: any) => {
-        e.startTime = new Date(e.startTime);
-        e.endTime = new Date(e.endTime);
+      data.officeHours.forEach((officeHour: any) => {
+        officeHour.startTime = new Date(officeHour.startTime);
+        officeHour.endTime = new Date(officeHour.endTime);
       });
       return data;
     },

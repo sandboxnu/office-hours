@@ -1,9 +1,8 @@
 import { setupDBTest, setupServerTest } from "../testUtils";
-import { ClubModel } from "../entity/ClubModel";
 import { OfficeHourModel } from "../entity/OfficeHourModel";
 import { CourseModel } from "../entity/CourseModel";
 
-describe("/v1/courses/course_id", () => {
+describe("/api/v1/courses/course_id", () => {
   setupDBTest();
   const getServer = setupServerTest();
 
@@ -21,7 +20,7 @@ describe("/v1/courses/course_id", () => {
     }).save();
     const get = await getServer().inject({
       method: "get",
-      url: `/v1/courses/${course.id}`,
+      url: `/api/v1/courses/${course.id}`,
     });
     expect(get.statusCode).toEqual(200);
     expect(get.result).toEqual({

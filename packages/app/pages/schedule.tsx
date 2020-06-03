@@ -22,11 +22,11 @@ export default function Schedule() {
       title: e.title,
       start: e.startTime,
       end: e.endTime,
-    })) || [];
+    })) ?? [];
 
   return (
     <div style={{ height: "400px" }}>
-      <h1>{data?.name || ""}</h1>
+      <h1>{data?.name ?? ""}</h1>
       <Calendar localizer={momentLocalizer(moment)} events={myEvents} />
     </div>
   );
