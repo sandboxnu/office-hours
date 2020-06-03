@@ -2,6 +2,7 @@ import "reflect-metadata";
 import Hapi from "@hapi/hapi";
 import io from "socket.io";
 import { clubRoutes } from "./api/clubRoutes";
+import { courseRoutes } from "./api/courseRoutes";
 import websocketManager from "./websocketManager";
 
 // Just initialize, don't start
@@ -12,6 +13,7 @@ export async function init() {
   });
   // Add routes
   server.route(clubRoutes);
+  server.route(courseRoutes); 
 
   // Bind socketio to http server
   websocketManager.bindSocketIO(io(server.listener));

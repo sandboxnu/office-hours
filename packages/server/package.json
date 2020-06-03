@@ -5,13 +5,16 @@
     "dev": "nodemon",
     "build": "babel --root-mode upward -d dist -x '.js,.ts' src",
     "test": "jest",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "dev:db:seed": "yarn fixtures -c ../../ormconfig.js fixtures/ --sync --require=ts-node/register"
   },
   "dependencies": {
     "@hapi/hapi": "^19.1.1",
     "@hapi/joi": "^17.1.1",
     "@template/common": "*",
     "axios": "^0.19.2",
+    "hapi-dev-errors": "^4.0.0",
+    "lodash": "^4.17.15",
     "node-ical": "^0.11.3",
     "nodemon": "^2.0.3",
     "pg": "^8.0.3",
@@ -23,10 +26,13 @@
     "@babel/node": "^7.8.7",
     "@types/hapi__hapi": "^19.0.3",
     "@types/jest": "^25.2.2",
+    "@types/lodash": "^4.14.153",
     "@types/node": "^13.13.2",
     "@types/socket.io": "^2.1.4",
     "babel-plugin-transform-typescript-metadata": "^0.3.0",
     "jest": "^26.0.1",
+    "ts-node": "^8.10.2",
+    "typeorm-fixtures-cli": "^1.6.0",
     "typescript": "^3.8.3"
   },
   "babel": {

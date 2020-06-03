@@ -17,7 +17,7 @@ export class OfficeHourModel extends BaseEntity {
   @JoinColumn({ name: "courseId" })
   course: Promise<CourseModel>;
 
-  @Column()
+  @Column({ nullable: true })
   courseId: number;
 
   @Column("text")
