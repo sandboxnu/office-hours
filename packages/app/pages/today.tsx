@@ -1,6 +1,7 @@
-import { Card, PageHeader } from "antd";
+import { Avatar, Button, Card, Col, PageHeader, Row } from "antd";
 import Schedule from "./schedule";
 import { Queue } from "../../common/index";
+import { MOCK_GET_COURSE_RESPONSE } from "../../server/src/mocks/getCourse";
 
 const Navbar = () => {
   return <PageHeader title={"Khoury Office Hours"}>Wakanda Forever</PageHeader>;
@@ -11,31 +12,53 @@ type QueueCardProps = {
 };
 
 const QueueCard = ({ queue }: QueueCardProps) => {
-  const staffList = queue.staffList.join(" ");
-
+  const staffList = queue.staffList;
   return (
     <Card
-      title={queue.room}
-      extra={<a href="#">Join Queue</a>} // todo: make this a button or something idk
-      style={{ width: 300 }}
+      title={staffList.map((staffMember) => staffMember.name).join(", ")}
+      extra={
+        <Button type="primary" size={"small"}>
+          Join Queue
+        </Button>
+      }
+      style={{ float: "left" }}
     >
-      <p>{staffList}</p>
-      <p>pictures</p>
-      <p>something else</p>
+      <p>{queue.room}</p>
+      {staffList.map((staffMember) => (
+        <div style={{ float: "left" }}>
+          <Avatar size={128} src={staffMember.photoURL} />
+        </div>
+      ))}
     </Card>
   );
 };
 
 export default function Today() {
+  const isTA = true;
+
+  // TODO: this is currently mock data
   return (
     <div>
       <Navbar />
-      <div>
-        <p>Lorem Ipsum</p>
-      </div>
-      <div style={{ float: "right" }}>
-        <Schedule viewType={"day"} />
-      </div>
+      <Row>
+        <Col span={12}>
+          {MOCK_GET_COURSE_RESPONSE.queues.map((q) => (
+            <QueueCard queue={q} />
+          ))}
+          {isTA ? (
+            <Button
+              style={{ bottom: "0%", width: "100%" }}
+              type="default"
+              size={"large"}
+            >
+              Create Queue
+            </Button>
+          ) : null}
+        </Col>
+        <Col span={12}>
+          <Schedule viewType={"day"} />
+        </Col>
+      </Row>
     </div>
   );
 }
