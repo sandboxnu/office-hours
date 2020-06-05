@@ -1,6 +1,8 @@
 import { Avatar, Button, Card, Col, PageHeader, Row } from "antd";
+import useSWR from "swr";
 import Schedule from "./schedule";
 import { Queue } from "../../common/index";
+import { API } from "@template/api-client";
 import { MOCK_GET_COURSE_RESPONSE } from "../../server/src/mocks/getCourse";
 
 const Navbar = () => {
@@ -34,6 +36,10 @@ const QueueCard = ({ queue }: QueueCardProps) => {
 };
 
 export default function Today() {
+  const { data, error } = useSWR(`api/v1/courses/1/queue`, async () =>
+    console.log("queues", API.course.queues(1))
+  );
+
   const isTA = true;
 
   // TODO: this is currently mock data
