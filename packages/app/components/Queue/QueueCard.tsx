@@ -1,5 +1,5 @@
 import { QuestionType } from "@template/common";
-import { Card, Row, Col, Avatar, Tag } from "antd";
+import { Card, Row, Col, Avatar, Tag, Button } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
@@ -36,6 +36,7 @@ interface QueueCardProps {
   questionType: QuestionType;
   waitTime: number;
   status: string;
+  onOpen: (name: string) => void;
 }
 
 export default function QueueCard({
@@ -44,6 +45,7 @@ export default function QueueCard({
   questionType,
   waitTime,
   status,
+  onOpen,
 }: QueueCardProps) {
   return (
     <HorizontalCard>
@@ -71,6 +73,7 @@ export default function QueueCard({
         <Col xs={0} lg={2}>
           <StatusTag color="purple">{status}</StatusTag>
         </Col>
+        <Button onClick={() => onOpen(name)}>Open</Button>
       </CenterRow>
     </HorizontalCard>
   );

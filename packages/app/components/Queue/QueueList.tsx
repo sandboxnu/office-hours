@@ -42,9 +42,11 @@ const CenterRow = styled(Row)`
   justify-content: space-between;
 `;
 
-interface QueueListProps {}
+interface QueueListProps {
+  onOpenClick: (name: string) => void;
+}
 
-export default function QueueList({}: QueueListProps) {
+export default function QueueList({ onOpenClick }: QueueListProps) {
   return (
     <div>
       <Row justify="space-between">
@@ -82,6 +84,7 @@ export default function QueueList({}: QueueListProps) {
         questionType={QuestionType.Bug}
         waitTime={30}
         status="WAITING"
+        onOpen={onOpenClick}
       />
       <QueueCard
         rank={2}
@@ -89,6 +92,7 @@ export default function QueueList({}: QueueListProps) {
         questionType={QuestionType.Concept}
         waitTime={30}
         status="WAITING"
+        onOpen={onOpenClick}
       />
       <QueueCard
         rank={1}
@@ -96,6 +100,7 @@ export default function QueueList({}: QueueListProps) {
         questionType={QuestionType.Setup}
         waitTime={100}
         status="IN PROGRESS"
+        onOpen={onOpenClick}
       />
       <QueueCard
         rank={1}
@@ -103,6 +108,7 @@ export default function QueueList({}: QueueListProps) {
         questionType={QuestionType.Other}
         waitTime={30}
         status="WAITING"
+        onOpen={onOpenClick}
       />
       <QueueCard
         rank={1}
@@ -110,6 +116,7 @@ export default function QueueList({}: QueueListProps) {
         questionType={QuestionType.Testing}
         waitTime={30}
         status="WAITING"
+        onOpen={onOpenClick}
       />
     </div>
   );
