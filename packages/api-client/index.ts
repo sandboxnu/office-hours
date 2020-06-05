@@ -4,7 +4,7 @@ import {
   CreateClubParams,
   CreateClubResponse,
   GetProfileResponse,
-  GetCourseScheduleResponse,
+  GetCourseResponse,
   TAUpdateStatusResponse,
   GetQuestionResponse,
   CreateQuestionResponse,
@@ -12,8 +12,9 @@ import {
   UpdateQuestionParams,
   ListQuestionsResponse,
   UpdateQuestionResponse,
+  GetCourseQueuesResponse,
+  QueuePartial,
 } from "@template/common";
-import { MOCK_GET_COURSE_RESPONSE } from "../mocks/getCourse";
 
 class APIClient {
   private axios: AxiosInstance;
@@ -31,18 +32,21 @@ class APIClient {
     },
   };
   course = {
-    get: async (courseId: number): Promise<GetCourseScheduleResponse> => {
-      const course = (await this.axios.get(`/api/v1/courses/${courseId}`)).data;
+    get: async (courseId: number): Promise<GetCourseResponse> => {
+      const course = (
+        await this.axios.get(`/api/v1/courses/${courseId}/schedule`)
+      ).data;
       course.officeHours.forEach((officeHour: any) =>
         parseOfficeHourDates(officeHour)
       );
       return course;
     },
-    queues: async (courseId: number): Promise<GetCourseQueueResponse> => {
+    queues: async (courseId: number): Promise<GetCourseQueuesResponse> => {
       const queues = (
         await this.axios.get(`/api/v1/courses/${courseId}/queues`)
       ).data;
-      return parseQueueDates(queues);
+      queues.forEach((q: QueuePartial) => parseQueueDates(q));
+      return queues;
     },
   };
   taStatus = {

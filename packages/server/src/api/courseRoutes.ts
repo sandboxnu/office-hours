@@ -1,8 +1,8 @@
 import { ServerRoute, ResponseObject } from "@hapi/hapi";
 import Joi from "@hapi/joi";
-import { CourseSchema, QueueSchema } from "../joi";
+import { CourseSchema, QueueSchema, CourseQueueSchema } from "../joi";
 import { CourseModel } from "../entity/CourseModel";
-import { pick } from "lodash";
+import { pick, cloneDeep } from "lodash";
 import {
   TAUpdateStatusParams,
   TAUpdateStatusResponse,
@@ -41,18 +41,20 @@ export const courseRoutes: ServerRoute[] = [
     method: "GET",
     path: "/api/v1/courses/{course_id}/queues",
     handler: async (request, h): Promise<GetCourseQueuesResponse> => {
-      const queuesResponse = { ...MOCK_GET_COURSE_RESPONSE.queues };
+      const queuesResponse = cloneDeep(MOCK_GET_COURSE_RESPONSE.queues);
+
       queuesResponse.forEach(
         (queue) =>
-          (queue["queueSize"] = queue.questions.filter((question) =>
-            Object.values(OpenQuestionStatus).includes(question.status)
+          (queue["queueSize"] = queue.questions.filter(
+            (question) => question.status in OpenQuestionStatus
           ).length)
       );
-      return queuesResponse.map((queue) =>
+
+      return queuesResponse.map((queue: any) =>
         pick(queue, [
           "id",
           "room",
-          "createAt",
+          "createdAt",
           "closedAt",
           "staffList",
           "queueSize",
@@ -61,7 +63,7 @@ export const courseRoutes: ServerRoute[] = [
     },
     options: {
       response: {
-        schema: CourseSchema.options({ presence: "required" }),
+        schema: CourseQueueSchema.options({ presence: "required" }),
       },
     },
   },

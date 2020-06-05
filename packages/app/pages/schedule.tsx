@@ -9,7 +9,7 @@ type ScheduleProps = {
 };
 
 export default function Schedule({ viewType }: ScheduleProps) {
-  const { data, error } = useSWR(`api/v1/courses/1`, async () =>
+  const { data, error } = useSWR(`api/v1/courses/1/schedule`, async () =>
     API.course.get(1)
   );
 
@@ -23,14 +23,13 @@ export default function Schedule({ viewType }: ScheduleProps) {
 
   const myEvents =
     data?.officeHours.map((e) => ({
-      title: e.title,
       start: e.startTime,
       end: e.endTime,
     })) ?? [];
-
+  // TODO: frontend guru pls cleanup height <3, month view is crunked :)
+  // esp on mobile
   return (
-    <div style={{ height: "400px" }}>
-      <h1>{data?.name ?? ""}</h1>
+    <div style={{ height: "70%" }}>
       <Calendar
         localizer={momentLocalizer(moment)}
         events={myEvents}
