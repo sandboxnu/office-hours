@@ -29,6 +29,7 @@
     "@types/jest": "^25.2.2",
     "@types/node": "^13.13.2",
     "@types/react": "^16.9.34",
+    "@types/react-big-calendar": "^0.24.2",
     "@types/socket.io-client": "^1.4.32",
     "babel-plugin-styled-components": "^1.10.7",
     "jest": "^26.0.1",
