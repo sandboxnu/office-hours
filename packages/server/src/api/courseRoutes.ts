@@ -15,6 +15,7 @@ import {
   MOCK_TA_UPDATE_STATUS_DEPARTED_RESPONSE,
 } from "../mocks/taUpdateStatus";
 import { MOCK_GET_COURSE_RESPONSE } from "../mocks/getCourse";
+import { WhiteBoard } from "../entity/WhiteBoard";
 
 export const courseRoutes: ServerRoute[] = [
   {
@@ -41,16 +42,23 @@ export const courseRoutes: ServerRoute[] = [
     method: "GET",
     path: "/api/v1/courses/{course_id}/queues",
     handler: async (request, h): Promise<GetCourseQueuesResponse> => {
+      const queues = await WhiteBoard.find({
+        where: { course_id: request.params.course_id },
+      });
       const queuesResponse = cloneDeep(MOCK_GET_COURSE_RESPONSE.queues);
+      queues.forEach((q) => {
+        q["queueSize"] = 0;
+        q["staffList"] = [];
+      });
 
-      queuesResponse.forEach(
+      /*queues.forEach(
         (queue) =>
           (queue["queueSize"] = queue.questions.filter(
             (question) => question.status in OpenQuestionStatus
           ).length)
-      );
+      );*/
 
-      return queuesResponse.map((queue: any) =>
+      return queues.map((queue: any) =>
         pick(queue, [
           "id",
           "room",

@@ -5,7 +5,7 @@ import { API } from "@template/api-client";
 import { Result } from "antd";
 
 type ScheduleProps = {
-  viewType: Calendar.Views; // TODO: debug this, hwy isn't it finding the types?
+  viewType: "month" | "week" | "work_week" | "day" | "agenda";
 };
 
 export default function Schedule({ viewType }: ScheduleProps) {

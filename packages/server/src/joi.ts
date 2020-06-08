@@ -90,7 +90,6 @@ export const CourseSchema = Joi.object({
 export const CourseQueueSchema = Joi.array().items(
   Joi.object({
     id: Joi.number(),
-    room: Joi.string(),
     createdAt: Joi.date(),
     closedAt: Joi.date().allow(null),
     staffList: Joi.array().items(UserPartialSchema),
