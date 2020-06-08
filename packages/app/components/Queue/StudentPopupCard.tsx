@@ -81,6 +81,16 @@ const MarginLeft = styled.div`
   margin-top: 5%;
 `;
 
+const ButtonDiv = styled.div`
+  padding: 4%;
+  margin: 4%;
+  width: 100%;
+`;
+
+const PopupButtons = styled(Button)`
+  margin-bottom: 1%;
+`;
+
 interface StudentPopupCardProps {
   onClose: () => void;
   name: string;
@@ -149,6 +159,14 @@ const StudentPopupCard = ({
               {location}
             </MarginLeft>
           </FullWidth>
+          <ButtonDiv>
+            <PopupButtons danger block>
+              Remove from Queue
+            </PopupButtons>
+            <PopupButtons block type="primary">
+              Help
+            </PopupButtons>
+          </ButtonDiv>
         </StudentDataDiv>
       </PopupDiv>
     );
