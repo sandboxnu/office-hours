@@ -1,8 +1,14 @@
 entity: OfficeHourModel
 items:
-  oh0:
-    title: "Matthias's special OH"
-    room: "WVH 138"
+  oh1:
+    title: "OH - Will"
+    room: "RY 154"
     startTime: "{{date.recent}}"
     endTime: "{{date.recent(-.1)}}"
+    courseId: "@course0"
+  oh2:
+    title: "OH - Grisha"
+    room: "KA 110"
+    startTime: "{{date.future(.0011)}}"
+    endTime: "{{date.future(.001)}}"
     courseId: "@course0"

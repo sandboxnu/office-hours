@@ -6,6 +6,7 @@ import {
   OneToMany,
 } from "typeorm";
 import { OfficeHourModel } from "./OfficeHourModel";
+import { WhiteBoard } from "./WhiteBoard";
 
 /**
  * Represents a course in the context of office hours.
@@ -28,6 +29,9 @@ export class CourseModel extends BaseEntity {
 
   @OneToMany((type) => OfficeHourModel, (oh) => oh.course)
   officeHours: Promise<OfficeHourModel[]>;
+
+  @OneToMany((type) => WhiteBoard, (q) => q.course)
+  whiteBoard: Promise<WhiteBoard[]>;
 
   @Column("text")
   name: string;

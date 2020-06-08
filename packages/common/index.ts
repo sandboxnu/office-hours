@@ -210,7 +210,17 @@ export enum QuestionType {
 }
 
 // Ticket Status - Represents a given status of as student's ticket
-export type QuestionStatus = OpenQuestionStatus | ClosedQuestionStatus;
+export type QuestionStatus = {
+  type: QuestionStatusType.Open,
+  status: OpenQuestionStatus
+} | {
+  type: QuestionStatusType.Closed,
+  status: ClosedQuestionStatus
+};
+enum QuestionStatusType {
+  Open = "Open",
+  Closed = "Closed"
+}
 
 export enum OpenQuestionStatus {
   Drafting = "Drafting",

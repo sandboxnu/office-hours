@@ -5,17 +5,15 @@ import {
   BaseEntity,
   ManyToOne,
   JoinColumn,
-  OneToMany,
 } from "typeorm";
 import { CourseModel } from "./CourseModel";
-import { StaffModel } from "./StaffModel";
 
-@Entity("office_hour")
-export class OfficeHourModel extends BaseEntity {
+@Entity("queue")
+export class WhiteBoard extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne((type) => CourseModel, (course) => course.officeHours)
+  @ManyToOne((type) => CourseModel, (course) => course.whiteBoard)
   @JoinColumn({ name: "courseId" })
   course: Promise<CourseModel>;
 
@@ -23,16 +21,7 @@ export class OfficeHourModel extends BaseEntity {
   courseId: number;
 
   @Column("text")
-  title: string;
-
-  @Column("text")
   room: string;
 
-  @Column()
-  startTime: Date;
-
-  @Column()
-  endTime: Date;
-
-
+  // TODO: implement questions to be on this
 }
