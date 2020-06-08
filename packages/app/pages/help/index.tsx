@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import TaQueue from "../../components/Queue/TaQueue";
+import HelpingView from "../../components/Helping/HelpingView";
 
 const Container = styled.div`
   margin: 32px 64px;
@@ -13,7 +13,7 @@ interface QueueProps {}
 export default function Queue({}: QueueProps) {
   return (
     <Container>
-      <TaQueue />
+      <HelpingView />
     </Container>
   );
 }
