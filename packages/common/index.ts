@@ -163,15 +163,11 @@ export interface Queue {
  * A Queue partial to be shown on the today page.
  * @param id - The unique id number for a Queue.
  * @param room - The full name of the building + room # that the current office hours queue is in.
- * @param createdAt - The date string for the opened on time (aka created on time) of this queue of this queue. Ex: "2019-09-21T12:00:00-04:00"
- * @param closedAt - The date string for the the closed on time for the queue.
  * @param staffList - The list of TA user's that are currently helping at office hours.
  */
 export interface QueuePartial {
   id: number;
   room: string;
-  createdAt: Date;
-  closedAt?: Date;
   staffList: UserPartial[];
   queueSize: number;
   // TODO: Add wait time?

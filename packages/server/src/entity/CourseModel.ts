@@ -31,7 +31,7 @@ export class CourseModel extends BaseEntity {
   officeHours: Promise<OfficeHourModel[]>;
 
   @OneToMany((type) => QueueModel, (q) => q.course)
-  whiteBoard: Promise<QueueModel[]>;
+  queues: Promise<QueueModel[]>;
 
   @Column("text")
   name: string;
