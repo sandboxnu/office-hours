@@ -9,7 +9,7 @@ import {
 import { CourseModel } from "./CourseModel";
 
 @Entity("queue")
-export class WhiteBoard extends BaseEntity {
+export class QueueModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

@@ -6,7 +6,7 @@ import {
   OneToMany,
 } from "typeorm";
 import { OfficeHourModel } from "./OfficeHourModel";
-import { WhiteBoard } from "./WhiteBoard";
+import { QueueModel } from "./QueueModel";
 
 @Entity("course_model")
 export class StaffModel extends BaseEntity {
