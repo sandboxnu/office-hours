@@ -210,7 +210,7 @@ export enum QuestionType {
 }
 
 // Ticket Status - Represents a given status of as student's ticket
-type QuestionStatus = OpenQuestionStatus | ClosedQuestionStatus;
+export type QuestionStatus = OpenQuestionStatus | ClosedQuestionStatus;
 
 export enum OpenQuestionStatus {
   Drafting = "Drafting",
