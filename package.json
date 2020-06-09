@@ -10,6 +10,7 @@
     "dev:db:up": "docker-compose -f infrastructure/dev/docker-compose.yml up -d && yarn dev:db:seed",
     "dev:db:down": "docker-compose -f infrastructure/dev/docker-compose.yml down",
     "dev:db:seed": "yarn workspace @template/server dev:db:seed",
+    "dev:db:reset": "echo 'DROP DATABASE dev;' | psql -U postgres -h localhost && echo 'CREATE DATABASE dev;' | psql -U postgres -h localhost",
     "prod:start": "docker-compose -f infrastructure/prod/docker-compose.yml up --build -d",
     "prod:stop": "docker-compose -f infrastructure/prod/docker-compose.yml down"
   },

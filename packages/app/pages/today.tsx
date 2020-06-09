@@ -35,6 +35,10 @@ const CreateQueueButton = styled(Button)`
   color: white;
 `;
 
+const RightHeader = styled.h3`
+  text-align: right;
+`;
+
 const QueueCard = ({ queue }: QueueCardProps) => {
   const staffList = queue.staffList;
   return (
@@ -46,7 +50,16 @@ const QueueCard = ({ queue }: QueueCardProps) => {
         </Button>
       }
     >
-      <h1>{queue.room}</h1>
+      <Row>
+        <Col md={12}>
+          <h1>{queue.room}</h1>
+        </Col>
+        <Col md={12}>
+          <RightHeader>
+            Number of students in queue: {queue.queueSize}
+          </RightHeader>
+        </Col>
+      </Row>
       {staffList.map((staffMember) => (
         <AvatarContainer key={staffMember.id}>
           <Avatar size={128} src={staffMember.photoURL} shape="square" />

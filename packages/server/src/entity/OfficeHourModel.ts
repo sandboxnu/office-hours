@@ -8,7 +8,6 @@ import {
   OneToMany,
 } from "typeorm";
 import { CourseModel } from "./CourseModel";
-import { StaffModel } from "./StaffModel";
 
 @Entity("office_hour")
 export class OfficeHourModel extends BaseEntity {
@@ -33,6 +32,4 @@ export class OfficeHourModel extends BaseEntity {
 
   @Column()
   endTime: Date;
-
-
 }

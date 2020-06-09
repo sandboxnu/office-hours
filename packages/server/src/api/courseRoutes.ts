@@ -45,28 +45,15 @@ export const courseRoutes: ServerRoute[] = [
       const queues = await QueueModel.find({
         where: { course_id: request.params.course_id },
       });
-      const queuesResponse = cloneDeep(MOCK_GET_COURSE_RESPONSE.queues);
-      queues.forEach((q) => {
-        q["queueSize"] = 0;
-        q["staffList"] = [];
+
+      // TODO: this is completely borked for some reason from a joi perspective, but we'll figure it out together
+      queues.forEach(async (q) => {
+        q["queueSize"] = (await q.questions).length;
+        q["staffList"] = MOCK_GET_COURSE_RESPONSE.queues[0].staffList;
       });
 
-      /*queues.forEach(
-        (queue) =>
-          (queue["queueSize"] = queue.questions.filter(
-            (question) => question.status in OpenQuestionStatus
-          ).length)
-      );*/
-
       return queues.map((queue: any) =>
-        pick(queue, [
-          "id",
-          "room",
-          "createdAt",
-          "closedAt",
-          "staffList",
-          "queueSize",
-        ])
+        pick(queue, ["id", "room", "staffList", "queueSize"])
       );
     },
     options: {
