@@ -1,5 +1,5 @@
 entity: QueueModel
 items:
-  oh0:
-    courseId: 1
-    createdAt: "{{date.recent}}"
+  queue1:
+    courseId: "@course0"
+    room: "RY 154"

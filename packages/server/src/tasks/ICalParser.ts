@@ -41,3 +41,5 @@ export async function updateCalendarForCourse(course: CourseModel) {
   const officeHours = parseIcal(await ical.fromURL(course.icalUrl), course.id);
   await OfficeHourModel.save(officeHours.map((e) => OfficeHourModel.create(e)));
 }
+
+// TODO: add soemthign that will craete room table

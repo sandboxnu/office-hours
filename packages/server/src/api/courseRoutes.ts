@@ -15,7 +15,7 @@ import {
   MOCK_TA_UPDATE_STATUS_DEPARTED_RESPONSE,
 } from "../mocks/taUpdateStatus";
 import { MOCK_GET_COURSE_RESPONSE } from "../mocks/getCourse";
-import { WhiteBoard } from "../entity/WhiteBoard";
+import { QueueModel } from "../entity/QueueModel";
 
 export const courseRoutes: ServerRoute[] = [
   {
@@ -42,7 +42,7 @@ export const courseRoutes: ServerRoute[] = [
     method: "GET",
     path: "/api/v1/courses/{course_id}/queues",
     handler: async (request, h): Promise<GetCourseQueuesResponse> => {
-      const queues = await WhiteBoard.find({
+      const queues = await QueueModel.find({
         where: { course_id: request.params.course_id },
       });
       const queuesResponse = cloneDeep(MOCK_GET_COURSE_RESPONSE.queues);
