@@ -208,6 +208,10 @@ export enum QuestionType {
   Setup = "Setup",
   Other = "Other",
 }
+
+// Ticket Status - Represents a given status of as student's ticket
+export type QuestionStatus = OpenQuestionStatus | ClosedQuestionStatus;
+
 export enum OpenQuestionStatus {
   Drafting = "Drafting",
   Queued = "Queued",
@@ -220,13 +224,6 @@ export enum ClosedQuestionStatus {
   NoShow = "No Show",
   Deleted = "Deleted",
 }
-
-export const QuestionStatus = {
-  ...OpenQuestionStatus,
-  ...ClosedQuestionStatus,
-};
-// Ticket Status - Represents a given status of as student's ticket
-export type QuestionStatus = typeof QuestionStatus;
 
 /**
  * A Semester object, representing a schedule semester term for the purposes of a course.

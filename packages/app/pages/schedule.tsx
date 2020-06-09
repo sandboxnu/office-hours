@@ -1,16 +1,23 @@
-import { Calendar, momentLocalizer } from "react-big-calendar";
+import { Calendar, momentLocalizer, View } from "react-big-calendar";
 import moment from "moment";
 import useSWR from "swr";
 import { API } from "@template/api-client";
 import { Result } from "antd";
+import styled from "styled-components";
 
 type ScheduleProps = {
-  viewType: "month" | "week" | "work_week" | "day" | "agenda";
+  viewType: View;
 };
 
+const CalendarContainer = styled.div`
+  height: 70%;
+`;
+
 export default function Schedule({ viewType }: ScheduleProps) {
-  const { data, error } = useSWR(`api/v1/courses/1/schedule`, async () =>
-    API.course.get(1)
+  const { data, error } = useSWR(
+    `api/v1/courses/1/schedule`,
+    async () => API.course.get(1),
+    { revalidateOnFocus: false }
   );
 
   if (error)
@@ -29,12 +36,12 @@ export default function Schedule({ viewType }: ScheduleProps) {
   // TODO: frontend guru pls cleanup height <3, month view is crunked :)
   // esp on mobile
   return (
-    <div style={{ height: "70%" }}>
+    <CalendarContainer>
       <Calendar
         localizer={momentLocalizer(moment)}
         events={myEvents}
         defaultView={viewType}
       />
-    </div>
+    </CalendarContainer>
   );
 }

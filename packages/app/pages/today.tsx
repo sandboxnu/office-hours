@@ -3,7 +3,7 @@ import useSWR from "swr";
 import Schedule from "./schedule";
 import { Queue, QueuePartial } from "../../common/index";
 import { API } from "@template/api-client";
-import { MOCK_GET_COURSE_RESPONSE } from "../../server/src/mocks/getCourse";
+import styled from "styled-components";
 
 const Navbar = () => {
   return (
@@ -17,26 +17,42 @@ type QueueCardProps = {
   queue: QueuePartial;
 };
 
+const PaddedCard = styled(Card)`
+  margin-bottom: 25px;
+`;
+
+const AvatarContainer = styled.div`
+  padding-left: 25px;
+  padding-right: 25px;
+  float: left;
+`;
+
+const CreateQueueButton = styled(Button)`
+  bottom: 0%;
+  width: 20%;
+  float: right;
+  background-color: #4cbb17;
+  color: white;
+`;
+
 const QueueCard = ({ queue }: QueueCardProps) => {
   const staffList = queue.staffList;
   return (
-    <div style={{ padding: "25px 15px 25px 15px" }}>
-      <Card
-        title={staffList.map((staffMember) => staffMember.name).join(", ")}
-        extra={
-          <Button type="primary" size={"middle"}>
-            Join Queue
-          </Button>
-        }
-      >
-        <h1>{queue.room}</h1>
-        {staffList.map((staffMember) => (
-          <div style={{ float: "left", padding: "0px 25px 0px 25px" }}>
-            <Avatar size={128} src={staffMember.photoURL} shape="square" />
-          </div>
-        ))}
-      </Card>
-    </div>
+    <PaddedCard
+      title={staffList.map((staffMember) => staffMember.name).join(", ")}
+      extra={
+        <Button type="primary" size={"middle"}>
+          Join Queue
+        </Button>
+      }
+    >
+      <h1>{queue.room}</h1>
+      {staffList.map((staffMember) => (
+        <AvatarContainer key={staffMember.id}>
+          <Avatar size={128} src={staffMember.photoURL} shape="square" />
+        </AvatarContainer>
+      ))}
+    </PaddedCard>
   );
 };
 
@@ -59,27 +75,15 @@ export default function Today() {
   return (
     <div>
       <Navbar />
-      <Row>
+      <Row gutter={25}>
         <Col md={12} sm={24}>
           {data?.map((q) => (
-            <QueueCard queue={q} />
+            <QueueCard key={q.id} queue={q} />
           ))}
           {isTA ? (
-            <div style={{ padding: "0px 15px 0px 0px" }}>
-              <Button
-                style={{
-                  bottom: "0%",
-                  width: "20%",
-                  float: "right",
-                  backgroundColor: "#4cbb17",
-                  color: "white",
-                }}
-                type="default"
-                size={"large"}
-              >
-                Create Queue
-              </Button>
-            </div>
+            <CreateQueueButton type="default" size={"large"}>
+              Create Queue
+            </CreateQueueButton>
           ) : null}
         </Col>
         <Col md={12} sm={24}>
