@@ -5,13 +5,13 @@ import { API } from "@template/api-client";
 import { Result } from "antd";
 import styled from "styled-components";
 
+const ScheduleCalendar = styled(Calendar)`
+  height: 70vh;
+`;
+
 type ScheduleProps = {
   viewType: View;
 };
-
-const CalendarContainer = styled.div`
-  height: 70%;
-`;
 
 export default function Schedule({ viewType }: ScheduleProps) {
   const { data, error } = useSWR(
@@ -33,15 +33,12 @@ export default function Schedule({ viewType }: ScheduleProps) {
       start: e.startTime,
       end: e.endTime,
     })) ?? [];
-  // TODO: frontend guru pls cleanup height <3, month view is crunked :)
-  // esp on mobile
+
   return (
-    <CalendarContainer>
-      <Calendar
-        localizer={momentLocalizer(moment)}
-        events={myEvents}
-        defaultView={viewType}
-      />
-    </CalendarContainer>
+    <ScheduleCalendar
+      localizer={momentLocalizer(moment)}
+      events={myEvents}
+      defaultView={viewType}
+    />
   );
 }
