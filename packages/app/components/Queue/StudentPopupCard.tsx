@@ -1,94 +1,71 @@
 import { useMemo } from "react";
-import { Row, Button, Avatar, Typography, Tag, Col } from "antd";
+import { Row, Button, Avatar, Tag, Col, Drawer } from "antd";
 import styled from "styled-components";
-import { IconMap } from "antd/lib/result";
-import { CloseOutlined, UserOutlined } from "@ant-design/icons";
-
-const PopupDiv = styled.div`
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 33%;
-  height: 100%;
-  background-color: white;
-  border-left: 0.5px solid #eceef4;
-  display: block;
-`;
-
-const CancelDiv = styled.div`
-  width: 100%;
-`;
+import { UserOutlined } from "@ant-design/icons";
 
 const FullWidth = styled.div`
+  margin-top: 32px;
   width: 100%;
 `;
 
-const StudentDataDiv = styled.div`
+const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  padding-top: 24px;
 `;
 
-const Email = styled.p`
-  padding: 0.25;
-  margin: 0;
+const Email = styled.div`
+  font-size: 12px;
+  line-height: 20px;
   color: #bfbfbf;
 `;
 
-const Title = styled.h1`
-  padding: 0;
-  margin: 0;
+const Title = styled.div`
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
 `;
 
 const InfoTextDiv = styled.div`
   text-align: center;
+  margin-top: 20px;
 `;
 
 const StatusTag = styled(Tag)`
   width: 96px;
   text-align: center;
-  float: right;
-  margin-right: 0;
+  margin: 0 auto;
+  margin-top: 12px;
 `;
 
-const StatusDiv = styled.div`
-  padding: 1%;
-  margin: 1%;
-`;
-
-const WaitDiv = styled.div`
-  margin-left: 20%;
-`;
-
-const HeadingText = styled.p`
-  color: #bfbfbf;
+const HeadingText = styled.div`
+  font-size: 14px;
+  line-height: 22px;
   font-weight: 600;
+  color: #bfbfbf;
+  font-variant: small-caps;
 `;
 
 const StyledRow = styled(Row)`
   width: 100%;
-`;
-
-const QuestionTypeDiv = styled.div`
-  margin-right: 20%;
-  float: right;
-`;
-
-const MarginLeft = styled.div`
-  margin-left: 10%;
-  margin-right: 10%;
-  margin-top: 5%;
+  margin-top: 40px;
 `;
 
 const ButtonDiv = styled.div`
-  padding: 4%;
-  margin: 4%;
-  width: 100%;
+  padding: 8px;
 `;
 
-const PopupButtons = styled(Button)`
-  margin-bottom: 1%;
+const RemoveButton = styled(Button)`
+  margin-bottom: 8px;
+`;
+
+const BodyText = styled.div`
+  font-size: 14px;
+  line-height: 22px;
+  margin-top: 8px;
+  color: #595959;
 `;
 
 interface StudentPopupCardProps {
@@ -100,6 +77,7 @@ interface StudentPopupCardProps {
   question: string;
   location: string;
   status: string;
+  visible: boolean;
 }
 
 const StudentPopupCard = ({
@@ -111,66 +89,60 @@ const StudentPopupCard = ({
   question,
   location,
   status,
+  visible,
 }: StudentPopupCardProps) => {
   return useMemo(() => {
     return (
-      <PopupDiv>
-        <FullWidth>
-          <Button icon={<CloseOutlined />} onClick={onClose} />
-        </FullWidth>
-        <StudentDataDiv>
-          <Avatar size={96} icon={<UserOutlined />} />
+      <Drawer
+        placement="right"
+        closable={true}
+        visible={visible}
+        width={272}
+        onClose={onClose}
+        footer={
+          <ButtonDiv>
+            <RemoveButton danger block>
+              Remove from Queue
+            </RemoveButton>
+            <Button block type="primary">
+              Help
+            </Button>
+          </ButtonDiv>
+        }
+      >
+        <Container>
+          <Avatar size={104} icon={<UserOutlined />} />
+
           <InfoTextDiv>
             <Title>{name}</Title>
             <Email>{email}</Email>
           </InfoTextDiv>
-          <StatusDiv>
-            <StatusTag color="purple">{status}</StatusTag>
-          </StatusDiv>
+
+          <StatusTag color="purple">{status}</StatusTag>
+
           <StyledRow gutter={[8, 0]}>
             <Col span={12}>
-              <WaitDiv>
-                <HeadingText>Wait</HeadingText>
-              </WaitDiv>
+              <HeadingText>wait</HeadingText>
+              <BodyText>{wait}</BodyText>
             </Col>
             <Col span={12}>
-              <QuestionTypeDiv>
-                <HeadingText>Question Type</HeadingText>
-              </QuestionTypeDiv>
+              <HeadingText>type</HeadingText>
+              <BodyText>{type}</BodyText>
             </Col>
           </StyledRow>
-          <StyledRow gutter={[8, 0]}>
-            <Col span={12}>
-              <WaitDiv>{wait}</WaitDiv>
-            </Col>
-            <Col span={12}>
-              <QuestionTypeDiv>{type}</QuestionTypeDiv>
-            </Col>
-          </StyledRow>
+
           <FullWidth>
-            <MarginLeft>
-              <HeadingText>Questions</HeadingText>
-              {question}
-            </MarginLeft>
+            <HeadingText>question</HeadingText>
+            <BodyText>{question}</BodyText>
           </FullWidth>
           <FullWidth>
-            <MarginLeft>
-              <HeadingText>Location</HeadingText>
-              {location}
-            </MarginLeft>
+            <HeadingText>location</HeadingText>
+            <BodyText>{location}</BodyText>
           </FullWidth>
-          <ButtonDiv>
-            <PopupButtons danger block>
-              Remove from Queue
-            </PopupButtons>
-            <PopupButtons block type="primary">
-              Help
-            </PopupButtons>
-          </ButtonDiv>
-        </StudentDataDiv>
-      </PopupDiv>
+        </Container>
+      </Drawer>
     );
-  }, []);
+  }, [visible]);
 };
 
 export default StudentPopupCard;

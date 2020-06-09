@@ -1,6 +1,5 @@
 import { useMemo, useCallback, useState } from "react";
 import QueueList from "./QueueList";
-import { open } from "inspector";
 import StudentPopupCard from "./StudentPopupCard";
 
 const TaQueue = () => {
@@ -18,18 +17,17 @@ const TaQueue = () => {
     return (
       <div>
         <QueueList onOpenClick={onOpenClick} />
-        {openPopup && (
-          <StudentPopupCard
-            onClose={onCloseClick}
-            name="Alex Takayama"
-            email="takayama.a@northeastern.edu"
-            wait={20}
-            type="Concept"
-            question="Help with working out how to use an accumulator for problem 1"
-            location="Outside room, by the couches"
-            status="WAITING"
-          />
-        )}
+        <StudentPopupCard
+          onClose={onCloseClick}
+          name="Alex Takayama"
+          email="takayama.a@northeastern.edu"
+          wait={20}
+          type="Concept"
+          question="Help with working out how to use an accumulator for problem 1"
+          location="Outside room, by the couches"
+          status="WAITING"
+          visible={openPopup}
+        />
       </div>
     );
   }, [openPopup]);
