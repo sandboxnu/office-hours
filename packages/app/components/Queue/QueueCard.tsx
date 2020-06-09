@@ -1,22 +1,35 @@
 import { QuestionType } from "@template/common";
 import { Card, Row, Col, Avatar, Tag, Button } from "antd";
-import { UserOutlined } from "@ant-design/icons";
+import { UserOutlined, RightOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
 const HorizontalCard = styled(Card)`
   margin-bottom: 8px;
-  padding-left: 8px;
-  padding-right: 8px;
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const Photo = styled(Avatar)`
+  margin-right: 16px;
+
+  @media (max-width: 992px) {
+    display: none;
+  }
+`;
+
+const Rank = styled.div`
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 500;
+  color: #595959;
 `;
 
 const Text = styled.div`
   font-size: 14px;
   line-height: 22px;
   color: #595959;
-`;
-
-const NameContainer = styled.div`
-  margin-left: 16px;
 `;
 
 const StatusTag = styled(Tag)`
@@ -48,17 +61,15 @@ export default function QueueCard({
   onOpen,
 }: QueueCardProps) {
   return (
-    <HorizontalCard>
+    <HorizontalCard onClick={() => onOpen(name)}>
       <CenterRow justify="space-between">
-        <Col span={1}>
-          <Text>{rank}</Text>
+        <Col xs={2} lg={1}>
+          <Rank>{rank}</Rank>
         </Col>
-        <Col xs={16} sm={11} lg={6}>
+        <Col xs={14} sm={11} lg={5}>
           <CenterRow>
-            <Avatar icon={<UserOutlined />} />
-            <NameContainer>
-              <Text>{name}</Text>
-            </NameContainer>
+            <Photo icon={<UserOutlined />} />
+            <Text>{name}</Text>
           </CenterRow>
         </Col>
         <Col xs={0} lg={2}>
@@ -67,13 +78,20 @@ export default function QueueCard({
               questionType.substr(1).toLowerCase()}
           </Text>
         </Col>
-        <Col span={2}>
-          <Text>{waitTime}</Text>
+        <Col xs={0} lg={7}>
+          <Text>
+            Help with working out how to use an accumulator for problem 1
+          </Text>
         </Col>
         <Col xs={0} lg={2}>
+          <Text>{waitTime}</Text>
+        </Col>
+        <Col span={2}>
           <StatusTag color="purple">{status}</StatusTag>
         </Col>
-        <Button onClick={() => onOpen(name)}>Open</Button>
+        <Col>
+          <RightOutlined />
+        </Col>
       </CenterRow>
     </HorizontalCard>
   );

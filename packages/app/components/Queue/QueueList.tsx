@@ -17,8 +17,6 @@ const StatusText = styled.div`
 
 const HeaderCard = styled(Card)`
   height: 64px;
-  padding-left: 8px;
-  padding-right: 8px;
   background: inherit;
 `;
 
@@ -42,6 +40,10 @@ const CenterRow = styled(Row)`
   justify-content: space-between;
 `;
 
+const Placeholder = styled.div`
+  width: 14px;
+`;
+
 interface QueueListProps {
   onOpenClick: (name: string) => void;
 }
@@ -60,20 +62,26 @@ export default function QueueList({ onOpenClick }: QueueListProps) {
 
       <HeaderCard bordered={false}>
         <CenterRow justify="space-between">
-          <Col span={1}>
+          <Col xs={2} lg={1}>
             <HeaderText>#</HeaderText>
           </Col>
-          <Col xs={16} sm={11} lg={6}>
+          <Col xs={14} sm={11} lg={5}>
             <HeaderText>name</HeaderText>
           </Col>
           <Col xs={0} lg={2}>
             <HeaderText>type</HeaderText>
           </Col>
-          <Col span={2}>
-            <HeaderText>wait</HeaderText>
+          <Col xs={0} lg={7}>
+            <HeaderText>question</HeaderText>
           </Col>
           <Col xs={0} lg={2}>
+            <HeaderText>wait</HeaderText>
+          </Col>
+          <Col span={2}>
             <StatusText>status</StatusText>
+          </Col>
+          <Col>
+            <Placeholder />
           </Col>
         </CenterRow>
       </HeaderCard>
