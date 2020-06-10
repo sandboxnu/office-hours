@@ -1,4 +1,4 @@
-import { QuestionType } from "@template/common";
+import { QuestionType, Role } from "@template/common";
 import { Button, Row, Card, Col } from "antd";
 import styled from "styled-components";
 import QueueCard from "./QueueCard";
@@ -15,8 +15,15 @@ const StatusText = styled.div`
   margin-right: 0;
 `;
 
-const HeaderCard = styled(Card)`
+const TAHeaderCard = styled(Card)`
   height: 64px;
+  background: inherit;
+`;
+
+const StudentHeaderCard = styled(Card)`
+  height: 64px;
+  padding-left: 8px;
+  padding-right: 8px;
   background: inherit;
 `;
 
@@ -45,48 +52,75 @@ const Placeholder = styled.div`
 `;
 
 interface QueueListProps {
+  role: Role;
   onOpenClick: (name: string) => void;
 }
 
-export default function QueueList({ onOpenClick }: QueueListProps) {
+export default function QueueList({ role, onOpenClick }: QueueListProps) {
   return (
     <div>
       <Row justify="space-between">
         <QueueTitle>Queue 1</QueueTitle>
-        <Link href="/queue/join">
-          <Button type="primary" size="large">
-            Join Queue
-          </Button>
-        </Link>
+        {role === "student" && (
+          <Link href="/queue/join">
+            <Button type="primary" size="large">
+              Join Queue
+            </Button>
+          </Link>
+        )}
       </Row>
 
-      <HeaderCard bordered={false}>
-        <CenterRow justify="space-between">
-          <Col xs={2} lg={1}>
-            <HeaderText>#</HeaderText>
-          </Col>
-          <Col xs={14} sm={11} lg={5}>
-            <HeaderText>name</HeaderText>
-          </Col>
-          <Col xs={0} lg={2}>
-            <HeaderText>type</HeaderText>
-          </Col>
-          <Col xs={0} lg={7}>
-            <HeaderText>question</HeaderText>
-          </Col>
-          <Col xs={0} lg={2}>
-            <HeaderText>wait</HeaderText>
-          </Col>
-          <Col span={2}>
-            <StatusText>status</StatusText>
-          </Col>
-          <Col>
-            <Placeholder />
-          </Col>
-        </CenterRow>
-      </HeaderCard>
+      {role === "ta" && (
+        <TAHeaderCard bordered={false}>
+          <CenterRow justify="space-between">
+            <Col xs={2} lg={1}>
+              <HeaderText>#</HeaderText>
+            </Col>
+            <Col xs={14} sm={11} lg={5}>
+              <HeaderText>name</HeaderText>
+            </Col>
+            <Col xs={0} lg={2}>
+              <HeaderText>type</HeaderText>
+            </Col>
+            <Col xs={0} lg={7}>
+              <HeaderText>question</HeaderText>
+            </Col>
+            <Col xs={0} lg={2}>
+              <HeaderText>wait</HeaderText>
+            </Col>
+            <Col span={2}>
+              <StatusText>status</StatusText>
+            </Col>
+            <Col>
+              <Placeholder />
+            </Col>
+          </CenterRow>
+        </TAHeaderCard>
+      )}
+      {role === "student" && (
+        <StudentHeaderCard bordered={false}>
+          <CenterRow justify="space-between">
+            <Col span={1}>
+              <HeaderText>#</HeaderText>
+            </Col>
+            <Col xs={16} sm={11} lg={6}>
+              <HeaderText>name</HeaderText>
+            </Col>
+            <Col xs={0} lg={2}>
+              <HeaderText>type</HeaderText>
+            </Col>
+            <Col span={2}>
+              <HeaderText>wait</HeaderText>
+            </Col>
+            <Col xs={0} lg={2}>
+              <StatusText>status</StatusText>
+            </Col>
+          </CenterRow>
+        </StudentHeaderCard>
+      )}
 
       <QueueCard
+        role={role}
         rank={99}
         name="Alex Takayama"
         questionType={QuestionType.Bug}
@@ -95,6 +129,7 @@ export default function QueueList({ onOpenClick }: QueueListProps) {
         onOpen={onOpenClick}
       />
       <QueueCard
+        role={role}
         rank={2}
         name="Supercalifragilistic"
         questionType={QuestionType.Concept}
@@ -103,6 +138,7 @@ export default function QueueList({ onOpenClick }: QueueListProps) {
         onOpen={onOpenClick}
       />
       <QueueCard
+        role={role}
         rank={1}
         name="Stanley Liu"
         questionType={QuestionType.Setup}
@@ -111,6 +147,7 @@ export default function QueueList({ onOpenClick }: QueueListProps) {
         onOpen={onOpenClick}
       />
       <QueueCard
+        role={role}
         rank={1}
         name="Alex Takayama"
         questionType={QuestionType.Other}
@@ -119,6 +156,7 @@ export default function QueueList({ onOpenClick }: QueueListProps) {
         onOpen={onOpenClick}
       />
       <QueueCard
+        role={role}
         rank={1}
         name="Alex Takayama"
         questionType={QuestionType.Testing}
