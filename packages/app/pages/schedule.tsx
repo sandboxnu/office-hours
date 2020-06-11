@@ -14,10 +14,8 @@ type ScheduleProps = {
 };
 
 export default function Schedule({ viewType }: ScheduleProps) {
-  const { data, error } = useSWR(
-    `api/v1/courses/1/schedule`,
-    async () => API.course.get(1),
-    { revalidateOnFocus: false }
+  const { data, error } = useSWR(`api/v1/courses/1/schedule`, async () =>
+    API.course.get(1)
   );
 
   if (error)
