@@ -14,8 +14,6 @@ const Navbar = () => {
 };
 
 const CreateQueueButton = styled(Button)`
-  bottom: 0%;
-  width: 20%;
   float: right;
   background-color: #4cbb17;
   color: white;
@@ -41,7 +39,7 @@ export default function Today() {
     <div>
       <Navbar />
       <Row gutter={25}>
-        <Col md={12} sm={24}>
+        <Col md={12} xs={24}>
           {data?.map((q) => (
             <OpenQueueCard key={q.id} queue={q} />
           ))}
