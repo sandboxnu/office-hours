@@ -43,11 +43,11 @@ export default function Today() {
           {data?.map((q) => (
             <OpenQueueCard key={q.id} queue={q} />
           ))}
-          {isTA ? (
+          {isTA && (
             <CreateQueueButton type="default" size={"large"}>
               Create Queue
             </CreateQueueButton>
-          ) : null}
+          )}
         </Col>
         <Col md={12} sm={24}>
           <Schedule viewType={"day"} />
