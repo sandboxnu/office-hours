@@ -1,34 +1,21 @@
 import { GetCourseResponse, QuestionType } from "@template/common";
 
 export const MOCK_GET_COURSE_RESPONSE: GetCourseResponse = {
-  id: 169,
   name: "CS 2500",
-  semester: {
-    season: "Fall",
-    year: 2019,
-  },
   officeHours: [
     {
       id: 84,
       title: "OH - Will",
-      course: {
-        id: 169,
-        name: "CS 2500",
-      },
       room: "RY 154",
-      startTime: "2019-09-21T12:00:00-04:00",
-      endTime: "2019-09-21T14:00:00-04:00",
+      startTime: new Date("2019-09-21T12:00:00-04:00"),
+      endTime: new Date("2019-09-21T14:00:00-04:00"),
     },
     {
       id: 82,
       title: "OH - Grisha",
-      course: {
-        id: 169,
-        name: "CS 2500",
-      },
       room: "KA 110",
-      startTime: "2019-09-04T06:00:00-04:00",
-      endTime: "2019-09-04T08:00:00-04:00",
+      startTime: new Date("2019-09-04T06:00:00-04:00"),
+      endTime: new Date("2019-09-04T08:00:00-04:00"),
     },
   ],
   queues: [

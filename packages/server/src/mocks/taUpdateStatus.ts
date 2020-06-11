@@ -7,7 +7,7 @@ export const MOCK_TA_UPDATE_STATUS_ARRIVED_RESPONSE: TAUpdateStatusResponse = {
     name: "CS 2500",
   },
   room: "WVH 650",
-  createdAt: "2019-09-14T14:00:02-04:00",
+  createdAt: new Date("2019-09-14T14:00:02-04:00"),
   closedAt: null,
   staffList: [
     {
@@ -27,8 +27,8 @@ export const MOCK_TA_UPDATE_STATUS_DEPARTED_RESPONSE: TAUpdateStatusResponse = {
     name: "CS 2500",
   },
   room: "WVH 650",
-  createdAt: "2019-08-08T15:22:58.144808-04:00",
-  closedAt: "2019-09-21T14:00:00-04:00",
+  createdAt: new Date("2019-08-08T15:22:58.144808-04:00"),
+  closedAt: new Date("2019-09-21T14:00:00-04:00"),
   staffList: [],
   questions: [],
 };

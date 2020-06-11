@@ -10,7 +10,7 @@ export const MOCK_CREATE_QUESTION_RESPONSE: CreateQuestionResponse = {
   },
   text: "MCV arcitecture is not making sense",
   taHelped: null,
-  createdAt: "2019-09-05T09:44:46.058327-04:00",
+  createdAt: new Date("2019-09-05T09:44:46.058327-04:00"),
   helpedAt: null,
   closedAt: null,
   questionType: QuestionType.Concept,

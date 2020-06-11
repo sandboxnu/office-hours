@@ -10,7 +10,7 @@ export const MOCK_GET_QUESTION_RESPONSE: GetQuestionResponse = {
   },
   text: "Recursion is wrecking me",
   taHelped: null,
-  createdAt: "2019-07-18T00:56:30.254545-04:00",
+  createdAt: new Date("2019-07-18T00:56:30.254545-04:00"),
   helpedAt: null,
   closedAt: null,
   questionType: QuestionType.Other,
