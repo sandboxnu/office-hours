@@ -55,6 +55,7 @@ const CenterRow = styled(Row)`
 
 interface QueueCardProps {
   role: Role;
+  helping: boolean;
   rank: number;
   name: string;
   questionType: QuestionType;
@@ -65,6 +66,7 @@ interface QueueCardProps {
 
 export default function QueueCard({
   role,
+  helping,
   rank,
   name,
   questionType,
@@ -74,7 +76,7 @@ export default function QueueCard({
 }: QueueCardProps) {
   return (
     <div>
-      {role === "ta" && (
+      {role === "ta" && !helping && (
         <HorizontalTACard onClick={() => onOpen(name)}>
           <CenterRow justify="space-between">
             <Col xs={2} lg={1}>
@@ -98,6 +100,35 @@ export default function QueueCard({
               </Text>
             </Col>
             <Col xs={0} lg={2}>
+              <Text>{waitTime}</Text>
+            </Col>
+            <Col span={2}>
+              <StatusTag color="purple">{status}</StatusTag>
+            </Col>
+            <Col>
+              <RightOutlined />
+            </Col>
+          </CenterRow>
+        </HorizontalTACard>
+      )}
+      {role === "ta" && helping && (
+        <HorizontalTACard onClick={() => onOpen(name)}>
+          <CenterRow justify="space-between">
+            <Col xs={2} lg={1}>
+              <Rank>{rank}</Rank>
+            </Col>
+            <Col xs={14} sm={9} lg={11} xl={9} xxl={4}>
+              <CenterRow>
+                <Photo icon={<UserOutlined />} />
+                <Text>{name}</Text>
+              </CenterRow>
+            </Col>
+            <Col xs={0} xxl={7}>
+              <Text>
+                Help with working out how to use an accumulator for problem 1
+              </Text>
+            </Col>
+            <Col xs={0} xl={3}>
               <Text>{waitTime}</Text>
             </Col>
             <Col span={2}>
