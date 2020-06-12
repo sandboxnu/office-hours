@@ -124,7 +124,11 @@ export type UserCourse = {
 /**
  * Represents one of three possible user roles in a course.
  */
-export type Role = "student" | "ta" | "professor";
+export enum Role {
+  STUDENT = "student",
+  TA = "ta",
+  PROFESSOR = "professor",
+}
 
 /**
  * Represents an Office Hour block as assigned on the course calendar.
