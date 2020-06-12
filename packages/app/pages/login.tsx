@@ -20,11 +20,11 @@ const LoginContainer = styled.div`
 `;
 
 const InputBoxContainer = styled.div`
-margin auto;
-    width: 500px;
-    height: 64px;
-    left: 570px;
-    top: 261px;
+  margin: auto;
+  width: 500px;
+  height: 64px;
+  left: 570px;
+  top: 261px;
 `;
 
 interface LoginProps {}
