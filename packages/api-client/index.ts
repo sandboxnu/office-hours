@@ -12,6 +12,8 @@ import {
   UpdateQuestionParams,
   ListQuestionsResponse,
   UpdateQuestionResponse,
+  GetCourseQueuesResponse,
+  QueuePartial,
 } from "@template/common";
 
 class APIClient {
@@ -31,11 +33,20 @@ class APIClient {
   };
   course = {
     get: async (courseId: number): Promise<GetCourseResponse> => {
-      const course = (await this.axios.get(`/api/v1/courses/${courseId}`)).data;
+      const course = (
+        await this.axios.get(`/api/v1/courses/${courseId}/schedule`)
+      ).data;
       course.officeHours.forEach((officeHour: any) =>
         parseOfficeHourDates(officeHour)
       );
       return course;
+    },
+    queues: async (courseId: number): Promise<GetCourseQueuesResponse> => {
+      const queues = (
+        await this.axios.get(`/api/v1/courses/${courseId}/queues`)
+      ).data;
+      queues.forEach((q: QueuePartial) => parseQueueDates(q));
+      return queues;
     },
   };
   taStatus = {

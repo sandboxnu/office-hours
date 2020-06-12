@@ -1,11 +1,20 @@
-import { Calendar, momentLocalizer } from "react-big-calendar";
+import { Calendar, momentLocalizer, View } from "react-big-calendar";
 import moment from "moment";
 import useSWR from "swr";
 import { API } from "@template/api-client";
 import { Result } from "antd";
+import styled from "styled-components";
 
-export default function Schedule() {
-  const { data, error } = useSWR(`api/v1/courses/1`, async () =>
+const ScheduleCalendar = styled(Calendar)`
+  height: 70vh;
+`;
+
+type ScheduleProps = {
+  viewType: View;
+};
+
+export default function Schedule({ viewType }: ScheduleProps) {
+  const { data, error } = useSWR(`api/v1/courses/1/schedule`, async () =>
     API.course.get(1)
   );
 
@@ -19,15 +28,15 @@ export default function Schedule() {
 
   const myEvents =
     data?.officeHours.map((e) => ({
-      title: e.title,
       start: e.startTime,
       end: e.endTime,
     })) ?? [];
 
   return (
-    <div style={{ height: "400px" }}>
-      <h1>{data?.name ?? ""}</h1>
-      <Calendar localizer={momentLocalizer(moment)} events={myEvents} />
-    </div>
+    <ScheduleCalendar
+      localizer={momentLocalizer(moment)}
+      events={myEvents}
+      defaultView={viewType}
+    />
   );
 }

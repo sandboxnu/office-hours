@@ -1,22 +1,25 @@
 import { ServerRoute, ResponseObject } from "@hapi/hapi";
 import Joi from "@hapi/joi";
-import { CourseSchema, QueueSchema } from "../joi";
+import { CourseSchema, QueueSchema, CourseQueueSchema } from "../joi";
 import { CourseModel } from "../entity/CourseModel";
-import { pick } from "lodash";
+import { pick, cloneDeep } from "lodash";
 import {
   TAUpdateStatusParams,
   TAUpdateStatusResponse,
   GetCourseResponse,
+  GetCourseQueuesResponse,
+  OpenQuestionStatus,
 } from "@template/common";
 import {
   MOCK_TA_UPDATE_STATUS_ARRIVED_RESPONSE,
   MOCK_TA_UPDATE_STATUS_DEPARTED_RESPONSE,
 } from "../mocks/taUpdateStatus";
+import { MOCK_GET_COURSE_RESPONSE } from "../mocks/getCourse";
 
 export const courseRoutes: ServerRoute[] = [
   {
     method: "GET",
-    path: "/api/v1/courses/{course_id}",
+    path: "/api/v1/courses/{course_id}/schedule",
     handler: async (request, h): Promise<GetCourseResponse> => {
       const course = await CourseModel.findOne(request.params.course_id, {
         relations: ["officeHours"],
@@ -31,6 +34,36 @@ export const courseRoutes: ServerRoute[] = [
     options: {
       response: {
         schema: CourseSchema.options({ presence: "required" }),
+      },
+    },
+  },
+  {
+    method: "GET",
+    path: "/api/v1/courses/{course_id}/queues",
+    handler: async (request, h): Promise<GetCourseQueuesResponse> => {
+      const queuesResponse = cloneDeep(MOCK_GET_COURSE_RESPONSE.queues);
+
+      queuesResponse.forEach(
+        (queue) =>
+          (queue["queueSize"] = queue.questions.filter(
+            (question) => question.status in OpenQuestionStatus
+          ).length)
+      );
+
+      return queuesResponse.map((queue: any) =>
+        pick(queue, [
+          "id",
+          "room",
+          "createdAt",
+          "closedAt",
+          "staffList",
+          "queueSize",
+        ])
+      );
+    },
+    options: {
+      response: {
+        schema: CourseQueueSchema.options({ presence: "required" }),
       },
     },
   },
