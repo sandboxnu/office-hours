@@ -5,7 +5,7 @@ import StudentPopupCard from "../../components/Queue/StudentPopupCard";
 import { useCallback, useState } from "react";
 
 // TODO: replace this with profile role from endpoint
-const ROLE: Role = "ta";
+const ROLE: Role = Role.TA;
 
 const Container = styled.div`
   margin: 32px 64px;

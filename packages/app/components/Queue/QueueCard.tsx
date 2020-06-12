@@ -74,101 +74,122 @@ export default function QueueCard({
   status,
   onOpen,
 }: QueueCardProps) {
+  /**
+   * Renders the queue card and its contents for a TA to view when they aren't helping anyone.
+   */
+  const renderTACard = () => {
+    return (
+      <HorizontalTACard onClick={() => onOpen(name)}>
+        <CenterRow justify="space-between">
+          <Col xs={2} lg={1}>
+            <Rank>{rank}</Rank>
+          </Col>
+          <Col xs={14} sm={11} lg={5}>
+            <CenterRow>
+              <Photo icon={<UserOutlined />} />
+              <Text>{name}</Text>
+            </CenterRow>
+          </Col>
+          <Col xs={0} lg={2}>
+            <Text>
+              {questionType.charAt(0).toUpperCase() +
+                questionType.substr(1).toLowerCase()}
+            </Text>
+          </Col>
+          <Col xs={0} lg={7}>
+            <Text>
+              Help with working out how to use an accumulator for problem 1
+            </Text>
+          </Col>
+          <Col xs={0} lg={2}>
+            <Text>{waitTime}</Text>
+          </Col>
+          <Col span={2}>
+            <StatusTag color="purple">{status}</StatusTag>
+          </Col>
+          <Col>
+            <RightOutlined />
+          </Col>
+        </CenterRow>
+      </HorizontalTACard>
+    );
+  };
+
+  /**
+   * Renders the queue card and its contents for a TA that is helping someone.
+   */
+  const renderHelpingCard = () => {
+    return (
+      <HorizontalTACard onClick={() => onOpen(name)}>
+        <CenterRow justify="space-between">
+          <Col xs={2} lg={1}>
+            <Rank>{rank}</Rank>
+          </Col>
+          <Col xs={14} sm={9} lg={11} xl={9} xxl={4}>
+            <CenterRow>
+              <Photo icon={<UserOutlined />} />
+              <Text>{name}</Text>
+            </CenterRow>
+          </Col>
+          <Col xs={0} xxl={7}>
+            <Text>
+              Help with working out how to use an accumulator for problem 1
+            </Text>
+          </Col>
+          <Col xs={0} xl={3}>
+            <Text>{waitTime}</Text>
+          </Col>
+          <Col span={2}>
+            <StatusTag color="purple">{status}</StatusTag>
+          </Col>
+          <Col>
+            <RightOutlined />
+          </Col>
+        </CenterRow>
+      </HorizontalTACard>
+    );
+  };
+
+  /**
+   * Renders the queue card and its contents for a student viewing.
+   */
+  const renderStudentCard = () => {
+    return (
+      <HorizontalStudentCard>
+        <CenterRow justify="space-between">
+          <Col span={1}>
+            <Text>{rank}</Text>
+          </Col>
+          <Col xs={16} sm={11} lg={6}>
+            <CenterRow>
+              <Avatar icon={<UserOutlined />} />
+              <NameContainer>
+                <Text>{name}</Text>
+              </NameContainer>
+            </CenterRow>
+          </Col>
+          <Col xs={0} lg={2}>
+            <Text>
+              {questionType.charAt(0).toUpperCase() +
+                questionType.substr(1).toLowerCase()}
+            </Text>
+          </Col>
+          <Col span={2}>
+            <Text>{waitTime}</Text>
+          </Col>
+          <Col xs={0} lg={2}>
+            <StatusTag color="purple">{status}</StatusTag>
+          </Col>
+        </CenterRow>
+      </HorizontalStudentCard>
+    );
+  };
+
   return (
     <div>
-      {role === "ta" && !helping && (
-        <HorizontalTACard onClick={() => onOpen(name)}>
-          <CenterRow justify="space-between">
-            <Col xs={2} lg={1}>
-              <Rank>{rank}</Rank>
-            </Col>
-            <Col xs={14} sm={11} lg={5}>
-              <CenterRow>
-                <Photo icon={<UserOutlined />} />
-                <Text>{name}</Text>
-              </CenterRow>
-            </Col>
-            <Col xs={0} lg={2}>
-              <Text>
-                {questionType.charAt(0).toUpperCase() +
-                  questionType.substr(1).toLowerCase()}
-              </Text>
-            </Col>
-            <Col xs={0} lg={7}>
-              <Text>
-                Help with working out how to use an accumulator for problem 1
-              </Text>
-            </Col>
-            <Col xs={0} lg={2}>
-              <Text>{waitTime}</Text>
-            </Col>
-            <Col span={2}>
-              <StatusTag color="purple">{status}</StatusTag>
-            </Col>
-            <Col>
-              <RightOutlined />
-            </Col>
-          </CenterRow>
-        </HorizontalTACard>
-      )}
-      {role === "ta" && helping && (
-        <HorizontalTACard onClick={() => onOpen(name)}>
-          <CenterRow justify="space-between">
-            <Col xs={2} lg={1}>
-              <Rank>{rank}</Rank>
-            </Col>
-            <Col xs={14} sm={9} lg={11} xl={9} xxl={4}>
-              <CenterRow>
-                <Photo icon={<UserOutlined />} />
-                <Text>{name}</Text>
-              </CenterRow>
-            </Col>
-            <Col xs={0} xxl={7}>
-              <Text>
-                Help with working out how to use an accumulator for problem 1
-              </Text>
-            </Col>
-            <Col xs={0} xl={3}>
-              <Text>{waitTime}</Text>
-            </Col>
-            <Col span={2}>
-              <StatusTag color="purple">{status}</StatusTag>
-            </Col>
-            <Col>
-              <RightOutlined />
-            </Col>
-          </CenterRow>
-        </HorizontalTACard>
-      )}
-      {role === "student" && (
-        <HorizontalStudentCard>
-          <CenterRow justify="space-between">
-            <Col span={1}>
-              <Text>{rank}</Text>
-            </Col>
-            <Col xs={16} sm={11} lg={6}>
-              <CenterRow>
-                <Avatar icon={<UserOutlined />} />
-                <NameContainer>
-                  <Text>{name}</Text>
-                </NameContainer>
-              </CenterRow>
-            </Col>
-            <Col xs={0} lg={2}>
-              <Text>
-                {questionType.charAt(0).toUpperCase() +
-                  questionType.substr(1).toLowerCase()}
-              </Text>
-            </Col>
-            <Col span={2}>
-              <Text>{waitTime}</Text>
-            </Col>
-            <Col xs={0} lg={2}>
-              <StatusTag color="purple">{status}</StatusTag>
-            </Col>
-          </CenterRow>
-        </HorizontalStudentCard>
-      )}
+      {role === "ta" && !helping && renderTACard()}
+      {role === "ta" && helping && renderHelpingCard()}
+      {role === "student" && renderStudentCard()}
     </div>
   );
 }

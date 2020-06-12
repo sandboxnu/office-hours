@@ -73,12 +73,120 @@ export default function QueueList({ role, onOpenClick }: QueueListProps) {
   const [helping, setHelping] = useState<boolean>(true);
   const screens = useBreakpoint();
 
-  console.log(screens);
+  /**
+   * Renders the card headers for a TA who is not yet helping someone.
+   */
+  const renderTAHeader = () => {
+    return (
+      <TAHeaderCard bordered={false}>
+        <CenterRow justify="space-between">
+          <Col xs={2} lg={1}>
+            <HeaderText>#</HeaderText>
+          </Col>
+          <Col xs={14} sm={11} lg={5}>
+            <HeaderText>name</HeaderText>
+          </Col>
+          <Col xs={0} lg={2}>
+            <HeaderText>type</HeaderText>
+          </Col>
+          <Col xs={0} lg={7}>
+            <HeaderText>question</HeaderText>
+          </Col>
+          <Col xs={0} lg={2}>
+            <HeaderText>wait</HeaderText>
+          </Col>
+          <Col span={2}>
+            <StatusText>status</StatusText>
+          </Col>
+          <Col>
+            <Placeholder />
+          </Col>
+        </CenterRow>
+      </TAHeaderCard>
+    );
+  };
+
+  /**
+   * Renders the card headers for a TA who is currently helping someone.
+   */
+  const renderHelpingHeader = () => {
+    return (
+      <TAHeaderCard bordered={false}>
+        <CenterRow justify="space-between">
+          <Col xs={2} lg={1}>
+            <HeaderText>#</HeaderText>
+          </Col>
+          <Col xs={14} sm={9} lg={11} xl={9} xxl={4}>
+            <HeaderText>name</HeaderText>
+          </Col>
+          <Col xs={0} xxl={7}>
+            <HeaderText>question</HeaderText>
+          </Col>
+          <Col xs={0} xl={3}>
+            <HeaderText>wait</HeaderText>
+          </Col>
+          <Col span={2}>
+            <StatusText>status</StatusText>
+          </Col>
+          <Col>
+            <Placeholder />
+          </Col>
+        </CenterRow>
+      </TAHeaderCard>
+    );
+  };
+
+  /**
+   * Renders the card headers for a student viewing the queue.
+   */
+  const renderStudentHeader = () => {
+    <StudentHeaderCard bordered={false}>
+      <CenterRow justify="space-between">
+        <Col span={1}>
+          <HeaderText>#</HeaderText>
+        </Col>
+        <Col xs={16} sm={11} lg={6}>
+          <HeaderText>name</HeaderText>
+        </Col>
+        <Col xs={0} lg={2}>
+          <HeaderText>type</HeaderText>
+        </Col>
+        <Col span={2}>
+          <HeaderText>wait</HeaderText>
+        </Col>
+        <Col xs={0} lg={2}>
+          <StatusText>status</StatusText>
+        </Col>
+      </CenterRow>
+    </StudentHeaderCard>;
+  };
+
+  /**
+   * Renders the title and aggregate buttons for the helping column.
+   */
+  const renderHelpingTitle = () => {
+    return (
+      <Col xs={24} lg={10} xxl={6} order={screens.lg === false ? 1 : 2}>
+        <HeaderRow justify="space-between">
+          <QueueTitle>Helping</QueueTitle>
+          <div>
+            <AlertButton danger size="large">
+              Alert All
+            </AlertButton>
+            <Button type="primary" size="large">
+              Finish All
+            </Button>
+          </div>
+        </HeaderRow>
+        <StudentInfoCard />
+        <GroupQuestions />
+      </Col>
+    );
+  };
 
   return (
     <div>
       <Row gutter={[64, 64]}>
-        {/* make each column a variable size instead of fixed, and hide queue col on small screens */}
         <Col flex="auto" order={screens.lg === false ? 2 : 1}>
           <Row justify="space-between">
             <QueueTitle>Queue 1</QueueTitle>
@@ -90,78 +198,9 @@ export default function QueueList({ role, onOpenClick }: QueueListProps) {
               </Link>
             )}
           </Row>
-          {role === "ta" && !helping && (
-            <TAHeaderCard bordered={false}>
-              <CenterRow justify="space-between">
-                <Col xs={2} lg={1}>
-                  <HeaderText>#</HeaderText>
-                </Col>
-                <Col xs={14} sm={11} lg={5}>
-                  <HeaderText>name</HeaderText>
-                </Col>
-                <Col xs={0} lg={2}>
-                  <HeaderText>type</HeaderText>
-                </Col>
-                <Col xs={0} lg={7}>
-                  <HeaderText>question</HeaderText>
-                </Col>
-                <Col xs={0} lg={2}>
-                  <HeaderText>wait</HeaderText>
-                </Col>
-                <Col span={2}>
-                  <StatusText>status</StatusText>
-                </Col>
-                <Col>
-                  <Placeholder />
-                </Col>
-              </CenterRow>
-            </TAHeaderCard>
-          )}
-          {role === "ta" && helping && (
-            <TAHeaderCard bordered={false}>
-              <CenterRow justify="space-between">
-                <Col xs={2} lg={1}>
-                  <HeaderText>#</HeaderText>
-                </Col>
-                <Col xs={14} sm={9} lg={11} xl={9} xxl={4}>
-                  <HeaderText>name</HeaderText>
-                </Col>
-                <Col xs={0} xxl={7}>
-                  <HeaderText>question</HeaderText>
-                </Col>
-                <Col xs={0} xl={3}>
-                  <HeaderText>wait</HeaderText>
-                </Col>
-                <Col span={2}>
-                  <StatusText>status</StatusText>
-                </Col>
-                <Col>
-                  <Placeholder />
-                </Col>
-              </CenterRow>
-            </TAHeaderCard>
-          )}
-          {role === "student" && (
-            <StudentHeaderCard bordered={false}>
-              <CenterRow justify="space-between">
-                <Col span={1}>
-                  <HeaderText>#</HeaderText>
-                </Col>
-                <Col xs={16} sm={11} lg={6}>
-                  <HeaderText>name</HeaderText>
-                </Col>
-                <Col xs={0} lg={2}>
-                  <HeaderText>type</HeaderText>
-                </Col>
-                <Col span={2}>
-                  <HeaderText>wait</HeaderText>
-                </Col>
-                <Col xs={0} lg={2}>
-                  <StatusText>status</StatusText>
-                </Col>
-              </CenterRow>
-            </StudentHeaderCard>
-          )}
+          {role === "ta" && !helping && renderTAHeader()}
+          {role === "ta" && helping && renderHelpingHeader()}
+          {role === "student" && renderStudentHeader()}
 
           <QueueCard
             helping={helping}
@@ -214,23 +253,7 @@ export default function QueueList({ role, onOpenClick }: QueueListProps) {
             onOpen={onOpenClick}
           />
         </Col>
-        {role === "ta" && helping && (
-          <Col xs={24} lg={10} xxl={6} order={screens.lg === false ? 1 : 2}>
-            <HeaderRow justify="space-between">
-              <QueueTitle>Helping</QueueTitle>
-              <div>
-                <AlertButton danger size="large">
-                  Alert All
-                </AlertButton>
-                <Button type="primary" size="large">
-                  Finish All
-                </Button>
-              </div>
-            </HeaderRow>
-            <StudentInfoCard />
-            <GroupQuestions />
-          </Col>
-        )}
+        {role === "ta" && helping && renderHelpingTitle()}
       </Row>
     </div>
   );
