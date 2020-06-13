@@ -234,4 +234,4 @@ interface Semester {
 /**
  * Represents one of the seasons in which a course can take place.
  */
-type Season = "Fall" | "Spring" | "Summer 1" | "Summer 2";
+export type Season = "Fall" | "Spring" | "Summer 1" | "Summer 2";

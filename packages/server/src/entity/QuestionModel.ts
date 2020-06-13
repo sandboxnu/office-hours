@@ -6,9 +6,9 @@ import {
   ManyToOne,
   JoinColumn,
 } from "typeorm";
-import { CourseModel } from "./CourseModel";
+import { UserCourseModel } from "./UserCourseModel";
 import { QueueModel } from "./QueueModel";
-import { QuestionType } from "@template/common";
+import { QuestionType, QuestionStatus } from "@template/common";
 
 @Entity("question_model")
 export class QuestionModel extends BaseEntity {
@@ -25,12 +25,19 @@ export class QuestionModel extends BaseEntity {
   @Column("text")
   text: string;
 
-  // TODO: users :)
-  //@Column()
-  //creator: UserCourseModel;
+  @ManyToOne((type) => UserCourseModel)
+  @JoinColumn({ name: "creatorId" })
+  creator: Promise<UserCourseModel>;
 
-  //@Column()
-  //taHelped: UserCourseModel;
+  @Column()
+  creatorId: number;
+
+  @ManyToOne((type) => UserCourseModel)
+  @JoinColumn({ name: "taHelpedId" })
+  taHelped: UserCourseModel;
+
+  @Column()
+  taHelpedId: number;
 
   @Column()
   createdAt: Date;
@@ -45,5 +52,5 @@ export class QuestionModel extends BaseEntity {
   questionType: QuestionType;
 
   @Column("text")
-  status: string; //TODO: whenever QuestionStatus gets figured out, we should make this one
+  status: QuestionStatus;
 }
