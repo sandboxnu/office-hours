@@ -205,20 +205,21 @@ export enum QuestionType {
   Other = "Other",
 }
 
-// Ticket Status - Represents a given status of as student's ticket
-export type QuestionStatus =
-  | {
-      type: QuestionStatusType.Open;
-      status: OpenQuestionStatus;
-    }
-  | {
-      type: QuestionStatusType.Closed;
-      status: ClosedQuestionStatus;
-    };
-enum QuestionStatusType {
-  Open = "Open",
-  Closed = "Closed",
-}
+// TODO: See if we want to do it this way later
+// export type QuestionStatus =
+//   | {
+//       type: QuestionStatusType.Open;
+//       status: OpenQuestionStatus;
+//     }
+//   | {
+//       type: QuestionStatusType.Closed;
+//       status: ClosedQuestionStatus;
+//     };
+
+// export enum QuestionStatusType {
+//   Open = "Open",
+//   Closed = "Closed",
+// }
 
 export enum OpenQuestionStatus {
   Drafting = "Drafting",
@@ -232,6 +233,12 @@ export enum ClosedQuestionStatus {
   NoShow = "No Show",
   Deleted = "Deleted",
 }
+
+// Ticket Status - Represents a given status of as student's ticket
+export const QuestionStatus = {
+  ...OpenQuestionStatus,
+  ...ClosedQuestionStatus,
+};
 
 /**
  * A Semester object, representing a schedule semester term for the purposes of a course.
