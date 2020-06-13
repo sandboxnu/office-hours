@@ -51,5 +51,6 @@ export class CourseModel extends BaseEntity {
   semester: SemesterModel;
 
   @Column({ nullable: true })
+  // TODO: can we make these not nullable and work with TypeORM
   semesterId: number;
 }

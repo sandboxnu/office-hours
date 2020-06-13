@@ -1,0 +1,10 @@
+entity: QuestionModel
+items:
+  question1:
+    queueId: "@queue1"
+    text: "Recursion is wrecking me"
+    createdAt: "{{date.recent}}"
+    questionType: "Other"
+    status: "Queued"
+    creator: "@ucm1"
+    taHelped: "@ucm2"

@@ -29,14 +29,14 @@ export class QuestionModel extends BaseEntity {
   @JoinColumn({ name: "creatorId" })
   creator: Promise<UserCourseModel>;
 
-  @Column()
+  @Column({ nullable: true })
   creatorId: number;
 
   @ManyToOne((type) => UserCourseModel)
   @JoinColumn({ name: "taHelpedId" })
   taHelped: UserCourseModel;
 
-  @Column()
+  @Column({ nullable: true })
   taHelpedId: number;
 
   @Column()
