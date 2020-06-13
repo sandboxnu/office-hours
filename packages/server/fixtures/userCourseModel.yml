@@ -1,0 +1,8 @@
+entity: UserCourseModel
+items:
+  ucm1:
+    userId: "@user1"
+    courseId: "@course0"
+  ucm2:
+    userId: "@user2"
+    courseId: "@course0"

@@ -28,6 +28,5 @@ export class QueueModel extends BaseEntity {
   @OneToMany((type) => QuestionModel, (qm) => qm.queue)
   questions: Promise<QuestionModel[]>;
 
-  // TODO: implement questions to be on this
   // TODO: eventually figure out how staff get sent to FE as well
 }

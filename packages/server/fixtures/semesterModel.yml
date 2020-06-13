@@ -1,0 +1,5 @@
+entity: SemesterModel
+items:
+  semester1:
+    season: "Fall"
+    year: 2020

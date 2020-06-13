@@ -206,16 +206,18 @@ export enum QuestionType {
 }
 
 // Ticket Status - Represents a given status of as student's ticket
-export type QuestionStatus = {
-  type: QuestionStatusType.Open,
-  status: OpenQuestionStatus
-} | {
-  type: QuestionStatusType.Closed,
-  status: ClosedQuestionStatus
-};
+export type QuestionStatus =
+  | {
+      type: QuestionStatusType.Open;
+      status: OpenQuestionStatus;
+    }
+  | {
+      type: QuestionStatusType.Closed;
+      status: ClosedQuestionStatus;
+    };
 enum QuestionStatusType {
   Open = "Open",
-  Closed = "Closed"
+  Closed = "Closed",
 }
 
 export enum OpenQuestionStatus {
@@ -244,4 +246,4 @@ interface Semester {
 /**
  * Represents one of the seasons in which a course can take place.
  */
-type Season = "Fall" | "Spring" | "Summer 1" | "Summer 2";
+export type Season = "Fall" | "Spring" | "Summer 1" | "Summer 2";
