@@ -34,7 +34,7 @@ export class QuestionModel extends BaseEntity {
 
   @ManyToOne((type) => UserCourseModel)
   @JoinColumn({ name: "taHelpedId" })
-  taHelped: UserCourseModel;
+  taHelped: Promise<UserCourseModel>;
 
   @Column({ nullable: true })
   taHelpedId: number;
