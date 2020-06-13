@@ -6,5 +6,4 @@ items:
     createdAt: "{{date.recent}}"
     questionType: "Other"
     status: "Queued"
-    creator: "@ucm1"
-    taHelped: "@ucm2"
+    creatorId: "@ucm1"
