@@ -46,11 +46,10 @@ export const courseRoutes: ServerRoute[] = [
         where: { course_id: request.params.course_id },
       });
 
-      // TODO: this is completely borked for some reason from a joi perspective, but we'll figure it out together
-      queues.forEach(async (q) => {
-        q["queueSize"] = (await q.questions).length;
-        q["staffList"] = MOCK_GET_COURSE_RESPONSE.queues[0].staffList;
-      });
+      for (let queue of queues) {
+        queue["queueSize"] = (await queue.questions).length;
+        queue["staffList"] = MOCK_GET_COURSE_RESPONSE.queues[0].staffList;
+      }
 
       return queues.map((queue: any) =>
         pick(queue, ["id", "room", "staffList", "queueSize"])

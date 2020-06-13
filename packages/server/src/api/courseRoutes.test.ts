@@ -6,8 +6,50 @@ import {
   MOCK_TA_UPDATE_STATUS_ARRIVED_RESPONSE,
   MOCK_TA_UPDATE_STATUS_DEPARTED_RESPONSE,
 } from "../mocks/taUpdateStatus";
+import { QueueModel } from "../entity/QueueModel";
+import { QuestionModel } from "../entity/QuestionModel";
+import { userInfo } from "os";
+import { UserModel } from "../entity/UserModel";
+import { UserCourseModel } from "../entity/UserCourseModel";
+import {
+  QuestionStatus,
+  OpenQuestionStatus,
+  QuestionType,
+} from "@template/common";
 
-describe("/api/v1/courses/course_id", () => {
+const generateMockData = async () => {
+  const course = await CourseModel.create({
+    name: "CS 2500",
+    icalUrl: "fudies1.com",
+  }).save();
+  const queue = await QueueModel.create({
+    room: "WVH 605",
+    courseId: course.id,
+  }).save();
+  const user = await UserModel.create({
+    username: "eddyTheDockerGodLi",
+    email: "li.e@northeastern.edu",
+    name: "Eddy Li",
+    photoURL:
+      "https://prod-web.neu.edu/wasapp/EnterprisePhotoService/PhotoServlet?vid=CCS&er=471f2d695fbb8a00ee740ad3ea910453986aec81ddaecf889ae98b3a1858597b12650afd0d4e59c561172f76cb1946eec217ed89bd4074c0",
+  }).save();
+  const userCourse = await UserCourseModel.create({
+    userId: user.id,
+    courseId: course.id,
+  }).save();
+  const question = await QuestionModel.create({
+    queueId: queue.id,
+    text: "Help pls",
+    creatorId: userCourse.id,
+    createdAt: new Date(),
+    questionType: QuestionType.Other,
+    status: "Queued",
+  }).save();
+  console.log("questions", await queue.questions);
+  console.log("queue", await queue);
+};
+
+describe("/api/v1/courses/course_id/schedule", () => {
   setupDBTest();
   const getServer = setupServerTest();
 
@@ -25,7 +67,7 @@ describe("/api/v1/courses/course_id", () => {
     }).save();
     const get = await getServer().inject({
       method: "get",
-      url: `/api/v1/courses/${course.id}`,
+      url: `/api/v1/courses/${course.id}/schedule`,
     });
     expect(get.statusCode).toEqual(200);
     expect(get.result).toEqual({
@@ -44,25 +86,38 @@ describe("/api/v1/courses/course_id", () => {
 });
 
 describe("Course Routes", () => {
+  setupDBTest();
   const getServer = setupServerTest();
   const expectWithServer = withServer(getServer);
 
-  describe("/courses/{course_id}", () => {
-    it("GET fundies", async () => {
-      await expectWithServer({
-        method: "get",
-        url: "/api/v1/courses/169",
-        result: MOCK_GET_COURSE_RESPONSE,
-      });
+  it("/courses/{course_id}/queues", async () => {
+    await generateMockData();
+    const get = await getServer().inject({
+      method: "get",
+      url: `/api/v1/courses/1/queues`,
     });
-    it("GET fails on unknown course", async () => {
-      await expectWithServer({
-        method: "get",
-        url: "/api/v1/courses/999",
-        statusCode: 404,
-        result: "The course did not exist",
-      });
-    });
+    expect(get.statusCode).toEqual(200);
+    expect(get.result).toEqual([
+      {
+        id: 1,
+        queueSize: 1,
+        room: "WVH 605",
+        staffList: [
+          {
+            id: 54,
+            name: "Will Stenzel",
+            photoURL:
+              "https://prod-web.neu.edu/wasapp/EnterprisePhotoService/PhotoServlet?vid=CCS&er=24f4b12cccbf875c7740bbfed45a993900cf0d08d11aa07c84780b3a3501f3bacca4eb33ed5effee8aa2dd195750cfbc9884dd5f2ac62c8f",
+          },
+          {
+            id: 42,
+            name: "Grisha Zaytsev",
+            photoURL:
+              "https://prod-web.neu.edu/wasapp/EnterprisePhotoService/PhotoServlet?vid=CCS&er=471f2d695fbb8a00ee740ad3ea910453986aec81ddaecf889ae98b3a1858597b12650afd0d4e59c561172f76cb1946eec217ed89bd4074c0",
+          },
+        ],
+      },
+    ]);
   });
 
   describe("/courses/{course_id}/ta/change_status", () => {
