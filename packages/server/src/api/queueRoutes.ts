@@ -41,6 +41,10 @@ export const queueRoutes: ServerRoute[] = [
         relations: ["creator", "taHelped", "creator.user"],
       });
 
+      if (questions.length === 0) {
+        return h.response().code(404);
+      }
+
       return await Promise.all(
         questions.map(async (qm) => {
           const result = pick(qm, [
