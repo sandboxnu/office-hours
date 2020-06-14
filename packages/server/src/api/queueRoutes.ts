@@ -16,6 +16,10 @@ import {
 } from "../mocks/updateQuestion";
 import { MOCK_STUDENT_LIST_QUESTIONS_RESPONSE } from "../mocks/listQuestions";
 import { MOCK_GET_QUESTION_RESPONSE } from "../mocks/getQuestion";
+import { QueueModel } from "../entity/QueueModecl";
+import { QuestionModel } from "../entity/QuestionModel";
+import { pick } from "lodash";
+import { getRepository } from "typeorm";
 
 export const queueRoutes: ServerRoute[] = [
   {
@@ -27,9 +31,39 @@ export const queueRoutes: ServerRoute[] = [
     ): Promise<ListQuestionsResponse | ResponseObject> => {
       // todo: need a way to return different data, if TA vs. student hits endpoint.
       // for now, just return the student response
-      const queue_id = request.params["queue_id"];
-      if (queue_id === "169") return MOCK_STUDENT_LIST_QUESTIONS_RESPONSE;
-      else return h.response("unknown course").code(404);
+
+      const questions = await QuestionModel.find({
+        where: [
+          {
+            queueId: request.params.queue_id,
+          },
+        ],
+        relations: ["creator", "taHelped", "creator.user"],
+      });
+
+      return await Promise.all(
+        questions.map(async (qm) => {
+          const result = pick(qm, [
+            "creator",
+            "id",
+            "createdAt",
+            "status",
+            "name",
+            "text",
+            "taHelped",
+            "helpedAt",
+            "closedAt",
+            "questionType",
+          ]);
+          result.taHelped = await result.taHelped;
+          result.creator = pick(await (await result.creator).user, [
+            "id",
+            "name",
+            "photoURL",
+          ]);
+          return result;
+        })
+      );
     },
     options: {
       response: {

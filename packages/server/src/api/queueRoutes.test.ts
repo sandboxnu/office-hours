@@ -1,19 +1,33 @@
-import { setupServerTest, withServer } from "../testUtils";
+import {
+  setupServerTest,
+  withServer,
+  setupDBTest,
+  generateMockData,
+} from "../testUtils";
 import { MOCK_STUDENT_LIST_QUESTIONS_RESPONSE } from "../mocks/listQuestions";
 import { MOCK_GET_QUESTION_RESPONSE } from "../mocks/getQuestion";
 import { MOCK_CREATE_QUESTION_RESPONSE } from "../mocks/createQuestion";
 import { QuestionType } from "@template/common";
 
 describe("Queue Routes", () => {
+  setupDBTest();
   const getServer = setupServerTest();
   const expectWithServer = withServer(getServer);
 
   describe("/queues/{queue_id}/questions", () => {
     it("GET fundies success", async () => {
+      await generateMockData();
       await expectWithServer({
         method: "get",
-        url: "/api/v1/queues/169/questions",
-        result: MOCK_STUDENT_LIST_QUESTIONS_RESPONSE,
+        url: "/api/v1/queues/1/questions",
+        result: {
+          queueId: 1,
+          text: "Help pls",
+          creatorId: 1,
+          createdAt: new Date(),
+          questionType: QuestionType.Other,
+          status: "Queued",
+        },
       });
     });
     it("GET fundies fail", async () => {
