@@ -41,7 +41,7 @@ export type CreateQuestionResponse = Question;
 export type UpdateQuestionParams = {
   text?: string;
   questionType?: QuestionType;
-  status?: QuestionStatus;
+  status?: keyof typeof QuestionStatus;
 };
 export type UpdateQuestionResponse = Question;
 
@@ -193,7 +193,7 @@ export type Question = {
   helpedAt?: Date;
   closedAt?: Date;
   questionType?: QuestionType;
-  status: QuestionStatus;
+  status: keyof typeof QuestionStatus;
 };
 
 // Question Types
