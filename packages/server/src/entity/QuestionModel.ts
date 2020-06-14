@@ -52,5 +52,5 @@ export class QuestionModel extends BaseEntity {
   questionType: QuestionType;
 
   @Column("text")
-  status: QuestionStatus;
+  status: keyof typeof QuestionStatus;
 }
