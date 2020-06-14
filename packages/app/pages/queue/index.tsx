@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { Role } from "@template/common";
 import QueueList from "../../components/Queue/QueueList";
 import StudentPopupCard from "../../components/Queue/StudentPopupCard";
-import { useCallback, useState, useContext } from "react";
+import { useCallback, useState, useContext, useEffect } from "react";
 import useSWR from "swr";
 import { API } from "@template/api-client";
 import { ProfileContext } from "../../contexts/ProfileContextProvider";
@@ -24,11 +24,23 @@ interface QueueProps {}
 export default function Queue({}: QueueProps) {
   const [openPopup, setOpenPopup] = useState(false);
   const { profile } = useContext(ProfileContext);
+  const [course, setCourse] = useState(null);
+  const [queueId, setQueueId] = useState(null);
 
   const { data, error } = useSWR(
     `/api/v1/queues/${queueId}/questions`,
-    async () => API.questions.index(queueId)
+    async () => {
+      if (queueId) {
+        API.questions.index(queueId);
+      }
+    }
   );
+
+  useEffect(() => {
+    if (profile) {
+      setCourse(profile.courses[0]);
+    }
+  }, [profile]);
 
   const onOpenClick = useCallback((name: string): void => {
     setOpenPopup(true);
