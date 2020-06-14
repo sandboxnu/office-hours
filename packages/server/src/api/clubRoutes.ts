@@ -1,4 +1,4 @@
-import { ClubModel } from "../entity/ClubModel";
+import { ClubModel } from "../entities/ClubModel";
 import {
   GetClubResponse,
   CreateClubParams,

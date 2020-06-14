@@ -1,7 +1,7 @@
 import { parseIcal, updateCalendarForCourse } from "./ICalParser";
 import iCal from "node-ical";
 import { setupDBTest } from "../testUtils";
-import { CourseModel } from "../entity/CourseModel";
+import { CourseModel } from "../entities/CourseModel";
 
 // oopsah
 const parsedICS = iCal.parseICS(`BEGIN:VCALENDAR

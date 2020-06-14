@@ -1,5 +1,5 @@
 import { setupDBTest, setupServerTest } from "../testUtils";
-import { ClubModel } from "../entity/ClubModel";
+import { ClubModel } from "../entities/ClubModel";
 
 describe("/api/club", () => {
   setupDBTest();

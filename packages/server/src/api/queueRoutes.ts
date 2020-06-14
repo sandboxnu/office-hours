@@ -16,8 +16,8 @@ import {
 } from "../mocks/updateQuestion";
 import { MOCK_STUDENT_LIST_QUESTIONS_RESPONSE } from "../mocks/listQuestions";
 import { MOCK_GET_QUESTION_RESPONSE } from "../mocks/getQuestion";
-import { QueueModel } from "../entity/QueueModecl";
-import { QuestionModel } from "../entity/QuestionModel";
+import { QueueModel } from "../entities/QueueModecl";
+import { QuestionModel } from "../entities/QuestionModel";
 import { pick } from "lodash";
 import { getRepository } from "typeorm";
 

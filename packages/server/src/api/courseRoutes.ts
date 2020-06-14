@@ -1,7 +1,8 @@
 import { ServerRoute, ResponseObject } from "@hapi/hapi";
 import Joi from "@hapi/joi";
 import { CourseSchema, QueueSchema, CourseQueueSchema } from "../joi";
-import { CourseModel } from "../entity/CourseModel";
+import { CourseModel } from "../entities/CourseModel";
+import { QueueModel } from "../entities/QueueModel";
 import { pick, cloneDeep } from "lodash";
 import {
   TAUpdateStatusParams,
@@ -15,7 +16,6 @@ import {
   MOCK_TA_UPDATE_STATUS_DEPARTED_RESPONSE,
 } from "../mocks/taUpdateStatus";
 import { MOCK_GET_COURSE_RESPONSE } from "../mocks/getCourse";
-import { QueueModel } from "../entity/QueueModel";
 
 export const courseRoutes: ServerRoute[] = [
   {
