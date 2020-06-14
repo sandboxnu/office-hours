@@ -91,7 +91,7 @@ export const generateMockData = async () => {
     queueId: queue.id,
     text: "Help pls",
     creatorId: userCourse.id,
-    createdAt: new Date(),
+    createdAt: new Date(2020, 16, 5),
     questionType: QuestionType.Other,
     status: "Queued",
   }).save();

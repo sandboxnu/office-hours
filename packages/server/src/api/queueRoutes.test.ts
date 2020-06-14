@@ -20,16 +20,27 @@ describe("Queue Routes", () => {
       await expectWithServer({
         method: "get",
         url: "/api/v1/queues/1/questions",
-        result: {
-          queueId: 1,
-          text: "Help pls",
-          creatorId: 1,
-          createdAt: new Date(),
-          questionType: QuestionType.Other,
-          status: "Queued",
-        },
+        result: [
+          {
+            closedAt: null,
+            createdAt: new Date(2020, 16, 5),
+            creator: {
+              id: 1,
+              name: "Eddy Li",
+              photoURL:
+                "https://prod-web.neu.edu/wasapp/EnterprisePhotoService/PhotoServlet?vid=CCS&er=471f2d695fbb8a00ee740ad3ea910453986aec81ddaecf889ae98b3a1858597b12650afd0d4e59c561172f76cb1946eec217ed89bd4074c0",
+            },
+            helpedAt: null,
+            id: 1,
+            questionType: "Other",
+            status: "Queued",
+            taHelped: null,
+            text: "Help pls",
+          },
+        ],
       });
     });
+    // TODO: is this test supposed to fail now?
     it("GET fundies fail", async () => {
       await expectWithServer({
         method: "get",
