@@ -1,4 +1,9 @@
-import { setupDBTest, setupServerTest, withServer } from "../testUtils";
+import {
+  setupDBTest,
+  setupServerTest,
+  withServer,
+  generateMockData,
+} from "../testUtils";
 import { MOCK_GET_COURSE_RESPONSE } from "../mocks/getCourse";
 import { OfficeHourModel } from "../entity/OfficeHourModel";
 import { CourseModel } from "../entity/CourseModel";
