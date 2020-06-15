@@ -22,9 +22,8 @@ const MenuItemLink = styled.a`
   padding: 10px 15px;
 `;
 
-interface LeftNavBarProps {}
 
-export default function LeftNavBar({}: LeftNavBarProps) {
+export default function LeftNavBar() {
   return (
     <HorizontalMenu mode="horizontal">
       <MenuItem key="today">
