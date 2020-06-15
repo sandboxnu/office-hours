@@ -118,8 +118,17 @@ export type CoursePartial = {
  */
 export type UserCourse = {
   course: CoursePartial;
-  role: "student" | "ta" | "professor";
+  role: Role;
 };
+
+/**
+ * Represents one of three possible user roles in a course.
+ */
+export enum Role {
+  STUDENT = "student",
+  TA = "ta",
+  PROFESSOR = "professor",
+}
 
 /**
  * Represents an Office Hour block as assigned on the course calendar.
