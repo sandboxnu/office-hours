@@ -1,8 +1,8 @@
 import { ServerRoute, ResponseObject } from "@hapi/hapi";
 import Joi from "@hapi/joi";
 import { CourseSchema, QueueSchema, CourseQueueSchema } from "../joi";
-import { CourseModel } from "../entities/CourseModel";
-import { QueueModel } from "../entities/QueueModel";
+import { CourseModel } from "../entity/CourseModel";
+import { QueueModel } from "../entity/QueueModel";
 import { pick, cloneDeep } from "lodash";
 import {
   TAUpdateStatusParams,

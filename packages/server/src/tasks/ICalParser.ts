@@ -1,6 +1,6 @@
 import ical, { CalendarComponent, CalendarResponse, VEvent } from "node-ical";
-import { OfficeHourModel } from "../entities/OfficeHourModel";
-import { CourseModel } from "../entities/CourseModel";
+import { OfficeHourModel } from "../entity/OfficeHourModel";
+import { CourseModel } from "../entity/CourseModel";
 import { DeepPartial } from "typeorm";
 
 type CreateOfficeHour = DeepPartial<OfficeHourModel>[];

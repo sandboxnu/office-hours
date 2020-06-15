@@ -1,5 +1,4 @@
 import { setupServerTest, withServer, setupDBTest } from "../testUtils";
-import { MOCK_STUDENT_LIST_QUESTIONS_RESPONSE } from "../mocks/listQuestions";
 import { MOCK_GET_QUESTION_RESPONSE } from "../mocks/getQuestion";
 import { MOCK_CREATE_QUESTION_RESPONSE } from "../mocks/createQuestion";
 import { QuestionType } from "@template/common";
@@ -72,7 +71,7 @@ describe("Queue Routes", () => {
         method: "get",
         url: "/api/v1/queues/999/questions",
         statusCode: 404,
-        result: "unknown course",
+        result: "no questions were found",
       });
     });
     it("POST new question", async () => {

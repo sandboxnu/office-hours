@@ -1,16 +1,15 @@
 import { setupDBTest, setupServerTest, withServer } from "../testUtils";
-import { MOCK_GET_COURSE_RESPONSE } from "../mocks/getCourse";
-import { OfficeHourModel } from "../entities/OfficeHourModel";
-import { CourseModel } from "../entities/CourseModel";
+import { OfficeHourModel } from "../entity/OfficeHourModel";
+import { CourseModel } from "../entity/CourseModel";
 import {
   MOCK_TA_UPDATE_STATUS_ARRIVED_RESPONSE,
   MOCK_TA_UPDATE_STATUS_DEPARTED_RESPONSE,
 } from "../mocks/taUpdateStatus";
-import { QueueModel } from "../entities/QueueModel";
-import { QuestionModel } from "../entities/QuestionModel";
+import { QueueModel } from "../entity/QueueModel";
+import { QuestionModel } from "../entity/QuestionModel";
 import { userInfo } from "os";
-import { UserModel } from "../entities/UserModel";
-import { UserCourseModel } from "../entities/UserCourseModel";
+import { UserModel } from "../entity/UserModel";
+import { UserCourseModel } from "../entity/UserCourseModel";
 import {
   QuestionStatus,
   OpenQuestionStatus,
