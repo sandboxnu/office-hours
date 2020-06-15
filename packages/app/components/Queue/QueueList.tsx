@@ -3,7 +3,7 @@ import { Button, Row, Card, Col, Grid } from "antd";
 import styled from "styled-components";
 import QueueCard from "./QueueCard";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import GroupQuestions from "./GroupQuestions";
 import StudentInfoCard from "./StudentInfoCard";
 
@@ -70,6 +70,7 @@ interface QueueListProps {
   joinQueue: () => void;
   updateQuestionTA: (question: Question, status: QuestionStatus) => void;
   alertStudent: (question: Question) => void;
+  questions: Array<Question>;
 }
 
 export default function QueueList({
@@ -78,6 +79,7 @@ export default function QueueList({
   joinQueue,
   updateQuestionTA,
   alertStudent,
+  questions,
 }: QueueListProps) {
   const [helping, setHelping] = useState<boolean>(true);
   const screens = useBreakpoint();
@@ -210,77 +212,98 @@ export default function QueueList({
     );
   };
 
-  return (
-    <div>
-      <Row gutter={[64, 64]}>
-        <Col flex="auto" order={screens.lg === false ? 2 : 1}>
-          <Row justify="space-between">
-            <QueueTitle>Queue 1</QueueTitle>
-            {role === "student" && (
-              <Link href="/queue/join">
-                <Button type="primary" size="large" onClick={joinQueue}>
-                  Join Queue
-                </Button>
-              </Link>
-            )}
-          </Row>
-          {role === "ta" && !helping && renderTAHeader()}
-          {role === "ta" && helping && renderHelpingHeader()}
-          {role === "student" && renderStudentHeader()}
+  console.log(questions);
 
-          <QueueCard
-            helping={helping}
-            role={role}
-            rank={99}
-            name="Alex Takayama"
-            questionType={QuestionType.Bug}
-            waitTime={30}
-            status="WAITING"
-            onOpen={onOpenClick}
-          />
-          <QueueCard
-            helping={helping}
-            role={role}
-            rank={2}
-            name="Supercalifragilistic"
-            questionType={QuestionType.Concept}
-            waitTime={30}
-            status="WAITING"
-            onOpen={onOpenClick}
-          />
-          <QueueCard
-            helping={helping}
-            role={role}
-            rank={1}
-            name="Stanley Liu"
-            questionType={QuestionType.Setup}
-            waitTime={100}
-            status="IN PROGRESS"
-            onOpen={onOpenClick}
-          />
-          <QueueCard
-            helping={helping}
-            role={role}
-            rank={1}
-            name="Alex Takayama"
-            questionType={QuestionType.Other}
-            waitTime={30}
-            status="WAITING"
-            onOpen={onOpenClick}
-          />
-          <QueueCard
-            helping={helping}
-            role={role}
-            rank={1}
-            name="Alex Takayama"
-            questionType={QuestionType.Testing}
-            waitTime={30}
-            status="WAITING"
-            onOpen={onOpenClick}
-          />
-        </Col>
-        {role === "ta" && helping && renderHelpingTitle()}
-      </Row>
-    </div>
-  );
+  return useMemo(() => {
+    return (
+      <div>
+        <Row gutter={[64, 64]}>
+          <Col flex="auto" order={screens.lg === false ? 2 : 1}>
+            <Row justify="space-between">
+              <QueueTitle>Queue 1</QueueTitle>
+              {role === "student" && (
+                <Link href="/queue/join">
+                  <Button type="primary" size="large" onClick={joinQueue}>
+                    Join Queue
+                  </Button>
+                </Link>
+              )}
+            </Row>
+            {role === "ta" && !helping && renderTAHeader()}
+            {role === "ta" && helping && renderHelpingHeader()}
+            {role === "student" && renderStudentHeader()}
+
+            {questions.map((question: Question, index: number) => {
+              const creator = question.creator;
+              return (
+                <QueueCard
+                  key={question.id}
+                  helping={helping}
+                  role={role}
+                  rank={99}
+                  name={creator.name}
+                  questionType={question.questionType}
+                  waitTime={30} //figure out later
+                  status={question.status}
+                  onOpen={onOpenClick}
+                />
+              );
+            })}
+
+            <QueueCard
+              helping={helping}
+              role={role}
+              rank={99}
+              name="Alex Takayama"
+              questionType={QuestionType.Bug}
+              waitTime={30}
+              status="WAITING"
+              onOpen={onOpenClick}
+            />
+            <QueueCard
+              helping={helping}
+              role={role}
+              rank={2}
+              name="Supercalifragilistic"
+              questionType={QuestionType.Concept}
+              waitTime={30}
+              status="WAITING"
+              onOpen={onOpenClick}
+            />
+            <QueueCard
+              helping={helping}
+              role={role}
+              rank={1}
+              name="Stanley Liu"
+              questionType={QuestionType.Setup}
+              waitTime={100}
+              status="IN PROGRESS"
+              onOpen={onOpenClick}
+            />
+            <QueueCard
+              helping={helping}
+              role={role}
+              rank={1}
+              name="Alex Takayama"
+              questionType={QuestionType.Other}
+              waitTime={30}
+              status="WAITING"
+              onOpen={onOpenClick}
+            />
+            <QueueCard
+              helping={helping}
+              role={role}
+              rank={1}
+              name="Alex Takayama"
+              questionType={QuestionType.Testing}
+              waitTime={30}
+              status="WAITING"
+              onOpen={onOpenClick}
+            />
+          </Col>
+          {role === "ta" && helping && renderHelpingTitle()}
+        </Row>
+      </div>
+    );
+  }, []);
 }

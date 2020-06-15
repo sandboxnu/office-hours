@@ -6,10 +6,11 @@ import {
   ClosedQuestionStatus,
   QuestionType,
   QuestionStatus,
+  UserCourse,
 } from "@template/common";
 import QueueList from "../../components/Queue/QueueList";
 import StudentPopupCard from "../../components/Queue/StudentPopupCard";
-import { useCallback, useState, useContext, useEffect } from "react";
+import { useCallback, useState, useContext, useEffect, useMemo } from "react";
 import useSWR from "swr";
 import { API } from "@template/api-client";
 import { ProfileContext } from "../../contexts/ProfileContextProvider";
@@ -31,8 +32,9 @@ interface QueueProps {}
 export default function Queue({}: QueueProps) {
   const [openPopup, setOpenPopup] = useState(false);
   const { profile } = useContext(ProfileContext);
-  const [course, setCourse] = useState(null);
-  const [queueId, setQueueId] = useState(null);
+  const [course, setCourse] = useState<UserCourse>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [queueId, setQueueId] = useState<number>(null);
   const [questionDraftId, setQuestionDraftId] = useState<number>(null);
 
   const { data, error } = useSWR(
@@ -46,9 +48,18 @@ export default function Queue({}: QueueProps) {
 
   useEffect(() => {
     if (profile) {
+      console.log(profile);
       setCourse(profile.courses[0]);
+      console.log(queueId);
     }
   }, [profile]);
+
+  useEffect(() => {
+    if (course) {
+      setQueueId(course.course.id);
+      getQuestions();
+    }
+  }, [course]);
 
   const onOpenClick = useCallback((name: string): void => {
     setOpenPopup(true);
@@ -123,29 +134,45 @@ export default function Queue({}: QueueProps) {
     // Send API request to trigger notification
   };
 
-  return (
-    <Container>
-      <QueueList
-        role={ROLE}
-        onOpenClick={onOpenClick}
-        joinQueue={joinQueue}
-        updateQuestionTA={updateQuestionTA}
-        alertStudent={alertStudent}
-      />
-      {ROLE === "ta" && (
-        <StudentPopupCard
-          onClose={onCloseClick}
-          name="Alex Takayama"
-          email="takayama.a@northeastern.edu"
-          wait={20}
-          type="Concept"
-          question="Help with working out how to use an accumulator for problem 1"
-          location="Outside room, by the couches"
-          status="WAITING"
-          visible={openPopup}
-          updateQuestion={updateQuestionTA}
+  /**
+   * Gets the questions for this course
+   */
+  const getQuestions = useCallback(() => {
+    if (queueId) {
+      API.questions.index(queueId).then((q) => {
+        if (q) {
+          setQuestions(q);
+        }
+      });
+    }
+  }, []);
+
+  return useMemo(() => {
+    return (
+      <Container>
+        <QueueList
+          role={ROLE}
+          onOpenClick={onOpenClick}
+          joinQueue={joinQueue}
+          updateQuestionTA={updateQuestionTA}
+          alertStudent={alertStudent}
+          questions={questions}
         />
-      )}
-    </Container>
-  );
+        {ROLE === "ta" && (
+          <StudentPopupCard
+            onClose={onCloseClick}
+            name="Alex Takayama"
+            email="takayama.a@northeastern.edu"
+            wait={20}
+            type="Concept"
+            question="Help with working out how to use an accumulator for problem 1"
+            location="Outside room, by the couches"
+            status="WAITING"
+            visible={openPopup}
+            updateQuestion={updateQuestionTA}
+          />
+        )}
+      </Container>
+    );
+  }, [questions]);
 }
