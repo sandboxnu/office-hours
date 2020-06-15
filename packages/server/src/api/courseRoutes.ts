@@ -16,6 +16,7 @@ import {
   MOCK_TA_UPDATE_STATUS_DEPARTED_RESPONSE,
 } from "../mocks/taUpdateStatus";
 import { MOCK_GET_COURSE_RESPONSE } from "../mocks/getCourse";
+import { QuestionModel } from "../entity/QuestionModel";
 
 export const courseRoutes: ServerRoute[] = [
   {
@@ -49,7 +50,9 @@ export const courseRoutes: ServerRoute[] = [
       });
 
       for (let queue of queues) {
-        queue["queueSize"] = (await queue.questions).length;
+        queue["queueSize"] = await QuestionModel.count({
+          where: { queueId: queue.id },
+        });
         // TODO: Fill this in with real data
         queue["staffList"] = MOCK_GET_COURSE_RESPONSE.queues[0].staffList;
       }

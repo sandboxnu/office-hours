@@ -66,33 +66,3 @@ export function withServer(server) {
     expect(request.result).toStrictEqual(result);
   };
 }
-
-export const generateMockData = async () => {
-  const course = await CourseModel.create({
-    name: "CS 2500",
-    icalUrl: "fudies1.com",
-  }).save();
-  const queue = await QueueModel.create({
-    room: "WVH 605",
-    courseId: course.id,
-  }).save();
-  const user = await UserModel.create({
-    username: "eddyTheDockerGodLi",
-    email: "li.e@northeastern.edu",
-    name: "Eddy Li",
-    photoURL:
-      "https://prod-web.neu.edu/wasapp/EnterprisePhotoService/PhotoServlet?vid=CCS&er=471f2d695fbb8a00ee740ad3ea910453986aec81ddaecf889ae98b3a1858597b12650afd0d4e59c561172f76cb1946eec217ed89bd4074c0",
-  }).save();
-  const userCourse = await UserCourseModel.create({
-    userId: user.id,
-    courseId: course.id,
-  }).save();
-  const question = await QuestionModel.create({
-    queueId: queue.id,
-    text: "Help pls",
-    creatorId: userCourse.id,
-    createdAt: new Date(2020, 16, 5),
-    questionType: QuestionType.Other,
-    status: "Queued",
-  }).save();
-};
