@@ -48,9 +48,7 @@ export default function Queue({}: QueueProps) {
 
   useEffect(() => {
     if (profile) {
-      console.log(profile);
       setCourse(profile.courses[0]);
-      console.log(queueId);
     }
   }, [profile]);
 

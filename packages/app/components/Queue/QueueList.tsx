@@ -249,57 +249,6 @@ export default function QueueList({
                 />
               );
             })}
-
-            <QueueCard
-              helping={helping}
-              role={role}
-              rank={99}
-              name="Alex Takayama"
-              questionType={QuestionType.Bug}
-              waitTime={30}
-              status="WAITING"
-              onOpen={onOpenClick}
-            />
-            <QueueCard
-              helping={helping}
-              role={role}
-              rank={2}
-              name="Supercalifragilistic"
-              questionType={QuestionType.Concept}
-              waitTime={30}
-              status="WAITING"
-              onOpen={onOpenClick}
-            />
-            <QueueCard
-              helping={helping}
-              role={role}
-              rank={1}
-              name="Stanley Liu"
-              questionType={QuestionType.Setup}
-              waitTime={100}
-              status="IN PROGRESS"
-              onOpen={onOpenClick}
-            />
-            <QueueCard
-              helping={helping}
-              role={role}
-              rank={1}
-              name="Alex Takayama"
-              questionType={QuestionType.Other}
-              waitTime={30}
-              status="WAITING"
-              onOpen={onOpenClick}
-            />
-            <QueueCard
-              helping={helping}
-              role={role}
-              rank={1}
-              name="Alex Takayama"
-              questionType={QuestionType.Testing}
-              waitTime={30}
-              status="WAITING"
-              onOpen={onOpenClick}
-            />
           </Col>
           {role === "ta" && helping && renderHelpingTitle()}
         </Row>
