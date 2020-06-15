@@ -50,7 +50,6 @@ export default function Login({}: LoginProps) {
   return (
     <Container>
       <LoginContainer>
-        <div>{username}</div>
         <Form name="basic" initialValues={{ remember: true }}>
           <InputBoxContainer>
             <Form.Item
