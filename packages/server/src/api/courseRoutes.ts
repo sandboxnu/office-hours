@@ -43,11 +43,14 @@ export const courseRoutes: ServerRoute[] = [
     path: "/api/v1/courses/{course_id}/queues",
     handler: async (request, h): Promise<GetCourseQueuesResponse> => {
       const queues = await QueueModel.find({
+        // TODO: Add another where clause to get only the open queues
+        // Pseudo code: { staffList > 1 || there are currently open office hours }
         where: { course_id: request.params.course_id },
       });
 
       for (let queue of queues) {
         queue["queueSize"] = (await queue.questions).length;
+        // TODO: Fill this in with real data
         queue["staffList"] = MOCK_GET_COURSE_RESPONSE.queues[0].staffList;
       }
 
