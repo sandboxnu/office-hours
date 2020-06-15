@@ -70,7 +70,7 @@ interface QueueListProps {
   joinQueue: () => void;
   updateQuestionTA: (question: Question, status: QuestionStatus) => void;
   alertStudent: (question: Question) => void;
-  questions: Array<Question>;
+  questions: Question[];
 }
 
 export default function QueueList({
@@ -254,5 +254,5 @@ export default function QueueList({
         </Row>
       </div>
     );
-  }, []);
+  }, [questions]);
 }

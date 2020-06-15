@@ -37,27 +37,32 @@ export default function Queue({}: QueueProps) {
   const [queueId, setQueueId] = useState<number>(null);
   const [questionDraftId, setQuestionDraftId] = useState<number>(null);
 
-  const { data, error } = useSWR(
-    `/api/v1/queues/${queueId}/questions`,
-    async () => {
-      if (queueId) {
-        API.questions.index(queueId);
-      }
-    }
-  );
-
   useEffect(() => {
     if (profile) {
-      setCourse(profile.courses[0]);
+      const selectedCourse: UserCourse = profile.courses[0];
+      setCourse(selectedCourse);
+      setQueueId(selectedCourse.course.id);
     }
   }, [profile]);
 
   useEffect(() => {
-    if (course) {
-      setQueueId(course.course.id);
+    if (queueId) {
       getQuestions();
     }
-  }, [course]);
+  }, [queueId]);
+
+  /**
+   * Gets the questions for this course
+   */
+  const getQuestions = () => {
+    if (queueId) {
+      API.questions.index(queueId).then((q) => {
+        if (q) {
+          setQuestions(q);
+        }
+      });
+    }
+  };
 
   const onOpenClick = useCallback((name: string): void => {
     setOpenPopup(true);
@@ -132,19 +137,6 @@ export default function Queue({}: QueueProps) {
     // Send API request to trigger notification
   };
 
-  /**
-   * Gets the questions for this course
-   */
-  const getQuestions = useCallback(() => {
-    if (queueId) {
-      API.questions.index(queueId).then((q) => {
-        if (q) {
-          setQuestions(q);
-        }
-      });
-    }
-  }, []);
-
   return useMemo(() => {
     return (
       <Container>
@@ -172,5 +164,5 @@ export default function Queue({}: QueueProps) {
         )}
       </Container>
     );
-  }, [questions]);
+  }, [questions, openPopup]);
 }
