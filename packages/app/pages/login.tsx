@@ -42,9 +42,6 @@ export default function Login({}: LoginProps) {
   };
 
   const onSubmit = () => {
-    if (!username || !password) {
-      alert("Must input username and password!");
-    }
   };
 
   return (
