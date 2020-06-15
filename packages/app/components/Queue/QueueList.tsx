@@ -1,4 +1,4 @@
-import { QuestionType, Role } from "@template/common";
+import { QuestionType, Role, Question, QuestionStatus } from "@template/common";
 import { Button, Row, Card, Col, Grid } from "antd";
 import styled from "styled-components";
 import QueueCard from "./QueueCard";
@@ -67,11 +67,34 @@ const HeaderRow = styled(Row)`
 interface QueueListProps {
   role: Role;
   onOpenClick: (name: string) => void;
+  joinQueue: () => void;
+  updateQuestionTA: (question: Question, status: QuestionStatus) => void;
+  alertStudent: (question: Question) => void;
 }
 
-export default function QueueList({ role, onOpenClick }: QueueListProps) {
+export default function QueueList({
+  role,
+  onOpenClick,
+  joinQueue,
+  updateQuestionTA,
+  alertStudent,
+}: QueueListProps) {
   const [helping, setHelping] = useState<boolean>(true);
   const screens = useBreakpoint();
+
+  /**
+   * Sends a push notification alert to every question currently being helped.
+   */
+  const alertHelpingAll = () => {
+    // for each question currently being helped, call alertStudent()
+  };
+
+  /**
+   * Marks every question currently being helped by this TA as finished.
+   */
+  const finishHelpingAll = () => {
+    // for each question currently being helped, call updateQuestionTA()
+  };
 
   /**
    * Renders the card headers for a TA who is not yet helping someone.
@@ -170,15 +193,18 @@ export default function QueueList({ role, onOpenClick }: QueueListProps) {
         <HeaderRow justify="space-between">
           <QueueTitle>Helping</QueueTitle>
           <div>
-            <AlertButton danger size="large">
+            <AlertButton danger size="large" onClick={alertHelpingAll}>
               Alert All
             </AlertButton>
-            <Button type="primary" size="large">
+            <Button type="primary" size="large" onClick={finishHelpingAll}>
               Finish All
             </Button>
           </div>
         </HeaderRow>
-        <StudentInfoCard />
+        <StudentInfoCard
+          updateQuestion={updateQuestionTA}
+          alertStudent={alertStudent}
+        />
         <GroupQuestions />
       </Col>
     );
@@ -192,7 +218,7 @@ export default function QueueList({ role, onOpenClick }: QueueListProps) {
             <QueueTitle>Queue 1</QueueTitle>
             {role === "student" && (
               <Link href="/queue/join">
-                <Button type="primary" size="large">
+                <Button type="primary" size="large" onClick={joinQueue}>
                   Join Queue
                 </Button>
               </Link>

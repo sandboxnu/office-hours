@@ -2,6 +2,12 @@ import React, { useMemo } from "react";
 import styled from "styled-components";
 import { Card, Row, Col, Avatar, Button } from "antd";
 import { UserOutlined } from "@ant-design/icons";
+import {
+  Question,
+  QuestionStatus,
+  ClosedQuestionStatus,
+  OpenQuestionStatus,
+} from "@template/common";
 
 const HelpCard = styled(Card)`
   margin-bottom: 16px;
@@ -44,7 +50,15 @@ const FinishButton = styled(Button)`
   margin-top: 12px;
 `;
 
-const StudentInfoCard = () => {
+interface StudentInfoCardProps {
+  updateQuestion: (question: Question, status: QuestionStatus) => void;
+  alertStudent: (question: Question) => void;
+}
+
+const StudentInfoCard = ({
+  updateQuestion,
+  alertStudent,
+}: StudentInfoCardProps) => {
   return useMemo(() => {
     return (
       <HelpCard
@@ -72,10 +86,32 @@ const StudentInfoCard = () => {
         </Row>
 
         <Row justify="space-between">
-          <HalfButton>Alert</HalfButton>
-          <HalfButton danger>Can't Find</HalfButton>
+          <HalfButton
+            onClick={
+              // TODO: replace w question
+              () => alertStudent(null)
+            }
+          >
+            Alert
+          </HalfButton>
+          <HalfButton
+            danger
+            onClick={
+              // TODO: replace w question
+              () => updateQuestion(null, ClosedQuestionStatus.NoShow)
+            }
+          >
+            Can't Find
+          </HalfButton>
         </Row>
-        <FinishButton block type="primary">
+        <FinishButton
+          block
+          type="primary"
+          onClick={
+            // TODO: replace w question
+            () => updateQuestion(null, ClosedQuestionStatus.Resolved)
+          }
+        >
           Finish Helping
         </FinishButton>
       </HelpCard>

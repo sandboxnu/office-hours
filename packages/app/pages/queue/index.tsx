@@ -1,5 +1,12 @@
 import styled from "styled-components";
-import { Role } from "@template/common";
+import {
+  Role,
+  Question,
+  OpenQuestionStatus,
+  ClosedQuestionStatus,
+  QuestionType,
+  QuestionStatus,
+} from "@template/common";
 import QueueList from "../../components/Queue/QueueList";
 import StudentPopupCard from "../../components/Queue/StudentPopupCard";
 import { useCallback, useState, useContext, useEffect } from "react";
@@ -26,6 +33,7 @@ export default function Queue({}: QueueProps) {
   const { profile } = useContext(ProfileContext);
   const [course, setCourse] = useState(null);
   const [queueId, setQueueId] = useState(null);
+  const [questionDraftId, setQuestionDraftId] = useState<number>(null);
 
   const { data, error } = useSWR(
     `/api/v1/queues/${queueId}/questions`,
@@ -50,9 +58,80 @@ export default function Queue({}: QueueProps) {
     setOpenPopup(false);
   }, []);
 
+  /**
+   * Student functions to support queue operations.
+   */
+
+  /**
+   * Creates a new Question draft for a student who has joined the queue.
+   */
+  const joinQueue = () => {
+    // API call to join queue, question marked as draft
+    API.questions.create(queueId, null).then((q) => {
+      if (q) {
+        // fetch updated question list
+        // store questionDraftId in state (should this be stored in state or fetched everytime using status.Drafting?)
+      }
+    });
+  };
+
+  /**
+   * Finishes creating a given question by updating the draft.
+   */
+  const finishQuestion = (text: string, questionType: QuestionType) => {
+    API.questions
+      .update(queueId, questionDraftId, {
+        text: text,
+        questionType: questionType,
+        status: OpenQuestionStatus.Queued,
+      })
+      .then((q) => {
+        if (q) {
+          // fetch updated question list
+        }
+      });
+  };
+
+  /**
+   * TA functions to support queue operations
+   */
+
+  /**
+   * Updates a given question to the given status.
+   * @param question the question being modified
+   * @param status the updated status
+   */
+  const updateQuestionTA = (question: Question, status: QuestionStatus) => {
+    API.questions
+      .update(queueId, question.id, {
+        status: status,
+      })
+      .then((q) => {
+        if (q) {
+          // fetch updated question list
+          // fetch updated helping list
+          // update helping state if none left
+        }
+      });
+  };
+
+  /**
+   * Sends a push notification to the student with the given Question
+   * @param question the question to be notified
+   */
+  const alertStudent = (question: Question) => {
+    // Send API request to trigger notification
+  };
+
   return (
     <Container>
-      <QueueList role={ROLE} onOpenClick={onOpenClick} />
+      <QueueList
+        role={ROLE}
+        onOpenClick={onOpenClick}
+        joinQueue={joinQueue}
+        updateQuestionTA={updateQuestionTA}
+        alertStudent={alertStudent}
+      />
       {ROLE === "ta" && (
         <StudentPopupCard
           onClose={onCloseClick}
@@ -64,6 +143,7 @@ export default function Queue({}: QueueProps) {
           location="Outside room, by the couches"
           status="WAITING"
           visible={openPopup}
+          updateQuestion={updateQuestionTA}
         />
       )}
     </Container>

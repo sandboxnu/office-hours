@@ -2,6 +2,12 @@ import { useMemo } from "react";
 import { Row, Button, Avatar, Tag, Col, Drawer } from "antd";
 import styled from "styled-components";
 import { UserOutlined } from "@ant-design/icons";
+import {
+  Question,
+  QuestionStatus,
+  ClosedQuestionStatus,
+  OpenQuestionStatus,
+} from "@template/common";
 
 const FullWidth = styled.div`
   margin-top: 32px;
@@ -69,6 +75,7 @@ const BodyText = styled.div`
 `;
 
 interface StudentPopupCardProps {
+  updateQuestion: (question: Question, status: QuestionStatus) => void;
   onClose: () => void;
   name: string;
   email: string;
@@ -81,6 +88,7 @@ interface StudentPopupCardProps {
 }
 
 const StudentPopupCard = ({
+  updateQuestion,
   onClose,
   name,
   email,
@@ -101,10 +109,24 @@ const StudentPopupCard = ({
         onClose={onClose}
         footer={
           <ButtonDiv>
-            <RemoveButton danger block>
+            <RemoveButton
+              danger
+              block
+              onClick={
+                //TODO: replace with question
+                () => updateQuestion(null, ClosedQuestionStatus.Deleted)
+              }
+            >
               Remove from Queue
             </RemoveButton>
-            <Button block type="primary">
+            <Button
+              block
+              type="primary"
+              onClick={
+                //TODO: replace with question
+                () => updateQuestion(null, OpenQuestionStatus.Helping)
+              }
+            >
               Help
             </Button>
           </ButtonDiv>
