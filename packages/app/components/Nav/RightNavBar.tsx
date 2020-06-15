@@ -24,9 +24,7 @@ const MenuItemLink = styled.a`
   padding: 10px 15px;
 `;
 
-interface RightNavBarProps {}
-
-export default function RightNavBar({}: RightNavBarProps) {
+export default function RightNavBar() {
   return (
     <HorizontalMenu mode="horizontal">
       <MenuItem key="mail">
