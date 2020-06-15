@@ -8,15 +8,23 @@ import {
   QuestionStatus,
   UserCourse,
 } from "@template/common";
-import QueueList from "../../components/Queue/QueueList";
-import StudentPopupCard from "../../components/Queue/StudentPopupCard";
-import { useCallback, useState, useContext, useEffect, useMemo } from "react";
+import QuestionForm from "../components/Queue/QuestionForm";
+import QueueList from "../components/Queue/QueueList";
+import StudentPopupCard from "../components/Queue/StudentPopupCard";
+import {
+  useCallback,
+  useState,
+  useContext,
+  useEffect,
+  useMemo,
+  Fragment,
+} from "react";
 import useSWR from "swr";
 import { API } from "@template/api-client";
-import { ProfileContext } from "../../contexts/ProfileContextProvider";
+import { ProfileContext } from "../contexts/ProfileContextProvider";
 
 // TODO: replace this with profile role from endpoint
-const ROLE: Role = Role.TA;
+const ROLE: Role = Role.STUDENT;
 
 const queueId: number = 169;
 
@@ -30,7 +38,8 @@ const Container = styled.div`
 interface QueueProps {}
 
 export default function Queue({}: QueueProps) {
-  const [openPopup, setOpenPopup] = useState(false);
+  const [isJoining, setIsJoining] = useState<boolean>(false);
+  const [openPopup, setOpenPopup] = useState<boolean>(false);
   const { profile } = useContext(ProfileContext);
   const [course, setCourse] = useState<UserCourse>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -80,6 +89,8 @@ export default function Queue({}: QueueProps) {
    * Creates a new Question draft for a student who has joined the queue.
    */
   const joinQueue = () => {
+    setIsJoining(true);
+
     // API call to join queue, question marked as draft
     API.questions.create(queueId, null).then((q) => {
       if (q) {
@@ -87,6 +98,10 @@ export default function Queue({}: QueueProps) {
         // store questionDraftId in state (should this be stored in state or fetched everytime using status.Drafting?)
       }
     });
+  };
+
+  const leaveQueue = () => {
+    setIsJoining(false);
   };
 
   /**
@@ -102,6 +117,7 @@ export default function Queue({}: QueueProps) {
       .then((q) => {
         if (q) {
           // fetch updated question list
+          setIsJoining(false);
         }
       });
   };
@@ -140,29 +156,39 @@ export default function Queue({}: QueueProps) {
   return useMemo(() => {
     return (
       <Container>
-        <QueueList
-          role={ROLE}
-          onOpenClick={onOpenClick}
-          joinQueue={joinQueue}
-          updateQuestionTA={updateQuestionTA}
-          alertStudent={alertStudent}
-          questions={questions}
-        />
-        {ROLE === "ta" && (
-          <StudentPopupCard
-            onClose={onCloseClick}
-            name="Alex Takayama"
-            email="takayama.a@northeastern.edu"
-            wait={20}
-            type="Concept"
-            question="Help with working out how to use an accumulator for problem 1"
-            location="Outside room, by the couches"
-            status="WAITING"
-            visible={openPopup}
-            updateQuestion={updateQuestionTA}
+        {!isJoining && (
+          <Fragment>
+            <QueueList
+              role={ROLE}
+              onOpenClick={onOpenClick}
+              joinQueue={joinQueue}
+              updateQuestionTA={updateQuestionTA}
+              alertStudent={alertStudent}
+              questions={questions}
+            />
+            {ROLE === "ta" && (
+              <StudentPopupCard
+                onClose={onCloseClick}
+                name="Alex Takayama"
+                email="takayama.a@northeastern.edu"
+                wait={20}
+                type="Concept"
+                question="Help with working out how to use an accumulator for problem 1"
+                location="Outside room, by the couches"
+                status="WAITING"
+                visible={openPopup}
+                updateQuestion={updateQuestionTA}
+              />
+            )}
+          </Fragment>
+        )}
+        {isJoining && (
+          <QuestionForm
+            leaveQueue={leaveQueue}
+            finishQuestion={finishQuestion}
           />
         )}
       </Container>
     );
-  }, [questions, openPopup]);
+  }, [questions, openPopup, isJoining]);
 }

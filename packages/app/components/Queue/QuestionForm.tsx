@@ -42,14 +42,14 @@ const FormButton = styled(Button)`
 `;
 
 interface QuestionFormProps {
-  rank: number;
-  name: string;
-  questionType: QuestionType;
-  waitTime: number;
-  status: string;
+  leaveQueue: () => void;
+  finishQuestion: (text: string, questionType: QuestionType) => void;
 }
 
-export default function QuestionForm() {
+export default function QuestionForm({
+  leaveQueue,
+  finishQuestion,
+}: QuestionFormProps) {
   const [questionType, setQuestionType] = useState<QuestionType | undefined>(
     undefined
   );
@@ -72,15 +72,8 @@ export default function QuestionForm() {
   // on button submit click, conditionally choose to go back to the queue
   const onClickSubmit = () => {
     if (!!questionType && questionText && questionText !== "") {
-      // todo: submit question (send http server whatnot)
-      // bring the user back to the queue page, assuming it was successful
-      Router.push("/queue");
+      finishQuestion(questionText, questionType);
     }
-  };
-
-  // on button leave queue click, delete question draft
-  const onClickLeave = () => {
-    // TODO: delete question (send http request)
   };
 
   return (
@@ -127,11 +120,9 @@ export default function QuestionForm() {
         >
           Finish
         </FormButton>
-        <Link href="/queue">
-          <FormButton danger onClick={onClickLeave}>
-            Leave Queue
-          </FormButton>
-        </Link>
+        <FormButton danger onClick={leaveQueue}>
+          Leave Queue
+        </FormButton>
       </div>
     </Container>
   );
