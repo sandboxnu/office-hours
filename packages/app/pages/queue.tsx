@@ -24,7 +24,7 @@ import { API } from "@template/api-client";
 import { ProfileContext } from "../contexts/ProfileContextProvider";
 
 // TODO: replace this with profile role from endpoint
-const ROLE: Role = Role.STUDENT;
+const ROLE: Role = Role.TA;
 
 const queueId: number = 169;
 
@@ -45,6 +45,7 @@ export default function Queue({}: QueueProps) {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [queueId, setQueueId] = useState<number>(null);
   const [questionDraftId, setQuestionDraftId] = useState<number>(null);
+  const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
 
   useEffect(() => {
     if (profile) {
@@ -73,7 +74,8 @@ export default function Queue({}: QueueProps) {
     }
   };
 
-  const onOpenClick = useCallback((name: string): void => {
+  const onOpenClick = useCallback((question: Question): void => {
+    setCurrentQuestion(question);
     setOpenPopup(true);
   }, []);
 
@@ -139,7 +141,9 @@ export default function Queue({}: QueueProps) {
       .then((q) => {
         if (q) {
           // fetch updated question list
+          getQuestions();
           // fetch updated helping list
+          setCurrentQuestion(q);
           // update helping state if none left
         }
       });
@@ -165,17 +169,15 @@ export default function Queue({}: QueueProps) {
               updateQuestionTA={updateQuestionTA}
               alertStudent={alertStudent}
               questions={questions}
+              currentQuestion={currentQuestion} // pass for the helping thing
             />
-            {ROLE === "ta" && (
+            {ROLE === "ta" && openPopup && (
               <StudentPopupCard
                 onClose={onCloseClick}
-                name="Alex Takayama"
-                email="takayama.a@northeastern.edu"
-                wait={20}
-                type="Concept"
-                question="Help with working out how to use an accumulator for problem 1"
-                location="Outside room, by the couches"
-                status="WAITING"
+                email="takayama.a@northeastern.edu" //need a way to access this. or the user
+                wait={20} //figure out later
+                question={currentQuestion}
+                location="Outside by the printer" // need a way to access this
                 visible={openPopup}
                 updateQuestion={updateQuestionTA}
               />

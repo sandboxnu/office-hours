@@ -76,28 +76,23 @@ const BodyText = styled.div`
 interface StudentPopupCardProps {
   updateQuestion: (question: Question, status: QuestionStatus) => void;
   onClose: () => void;
-  name: string;
   email: string;
   wait: number;
-  type: string;
-  question: string;
   location: string;
-  status: string;
   visible: boolean;
+  question: Question;
 }
 
 const StudentPopupCard = ({
   updateQuestion,
   onClose,
-  name,
   email,
   wait,
-  type,
-  question,
   location,
-  status,
+  question,
   visible,
 }: StudentPopupCardProps) => {
+  console.log(question.text);
   return (
     <Drawer
       placement="right"
@@ -122,7 +117,7 @@ const StudentPopupCard = ({
             type="primary"
             onClick={
               //TODO: replace with question
-              () => updateQuestion(null, OpenQuestionStatus.Helping)
+              () => updateQuestion(question, OpenQuestionStatus.Helping)
             }
           >
             Help
@@ -134,11 +129,11 @@ const StudentPopupCard = ({
         <Avatar size={104} icon={<UserOutlined />} />
 
         <InfoTextDiv>
-          <Title>{name}</Title>
+          <Title>{question.creator.name}</Title>
           <Email>{email}</Email>
         </InfoTextDiv>
 
-        <StatusTag color="purple">{status}</StatusTag>
+        <StatusTag color="purple">{question.status}</StatusTag>
 
         <StyledRow gutter={[8, 0]}>
           <Col span={12}>
@@ -147,13 +142,13 @@ const StudentPopupCard = ({
           </Col>
           <Col span={12}>
             <HeadingText>type</HeadingText>
-            <BodyText>{type}</BodyText>
+            <BodyText>{question.questionType.toString()}</BodyText>
           </Col>
         </StyledRow>
 
         <FullWidth>
           <HeadingText>question</HeadingText>
-          <BodyText>{question}</BodyText>
+          <BodyText>{question.text}</BodyText>
         </FullWidth>
         <FullWidth>
           <HeadingText>location</HeadingText>

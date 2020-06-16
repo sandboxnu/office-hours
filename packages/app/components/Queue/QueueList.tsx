@@ -66,11 +66,12 @@ const HeaderRow = styled(Row)`
 
 interface QueueListProps {
   role: Role;
-  onOpenClick: (name: string) => void;
+  onOpenClick: (question: Question) => void;
   joinQueue: () => void;
   updateQuestionTA: (question: Question, status: QuestionStatus) => void;
   alertStudent: (question: Question) => void;
   questions: Question[];
+  currentQuestion: Question;
 }
 
 export default function QueueList({
@@ -80,6 +81,7 @@ export default function QueueList({
   updateQuestionTA,
   alertStudent,
   questions,
+  currentQuestion,
 }: QueueListProps) {
   const [helping, setHelping] = useState<boolean>(true);
   const screens = useBreakpoint();
@@ -205,11 +207,16 @@ export default function QueueList({
             </Button>
           </div>
         </HeaderRow>
-        <StudentInfoCard
-          updateQuestion={updateQuestionTA}
-          alertStudent={alertStudent}
-        />
-        <GroupQuestions />
+        {currentQuestion && (
+          <div>
+            <StudentInfoCard
+              updateQuestion={updateQuestionTA}
+              alertStudent={alertStudent}
+              question={currentQuestion}
+            />
+            <GroupQuestions />{" "}
+          </div>
+        )}
       </Col>
     );
   };
@@ -239,10 +246,8 @@ export default function QueueList({
                   helping={helping}
                   role={role}
                   rank={99}
-                  name={creator.name}
-                  questionType={question.questionType}
                   waitTime={30} //figure out later
-                  status={question.status}
+                  question={question}
                   onOpen={onOpenClick}
                 />
               );

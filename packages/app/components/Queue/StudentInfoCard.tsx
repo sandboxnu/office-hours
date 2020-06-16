@@ -8,6 +8,7 @@ import {
   ClosedQuestionStatus,
   OpenQuestionStatus,
 } from "@template/common";
+import QuestionForm from "./QuestionForm";
 
 const HelpCard = styled(Card)`
   margin-bottom: 16px;
@@ -53,11 +54,13 @@ const FinishButton = styled(Button)`
 interface StudentInfoCardProps {
   updateQuestion: (question: Question, status: QuestionStatus) => void;
   alertStudent: (question: Question) => void;
+  question: Question;
 }
 
 const StudentInfoCard = ({
   updateQuestion,
   alertStudent,
+  question,
 }: StudentInfoCardProps) => {
   return useMemo(() => {
     return (
@@ -66,7 +69,7 @@ const StudentInfoCard = ({
         bodyStyle={{ padding: "16px" }}
         title={
           <Row justify="space-between">
-            <Name>Alex Takayama</Name>
+            <Name>{question?.creator.name}</Name>
             <Email>takayama.a@northeastern.edu</Email>
           </Row>
         }
@@ -77,9 +80,7 @@ const StudentInfoCard = ({
           </Col>
           <Col span={18}>
             <HeadingText>question</HeadingText>
-            <BodyText>
-              Help with working out how to use an accumulator for problem 1
-            </BodyText>
+            <BodyText>{question?.text ?? ""}</BodyText>
             <HeadingText>location</HeadingText>
             <BodyText>Outside room, by the couches</BodyText>
           </Col>
@@ -89,7 +90,7 @@ const StudentInfoCard = ({
           <HalfButton
             onClick={
               // TODO: replace w question
-              () => alertStudent(null)
+              () => alertStudent(question)
             }
           >
             Alert
@@ -98,7 +99,7 @@ const StudentInfoCard = ({
             danger
             onClick={
               // TODO: replace w question
-              () => updateQuestion(null, ClosedQuestionStatus.NoShow)
+              () => updateQuestion(question, ClosedQuestionStatus.NoShow)
             }
           >
             Can't Find
@@ -109,7 +110,7 @@ const StudentInfoCard = ({
           type="primary"
           onClick={
             // TODO: replace w question
-            () => updateQuestion(null, ClosedQuestionStatus.Resolved)
+            () => updateQuestion(question, ClosedQuestionStatus.Resolved)
           }
         >
           Finish Helping
