@@ -3,6 +3,7 @@ import React, { Component, useState } from "react";
 import LeftNavBar from "./LeftNavBar";
 import { Drawer, Button, Menu } from "antd";
 import RightNavBar from "./RightNavBar";
+import { Course } from "@template/common";
 
 const Container = styled.div`
   width: 1440px;
