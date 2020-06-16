@@ -3,14 +3,15 @@ import Joi from "@hapi/joi";
 import { QuestionSchema } from "../joi";
 import {
   ListQuestionsResponse,
-  CreateQuestionParams,
   CreateQuestionResponse,
   UpdateQuestionParams,
   GetQuestionResponse,
   UpdateQuestionResponse,
   Question,
   UserPartial,
+  QuestionStatus,
 } from "@template/common";
+import { QuestionStatusKeys } from "@template/common/index";
 import { MOCK_CREATE_QUESTION_RESPONSE } from "../mocks/createQuestion";
 import {
   MOCK_STUDENT_UPDATE_QUESTION_RESPONSE,
@@ -126,7 +127,7 @@ async function questionModelToQuestion(qm: QuestionModel): Promise<Question> {
     creator: await userModelToUserPartial(await (await qm.creator).user),
     id: qm.id,
     createdAt: qm.createdAt,
-    status: qm.status,
+    status: parseStatus(qm.status),
     text: qm.text,
     // qm.taHelped: types says is nonnullable, but it is nullable
     taHelped:
@@ -157,4 +158,14 @@ async function userCourseModelToUserPartial(
     // TODO: photoURL: property not required in types, but required by JOI
     photoURL: (await ucm.user).photoURL,
   };
+}
+
+function parseStatus(maybeStatus: string | number | symbol): QuestionStatus {
+  if (maybeStatus in QuestionStatusKeys) {
+    return maybeStatus as QuestionStatus;
+  } else {
+    throw new Error(
+      `received unknown or ill-formatted status: ${String(maybeStatus)}`
+    );
+  }
 }

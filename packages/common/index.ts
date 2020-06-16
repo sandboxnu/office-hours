@@ -41,7 +41,7 @@ export type CreateQuestionResponse = Question;
 export type UpdateQuestionParams = {
   text?: string;
   questionType?: QuestionType;
-  status?: keyof typeof QuestionStatus;
+  status?: QuestionStatus;
 };
 export type UpdateQuestionResponse = Question;
 
@@ -193,7 +193,7 @@ export type Question = {
   helpedAt?: Date;
   closedAt?: Date;
   questionType?: QuestionType;
-  status: keyof typeof QuestionStatus;
+  status: QuestionStatus;
 };
 
 // Question Types
@@ -230,12 +230,15 @@ export enum OpenQuestionStatus {
 export enum ClosedQuestionStatus {
   Resolved = "Resolved",
   Deferred = "Deferred",
-  NoShow = "No Show",
+  NoShow = "NoShow",
   Deleted = "Deleted",
 }
 
 // Ticket Status - Represents a given status of as student's ticket
-export const QuestionStatus = {
+export type QuestionStatus = keyof typeof QuestionStatusKeys;
+// IMPORTANT: whenever importing QuestionStatusKeys to use for any reason, import it from
+// @template/common/index. for some reason, importing from @template/common results in undefined.
+export const QuestionStatusKeys = {
   ...OpenQuestionStatus,
   ...ClosedQuestionStatus,
 };
