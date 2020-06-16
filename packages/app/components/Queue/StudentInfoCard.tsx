@@ -69,7 +69,7 @@ const StudentInfoCard = ({
         bodyStyle={{ padding: "16px" }}
         title={
           <Row justify="space-between">
-            <Name>{question?.creator.name}</Name>
+            <Name>{question.creator.name}</Name>
             <Email>takayama.a@northeastern.edu</Email>
           </Row>
         }
@@ -80,7 +80,7 @@ const StudentInfoCard = ({
           </Col>
           <Col span={18}>
             <HeadingText>question</HeadingText>
-            <BodyText>{question?.text ?? ""}</BodyText>
+            <BodyText>{question.text ?? ""}</BodyText>
             <HeadingText>location</HeadingText>
             <BodyText>Outside room, by the couches</BodyText>
           </Col>
