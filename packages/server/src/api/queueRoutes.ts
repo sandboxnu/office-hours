@@ -8,6 +8,8 @@ import {
   UpdateQuestionParams,
   GetQuestionResponse,
   UpdateQuestionResponse,
+  Question,
+  UserPartial,
 } from "@template/common";
 import { MOCK_CREATE_QUESTION_RESPONSE } from "../mocks/createQuestion";
 import {
@@ -16,7 +18,8 @@ import {
 } from "../mocks/updateQuestion";
 import { MOCK_GET_QUESTION_RESPONSE } from "../mocks/getQuestion";
 import { QuestionModel } from "../entity/QuestionModel";
-import { pick } from "lodash";
+import { UserCourseModel } from "../entity/UserCourseModel";
+import { UserModel } from "../entity/UserModel";
 
 export const queueRoutes: ServerRoute[] = [
   {
@@ -42,29 +45,7 @@ export const queueRoutes: ServerRoute[] = [
         return h.response("no questions were found").code(404);
       }
 
-      return await Promise.all(
-        questions.map(async (qm) => {
-          const result = pick(qm, [
-            "creator",
-            "id",
-            "createdAt",
-            "status",
-            "name",
-            "text",
-            "taHelped",
-            "helpedAt",
-            "closedAt",
-            "questionType",
-          ]);
-          result.taHelped = await result.taHelped;
-          result.creator = pick(await (await result.creator).user, [
-            "id",
-            "name",
-            "photoURL",
-          ]);
-          return result;
-        })
-      );
+      return await Promise.all(questions.map(questionModelToQuestion));
     },
     options: {
       response: {
@@ -137,3 +118,43 @@ export const queueRoutes: ServerRoute[] = [
     },
   },
 ];
+
+// for some reason, JOI.allow(null) means the property has to exist, but can be null
+
+async function questionModelToQuestion(qm: QuestionModel): Promise<Question> {
+  return {
+    creator: await userModelToUserPartial(await (await qm.creator).user),
+    id: qm.id,
+    createdAt: qm.createdAt,
+    status: qm.status,
+    text: qm.text,
+    // qm.taHelped: types says is nonnullable, but it is nullable
+    taHelped:
+      (await qm.taHelped) &&
+      (await userCourseModelToUserPartial(await qm.taHelped)),
+    closedAt: qm.closedAt,
+    questionType: qm.questionType,
+    // TODO: helpedAt: property not required in types, but required by JOI
+    helpedAt: qm.helpedAt,
+  };
+}
+
+async function userModelToUserPartial(um: UserModel): Promise<UserPartial> {
+  return {
+    id: um.id,
+    name: um.name,
+    // TODO: photoURL: property not required in types, but required by JOI
+    photoURL: um.photoURL,
+  };
+}
+
+async function userCourseModelToUserPartial(
+  ucm: UserCourseModel
+): Promise<UserPartial> {
+  return {
+    id: (await ucm.user).id,
+    name: (await ucm.user).name,
+    // TODO: photoURL: property not required in types, but required by JOI
+    photoURL: (await ucm.user).photoURL,
+  };
+}
