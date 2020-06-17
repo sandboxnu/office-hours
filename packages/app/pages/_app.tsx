@@ -11,10 +11,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   const { data, error } = useSWR(`/api/v1/profile`, async () =>
     API.profile.index()
   );
-  // let profile: User;
-  // API.profile.index().then(
-  //   (res: User) => profile = res
-  // )
 
   return (
     <Fragment>
