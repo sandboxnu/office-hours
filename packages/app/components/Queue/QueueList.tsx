@@ -1,4 +1,11 @@
-import { QuestionType, Role, Question, QuestionStatus } from "@template/common";
+import {
+  QuestionType,
+  Role,
+  Question,
+  QuestionStatus,
+  OpenQuestionStatus,
+  ClosedQuestionStatus,
+} from "@template/common";
 import { Button, Row, Card, Col, Grid } from "antd";
 import styled from "styled-components";
 import QueueCard from "./QueueCard";
@@ -70,6 +77,7 @@ interface QueueListProps {
   alertStudent: (question: Question) => void;
   questions: Question[];
   helpingQuestions: Question[];
+  groupQuestions: Question[];
 }
 
 export default function QueueList({
@@ -80,6 +88,7 @@ export default function QueueList({
   alertStudent,
   questions,
   helpingQuestions,
+  groupQuestions,
 }: QueueListProps) {
   const helping = helpingQuestions.length !== 0;
   const screens = useBreakpoint();
@@ -95,7 +104,19 @@ export default function QueueList({
    * Marks every question currently being helped by this TA as finished.
    */
   const finishHelpingAll = () => {
-    // for each question currently being helped, call updateQuestionTA()
+    for (let question of helpingQuestions) {
+      updateQuestionTA(question, ClosedQuestionStatus.Resolved);
+    }
+  };
+
+  /**
+   * Adds every given question to the group that is currently being helped.
+   * @param selected the given list of questions to help
+   */
+  const addQuestionsToHelp = (selected: Question[]) => {
+    for (let question of selected) {
+      updateQuestionTA(question, OpenQuestionStatus.Helping);
+    }
   };
 
   /**
@@ -208,12 +229,18 @@ export default function QueueList({
         {helpingQuestions &&
           helpingQuestions.map((question) => (
             <StudentInfoCard
+              key={question.id}
               updateQuestion={updateQuestionTA}
               alertStudent={alertStudent}
               question={question}
             />
           ))}
-        <GroupQuestions />
+        {groupQuestions && groupQuestions.length !== 0 && (
+          <GroupQuestions
+            questions={groupQuestions}
+            addQuestions={addQuestionsToHelp}
+          />
+        )}
       </Col>
     );
   };

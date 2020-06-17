@@ -36,14 +36,19 @@ const Container = styled.div`
 interface QueueProps {}
 
 export default function Queue({}: QueueProps) {
-  const [isJoining, setIsJoining] = useState<boolean>(false);
-  const [openPopup, setOpenPopup] = useState<boolean>(false);
   const { profile } = useContext(ProfileContext);
   const [course, setCourse] = useState<UserCourse>(null);
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [helpingQuestions, setHelpingQuestions] = useState<Question[]>([]);
   const [queueId, setQueueId] = useState<number>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
+
+  // Student queue state variables
+  const [isJoining, setIsJoining] = useState<boolean>(false);
   const [questionDraftId, setQuestionDraftId] = useState<number>(null);
+
+  // TA queue state variables
+  const [openPopup, setOpenPopup] = useState<boolean>(false);
+  const [helpingQuestions, setHelpingQuestions] = useState<Question[]>([]);
+  const [groupQuestions, setGroupQuestions] = useState<Question[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
 
   useEffect(() => {
@@ -70,6 +75,7 @@ export default function Queue({}: QueueProps) {
           setQuestions(q);
 
           let helping: Question[] = [];
+          let group: Question[] = [];
           for (let question of q) {
             if (
               question.status === OpenQuestionStatus.Helping
@@ -77,9 +83,12 @@ export default function Queue({}: QueueProps) {
               // question.taHelped.id === profile.id
             ) {
               helping.push(question);
+            } else {
+              group.push(question);
             }
           }
           setHelpingQuestions(helping);
+          setGroupQuestions(group);
         }
       });
     }
@@ -202,6 +211,7 @@ export default function Queue({}: QueueProps) {
             alertStudent={alertStudent}
             questions={questions}
             helpingQuestions={helpingQuestions}
+            groupQuestions={groupQuestions}
           />
           {ROLE === "ta" && currentQuestion && (
             <StudentPopupCard
