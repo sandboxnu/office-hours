@@ -1,5 +1,5 @@
-import { QuestionType, Role, Question } from "@template/common";
-import { Card, Row, Col, Avatar, Tag, Button } from "antd";
+import { Role, Question } from "@template/common";
+import { Card, Row, Col, Avatar, Tag } from "antd";
 import { UserOutlined, RightOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 

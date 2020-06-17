@@ -1,5 +1,4 @@
 import {
-  QuestionType,
   Role,
   Question,
   QuestionStatus,

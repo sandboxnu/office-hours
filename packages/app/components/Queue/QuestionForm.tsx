@@ -3,8 +3,6 @@ import { Button, Input, Radio, Alert } from "antd";
 import styled from "styled-components";
 import { useState } from "react";
 import { RadioChangeEvent } from "antd/lib/radio";
-import Router from "next/router";
-import Link from "next/link";
 import React from "react";
 
 const Container = styled.div`

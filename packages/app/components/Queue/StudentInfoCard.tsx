@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import styled from "styled-components";
 import { Card, Row, Col, Avatar, Button } from "antd";
 import { UserOutlined } from "@ant-design/icons";
@@ -6,7 +6,6 @@ import {
   Question,
   QuestionStatus,
   ClosedQuestionStatus,
-  OpenQuestionStatus,
 } from "@template/common";
 
 const HelpCard = styled(Card)`

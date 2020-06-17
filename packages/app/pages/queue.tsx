@@ -11,15 +11,7 @@ import {
 import QuestionForm from "../components/Queue/QuestionForm";
 import QueueList from "../components/Queue/QueueList";
 import StudentPopupCard from "../components/Queue/StudentPopupCard";
-import {
-  useCallback,
-  useState,
-  useContext,
-  useEffect,
-  useMemo,
-  Fragment,
-} from "react";
-import useSWR from "swr";
+import { useCallback, useState, useContext, useEffect, Fragment } from "react";
 import { API } from "@template/api-client";
 import { ProfileContext } from "../contexts/ProfileContextProvider";
 
@@ -68,29 +60,26 @@ export default function Queue({}: QueueProps) {
   /**
    * Gets the questions for this course
    */
-  const getQuestions = () => {
-    if (queueId) {
-      API.questions.index(queueId).then((q: Question[]) => {
-        if (q) {
-          setQuestions(q);
+  const getQuestions = async () => {
+    const q = await API.questions.index(queueId);
 
-          let helping: Question[] = [];
-          let group: Question[] = [];
-          for (let question of q) {
-            if (
-              question.status === OpenQuestionStatus.Helping
-              // question.taHelped &&
-              // question.taHelped.id === profile.id
-            ) {
-              helping.push(question);
-            } else {
-              group.push(question);
-            }
-          }
-          setHelpingQuestions(helping);
-          setGroupQuestions(group);
+    if (queueId && q) {
+      setQuestions(q);
+      let helping: Question[] = [];
+      let group: Question[] = [];
+      for (let question of q) {
+        if (
+          question.status === OpenQuestionStatus.Helping
+          // question.taHelped &&
+          // question.taHelped.id === profile.id
+        ) {
+          helping.push(question);
+        } else {
+          group.push(question);
         }
-      });
+      }
+      setHelpingQuestions(helping);
+      setGroupQuestions(group);
     }
   };
 
@@ -110,60 +99,51 @@ export default function Queue({}: QueueProps) {
   /**
    * Creates a new Question draft for a student who has joined the queue.
    */
-  const joinQueue = () => {
+  const joinQueue = async () => {
     setIsJoining(true);
 
     // API call to join queue, question marked as draft
-    API.questions
-      .create(queueId, {
-        text: "",
-        questionType: null, // endpoint needs to be changed to allow empty questionType for drafts
-      })
-      .then((q: Question) => {
-        if (q) {
-          // fetch updated question list
-          getQuestions();
-
-          setQuestionDraftId(q.id);
-        }
-      });
+    const q = await API.questions.create(queueId, {
+      text: "",
+      questionType: null, // endpoint needs to be changed to allow empty questionType for drafts
+    });
+    if (q) {
+      // fetch updated question list
+      getQuestions();
+      setQuestionDraftId(q.id);
+    }
   };
 
   /**
    * Deletes existing Question draft for a student who has left the queue.
    */
-  const leaveQueue = () => {
+  const leaveQueue = async () => {
     setIsJoining(false);
 
-    API.questions
-      .update(queueId, questionDraftId, {
-        status: ClosedQuestionStatus.Deleted,
-      })
-      .then((q) => {
-        // fetch updated question list
-        getQuestions();
+    const q = await API.questions.update(queueId, questionDraftId, {
+      status: ClosedQuestionStatus.Deleted,
+    });
 
-        setQuestionDraftId(null);
-      });
+    // fetch updated question list
+    getQuestions();
+    setQuestionDraftId(null);
   };
 
   /**
    * Finishes creating a given question by updating the draft.
    */
-  const finishQuestion = (text: string, questionType: QuestionType) => {
-    API.questions
-      .update(queueId, questionDraftId, {
-        text: text,
-        questionType: questionType,
-        status: OpenQuestionStatus.Queued,
-      })
-      .then((q) => {
-        if (q) {
-          // fetch updated question list
-          getQuestions();
-          setIsJoining(false);
-        }
-      });
+  const finishQuestion = async (text: string, questionType: QuestionType) => {
+    const q = await API.questions.update(queueId, questionDraftId, {
+      text: text,
+      questionType: questionType,
+      status: OpenQuestionStatus.Queued,
+    });
+
+    if (q) {
+      // fetch updated question list
+      getQuestions();
+      setIsJoining(false);
+    }
   };
 
   /**
@@ -175,20 +155,21 @@ export default function Queue({}: QueueProps) {
    * @param question the question being modified
    * @param status the updated status
    */
-  const updateQuestionTA = (question: Question, status: QuestionStatus) => {
-    API.questions
-      .update(queueId, question.id, {
-        status: status,
-      })
-      .then((q) => {
-        if (q) {
-          // fetch updated question list
-          getQuestions();
-          // fetch updated helping list
-          setCurrentQuestion(q);
-          // update helping state if none left
-        }
-      });
+  const updateQuestionTA = async (
+    question: Question,
+    status: QuestionStatus
+  ) => {
+    const q = await API.questions.update(queueId, question.id, {
+      status: status,
+    });
+
+    if (q) {
+      // fetch updated question list
+      getQuestions();
+      // fetch updated helping list
+      setCurrentQuestion(q);
+      // update helping state if none left
+    }
   };
 
   /**
