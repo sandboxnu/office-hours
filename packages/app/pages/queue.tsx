@@ -105,16 +105,37 @@ export default function Queue({}: QueueProps) {
     setIsJoining(true);
 
     // API call to join queue, question marked as draft
-    API.questions.create(queueId, null).then((q) => {
-      if (q) {
-        // fetch updated question list
-        // store questionDraftId in state (should this be stored in state or fetched everytime using status.Drafting?)
-      }
-    });
+    API.questions
+      .create(queueId, {
+        text: "",
+        questionType: null, // endpoint needs to be changed to allow empty questionType for drafts
+      })
+      .then((q: Question) => {
+        if (q) {
+          // fetch updated question list
+          getQuestions();
+
+          setQuestionDraftId(q.id);
+        }
+      });
   };
 
+  /**
+   * Deletes existing Question draft for a student who has left the queue.
+   */
   const leaveQueue = () => {
     setIsJoining(false);
+
+    API.questions
+      .update(queueId, questionDraftId, {
+        status: ClosedQuestionStatus.Deleted,
+      })
+      .then((q) => {
+        // fetch updated question list
+        getQuestions();
+
+        setQuestionDraftId(null);
+      });
   };
 
   /**
@@ -130,6 +151,7 @@ export default function Queue({}: QueueProps) {
       .then((q) => {
         if (q) {
           // fetch updated question list
+          getQuestions();
           setIsJoining(false);
         }
       });
