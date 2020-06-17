@@ -2,6 +2,12 @@ import { createConnection, Connection } from "typeorm";
 import { init } from "./server";
 import path from "path";
 import { Server } from "@hapi/hapi";
+import { CourseModel } from "./entity/CourseModel";
+import { QueueModel } from "./entity/QueueModel";
+import { UserModel } from "./entity/UserModel";
+import { UserCourseModel } from "./entity/UserCourseModel";
+import { QuestionModel } from "./entity/QuestionModel";
+import { QuestionType } from "@template/common";
 
 export function setupServerTest(): () => Server {
   let server: Server;

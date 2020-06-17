@@ -1,8 +1,7 @@
 import ical, { CalendarComponent, CalendarResponse, VEvent } from "node-ical";
 import { OfficeHourModel } from "../entity/OfficeHourModel";
 import { CourseModel } from "../entity/CourseModel";
-import { DeepPartial, getConnection, getManager } from "typeorm";
-import { flatten } from "lodash";
+import { DeepPartial } from "typeorm";
 
 type CreateOfficeHour = DeepPartial<OfficeHourModel>[];
 
@@ -41,3 +40,5 @@ export async function updateCalendarForCourse(course: CourseModel) {
   const officeHours = parseIcal(await ical.fromURL(course.icalUrl), course.id);
   await OfficeHourModel.save(officeHours.map((e) => OfficeHourModel.create(e)));
 }
+
+// TODO: add soemthign that will craete room table

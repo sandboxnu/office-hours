@@ -172,15 +172,11 @@ export interface Queue {
  * A Queue partial to be shown on the today page.
  * @param id - The unique id number for a Queue.
  * @param room - The full name of the building + room # that the current office hours queue is in.
- * @param createdAt - The date string for the opened on time (aka created on time) of this queue of this queue. Ex: "2019-09-21T12:00:00-04:00"
- * @param closedAt - The date string for the the closed on time for the queue.
  * @param staffList - The list of TA user's that are currently helping at office hours.
  */
 export interface QueuePartial {
   id: number;
   room: string;
-  createdAt: Date;
-  closedAt?: Date;
   staffList: UserPartial[];
   queueSize: number;
   // TODO: Add wait time?
@@ -218,8 +214,21 @@ export enum QuestionType {
   Other = "Other",
 }
 
-// Ticket Status - Represents a given status of as student's ticket
-export type QuestionStatus = OpenQuestionStatus | ClosedQuestionStatus;
+// TODO: See if we want to do it this way later
+// export type QuestionStatus =
+//   | {
+//       type: QuestionStatusType.Open;
+//       status: OpenQuestionStatus;
+//     }
+//   | {
+//       type: QuestionStatusType.Closed;
+//       status: ClosedQuestionStatus;
+//     };
+
+// export enum QuestionStatusType {
+//   Open = "Open",
+//   Closed = "Closed",
+// }
 
 export enum OpenQuestionStatus {
   Drafting = "Drafting",
@@ -230,9 +239,18 @@ export enum OpenQuestionStatus {
 export enum ClosedQuestionStatus {
   Resolved = "Resolved",
   Deferred = "Deferred",
-  NoShow = "No Show",
+  NoShow = "NoShow",
   Deleted = "Deleted",
 }
+
+// Ticket Status - Represents a given status of as student's ticket
+export type QuestionStatus = keyof typeof QuestionStatusKeys;
+// IMPORTANT: whenever importing QuestionStatusKeys to use for any reason, import it from
+// @template/common/index. for some reason, importing from @template/common results in undefined.
+export const QuestionStatusKeys = {
+  ...OpenQuestionStatus,
+  ...ClosedQuestionStatus,
+};
 
 /**
  * A Semester object, representing a schedule semester term for the purposes of a course.
@@ -247,4 +265,4 @@ interface Semester {
 /**
  * Represents one of the seasons in which a course can take place.
  */
-type Season = "Fall" | "Spring" | "Summer 1" | "Summer 2";
+export type Season = "Fall" | "Spring" | "Summer 1" | "Summer 2";

@@ -4,8 +4,13 @@ import {
   PrimaryGeneratedColumn,
   BaseEntity,
   OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from "typeorm";
 import { OfficeHourModel } from "./OfficeHourModel";
+import { QueueModel } from "./QueueModel";
+import { UserCourseModel } from "./UserCourseModel";
+import { SemesterModel } from "./SemesterModel";
 
 /**
  * Represents a course in the context of office hours.
@@ -29,11 +34,23 @@ export class CourseModel extends BaseEntity {
   @OneToMany((type) => OfficeHourModel, (oh) => oh.course)
   officeHours: Promise<OfficeHourModel[]>;
 
+  @OneToMany((type) => QueueModel, (q) => q.course)
+  queues: Promise<QueueModel[]>;
+
   @Column("text")
   name: string;
 
   @Column("text")
   icalUrl: string;
 
-  //todo: add semester + userCourse
+  @OneToMany((type) => UserCourseModel, (ucm) => ucm.course)
+  userCourses: Promise<UserCourseModel>;
+
+  @ManyToOne((type) => SemesterModel, (semester) => semester.courses)
+  @JoinColumn({ name: "semesterId" })
+  semester: SemesterModel;
+
+  @Column({ nullable: true })
+  // TODO: can we make these not nullable and work with TypeORM
+  semesterId: number;
 }

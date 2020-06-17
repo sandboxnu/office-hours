@@ -2,6 +2,7 @@ import { ServerRoute, ResponseObject } from "@hapi/hapi";
 import Joi from "@hapi/joi";
 import { CourseSchema, QueueSchema, CourseQueueSchema } from "../joi";
 import { CourseModel } from "../entity/CourseModel";
+import { QueueModel } from "../entity/QueueModel";
 import { pick, cloneDeep } from "lodash";
 import {
   TAUpdateStatusParams,
@@ -15,6 +16,7 @@ import {
   MOCK_TA_UPDATE_STATUS_DEPARTED_RESPONSE,
 } from "../mocks/taUpdateStatus";
 import { MOCK_GET_COURSE_RESPONSE } from "../mocks/getCourse";
+import { QuestionModel } from "../entity/QuestionModel";
 
 export const courseRoutes: ServerRoute[] = [
   {
@@ -41,24 +43,22 @@ export const courseRoutes: ServerRoute[] = [
     method: "GET",
     path: "/api/v1/courses/{course_id}/queues",
     handler: async (request, h): Promise<GetCourseQueuesResponse> => {
-      const queuesResponse = cloneDeep(MOCK_GET_COURSE_RESPONSE.queues);
+      const queues = await QueueModel.find({
+        // TODO: Add another where clause to get only the open queues
+        // Pseudo code: { staffList > 1 || there are currently open office hours }
+        where: { course_id: request.params.course_id },
+      });
 
-      queuesResponse.forEach(
-        (queue) =>
-          (queue["queueSize"] = queue.questions.filter(
-            (question) => question.status in OpenQuestionStatus
-          ).length)
-      );
+      for (let queue of queues) {
+        queue["queueSize"] = await QuestionModel.count({
+          where: { queueId: queue.id },
+        });
+        // TODO: Fill this in with real data
+        queue["staffList"] = MOCK_GET_COURSE_RESPONSE.queues[0].staffList;
+      }
 
-      return queuesResponse.map((queue: any) =>
-        pick(queue, [
-          "id",
-          "room",
-          "createdAt",
-          "closedAt",
-          "staffList",
-          "queueSize",
-        ])
+      return queues.map((queue: any) =>
+        pick(queue, ["id", "room", "staffList", "queueSize"])
       );
     },
     options: {
