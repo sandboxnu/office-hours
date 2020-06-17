@@ -267,7 +267,7 @@ export default function QueueList({
                 key={question.id}
                 helping={helping}
                 role={role}
-                rank={99}
+                rank={index + 1}
                 waitTime={30} //figure out later
                 question={question}
                 onOpen={onOpenClick}

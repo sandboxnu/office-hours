@@ -104,9 +104,10 @@ const StudentPopupCard = ({
           <RemoveButton
             danger
             block
-            onClick={() =>
-              updateQuestion(question, ClosedQuestionStatus.Deleted)
-            }
+            onClick={() => {
+              onClose();
+              updateQuestion(question, ClosedQuestionStatus.Deleted);
+            }}
           >
             Remove from Queue
           </RemoveButton>

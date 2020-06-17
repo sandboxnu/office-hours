@@ -89,6 +89,7 @@ export default function Queue({}: QueueProps) {
   }, []);
 
   const onCloseClick = useCallback((): void => {
+    setCurrentQuestion(null);
     setOpenPopup(false);
   }, []);
 
@@ -166,8 +167,7 @@ export default function Queue({}: QueueProps) {
     if (q) {
       // fetch updated question list
       getQuestions();
-      // fetch updated helping list
-      setCurrentQuestion(q);
+
       // update helping state if none left
     }
   };
