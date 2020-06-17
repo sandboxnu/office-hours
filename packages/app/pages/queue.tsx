@@ -26,8 +26,6 @@ import { ProfileContext } from "../contexts/ProfileContextProvider";
 // TODO: replace this with profile role from endpoint
 const ROLE: Role = Role.TA;
 
-const queueId: number = 169;
-
 const Container = styled.div`
   margin: 32px 64px;
   @media (max-width: 768px) {
@@ -43,6 +41,7 @@ export default function Queue({}: QueueProps) {
   const { profile } = useContext(ProfileContext);
   const [course, setCourse] = useState<UserCourse>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [helpingQuestions, setHelpingQuestions] = useState<Question[]>([]);
   const [queueId, setQueueId] = useState<number>(null);
   const [questionDraftId, setQuestionDraftId] = useState<number>(null);
   const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
@@ -66,9 +65,21 @@ export default function Queue({}: QueueProps) {
    */
   const getQuestions = () => {
     if (queueId) {
-      API.questions.index(queueId).then((q) => {
+      API.questions.index(queueId).then((q: Question[]) => {
         if (q) {
           setQuestions(q);
+
+          let helping: Question[] = [];
+          for (let question of q) {
+            if (
+              question.status === OpenQuestionStatus.Helping
+              // question.taHelped &&
+              // question.taHelped.id === profile.id
+            ) {
+              helping.push(question);
+            }
+          }
+          setHelpingQuestions(helping);
         }
       });
     }
@@ -157,40 +168,35 @@ export default function Queue({}: QueueProps) {
     // Send API request to trigger notification
   };
 
-  return useMemo(() => {
-    return (
-      <Container>
-        {!isJoining && (
-          <Fragment>
-            <QueueList
-              role={ROLE}
-              onOpenClick={onOpenClick}
-              joinQueue={joinQueue}
-              updateQuestionTA={updateQuestionTA}
-              alertStudent={alertStudent}
-              questions={questions}
-              currentQuestion={currentQuestion} // pass for the helping thing
-            />
-            {ROLE === "ta" && openPopup && (
-              <StudentPopupCard
-                onClose={onCloseClick}
-                email="takayama.a@northeastern.edu" //need a way to access this. or the user
-                wait={20} //figure out later
-                question={currentQuestion}
-                location="Outside by the printer" // need a way to access this
-                visible={openPopup}
-                updateQuestion={updateQuestionTA}
-              />
-            )}
-          </Fragment>
-        )}
-        {isJoining && (
-          <QuestionForm
-            leaveQueue={leaveQueue}
-            finishQuestion={finishQuestion}
+  return (
+    <Container>
+      {!isJoining && (
+        <Fragment>
+          <QueueList
+            role={ROLE}
+            onOpenClick={onOpenClick}
+            joinQueue={joinQueue}
+            updateQuestionTA={updateQuestionTA}
+            alertStudent={alertStudent}
+            questions={questions}
+            helpingQuestions={helpingQuestions}
           />
-        )}
-      </Container>
-    );
-  }, [questions, openPopup, isJoining]);
+          {ROLE === "ta" && currentQuestion && (
+            <StudentPopupCard
+              onClose={onCloseClick}
+              email="takayama.a@northeastern.edu" //need a way to access this. or the user
+              wait={20} //figure out later
+              question={currentQuestion}
+              location="Outside by the printer" // need a way to access this
+              visible={openPopup}
+              updateQuestion={updateQuestionTA}
+            />
+          )}
+        </Fragment>
+      )}
+      {isJoining && (
+        <QuestionForm leaveQueue={leaveQueue} finishQuestion={finishQuestion} />
+      )}
+    </Container>
+  );
 }

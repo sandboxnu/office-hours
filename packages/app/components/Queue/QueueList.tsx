@@ -2,8 +2,6 @@ import { QuestionType, Role, Question, QuestionStatus } from "@template/common";
 import { Button, Row, Card, Col, Grid } from "antd";
 import styled from "styled-components";
 import QueueCard from "./QueueCard";
-import Link from "next/link";
-import { useState, useMemo } from "react";
 import GroupQuestions from "./GroupQuestions";
 import StudentInfoCard from "./StudentInfoCard";
 
@@ -71,7 +69,7 @@ interface QueueListProps {
   updateQuestionTA: (question: Question, status: QuestionStatus) => void;
   alertStudent: (question: Question) => void;
   questions: Question[];
-  currentQuestion: Question;
+  helpingQuestions: Question[];
 }
 
 export default function QueueList({
@@ -81,9 +79,9 @@ export default function QueueList({
   updateQuestionTA,
   alertStudent,
   questions,
-  currentQuestion,
+  helpingQuestions,
 }: QueueListProps) {
-  const [helping, setHelping] = useState<boolean>(true);
+  const helping = helpingQuestions.length !== 0;
   const screens = useBreakpoint();
 
   /**
@@ -207,55 +205,52 @@ export default function QueueList({
             </Button>
           </div>
         </HeaderRow>
-        {currentQuestion && (
-          <div>
+        {helpingQuestions &&
+          helpingQuestions.map((question) => (
             <StudentInfoCard
               updateQuestion={updateQuestionTA}
               alertStudent={alertStudent}
-              question={currentQuestion}
+              question={question}
             />
-            <GroupQuestions />{" "}
-          </div>
-        )}
+          ))}
+        <GroupQuestions />
       </Col>
     );
   };
 
-  return useMemo(() => {
-    return (
-      <div>
-        <Row gutter={[64, 64]}>
-          <Col flex="auto" order={screens.lg === false ? 2 : 1}>
-            <Row justify="space-between">
-              <QueueTitle>Queue 1</QueueTitle>
-              {role === "student" && (
-                <Button type="primary" size="large" onClick={joinQueue}>
-                  Join Queue
-                </Button>
-              )}
-            </Row>
-            {role === Role.TA && !helping && renderTAHeader()}
-            {role === Role.TA && helping && renderHelpingHeader()}
-            {role === Role.STUDENT && renderStudentHeader()}
+  return (
+    <div>
+      <Row gutter={[64, 64]}>
+        <Col flex="auto" order={screens.lg === false ? 2 : 1}>
+          <Row justify="space-between">
+            <QueueTitle>Queue 1</QueueTitle>
+            {role === "student" && (
+              <Button type="primary" size="large" onClick={joinQueue}>
+                Join Queue
+              </Button>
+            )}
+          </Row>
+          {role === Role.TA && !helping && renderTAHeader()}
+          {role === Role.TA && helping && renderHelpingHeader()}
+          {role === Role.STUDENT && renderStudentHeader()}
 
-            {questions.map((question: Question, index: number) => {
-              const creator = question.creator;
-              return (
-                <QueueCard
-                  key={question.id}
-                  helping={helping}
-                  role={role}
-                  rank={99}
-                  waitTime={30} //figure out later
-                  question={question}
-                  onOpen={onOpenClick}
-                />
-              );
-            })}
-          </Col>
-          {role === "ta" && helping && renderHelpingTitle()}
-        </Row>
-      </div>
-    );
-  }, [questions]);
+          {questions.map((question: Question, index: number) => {
+            const creator = question.creator;
+            return (
+              <QueueCard
+                key={question.id}
+                helping={helping}
+                role={role}
+                rank={99}
+                waitTime={30} //figure out later
+                question={question}
+                onOpen={onOpenClick}
+              />
+            );
+          })}
+        </Col>
+        {role === "ta" && helping && renderHelpingTitle()}
+      </Row>
+    </div>
+  );
 }

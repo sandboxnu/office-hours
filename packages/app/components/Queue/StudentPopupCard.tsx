@@ -92,7 +92,6 @@ const StudentPopupCard = ({
   question,
   visible,
 }: StudentPopupCardProps) => {
-  console.log(question.text);
   return (
     <Drawer
       placement="right"
@@ -105,9 +104,8 @@ const StudentPopupCard = ({
           <RemoveButton
             danger
             block
-            onClick={
-              //TODO: replace with question
-              () => updateQuestion(null, ClosedQuestionStatus.Deleted)
+            onClick={() =>
+              updateQuestion(question, ClosedQuestionStatus.Deleted)
             }
           >
             Remove from Queue
@@ -115,10 +113,7 @@ const StudentPopupCard = ({
           <Button
             block
             type="primary"
-            onClick={
-              //TODO: replace with question
-              () => updateQuestion(question, OpenQuestionStatus.Helping)
-            }
+            onClick={() => updateQuestion(question, OpenQuestionStatus.Helping)}
           >
             Help
           </Button>

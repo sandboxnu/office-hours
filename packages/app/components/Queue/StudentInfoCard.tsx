@@ -8,7 +8,6 @@ import {
   ClosedQuestionStatus,
   OpenQuestionStatus,
 } from "@template/common";
-import QuestionForm from "./QuestionForm";
 
 const HelpCard = styled(Card)`
   margin-bottom: 16px;
@@ -62,62 +61,47 @@ const StudentInfoCard = ({
   alertStudent,
   question,
 }: StudentInfoCardProps) => {
-  return useMemo(() => {
-    return (
-      <HelpCard
-        headStyle={{ padding: "0 16px" }}
-        bodyStyle={{ padding: "16px" }}
-        title={
-          <Row justify="space-between">
-            <Name>{question.creator.name}</Name>
-            <Email>takayama.a@northeastern.edu</Email>
-          </Row>
-        }
-      >
-        <Row>
-          <Col span={6}>
-            <Avatar size={64} icon={<UserOutlined />} />
-          </Col>
-          <Col span={18}>
-            <HeadingText>question</HeadingText>
-            <BodyText>{question.text ?? ""}</BodyText>
-            <HeadingText>location</HeadingText>
-            <BodyText>Outside room, by the couches</BodyText>
-          </Col>
-        </Row>
-
+  return (
+    <HelpCard
+      headStyle={{ padding: "0 16px" }}
+      bodyStyle={{ padding: "16px" }}
+      title={
         <Row justify="space-between">
-          <HalfButton
-            onClick={
-              // TODO: replace w question
-              () => alertStudent(question)
-            }
-          >
-            Alert
-          </HalfButton>
-          <HalfButton
-            danger
-            onClick={
-              // TODO: replace w question
-              () => updateQuestion(question, ClosedQuestionStatus.NoShow)
-            }
-          >
-            Can't Find
-          </HalfButton>
+          <Name>{question.creator.name}</Name>
+          <Email>takayama.a@northeastern.edu</Email>
         </Row>
-        <FinishButton
-          block
-          type="primary"
-          onClick={
-            // TODO: replace w question
-            () => updateQuestion(question, ClosedQuestionStatus.Resolved)
-          }
+      }
+    >
+      <Row>
+        <Col span={6}>
+          <Avatar size={64} icon={<UserOutlined />} />
+        </Col>
+        <Col span={18}>
+          <HeadingText>question</HeadingText>
+          <BodyText>{question.text ?? ""}</BodyText>
+          <HeadingText>location</HeadingText>
+          <BodyText>Outside room, by the couches</BodyText>
+        </Col>
+      </Row>
+
+      <Row justify="space-between">
+        <HalfButton onClick={() => alertStudent(question)}>Alert</HalfButton>
+        <HalfButton
+          danger
+          onClick={() => updateQuestion(question, ClosedQuestionStatus.NoShow)}
         >
-          Finish Helping
-        </FinishButton>
-      </HelpCard>
-    );
-  }, []);
+          Can't Find
+        </HalfButton>
+      </Row>
+      <FinishButton
+        block
+        type="primary"
+        onClick={() => updateQuestion(question, ClosedQuestionStatus.Resolved)}
+      >
+        Finish Helping
+      </FinishButton>
+    </HelpCard>
+  );
 };
 
 export default StudentInfoCard;
