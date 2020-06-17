@@ -1,7 +1,12 @@
-import { useMemo } from "react";
 import { Row, Button, Avatar, Tag, Col, Drawer } from "antd";
 import styled from "styled-components";
 import { UserOutlined } from "@ant-design/icons";
+import {
+  Question,
+  QuestionStatus,
+  ClosedQuestionStatus,
+  OpenQuestionStatus,
+} from "@template/common";
 
 const FullWidth = styled.div`
   margin-top: 32px;
@@ -69,80 +74,85 @@ const BodyText = styled.div`
 `;
 
 interface StudentPopupCardProps {
+  updateQuestion: (question: Question, status: QuestionStatus) => void;
   onClose: () => void;
-  name: string;
   email: string;
   wait: number;
-  type: string;
-  question: string;
   location: string;
-  status: string;
   visible: boolean;
+  question: Question;
 }
 
 const StudentPopupCard = ({
+  updateQuestion,
   onClose,
-  name,
   email,
   wait,
-  type,
-  question,
   location,
-  status,
+  question,
   visible,
 }: StudentPopupCardProps) => {
-  return useMemo(() => {
-    return (
-      <Drawer
-        placement="right"
-        closable={true}
-        visible={visible}
-        width={272}
-        onClose={onClose}
-        footer={
-          <ButtonDiv>
-            <RemoveButton danger block>
-              Remove from Queue
-            </RemoveButton>
-            <Button block type="primary">
-              Help
-            </Button>
-          </ButtonDiv>
-        }
-      >
-        <Container>
-          <Avatar size={104} icon={<UserOutlined />} />
+  return (
+    <Drawer
+      placement="right"
+      closable={true}
+      visible={visible}
+      width={272}
+      onClose={onClose}
+      footer={
+        <ButtonDiv>
+          <RemoveButton
+            danger
+            block
+            onClick={() => {
+              onClose();
+              updateQuestion(question, ClosedQuestionStatus.Deleted);
+            }}
+          >
+            Remove from Queue
+          </RemoveButton>
+          <Button
+            block
+            type="primary"
+            onClick={() => updateQuestion(question, OpenQuestionStatus.Helping)}
+          >
+            Help
+          </Button>
+        </ButtonDiv>
+      }
+    >
+      <Container>
+        <Avatar size={104} icon={<UserOutlined />} />
 
-          <InfoTextDiv>
-            <Title>{name}</Title>
-            <Email>{email}</Email>
-          </InfoTextDiv>
+        <InfoTextDiv>
+          <Title>{question.creator.name}</Title>
+          <Email>{email}</Email>
+        </InfoTextDiv>
 
-          <StatusTag color="purple">{status}</StatusTag>
+        <StatusTag color="purple">{question.status}</StatusTag>
 
-          <StyledRow gutter={[8, 0]}>
-            <Col span={12}>
-              <HeadingText>wait</HeadingText>
-              <BodyText>{wait}</BodyText>
-            </Col>
-            <Col span={12}>
-              <HeadingText>type</HeadingText>
-              <BodyText>{type}</BodyText>
-            </Col>
-          </StyledRow>
+        <StyledRow gutter={[8, 0]}>
+          <Col span={12}>
+            <HeadingText>wait</HeadingText>
+            <BodyText>{wait}</BodyText>
+          </Col>
+          <Col span={12}>
+            <HeadingText>type</HeadingText>
+            <BodyText>{question.questionType.toString()}</BodyText>
+          </Col>
+        </StyledRow>
 
-          <FullWidth>
-            <HeadingText>question</HeadingText>
-            <BodyText>{question}</BodyText>
-          </FullWidth>
-          <FullWidth>
-            <HeadingText>location</HeadingText>
-            <BodyText>{location}</BodyText>
-          </FullWidth>
-        </Container>
-      </Drawer>
-    );
-  }, [visible]);
+        <FullWidth>
+          <HeadingText>question</HeadingText>
+          <BodyText>{question.text}</BodyText>
+        </FullWidth>
+        <FullWidth>
+          <HeadingText>location</HeadingText>
+          <BodyText>{location}</BodyText>
+        </FullWidth>
+      </Container>
+    </Drawer>
+  );
 };
 
 export default StudentPopupCard;

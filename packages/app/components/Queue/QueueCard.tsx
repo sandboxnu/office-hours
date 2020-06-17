@@ -1,5 +1,5 @@
-import { QuestionType, Role } from "@template/common";
-import { Card, Row, Col, Avatar, Tag, Button } from "antd";
+import { Role, Question } from "@template/common";
+import { Card, Row, Col, Avatar, Tag } from "antd";
 import { UserOutlined, RightOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
@@ -57,21 +57,17 @@ interface QueueCardProps {
   role: Role;
   helping: boolean;
   rank: number;
-  name: string;
-  questionType: QuestionType;
   waitTime: number;
-  status: string;
-  onOpen: (name: string) => void;
+  question: Question;
+  onOpen: (question: Question) => void;
 }
 
 export default function QueueCard({
   role,
   helping,
   rank,
-  name,
-  questionType,
   waitTime,
-  status,
+  question,
   onOpen,
 }: QueueCardProps) {
   /**
@@ -79,33 +75,35 @@ export default function QueueCard({
    */
   const renderTACard = () => {
     return (
-      <HorizontalTACard onClick={() => onOpen(name)}>
+      <HorizontalTACard onClick={() => onOpen(question)}>
         <CenterRow justify="space-between">
           <Col xs={2} lg={1}>
             <Rank>{rank}</Rank>
           </Col>
           <Col xs={14} sm={11} lg={5}>
             <CenterRow>
-              <Photo icon={<UserOutlined />} />
-              <Text>{name}</Text>
+              <Photo icon={<UserOutlined />} src={question.creator.photoURL} />
+              <Text>{question.creator.name}</Text>
             </CenterRow>
           </Col>
           <Col xs={0} lg={2}>
             <Text>
-              {questionType.charAt(0).toUpperCase() +
-                questionType.substr(1).toLowerCase()}
+              {question.questionType.charAt(0).toUpperCase() +
+                question.questionType.substr(1).toLowerCase()}
             </Text>
           </Col>
           <Col xs={0} lg={7}>
-            <Text>
-              Help with working out how to use an accumulator for problem 1
-            </Text>
+            <Text>{question.text}</Text>
           </Col>
           <Col xs={0} lg={2}>
-            <Text>{waitTime}</Text>
+            <Text>
+              {
+                30 //figure out later
+              }
+            </Text>
           </Col>
           <Col span={2}>
-            <StatusTag color="purple">{status}</StatusTag>
+            <StatusTag color="purple">{question.status}</StatusTag>
           </Col>
           <Col>
             <RightOutlined />
@@ -120,27 +118,25 @@ export default function QueueCard({
    */
   const renderHelpingCard = () => {
     return (
-      <HorizontalTACard onClick={() => onOpen(name)}>
+      <HorizontalTACard onClick={() => onOpen(question)}>
         <CenterRow justify="space-between">
           <Col xs={2} lg={1}>
             <Rank>{rank}</Rank>
           </Col>
           <Col xs={14} sm={9} lg={11} xl={9} xxl={4}>
             <CenterRow>
-              <Photo icon={<UserOutlined />} />
-              <Text>{name}</Text>
+              <Photo icon={<UserOutlined />} src={question.creator.photoURL} />
+              <Text>{question.creator.name}</Text>
             </CenterRow>
           </Col>
           <Col xs={0} xxl={7}>
-            <Text>
-              Help with working out how to use an accumulator for problem 1
-            </Text>
+            <Text>{question.text}</Text>
           </Col>
           <Col xs={0} xl={3}>
             <Text>{waitTime}</Text>
           </Col>
           <Col span={2}>
-            <StatusTag color="purple">{status}</StatusTag>
+            <StatusTag color="purple">{question.status}</StatusTag>
           </Col>
           <Col>
             <RightOutlined />
@@ -162,23 +158,23 @@ export default function QueueCard({
           </Col>
           <Col xs={16} sm={11} lg={6}>
             <CenterRow>
-              <Avatar icon={<UserOutlined />} />
+              <Avatar icon={<UserOutlined />} src={question.creator.photoURL} />
               <NameContainer>
-                <Text>{name}</Text>
+                <Text>{question.creator.name}</Text>
               </NameContainer>
             </CenterRow>
           </Col>
           <Col xs={0} lg={2}>
             <Text>
-              {questionType.charAt(0).toUpperCase() +
-                questionType.substr(1).toLowerCase()}
+              {question.questionType.charAt(0).toUpperCase() +
+                question.questionType.substr(1).toLowerCase()}
             </Text>
           </Col>
           <Col span={2}>
             <Text>{waitTime}</Text>
           </Col>
           <Col xs={0} lg={2}>
-            <StatusTag color="purple">{status}</StatusTag>
+            <StatusTag color="purple">{question.status}</StatusTag>
           </Col>
         </CenterRow>
       </HorizontalStudentCard>

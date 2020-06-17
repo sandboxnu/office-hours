@@ -1,9 +1,13 @@
-import { QuestionType, Role } from "@template/common";
+import {
+  Role,
+  Question,
+  QuestionStatus,
+  OpenQuestionStatus,
+  ClosedQuestionStatus,
+} from "@template/common";
 import { Button, Row, Card, Col, Grid } from "antd";
 import styled from "styled-components";
 import QueueCard from "./QueueCard";
-import Link from "next/link";
-import { useState } from "react";
 import GroupQuestions from "./GroupQuestions";
 import StudentInfoCard from "./StudentInfoCard";
 
@@ -66,12 +70,53 @@ const HeaderRow = styled(Row)`
 
 interface QueueListProps {
   role: Role;
-  onOpenClick: (name: string) => void;
+  onOpenClick: (question: Question) => void;
+  joinQueue: () => void;
+  updateQuestionTA: (question: Question, status: QuestionStatus) => void;
+  alertStudent: (question: Question) => void;
+  questions: Question[];
+  helpingQuestions: Question[];
+  groupQuestions: Question[];
 }
 
-export default function QueueList({ role, onOpenClick }: QueueListProps) {
-  const [helping, setHelping] = useState<boolean>(true);
+export default function QueueList({
+  role,
+  onOpenClick,
+  joinQueue,
+  updateQuestionTA,
+  alertStudent,
+  questions,
+  helpingQuestions,
+  groupQuestions,
+}: QueueListProps) {
+  const helping = helpingQuestions.length !== 0;
   const screens = useBreakpoint();
+
+  /**
+   * Sends a push notification alert to every question currently being helped.
+   */
+  const alertHelpingAll = () => {
+    // for each question currently being helped, call alertStudent()
+  };
+
+  /**
+   * Marks every question currently being helped by this TA as finished.
+   */
+  const finishHelpingAll = () => {
+    for (let question of helpingQuestions) {
+      updateQuestionTA(question, ClosedQuestionStatus.Resolved);
+    }
+  };
+
+  /**
+   * Adds every given question to the group that is currently being helped.
+   * @param selected the given list of questions to help
+   */
+  const addQuestionsToHelp = (selected: Question[]) => {
+    for (let question of selected) {
+      updateQuestionTA(question, OpenQuestionStatus.Helping);
+    }
+  };
 
   /**
    * Renders the card headers for a TA who is not yet helping someone.
@@ -140,25 +185,27 @@ export default function QueueList({ role, onOpenClick }: QueueListProps) {
    * Renders the card headers for a student viewing the queue.
    */
   const renderStudentHeader = () => {
-    <StudentHeaderCard bordered={false}>
-      <CenterRow justify="space-between">
-        <Col span={1}>
-          <HeaderText>#</HeaderText>
-        </Col>
-        <Col xs={16} sm={11} lg={6}>
-          <HeaderText>name</HeaderText>
-        </Col>
-        <Col xs={0} lg={2}>
-          <HeaderText>type</HeaderText>
-        </Col>
-        <Col span={2}>
-          <HeaderText>wait</HeaderText>
-        </Col>
-        <Col xs={0} lg={2}>
-          <StatusText>status</StatusText>
-        </Col>
-      </CenterRow>
-    </StudentHeaderCard>;
+    return (
+      <StudentHeaderCard bordered={false}>
+        <CenterRow justify="space-between">
+          <Col span={1}>
+            <HeaderText>#</HeaderText>
+          </Col>
+          <Col xs={16} sm={11} lg={6}>
+            <HeaderText>name</HeaderText>
+          </Col>
+          <Col xs={0} lg={2}>
+            <HeaderText>type</HeaderText>
+          </Col>
+          <Col span={2}>
+            <HeaderText>wait</HeaderText>
+          </Col>
+          <Col xs={0} lg={2}>
+            <StatusText>status</StatusText>
+          </Col>
+        </CenterRow>
+      </StudentHeaderCard>
+    );
   };
 
   /**
@@ -170,16 +217,29 @@ export default function QueueList({ role, onOpenClick }: QueueListProps) {
         <HeaderRow justify="space-between">
           <QueueTitle>Helping</QueueTitle>
           <div>
-            <AlertButton danger size="large">
+            <AlertButton danger size="large" onClick={alertHelpingAll}>
               Alert All
             </AlertButton>
-            <Button type="primary" size="large">
+            <Button type="primary" size="large" onClick={finishHelpingAll}>
               Finish All
             </Button>
           </div>
         </HeaderRow>
-        <StudentInfoCard />
-        <GroupQuestions />
+        {helpingQuestions &&
+          helpingQuestions.map((question) => (
+            <StudentInfoCard
+              key={question.id}
+              updateQuestion={updateQuestionTA}
+              alertStudent={alertStudent}
+              question={question}
+            />
+          ))}
+        {groupQuestions && groupQuestions.length !== 0 && (
+          <GroupQuestions
+            questions={groupQuestions}
+            addQuestions={addQuestionsToHelp}
+          />
+        )}
       </Col>
     );
   };
@@ -191,67 +251,29 @@ export default function QueueList({ role, onOpenClick }: QueueListProps) {
           <Row justify="space-between">
             <QueueTitle>Queue 1</QueueTitle>
             {role === "student" && (
-              <Link href="/queue/join">
-                <Button type="primary" size="large">
-                  Join Queue
-                </Button>
-              </Link>
+              <Button type="primary" size="large" onClick={joinQueue}>
+                Join Queue
+              </Button>
             )}
           </Row>
-          {role === "ta" && !helping && renderTAHeader()}
-          {role === "ta" && helping && renderHelpingHeader()}
-          {role === "student" && renderStudentHeader()}
+          {role === Role.TA && !helping && renderTAHeader()}
+          {role === Role.TA && helping && renderHelpingHeader()}
+          {role === Role.STUDENT && renderStudentHeader()}
 
-          <QueueCard
-            helping={helping}
-            role={role}
-            rank={99}
-            name="Alex Takayama"
-            questionType={QuestionType.Bug}
-            waitTime={30}
-            status="WAITING"
-            onOpen={onOpenClick}
-          />
-          <QueueCard
-            helping={helping}
-            role={role}
-            rank={2}
-            name="Supercalifragilistic"
-            questionType={QuestionType.Concept}
-            waitTime={30}
-            status="WAITING"
-            onOpen={onOpenClick}
-          />
-          <QueueCard
-            helping={helping}
-            role={role}
-            rank={1}
-            name="Stanley Liu"
-            questionType={QuestionType.Setup}
-            waitTime={100}
-            status="IN PROGRESS"
-            onOpen={onOpenClick}
-          />
-          <QueueCard
-            helping={helping}
-            role={role}
-            rank={1}
-            name="Alex Takayama"
-            questionType={QuestionType.Other}
-            waitTime={30}
-            status="WAITING"
-            onOpen={onOpenClick}
-          />
-          <QueueCard
-            helping={helping}
-            role={role}
-            rank={1}
-            name="Alex Takayama"
-            questionType={QuestionType.Testing}
-            waitTime={30}
-            status="WAITING"
-            onOpen={onOpenClick}
-          />
+          {questions.map((question: Question, index: number) => {
+            const creator = question.creator;
+            return (
+              <QueueCard
+                key={question.id}
+                helping={helping}
+                role={role}
+                rank={index + 1}
+                waitTime={30} //figure out later
+                question={question}
+                onOpen={onOpenClick}
+              />
+            );
+          })}
         </Col>
         {role === "ta" && helping && renderHelpingTitle()}
       </Row>

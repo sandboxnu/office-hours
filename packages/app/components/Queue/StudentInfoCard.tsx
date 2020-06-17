@@ -1,7 +1,12 @@
-import React, { useMemo } from "react";
+import React from "react";
 import styled from "styled-components";
 import { Card, Row, Col, Avatar, Button } from "antd";
 import { UserOutlined } from "@ant-design/icons";
+import {
+  Question,
+  QuestionStatus,
+  ClosedQuestionStatus,
+} from "@template/common";
 
 const HelpCard = styled(Card)`
   margin-bottom: 16px;
@@ -44,43 +49,58 @@ const FinishButton = styled(Button)`
   margin-top: 12px;
 `;
 
-const StudentInfoCard = () => {
-  return useMemo(() => {
-    return (
-      <HelpCard
-        headStyle={{ padding: "0 16px" }}
-        bodyStyle={{ padding: "16px" }}
-        title={
-          <Row justify="space-between">
-            <Name>Alex Takayama</Name>
-            <Email>takayama.a@northeastern.edu</Email>
-          </Row>
-        }
-      >
-        <Row>
-          <Col span={6}>
-            <Avatar size={64} icon={<UserOutlined />} />
-          </Col>
-          <Col span={18}>
-            <HeadingText>question</HeadingText>
-            <BodyText>
-              Help with working out how to use an accumulator for problem 1
-            </BodyText>
-            <HeadingText>location</HeadingText>
-            <BodyText>Outside room, by the couches</BodyText>
-          </Col>
-        </Row>
+interface StudentInfoCardProps {
+  updateQuestion: (question: Question, status: QuestionStatus) => void;
+  alertStudent: (question: Question) => void;
+  question: Question;
+}
 
+const StudentInfoCard = ({
+  updateQuestion,
+  alertStudent,
+  question,
+}: StudentInfoCardProps) => {
+  return (
+    <HelpCard
+      headStyle={{ padding: "0 16px" }}
+      bodyStyle={{ padding: "16px" }}
+      title={
         <Row justify="space-between">
-          <HalfButton>Alert</HalfButton>
-          <HalfButton danger>Can't Find</HalfButton>
+          <Name>{question.creator.name}</Name>
+          <Email>takayama.a@northeastern.edu</Email>
         </Row>
-        <FinishButton block type="primary">
-          Finish Helping
-        </FinishButton>
-      </HelpCard>
-    );
-  }, []);
+      }
+    >
+      <Row>
+        <Col span={6}>
+          <Avatar size={64} icon={<UserOutlined />} />
+        </Col>
+        <Col span={18}>
+          <HeadingText>question</HeadingText>
+          <BodyText>{question.text ?? ""}</BodyText>
+          <HeadingText>location</HeadingText>
+          <BodyText>Outside room, by the couches</BodyText>
+        </Col>
+      </Row>
+
+      <Row justify="space-between">
+        <HalfButton onClick={() => alertStudent(question)}>Alert</HalfButton>
+        <HalfButton
+          danger
+          onClick={() => updateQuestion(question, ClosedQuestionStatus.NoShow)}
+        >
+          Can't Find
+        </HalfButton>
+      </Row>
+      <FinishButton
+        block
+        type="primary"
+        onClick={() => updateQuestion(question, ClosedQuestionStatus.Resolved)}
+      >
+        Finish Helping
+      </FinishButton>
+    </HelpCard>
+  );
 };
 
 export default StudentInfoCard;
