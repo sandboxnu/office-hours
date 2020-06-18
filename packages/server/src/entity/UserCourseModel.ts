@@ -11,6 +11,7 @@ import { CourseModel } from "./CourseModel";
 import { QueueModel } from "./QueueModel";
 import { QuestionType } from "@template/common";
 import { UserModel } from "./UserModel";
+import { Role } from "@template/common";
 
 @Entity("user_course_model")
 export class UserCourseModel extends BaseEntity {
@@ -31,4 +32,7 @@ export class UserCourseModel extends BaseEntity {
   // TODO: can we make this not nullable?
   @Column({ nullable: true })
   courseId: number;
+
+  @Column({ type: "enum", enum: Role, default: Role.STUDENT })
+  role: Role;
 }
