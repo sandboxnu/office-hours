@@ -7,6 +7,7 @@ import { QueueModel } from "../entity/QueueModel";
 import { UserModel } from "../entity/UserModel";
 import { UserCourseModel } from "../entity/UserCourseModel";
 import { QuestionModel } from "../entity/QuestionModel";
+import { QuestionSchema } from "../joi";
 
 describe("Queue Routes", () => {
   setupDBTest();
@@ -75,16 +76,25 @@ describe("Queue Routes", () => {
       });
     });
     it("POST new question", async () => {
-      await expectWithServer({
+      const server = getServer();
+      const request = await server.inject({
         method: "post",
-        url: "/api/v1/queues/45/questions",
+        url: "/api/v1/queues/1/questions",
         payload: {
           text: "Don't know recursion",
           questionType: "Concept",
         },
-        statusCode: 200,
-        result: MOCK_CREATE_QUESTION_RESPONSE,
       });
+      expect(request.statusCode).toEqual(201);
+      expect(request.result).toMatchObject({
+        text: "Don't know recursion",
+        taHelped: null,
+        helpedAt: null,
+        closedAt: null,
+        questionType: "Concept",
+        status: "Queued",
+      });
+      expect(QuestionModel.count({ where: { queueId: 1 } })).toEqual(1);
     });
     it("POST new question fails with bad params", async () => {
       await expectWithServer({
