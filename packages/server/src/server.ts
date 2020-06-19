@@ -16,11 +16,15 @@ export async function init() {
     port: 3002,
     host: "localhost",
   });
+
+  await server.register(inert);
+
   // Add routes
   server.route(clubRoutes);
   server.route(profileRoutes);
   server.route(courseRoutes);
   server.route(queueRoutes);
+  server.route(notifRoutes);
 
   // Bind socketio to http server
   websocketManager.bindSocketIO(io(server.listener));
@@ -31,9 +35,6 @@ export async function init() {
       showErrors: process.env.NODE_ENV !== "production",
     },
   });
-
-  await server.register(inert);
-  server.route(notifRoutes);
 
   await server.initialize();
   return server;

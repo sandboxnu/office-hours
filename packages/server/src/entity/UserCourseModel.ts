@@ -28,7 +28,6 @@ export class UserCourseModel extends BaseEntity {
   @JoinColumn({ name: "courseId" })
   course: Promise<CourseModel>;
 
-  // TODO: can we make this not nullable?
   @Column({ nullable: true })
   courseId: number;
 }

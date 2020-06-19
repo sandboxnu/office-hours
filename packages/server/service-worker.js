@@ -14,7 +14,7 @@ const urlB64ToUint8Array = (base64String) => {
 };
 
 const saveSubscription = async (subscription) => {
-  const SERVER_URL = "http://localhost:4000/save-subscription";
+  const SERVER_URL = "localhost:3002/api/v1/register-notif";
   const response = await fetch(SERVER_URL, {
     method: "post",
     headers: {
@@ -29,7 +29,7 @@ self.addEventListener("activate", async () => {
   // This will be called only once when the service worker is installed for first time.
   try {
     const applicationServerKey = urlB64ToUint8Array(
-      `BD3A5TVqz6Rud5INw-kBmXcKjaljXeuVI_I8hbqnHWouuyDwsjDAU95eNhmaPMPwBPuFSEKzdI1HL91ONHZ1yWo`
+      `BBFy7fEShgbbbxcJKdtgdyruVEsC-vEHfWiND5ndPQS5KLVPJWu229F4QUj3vsQhrA85-8dZxtQmQD5h9Hwkq0o`
     );
     const options = { applicationServerKey, userVisibleOnly: true };
     const subscription = await self.registration.pushManager.subscribe(options);
@@ -43,7 +43,11 @@ self.addEventListener("activate", async () => {
 self.addEventListener("push", function (event) {
   if (event.data) {
     console.log("Push event!! ", event.data.text());
-    showLocalNotification("Yolo", event.data.text(), self.registration);
+    showLocalNotification(
+      "alex is brain dead",
+      event.data.text(),
+      self.registration
+    );
   } else {
     console.log("Push event but no data");
   }

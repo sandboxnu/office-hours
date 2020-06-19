@@ -266,3 +266,12 @@ interface Semester {
  * Represents one of the seasons in which a course can take place.
  */
 export type Season = "Fall" | "Spring" | "Summer 1" | "Summer 2";
+
+export type NotifBody = {
+  endpoint: string;
+  expirationTime: Date;
+  keys: {
+    p256dh: string;
+    auth: string;
+  };
+};

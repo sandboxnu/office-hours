@@ -32,7 +32,6 @@ export const queueRoutes: ServerRoute[] = [
     ): Promise<ListQuestionsResponse | ResponseObject> => {
       // todo: need a way to return different data, if TA vs. student hits endpoint.
       // for now, just return the student response
-
       const questions = await QuestionModel.find({
         where: [
           {
