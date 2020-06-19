@@ -12,6 +12,7 @@
     "axios": "^0.19.2",
     "next": "^9.4.0",
     "next-compose-plugins": "^2.2.0",
+    "next-offline": "^5.0.2",
     "next-transpile-modules": "^3.3.0",
     "react": "16.13.1",
     "react-big-calendar": "^0.24.6",

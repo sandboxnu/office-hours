@@ -5,7 +5,10 @@ import { clubRoutes } from "./api/clubRoutes";
 import { profileRoutes } from "./api/profileRoutes";
 import { courseRoutes } from "./api/courseRoutes";
 import { queueRoutes } from "./api/queueRoutes";
+import { notifRoutes } from "./api/notifRoutes";
 import websocketManager from "./websocketManager";
+import * as hde from "hapi-dev-errors";
+import * as inert from "@hapi/inert";
 
 // Just initialize, don't start
 export async function init() {
@@ -23,11 +26,15 @@ export async function init() {
   websocketManager.bindSocketIO(io(server.listener));
 
   await server.register({
-    plugin: require("hapi-dev-errors"),
+    plugin: hde,
     options: {
       showErrors: process.env.NODE_ENV !== "production",
     },
   });
+
+  await server.register(inert);
+  server.route(notifRoutes);
+
   await server.initialize();
   return server;
 }
