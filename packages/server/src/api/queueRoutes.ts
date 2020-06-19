@@ -10,8 +10,8 @@ import {
   Question,
   UserPartial,
   QuestionStatus,
+  QuestionStatusKeys,
 } from "@template/common";
-import { QuestionStatusKeys } from "@template/common/index";
 import { MOCK_CREATE_QUESTION_RESPONSE } from "../mocks/createQuestion";
 import {
   MOCK_STUDENT_UPDATE_QUESTION_RESPONSE,
