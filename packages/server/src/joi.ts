@@ -95,3 +95,9 @@ export const CourseQueueSchema = Joi.array().items(
     queueSize: Joi.number(),
   })
 );
+
+export const NotifSchema = Joi.object({
+  endpoint: Joi.string(),
+  expirationTime: Joi.date().allow(null),
+  keys: Joi.object({ p256dh: Joi.string(), auth: Joi.string() }),
+});

@@ -14,10 +14,14 @@ export async function init() {
     port: 3002,
     host: "localhost",
   });
+
+  await server.register(inert);
+
   // Add routes
   server.route(profileRoutes);
   server.route(courseRoutes);
   server.route(queueRoutes);
+  server.route(notifRoutes);
 
   // Error logging
   await server.register({
@@ -38,9 +42,6 @@ export async function init() {
         (request.response as any).statusCode
     );
   });
-
-  await server.register(inert);
-  server.route(notifRoutes);
 
   await server.initialize();
   return server;
