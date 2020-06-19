@@ -3,6 +3,10 @@ import Hapi from "@hapi/hapi";
 import { profileRoutes } from "./api/profileRoutes";
 import { courseRoutes } from "./api/courseRoutes";
 import { queueRoutes } from "./api/queueRoutes";
+import { notifRoutes } from "./api/notifRoutes";
+import websocketManager from "./websocketManager";
+import * as hde from "hapi-dev-errors";
+import * as inert from "@hapi/inert";
 
 // Just initialize, don't start
 export async function init() {
@@ -17,7 +21,7 @@ export async function init() {
 
   // Error logging
   await server.register({
-    plugin: require("hapi-dev-errors"),
+    plugin: hde,
     options: {
       showErrors: process.env.NODE_ENV !== "production",
     },
@@ -34,6 +38,10 @@ export async function init() {
         (request.response as any).statusCode
     );
   });
+
+  await server.register(inert);
+  server.route(notifRoutes);
+
   await server.initialize();
   return server;
 }
