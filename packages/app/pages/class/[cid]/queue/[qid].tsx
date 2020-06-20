@@ -9,7 +9,6 @@ import {
   UserCourse,
 } from "@template/common";
 import QuestionForm from "../../../../components/Queue/QuestionForm";
-import QueueList from "../../../../components/Queue/QueueList";
 import StudentPopupCard from "../../../../components/Queue/StudentPopupCard";
 import { useCallback, useState, useContext, useEffect, Fragment } from "react";
 import { API } from "@template/api-client";
@@ -19,7 +18,7 @@ import { useRouter } from "next/router";
 import NavBar from "../../../../components/Nav/NavBar";
 
 // TODO: replace this with profile role from endpoint
-const ROLE: Role = Role.TA;
+const ROLE: Role = Role.STUDENT;
 
 const Container = styled.div`
   margin: 32px 64px;
@@ -53,7 +52,9 @@ export default function Queue({}: QueueProps) {
     if (profile) {
       const selectedCourse: UserCourse = profile.courses[0];
       setCourse(selectedCourse);
-      setQueueId(selectedCourse.course.id);
+      // course id is not = queue id
+      getQueueIdFromCourse(selectedCourse.course.id);
+      //setQueueId(selectedCourse.course.id);
     }
   }, [profile]);
 
@@ -63,10 +64,18 @@ export default function Queue({}: QueueProps) {
     }
   }, [queueId]);
 
+  const getQueueIdFromCourse = async (courseId) => {
+    const q = await API.course.queues(courseId);
+    if (q) {
+      setQueueId(q[0].id);
+    }
+  };
+
   /**
    * Gets the questions for this course
    */
   const getQuestions = async () => {
+    console.log("here");
     const q = await API.questions.index(queueId);
     console.log(q);
 
@@ -195,7 +204,7 @@ export default function Queue({}: QueueProps) {
         <Container>
           {!isJoining && (
             <Fragment>
-              <QueueList
+              {/* <QueueList
                 role={ROLE}
                 onOpenClick={onOpenClick}
                 joinQueue={joinQueue}
@@ -204,7 +213,7 @@ export default function Queue({}: QueueProps) {
                 questions={questions}
                 helpingQuestions={helpingQuestions}
                 groupQuestions={groupQuestions}
-              />
+              /> */}
               {ROLE === "ta" && currentQuestion && (
                 <StudentPopupCard
                   onClose={onCloseClick}
