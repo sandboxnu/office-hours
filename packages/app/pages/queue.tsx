@@ -79,7 +79,8 @@ export default function Queue({}: QueueProps) {
 
     if (queueId && q) {
       setQuestions(q);
-      let helping: Question[] = [];
+      //temporary
+      let helping: Question[] = [q[0]];
       let group: Question[] = [];
       for (let question of q) {
         if (
@@ -135,7 +136,7 @@ export default function Queue({}: QueueProps) {
   const leaveQueue = async () => {
     setIsJoining(false);
 
-    const q = await API.questions.update(queueId, questionDraftId, {
+    await API.questions.update(queueId, questionDraftId, {
       status: ClosedQuestionStatus.Deleted,
     });
 
@@ -183,6 +184,9 @@ export default function Queue({}: QueueProps) {
       getQuestions();
 
       // update helping state if none left
+
+      //temporary
+      setHelpingQuestions([question]);
     }
   };
 
@@ -226,13 +230,6 @@ export default function Queue({}: QueueProps) {
               location="Outside by the printer" // need a way to access this
               visible={openPopup}
               updateQuestion={updateQuestionTA}
-            />
-          )}
-          {ROLE === "student" && (
-            <EditableQuestion
-              position={1}
-              type={QuestionType.Bug}
-              text={"How to change the font"}
             />
           )}
         </Fragment>

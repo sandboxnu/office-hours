@@ -217,7 +217,6 @@ export default function TAQueueList({
           </Row>
           {!helping && renderTAHeader()}
           {helping && renderHelpingHeader()}
-
           {questions.map((question: Question, index: number) => {
             const creator = question.creator;
             return (
