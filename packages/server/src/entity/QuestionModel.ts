@@ -10,6 +10,7 @@ import {
 import { UserCourseModel } from "./UserCourseModel";
 import { QueueModel } from "./QueueModel";
 import { QuestionType, QuestionStatus } from "@template/common";
+import { UserModel } from "./UserModel";
 
 @Entity("question_model")
 export class QuestionModel extends BaseEntity {
@@ -26,16 +27,16 @@ export class QuestionModel extends BaseEntity {
   @Column("text")
   text: string;
 
-  @ManyToOne((type) => UserCourseModel)
+  @ManyToOne((type) => UserModel)
   @JoinColumn({ name: "creatorId" })
-  creator: UserCourseModel;
+  creator: UserModel;
 
   @Column({ nullable: true })
   creatorId: number;
 
-  @ManyToOne((type) => UserCourseModel)
+  @ManyToOne((type) => UserModel)
   @JoinColumn({ name: "taHelpedId" })
-  taHelped: UserCourseModel;
+  taHelped: UserModel;
 
   @Column({ nullable: true })
   taHelpedId: number;

@@ -39,7 +39,7 @@ export const queueRoutes: ServerRoute[] = [
             queueId: request.params.queue_id,
           },
         ],
-        relations: ["creator", "taHelped", "creator.user"],
+        relations: ["creator", "taHelped"],
       });
 
       if (questions.length === 0) {
@@ -124,13 +124,13 @@ export const queueRoutes: ServerRoute[] = [
 
 function questionModelToQuestion(qm: QuestionModel): Question {
   return {
-    creator: userModelToUserPartial(qm.creator.user),
+    creator: userModelToUserPartial(qm.creator),
     id: qm.id,
     createdAt: qm.createdAt,
     status: parseStatus(qm.status),
     text: qm.text,
     // qm.taHelped: types says is nonnullable, but it is nullable
-    taHelped: qm.taHelped && userCourseModelToUserPartial(qm.taHelped),
+    taHelped: qm.taHelped && userModelToUserPartial(qm.taHelped),
     closedAt: qm.closedAt,
     questionType: qm.questionType,
     // TODO: helpedAt: property not required in types, but required by JOI
@@ -144,15 +144,6 @@ function userModelToUserPartial(um: UserModel): UserPartial {
     name: um.name,
     // TODO: photoURL: property not required in types, but required by JOI
     photoURL: um.photoURL,
-  };
-}
-
-function userCourseModelToUserPartial(ucm: UserCourseModel): UserPartial {
-  return {
-    id: ucm.user.id,
-    name: ucm.user.name,
-    // TODO: photoURL: property not required in types, but required by JOI
-    photoURL: ucm.user.photoURL,
   };
 }
 

@@ -6,4 +6,4 @@ items:
     createdAt: "{{date.recent}}"
     questionType: "Other"
     status: "Queued"
-    creatorId: "@ucm1"
+    creatorId: "@user1"

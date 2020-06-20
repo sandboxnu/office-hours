@@ -41,7 +41,7 @@ export class CourseModel extends BaseEntity {
   name: string;
 
   @Column("text")
-  icalUrl: string;
+  icalURL: string;
 
   @OneToMany((type) => UserCourseModel, (ucm) => ucm.course)
   userCourses: UserCourseModel;

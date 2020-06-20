@@ -37,7 +37,7 @@ export function parseIcal(
  * @param course to parse
  */
 export async function updateCalendarForCourse(course: CourseModel) {
-  const officeHours = parseIcal(await ical.fromURL(course.icalUrl), course.id);
+  const officeHours = parseIcal(await ical.fromURL(course.icalURL), course.id);
   await OfficeHourModel.save(officeHours.map((e) => OfficeHourModel.create(e)));
 }
 
