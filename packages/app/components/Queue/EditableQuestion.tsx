@@ -1,5 +1,7 @@
 import { Question, QuestionType } from "@template/common";
 import styled from "styled-components";
+import { Button, Tooltip, Card } from "antd";
+import { EditOutlined } from "@ant-design/icons";
 
 const SpotNum = styled.div`
   font-size: 38px;
@@ -14,6 +16,14 @@ const QuestionText = styled.div`
   color: #595959;
 `;
 
+const EditButton = styled(Button)`
+  float: right;
+`;
+
+const EditableQuestionCard = styled(Card)`
+  margin-top: 115px;
+`;
+
 interface EditableQuestionProps {
   position: number;
   type: QuestionType;
@@ -25,13 +35,14 @@ export default function EditableQuestion({
   text,
 }: EditableQuestionProps) {
   return (
-    <div>
+    <EditableQuestionCard>
+      <EditButton type="link" icon={<EditOutlined />} onclick={() => {}} />
       <div>Your spot</div>
       <SpotNum>{position}</SpotNum>
       <div>TYPE</div>
       <div>{type}</div>
       <div>QUESTION</div>
       <QuestionText>{text}</QuestionText>
-    </div>
+    </EditableQuestionCard>
   );
 }
