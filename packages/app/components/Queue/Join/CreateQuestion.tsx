@@ -15,7 +15,7 @@ export default function CreateQuestion({ place }: CreateQuestionProps) {
     <div>
       <Row>
         <PlaceInLineAlert
-          message={`You are currently ${place}th in queue`}
+          message={`You are currently ${place}rd in queue`}
           type="success"
           description="Your spot in queue has been temporarily reserved. Please describe your question to finish joining the queue."
           showIcon
