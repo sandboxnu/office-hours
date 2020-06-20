@@ -68,6 +68,7 @@ export default function Queue({}: QueueProps) {
    */
   const getQuestions = async () => {
     const q = await API.questions.index(queueId);
+    console.log(q);
 
     if (queueId && q) {
       setQuestions(q);
