@@ -52,9 +52,11 @@ describe("Queue Routes", () => {
     });
     it("POST new question", async () => {
       const server = getServer();
+      const queue = await QueueFactory.create();
+
       const request = await server.inject({
         method: "post",
-        url: "/api/v1/queues/1/questions",
+        url: `/api/v1/queues/${queue.id}/questions`,
         payload: {
           text: "Don't know recursion",
           questionType: "Concept",
@@ -67,9 +69,9 @@ describe("Queue Routes", () => {
         helpedAt: null,
         closedAt: null,
         questionType: "Concept",
-        status: "Queued",
+        status: "Drafing",
       });
-      expect(QuestionModel.count({ where: { queueId: 1 } })).toEqual(1);
+      expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(1);
     });
     it("POST new question fails with bad params", async () => {
       await expectWithServer({

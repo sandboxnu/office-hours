@@ -11,6 +11,8 @@ import {
   UserPartial,
   QuestionStatus,
   QuestionStatusKeys,
+  QuestionType,
+  CreateQuestionParams,
 } from "@template/common";
 import { MOCK_CREATE_QUESTION_RESPONSE } from "../mocks/createQuestion";
 import {
@@ -21,6 +23,9 @@ import { MOCK_GET_QUESTION_RESPONSE } from "../mocks/getQuestion";
 import { QuestionModel } from "../entity/QuestionModel";
 import { UserCourseModel } from "../entity/UserCourseModel";
 import { UserModel } from "../entity/UserModel";
+import { QueueModel } from "../entity/QueueModel";
+import { CourseModel } from "../entity/CourseModel";
+import { head } from "lodash";
 
 export const queueRoutes: ServerRoute[] = [
   {
@@ -59,11 +64,39 @@ export const queueRoutes: ServerRoute[] = [
   {
     method: "POST",
     path: "/api/v1/queues/{queue_id}/questions",
+    // TODO: Add request validations
     handler: async (
-      request
+      request,
+      h
     ): Promise<CreateQuestionResponse | ResponseObject> => {
-      // TODO: Add request validations
-      return MOCK_CREATE_QUESTION_RESPONSE;
+      // TODO: Remove this once we implemntent user authentication
+      const DEFAULT_USER = await UserModel.create({
+        id: 42,
+        username: "test_user",
+        email: "test_user@husky.neu.edu",
+        name: "Test User",
+        photoURL: "www.photoURL.com",
+      }).save();
+      const queueSize = await QueueModel.count({
+        where: { id: request.params.queue_id },
+      });
+      // Check that the queue model exists
+      if (queueSize === 0) {
+        return h.response("Queue not found").code(404);
+      }
+      // TODO: Check that the user posting the question is a member of the course
+
+      const { text, questionType } = request.payload as CreateQuestionParams;
+      const question = await QuestionModel.create({
+        queueId: parseInt(request.params.queue_id),
+        creator: DEFAULT_USER,
+        text,
+        questionType,
+        status: QuestionStatusKeys.Drafting,
+      }).save();
+
+      question.creator = DEFAULT_USER;
+      return h.response(questionModelToQuestion(question)).code(201);
     },
     options: {
       response: {
@@ -130,7 +163,7 @@ function questionModelToQuestion(qm: QuestionModel): Question {
     status: parseStatus(qm.status),
     text: qm.text,
     // qm.taHelped: types says is nonnullable, but it is nullable
-    taHelped: qm.taHelped && userModelToUserPartial(qm.taHelped),
+    taHelped: qm.taHelped ? userModelToUserPartial(qm.taHelped) : null,
     closedAt: qm.closedAt,
     questionType: qm.questionType,
     // TODO: helpedAt: property not required in types, but required by JOI
