@@ -5,6 +5,7 @@ import {
   BaseEntity,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
 } from "typeorm";
 import { UserCourseModel } from "./UserCourseModel";
 import { QueueModel } from "./QueueModel";
@@ -39,7 +40,7 @@ export class QuestionModel extends BaseEntity {
   @Column({ nullable: true })
   taHelpedId: number;
 
-  @Column()
+  @CreateDateColumn()
   createdAt: Date;
 
   @Column({ nullable: true })

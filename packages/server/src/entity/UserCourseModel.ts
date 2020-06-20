@@ -9,9 +9,8 @@ import {
 } from "typeorm";
 import { CourseModel } from "./CourseModel";
 import { QueueModel } from "./QueueModel";
-import { QuestionType } from "@template/common";
+import { QuestionType, Role } from "@template/common";
 import { UserModel } from "./UserModel";
-import { Role } from "@template/common";
 
 @Entity("user_course_model")
 export class UserCourseModel extends BaseEntity {
