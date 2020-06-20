@@ -16,7 +16,7 @@ describe("Queue Routes", () => {
   const expectWithServer = withServer(getServer);
 
   describe("/queues/{queue_id}/questions", () => {
-    it("GET fundies success", async () => {
+    it("GET question success", async () => {
       const q = await QuestionFactory.create({ text: "Help pls" });
 
       const request = await getServer().inject({
@@ -42,19 +42,28 @@ describe("Queue Routes", () => {
       ]);
     });
     // TODO: is this test supposed to fail now?
-    it("GET fundies fail", async () => {
-      await expectWithServer({
+    it("GET questions fail with non-exisitant queue", async () => {
+      const queue = await QueueFactory.create();
+      const request = await getServer().inject({
         method: "get",
-        url: "/api/v1/queues/999/questions",
-        statusCode: 404,
-        result: "no questions were found",
+        url: `/api/v1/queues/999/questions`,
       });
+      expect(request.statusCode).toEqual(404);
+      expect(request.result).toEqual("");
+    });
+    it("GET questions returns empty list", async () => {
+      const queue = await QueueFactory.create();
+      const request = await getServer().inject({
+        method: "get",
+        url: `/api/v1/queues/${queue.id}/questions`,
+      });
+      expect(request.statusCode).toEqual(200);
+      expect(request.result).toEqual([]);
     });
     it("POST new question", async () => {
-      const server = getServer();
       const queue = await QueueFactory.create();
 
-      const request = await server.inject({
+      const request = await getServer().inject({
         method: "post",
         url: `/api/v1/queues/${queue.id}/questions`,
         payload: {
@@ -69,7 +78,7 @@ describe("Queue Routes", () => {
         helpedAt: null,
         closedAt: null,
         questionType: "Concept",
-        status: "Drafing",
+        status: "Drafting",
       });
       expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(1);
     });
@@ -85,6 +94,10 @@ describe("Queue Routes", () => {
           statusCode: 400,
         },
       });
+    });
+    it.skip("PATCH question fails when you are not the question creator", async () => {
+      // TODO
+      // expect(request.statusCode).toEqual(401);
     });
   });
 
