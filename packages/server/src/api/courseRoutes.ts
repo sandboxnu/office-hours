@@ -28,7 +28,7 @@ export const courseRoutes: ServerRoute[] = [
       });
       return {
         name: course.name,
-        officeHours: (await course.officeHours).map((e) =>
+        officeHours: course.officeHours.map((e) =>
           pick(e, ["id", "title", "room", "startTime", "endTime"])
         ),
       };

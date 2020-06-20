@@ -122,17 +122,15 @@ export const queueRoutes: ServerRoute[] = [
 
 // for some reason, JOI.allow(null) means the property has to exist, but can be null
 
-async function questionModelToQuestion(qm: QuestionModel): Promise<Question> {
+function questionModelToQuestion(qm: QuestionModel): Question {
   return {
-    creator: await userModelToUserPartial(await (await qm.creator).user),
+    creator: userModelToUserPartial(qm.creator.user),
     id: qm.id,
     createdAt: qm.createdAt,
     status: parseStatus(qm.status),
     text: qm.text,
     // qm.taHelped: types says is nonnullable, but it is nullable
-    taHelped:
-      (await qm.taHelped) &&
-      (await userCourseModelToUserPartial(await qm.taHelped)),
+    taHelped: qm.taHelped && userCourseModelToUserPartial(qm.taHelped),
     closedAt: qm.closedAt,
     questionType: qm.questionType,
     // TODO: helpedAt: property not required in types, but required by JOI
@@ -140,7 +138,7 @@ async function questionModelToQuestion(qm: QuestionModel): Promise<Question> {
   };
 }
 
-async function userModelToUserPartial(um: UserModel): Promise<UserPartial> {
+function userModelToUserPartial(um: UserModel): UserPartial {
   return {
     id: um.id,
     name: um.name,
@@ -149,14 +147,12 @@ async function userModelToUserPartial(um: UserModel): Promise<UserPartial> {
   };
 }
 
-async function userCourseModelToUserPartial(
-  ucm: UserCourseModel
-): Promise<UserPartial> {
+function userCourseModelToUserPartial(ucm: UserCourseModel): UserPartial {
   return {
-    id: (await ucm.user).id,
-    name: (await ucm.user).name,
+    id: ucm.user.id,
+    name: ucm.user.name,
     // TODO: photoURL: property not required in types, but required by JOI
-    photoURL: (await ucm.user).photoURL,
+    photoURL: ucm.user.photoURL,
   };
 }
 
