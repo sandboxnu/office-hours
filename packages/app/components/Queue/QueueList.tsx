@@ -1,8 +1,17 @@
-import { QuestionType } from "@template/common";
-import { Button, Row, Card, Col } from "antd";
+import {
+  Role,
+  Question,
+  QuestionStatus,
+  OpenQuestionStatus,
+  ClosedQuestionStatus,
+} from "@template/common";
+import { Button, Row, Card, Col, Grid } from "antd";
 import styled from "styled-components";
 import QueueCard from "./QueueCard";
-import Link from "next/link";
+import GroupQuestions from "./GroupQuestions";
+import StudentInfoCard from "./StudentInfoCard";
+
+const { useBreakpoint } = Grid;
 
 const StatusText = styled.div`
   font-size: 14px;
@@ -15,7 +24,12 @@ const StatusText = styled.div`
   margin-right: 0;
 `;
 
-const HeaderCard = styled(Card)`
+const TAHeaderCard = styled(Card)`
+  height: 64px;
+  background: inherit;
+`;
+
+const StudentHeaderCard = styled(Card)`
   height: 64px;
   padding-left: 8px;
   padding-right: 8px;
@@ -42,21 +56,137 @@ const CenterRow = styled(Row)`
   justify-content: space-between;
 `;
 
-interface QueueListProps {}
+const Placeholder = styled.div`
+  width: 14px;
+`;
 
-export default function QueueList({}: QueueListProps) {
-  return (
-    <div>
-      <Row justify="space-between">
-        <QueueTitle>Queue 1</QueueTitle>
-        <Link href="/queue/join">
-          <Button type="primary" size="large">
-            Join Queue
-          </Button>
-        </Link>
-      </Row>
+const AlertButton = styled(Button)`
+  margin-right: 12px;
+`;
 
-      <HeaderCard bordered={false}>
+const HeaderRow = styled(Row)`
+  margin-bottom: 64px;
+`;
+
+interface QueueListProps {
+  role: Role;
+  onOpenClick: (question: Question) => void;
+  joinQueue: () => void;
+  updateQuestionTA: (question: Question, status: QuestionStatus) => void;
+  alertStudent: (question: Question) => void;
+  questions: Question[];
+  helpingQuestions: Question[];
+  groupQuestions: Question[];
+}
+
+export default function QueueList({
+  role,
+  onOpenClick,
+  joinQueue,
+  updateQuestionTA,
+  alertStudent,
+  questions,
+  helpingQuestions,
+  groupQuestions,
+}: QueueListProps) {
+  const helping = helpingQuestions.length !== 0;
+  const screens = useBreakpoint();
+
+  /**
+   * Sends a push notification alert to every question currently being helped.
+   */
+  const alertHelpingAll = () => {
+    // for each question currently being helped, call alertStudent()
+  };
+
+  /**
+   * Marks every question currently being helped by this TA as finished.
+   */
+  const finishHelpingAll = () => {
+    for (let question of helpingQuestions) {
+      updateQuestionTA(question, ClosedQuestionStatus.Resolved);
+    }
+  };
+
+  /**
+   * Adds every given question to the group that is currently being helped.
+   * @param selected the given list of questions to help
+   */
+  const addQuestionsToHelp = (selected: Question[]) => {
+    for (let question of selected) {
+      updateQuestionTA(question, OpenQuestionStatus.Helping);
+    }
+  };
+
+  /**
+   * Renders the card headers for a TA who is not yet helping someone.
+   */
+  const renderTAHeader = () => {
+    return (
+      <TAHeaderCard bordered={false}>
+        <CenterRow justify="space-between">
+          <Col xs={2} lg={1}>
+            <HeaderText>#</HeaderText>
+          </Col>
+          <Col xs={14} sm={11} lg={5}>
+            <HeaderText>name</HeaderText>
+          </Col>
+          <Col xs={0} lg={2}>
+            <HeaderText>type</HeaderText>
+          </Col>
+          <Col xs={0} lg={7}>
+            <HeaderText>question</HeaderText>
+          </Col>
+          <Col xs={0} lg={2}>
+            <HeaderText>wait</HeaderText>
+          </Col>
+          <Col span={2}>
+            <StatusText>status</StatusText>
+          </Col>
+          <Col>
+            <Placeholder />
+          </Col>
+        </CenterRow>
+      </TAHeaderCard>
+    );
+  };
+
+  /**
+   * Renders the card headers for a TA who is currently helping someone.
+   */
+  const renderHelpingHeader = () => {
+    return (
+      <TAHeaderCard bordered={false}>
+        <CenterRow justify="space-between">
+          <Col xs={2} lg={1}>
+            <HeaderText>#</HeaderText>
+          </Col>
+          <Col xs={14} sm={9} lg={11} xl={9} xxl={4}>
+            <HeaderText>name</HeaderText>
+          </Col>
+          <Col xs={0} xxl={7}>
+            <HeaderText>question</HeaderText>
+          </Col>
+          <Col xs={0} xl={3}>
+            <HeaderText>wait</HeaderText>
+          </Col>
+          <Col span={2}>
+            <StatusText>status</StatusText>
+          </Col>
+          <Col>
+            <Placeholder />
+          </Col>
+        </CenterRow>
+      </TAHeaderCard>
+    );
+  };
+
+  /**
+   * Renders the card headers for a student viewing the queue.
+   */
+  const renderStudentHeader = () => {
+    return (
+      <StudentHeaderCard bordered={false}>
         <CenterRow justify="space-between">
           <Col span={1}>
             <HeaderText>#</HeaderText>
@@ -74,43 +204,79 @@ export default function QueueList({}: QueueListProps) {
             <StatusText>status</StatusText>
           </Col>
         </CenterRow>
-      </HeaderCard>
+      </StudentHeaderCard>
+    );
+  };
 
-      <QueueCard
-        rank={99}
-        name="Alex Takayama"
-        questionType={QuestionType.Bug}
-        waitTime={30}
-        status="WAITING"
-      />
-      <QueueCard
-        rank={2}
-        name="Supercalifragilistic"
-        questionType={QuestionType.Concept}
-        waitTime={30}
-        status="WAITING"
-      />
-      <QueueCard
-        rank={1}
-        name="Stanley Liu"
-        questionType={QuestionType.Setup}
-        waitTime={100}
-        status="IN PROGRESS"
-      />
-      <QueueCard
-        rank={1}
-        name="Alex Takayama"
-        questionType={QuestionType.Other}
-        waitTime={30}
-        status="WAITING"
-      />
-      <QueueCard
-        rank={1}
-        name="Alex Takayama"
-        questionType={QuestionType.Testing}
-        waitTime={30}
-        status="WAITING"
-      />
+  /**
+   * Renders the title and aggregate buttons for the helping column.
+   */
+  const renderHelpingTitle = () => {
+    return (
+      <Col xs={24} lg={10} xxl={6} order={screens.lg === false ? 1 : 2}>
+        <HeaderRow justify="space-between">
+          <QueueTitle>Helping</QueueTitle>
+          <div>
+            <AlertButton danger size="large" onClick={alertHelpingAll}>
+              Alert All
+            </AlertButton>
+            <Button type="primary" size="large" onClick={finishHelpingAll}>
+              Finish All
+            </Button>
+          </div>
+        </HeaderRow>
+        {helpingQuestions &&
+          helpingQuestions.map((question) => (
+            <StudentInfoCard
+              key={question.id}
+              updateQuestion={updateQuestionTA}
+              alertStudent={alertStudent}
+              question={question}
+            />
+          ))}
+        {groupQuestions && groupQuestions.length !== 0 && (
+          <GroupQuestions
+            questions={groupQuestions}
+            addQuestions={addQuestionsToHelp}
+          />
+        )}
+      </Col>
+    );
+  };
+
+  return (
+    <div>
+      <Row gutter={[64, 64]}>
+        <Col flex="auto" order={screens.lg === false ? 2 : 1}>
+          <Row justify="space-between">
+            <QueueTitle>Queue 1</QueueTitle>
+            {role === "student" && (
+              <Button type="primary" size="large" onClick={joinQueue}>
+                Join Queue
+              </Button>
+            )}
+          </Row>
+          {role === Role.TA && !helping && renderTAHeader()}
+          {role === Role.TA && helping && renderHelpingHeader()}
+          {role === Role.STUDENT && renderStudentHeader()}
+
+          {questions.map((question: Question, index: number) => {
+            const creator = question.creator;
+            return (
+              <QueueCard
+                key={question.id}
+                helping={helping}
+                role={role}
+                rank={index + 1}
+                waitTime={30} //figure out later
+                question={question}
+                onOpen={onOpenClick}
+              />
+            );
+          })}
+        </Col>
+        {role === "ta" && helping && renderHelpingTitle()}
+      </Row>
     </div>
   );
 }

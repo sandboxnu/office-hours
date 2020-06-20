@@ -8,13 +8,14 @@ import {
   OneToMany,
 } from "typeorm";
 import { CourseModel } from "./CourseModel";
+import { QuestionModel } from "./QuestionModel";
 
-@Entity("office_hour")
-export class OfficeHourModel extends BaseEntity {
+@Entity("queue_model")
+export class QueueModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne((type) => CourseModel, (course) => course.officeHours)
+  @ManyToOne((type) => CourseModel, (course) => course.queues)
   @JoinColumn({ name: "courseId" })
   course: Promise<CourseModel>;
 
@@ -22,14 +23,10 @@ export class OfficeHourModel extends BaseEntity {
   courseId: number;
 
   @Column("text")
-  title: string;
-
-  @Column("text")
   room: string;
 
-  @Column()
-  startTime: Date;
+  @OneToMany((type) => QuestionModel, (qm) => qm.queue)
+  questions: Promise<QuestionModel[]>;
 
-  @Column()
-  endTime: Date;
+  // TODO: eventually figure out how staff get sent to FE as well
 }

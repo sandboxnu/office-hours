@@ -1,22 +1,27 @@
 import { ServerRoute, ResponseObject } from "@hapi/hapi";
 import Joi from "@hapi/joi";
-import { CourseSchema, QueueSchema } from "../joi";
+import { CourseSchema, QueueSchema, CourseQueueSchema } from "../joi";
 import { CourseModel } from "../entity/CourseModel";
-import { pick } from "lodash";
+import { QueueModel } from "../entity/QueueModel";
+import { pick, cloneDeep } from "lodash";
 import {
   TAUpdateStatusParams,
   TAUpdateStatusResponse,
   GetCourseResponse,
+  GetCourseQueuesResponse,
+  OpenQuestionStatus,
 } from "@template/common";
 import {
   MOCK_TA_UPDATE_STATUS_ARRIVED_RESPONSE,
   MOCK_TA_UPDATE_STATUS_DEPARTED_RESPONSE,
 } from "../mocks/taUpdateStatus";
+import { MOCK_GET_COURSE_RESPONSE } from "../mocks/getCourse";
+import { QuestionModel } from "../entity/QuestionModel";
 
 export const courseRoutes: ServerRoute[] = [
   {
     method: "GET",
-    path: "/api/v1/courses/{course_id}",
+    path: "/api/v1/courses/{course_id}/schedule",
     handler: async (request, h): Promise<GetCourseResponse> => {
       const course = await CourseModel.findOne(request.params.course_id, {
         relations: ["officeHours"],
@@ -31,6 +36,34 @@ export const courseRoutes: ServerRoute[] = [
     options: {
       response: {
         schema: CourseSchema.options({ presence: "required" }),
+      },
+    },
+  },
+  {
+    method: "GET",
+    path: "/api/v1/courses/{course_id}/queues",
+    handler: async (request, h): Promise<GetCourseQueuesResponse> => {
+      const queues = await QueueModel.find({
+        // TODO: Add another where clause to get only the open queues
+        // Pseudo code: { staffList > 1 || there are currently open office hours }
+        where: { course_id: request.params.course_id },
+      });
+
+      for (let queue of queues) {
+        queue["queueSize"] = await QuestionModel.count({
+          where: { queueId: queue.id },
+        });
+        // TODO: Fill this in with real data
+        queue["staffList"] = MOCK_GET_COURSE_RESPONSE.queues[0].staffList;
+      }
+
+      return queues.map((queue: any) =>
+        pick(queue, ["id", "room", "staffList", "queueSize"])
+      );
+    },
+    options: {
+      response: {
+        schema: CourseQueueSchema.options({ presence: "required" }),
       },
     },
   },

@@ -86,3 +86,12 @@ export const CourseSchema = Joi.object({
   officeHours: Joi.array().items(OfficeHourBlockSchema),
   // queues: Joi.array().items(QueueSchema),
 });
+
+export const CourseQueueSchema = Joi.array().items(
+  Joi.object({
+    id: Joi.number(),
+    room: Joi.string(),
+    staffList: Joi.array().items(UserPartialSchema),
+    queueSize: Joi.number(),
+  })
+);

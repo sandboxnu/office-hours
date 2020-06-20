@@ -29,6 +29,8 @@ export interface GetCourseResponse {
   queues?: Queue[];
 }
 
+export type GetCourseQueuesResponse = QueuePartial[];
+
 export type ListQuestionsResponse = Question[];
 
 export type GetQuestionResponse = Question;
@@ -116,8 +118,17 @@ export type CoursePartial = {
  */
 export type UserCourse = {
   course: CoursePartial;
-  role: "student" | "ta" | "professor";
+  role: Role;
 };
+
+/**
+ * Represents one of three possible user roles in a course.
+ */
+export enum Role {
+  STUDENT = "student",
+  TA = "ta",
+  PROFESSOR = "professor",
+}
 
 /**
  * Represents an Office Hour block as assigned on the course calendar.
@@ -147,7 +158,7 @@ interface OfficeHourBlock {
  * @param staffList - The list of TA user's that are currently helping at office hours.
  * @param questions - The list of the students questions assocaited with the queue.
  */
-interface Queue {
+export interface Queue {
   id: number;
   course: CoursePartial;
   room: string;
@@ -155,6 +166,20 @@ interface Queue {
   closedAt?: Date;
   staffList: UserPartial[];
   questions: Question[];
+}
+
+/**
+ * A Queue partial to be shown on the today page.
+ * @param id - The unique id number for a Queue.
+ * @param room - The full name of the building + room # that the current office hours queue is in.
+ * @param staffList - The list of TA user's that are currently helping at office hours.
+ */
+export interface QueuePartial {
+  id: number;
+  room: string;
+  staffList: UserPartial[];
+  queueSize: number;
+  // TODO: Add wait time?
 }
 
 /**
@@ -191,15 +216,42 @@ export enum QuestionType {
   Other = "Other",
 }
 
+// TODO: See if we want to do it this way later
+// export type QuestionStatus =
+//   | {
+//       type: QuestionStatusType.Open;
+//       status: OpenQuestionStatus;
+//     }
+//   | {
+//       type: QuestionStatusType.Closed;
+//       status: ClosedQuestionStatus;
+//     };
+
+// export enum QuestionStatusType {
+//   Open = "Open",
+//   Closed = "Closed",
+// }
+
+export enum OpenQuestionStatus {
+  Drafting = "Drafting",
+  Queued = "Queued",
+  Helping = "Helping",
+}
+
+export enum ClosedQuestionStatus {
+  Resolved = "Resolved",
+  Deferred = "Deferred",
+  NoShow = "NoShow",
+  Deleted = "Deleted",
+}
+
 // Ticket Status - Represents a given status of as student's ticket
-type QuestionStatus =
-  | "Drafting"
-  | "Queued"
-  | "Helping"
-  | "Resolved"
-  | "Deferred"
-  | "No Show"
-  | "Deleted";
+export type QuestionStatus = keyof typeof QuestionStatusKeys;
+// an Enum-like constant that contains all the statuses for convenience.
+export const QuestionStatusKeys = {
+  ...OpenQuestionStatus,
+  ...ClosedQuestionStatus,
+};
 
 /**
  * A Semester object, representing a schedule semester term for the purposes of a course.
@@ -214,4 +266,4 @@ interface Semester {
 /**
  * Represents one of the seasons in which a course can take place.
  */
-type Season = "Fall" | "Spring" | "Summer 1" | "Summer 2";
+export type Season = "Fall" | "Spring" | "Summer 1" | "Summer 2";

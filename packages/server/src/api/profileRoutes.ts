@@ -1,5 +1,4 @@
 import { ServerRoute } from "@hapi/hapi";
-import Joi from "@hapi/joi";
 import { UserSchema } from "../joi";
 import { GetProfileResponse } from "@template/common";
 import { MOCK_GET_PROFILE_RESPONSE } from "../mocks/getProfile";
