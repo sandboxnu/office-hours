@@ -14,6 +14,7 @@ import StudentPopupCard from "../components/Queue/StudentPopupCard";
 import { useCallback, useState, useContext, useEffect, Fragment } from "react";
 import { API } from "@template/api-client";
 import { ProfileContext } from "../contexts/ProfileContextProvider";
+import EditableQuestion from "../components/Queue/EditableQuestion";
 
 // TODO: replace this with profile role from endpoint
 const ROLE: Role = Role.TA;
@@ -62,6 +63,7 @@ export default function Queue({}: QueueProps) {
    */
   const getQuestions = async () => {
     const q = await API.questions.index(queueId);
+    console.log(q);
 
     if (queueId && q) {
       setQuestions(q);
@@ -203,6 +205,13 @@ export default function Queue({}: QueueProps) {
               location="Outside by the printer" // need a way to access this
               visible={openPopup}
               updateQuestion={updateQuestionTA}
+            />
+          )}
+          {ROLE === "student" && (
+            <EditableQuestion
+              position={1}
+              type={QuestionType.Bug}
+              text={"How to change the font"}
             />
           )}
         </Fragment>
