@@ -18,7 +18,7 @@ export class QuestionModel extends BaseEntity {
 
   @ManyToOne((type) => QueueModel, (q) => q.questions)
   @JoinColumn({ name: "queueId" })
-  queue: Promise<QueueModel>;
+  queue: QueueModel;
 
   @Column({ nullable: true })
   queueId: number;
@@ -28,14 +28,14 @@ export class QuestionModel extends BaseEntity {
 
   @ManyToOne((type) => UserCourseModel)
   @JoinColumn({ name: "creatorId" })
-  creator: Promise<UserCourseModel>;
+  creator: UserCourseModel;
 
   @Column({ nullable: true })
   creatorId: number;
 
   @ManyToOne((type) => UserCourseModel)
   @JoinColumn({ name: "taHelpedId" })
-  taHelped: Promise<UserCourseModel>;
+  taHelped: UserCourseModel;
 
   @Column({ nullable: true })
   taHelpedId: number;

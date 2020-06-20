@@ -27,5 +27,5 @@ export class UserModel extends BaseEntity {
   photoURL: string;
 
   @OneToMany((type) => UserCourseModel, (ucm) => ucm.user)
-  courses: Promise<UserCourseModel[]>;
+  courses: UserCourseModel[];
 }

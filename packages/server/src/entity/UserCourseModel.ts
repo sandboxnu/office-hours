@@ -19,14 +19,14 @@ export class UserCourseModel extends BaseEntity {
 
   @ManyToOne((type) => UserModel, (user) => user.courses)
   @JoinColumn({ name: "userId" })
-  user: Promise<UserModel>;
+  user: UserModel;
 
   @Column({ nullable: true })
   userId: number;
 
   @ManyToOne((type) => CourseModel, (course) => course.userCourses)
   @JoinColumn({ name: "courseId" })
-  course: Promise<CourseModel>;
+  course: CourseModel;
 
   // TODO: can we make this not nullable?
   @Column({ nullable: true })

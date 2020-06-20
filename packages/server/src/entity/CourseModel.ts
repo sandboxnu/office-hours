@@ -32,10 +32,10 @@ export class CourseModel extends BaseEntity {
   id: number;
 
   @OneToMany((type) => OfficeHourModel, (oh) => oh.course)
-  officeHours: Promise<OfficeHourModel[]>;
+  officeHours: OfficeHourModel[];
 
   @OneToMany((type) => QueueModel, (q) => q.course)
-  queues: Promise<QueueModel[]>;
+  queues: QueueModel[];
 
   @Column("text")
   name: string;
@@ -44,7 +44,7 @@ export class CourseModel extends BaseEntity {
   icalUrl: string;
 
   @OneToMany((type) => UserCourseModel, (ucm) => ucm.course)
-  userCourses: Promise<UserCourseModel>;
+  userCourses: UserCourseModel;
 
   @ManyToOne((type) => SemesterModel, (semester) => semester.courses)
   @JoinColumn({ name: "semesterId" })
