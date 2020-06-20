@@ -46,10 +46,10 @@ describe("Queue Routes", () => {
       const queue = await QueueFactory.create();
       const request = await getServer().inject({
         method: "get",
-        url: `/api/v1/queues/999/questions`,
+        url: "/api/v1/queues/999/questions",
       });
       expect(request.statusCode).toEqual(404);
-      expect(request.result).toEqual("");
+      expect(request.result).toEqual("Queue not found");
     });
     it("GET questions returns empty list", async () => {
       const queue = await QueueFactory.create();
