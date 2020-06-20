@@ -47,11 +47,7 @@ export const queueRoutes: ServerRoute[] = [
         relations: ["creator", "taHelped"],
       });
 
-      if (questions.length === 0) {
-        return h.response("no questions were found").code(404);
-      }
-
-      return await Promise.all(questions.map(questionModelToQuestion));
+      return questions.map(questionModelToQuestion);
     },
     options: {
       response: {
