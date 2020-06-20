@@ -1,8 +1,10 @@
-import React from "react";
-import { Question, Role } from "@template/common";
+import React, { useMemo } from "react";
+import { Question, Role, QuestionType } from "@template/common";
 import styled from "styled-components";
 import { Row, Col, Card, Button, Grid } from "antd";
 import QueueCard from "./QueueCard";
+import EditableQuestion from "./EditableQuestion";
+import QuestionForm from "./QuestionForm";
 const { useBreakpoint } = Grid;
 
 const StatusText = styled.div`
@@ -43,6 +45,10 @@ const CenterRow = styled(Row)`
   justify-content: space-between;
 `;
 
+const HeaderRow = styled(Row)`
+  margin-bottom: 64px;
+`;
+
 interface StudentQueueListProps {
   joinQueue: () => void;
   studentQuestion: Question;
@@ -60,6 +66,19 @@ export default function StudentQueueList({
 }: StudentQueueListProps) {
   const helping = helpingQuestions.length !== 0;
   const screens = useBreakpoint();
+
+  const renderEditableQuestion = () => {
+    return (
+      <Col xs={24} lg={10} xxl={6} order={screens.lg === false ? 1 : 2}>
+        <HeaderRow></HeaderRow>
+        <EditableQuestion
+          position={3}
+          type={QuestionType.Concept}
+          text={"I don't under stand when to use an accumulator"}
+        />
+      </Col>
+    );
+  };
 
   return (
     <div>
@@ -104,6 +123,7 @@ export default function StudentQueueList({
             );
           })}
         </Col>
+        {studentQuestion && renderEditableQuestion()}
       </Row>
     </div>
   );
