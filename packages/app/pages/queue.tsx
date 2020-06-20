@@ -15,9 +15,11 @@ import { useCallback, useState, useContext, useEffect, Fragment } from "react";
 import { API } from "@template/api-client";
 import { ProfileContext } from "../contexts/ProfileContextProvider";
 import EditableQuestion from "../components/Queue/EditableQuestion";
+import StudentQueueList from "../components/Queue/StudentQueueList";
+import TAQueueList from "../components/Queue/TAQueueList";
 
 // TODO: replace this with profile role from endpoint
-const ROLE: Role = Role.TA;
+const ROLE: Role = Role.STUDENT;
 
 const Container = styled.div`
   margin: 32px 64px;
@@ -48,7 +50,9 @@ export default function Queue({}: QueueProps) {
     if (profile) {
       const selectedCourse: UserCourse = profile.courses[0];
       setCourse(selectedCourse);
-      setQueueId(selectedCourse.course.id);
+      // course id is not = queue id
+      getQueueIdFromCourse(selectedCourse.course.id);
+      //setQueueId(selectedCourse.course.id);
     }
   }, [profile]);
 
@@ -58,10 +62,18 @@ export default function Queue({}: QueueProps) {
     }
   }, [queueId]);
 
+  const getQueueIdFromCourse = async (courseId) => {
+    const q = await API.course.queues(courseId);
+    if (q) {
+      setQueueId(q[0].id);
+    }
+  };
+
   /**
    * Gets the questions for this course
    */
   const getQuestions = async () => {
+    console.log("here");
     const q = await API.questions.index(queueId);
     console.log(q);
 
@@ -186,16 +198,25 @@ export default function Queue({}: QueueProps) {
     <Container>
       {!isJoining && (
         <Fragment>
-          <QueueList
-            role={ROLE}
-            onOpenClick={onOpenClick}
-            joinQueue={joinQueue}
-            updateQuestionTA={updateQuestionTA}
-            alertStudent={alertStudent}
-            questions={questions}
-            helpingQuestions={helpingQuestions}
-            groupQuestions={groupQuestions}
-          />
+          {Role.STUDENT === ROLE ? (
+            <StudentQueueList
+              onOpenClick={onOpenClick}
+              joinQueue={joinQueue}
+              questions={questions}
+              helpingQuestions={helpingQuestions}
+              studentQuestion={questions[0]}
+            />
+          ) : (
+            <TAQueueList
+              onOpenClick={onOpenClick}
+              joinQueue={joinQueue}
+              updateQuestionTA={updateQuestionTA}
+              alertStudent={alertStudent}
+              questions={questions}
+              helpingQuestions={helpingQuestions}
+              groupQuestions={groupQuestions}
+            />
+          )}
           {ROLE === "ta" && currentQuestion && (
             <StudentPopupCard
               onClose={onCloseClick}

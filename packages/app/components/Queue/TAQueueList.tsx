@@ -29,13 +29,6 @@ const TAHeaderCard = styled(Card)`
   background: inherit;
 `;
 
-const StudentHeaderCard = styled(Card)`
-  height: 64px;
-  padding-left: 8px;
-  padding-right: 8px;
-  background: inherit;
-`;
-
 const HeaderText = styled.div`
   font-size: 14px;
   line-height: 22px;
@@ -69,7 +62,6 @@ const HeaderRow = styled(Row)`
 `;
 
 interface QueueListProps {
-  role: Role;
   onOpenClick: (question: Question) => void;
   joinQueue: () => void;
   updateQuestionTA: (question: Question, status: QuestionStatus) => void;
@@ -79,8 +71,7 @@ interface QueueListProps {
   groupQuestions: Question[];
 }
 
-export default function QueueList({
-  role,
+export default function TAQueueList({
   onOpenClick,
   joinQueue,
   updateQuestionTA,
@@ -182,33 +173,6 @@ export default function QueueList({
   };
 
   /**
-   * Renders the card headers for a student viewing the queue.
-   */
-  const renderStudentHeader = () => {
-    return (
-      <StudentHeaderCard bordered={false}>
-        <CenterRow justify="space-between">
-          <Col span={1}>
-            <HeaderText>#</HeaderText>
-          </Col>
-          <Col xs={16} sm={11} lg={6}>
-            <HeaderText>name</HeaderText>
-          </Col>
-          <Col xs={0} lg={2}>
-            <HeaderText>type</HeaderText>
-          </Col>
-          <Col span={2}>
-            <HeaderText>wait</HeaderText>
-          </Col>
-          <Col xs={0} lg={2}>
-            <StatusText>status</StatusText>
-          </Col>
-        </CenterRow>
-      </StudentHeaderCard>
-    );
-  };
-
-  /**
    * Renders the title and aggregate buttons for the helping column.
    */
   const renderHelpingTitle = () => {
@@ -250,15 +214,9 @@ export default function QueueList({
         <Col flex="auto" order={screens.lg === false ? 2 : 1}>
           <Row justify="space-between">
             <QueueTitle>Queue 1</QueueTitle>
-            {role === "student" && (
-              <Button type="primary" size="large" onClick={joinQueue}>
-                Join Queue
-              </Button>
-            )}
           </Row>
-          {role === Role.TA && !helping && renderTAHeader()}
-          {role === Role.TA && helping && renderHelpingHeader()}
-          {role === Role.STUDENT && renderStudentHeader()}
+          {!helping && renderTAHeader()}
+          {helping && renderHelpingHeader()}
 
           {questions.map((question: Question, index: number) => {
             const creator = question.creator;
@@ -266,7 +224,7 @@ export default function QueueList({
               <QueueCard
                 key={question.id}
                 helping={helping}
-                role={role}
+                role={Role.TA}
                 rank={index + 1}
                 waitTime={30} //figure out later
                 question={question}
@@ -275,7 +233,7 @@ export default function QueueList({
             );
           })}
         </Col>
-        {role === "ta" && helping && renderHelpingTitle()}
+        {helping && renderHelpingTitle()}
       </Row>
     </div>
   );
