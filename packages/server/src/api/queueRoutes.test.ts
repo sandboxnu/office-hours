@@ -1,14 +1,7 @@
 import { setupServerTest, withServer, setupDBTest } from "../testUtils";
 import { MOCK_GET_QUESTION_RESPONSE } from "../mocks/getQuestion";
-import { MOCK_CREATE_QUESTION_RESPONSE } from "../mocks/createQuestion";
-import { QuestionType } from "@template/common";
-import { CourseModel } from "../entity/CourseModel";
-import { QueueModel } from "../entity/QueueModel";
-import { UserModel } from "../entity/UserModel";
-import { UserCourseModel } from "../entity/UserCourseModel";
 import { QuestionModel } from "../entity/QuestionModel";
-import { QuestionSchema } from "../joi";
-import { QueueFactory, QuestionFactory } from "../factory";
+import { QuestionFactory } from "../factory";
 
 describe("Queue Routes", () => {
   setupDBTest();
@@ -17,7 +10,7 @@ describe("Queue Routes", () => {
 
   describe("/queues/{queue_id}/questions", () => {
     it("GET fundies success", async () => {
-      const q = await QuestionFactory.create({ text: "Help pls" });
+      await QuestionFactory.create({ text: "Help pls" });
 
       const request = await getServer().inject({
         method: "get",

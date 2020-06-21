@@ -3,7 +3,7 @@ import Joi from "@hapi/joi";
 import { CourseSchema, QueueSchema, CourseQueueSchema } from "../joi";
 import { CourseModel } from "../entity/CourseModel";
 import { QueueModel } from "../entity/QueueModel";
-import { pick, cloneDeep } from "lodash";
+import { pick } from "lodash";
 import {
   TAUpdateStatusParams,
   TAUpdateStatusResponse,

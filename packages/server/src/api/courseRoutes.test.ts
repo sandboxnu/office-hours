@@ -7,14 +7,9 @@ import {
 } from "../mocks/taUpdateStatus";
 import { QueueModel } from "../entity/QueueModel";
 import { QuestionModel } from "../entity/QuestionModel";
-import { userInfo } from "os";
 import { UserModel } from "../entity/UserModel";
 import { UserCourseModel } from "../entity/UserCourseModel";
-import {
-  QuestionStatus,
-  OpenQuestionStatus,
-  QuestionType,
-} from "@template/common";
+import { QuestionType } from "@template/common";
 
 describe("/api/v1/courses/course_id/schedule", () => {
   setupDBTest();
