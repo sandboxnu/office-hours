@@ -1,4 +1,4 @@
-import { GetProfileResponse } from "@template/common";
+import { GetProfileResponse, Role } from "@template/common";
 
 export const MOCK_GET_PROFILE_RESPONSE: GetProfileResponse = {
   id: 258,
@@ -12,14 +12,14 @@ export const MOCK_GET_PROFILE_RESPONSE: GetProfileResponse = {
         id: 169,
         name: "CS 2500",
       },
-      role: "ta",
+      role: Role.TA,
     },
     {
       course: {
         id: 21,
         name: "CS 4500",
       },
-      role: "student",
+      role: Role.STUDENT,
     },
   ],
 };
