@@ -34,7 +34,6 @@ describe("Queue Routes", () => {
         },
       ]);
     });
-    // TODO: is this test supposed to fail now?
     it("GET fundies fail", async () => {
       await expectWithServer({
         method: "get",
@@ -45,6 +44,7 @@ describe("Queue Routes", () => {
     });
     it("POST new question", async () => {
       const server = getServer();
+      expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(0);
       const request = await server.inject({
         method: "post",
         url: "/api/v1/queues/1/questions",
@@ -62,7 +62,7 @@ describe("Queue Routes", () => {
         questionType: "Concept",
         status: "Queued",
       });
-      expect(QuestionModel.count({ where: { queueId: 1 } })).toEqual(1);
+      expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(1);
     });
     it("POST new question fails with bad params", async () => {
       await expectWithServer({
