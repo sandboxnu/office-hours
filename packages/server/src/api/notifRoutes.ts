@@ -3,18 +3,22 @@ import { NotifBody } from "@template/common";
 import { NotifModel } from "../entity/NotifModel";
 import Joi from "@hapi/joi";
 import { NotifSchema } from "../joi";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 export const notifRoutes: ServerRoute[] = [
   {
+    // endpoint to get the VAPID public key
     method: "GET",
-    path: "/service-worker.js",
-    handler: {
-      file: `service-worker.js`,
+    path: "/api/v1/notifications/credentials",
+    handler: (request, h) => {
+      return process.env.PUBLICKEY;
     },
   },
   {
     method: "POST",
-    path: "/api/v1/register-notif/{user_id}", // TODO:   make this not a param for the users lmaoooooooo soI don't spam alex with sugondese
+    path: "/api/v1/notifications/register/{user_id}", // TODO:   make this not a param for the users lmaoooooooo soI don't spam alex with sugondese
     handler: async (request, h) => {
       const payload = request.payload as NotifBody;
       await NotifModel.create({
