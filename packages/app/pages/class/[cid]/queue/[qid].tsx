@@ -41,6 +41,7 @@ export default function Queue({}: QueueProps) {
   // Student queue state variables
   const [isJoining, setIsJoining] = useState<boolean>(false);
   const [questionDraftId, setQuestionDraftId] = useState<number>(null);
+  const [studentQuestion, setStudentQuestion] = useState<Question>(null);
 
   // TA queue state variables
   const [openPopup, setOpenPopup] = useState<boolean>(false);

@@ -12,7 +12,6 @@ type QuestionContextProps = {
   updateQuestionType(q: Question, type: QuestionType): void;
   updateText(q: Question, text: string): void;
 };
-
 export const QuestionContext = createContext<Partial<QuestionContextProps>>({
   updateQuestionType: (q, type) => {
     q.questionType = type;
