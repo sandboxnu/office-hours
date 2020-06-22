@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useState, useCallback } from "react";
 import {
   Question,
   QuestionStatus,
@@ -12,11 +12,28 @@ type QuestionContextProps = {
   updateQuestionType(q: Question, type: QuestionType): void;
   updateText(q: Question, text: string): void;
 };
-export const QuestionContext = createContext<Partial<QuestionContextProps>>({
-  updateQuestionType: (q, type) => {
-    q.questionType = type;
-  },
-  updateText(q: Question, text: string): void {
-    q.text = text;
-  },
-});
+
+const QuestionContext = createContext<Partial<QuestionContextProps>>({});
+
+type QuestionContextProviderProps = {
+  children: React.ReactNode;
+};
+
+const QuestionContextProvider = ({
+  children,
+}: QuestionContextProviderProps) => {
+  const [question, setQuestion] = useState<Question>(null);
+
+  const updateText = useCallback(() => {}, []);
+  const updateQuestionType = useCallback(() => {}, []);
+
+  return (
+    <QuestionContext.Provider
+      value={{ question, updateQuestionType, updateText }}
+    >
+      {children}
+    </QuestionContext.Provider>
+  );
+};
+
+export { QuestionContext, QuestionContextProvider };
