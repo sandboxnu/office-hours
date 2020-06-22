@@ -41,7 +41,6 @@ const FormButton = styled(Button)`
 `;
 
 interface QuestionFormProps {
-  prevQuestion: Question | undefined;
   leaveQueue: () => void;
   finishQuestion: (text: string, questionType: QuestionType) => void;
 }
@@ -64,7 +63,7 @@ export default function QuestionForm({
 
   // on question type change, update the question type state
   const onCategoryChange = (e: RadioChangeEvent) => {
-    updateQuestionType(question, e.target.value);
+    updateQuestionType(e.target.value);
     setQuestionTypeInput(e.target.value);
   };
 
@@ -72,7 +71,7 @@ export default function QuestionForm({
   const onQuestionTextChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
-    updateText(question, event.target.value);
+    updateText(event.target.value);
     setQuestionText(event.target.value);
   };
 

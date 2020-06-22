@@ -39,9 +39,10 @@ export default function Queue({}: QueueProps) {
   const [questions, setQuestions] = useState<Question[]>([]);
 
   // Student queue state variables
+  // const { question, updateQuestion } = useState<any>(undefined);
   const [isJoining, setIsJoining] = useState<boolean>(false);
   const [questionDraftId, setQuestionDraftId] = useState<number>(null);
-  const [studentQuestion, setStudentQuestion] = useState<Question>(null);
+  //const [studentQuestion, setStudentQuestion] = useState<Question>(null);
 
   // TA queue state variables
   const [openPopup, setOpenPopup] = useState<boolean>(false);
@@ -130,6 +131,9 @@ export default function Queue({}: QueueProps) {
       // fetch updated question list
       getQuestions();
       setQuestionDraftId(q.id);
+
+      //update the student's question
+      // updateQuestion(q);
     }
   };
 
@@ -162,6 +166,7 @@ export default function Queue({}: QueueProps) {
       // fetch updated question list
       getQuestions();
       setIsJoining(false);
+      setCurrentQuestion(q);
     }
   };
 

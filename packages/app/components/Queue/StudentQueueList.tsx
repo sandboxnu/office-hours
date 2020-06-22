@@ -1,7 +1,7 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import { Question, Role, QuestionType } from "@template/common";
 import styled from "styled-components";
-import { Row, Col, Card, Button, Grid } from "antd";
+import { Row, Col, Card, Button, Grid, Modal } from "antd";
 import QueueCard from "./QueueCard";
 import EditableQuestion from "./EditableQuestion";
 import QuestionForm from "./QuestionForm";
@@ -66,6 +66,15 @@ export default function StudentQueueList({
 }: StudentQueueListProps) {
   const helping = helpingQuestions.length !== 0;
   const screens = useBreakpoint();
+  const [popupEditQuestion, setPopupEditQuestion] = useState(false);
+
+  const openEditModal = useCallback(() => {
+    setPopupEditQuestion(true);
+  }, []);
+
+  const closeEditModal = useCallback(() => {
+    setPopupEditQuestion(false);
+  }, []);
 
   const renderEditableQuestion = () => {
     return (
@@ -75,6 +84,7 @@ export default function StudentQueueList({
           position={3}
           type={QuestionType.Concept}
           text={"I don't under stand when to use an accumulator"}
+          openEdit={openEditModal}
         />
       </Col>
     );
@@ -124,6 +134,13 @@ export default function StudentQueueList({
           })}
         </Col>
         {studentQuestion && renderEditableQuestion()}
+        <Modal
+          visible={popupEditQuestion}
+          closable={true}
+          onCancel={closeEditModal}
+        >
+          <QuestionForm leaveQueue={() => {}} finishQuestion={() => {}} />
+        </Modal>
       </Row>
     </div>
   );
