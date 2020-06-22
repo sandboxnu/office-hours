@@ -17,7 +17,10 @@ import { ProfileContext } from "../contexts/ProfileContextProvider";
 import EditableQuestion from "../components/Queue/EditableQuestion";
 import StudentQueueList from "../components/Queue/StudentQueueList";
 import TAQueueList from "../components/Queue/TAQueueList";
-import { QuestionContext } from "../contexts/QuestionContext";
+import {
+  QuestionContext,
+  QuestionContextProvider,
+} from "../contexts/QuestionContext";
 
 // TODO: replace this with profile role from endpoint
 const ROLE: Role = Role.STUDENT;
@@ -38,9 +41,10 @@ export default function Queue({}: QueueProps) {
   const [questions, setQuestions] = useState<Question[]>([]);
 
   // Student queue state variables
+  const { question, updateQuestion } = useContext(QuestionContext);
   const [isJoining, setIsJoining] = useState<boolean>(false);
   const [questionDraftId, setQuestionDraftId] = useState<number>(null);
-  const [studentQuestion, setStudentQuestion] = useState<Question>(null);
+  //const [studentQuestion, setStudentQuestion] = useState<Question>(null);
 
   // TA queue state variables
   const [openPopup, setOpenPopup] = useState<boolean>(false);
@@ -129,6 +133,9 @@ export default function Queue({}: QueueProps) {
       // fetch updated question list
       getQuestions();
       setQuestionDraftId(q.id);
+
+      //update the student's question
+      updateQuestion(q);
     }
   };
 
@@ -161,6 +168,7 @@ export default function Queue({}: QueueProps) {
       // fetch updated question list
       getQuestions();
       setIsJoining(false);
+      setCurrentQuestion(q);
     }
   };
 
@@ -202,7 +210,7 @@ export default function Queue({}: QueueProps) {
 
   return (
     <Container>
-      <QuestionContext.Provider value={{ question: studentQuestion }}>
+      <QuestionContextProvider>
         {!isJoining && (
           <Fragment>
             {Role.STUDENT === ROLE ? (
@@ -243,7 +251,7 @@ export default function Queue({}: QueueProps) {
             finishQuestion={finishQuestion}
           />
         )}
-      </QuestionContext.Provider>
+      </QuestionContextProvider>
     </Container>
   );
 }

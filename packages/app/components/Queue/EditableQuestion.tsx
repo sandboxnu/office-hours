@@ -28,15 +28,17 @@ interface EditableQuestionProps {
   position: number;
   type: QuestionType;
   text: string;
+  openEdit: () => void;
 }
 export default function EditableQuestion({
   position,
   type,
   text,
+  openEdit,
 }: EditableQuestionProps) {
   return (
     <EditableQuestionCard>
-      <EditButton type="link" icon={<EditOutlined />} onclick={() => {}} />
+      <EditButton type="link" icon={<EditOutlined />} onClick={openEdit} />
       <div>Your spot</div>
       <SpotNum>{position}</SpotNum>
       <div>TYPE</div>

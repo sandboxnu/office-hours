@@ -9,8 +9,9 @@ import {
 
 type QuestionContextProps = {
   question: Question;
-  updateQuestionType(q: Question, type: QuestionType): void;
-  updateText(q: Question, text: string): void;
+  updateQuestionType(type: QuestionType): void;
+  updateText(text: string): void;
+  updateQuestion(q: Question): void;
 };
 
 const QuestionContext = createContext<Partial<QuestionContextProps>>({});
@@ -24,12 +25,16 @@ const QuestionContextProvider = ({
 }: QuestionContextProviderProps) => {
   const [question, setQuestion] = useState<Question>(null);
 
+  const updateQuestion = useCallback((newQuestion: Question) => {
+    setQuestion(newQuestion);
+  }, []);
+
   const updateText = useCallback(() => {}, []);
   const updateQuestionType = useCallback(() => {}, []);
 
   return (
     <QuestionContext.Provider
-      value={{ question, updateQuestionType, updateText }}
+      value={{ question, updateQuestionType, updateText, updateQuestion }}
     >
       {children}
     </QuestionContext.Provider>
