@@ -21,7 +21,6 @@ import {
 } from "../mocks/updateQuestion";
 import { MOCK_GET_QUESTION_RESPONSE } from "../mocks/getQuestion";
 import { QuestionModel } from "../entity/QuestionModel";
-import { UserCourseModel } from "../entity/UserCourseModel";
 import { UserModel } from "../entity/UserModel";
 import { QueueModel } from "../entity/QueueModel";
 import { CourseModel } from "../entity/CourseModel";

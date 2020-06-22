@@ -1,14 +1,7 @@
 import { setupServerTest, withServer, setupDBTest } from "../testUtils";
 import { MOCK_GET_QUESTION_RESPONSE } from "../mocks/getQuestion";
-import { MOCK_CREATE_QUESTION_RESPONSE } from "../mocks/createQuestion";
-import { QuestionType } from "@template/common";
-import { CourseModel } from "../entity/CourseModel";
-import { QueueModel } from "../entity/QueueModel";
-import { UserModel } from "../entity/UserModel";
-import { UserCourseModel } from "../entity/UserCourseModel";
 import { QuestionModel } from "../entity/QuestionModel";
-import { QuestionSchema } from "../joi";
-import { QueueFactory, QuestionFactory } from "../factory";
+import { QuestionFactory, QueueFactory } from "../factory";
 
 describe("Queue Routes", () => {
   setupDBTest();
@@ -21,7 +14,7 @@ describe("Queue Routes", () => {
 
       const request = await getServer().inject({
         method: "get",
-        url: "/api/v1/queues/1/questions",
+        url: `/api/v1/queues/${q.id}/questions`,
       });
       expect(request.statusCode).toEqual(200);
       expect(request.result).toMatchObject([
@@ -43,7 +36,6 @@ describe("Queue Routes", () => {
     });
     // TODO: is this test supposed to fail now?
     it("GET questions fail with non-exisitant queue", async () => {
-      const queue = await QueueFactory.create();
       const request = await getServer().inject({
         method: "get",
         url: "/api/v1/queues/999/questions",
@@ -63,6 +55,7 @@ describe("Queue Routes", () => {
     it("POST new question", async () => {
       const queue = await QueueFactory.create();
 
+      expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(0);
       const request = await getServer().inject({
         method: "post",
         url: `/api/v1/queues/${queue.id}/questions`,
