@@ -210,6 +210,7 @@ export type Question = {
 // Question Types
 export enum QuestionType {
   Concept = "Concept",
+  Clarification = "Clarification",
   Testing = "Testing",
   Bug = "Bug",
   Setup = "Setup",
