@@ -17,6 +17,7 @@ import { ProfileContext } from "../contexts/ProfileContextProvider";
 import EditableQuestion from "../components/Queue/EditableQuestion";
 import StudentQueueList from "../components/Queue/StudentQueueList";
 import TAQueueList from "../components/Queue/TAQueueList";
+import { QuestionContext } from "../contexts/QuestionContext";
 
 // TODO: replace this with profile role from endpoint
 const ROLE: Role = Role.STUDENT;
@@ -39,6 +40,7 @@ export default function Queue({}: QueueProps) {
   // Student queue state variables
   const [isJoining, setIsJoining] = useState<boolean>(false);
   const [questionDraftId, setQuestionDraftId] = useState<number>(null);
+  const [studentQuestion, setStudentQuestion] = useState<Question>(null);
 
   // TA queue state variables
   const [openPopup, setOpenPopup] = useState<boolean>(false);
@@ -200,43 +202,48 @@ export default function Queue({}: QueueProps) {
 
   return (
     <Container>
-      {!isJoining && (
-        <Fragment>
-          {Role.STUDENT === ROLE ? (
-            <StudentQueueList
-              onOpenClick={onOpenClick}
-              joinQueue={joinQueue}
-              questions={questions}
-              helpingQuestions={helpingQuestions}
-              studentQuestion={questions[0]}
-            />
-          ) : (
-            <TAQueueList
-              onOpenClick={onOpenClick}
-              joinQueue={joinQueue}
-              updateQuestionTA={updateQuestionTA}
-              alertStudent={alertStudent}
-              questions={questions}
-              helpingQuestions={helpingQuestions}
-              groupQuestions={groupQuestions}
-            />
-          )}
-          {ROLE === "ta" && currentQuestion && (
-            <StudentPopupCard
-              onClose={onCloseClick}
-              email="takayama.a@northeastern.edu" //need a way to access this. or the user
-              wait={20} //figure out later
-              question={currentQuestion}
-              location="Outside by the printer" // need a way to access this
-              visible={openPopup}
-              updateQuestion={updateQuestionTA}
-            />
-          )}
-        </Fragment>
-      )}
-      {isJoining && (
-        <QuestionForm leaveQueue={leaveQueue} finishQuestion={finishQuestion} />
-      )}
+      <QuestionContext.Provider value={{ question: studentQuestion }}>
+        {!isJoining && (
+          <Fragment>
+            {Role.STUDENT === ROLE ? (
+              <StudentQueueList
+                onOpenClick={onOpenClick}
+                joinQueue={joinQueue}
+                questions={questions}
+                helpingQuestions={helpingQuestions}
+                studentQuestion={questions[0]}
+              />
+            ) : (
+              <TAQueueList
+                onOpenClick={onOpenClick}
+                joinQueue={joinQueue}
+                updateQuestionTA={updateQuestionTA}
+                alertStudent={alertStudent}
+                questions={questions}
+                helpingQuestions={helpingQuestions}
+                groupQuestions={groupQuestions}
+              />
+            )}
+            {ROLE === "ta" && currentQuestion && (
+              <StudentPopupCard
+                onClose={onCloseClick}
+                email="takayama.a@northeastern.edu" //need a way to access this. or the user
+                wait={20} //figure out later
+                question={currentQuestion}
+                location="Outside by the printer" // need a way to access this
+                visible={openPopup}
+                updateQuestion={updateQuestionTA}
+              />
+            )}
+          </Fragment>
+        )}
+        {isJoining && (
+          <QuestionForm
+            leaveQueue={leaveQueue}
+            finishQuestion={finishQuestion}
+          />
+        )}
+      </QuestionContext.Provider>
     </Container>
   );
 }

@@ -47,40 +47,25 @@ interface QuestionFormProps {
 }
 
 export default function QuestionForm({
-  prevQuestion,
   leaveQueue,
   finishQuestion,
 }: QuestionFormProps) {
-  const setInitType = () => {
-    if (prevQuestion != undefined) {
-      return prevQuestion.questionType;
-    } else {
-      return undefined;
-    }
-  };
-
-  const setInitText = () => {
-    if (prevQuestion != undefined) {
-      return prevQuestion.text;
-    } else {
-      return undefined;
-    }
-  };
-
-  const { updateQuestionType, updateText } = useContext(QuestionContext);
-
-  const [question, setQuestion] = useState<Question | undefined>(prevQuestion);
-  const [questionType, setQuestionType] = useState<QuestionType | undefined>(
-    setInitType
+  const { question, updateQuestionType, updateText } = useContext(
+    QuestionContext
   );
-  const [questionText, setQuestionText] = useState<string | undefined>(
-    setInitText
+
+  const [questionTypeInput, setQuestionTypeInput] = useState<QuestionType>(
+    question ? question.questionType : null
+  );
+
+  const [questionText, setQuestionText] = useState<string>(
+    question ? question.text : null
   );
 
   // on question type change, update the question type state
   const onCategoryChange = (e: RadioChangeEvent) => {
     updateQuestionType(question, e.target.value);
-    setQuestionType(e.target.value);
+    setQuestionTypeInput(e.target.value);
   };
 
   // on question text change, update the question text state
@@ -93,8 +78,8 @@ export default function QuestionForm({
 
   // on button submit click, conditionally choose to go back to the queue
   const onClickSubmit = () => {
-    if (!!questionType && questionText && questionText !== "") {
-      finishQuestion(questionText, questionType);
+    if (questionTypeInput && questionText && questionText !== "") {
+      finishQuestion(questionText, questionTypeInput);
     }
   };
 
@@ -138,7 +123,7 @@ export default function QuestionForm({
       <div>
         <FormButton
           type="primary"
-          disabled={!questionType || !questionText || questionText === ""}
+          disabled={!questionTypeInput || !questionText || questionText === ""}
           onClick={onClickSubmit}
         >
           Finish
