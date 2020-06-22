@@ -8,7 +8,6 @@ import { queueRoutes } from "./api/queueRoutes";
 import { notifRoutes } from "./api/notifRoutes";
 import websocketManager from "./websocketManager";
 import * as hde from "hapi-dev-errors";
-import * as inert from "@hapi/inert";
 
 // Just initialize, don't start
 export async function init() {
@@ -16,8 +15,6 @@ export async function init() {
     port: 3002,
     host: "localhost",
   });
-
-  await server.register(inert);
 
   // Add routes
   server.route(clubRoutes);
