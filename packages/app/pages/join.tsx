@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import CreateQuestion from "../components/Queue/Join/CreateQuestion";
+import QuestionForm from "../components/Queue/QuestionForm";
 
 const Container = styled.div`
   margin: 32px 64px;
@@ -11,7 +12,11 @@ const Container = styled.div`
 export default function Join() {
   return (
     <Container>
-      <CreateQuestion place={12} />
+      <QuestionForm
+        prevQuestion={null}
+        leaveQueue={null}
+        finishQuestion={null}
+      />
     </Container>
   );
 }

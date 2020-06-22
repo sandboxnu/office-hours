@@ -1,9 +1,10 @@
-import { QuestionType } from "@template/common";
+import { Question, QuestionType } from "@template/common";
 import { Button, Input, Radio, Alert } from "antd";
 import styled from "styled-components";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { RadioChangeEvent } from "antd/lib/radio";
 import React from "react";
+import { QuestionContext } from "../../contexts/QuestionContext";
 
 const Container = styled.div`
   max-width: 960px;
@@ -40,23 +41,45 @@ const FormButton = styled(Button)`
 `;
 
 interface QuestionFormProps {
+  prevQuestion: Question | undefined;
   leaveQueue: () => void;
   finishQuestion: (text: string, questionType: QuestionType) => void;
 }
 
 export default function QuestionForm({
+  prevQuestion,
   leaveQueue,
   finishQuestion,
 }: QuestionFormProps) {
+  const setInitType = () => {
+    if (prevQuestion != undefined) {
+      return prevQuestion.questionType;
+    } else {
+      return undefined;
+    }
+  };
+
+  const setInitText = () => {
+    if (prevQuestion != undefined) {
+      return prevQuestion.text;
+    } else {
+      return undefined;
+    }
+  };
+
+  const { updateQuestionType, updateText } = useContext(QuestionContext);
+
+  const [question, setQuestion] = useState<Question | undefined>(prevQuestion);
   const [questionType, setQuestionType] = useState<QuestionType | undefined>(
-    undefined
+    setInitType
   );
   const [questionText, setQuestionText] = useState<string | undefined>(
-    undefined
+    setInitText
   );
 
   // on question type change, update the question type state
   const onCategoryChange = (e: RadioChangeEvent) => {
+    updateQuestionType(question, e.target.value);
     setQuestionType(e.target.value);
   };
 
@@ -64,6 +87,7 @@ export default function QuestionForm({
   const onQuestionTextChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
+    updateText(question, event.target.value);
     setQuestionText(event.target.value);
   };
 
@@ -92,6 +116,7 @@ export default function QuestionForm({
         style={{ marginBottom: 48 }}
       >
         <Radio.Button value={QuestionType.Concept}>Concept</Radio.Button>
+        <Radio.Button value={QuestionType.Clarification}>Concept</Radio.Button>
         <Radio.Button value={QuestionType.Testing}>Testing</Radio.Button>
         <Radio.Button value={QuestionType.Bug}>Bug</Radio.Button>
         <Radio.Button value={QuestionType.Setup}>Setup</Radio.Button>
@@ -100,9 +125,9 @@ export default function QuestionForm({
 
       <QuestionText>What do you need help with?</QuestionText>
       <Input.TextArea
-        placeholder="I’m having trouble understanding list abstractions, particularly in the
-        context of Assignment 5."
-        autoSize={{ minRows: 3 }}
+        value={questionText}
+        placeholder="I’m having trouble understanding list abstractions, particularly in Assignment 5."
+        autoSize={{ minRows: 3, maxRows: 6 }}
         onChange={onQuestionTextChange}
       />
       <QuestionCaption>
