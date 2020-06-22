@@ -13,9 +13,11 @@ const urlB64ToUint8Array = (base64String) => {
   return outputArray;
 };
 
-const saveSubscription = async (subscription) => {
-  const SERVER_URL = "localhost:3002/api/v1/register-notif";
-  const response = await fetch(SERVER_URL, {
+const SERVER_URL = (s) => `${window.origin}/api/v1/notifications/${s}`;
+
+const saveSubscription = async (subscription, user_id) => {
+  const URL = SERVER_URL(`register`) + "/" + user_id;
+  const response = await fetch(URL, {
     method: "post",
     headers: {
       "Content-Type": "application/json",
@@ -25,12 +27,15 @@ const saveSubscription = async (subscription) => {
   return response.json();
 };
 
+console.log("serviceWorker.js is running");
+
 self.addEventListener("activate", async () => {
   // This will be called only once when the service worker is installed for first time.
   try {
-    const applicationServerKey = urlB64ToUint8Array(
-      `BBFy7fEShgbbbxcJKdtgdyruVEsC-vEHfWiND5ndPQS5KLVPJWu229F4QUj3vsQhrA85-8dZxtQmQD5h9Hwkq0o`
-    );
+    const URL = SERVER_URL(`credentials`);
+    const PUBLICKEY = await fetch(URL);
+    console.log(PUBLICKEY);
+    const applicationServerKey = urlB64ToUint8Array(PUBLICKEY);
     const options = { applicationServerKey, userVisibleOnly: true };
     const subscription = await self.registration.pushManager.subscribe(options);
     const response = await saveSubscription(subscription);
