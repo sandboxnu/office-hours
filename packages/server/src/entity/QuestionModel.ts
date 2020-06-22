@@ -5,10 +5,12 @@ import {
   BaseEntity,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
 } from "typeorm";
 import { UserCourseModel } from "./UserCourseModel";
 import { QueueModel } from "./QueueModel";
 import { QuestionType, QuestionStatus } from "@template/common";
+import { UserModel } from "./UserModel";
 
 @Entity("question_model")
 export class QuestionModel extends BaseEntity {
@@ -17,7 +19,7 @@ export class QuestionModel extends BaseEntity {
 
   @ManyToOne((type) => QueueModel, (q) => q.questions)
   @JoinColumn({ name: "queueId" })
-  queue: Promise<QueueModel>;
+  queue: QueueModel;
 
   @Column({ nullable: true })
   queueId: number;
@@ -25,21 +27,21 @@ export class QuestionModel extends BaseEntity {
   @Column("text")
   text: string;
 
-  @ManyToOne((type) => UserCourseModel)
+  @ManyToOne((type) => UserModel)
   @JoinColumn({ name: "creatorId" })
-  creator: Promise<UserCourseModel>;
+  creator: UserModel;
 
   @Column({ nullable: true })
   creatorId: number;
 
-  @ManyToOne((type) => UserCourseModel)
+  @ManyToOne((type) => UserModel)
   @JoinColumn({ name: "taHelpedId" })
-  taHelped: Promise<UserCourseModel>;
+  taHelped: UserModel;
 
   @Column({ nullable: true })
   taHelpedId: number;
 
-  @Column()
+  @CreateDateColumn()
   createdAt: Date;
 
   @Column({ nullable: true })

@@ -17,7 +17,7 @@ export class QueueModel extends BaseEntity {
 
   @ManyToOne((type) => CourseModel, (course) => course.queues)
   @JoinColumn({ name: "courseId" })
-  course: Promise<CourseModel>;
+  course: CourseModel;
 
   @Column({ nullable: true })
   courseId: number;
@@ -26,7 +26,7 @@ export class QueueModel extends BaseEntity {
   room: string;
 
   @OneToMany((type) => QuestionModel, (qm) => qm.queue)
-  questions: Promise<QuestionModel[]>;
+  questions: QuestionModel[];
 
   // TODO: eventually figure out how staff get sent to FE as well
 }

@@ -19,7 +19,6 @@ import {
 } from "../mocks/updateQuestion";
 import { MOCK_GET_QUESTION_RESPONSE } from "../mocks/getQuestion";
 import { QuestionModel } from "../entity/QuestionModel";
-import { UserCourseModel } from "../entity/UserCourseModel";
 import { UserModel } from "../entity/UserModel";
 
 export const queueRoutes: ServerRoute[] = [
@@ -39,7 +38,7 @@ export const queueRoutes: ServerRoute[] = [
             queueId: request.params.queue_id,
           },
         ],
-        relations: ["creator", "taHelped", "creator.user"],
+        relations: ["creator", "taHelped"],
       });
 
       if (questions.length === 0) {
@@ -122,17 +121,15 @@ export const queueRoutes: ServerRoute[] = [
 
 // for some reason, JOI.allow(null) means the property has to exist, but can be null
 
-async function questionModelToQuestion(qm: QuestionModel): Promise<Question> {
+function questionModelToQuestion(qm: QuestionModel): Question {
   return {
-    creator: await userModelToUserPartial(await (await qm.creator).user),
+    creator: userModelToUserPartial(qm.creator),
     id: qm.id,
     createdAt: qm.createdAt,
     status: parseStatus(qm.status),
     text: qm.text,
     // qm.taHelped: types says is nonnullable, but it is nullable
-    taHelped:
-      (await qm.taHelped) &&
-      (await userCourseModelToUserPartial(await qm.taHelped)),
+    taHelped: qm.taHelped && userModelToUserPartial(qm.taHelped),
     closedAt: qm.closedAt,
     questionType: qm.questionType,
     // TODO: helpedAt: property not required in types, but required by JOI
@@ -140,23 +137,12 @@ async function questionModelToQuestion(qm: QuestionModel): Promise<Question> {
   };
 }
 
-async function userModelToUserPartial(um: UserModel): Promise<UserPartial> {
+function userModelToUserPartial(um: UserModel): UserPartial {
   return {
     id: um.id,
     name: um.name,
     // TODO: photoURL: property not required in types, but required by JOI
     photoURL: um.photoURL,
-  };
-}
-
-async function userCourseModelToUserPartial(
-  ucm: UserCourseModel
-): Promise<UserPartial> {
-  return {
-    id: (await ucm.user).id,
-    name: (await ucm.user).name,
-    // TODO: photoURL: property not required in types, but required by JOI
-    photoURL: (await ucm.user).photoURL,
   };
 }
 

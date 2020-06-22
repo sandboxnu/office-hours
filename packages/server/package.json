@@ -33,6 +33,7 @@
     "babel-plugin-transform-typescript-metadata": "^0.3.0",
     "jest": "^26.0.1",
     "ts-node": "^8.10.2",
+    "typeorm-factory": "^0.0.14",
     "typeorm-fixtures-cli": "^1.6.0",
     "typescript": "^3.8.3"
   },

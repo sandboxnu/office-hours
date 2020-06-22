@@ -2,6 +2,7 @@ import { parseIcal, updateCalendarForCourse } from "./ICalParser";
 import iCal from "node-ical";
 import { setupDBTest } from "../testUtils";
 import { CourseModel } from "../entity/CourseModel";
+import { OfficeHourModel } from "../entity/OfficeHourModel";
 
 // oopsah
 const parsedICS = iCal.parseICS(`BEGIN:VCALENDAR
@@ -105,12 +106,11 @@ describe("updateCalendarForCourse", () => {
   it("adds office hour rows for the course", async () => {
     const course = await CourseModel.create({
       name: "CS 2510",
-      icalUrl: "your mom",
+      icalURL: "your mom",
     }).save();
     await updateCalendarForCourse(course);
 
-    await course.reload();
-    const ohs = await course.officeHours;
+    const ohs = await OfficeHourModel.find({ where: { courseId: course.id } });
 
     expect(ohs).toMatchObject([
       {
