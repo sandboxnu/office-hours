@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "nodemon",
     "build": "babel --root-mode upward -d dist -x '.js,.ts' src",
-    "test": "jest --run-in-band",
+    "test": "jest --runInBand",
     "start": "node dist/index.js",
     "dev:db:seed": "yarn fixtures -c ../../ormconfig.js fixtures/ --sync --require=ts-node/register",
     "dev:db:reset": "echo 'DROP DATABASE dev;' | psql -U postgres -h localhost && echo 'CREATE DATABASE dev;' | psql -U postgres -h localhost"
