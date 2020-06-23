@@ -37,6 +37,36 @@ export default function Home({ clubs }: HomeProps) {
       refreshData();
     });
   }, []);
+
+  // web push code
+  const check = () => {
+    if (!("serviceWorker" in navigator)) {
+      throw new Error("No Service Worker support!");
+    }
+    if (!("PushManager" in window)) {
+      throw new Error("No Push API Support!");
+    }
+  };
+
+  const requestNotificationPermission = async () => {
+    if (Notification.permission === "granted") {
+      console.log(`permission previously granted`);
+    } else if (Notification.permission === "denied") {
+      console.log("permission previously denied");
+      const permission = await window.Notification.requestPermission();
+    } else if (Notification.permission === "default") {
+      console.log("permission not set");
+      const permission = await window.Notification.requestPermission();
+    }
+  };
+
+  const checkBrowserAndRequestNotifications = async () => {
+    check();
+    const permission = await requestNotificationPermission();
+  };
+
+  // end web push code
+
   return (
     <div>
       <Head>
@@ -66,6 +96,9 @@ export default function Home({ clubs }: HomeProps) {
       Try opening this page in another tab
       <br />
       Click Add a Club and watch it update on both tabs.
+      <Button size="large" onClick={checkBrowserAndRequestNotifications}>
+        Request Notification Permission
+      </Button>
     </div>
   );
 }

@@ -13,7 +13,11 @@ const urlB64ToUint8Array = (base64String) => {
   return outputArray;
 };
 
-const SERVER_URL = (s) => `${window.origin}/api/v1/notifications/${s}`;
+// todo: figure out how to do this
+const ORIGIN = `http://localhost:3000`;
+const SERVER_URL = (s) => `${ORIGIN}/api/v1/notifications/${s}`;
+// todo: replace with actual user id.
+const USER_ID = 1;
 
 const saveSubscription = async (subscription, user_id) => {
   const URL = SERVER_URL(`register`) + "/" + user_id;
@@ -27,18 +31,16 @@ const saveSubscription = async (subscription, user_id) => {
   return response.json();
 };
 
-console.log("serviceWorker.js is running");
-
 self.addEventListener("activate", async () => {
   // This will be called only once when the service worker is installed for first time.
   try {
     const URL = SERVER_URL(`credentials`);
-    const PUBLICKEY = await fetch(URL);
-    console.log(PUBLICKEY);
+    // todo: is there a better way to get the body?
+    const PUBLICKEY = await (await fetch(URL)).json();
     const applicationServerKey = urlB64ToUint8Array(PUBLICKEY);
     const options = { applicationServerKey, userVisibleOnly: true };
     const subscription = await self.registration.pushManager.subscribe(options);
-    const response = await saveSubscription(subscription);
+    const response = await saveSubscription(subscription, USER_ID);
     console.log(response);
   } catch (err) {
     console.log("Error", err);
