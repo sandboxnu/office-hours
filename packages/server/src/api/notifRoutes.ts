@@ -13,7 +13,7 @@ export const notifRoutes: ServerRoute[] = [
     method: "GET",
     path: "/api/v1/notifications/credentials",
     handler: (request, h) => {
-      return process.env.PUBLICKEY;
+      return JSON.stringify(process.env.PUBLICKEY);
     },
   },
   {
@@ -21,9 +21,17 @@ export const notifRoutes: ServerRoute[] = [
     path: "/api/v1/notifications/register/{user_id}", // TODO:   make this not a param for the users lmaoooooooo soI don't spam alex with sugondese
     handler: async (request, h) => {
       const payload = request.payload as NotifBody;
+      const toSave = {
+        endpoint: payload.endpoint,
+        expirationTime: new Date(payload.expirationTime),
+        p256dh: payload.keys.p256dh,
+        auth: payload.keys.auth,
+        userId: Number(request.params.user_id),
+      };
+      console.debug(toSave);
       await NotifModel.create({
         endpoint: payload.endpoint,
-        expirationTime: payload.expirationTime,
+        expirationTime: new Date(payload.expirationTime),
         p256dh: payload.keys.p256dh,
         auth: payload.keys.auth,
         userId: Number(request.params.user_id),

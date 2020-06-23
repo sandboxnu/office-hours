@@ -21,17 +21,9 @@ function withCustomWebpack(config = {}) {
 }
 
 const plugins = [
-  [
-    withOffline,
-    {
-      dontAutoRegisterSw: true,
-      devSwSrc: "public/service-worker.js",
-      registerSwPrefix: false,
-      scope: "/",
-    },
-  ],
   [withTM, { transpileModules: ["@template"] }],
   [withCustomWebpack],
+  [withOffline, { dontGenerateSw: true }],
 ];
 
 const config = {};
