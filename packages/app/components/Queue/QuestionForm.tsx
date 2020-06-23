@@ -1,7 +1,7 @@
 import { Question, QuestionType } from "@template/common";
 import { Button, Input, Radio, Alert } from "antd";
 import styled from "styled-components";
-import { useContext, useState, useMemo } from "react";
+import { useContext, useState, useMemo, useEffect } from "react";
 import { RadioChangeEvent } from "antd/lib/radio";
 import React from "react";
 import { QuestionContext } from "../../contexts/QuestionContext";
@@ -52,12 +52,17 @@ export default function QuestionForm({
   finishQuestion,
 }: QuestionFormProps) {
   const [questionTypeInput, setQuestionTypeInput] = useState<QuestionType>(
-    question ? question.questionType : null
+    null
   );
 
-  const [questionText, setQuestionText] = useState<string>(
-    question ? question.text : ""
-  );
+  const [questionText, setQuestionText] = useState<string>("");
+
+  useEffect(() => {
+    if (question) {
+      setQuestionText(question.text);
+      setQuestionTypeInput(question.questionType);
+    }
+  }, [question]);
 
   // on question type change, update the question type state
   const onCategoryChange = (e: RadioChangeEvent) => {
@@ -78,63 +83,57 @@ export default function QuestionForm({
     }
   };
 
-  return useMemo(() => {
-    return (
-      <Container>
-        <Alert
-          message="You are currently 12th in queue"
-          description="Your spot in queue has been temporarily reserved. Please describe your question to finish joining the queue."
-          type="success"
-          showIcon
-        />
+  return (
+    <Container>
+      <Alert
+        message="You are currently 12th in queue"
+        description="Your spot in queue has been temporarily reserved. Please describe your question to finish joining the queue."
+        type="success"
+        showIcon
+      />
 
-        <Title>Describe your question</Title>
+      <Title>Describe your question</Title>
 
-        <QuestionText>
-          What category does your question fall under?
-        </QuestionText>
-        <Radio.Group
-          onChange={onCategoryChange}
-          buttonStyle="solid"
-          style={{ marginBottom: 48 }}
+      <QuestionText>What category does your question fall under?</QuestionText>
+      <Radio.Group
+        onChange={onCategoryChange}
+        buttonStyle="solid"
+        style={{ marginBottom: 48 }}
+      >
+        <Radio.Button value={QuestionType.Concept}>Concept</Radio.Button>
+        <Radio.Button value={QuestionType.Clarification}>
+          Clarification
+        </Radio.Button>
+        <Radio.Button value={QuestionType.Testing}>Testing</Radio.Button>
+        <Radio.Button value={QuestionType.Bug}>Bug</Radio.Button>
+        <Radio.Button value={QuestionType.Setup}>Setup</Radio.Button>
+        <Radio.Button value={QuestionType.Other}>Other</Radio.Button>
+      </Radio.Group>
+
+      <QuestionText>What do you need help with?</QuestionText>
+      <Input.TextArea
+        value={questionText}
+        placeholder="I’m having trouble understanding list abstractions, particularly in Assignment 5."
+        autoSize={{ minRows: 3, maxRows: 6 }}
+        onChange={onQuestionTextChange}
+      />
+      <QuestionCaption>
+        Be as descriptive and specific as possible in your answer. If your
+        question matches another student’s, your wait time may be reduced.
+      </QuestionCaption>
+
+      <div>
+        <FormButton
+          type="primary"
+          disabled={!questionTypeInput || !questionText || questionText === ""}
+          onClick={onClickSubmit}
         >
-          <Radio.Button value={QuestionType.Concept}>Concept</Radio.Button>
-          <Radio.Button value={QuestionType.Clarification}>
-            Clarification
-          </Radio.Button>
-          <Radio.Button value={QuestionType.Testing}>Testing</Radio.Button>
-          <Radio.Button value={QuestionType.Bug}>Bug</Radio.Button>
-          <Radio.Button value={QuestionType.Setup}>Setup</Radio.Button>
-          <Radio.Button value={QuestionType.Other}>Other</Radio.Button>
-        </Radio.Group>
-
-        <QuestionText>What do you need help with?</QuestionText>
-        <Input.TextArea
-          value={questionText}
-          placeholder="I’m having trouble understanding list abstractions, particularly in Assignment 5."
-          autoSize={{ minRows: 3, maxRows: 6 }}
-          onChange={onQuestionTextChange}
-        />
-        <QuestionCaption>
-          Be as descriptive and specific as possible in your answer. If your
-          question matches another student’s, your wait time may be reduced.
-        </QuestionCaption>
-
-        <div>
-          <FormButton
-            type="primary"
-            disabled={
-              !questionTypeInput || !questionText || questionText === ""
-            }
-            onClick={onClickSubmit}
-          >
-            Finish
-          </FormButton>
-          <FormButton danger onClick={leaveQueue}>
-            Leave Queue
-          </FormButton>
-        </div>
-      </Container>
-    );
-  }, []);
+          Finish
+        </FormButton>
+        <FormButton danger onClick={leaveQueue}>
+          Leave Queue
+        </FormButton>
+      </div>
+    </Container>
+  );
 }
