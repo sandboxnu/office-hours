@@ -99,6 +99,9 @@ export default function Home({ clubs }: HomeProps) {
       <Button size="large" onClick={checkBrowserAndRequestNotifications}>
         Request Notification Permission
       </Button>
+      <Button size="large" onClick={() => API.notif.notify_user(1)}>
+        Test Notify
+      </Button>
     </div>
   );
 }
