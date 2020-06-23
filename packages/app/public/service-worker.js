@@ -49,23 +49,31 @@ self.addEventListener("activate", async () => {
   }
 });
 
-self.addEventListener("push", function (event) {
+self.addEventListener("push", async function (event) {
   if (event.data) {
+    // todo: remove later
     console.log("Push event!! ", event.data.text());
-    showLocalNotification(
-      "alex is brain dead",
-      event.data.text(),
-      self.registration
-    );
+    try {
+      await showLocalNotification(
+        // todo: change mssg
+        "alex is brain dead",
+        event.data.text(),
+        self.registration
+      );
+    } catch (err) {
+      throw new Err(
+        `error sending notif from browser to local machine: ${err}`
+      );
+    }
   } else {
     console.log("Push event but no data");
   }
 });
 
-const showLocalNotification = (title, body, swRegistration) => {
+const showLocalNotification = async (title, body, swRegistration) => {
   const options = {
     body,
     // here you can add more properties like icon, image, vibrate, etc.
   };
-  swRegistration.showNotification(title, options);
+  await swRegistration.showNotification(title, options);
 };
