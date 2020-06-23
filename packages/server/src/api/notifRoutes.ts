@@ -1,4 +1,4 @@
-import { ServerRoute } from "@hapi/hapi";
+import { ServerRoute, ResponseObject } from "@hapi/hapi";
 import { NotifBody } from "@template/common";
 import { NotifModel } from "../entity/NotifModel";
 import { NotifPayload } from "../joi";
@@ -6,11 +6,18 @@ import * as dotenv from "dotenv";
 import * as webPush from "web-push";
 
 dotenv.config();
-webPush.setVapidDetails(
-  process.env.EMAIL,
-  process.env.PUBLICKEY,
-  process.env.PRIVATEKEY
-);
+
+if (!process.env.EMAIL || !process.env.PUBLICKEY || !process.env.PRIVATEKEY) {
+  throw new Error(
+    "please add a .env file with keys+email in packages/server. ask alex/eddy for deets."
+  );
+} else {
+  webPush.setVapidDetails(
+    process.env.EMAIL,
+    process.env.PUBLICKEY,
+    process.env.PRIVATEKEY
+  );
+}
 
 export const notifRoutes: ServerRoute[] = [
   {
@@ -24,8 +31,9 @@ export const notifRoutes: ServerRoute[] = [
   {
     method: "POST",
     path: "/api/v1/notifications/register/{user_id}", // TODO:   make this not a param for the users lmaoooooooo soI don't spam alex with sugondese
-    handler: async (request, h) => {
+    handler: async (request, h): Promise<string | ResponseObject> => {
       const payload = request.payload as NotifBody;
+      console.debug("registering user with endpoint:", payload.endpoint);
       await NotifModel.create({
         endpoint: payload.endpoint,
         expirationTime: new Date(payload.expirationTime),
@@ -33,7 +41,7 @@ export const notifRoutes: ServerRoute[] = [
         auth: payload.keys.auth,
         userId: Number(request.params.user_id),
       }).save();
-      return h.response().code(200);
+      return h.response(JSON.stringify("registration success")).code(200);
     },
     options: {
       validate: {
@@ -55,6 +63,10 @@ export const notifRoutes: ServerRoute[] = [
         notifModelsOfUser.map(async (nm) => {
           try {
             await webPush.sendNotification(unparse(nm), "joe mama");
+            console.debug(
+              "notifying user with endpoint:",
+              unparse(nm).endpoint
+            );
           } catch (error) {
             console.error(error.body);
             await NotifModel.remove(nm);

@@ -99,8 +99,8 @@ class APIClient {
     credentials: async (): Promise<string> => {
       return this.axios.get("/api/v1/notifications/credentials");
     },
-    register: async (userId: number, payload: NotifBody): Promise<void> => {
-      await this.axios.post(
+    register: async (userId: number, payload: NotifBody): Promise<string> => {
+      return this.axios.post(
         `/api/v1/notifications/register/${userId}`,
         payload
       );
