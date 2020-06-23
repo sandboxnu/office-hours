@@ -36,7 +36,8 @@ export const notifRoutes: ServerRoute[] = [
       console.debug("registering user with endpoint:", payload.endpoint);
       await NotifModel.create({
         endpoint: payload.endpoint,
-        expirationTime: new Date(payload.expirationTime),
+        expirationTime:
+          payload.expirationTime && new Date(payload.expirationTime),
         p256dh: payload.keys.p256dh,
         auth: payload.keys.auth,
         userId: Number(request.params.user_id),
