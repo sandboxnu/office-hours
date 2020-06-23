@@ -96,11 +96,45 @@ describe("Queue Routes", () => {
 
   describe("/queues/{queue_id}/questions/:question_id", () => {
     it("GET question that exists", async () => {
-      await expectWithServer({
-        method: "get",
-        url: "/api/v1/queues/169/questions/1",
-        result: MOCK_GET_QUESTION_RESPONSE,
+      const question = await QuestionFactory.create({
+        text: "Recursion is wrecking me",
       });
+      const request = await getServer().inject({
+        method: "get",
+        url: `/api/v1/queues/${question.queueId}/questions/${question.id}`,
+      });
+      expect(request.statusCode).toEqual(200);
+      expect(request.result).toMatchObject({
+        closedAt: null,
+        creator: {
+          id: 1,
+          name: "John Doe the 2th",
+          photoURL: "https://pics/2",
+        },
+        helpedAt: null,
+        id: 1,
+        questionType: "Other",
+        status: "Queued",
+        taHelped: null,
+        text: "Recursion is wrecking me",
+      });
+    });
+    it("GET question not found", async () => {
+      const queue = await QueueFactory.create();
+      const request = await getServer().inject({
+        method: "get",
+        url: `/api/v1/queues/${queue.id}/questions/1`,
+      });
+      expect(request.statusCode).toEqual(404);
+      expect(request.result).toEqual("Question not found");
+    });
+    it("GET question - queue not found", async () => {
+      const request = await getServer().inject({
+        method: "get",
+        url: `/api/v1/queues/10/questions/1`,
+      });
+      expect(request.statusCode).toEqual(404);
+      expect(request.result).toEqual("Queue not found");
     });
   });
 });

@@ -24,7 +24,6 @@ import { QuestionModel } from "../entity/QuestionModel";
 import { UserModel } from "../entity/UserModel";
 import { QueueModel } from "../entity/QueueModel";
 import { CourseModel } from "../entity/CourseModel";
-import { head } from "lodash";
 
 export const queueRoutes: ServerRoute[] = [
   {
@@ -115,8 +114,25 @@ export const queueRoutes: ServerRoute[] = [
   {
     method: "GET",
     path: "/api/v1/queues/{queue_id}/questions/{question_id}",
-    handler: async (request): Promise<GetQuestionResponse | ResponseObject> => {
-      return MOCK_GET_QUESTION_RESPONSE;
+    handler: async (
+      request,
+      h
+    ): Promise<GetQuestionResponse | ResponseObject> => {
+      const queueSize = await QueueModel.count({
+        where: { id: request.params.queue_id },
+      });
+      // Check that the queue exists
+      if (queueSize === 0) {
+        return h.response("Queue not found").code(404);
+      }
+      const question = await QuestionModel.findOne(request.params.question_id, {
+        relations: ["creator", "taHelped"],
+      });
+      if (question === undefined) {
+        return h.response("Question not found").code(404);
+      }
+
+      return questionModelToQuestion(question);
     },
     options: {
       response: {
