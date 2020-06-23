@@ -52,7 +52,7 @@ export default function QuestionForm({
   finishQuestion,
 }: QuestionFormProps) {
   const [questionTypeInput, setQuestionTypeInput] = useState<QuestionType>(
-    question ? question.questionType : ""
+    question ? question.questionType : null
   );
 
   const [questionText, setQuestionText] = useState<string>(
