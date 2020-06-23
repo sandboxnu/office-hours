@@ -1,5 +1,4 @@
 import { setupServerTest, withServer, setupDBTest } from "../testUtils";
-import { MOCK_GET_PROFILE_RESPONSE } from "../mocks/getProfile";
 import { UserFactory, CourseFactory } from "../factory";
 import { UserCourseModel } from "../entity/UserCourseModel";
 import { Role } from "@template/common";
@@ -7,7 +6,6 @@ import { Role } from "@template/common";
 describe("Profile Routes", () => {
   setupDBTest();
   const getServer = setupServerTest();
-  const expectWithServer = withServer(getServer);
 
   describe("/profile", () => {
     it("GET profile", async () => {

@@ -14,16 +14,13 @@ import {
   QuestionType,
   CreateQuestionParams,
 } from "@template/common";
-import { MOCK_CREATE_QUESTION_RESPONSE } from "../mocks/createQuestion";
 import {
   MOCK_STUDENT_UPDATE_QUESTION_RESPONSE,
   MOCK_TA_UPDATE_QUESTION,
 } from "../mocks/updateQuestion";
-import { MOCK_GET_QUESTION_RESPONSE } from "../mocks/getQuestion";
 import { QuestionModel } from "../entity/QuestionModel";
 import { UserModel } from "../entity/UserModel";
 import { QueueModel } from "../entity/QueueModel";
-import { CourseModel } from "../entity/CourseModel";
 
 export const queueRoutes: ServerRoute[] = [
   {

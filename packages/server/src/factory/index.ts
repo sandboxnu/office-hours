@@ -1,10 +1,11 @@
 import { Factory } from "typeorm-factory";
 import { QuestionModel } from "../entity/QuestionModel";
-import { QuestionType } from "@template/common";
+import { QuestionType, Role } from "@template/common";
 import { QueueModel } from "../entity/QueueModel";
 import { CourseModel } from "../entity/CourseModel";
 import { SemesterModel } from "../entity/SemesterModel";
 import { UserModel } from "../entity/UserModel";
+import { UserCourseModel } from "../entity/UserCourseModel";
 
 export const UserFactory = new Factory(UserModel)
   .sequence("username", (i) => `user${i}`)
@@ -20,6 +21,11 @@ export const CourseFactory = new Factory(CourseModel)
   .attr("name", "CS 2500")
   .attr("icalURL", "hi.com")
   .assocOne("semester", SemesterFactory);
+
+export const UserCourseFactory = new Factory(UserCourseModel)
+  .assocOne("user", UserFactory)
+  .assocOne("course", CourseFactory)
+  .attr("role", Role.STUDENT);
 
 export const QueueFactory = new Factory(QueueModel)
   .sequence("room", (i) => `WVH ${i}`)
