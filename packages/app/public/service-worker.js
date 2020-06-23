@@ -21,6 +21,8 @@ const USER_ID = 1;
 
 const saveSubscription = async (subscription, user_id) => {
   const URL = SERVER_URL(`register`) + "/" + user_id;
+  console.log("joe mama");
+  console.log(JSON.stringify(subscription));
   const response = await fetch(URL, {
     method: "post",
     headers: {

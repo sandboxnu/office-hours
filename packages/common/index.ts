@@ -268,7 +268,7 @@ export type Season = "Fall" | "Spring" | "Summer 1" | "Summer 2";
 
 export type NotifBody = {
   endpoint: string;
-  expirationTime: Date;
+  expirationTime?: Date;
   keys: {
     p256dh: string;
     auth: string;
