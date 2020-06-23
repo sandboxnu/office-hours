@@ -5,10 +5,7 @@ import {
   BaseEntity,
   ManyToOne,
   JoinColumn,
-  OneToMany,
 } from "typeorm";
-import { UserCourseModel } from "./UserCourseModel";
-import { NotifBody } from "@template/common";
 import { UserModel } from "./UserModel";
 
 /*
@@ -41,7 +38,7 @@ export class NotifModel extends BaseEntity {
 
   @ManyToOne((type) => UserModel, (user) => user.notifs)
   @JoinColumn({ name: "userId" })
-  user: Promise<UserModel>;
+  user: UserModel;
 
   @Column({ nullable: true })
   userId: number;
