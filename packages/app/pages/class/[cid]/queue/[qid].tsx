@@ -42,7 +42,7 @@ export default function Queue({}: QueueProps) {
   // const { question, updateQuestion } = useState<any>(undefined);
   const [isJoining, setIsJoining] = useState<boolean>(false);
   const [questionDraftId, setQuestionDraftId] = useState<number>(null);
-  //const [studentQuestion, setStudentQuestion] = useState<Question>(null);
+  const [studentQuestion, setStudentQuestion] = useState<Question>(null);
 
   // TA queue state variables
   const [openPopup, setOpenPopup] = useState<boolean>(false);
@@ -77,14 +77,12 @@ export default function Queue({}: QueueProps) {
    * Gets the questions for this course
    */
   const getQuestions = async () => {
-    console.log("here");
     const q = await API.questions.index(queueId);
-    console.log(q);
 
     if (queueId && q) {
       setQuestions(q);
       //temporary
-      let helping: Question[] = [q[0]];
+      let helping: Question[] = [];
       let group: Question[] = [];
       for (let question of q) {
         if (
@@ -120,13 +118,13 @@ export default function Queue({}: QueueProps) {
    * Creates a new Question draft for a student who has joined the queue.
    */
   const joinQueue = async () => {
-    setIsJoining(true);
-
     // API call to join queue, question marked as draft
     const q = await API.questions.create(queueId, {
-      text: "",
-      questionType: null, // endpoint needs to be changed to allow empty questionType for drafts
+      text: "fake text",
+      questionType: QuestionType.Bug, // endpoint needs to be changed to allow empty questionType for drafts
+      // for the moment I am defaulting this data so that there is no error
     });
+
     if (q) {
       // fetch updated question list
       getQuestions();
@@ -156,7 +154,7 @@ export default function Queue({}: QueueProps) {
    * Finishes creating a given question by updating the draft.
    */
   const finishQuestion = async (text: string, questionType: QuestionType) => {
-    const q = await API.questions.update(queueId, questionDraftId, {
+    const q = await API.questions.update(queueId, studentQuestion.id, {
       text: text,
       questionType: questionType,
       status: OpenQuestionStatus.Queued,

@@ -51,14 +51,18 @@ const HeaderRow = styled(Row)`
 
 interface StudentQueueListProps {
   joinQueue: () => void;
-  studentQuestion: Question;
+  leaveQueue: () => void;
+  finishQuestion: (questionType: QuestionType, questionText: string) => void;
   onOpenClick: (question: Question) => void;
   questions: Question[];
   helpingQuestions: Question[];
+  studentQuestion: Question;
 }
 
 export default function StudentQueueList({
   onOpenClick,
+  leaveQueue,
+  finishQuestion,
   joinQueue,
   studentQuestion,
   questions,
@@ -67,6 +71,7 @@ export default function StudentQueueList({
   const helping = helpingQuestions.length !== 0;
   const screens = useBreakpoint();
   const [popupEditQuestion, setPopupEditQuestion] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
 
   const openEditModal = useCallback(() => {
     setPopupEditQuestion(true);
@@ -82,13 +87,31 @@ export default function StudentQueueList({
         <HeaderRow></HeaderRow>
         <EditableQuestion
           position={3}
-          type={QuestionType.Concept}
-          text={"I don't under stand when to use an accumulator"}
+          type={studentQuestion.questionType}
+          text={studentQuestion.text}
           openEdit={openEditModal}
         />
       </Col>
     );
   };
+
+  const leaveQueueAndClose = useCallback(() => {
+    leaveQueue();
+    closeEditModal();
+  }, []);
+
+  const joinQueueOpenModal = useCallback(() => {
+    joinQueue();
+    openEditModal();
+  }, []);
+
+  const finishQuestionAndClose = useCallback(
+    (qt: QuestionType, text: string) => {
+      finishQuestion(qt, text);
+      closeEditModal();
+    },
+    []
+  );
 
   return (
     <div>
@@ -96,7 +119,7 @@ export default function StudentQueueList({
         <Col flex="auto" order={screens.lg === false ? 2 : 1}>
           <Row justify="space-between">
             <QueueTitle>Queue 1</QueueTitle>
-            <Button type="primary" size="large" onClick={joinQueue}>
+            <Button type="primary" size="large" onClick={joinQueueOpenModal}>
               Join Queue
             </Button>
           </Row>
@@ -135,11 +158,16 @@ export default function StudentQueueList({
         </Col>
         {studentQuestion && renderEditableQuestion()}
         <Modal
-          visible={popupEditQuestion}
+          visible={isJoining || popupEditQuestion}
           closable={true}
           onCancel={closeEditModal}
+          footer={<div></div>}
         >
-          <QuestionForm leaveQueue={() => {}} finishQuestion={() => {}} />
+          <QuestionForm
+            question={studentQuestion}
+            leaveQueue={leaveQueueAndClose}
+            finishQuestion={finishQuestionAndClose}
+          />
         </Modal>
       </Row>
     </div>

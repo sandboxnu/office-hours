@@ -1,7 +1,7 @@
 import { Question, QuestionType } from "@template/common";
 import { Button, Input, Radio, Alert } from "antd";
 import styled from "styled-components";
-import { useContext, useState } from "react";
+import { useContext, useState, useMemo } from "react";
 import { RadioChangeEvent } from "antd/lib/radio";
 import React from "react";
 import { QuestionContext } from "../../contexts/QuestionContext";
@@ -41,29 +41,26 @@ const FormButton = styled(Button)`
 `;
 
 interface QuestionFormProps {
+  question: Question;
   leaveQueue: () => void;
   finishQuestion: (text: string, questionType: QuestionType) => void;
 }
 
 export default function QuestionForm({
+  question,
   leaveQueue,
   finishQuestion,
 }: QuestionFormProps) {
-  const { question, updateQuestionType, updateText } = useContext(
-    QuestionContext
-  );
-
   const [questionTypeInput, setQuestionTypeInput] = useState<QuestionType>(
-    question ? question.questionType : null
+    question ? question.questionType : ""
   );
 
   const [questionText, setQuestionText] = useState<string>(
-    question ? question.text : null
+    question ? question.text : ""
   );
 
   // on question type change, update the question type state
   const onCategoryChange = (e: RadioChangeEvent) => {
-    updateQuestionType(e.target.value);
     setQuestionTypeInput(e.target.value);
   };
 
@@ -71,7 +68,6 @@ export default function QuestionForm({
   const onQuestionTextChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
-    updateText(event.target.value);
     setQuestionText(event.target.value);
   };
 
@@ -82,55 +78,63 @@ export default function QuestionForm({
     }
   };
 
-  return (
-    <Container>
-      <Alert
-        message="You are currently 12th in queue"
-        description="Your spot in queue has been temporarily reserved. Please describe your question to finish joining the queue."
-        type="success"
-        showIcon
-      />
+  return useMemo(() => {
+    return (
+      <Container>
+        <Alert
+          message="You are currently 12th in queue"
+          description="Your spot in queue has been temporarily reserved. Please describe your question to finish joining the queue."
+          type="success"
+          showIcon
+        />
 
-      <Title>Describe your question</Title>
+        <Title>Describe your question</Title>
 
-      <QuestionText>What category does your question fall under?</QuestionText>
-      <Radio.Group
-        onChange={onCategoryChange}
-        buttonStyle="solid"
-        style={{ marginBottom: 48 }}
-      >
-        <Radio.Button value={QuestionType.Concept}>Concept</Radio.Button>
-        <Radio.Button value={QuestionType.Clarification}>Concept</Radio.Button>
-        <Radio.Button value={QuestionType.Testing}>Testing</Radio.Button>
-        <Radio.Button value={QuestionType.Bug}>Bug</Radio.Button>
-        <Radio.Button value={QuestionType.Setup}>Setup</Radio.Button>
-        <Radio.Button value={QuestionType.Other}>Other</Radio.Button>
-      </Radio.Group>
-
-      <QuestionText>What do you need help with?</QuestionText>
-      <Input.TextArea
-        value={questionText}
-        placeholder="I’m having trouble understanding list abstractions, particularly in Assignment 5."
-        autoSize={{ minRows: 3, maxRows: 6 }}
-        onChange={onQuestionTextChange}
-      />
-      <QuestionCaption>
-        Be as descriptive and specific as possible in your answer. If your
-        question matches another student’s, your wait time may be reduced.
-      </QuestionCaption>
-
-      <div>
-        <FormButton
-          type="primary"
-          disabled={!questionTypeInput || !questionText || questionText === ""}
-          onClick={onClickSubmit}
+        <QuestionText>
+          What category does your question fall under?
+        </QuestionText>
+        <Radio.Group
+          onChange={onCategoryChange}
+          buttonStyle="solid"
+          style={{ marginBottom: 48 }}
         >
-          Finish
-        </FormButton>
-        <FormButton danger onClick={leaveQueue}>
-          Leave Queue
-        </FormButton>
-      </div>
-    </Container>
-  );
+          <Radio.Button value={QuestionType.Concept}>Concept</Radio.Button>
+          <Radio.Button value={QuestionType.Clarification}>
+            Clarification
+          </Radio.Button>
+          <Radio.Button value={QuestionType.Testing}>Testing</Radio.Button>
+          <Radio.Button value={QuestionType.Bug}>Bug</Radio.Button>
+          <Radio.Button value={QuestionType.Setup}>Setup</Radio.Button>
+          <Radio.Button value={QuestionType.Other}>Other</Radio.Button>
+        </Radio.Group>
+
+        <QuestionText>What do you need help with?</QuestionText>
+        <Input.TextArea
+          value={questionText}
+          placeholder="I’m having trouble understanding list abstractions, particularly in Assignment 5."
+          autoSize={{ minRows: 3, maxRows: 6 }}
+          onChange={onQuestionTextChange}
+        />
+        <QuestionCaption>
+          Be as descriptive and specific as possible in your answer. If your
+          question matches another student’s, your wait time may be reduced.
+        </QuestionCaption>
+
+        <div>
+          <FormButton
+            type="primary"
+            disabled={
+              !questionTypeInput || !questionText || questionText === ""
+            }
+            onClick={onClickSubmit}
+          >
+            Finish
+          </FormButton>
+          <FormButton danger onClick={leaveQueue}>
+            Leave Queue
+          </FormButton>
+        </div>
+      </Container>
+    );
+  }, []);
 }
