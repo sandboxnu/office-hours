@@ -141,17 +141,23 @@ export const queueRoutes: ServerRoute[] = [
     method: "PATCH",
     path: "/api/v1/queues/{queue_id}/questions/{question_id}",
     handler: async (
-      request
+      request,
+      h
     ): Promise<UpdateQuestionResponse | ResponseObject> => {
       const { text, questionType } = request.payload as UpdateQuestionParams; // Question: Do we want to take in the whole question as a param?
+      const { queue_id, question_id } = request.params;
       // TODO: Check that the question_id belongs to the user or a TA that is currently helping with the given queue_id
       // TODO: Use user type to dertermine wether or not we should include the text in the response
-      if (text || questionType) {
-        // If student called the api
-        return MOCK_STUDENT_UPDATE_QUESTION_RESPONSE;
-      } else {
-        return MOCK_TA_UPDATE_QUESTION;
+      let question = await QuestionModel.findOne({
+        where: { queueId: queue_id, id: question_id },
+        relations: ["creator"],
+      });
+      if (question === undefined) {
+        return h.response("").code(404);
       }
+      question = Object.assign(question, request.payload);
+      await question.save();
+      return questionModelToQuestion(question);
     },
     options: {
       response: {
