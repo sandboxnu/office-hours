@@ -8,13 +8,10 @@ import {
   QuestionStatus,
   UserCourse,
 } from "@template/common";
-import QuestionForm from "../components/Queue/QuestionForm";
-import QueueList from "../components/Queue/QueueList";
 import StudentPopupCard from "../components/Queue/StudentPopupCard";
 import { useCallback, useState, useContext, useEffect, Fragment } from "react";
 import { API } from "@template/api-client";
 import { ProfileContext } from "../contexts/ProfileContextProvider";
-import EditableQuestion from "../components/Queue/EditableQuestion";
 import StudentQueueList from "../components/Queue/StudentQueueList";
 import TAQueueList from "../components/Queue/TAQueueList";
 import {
@@ -44,7 +41,7 @@ export default function Queue({}: QueueProps) {
   const { question, updateQuestion } = useContext(QuestionContext);
   const [isJoining, setIsJoining] = useState<boolean>(false);
   const [questionDraftId, setQuestionDraftId] = useState<number>(null);
-  //const [studentQuestion, setStudentQuestion] = useState<Question>(null);
+  const [studentQuestion, setStudentQuestion] = useState<Question>(null);
 
   // TA queue state variables
   const [openPopup, setOpenPopup] = useState<boolean>(false);
@@ -79,14 +76,12 @@ export default function Queue({}: QueueProps) {
    * Gets the questions for this course
    */
   const getQuestions = async () => {
-    console.log("here");
     const q = await API.questions.index(queueId);
-    console.log(q);
 
     if (queueId && q) {
       setQuestions(q);
       //temporary
-      let helping: Question[] = [q[0]];
+      let helping: Question[] = [];
       let group: Question[] = [];
       for (let question of q) {
         if (
@@ -122,20 +117,20 @@ export default function Queue({}: QueueProps) {
    * Creates a new Question draft for a student who has joined the queue.
    */
   const joinQueue = async () => {
-    setIsJoining(true);
-
     // API call to join queue, question marked as draft
     const q = await API.questions.create(queueId, {
-      text: "",
-      questionType: null, // endpoint needs to be changed to allow empty questionType for drafts
+      text: "fake text",
+      questionType: QuestionType.Bug, // endpoint needs to be changed to allow empty questionType for drafts
+      // for the moment I am defaulting this data so that there is no error
     });
+
     if (q) {
       // fetch updated question list
       getQuestions();
       setQuestionDraftId(q.id);
 
       //update the student's question
-      updateQuestion(q);
+      setStudentQuestion(q);
     }
   };
 
@@ -158,7 +153,7 @@ export default function Queue({}: QueueProps) {
    * Finishes creating a given question by updating the draft.
    */
   const finishQuestion = async (text: string, questionType: QuestionType) => {
-    const q = await API.questions.update(queueId, questionDraftId, {
+    const q = await API.questions.update(queueId, studentQuestion.id, {
       text: text,
       questionType: questionType,
       status: OpenQuestionStatus.Queued,
@@ -210,48 +205,40 @@ export default function Queue({}: QueueProps) {
 
   return (
     <Container>
-      <QuestionContextProvider>
-        {!isJoining && (
-          <Fragment>
-            {Role.STUDENT === ROLE ? (
-              <StudentQueueList
-                onOpenClick={onOpenClick}
-                joinQueue={joinQueue}
-                questions={questions}
-                helpingQuestions={helpingQuestions}
-                studentQuestion={questions[0]}
-              />
-            ) : (
-              <TAQueueList
-                onOpenClick={onOpenClick}
-                joinQueue={joinQueue}
-                updateQuestionTA={updateQuestionTA}
-                alertStudent={alertStudent}
-                questions={questions}
-                helpingQuestions={helpingQuestions}
-                groupQuestions={groupQuestions}
-              />
-            )}
-            {ROLE === "ta" && currentQuestion && (
-              <StudentPopupCard
-                onClose={onCloseClick}
-                email="takayama.a@northeastern.edu" //need a way to access this. or the user
-                wait={20} //figure out later
-                question={currentQuestion}
-                location="Outside by the printer" // need a way to access this
-                visible={openPopup}
-                updateQuestion={updateQuestionTA}
-              />
-            )}
-          </Fragment>
-        )}
-        {isJoining && (
-          <QuestionForm
+      <Fragment>
+        {Role.STUDENT === ROLE ? (
+          <StudentQueueList
+            onOpenClick={onOpenClick}
+            joinQueue={joinQueue}
+            questions={questions}
+            helpingQuestions={helpingQuestions}
+            studentQuestion={studentQuestion} // temporary
             leaveQueue={leaveQueue}
             finishQuestion={finishQuestion}
           />
+        ) : (
+          <TAQueueList
+            onOpenClick={onOpenClick}
+            joinQueue={joinQueue}
+            updateQuestionTA={updateQuestionTA}
+            alertStudent={alertStudent}
+            questions={questions}
+            helpingQuestions={helpingQuestions}
+            groupQuestions={groupQuestions}
+          />
         )}
-      </QuestionContextProvider>
+        {ROLE === "ta" && currentQuestion && (
+          <StudentPopupCard
+            onClose={onCloseClick}
+            email="takayama.a@northeastern.edu" //need a way to access this. or the user
+            wait={20} //figure out later
+            question={currentQuestion}
+            location="Outside by the printer" // need a way to access this
+            visible={openPopup}
+            updateQuestion={updateQuestionTA}
+          />
+        )}
+      </Fragment>
     </Container>
   );
 }
