@@ -30,8 +30,8 @@ describe("Profile Routes", () => {
       });
       expect(get.statusCode).toEqual(200);
       expect(get.result).toEqual({
-        email: "user1@neu.edu",
         id: 1,
+        email: "user1@neu.edu",
         name: "John Doe the 1th",
         photoURL: "https://pics/1",
         courses: [

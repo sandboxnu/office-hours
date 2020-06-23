@@ -13,7 +13,7 @@ export const profileRoutes: ServerRoute[] = [
       let user = await UserModel.findOne(1, {
         relations: ["courses", "courses.course"],
       });
-      user.courses = user.courses.map((userCourse) => {
+      const courses = user.courses.map((userCourse) => {
         return {
           course: {
             id: userCourse.courseId,
@@ -22,7 +22,14 @@ export const profileRoutes: ServerRoute[] = [
           role: userCourse.role,
         };
       });
-      return pick(user, ["id", "email", "name", "photoURL", "courses"]);
+      const userResponse = pick(user, [
+        "id",
+        "email",
+        "name",
+        "photoURL",
+        "courses",
+      ]);
+      return { ...userResponse, courses };
     },
     options: {
       response: {
