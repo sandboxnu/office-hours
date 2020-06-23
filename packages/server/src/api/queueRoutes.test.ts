@@ -1,12 +1,7 @@
 import { setupServerTest, withServer, setupDBTest } from "../testUtils";
 import { MOCK_GET_QUESTION_RESPONSE } from "../mocks/getQuestion";
-import { MOCK_CREATE_QUESTION_RESPONSE } from "../mocks/createQuestion";
-import { QuestionType } from "@template/common";
-import { CourseModel } from "../entity/CourseModel";
-import { QueueModel } from "../entity/QueueModel";
-import { UserModel } from "../entity/UserModel";
-import { UserCourseModel } from "../entity/UserCourseModel";
 import { QuestionModel } from "../entity/QuestionModel";
+import { QuestionFactory } from "../factory";
 
 describe("Queue Routes", () => {
   setupDBTest();
@@ -15,57 +10,30 @@ describe("Queue Routes", () => {
 
   describe("/queues/{queue_id}/questions", () => {
     it("GET fundies success", async () => {
-      const course = await CourseModel.create({
-        name: "CS 2500",
-        icalUrl: "fudies1.com",
-      }).save();
-      const queue = await QueueModel.create({
-        room: "WVH 605",
-        courseId: course.id,
-      }).save();
-      const user = await UserModel.create({
-        username: "eddyTheDockerGodLi",
-        email: "li.e@northeastern.edu",
-        name: "Eddy Li",
-        photoURL:
-          "https://prod-web.neu.edu/wasapp/EnterprisePhotoService/PhotoServlet?vid=CCS&er=471f2d695fbb8a00ee740ad3ea910453986aec81ddaecf889ae98b3a1858597b12650afd0d4e59c561172f76cb1946eec217ed89bd4074c0",
-      }).save();
-      const userCourse = await UserCourseModel.create({
-        userId: user.id,
-        courseId: course.id,
-      }).save();
-      const question = await QuestionModel.create({
-        queueId: queue.id,
-        text: "Help pls",
-        creatorId: userCourse.id,
-        createdAt: new Date(2020, 16, 5),
-        questionType: QuestionType.Other,
-        status: "Queued",
-      }).save();
-      await expectWithServer({
+      await QuestionFactory.create({ text: "Help pls" });
+
+      const request = await getServer().inject({
         method: "get",
         url: "/api/v1/queues/1/questions",
-        result: [
-          {
-            closedAt: null,
-            createdAt: new Date(2020, 16, 5),
-            creator: {
-              id: 1,
-              name: "Eddy Li",
-              photoURL:
-                "https://prod-web.neu.edu/wasapp/EnterprisePhotoService/PhotoServlet?vid=CCS&er=471f2d695fbb8a00ee740ad3ea910453986aec81ddaecf889ae98b3a1858597b12650afd0d4e59c561172f76cb1946eec217ed89bd4074c0",
-            },
-            helpedAt: null,
-            id: 1,
-            questionType: "Other",
-            status: "Queued",
-            taHelped: null,
-            text: "Help pls",
-          },
-        ],
       });
+      expect(request.statusCode).toEqual(200);
+      expect(request.result).toMatchObject([
+        {
+          closedAt: null,
+          creator: {
+            id: 1,
+            name: "John Doe the 1th",
+            photoURL: "https://pics/1",
+          },
+          helpedAt: null,
+          id: 1,
+          questionType: "Other",
+          status: "Queued",
+          taHelped: null,
+          text: "Help pls",
+        },
+      ]);
     });
-    // TODO: is this test supposed to fail now?
     it("GET fundies fail", async () => {
       await expectWithServer({
         method: "get",
@@ -75,16 +43,26 @@ describe("Queue Routes", () => {
       });
     });
     it("POST new question", async () => {
-      await expectWithServer({
+      const server = getServer();
+      expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(0);
+      const request = await server.inject({
         method: "post",
-        url: "/api/v1/queues/45/questions",
+        url: "/api/v1/queues/1/questions",
         payload: {
           text: "Don't know recursion",
           questionType: "Concept",
         },
-        statusCode: 200,
-        result: MOCK_CREATE_QUESTION_RESPONSE,
       });
+      expect(request.statusCode).toEqual(201);
+      expect(request.result).toMatchObject({
+        text: "Don't know recursion",
+        taHelped: null,
+        helpedAt: null,
+        closedAt: null,
+        questionType: "Concept",
+        status: "Queued",
+      });
+      expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(1);
     });
     it("POST new question fails with bad params", async () => {
       await expectWithServer({

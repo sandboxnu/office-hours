@@ -3,6 +3,8 @@ items:
   ucm1:
     userId: "@user1"
     courseId: "@course0"
+    role: "student"
   ucm2:
     userId: "@user2"
     courseId: "@course0"
+    role: "ta"

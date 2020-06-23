@@ -245,8 +245,7 @@ export enum ClosedQuestionStatus {
 
 // Ticket Status - Represents a given status of as student's ticket
 export type QuestionStatus = keyof typeof QuestionStatusKeys;
-// IMPORTANT: whenever importing QuestionStatusKeys to use for any reason, import it from
-// @template/common/index. for some reason, importing from @template/common results in undefined.
+// an Enum-like constant that contains all the statuses for convenience.
 export const QuestionStatusKeys = {
   ...OpenQuestionStatus,
   ...ClosedQuestionStatus,

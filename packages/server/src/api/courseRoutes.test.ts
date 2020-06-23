@@ -7,14 +7,9 @@ import {
 } from "../mocks/taUpdateStatus";
 import { QueueModel } from "../entity/QueueModel";
 import { QuestionModel } from "../entity/QuestionModel";
-import { userInfo } from "os";
 import { UserModel } from "../entity/UserModel";
 import { UserCourseModel } from "../entity/UserCourseModel";
-import {
-  QuestionStatus,
-  OpenQuestionStatus,
-  QuestionType,
-} from "@template/common";
+import { QuestionType } from "@template/common";
 
 describe("/api/v1/courses/course_id/schedule", () => {
   setupDBTest();
@@ -23,7 +18,7 @@ describe("/api/v1/courses/course_id/schedule", () => {
   it("gets matthias's office hours", async () => {
     const course = await CourseModel.create({
       name: "CS 2500",
-      icalUrl: "testest.com/water-sausage",
+      icalURL: "testest.com/water-sausage",
     }).save();
     await OfficeHourModel.create({
       title: "Matthias's Special Office Hours",
@@ -60,7 +55,7 @@ describe("Course Routes", () => {
   it("/courses/{course_id}/queues", async () => {
     const course = await CourseModel.create({
       name: "CS 2500",
-      icalUrl: "fudies1.com",
+      icalURL: "fudies1.com",
     }).save();
     const queue = await QueueModel.create({
       room: "WVH 605",
