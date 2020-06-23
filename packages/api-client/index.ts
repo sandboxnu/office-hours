@@ -11,6 +11,7 @@ import {
   UpdateQuestionResponse,
   GetCourseQueuesResponse,
   QueuePartial,
+  NotifBody,
 } from "@template/common";
 
 class APIClient {
@@ -89,6 +90,20 @@ class APIClient {
       ).data;
       parseQuestionDates(question);
       return question;
+    },
+  };
+  notif = {
+    notify_user: async (userId: number): Promise<void> => {
+      await this.axios.post(`/api/v1/notifications/notify_user/${userId}`);
+    },
+    credentials: async (): Promise<string> => {
+      return this.axios.get("/api/v1/notifications/credentials");
+    },
+    register: async (userId: number, payload: NotifBody): Promise<void> => {
+      await this.axios.post(
+        `/api/v1/notifications/register/${userId}`,
+        payload
+      );
     },
   };
   constructor(baseURL: string = "") {

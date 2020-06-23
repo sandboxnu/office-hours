@@ -4,7 +4,7 @@ import { NotifModel } from "../entity/NotifModel";
 import { NotifPayload } from "../joi";
 import * as dotenv from "dotenv";
 import * as webPush from "web-push";
-import { connect } from "http2";
+
 dotenv.config();
 webPush.setVapidDetails(
   process.env.EMAIL,
@@ -42,12 +42,17 @@ export const notifRoutes: ServerRoute[] = [
     },
   },
   {
-    method: "GET",
-    path: "/api/v1/notifications/notify_all",
+    method: "POST",
+    path: "/api/v1/notifications/notify_user/{user_id}",
     handler: async (request, h) => {
-      const test = await NotifModel.find();
+      const user_id = request.params.user_id;
+      const notifModelsOfUser = await NotifModel.find({
+        where: {
+          userId: user_id,
+        },
+      });
       await Promise.all(
-        test.map(async (nm) => {
+        notifModelsOfUser.map(async (nm) => {
           try {
             await webPush.sendNotification(unparse(nm), "joe mama");
           } catch (error) {
