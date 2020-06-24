@@ -2,5 +2,5 @@ entity: CourseModel
 items:
   course0:
     name: "CS 2500"
-    icalUrl: "testest.com/water-sausage"
-    semesterId: "@semester1"
+    icalURL: "testest.com/water-sausage"
+    semesterId: "@semester0"

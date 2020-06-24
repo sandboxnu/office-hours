@@ -16,7 +16,7 @@ export class OfficeHourModel extends BaseEntity {
 
   @ManyToOne((type) => CourseModel, (course) => course.officeHours)
   @JoinColumn({ name: "courseId" })
-  course: Promise<CourseModel>;
+  course: CourseModel;
 
   @Column({ nullable: true })
   courseId: number;
