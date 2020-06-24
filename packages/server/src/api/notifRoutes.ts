@@ -67,10 +67,7 @@ export const notifRoutes: ServerRoute[] = [
               fromDBmodel(nm).endpoint
             );
           } catch (error) {
-            console.debug(
-              "removing user for reason:",
-              JSON.parse(error.body).message
-            );
+            console.debug("removing user for reason:", error.body);
             await NotifModel.remove(nm);
           }
         })
