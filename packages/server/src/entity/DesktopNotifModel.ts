@@ -9,7 +9,7 @@ import {
   AfterLoad,
 } from "typeorm";
 import { UserModel } from "./UserModel";
-import { notifyUser } from "../api/notifRoutes";
+import { desktopNotifyUser } from "../api/notifRoutes";
 
 @Entity("desktop_notif_model")
 export class DesktopNotifModel extends BaseEntity {
@@ -37,7 +37,7 @@ export class DesktopNotifModel extends BaseEntity {
 
   @AfterInsert()
   async initialNotifyUser() {
-    await notifyUser(
+    await desktopNotifyUser(
       this,
       "You've successfully signed up for desktop notifications!"
     );

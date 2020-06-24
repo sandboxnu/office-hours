@@ -6,20 +6,34 @@ import * as dotenv from "dotenv";
 import * as webPush from "web-push";
 import { DeepPartial } from "typeorm";
 import { PhoneNotifModel } from "../entity/PhoneNotifModel";
+import { Twilio } from "twilio";
+import { UserModel } from "../entity/UserModel";
 
-// configure env vars for VAPID
+// configure env vars for VAPID + Twilio
 dotenv.config();
+let twilioClient: undefined | Twilio;
 
 // if env vars not found, then throw an error early
-if (!process.env.EMAIL || !process.env.PUBLICKEY || !process.env.PRIVATEKEY) {
+if (
+  !process.env.EMAIL ||
+  !process.env.PUBLICKEY ||
+  !process.env.PRIVATEKEY ||
+  !process.env.TWILIOACCOUNTSID ||
+  !process.env.TWILIIOAUTHTOKEN ||
+  !process.env.TWILIOPHONENUMBER
+) {
   throw new Error(
-    "please add a .env file with keys+email in packages/server. ask alex/eddy for deets."
+    "please add a .env file with keys+email in packages/server. ask alex/eddy for deets. also twilio stuff"
   );
 } else {
   webPush.setVapidDetails(
     process.env.EMAIL,
     process.env.PUBLICKEY,
     process.env.PRIVATEKEY
+  );
+  twilioClient = new Twilio(
+    process.env.TWILIOACCOUNTSID,
+    process.env.TWILIIOAUTHTOKEN
   );
 }
 
@@ -82,26 +96,54 @@ export const notifRoutes: ServerRoute[] = [
     path: "/api/v1/notifications/notify_user/{user_id}",
     handler: async (request, h) => {
       const user_id = request.params.user_id;
-      const notifModelsOfUser = await DesktopNotifModel.find({
+      const notifModelsOfUser = await UserModel.findOne({
         where: {
-          userId: user_id,
+          id: user_id,
         },
+        relations: ["desktopNotifs", "phoneNotifs"],
       });
-      await Promise.all(
-        notifModelsOfUser.map(async (nm) => notifyUser(nm, "joe mama"))
-      );
+
+      // run the promises concurrently
+      await Promise.all([
+        ...notifModelsOfUser.desktopNotifs.map(async (nm) =>
+          desktopNotifyUser(nm, "joe mama")
+        ),
+        ...notifModelsOfUser.phoneNotifs.map(async (pn) =>
+          phoneNotifyUser(pn, "have u heard of ligma?")
+        ),
+      ]);
+
       return h.response().code(200);
     },
   },
 ];
 
-export async function notifyUser(nm: DesktopNotifModel, message: string) {
+// notifies a user via desktop notification
+export async function desktopNotifyUser(
+  nm: DesktopNotifModel,
+  message: string
+) {
   try {
     await webPush.sendNotification(fromDBmodel(nm), message);
     console.debug("notifying user with endpoint:", fromDBmodel(nm).endpoint);
   } catch (error) {
     console.debug("removing user for reason:", error.body);
     await DesktopNotifModel.remove(nm);
+  }
+}
+
+// notifies a user via phone number
+export async function phoneNotifyUser(pn: PhoneNotifModel, message: string) {
+  try {
+    twilioClient &&
+      (await twilioClient.messages.create({
+        body: message,
+        from: process.env.TWILIOPHONENUMBER,
+        to: pn.phoneNumber,
+      }));
+    console.log("texting user: ", pn.phoneNumber);
+  } catch (error) {
+    console.error("problem sending message", error);
   }
 }
 
