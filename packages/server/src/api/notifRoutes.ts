@@ -4,9 +4,12 @@ import { NotifModel } from "../entity/NotifModel";
 import { NotifPayload } from "../joi";
 import * as dotenv from "dotenv";
 import * as webPush from "web-push";
+import { DeepPartial } from "typeorm";
 
+// configure env vars for VAPID
 dotenv.config();
 
+// if env vars not found, then throw an error early
 if (!process.env.EMAIL || !process.env.PUBLICKEY || !process.env.PRIVATEKEY) {
   throw new Error(
     "please add a .env file with keys+email in packages/server. ask alex/eddy for deets."
@@ -34,14 +37,9 @@ export const notifRoutes: ServerRoute[] = [
     handler: async (request, h): Promise<string | ResponseObject> => {
       const payload = request.payload as NotifBody;
       console.debug("registering user with endpoint:", payload.endpoint);
-      await NotifModel.create({
-        endpoint: payload.endpoint,
-        expirationTime:
-          payload.expirationTime && new Date(payload.expirationTime),
-        p256dh: payload.keys.p256dh,
-        auth: payload.keys.auth,
-        userId: Number(request.params.user_id),
-      }).save();
+      await NotifModel.create(
+        toDBmodel(payload, Number(request.params.user_id))
+      ).save();
       return h.response(JSON.stringify("registration success")).code(200);
     },
     options: {
@@ -63,13 +61,16 @@ export const notifRoutes: ServerRoute[] = [
       await Promise.all(
         notifModelsOfUser.map(async (nm) => {
           try {
-            await webPush.sendNotification(unparse(nm), "joe mama");
+            await webPush.sendNotification(fromDBmodel(nm), "joe mama");
             console.debug(
               "notifying user with endpoint:",
-              unparse(nm).endpoint
+              fromDBmodel(nm).endpoint
             );
           } catch (error) {
-            console.error(error.body);
+            console.debug(
+              "removing user for reason:",
+              JSON.parse(error.body).message
+            );
             await NotifModel.remove(nm);
           }
         })
@@ -78,7 +79,12 @@ export const notifRoutes: ServerRoute[] = [
     },
   },
 ];
-function unparse(nm: NotifModel) {
+
+/**
+ * converts from DB model instance to subscription format
+ * @param nm the DB model
+ */
+function fromDBmodel(nm: NotifModel): NotifBody & { id: Number } {
   return {
     id: nm.id,
     endpoint: nm.endpoint,
@@ -87,5 +93,20 @@ function unparse(nm: NotifModel) {
       p256dh: nm.p256dh,
       auth: nm.auth,
     },
+  };
+}
+
+/**
+ * converts from subscription object to DB model param
+ * @param payload the subscription object
+ * @param uid the user id
+ */
+function toDBmodel(payload: NotifBody, uid: number): DeepPartial<NotifModel> {
+  return {
+    endpoint: payload.endpoint,
+    expirationTime: payload.expirationTime && new Date(payload.expirationTime),
+    p256dh: payload.keys.p256dh,
+    auth: payload.keys.auth,
+    userId: uid,
   };
 }

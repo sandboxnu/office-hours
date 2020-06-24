@@ -6,17 +6,11 @@ import "../styles/global.css";
 import useSWR from "swr";
 import { API } from "@template/api-client";
 import { ProfileContext } from "../contexts/ProfileContextProvider";
-import { register } from "next-offline/runtime";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const { data, error } = useSWR(`/api/v1/profile`, async () =>
     API.profile.index()
   );
-
-  useEffect(() => {
-    register();
-    return () => {};
-  });
 
   return (
     <Fragment>

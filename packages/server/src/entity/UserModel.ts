@@ -1,10 +1,5 @@
 import {
   BaseEntity, Column, Entity,
-
-
-
-
-
   OneToMany, PrimaryGeneratedColumn
 } from "typeorm";
 import { NotifModel } from "./NotifModel";
@@ -31,5 +26,5 @@ export class UserModel extends BaseEntity {
   courses: UserCourseModel[];
 
   @OneToMany((type) => NotifModel, (notif) => notif.user)
-  notifs: Promise<NotifModel[]>;
+  notifs: NotifModel[];
 }
