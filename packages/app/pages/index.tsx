@@ -2,6 +2,16 @@ import { User } from "@template/common";
 import Head from "next/head";
 import Router from "next/router";
 import { useProfile } from "../hooks/useProfile";
+import { GetServerSideProps } from "next";
+import { useEffect, useState } from "react";
+import WebsocketDemo from "../components/WebsocketDemo";
+import ClubList from "../components/ClubList";
+import { socket } from "../utils/socket";
+import { API } from "@template/api-client";
+import { Club, WSMessageType } from "@template/common";
+import { Button } from "antd";
+import styled from "styled-components";
+import { register, unregister } from "next-offline/runtime";
 
 export default function Home() {
   const profile: User = useProfile();
@@ -35,18 +45,23 @@ export default function Home() {
       console.log(`permission previously granted`);
     } else if (Notification.permission === "denied") {
       console.log("permission previously denied");
-      const permission = await window.Notification.requestPermission();
     } else if (Notification.permission === "default") {
-      console.log("permission not set");
-      const permission = await window.Notification.requestPermission();
+      console.log("permission not set > requesting");
+      await window.Notification.requestPermission();
     }
   };
 
   const checkBrowserAndRequestNotifications = async () => {
     check();
-    const permission = await requestNotificationPermission();
+    // try to get notification permissions
+    await requestNotificationPermission();
+    // get rid of old service worker, and then try and re-register.
+    unregister();
+    // have to use setTimeout because unregister does async things, but is sync
+    setTimeout(() => {
+      register();
+    }, 500);
   };
-
   // end web push code
 
   return (
