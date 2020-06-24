@@ -164,7 +164,7 @@ export default function Queue({}: QueueProps) {
       // fetch updated question list
       getQuestions();
       setIsJoining(false);
-      setCurrentQuestion(q);
+      setStudentQuestion(q);
     }
   };
 
