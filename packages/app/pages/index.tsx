@@ -6,8 +6,9 @@ import ClubList from "../components/ClubList";
 import { socket } from "../utils/socket";
 import { API } from "@template/api-client";
 import { Club, WSMessageType } from "@template/common";
-import { Space, Button } from "antd";
+import { Button } from "antd";
 import styled from "styled-components";
+import { register, unregister } from "next-offline/runtime";
 
 const Title = styled.h1`
   color: red;
@@ -53,18 +54,23 @@ export default function Home({ clubs }: HomeProps) {
       console.log(`permission previously granted`);
     } else if (Notification.permission === "denied") {
       console.log("permission previously denied");
-      const permission = await window.Notification.requestPermission();
     } else if (Notification.permission === "default") {
-      console.log("permission not set");
-      const permission = await window.Notification.requestPermission();
+      console.log("permission not set > requesting");
+      await window.Notification.requestPermission();
     }
   };
 
   const checkBrowserAndRequestNotifications = async () => {
     check();
-    const permission = await requestNotificationPermission();
+    // try to get notification permissions
+    await requestNotificationPermission();
+    // get rid of old service worker, and then try and re-register.
+    unregister();
+    // have to use setTimeout because unregister does async things, but is sync
+    setTimeout(() => {
+      register();
+    }, 500);
   };
-
   // end web push code
 
   return (
