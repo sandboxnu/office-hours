@@ -8,24 +8,15 @@ import {
 } from "typeorm";
 import { UserModel } from "./UserModel";
 
-@Entity("notif_model")
-export class NotifModel extends BaseEntity {
+@Entity("phone_notif_model")
+export class PhoneNotifModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column("text")
-  endpoint: string;
+  phoneNumber: string;
 
-  @Column({ nullable: true })
-  expirationTime: Date;
-
-  @Column("text")
-  p256dh: string;
-
-  @Column("text")
-  auth: string;
-
-  @ManyToOne((type) => UserModel, (user) => user.notifs)
+  @ManyToOne((type) => UserModel, (user) => user.phoneNotifs)
   @JoinColumn({ name: "userId" })
   user: UserModel;
 

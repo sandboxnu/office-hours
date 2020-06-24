@@ -6,7 +6,8 @@ import {
   OneToMany,
 } from "typeorm";
 import { UserCourseModel } from "./UserCourseModel";
-import { NotifModel } from "./NotifModel";
+import { DesktopNotifModel } from "./DesktopNotifModel";
+import { PhoneNotifModel } from "./PhoneNotifModel";
 
 @Entity("user_model")
 export class UserModel extends BaseEntity {
@@ -28,6 +29,9 @@ export class UserModel extends BaseEntity {
   @OneToMany((type) => UserCourseModel, (ucm) => ucm.user)
   courses: UserCourseModel[];
 
-  @OneToMany((type) => NotifModel, (notif) => notif.user)
-  notifs: NotifModel[];
+  @OneToMany((type) => DesktopNotifModel, (notif) => notif.user)
+  desktopNotifs: DesktopNotifModel[];
+
+  @OneToMany((type) => PhoneNotifModel, (notif) => notif.user)
+  phoneNotifs: PhoneNotifModel[];
 }

@@ -17,7 +17,7 @@ const urlB64ToUint8Array = (base64String) => {
 
 // todo: figure out how to do this
 const ORIGIN = `http://localhost:3000`;
-const SERVER_URL = (s) => `${ORIGIN}/api/v1/notifications/${s}`;
+const SERVER_URL = (s) => `${ORIGIN}/api/v1/notifications/desktop/${s}`;
 // todo: replace with actual user id.
 const USER_ID = 1;
 
@@ -44,6 +44,7 @@ self.addEventListener("activate", async () => {
     const applicationServerKey = urlB64ToUint8Array(PUBLICKEY);
     const options = { applicationServerKey, userVisibleOnly: true };
     const subscription = await self.registration.pushManager.subscribe(options);
+    console.log("here");
     const response = await saveSubscription(subscription, USER_ID);
     console.log(response);
   } catch (err) {

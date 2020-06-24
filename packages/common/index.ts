@@ -266,11 +266,15 @@ interface Semester {
  */
 export type Season = "Fall" | "Spring" | "Summer 1" | "Summer 2";
 
-export type NotifBody = {
+export type DesktopNotifBody = {
   endpoint: string;
   expirationTime?: Date;
   keys: {
     p256dh: string;
     auth: string;
   };
+};
+
+export type PhoneNotifBody = {
+  phoneNumber: string;
 };

@@ -65,7 +65,7 @@ export default function Home({ clubs }: HomeProps) {
     // try to get notification permissions
     await requestNotificationPermission();
     // get rid of old service worker, and then try and re-register.
-    unregister();
+    // unregister();
     // have to use setTimeout because unregister does async things, but is sync
     setTimeout(() => {
       register();
