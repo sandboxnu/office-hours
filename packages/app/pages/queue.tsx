@@ -14,10 +14,6 @@ import { API } from "@template/api-client";
 import { ProfileContext } from "../contexts/ProfileContextProvider";
 import StudentQueueList from "../components/Queue/StudentQueueList";
 import TAQueueList from "../components/Queue/TAQueueList";
-import {
-  QuestionContext,
-  QuestionContextProvider,
-} from "../contexts/QuestionContext";
 
 // TODO: replace this with profile role from endpoint
 const ROLE: Role = Role.STUDENT;
@@ -38,7 +34,6 @@ export default function Queue({}: QueueProps) {
   const [questions, setQuestions] = useState<Question[]>([]);
 
   // Student queue state variables
-  const { question, updateQuestion } = useContext(QuestionContext);
   const [isJoining, setIsJoining] = useState<boolean>(false);
   const [questionDraftId, setQuestionDraftId] = useState<number>(null);
   const [studentQuestion, setStudentQuestion] = useState<Question>(null);
@@ -53,9 +48,6 @@ export default function Queue({}: QueueProps) {
     if (profile) {
       const selectedCourse: UserCourse = profile.courses[0];
       setCourse(selectedCourse);
-      // course id is not = queue id
-      getQueueIdFromCourse(selectedCourse.course.id);
-      //setQueueId(selectedCourse.course.id);
     }
   }, [profile]);
 
@@ -64,6 +56,12 @@ export default function Queue({}: QueueProps) {
       getQuestions();
     }
   }, [queueId]);
+
+  useEffect(() => {
+    if (course) {
+      getQueueIdFromCourse(course.course.id);
+    }
+  }, [course]);
 
   const getQueueIdFromCourse = async (courseId) => {
     const q = await API.course.queues(courseId);
@@ -80,7 +78,6 @@ export default function Queue({}: QueueProps) {
 
     if (queueId && q) {
       setQuestions(q);
-      //temporary
       let helping: Question[] = [];
       let group: Question[] = [];
       for (let question of q) {
@@ -117,8 +114,9 @@ export default function Queue({}: QueueProps) {
    * Creates a new Question draft for a student who has joined the queue.
    */
   const joinQueue = async () => {
+    setStudentQuestion(questions[0]);
     // API call to join queue, question marked as draft
-    const q = await API.questions.create(queueId, {
+    const q = await API.questions.create(1, {
       text: "fake text",
       questionType: QuestionType.Bug, // endpoint needs to be changed to allow empty questionType for drafts
       // for the moment I am defaulting this data so that there is no error

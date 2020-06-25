@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { useContext, useState, useMemo, useEffect } from "react";
 import { RadioChangeEvent } from "antd/lib/radio";
 import React from "react";
-import { QuestionContext } from "../../contexts/QuestionContext";
 
 const Container = styled.div`
   max-width: 960px;
