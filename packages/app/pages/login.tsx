@@ -47,42 +47,6 @@ export default function Login({}: LoginProps) {
   return (
     <Container>
       <LoginContainer>
-        <Form name="basic" initialValues={{ remember: true }}>
-          <InputBoxContainer>
-            <Form.Item
-              label="Username"
-              name="username"
-              rules={[
-                { required: true, message: "Please input your username!" },
-              ]}
-            >
-              <Input onChange={onChangeUsername} />
-            </Form.Item>
-          </InputBoxContainer>
-
-          <InputBoxContainer>
-            <Form.Item
-              label="Password"
-              name="password"
-              rules={[
-                { required: true, message: "Please input your password!" },
-              ]}
-            >
-              <Input.Password onChange={onChangePassword} />
-            </Form.Item>
-          </InputBoxContainer>
-
-          <Form.Item name="remember" valuePropName="checked">
-            <Checkbox>Remember me</Checkbox>
-          </Form.Item>
-
-          <Form.Item>
-            <Button type="primary" htmlType="submit" onClick={onSubmit}>
-              Submit
-            </Button>
-          </Form.Item>
-        </Form>
-        <br />
         <Divider plain>
           <h3>For Development Use Only</h3>
         </Divider>
