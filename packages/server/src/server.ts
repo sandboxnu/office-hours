@@ -7,8 +7,9 @@ import { courseRoutes } from "./api/courseRoutes";
 import { queueRoutes } from "./api/queueRoutes";
 import websocketManager from "./websocketManager";
 import { UserModel } from "./entity/UserModel";
+import path from "path";
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 // Just initialize, don't start
 export async function init() {
