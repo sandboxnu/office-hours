@@ -50,6 +50,11 @@ export default function CreateQuestion({
         }
         autoSize={{ minRows: 3, maxRows: 6 }}
       />
+      <div>Where in the room are you located?</div>
+      <TextArea
+        placeholder={"Outside room, by the couches"}
+        autoSize={{ minRows: 1, maxRows: 1 }}
+      />
     </div>
   );
 }

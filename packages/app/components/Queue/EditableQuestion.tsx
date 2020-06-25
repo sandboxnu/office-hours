@@ -8,6 +8,7 @@ const SpotNum = styled.div`
   font-weight: 500;
   font-size: 24px;
   line-height: 32px;
+  margin-bottom: 20px;
 `;
 
 const QuestionText = styled.div`
@@ -32,15 +33,16 @@ const HeadingText = styled.div`
   line-height: 22px;
   color: #bfbfbf;
   font-variant: small-caps;
+  margin-bottom: 5px;
 `;
 
 const InfoText = styled.div`
   font-style: normal;
   font-weight: normal;
-  font-size: 12px;
+  font-size: 16px;
   line-height: 22px;
   color: #595959;
-  margin-bottom: 5px;
+  margin-bottom: 20px;
 `;
 
 const FullWidthButton = styled(Button)`
@@ -81,7 +83,7 @@ export default function EditableQuestion({
         <EditableQuestionCard>
           <Row>
             <Col span={6}>
-              <Avatar size={40} icon={<UserOutlined />} />
+              <Avatar size={56} icon={<UserOutlined />} />
             </Col>
             <Col span={18}>
               <HeadingText>YOUR SPOT</HeadingText>
