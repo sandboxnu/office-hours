@@ -9,6 +9,7 @@ import websocketManager from "./websocketManager";
 import { UserModel } from "./entity/UserModel";
 import path from "path";
 import dotenv from "dotenv";
+import { entryRoutes } from "./api/entryRoutes";
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 // Just initialize, don't start
@@ -42,6 +43,7 @@ export async function init() {
   server.route(profileRoutes);
   server.route(courseRoutes);
   server.route(queueRoutes);
+  server.route(entryRoutes);
 
   // Bind socketio to http server
   websocketManager.bindSocketIO(io(server.listener));
