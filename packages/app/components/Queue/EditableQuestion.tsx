@@ -4,9 +4,10 @@ import { Button, Tooltip, Card, Row, Col, Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 
 const SpotNum = styled.div`
-  font-size: 38px;
-  line-height: 46px;
-  color: #000000;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 32px;
 `;
 
 const QuestionText = styled.div`
@@ -20,7 +21,31 @@ const EditButton = styled(Button)`
   float: right;
 `;
 
-const EditableQuestionCard = styled(Card)``;
+const EditableQuestionCard = styled(Card)`
+  width: 370px;
+`;
+
+const HeadingText = styled.div`
+  font-style: normal;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 22px;
+  color: #bfbfbf;
+  font-variant: small-caps;
+`;
+
+const InfoText = styled.div`
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 22px;
+  color: #595959;
+  margin-bottom: 5px;
+`;
+
+const FullWidthButton = styled(Button)`
+  width: 100%;
+`;
 
 const HeaderText = styled.div`
   margin-top: 13px;
@@ -29,7 +54,6 @@ const HeaderText = styled.div`
   line-height: 22px;
   font-weight: 600;
   color: #bfbfbf;
-  font-variant: small-caps;
 `;
 
 interface EditableQuestionProps {
@@ -57,18 +81,29 @@ export default function EditableQuestion({
         <EditableQuestionCard>
           <Row>
             <Col span={6}>
-              <Avatar size={64} icon={<UserOutlined />} />
+              <Avatar size={40} icon={<UserOutlined />} />
             </Col>
             <Col span={18}>
-              <div>Your spot</div>
-              <SpotNum>{position}</SpotNum>
-              <div>TYPE</div>
-              <div>{type}</div>
-              <div>QUESTION</div>
-              <QuestionText>{text}</QuestionText>
-              <div>Location</div>
-              <QuestionText>{location}</QuestionText>
+              <HeadingText>YOUR SPOT</HeadingText>
+              <SpotNum>{position}rd</SpotNum>
+              <HeadingText>TYPE</HeadingText>
+              <InfoText>{type}</InfoText>
+              <HeadingText>QUESTION</HeadingText>
+              <InfoText>{text}</InfoText>
+              <HeadingText>LOCATION</HeadingText>
+              <InfoText>{location}</InfoText>
             </Col>
+          </Row>
+          <Row gutter={[8, 8]}>
+            <Col span={12}>
+              <FullWidthButton>AFK</FullWidthButton>
+            </Col>
+            <Col span={12}>
+              <FullWidthButton>EDIT BUTTON</FullWidthButton>
+            </Col>
+          </Row>
+          <Row>
+            <FullWidthButton danger>LEAVE THE QUEUE</FullWidthButton>
           </Row>
         </EditableQuestionCard>
       </Row>
