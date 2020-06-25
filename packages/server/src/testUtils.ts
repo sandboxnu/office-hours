@@ -1,13 +1,14 @@
 import { createConnection, Connection } from "typeorm";
 import { init } from "./server";
 import path from "path";
-import { Server } from "@hapi/hapi";
+import { Server, ServerInjectOptions, AuthCredentials } from "@hapi/hapi";
 import { CourseModel } from "./entity/CourseModel";
 import { QueueModel } from "./entity/QueueModel";
 import { UserModel } from "./entity/UserModel";
 import { UserCourseModel } from "./entity/UserCourseModel";
 import { QuestionModel } from "./entity/QuestionModel";
 import { QuestionType } from "@template/common";
+import hapiAuthCookie from "@hapi/cookie";
 
 export function setupServerTest(): () => Server {
   let server: Server;
@@ -65,4 +66,15 @@ export function withServer(server) {
     expect(request.statusCode).toEqual(statusCode);
     expect(request.result).toStrictEqual(result);
   };
+}
+
+export async function injectAsUser(
+  server: Server,
+  user: UserModel,
+  opts: ServerInjectOptions
+) {
+  return await server.inject({
+    auth: { strategy: "session", credentials: user as AuthCredentials },
+    ...opts,
+  });
 }
