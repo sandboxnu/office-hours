@@ -1,6 +1,7 @@
 import styled from "styled-components";
-import { Form, Input, Button, Checkbox } from "antd";
+import { Form, Input, Button, Checkbox, Divider } from "antd";
 import React, { useState } from "react";
+import Link from "next/link";
 import NavBar from "../components/Nav/NavBar";
 
 const Container = styled.div`
@@ -41,8 +42,7 @@ export default function Login({}: LoginProps) {
     setPassword(e.target.value);
   };
 
-  const onSubmit = () => {
-  };
+  const onSubmit = () => {};
 
   return (
     <Container>
@@ -82,6 +82,25 @@ export default function Login({}: LoginProps) {
             </Button>
           </Form.Item>
         </Form>
+        <br />
+        <Divider plain>
+          <h3>For Development Use Only</h3>
+        </Divider>
+        <Link href="/entry?userId=1">
+          <Button
+            style={{ marginRight: "15px" }}
+            type="default"
+            htmlType="submit"
+            onClick={onSubmit}
+          >
+            Login as <b>Student</b>
+          </Button>
+        </Link>
+        <Link href="/entry?userId=2">
+          <Button type="default" htmlType="submit" onClick={onSubmit}>
+            Login as <b>TA</b>
+          </Button>
+        </Link>
       </LoginContainer>
     </Container>
   );
