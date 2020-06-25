@@ -10,7 +10,12 @@ import { UserModel } from "./entity/UserModel";
 import path from "path";
 import dotenv from "dotenv";
 import { entryRoutes } from "./api/entryRoutes";
-dotenv.config({ path: path.resolve(__dirname, "../.env") });
+dotenv.config({
+  path: path.resolve(
+    __dirname,
+    process.env.NODE_ENV === "development" ? "../.env.development" : "../.env"
+  ),
+});
 
 // Just initialize, don't start
 export async function init() {
