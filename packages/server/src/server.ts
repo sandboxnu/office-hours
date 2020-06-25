@@ -6,6 +6,9 @@ import { profileRoutes } from "./api/profileRoutes";
 import { courseRoutes } from "./api/courseRoutes";
 import { queueRoutes } from "./api/queueRoutes";
 import websocketManager from "./websocketManager";
+import { UserModel } from "./entity/UserModel";
+import dotenv from "dotenv";
+dotenv.config();
 
 // Just initialize, don't start
 export async function init() {
@@ -13,6 +16,26 @@ export async function init() {
     port: 3002,
     host: "localhost",
   });
+
+  // Cookie auth
+  await server.register(require("@hapi/cookie"));
+
+  server.auth.strategy("session", "cookie", {
+    cookie: {
+      name: "office-hours",
+      password: process.env.COOKIE_PASSWORD,
+      isSecure: process.env.NODE_ENV === "production",
+    },
+    validateFunc: async (request, session) => {
+      const user = await UserModel.findOne((session as any).id);
+      if (!user) {
+        return { valid: false };
+      }
+      return { valid: true, credentials: user };
+    },
+  });
+  server.auth.default("session");
+
   // Add routes
   server.route(clubRoutes);
   server.route(profileRoutes);
