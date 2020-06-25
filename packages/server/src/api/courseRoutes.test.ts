@@ -17,8 +17,9 @@ import { UserCourseModel } from "../entity/UserCourseModel";
 import { QuestionType } from "@template/common";
 import { UserFactory } from "../factory";
 
+setupDBTest();
+
 describe("/api/v1/courses/course_id/schedule", () => {
-  setupDBTest();
   const getServer = setupServerTest();
 
   it("gets matthias's office hours", async () => {
@@ -55,7 +56,6 @@ describe("/api/v1/courses/course_id/schedule", () => {
 });
 
 describe("Course Routes", () => {
-  setupDBTest();
   const getServer = setupServerTest();
   const expectWithServer = withServer(getServer);
 
@@ -87,9 +87,9 @@ describe("Course Routes", () => {
       questionType: QuestionType.Other,
       status: "Queued",
     }).save();
-    const get = await getServer().inject({
+    const get = await injectAsUser(getServer(), user, {
       method: "get",
-      url: `/api/v1/courses/1/queues`,
+      url: `/api/v1/courses/${queue.id}/queues`,
     });
     expect(get.statusCode).toEqual(200);
     expect(get.result).toEqual([
