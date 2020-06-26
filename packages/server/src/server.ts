@@ -8,12 +8,16 @@ import { queueRoutes } from "./api/queueRoutes";
 import websocketManager from "./websocketManager";
 import { UserModel } from "./entity/UserModel";
 import path from "path";
+import fs from "fs";
 import dotenv from "dotenv";
 import { entryRoutes } from "./api/entryRoutes";
+const shouldUseDevEnv =
+  process.env.NODE_ENV === "development" &&
+  !fs.existsSync(path.resolve(__dirname, "../.env"));
 dotenv.config({
   path: path.resolve(
     __dirname,
-    process.env.NODE_ENV === "development" ? "../.env.development" : "../.env"
+    shouldUseDevEnv ? "../.env.development" : "../.env"
   ),
 });
 
