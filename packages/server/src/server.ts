@@ -12,7 +12,7 @@ import fs from "fs";
 import dotenv from "dotenv";
 import { entryRoutes } from "./api/entryRoutes";
 const shouldUseDevEnv =
-  process.env.NODE_ENV === "development" &&
+  process.env.NODE_ENV !== "production" &&
   !fs.existsSync(path.resolve(__dirname, "../.env"));
 dotenv.config({
   path: path.resolve(
