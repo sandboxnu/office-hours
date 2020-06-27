@@ -37,7 +37,7 @@ export default function Today() {
   if (profile) {
     return (
       <div>
-        <NavBar profile={profile} courseId={Number(cid)} />
+        <NavBar courseId={Number(cid)} />
         <Row gutter={25}>
           <Col md={12} xs={24}>
             {data?.map((q) => (
@@ -50,7 +50,7 @@ export default function Today() {
             )}
           </Col>
           <Col md={12} sm={24}>
-            <Schedule viewType={"day"} />
+            <Schedule today={true} viewType={"day"} />
           </Col>
         </Row>
       </div>

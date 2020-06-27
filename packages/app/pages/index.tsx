@@ -7,7 +7,10 @@ export default function Home() {
   const profile: User = useProfile();
 
   if (profile) {
-    Router.push("/class/" + profile.courses[0].course.id + "/today");
+    Router.push(
+      "/class/[cid]/today",
+      "/class/" + profile.courses[0].course.id + "/today"
+    );
   }
 
   return (

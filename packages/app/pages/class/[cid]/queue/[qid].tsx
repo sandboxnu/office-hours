@@ -190,7 +190,7 @@ export default function Queue({}: QueueProps) {
   if (profile) {
     return (
       <div>
-        <NavBar profile={profile} courseId={Number(cid)} />
+        <NavBar courseId={Number(cid)} />
         <Container>
           {!isJoining && (
             <Fragment>

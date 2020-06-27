@@ -13,10 +13,11 @@ const ScheduleCalendar = styled(Calendar)`
 `;
 
 type ScheduleProps = {
+  today?: boolean;
   viewType: View;
 };
 
-export default function Schedule({ viewType }: ScheduleProps) {
+export default function Schedule({ today, viewType }: ScheduleProps) {
   const profile = useProfile();
   const router = useRouter();
   const { cid } = router.query;
@@ -42,7 +43,7 @@ export default function Schedule({ viewType }: ScheduleProps) {
   if (profile) {
     return (
       <div>
-        <NavBar profile={profile} courseId={Number(cid)} />
+        {!today && <NavBar courseId={Number(cid)} />}
         <ScheduleCalendar
           localizer={momentLocalizer(moment)}
           events={myEvents}

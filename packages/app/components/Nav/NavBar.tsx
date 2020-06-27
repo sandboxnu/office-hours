@@ -7,6 +7,7 @@ import { Course, User, UserCourse, CoursePartial } from "@template/common";
 import Link from "next/link";
 import { API } from "@template/api-client";
 import useSWR from "swr";
+import { useProfile } from "../../hooks/useProfile";
 
 const Container = styled.div`
   width: 1440px;
@@ -102,26 +103,19 @@ const BarsButton = styled.span`
 `;
 
 interface NavBarProps {
-  profile: User;
   courseId: number;
 }
 
-export default function NavBar({ profile, courseId }: NavBarProps) {
+export default function NavBar({ courseId }: NavBarProps) {
+  const profile = useProfile();
   const [visible, setVisible] = useState<boolean>(false);
-  const [course, setCourse] = useState<CoursePartial>(
-    profile.courses.find((c) => c.course.id === courseId).course
-  );
-  const [queueId, setQueueId] = useState<number>(undefined);
 
   const { data, error } = useSWR(`api/v1/courses/${courseId}/queue`, async () =>
     API.course.queues(courseId)
   );
 
-  useEffect(() => {
-    if (data && data.length > 0) {
-      setQueueId(data[0].id);
-    }
-  }, [data]);
+  const course = profile.courses.find((c) => c.course.id === courseId).course;
+  const queueId = data && data.length > 0 && data[0].id;
 
   const showDrawer = () => {
     setVisible(true);
@@ -156,20 +150,32 @@ export default function NavBar({ profile, courseId }: NavBarProps) {
           >
             <Menu>
               <Menu.Item key="today">
-                <Link href={`/class/${courseId}/today`}>Today</Link>
+                <Link href="/class/[cid]/today" as={`/class/${courseId}/today`}>
+                  <a>Today</a>
+                </Link>
               </Menu.Item>
               <Menu.Item key="schedule">
-                <Link href={`/class/${courseId}/schedule`}>Schedule</Link>
+                <Link
+                  href="/class/[cid]/schedule"
+                  as={`/class/${courseId}/schedule`}
+                >
+                  <a>Schedule</a>
+                </Link>
               </Menu.Item>
               {queueId && (
                 <Menu.Item key="queue">
-                  <Link href={`/class/${courseId}/queue/${queueId}`}>
-                    Queue
+                  <Link
+                    href="/class/[cid]/queue/[qid]"
+                    as={`/class/${courseId}/queue/${queueId}`}
+                  >
+                    <a>Queue</a>
                   </Link>
                 </Menu.Item>
               )}
               <Menu.Item key="login">
-                <Link href="/login">Login</Link>
+                <Link href="/login" as="/login">
+                  <a>Login</a>
+                </Link>
               </Menu.Item>
             </Menu>
           </Drawer>

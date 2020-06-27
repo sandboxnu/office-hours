@@ -19,10 +19,6 @@ const MenuItem = styled(Menu.Item)`
   }
 `;
 
-const MenuItemLink = styled(Link)`
-  padding: 10px 15px;
-`;
-
 interface LeftNavBarProps {
   courseId: number;
   queueId: number;
@@ -32,18 +28,23 @@ export default function LeftNavBar({ courseId, queueId }: LeftNavBarProps) {
   return (
     <HorizontalMenu mode="horizontal">
       <MenuItem key="today">
-        <MenuItemLink href={`/class/${courseId}/today`}>Today</MenuItemLink>
+        <Link href="/class/[cid]/today" as={`/class/${courseId}/today`}>
+          <a>Today</a>
+        </Link>
       </MenuItem>
       <MenuItem key="week">
-        <MenuItemLink href={`/class/${courseId}/schedule`}>
-          Schedule
-        </MenuItemLink>
+        <Link href="/class/[cid]/schedule" as={`/class/${courseId}/schedule`}>
+          <a>Schedule</a>
+        </Link>
       </MenuItem>
       {queueId && (
         <MenuItem key="queue">
-          <MenuItemLink href={`/class/${courseId}/queue/${queueId}`}>
-            Queue
-          </MenuItemLink>
+          <Link
+            href="/class/[cid]/queue/[qid]"
+            as={`/class/${courseId}/queue/${queueId}`}
+          >
+            <a>Queue</a>
+          </Link>
         </MenuItem>
       )}
     </HorizontalMenu>
