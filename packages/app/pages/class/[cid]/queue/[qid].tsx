@@ -16,6 +16,7 @@ import { API } from "@template/api-client";
 import { ProfileContext } from "../../../../contexts/ProfileContextProvider";
 import { useProfile } from "../../../../hooks/useProfile";
 import { useRouter } from "next/router";
+import NavBar from "../../../../components/Nav/NavBar";
 
 // TODO: replace this with profile role from endpoint
 const ROLE: Role = Role.TA;
@@ -188,39 +189,42 @@ export default function Queue({}: QueueProps) {
   // Prevent queue from rendering without authentication
   if (profile) {
     return (
-      <Container>
-        {!isJoining && (
-          <Fragment>
-            <QueueList
-              role={ROLE}
-              onOpenClick={onOpenClick}
-              joinQueue={joinQueue}
-              updateQuestionTA={updateQuestionTA}
-              alertStudent={alertStudent}
-              questions={questions}
-              helpingQuestions={helpingQuestions}
-              groupQuestions={groupQuestions}
-            />
-            {ROLE === "ta" && currentQuestion && (
-              <StudentPopupCard
-                onClose={onCloseClick}
-                email="takayama.a@northeastern.edu" //need a way to access this. or the user
-                wait={20} //figure out later
-                question={currentQuestion}
-                location="Outside by the printer" // need a way to access this
-                visible={openPopup}
-                updateQuestion={updateQuestionTA}
+      <div>
+        <NavBar profile={profile} courseId={Number(cid)} />
+        <Container>
+          {!isJoining && (
+            <Fragment>
+              <QueueList
+                role={ROLE}
+                onOpenClick={onOpenClick}
+                joinQueue={joinQueue}
+                updateQuestionTA={updateQuestionTA}
+                alertStudent={alertStudent}
+                questions={questions}
+                helpingQuestions={helpingQuestions}
+                groupQuestions={groupQuestions}
               />
-            )}
-          </Fragment>
-        )}
-        {isJoining && (
-          <QuestionForm
-            leaveQueue={leaveQueue}
-            finishQuestion={finishQuestion}
-          />
-        )}
-      </Container>
+              {ROLE === "ta" && currentQuestion && (
+                <StudentPopupCard
+                  onClose={onCloseClick}
+                  email="takayama.a@northeastern.edu" //need a way to access this. or the user
+                  wait={20} //figure out later
+                  question={currentQuestion}
+                  location="Outside by the printer" // need a way to access this
+                  visible={openPopup}
+                  updateQuestion={updateQuestionTA}
+                />
+              )}
+            </Fragment>
+          )}
+          {isJoining && (
+            <QuestionForm
+              leaveQueue={leaveQueue}
+              finishQuestion={finishQuestion}
+            />
+          )}
+        </Container>
+      </div>
     );
   } else {
     return null;
