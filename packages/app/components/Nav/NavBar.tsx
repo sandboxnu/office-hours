@@ -1,9 +1,12 @@
 import styled from "styled-components";
-import React, { Component, useState } from "react";
+import React, { Component, useState, useEffect } from "react";
 import LeftNavBar from "./LeftNavBar";
 import { Drawer, Button, Menu } from "antd";
 import RightNavBar from "./RightNavBar";
-import { Course } from "@template/common";
+import { Course, User, UserCourse, CoursePartial } from "@template/common";
+import Link from "next/link";
+import { API } from "@template/api-client";
+import useSWR from "swr";
 
 const Container = styled.div`
   width: 1440px;
@@ -22,7 +25,7 @@ const Nav = styled.nav`
 `;
 
 const LogoContainer = styled.div`
-  width: 150px;
+  width: 225px;
   float: left;
 `;
 
@@ -31,7 +34,8 @@ const Logo = styled.a`
   font-size: 20px;
   font-weight: 500;
   color: #262626;
-  padding: 19px 60px;
+  padding: 19px 0px;
+  padding-left: 64px;
   text-transform: capitalize;
 
   @media (max-width: 767px) {
@@ -41,8 +45,8 @@ const Logo = styled.a`
 `;
 
 const MenuCon = styled.div`
-  width: calc(100% - 150px);
-  padding-left: 200px;
+  width: calc(100% - 225px);
+  padding-left: 0px;
   float: left;
 `;
 
@@ -98,11 +102,26 @@ const BarsButton = styled.span`
 `;
 
 interface NavBarProps {
-  course: Course;
+  profile: User;
+  courseId: number;
 }
 
-export default function NavBar({ course }: NavBarProps) {
+export default function NavBar({ profile, courseId }: NavBarProps) {
   const [visible, setVisible] = useState<boolean>(false);
+  const [course, setCourse] = useState<CoursePartial>(
+    profile.courses.find((c) => c.course.id === courseId).course
+  );
+  const [queueId, setQueueId] = useState<number>(undefined);
+
+  const { data, error } = useSWR(`api/v1/courses/${courseId}/queue`, async () =>
+    API.course.queues(courseId)
+  );
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      setQueueId(data[0].id);
+    }
+  }, [data]);
 
   const showDrawer = () => {
     setVisible(true);
@@ -111,45 +130,53 @@ export default function NavBar({ course }: NavBarProps) {
     setVisible(false);
   };
 
-  return (
-    <Nav>
-      <LogoContainer>
-        <Logo href="">Course</Logo>
-      </LogoContainer>
-      <MenuCon>
-        <LeftMenu>
-          <LeftNavBar />
-        </LeftMenu>
-        <RightMenu>
-          <RightNavBar />
-        </RightMenu>
-        <BarsMenu type="primary" onClick={showDrawer}>
-          <BarsButton></BarsButton>
-        </BarsMenu>
-        <Drawer
-          title="Course"
-          placement="right"
-          visible={visible}
-          closable={false}
-          onClose={onClose}
-          bodyStyle={{ padding: "12px" }}
-        >
-          <Menu>
-            <Menu.Item key="today">
-              <a href="/today">Today</a>
-            </Menu.Item>
-            <Menu.Item key="schedule">
-              <a href="/schedule">Schedule</a>
-            </Menu.Item>
-            <Menu.Item key="queue">
-              <a href="/queue">Queue</a>
-            </Menu.Item>
-            <Menu.Item key="login">
-              <a href="/login">Login</a>
-            </Menu.Item>
-          </Menu>
-        </Drawer>
-      </MenuCon>
-    </Nav>
-  );
+  if (course) {
+    return (
+      <Nav>
+        <LogoContainer>
+          <Logo href={`/class/${courseId}/today`}>{course.name}</Logo>
+        </LogoContainer>
+        <MenuCon>
+          <LeftMenu>
+            <LeftNavBar courseId={courseId} queueId={queueId} />
+          </LeftMenu>
+          <RightMenu>
+            <RightNavBar />
+          </RightMenu>
+          <BarsMenu type="primary" onClick={showDrawer}>
+            <BarsButton></BarsButton>
+          </BarsMenu>
+          <Drawer
+            title="Course"
+            placement="right"
+            visible={visible}
+            closable={false}
+            onClose={onClose}
+            bodyStyle={{ padding: "12px" }}
+          >
+            <Menu>
+              <Menu.Item key="today">
+                <Link href={`/class/${courseId}/today`}>Today</Link>
+              </Menu.Item>
+              <Menu.Item key="schedule">
+                <Link href={`/class/${courseId}/schedule`}>Schedule</Link>
+              </Menu.Item>
+              {queueId && (
+                <Menu.Item key="queue">
+                  <Link href={`/class/${courseId}/queue/${queueId}`}>
+                    Queue
+                  </Link>
+                </Menu.Item>
+              )}
+              <Menu.Item key="login">
+                <Link href="/login">Login</Link>
+              </Menu.Item>
+            </Menu>
+          </Drawer>
+        </MenuCon>
+      </Nav>
+    );
+  } else {
+    return null;
+  }
 }

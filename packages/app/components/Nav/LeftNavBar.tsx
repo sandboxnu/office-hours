@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Menu } from "antd";
 const SubMenu = Menu.SubMenu;
 const MenuItemGroup = Menu.ItemGroup;
+import Link from "next/link";
 
 const HorizontalMenu = styled(Menu)`
   border-bottom: none;
@@ -18,23 +19,33 @@ const MenuItem = styled(Menu.Item)`
   }
 `;
 
-const MenuItemLink = styled.a`
+const MenuItemLink = styled(Link)`
   padding: 10px 15px;
 `;
 
+interface LeftNavBarProps {
+  courseId: number;
+  queueId: number;
+}
 
-export default function LeftNavBar() {
+export default function LeftNavBar({ courseId, queueId }: LeftNavBarProps) {
   return (
     <HorizontalMenu mode="horizontal">
       <MenuItem key="today">
-        <MenuItemLink href="/today">Today</MenuItemLink>
+        <MenuItemLink href={`/class/${courseId}/today`}>Today</MenuItemLink>
       </MenuItem>
       <MenuItem key="week">
-        <MenuItemLink href="/schedule">Schedule</MenuItemLink>
+        <MenuItemLink href={`/class/${courseId}/schedule`}>
+          Schedule
+        </MenuItemLink>
       </MenuItem>
-      <MenuItem key="queue">
-        <MenuItemLink href="/queue">Queue</MenuItemLink>
-      </MenuItem>
+      {queueId && (
+        <MenuItem key="queue">
+          <MenuItemLink href={`/class/${courseId}/queue/${queueId}`}>
+            Queue
+          </MenuItemLink>
+        </MenuItem>
+      )}
     </HorizontalMenu>
   );
 }
