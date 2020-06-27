@@ -22,11 +22,24 @@ export async function init() {
   // Bind socketio to http server
   websocketManager.bindSocketIO(io(server.listener));
 
+  // Error logging
   await server.register({
     plugin: require("hapi-dev-errors"),
     options: {
       showErrors: process.env.NODE_ENV !== "production",
     },
+  });
+  // Request logging
+  server.events.on("response", (request) => {
+    console.log(
+      request.info.remoteAddress +
+        ": " +
+        request.method.toUpperCase() +
+        " " +
+        request.path +
+        " --> " +
+        (request.response as any).statusCode
+    );
   });
   await server.initialize();
   return server;
