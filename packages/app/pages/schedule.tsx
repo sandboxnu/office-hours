@@ -4,6 +4,7 @@ import useSWR from "swr";
 import { API } from "@template/api-client";
 import { Result } from "antd";
 import styled from "styled-components";
+import { useProfile } from "../hooks/useProfile";
 
 const ScheduleCalendar = styled(Calendar)`
   height: 70vh;
@@ -14,6 +15,7 @@ type ScheduleProps = {
 };
 
 export default function Schedule({ viewType }: ScheduleProps) {
+  const profile = useProfile();
   const { data, error } = useSWR(`api/v1/courses/1/schedule`, async () =>
     API.course.get(1)
   );
@@ -32,11 +34,15 @@ export default function Schedule({ viewType }: ScheduleProps) {
       end: e.endTime,
     })) ?? [];
 
-  return (
-    <ScheduleCalendar
-      localizer={momentLocalizer(moment)}
-      events={myEvents}
-      defaultView={viewType}
-    />
-  );
+  if (profile) {
+    return (
+      <ScheduleCalendar
+        localizer={momentLocalizer(moment)}
+        events={myEvents}
+        defaultView={viewType}
+      />
+    );
+  } else {
+    return null;
+  }
 }
