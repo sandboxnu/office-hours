@@ -1,10 +1,10 @@
-import { ServerRoute, ResponseObject } from "@hapi/hapi";
+import { ResponseObject, ServerRoute } from "@hapi/hapi";
 import { NotifBody } from "@template/common";
+import * as dotenv from "dotenv";
+import { DeepPartial } from "typeorm";
+import * as webPush from "web-push";
 import { NotifModel } from "../entity/NotifModel";
 import { NotifPayload } from "../joi";
-import * as dotenv from "dotenv";
-import * as webPush from "web-push";
-import { DeepPartial } from "typeorm";
 
 // configure env vars for VAPID
 dotenv.config();
