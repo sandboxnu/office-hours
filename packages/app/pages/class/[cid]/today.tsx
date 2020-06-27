@@ -1,18 +1,12 @@
 import { Button, Col, PageHeader, Row, Result } from "antd";
 import useSWR from "swr";
-import Schedule from "./schedule";
+import Schedule from "../../schedule";
 import { API } from "@template/api-client";
 import styled from "styled-components";
-import OpenQueueCard from "../components/Today/OpenQueueCard";
-import { useProfile } from "../hooks/useProfile";
-
-const Navbar = () => {
-  return (
-    <PageHeader title={"Khoury Office Hours"}>
-      <h1>CS 2500</h1>
-    </PageHeader>
-  );
-};
+import OpenQueueCard from "../../../components/Today/OpenQueueCard";
+import { useProfile } from "../../../hooks/useProfile";
+import { useRouter } from "next/router";
+import NavBar from "../../../components/Nav/NavBar";
 
 const CreateQueueButton = styled(Button)`
   float: right;
@@ -22,8 +16,11 @@ const CreateQueueButton = styled(Button)`
 
 export default function Today() {
   const profile = useProfile();
-  const { data, error } = useSWR(`api/v1/courses/1/queue`, async () =>
-    API.course.queues(1)
+  const router = useRouter();
+  const { cid } = router.query;
+
+  const { data, error } = useSWR(`api/v1/courses/${cid}/queue`, async () =>
+    API.course.queues(Number(cid))
   );
 
   const isTA = true; // TODO: temp
@@ -40,7 +37,7 @@ export default function Today() {
   if (profile) {
     return (
       <div>
-        <Navbar />
+        <NavBar profile={profile} courseId={Number(cid)} />
         <Row gutter={25}>
           <Col md={12} xs={24}>
             {data?.map((q) => (
