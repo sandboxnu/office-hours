@@ -8,13 +8,14 @@ import {
   QuestionStatus,
   UserCourse,
 } from "@template/common";
-import QuestionForm from "../components/Queue/QuestionForm";
-import QueueList from "../components/Queue/QueueList";
-import StudentPopupCard from "../components/Queue/StudentPopupCard";
+import QuestionForm from "../../../../components/Queue/QuestionForm";
+import QueueList from "../../../../components/Queue/QueueList";
+import StudentPopupCard from "../../../../components/Queue/StudentPopupCard";
 import { useCallback, useState, useContext, useEffect, Fragment } from "react";
 import { API } from "@template/api-client";
-import { ProfileContext } from "../contexts/ProfileContextProvider";
-import { useProfile } from "../hooks/useProfile";
+import { ProfileContext } from "../../../../contexts/ProfileContextProvider";
+import { useProfile } from "../../../../hooks/useProfile";
+import { useRouter } from "next/router";
 
 // TODO: replace this with profile role from endpoint
 const ROLE: Role = Role.TA;
@@ -30,6 +31,9 @@ interface QueueProps {}
 
 export default function Queue({}: QueueProps) {
   const profile = useProfile();
+  const router = useRouter();
+  const { cid } = router.query;
+
   const [course, setCourse] = useState<UserCourse>(null);
   const [queueId, setQueueId] = useState<number>(null);
   const [questions, setQuestions] = useState<Question[]>([]);

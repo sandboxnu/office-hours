@@ -1,6 +1,6 @@
 import { Button, Col, PageHeader, Row, Result } from "antd";
 import useSWR from "swr";
-import Schedule from "../../schedule";
+import Schedule from "./schedule";
 import { API } from "@template/api-client";
 import styled from "styled-components";
 import OpenQueueCard from "../../../components/Today/OpenQueueCard";

@@ -4,7 +4,9 @@ import useSWR from "swr";
 import { API } from "@template/api-client";
 import { Result } from "antd";
 import styled from "styled-components";
-import { useProfile } from "../hooks/useProfile";
+import { useProfile } from "../../../hooks/useProfile";
+import { useRouter } from "next/router";
+import NavBar from "../../../components/Nav/NavBar";
 
 const ScheduleCalendar = styled(Calendar)`
   height: 70vh;
@@ -16,8 +18,11 @@ type ScheduleProps = {
 
 export default function Schedule({ viewType }: ScheduleProps) {
   const profile = useProfile();
-  const { data, error } = useSWR(`api/v1/courses/1/schedule`, async () =>
-    API.course.get(1)
+  const router = useRouter();
+  const { cid } = router.query;
+
+  const { data, error } = useSWR(`api/v1/courses/${cid}/schedule`, async () =>
+    API.course.get(Number(cid))
   );
 
   if (error)
@@ -36,11 +41,14 @@ export default function Schedule({ viewType }: ScheduleProps) {
 
   if (profile) {
     return (
-      <ScheduleCalendar
-        localizer={momentLocalizer(moment)}
-        events={myEvents}
-        defaultView={viewType}
-      />
+      <div>
+        <NavBar profile={profile} courseId={Number(cid)} />
+        <ScheduleCalendar
+          localizer={momentLocalizer(moment)}
+          events={myEvents}
+          defaultView={viewType}
+        />
+      </div>
     );
   } else {
     return null;
