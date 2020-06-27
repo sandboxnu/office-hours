@@ -1,13 +1,13 @@
-import { ServerRoute, ResponseObject } from "@hapi/hapi";
+import { ResponseObject, ServerRoute } from "@hapi/hapi";
 import { DesktopNotifBody } from "@template/common";
-import { DesktopNotifModel } from "../entity/DesktopNotifModel";
-import { DesktopNotifPayload, PhoneNotifPayload } from "../joi";
 import * as dotenv from "dotenv";
-import * as webPush from "web-push";
-import { DeepPartial } from "typeorm";
-import { PhoneNotifModel } from "../entity/PhoneNotifModel";
 import { Twilio } from "twilio";
+import { DeepPartial } from "typeorm";
+import * as webPush from "web-push";
+import { DesktopNotifModel } from "../entity/DesktopNotifModel";
+import { PhoneNotifModel } from "../entity/PhoneNotifModel";
 import { UserModel } from "../entity/UserModel";
+import { DesktopNotifPayload, PhoneNotifPayload } from "../joi";
 
 // configure env vars for VAPID + Twilio
 dotenv.config();
@@ -19,7 +19,7 @@ if (
   !process.env.PUBLICKEY ||
   !process.env.PRIVATEKEY ||
   !process.env.TWILIOACCOUNTSID ||
-  !process.env.TWILIIOAUTHTOKEN ||
+  !process.env.TWILIOAUTHTOKEN ||
   !process.env.TWILIOPHONENUMBER
 ) {
   throw new Error(
@@ -33,7 +33,7 @@ if (
   );
   twilioClient = new Twilio(
     process.env.TWILIOACCOUNTSID,
-    process.env.TWILIIOAUTHTOKEN
+    process.env.TWILIOAUTHTOKEN
   );
 }
 
