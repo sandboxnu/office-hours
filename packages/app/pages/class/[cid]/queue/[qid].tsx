@@ -8,13 +8,15 @@ import {
   QuestionStatus,
   UserCourse,
 } from "@template/common";
-import QuestionForm from "../components/Queue/QuestionForm";
-import QueueList from "../components/Queue/QueueList";
-import StudentPopupCard from "../components/Queue/StudentPopupCard";
+import QuestionForm from "../../../../components/Queue/QuestionForm";
+import QueueList from "../../../../components/Queue/QueueList";
+import StudentPopupCard from "../../../../components/Queue/StudentPopupCard";
 import { useCallback, useState, useContext, useEffect, Fragment } from "react";
 import { API } from "@template/api-client";
-import { ProfileContext } from "../contexts/ProfileContextProvider";
-import { useProfile } from "../hooks/useProfile";
+import { ProfileContext } from "../../../../contexts/ProfileContextProvider";
+import { useProfile } from "../../../../hooks/useProfile";
+import { useRouter } from "next/router";
+import NavBar from "../../../../components/Nav/NavBar";
 
 // TODO: replace this with profile role from endpoint
 const ROLE: Role = Role.TA;
@@ -30,6 +32,9 @@ interface QueueProps {}
 
 export default function Queue({}: QueueProps) {
   const profile = useProfile();
+  const router = useRouter();
+  const { cid } = router.query;
+
   const [course, setCourse] = useState<UserCourse>(null);
   const [queueId, setQueueId] = useState<number>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -184,39 +189,42 @@ export default function Queue({}: QueueProps) {
   // Prevent queue from rendering without authentication
   if (profile) {
     return (
-      <Container>
-        {!isJoining && (
-          <Fragment>
-            <QueueList
-              role={ROLE}
-              onOpenClick={onOpenClick}
-              joinQueue={joinQueue}
-              updateQuestionTA={updateQuestionTA}
-              alertStudent={alertStudent}
-              questions={questions}
-              helpingQuestions={helpingQuestions}
-              groupQuestions={groupQuestions}
-            />
-            {ROLE === "ta" && currentQuestion && (
-              <StudentPopupCard
-                onClose={onCloseClick}
-                email="takayama.a@northeastern.edu" //need a way to access this. or the user
-                wait={20} //figure out later
-                question={currentQuestion}
-                location="Outside by the printer" // need a way to access this
-                visible={openPopup}
-                updateQuestion={updateQuestionTA}
+      <div>
+        <NavBar courseId={Number(cid)} />
+        <Container>
+          {!isJoining && (
+            <Fragment>
+              <QueueList
+                role={ROLE}
+                onOpenClick={onOpenClick}
+                joinQueue={joinQueue}
+                updateQuestionTA={updateQuestionTA}
+                alertStudent={alertStudent}
+                questions={questions}
+                helpingQuestions={helpingQuestions}
+                groupQuestions={groupQuestions}
               />
-            )}
-          </Fragment>
-        )}
-        {isJoining && (
-          <QuestionForm
-            leaveQueue={leaveQueue}
-            finishQuestion={finishQuestion}
-          />
-        )}
-      </Container>
+              {ROLE === "ta" && currentQuestion && (
+                <StudentPopupCard
+                  onClose={onCloseClick}
+                  email="takayama.a@northeastern.edu" //need a way to access this. or the user
+                  wait={20} //figure out later
+                  question={currentQuestion}
+                  location="Outside by the printer" // need a way to access this
+                  visible={openPopup}
+                  updateQuestion={updateQuestionTA}
+                />
+              )}
+            </Fragment>
+          )}
+          {isJoining && (
+            <QuestionForm
+              leaveQueue={leaveQueue}
+              finishQuestion={finishQuestion}
+            />
+          )}
+        </Container>
+      </div>
     );
   } else {
     return null;
