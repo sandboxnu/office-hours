@@ -8,14 +8,12 @@ import {
   QuestionStatus,
   UserCourse,
 } from "@template/common";
-import QuestionForm from "../../../../components/Queue/QuestionForm";
 import StudentPopupCard from "../../../../components/Queue/StudentPopupCard";
 import { useCallback, useState, useContext, useEffect, Fragment } from "react";
 import { API } from "@template/api-client";
 import { ProfileContext } from "../../../../contexts/ProfileContextProvider";
-import { useProfile } from "../../../../hooks/useProfile";
-import { useRouter } from "next/router";
-import NavBar from "../../../../components/Nav/NavBar";
+import StudentQueueList from "../../../../components/Queue/StudentQueueList";
+import TAQueueList from "../../../../components/Queue/TAQueueList";
 
 // TODO: replace this with profile role from endpoint
 const ROLE: Role = Role.STUDENT;
@@ -30,16 +28,12 @@ const Container = styled.div`
 interface QueueProps {}
 
 export default function Queue({}: QueueProps) {
-  const profile = useProfile();
-  const router = useRouter();
-  const { cid } = router.query;
-
+  const { profile } = useContext(ProfileContext);
   const [course, setCourse] = useState<UserCourse>(null);
   const [queueId, setQueueId] = useState<number>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
 
   // Student queue state variables
-  // const { question, updateQuestion } = useState<any>(undefined);
   const [isJoining, setIsJoining] = useState<boolean>(false);
   const [questionDraftId, setQuestionDraftId] = useState<number>(null);
   const [studentQuestion, setStudentQuestion] = useState<Question>(null);
@@ -134,7 +128,7 @@ export default function Queue({}: QueueProps) {
       setQuestionDraftId(q.id);
 
       //update the student's question
-      // updateQuestion(q);
+      setStudentQuestion(q);
     }
   };
 
@@ -207,47 +201,42 @@ export default function Queue({}: QueueProps) {
     // Send API request to trigger notification
   };
 
-  // Prevent queue from rendering without authentication
-  if (profile) {
-    return (
-      <div>
-        <NavBar courseId={Number(cid)} />
-        <Container>
-          {!isJoining && (
-            <Fragment>
-              {/* <QueueList
-                role={ROLE}
-                onOpenClick={onOpenClick}
-                joinQueue={joinQueue}
-                updateQuestionTA={updateQuestionTA}
-                alertStudent={alertStudent}
-                questions={questions}
-                helpingQuestions={helpingQuestions}
-                groupQuestions={groupQuestions}
-              /> */}
-              {ROLE === "ta" && currentQuestion && (
-                <StudentPopupCard
-                  onClose={onCloseClick}
-                  email="takayama.a@northeastern.edu" //need a way to access this. or the user
-                  wait={20} //figure out later
-                  question={currentQuestion}
-                  location="Outside by the printer" // need a way to access this
-                  visible={openPopup}
-                  updateQuestion={updateQuestionTA}
-                />
-              )}
-            </Fragment>
-          )}
-          {isJoining && (
-            <QuestionForm
-              leaveQueue={leaveQueue}
-              finishQuestion={finishQuestion}
-            />
-          )}
-        </Container>
-      </div>
-    );
-  } else {
-    return null;
-  }
+  return (
+    <Container>
+      <Fragment>
+        {Role.STUDENT === ROLE ? (
+          <StudentQueueList
+            onOpenClick={onOpenClick}
+            joinQueue={joinQueue}
+            questions={questions}
+            helpingQuestions={helpingQuestions}
+            studentQuestion={studentQuestion} // temporary
+            leaveQueue={leaveQueue}
+            finishQuestion={finishQuestion}
+          />
+        ) : (
+          <TAQueueList
+            onOpenClick={onOpenClick}
+            joinQueue={joinQueue}
+            updateQuestionTA={updateQuestionTA}
+            alertStudent={alertStudent}
+            questions={questions}
+            helpingQuestions={helpingQuestions}
+            groupQuestions={groupQuestions}
+          />
+        )}
+        {ROLE === "ta" && currentQuestion && (
+          <StudentPopupCard
+            onClose={onCloseClick}
+            email="takayama.a@northeastern.edu" //need a way to access this. or the user
+            wait={20} //figure out later
+            question={currentQuestion}
+            location="Outside by the printer" // need a way to access this
+            visible={openPopup}
+            updateQuestion={updateQuestionTA}
+          />
+        )}
+      </Fragment>
+    </Container>
+  );
 }
