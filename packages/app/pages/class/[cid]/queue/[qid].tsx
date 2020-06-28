@@ -9,11 +9,13 @@ import {
   UserCourse,
 } from "@template/common";
 import StudentPopupCard from "../../../../components/Queue/StudentPopupCard";
-import { useCallback, useState, useContext, useEffect, Fragment } from "react";
+import { useCallback, useState, useEffect, Fragment } from "react";
 import { API } from "@template/api-client";
-import { ProfileContext } from "../../../../contexts/ProfileContextProvider";
 import StudentQueueList from "../../../../components/Queue/StudentQueueList";
 import TAQueueList from "../../../../components/Queue/TAQueueList";
+import { useProfile } from "../../../../hooks/useProfile";
+import { useRouter } from "next/router";
+import useSWR from "swr";
 
 // TODO: replace this with profile role from endpoint
 const ROLE: Role = Role.STUDENT;
@@ -28,10 +30,38 @@ const Container = styled.div`
 interface QueueProps {}
 
 export default function Queue({}: QueueProps) {
-  const { profile } = useContext(ProfileContext);
-  const [course, setCourse] = useState<UserCourse>(null);
-  const [queueId, setQueueId] = useState<number>(null);
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const profile = useProfile();
+  const router = useRouter();
+  const { cid, qid } = router.query;
+
+  const { data, error } = useSWR(`/api/v1/queues/${qid}/questions`, async () =>
+    API.questions.index(Number(qid))
+  );
+
+  const questions: Question[] = data;
+  const helpingQuestions: Question[] = [];
+  const groupQuestions: Question[] = [];
+
+  /**
+   * Filters through the fetched list of questions to fill the helpingQuestions and groupQuestions arrays
+   */
+  const filterHelpingGroup = () => {
+    if (questions) {
+      for (let q of questions) {
+        if (
+          q.status === OpenQuestionStatus.Helping
+          // question.taHelped &&
+          // question.taHelped.id === profile.id
+        ) {
+          helpingQuestions.push(q);
+        } else {
+          groupQuestions.push(q);
+        }
+      }
+    }
+  };
+
+  filterHelpingGroup();
 
   // Student queue state variables
   const [isJoining, setIsJoining] = useState<boolean>(false);
@@ -40,61 +70,7 @@ export default function Queue({}: QueueProps) {
 
   // TA queue state variables
   const [openPopup, setOpenPopup] = useState<boolean>(false);
-  const [helpingQuestions, setHelpingQuestions] = useState<Question[]>([]);
-  const [groupQuestions, setGroupQuestions] = useState<Question[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
-
-  useEffect(() => {
-    if (profile) {
-      const selectedCourse: UserCourse = profile.courses[0];
-      setCourse(selectedCourse);
-    }
-  }, [profile]);
-
-  useEffect(() => {
-    if (queueId) {
-      getQuestions();
-    }
-  }, [queueId]);
-
-  useEffect(() => {
-    if (course) {
-      getQueueIdFromCourse(course.course.id);
-    }
-  }, [course]);
-
-  const getQueueIdFromCourse = async (courseId) => {
-    const q = await API.course.queues(courseId);
-    if (q) {
-      setQueueId(q[0].id);
-    }
-  };
-
-  /**
-   * Gets the questions for this course
-   */
-  const getQuestions = async () => {
-    const q = await API.questions.index(queueId);
-
-    if (queueId && q) {
-      setQuestions(q);
-      let helping: Question[] = [];
-      let group: Question[] = [];
-      for (let question of q) {
-        if (
-          question.status === OpenQuestionStatus.Helping
-          // question.taHelped &&
-          // question.taHelped.id === profile.id
-        ) {
-          helping.push(question);
-        } else {
-          group.push(question);
-        }
-      }
-      setHelpingQuestions(helping);
-      setGroupQuestions(group);
-    }
-  };
 
   const onOpenClick = useCallback((question: Question): void => {
     setCurrentQuestion(question);
@@ -123,8 +99,6 @@ export default function Queue({}: QueueProps) {
     });
 
     if (q) {
-      // fetch updated question list
-      getQuestions();
       setQuestionDraftId(q.id);
 
       //update the student's question
@@ -138,12 +112,10 @@ export default function Queue({}: QueueProps) {
   const leaveQueue = async () => {
     setIsJoining(false);
 
-    await API.questions.update(queueId, questionDraftId, {
+    await API.questions.update(Number(qid), questionDraftId, {
       status: ClosedQuestionStatus.Deleted,
     });
 
-    // fetch updated question list
-    getQuestions();
     setQuestionDraftId(null);
   };
 
@@ -151,15 +123,13 @@ export default function Queue({}: QueueProps) {
    * Finishes creating a given question by updating the draft.
    */
   const finishQuestion = async (text: string, questionType: QuestionType) => {
-    const q = await API.questions.update(queueId, studentQuestion.id, {
+    const q = await API.questions.update(Number(qid), studentQuestion.id, {
       text: text,
       questionType: questionType,
       status: OpenQuestionStatus.Queued,
     });
 
     if (q) {
-      // fetch updated question list
-      getQuestions();
       setIsJoining(false);
       setStudentQuestion(q);
     }
@@ -178,18 +148,14 @@ export default function Queue({}: QueueProps) {
     question: Question,
     status: QuestionStatus
   ) => {
-    const q = await API.questions.update(queueId, question.id, {
+    const q = await API.questions.update(Number(qid), question.id, {
       status: status,
     });
 
     if (q) {
-      // fetch updated question list
-      getQuestions();
-
       // update helping state if none left
-
       //temporary
-      setHelpingQuestions([question]);
+      // setHelpingQuestions([question]);
     }
   };
 
@@ -201,42 +167,46 @@ export default function Queue({}: QueueProps) {
     // Send API request to trigger notification
   };
 
-  return (
-    <Container>
-      <Fragment>
-        {Role.STUDENT === ROLE ? (
-          <StudentQueueList
-            onOpenClick={onOpenClick}
-            joinQueue={joinQueue}
-            questions={questions}
-            helpingQuestions={helpingQuestions}
-            studentQuestion={studentQuestion} // temporary
-            leaveQueue={leaveQueue}
-            finishQuestion={finishQuestion}
-          />
-        ) : (
-          <TAQueueList
-            onOpenClick={onOpenClick}
-            joinQueue={joinQueue}
-            updateQuestionTA={updateQuestionTA}
-            alertStudent={alertStudent}
-            questions={questions}
-            helpingQuestions={helpingQuestions}
-            groupQuestions={groupQuestions}
-          />
-        )}
-        {ROLE === "ta" && currentQuestion && (
-          <StudentPopupCard
-            onClose={onCloseClick}
-            email="takayama.a@northeastern.edu" //need a way to access this. or the user
-            wait={20} //figure out later
-            question={currentQuestion}
-            location="Outside by the printer" // need a way to access this
-            visible={openPopup}
-            updateQuestion={updateQuestionTA}
-          />
-        )}
-      </Fragment>
-    </Container>
-  );
+  if (questions) {
+    return (
+      <Container>
+        <Fragment>
+          {Role.STUDENT === ROLE ? (
+            <StudentQueueList
+              onOpenClick={onOpenClick}
+              joinQueue={joinQueue}
+              questions={questions}
+              helpingQuestions={helpingQuestions}
+              studentQuestion={studentQuestion} // temporary
+              leaveQueue={leaveQueue}
+              finishQuestion={finishQuestion}
+            />
+          ) : (
+            <TAQueueList
+              onOpenClick={onOpenClick}
+              joinQueue={joinQueue}
+              updateQuestionTA={updateQuestionTA}
+              alertStudent={alertStudent}
+              questions={questions}
+              helpingQuestions={helpingQuestions}
+              groupQuestions={groupQuestions}
+            />
+          )}
+          {ROLE === "ta" && currentQuestion && (
+            <StudentPopupCard
+              onClose={onCloseClick}
+              email="takayama.a@northeastern.edu" //need a way to access this. or the user
+              wait={20} //figure out later
+              question={currentQuestion}
+              location="Outside by the printer" // need a way to access this
+              visible={openPopup}
+              updateQuestion={updateQuestionTA}
+            />
+          )}
+        </Fragment>
+      </Container>
+    );
+  } else {
+    return null;
+  }
 }
