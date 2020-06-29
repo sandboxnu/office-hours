@@ -66,12 +66,12 @@ export default function Queue({}: QueueProps) {
   // Student queue state variables
   const [isJoining, setIsJoining] = useState<boolean>(false);
   const [questionDraftId, setQuestionDraftId] = useState<number>(null);
-  const [studentQuestion, setStudentQuestion] = useState<Question>(null);
+  const studentQuestion = profile && data && data.find((q) => q.creator.id === profile.id);
 
   // TA queue state variables
   const [openPopup, setOpenPopup] = useState<boolean>(false);
   const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
-
+  
   const onOpenClick = useCallback((question: Question): void => {
     setCurrentQuestion(question);
     setOpenPopup(true);
