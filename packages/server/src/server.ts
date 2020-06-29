@@ -1,11 +1,10 @@
-import "reflect-metadata";
 import Hapi from "@hapi/hapi";
-import { profileRoutes } from "./api/profileRoutes";
-import { courseRoutes } from "./api/courseRoutes";
-import { queueRoutes } from "./api/queueRoutes";
-import { notifRoutes } from "./api/notifRoutes";
-import websocketManager from "./websocketManager";
 import * as hde from "hapi-dev-errors";
+import "reflect-metadata";
+import { courseRoutes } from "./api/courseRoutes";
+import { notifRoutes } from "./api/notifRoutes";
+import { profileRoutes } from "./api/profileRoutes";
+import { queueRoutes } from "./api/queueRoutes";
 
 // Just initialize, don't start
 export async function init() {

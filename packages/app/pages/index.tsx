@@ -1,17 +1,9 @@
+import { API } from "@template/api-client";
 import { User } from "@template/common";
-import Head from "next/head";
+import { Button } from "antd";
+import { register } from "next-offline/runtime";
 import Router from "next/router";
 import { useProfile } from "../hooks/useProfile";
-import { GetServerSideProps } from "next";
-import { useEffect, useState } from "react";
-import WebsocketDemo from "../components/WebsocketDemo";
-import ClubList from "../components/ClubList";
-import { socket } from "../utils/socket";
-import { API } from "@template/api-client";
-import { Club, WSMessageType } from "@template/common";
-import { Button } from "antd";
-import styled from "styled-components";
-import { register, unregister } from "next-offline/runtime";
 
 export default function Home() {
   const profile: User = useProfile();
@@ -22,14 +14,6 @@ export default function Home() {
       "/class/" + profile.courses[0].course.id + "/today"
     );
   }
-
-  useEffect(() => {
-    refreshData();
-    socket.on(WSMessageType.Refresh, () => {
-      refreshData();
-    });
-  }, []);
-
   // web push code
   const check = () => {
     if (!("serviceWorker" in navigator)) {
@@ -67,33 +51,6 @@ export default function Home() {
 
   return (
     <div>
-      <Head>
-        <title>Khoury Office Hours</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <div>Server side rendered:</div>
-      <ClubList clubs={clubs} />
-      <br />
-      <div>Client side fetch:</div>
-      <ClubList clubs={other} />
-      <AddButton
-        type="primary"
-        onClick={() =>
-          API.club.create({
-            name: "Sandbox",
-            rating: 10,
-          })
-        }
-      >
-        Add a club
-      </AddButton>
-      <br />
-      <Title>Websocket Demo:</Title>
-      <br />
-      <WebsocketDemo />
-      Try opening this page in another tab
-      <br />
-      Click Add a Club and watch it update on both tabs.
       <Button size="large" onClick={checkBrowserAndRequestNotifications}>
         Request Notification Permission
       </Button>
