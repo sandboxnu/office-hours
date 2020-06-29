@@ -2,20 +2,20 @@ import { NotifModel } from "../entity/NotifModel";
 import { UserModel } from "../entity/UserModel";
 import { setupDBTest, setupServerTest } from "../testUtils";
 
-describe("/api/v1/notifications/desktop/credentials", () => {
+describe("/api/v1/notifications/credentials", () => {
   const getServer = setupServerTest();
 
   it("gets a public key (this test should always pass since we should always have an env installed to be hapi)", async () => {
     const get = await getServer().inject({
       method: "get",
-      url: "/api/v1/notifications/desktop/credentials",
+      url: "/api/v1/notifications/credentials",
     });
     expect(get.statusCode).toEqual(200);
     expect(get.result).toBeTruthy();
   });
 });
 
-describe("/api/v1/notifications/desktop/register/{user_id}", () => {
+describe("/api/v1/notifications/register/{user_id}", () => {
   setupDBTest();
   const getServer = setupServerTest();
 
@@ -32,7 +32,7 @@ describe("/api/v1/notifications/desktop/register/{user_id}", () => {
 
     const post = await getServer().inject({
       method: "post",
-      url: `/api/v1/notifications/desktop/register/${user1.id}`,
+      url: `/api/v1/notifications/register/${user1.id}`,
       payload: {
         endpoint: "biggoogle.com",
         expirationTime: dateInPayload,

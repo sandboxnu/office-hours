@@ -1,13 +1,12 @@
-import { setupServerTest, withServer, setupDBTest } from "../testUtils";
-import { MOCK_GET_QUESTION_RESPONSE } from "../mocks/getQuestion";
+import { QuestionStatusKeys } from "@template/common";
 import { QuestionModel } from "../entity/QuestionModel";
 import {
   QuestionFactory,
   QueueFactory,
-  UserFactory,
-  TACourseFactory,
+
+  TACourseFactory, UserFactory
 } from "../factory";
-import { QuestionStatusKeys } from "@template/common";
+import { setupDBTest, setupServerTest, withServer } from "../testUtils";
 
 describe("Queue Routes", () => {
   setupDBTest();
