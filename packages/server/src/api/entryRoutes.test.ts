@@ -1,4 +1,4 @@
-import { setupDBTest, setupServerTest, injectAsUser } from "../testUtils";
+import { setupDBTest, setupServerTest } from "../testUtils";
 import { UserFactory } from "../factory";
 
 describe("Queue Routes", () => {
