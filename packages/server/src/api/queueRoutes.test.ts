@@ -1,12 +1,13 @@
 import { setupServerTest, withServer, setupDBTest } from "../testUtils";
 import { MOCK_GET_QUESTION_RESPONSE } from "../mocks/getQuestion";
-import { MOCK_CREATE_QUESTION_RESPONSE } from "../mocks/createQuestion";
-import { QuestionType } from "@template/common";
-import { CourseModel } from "../entity/CourseModel";
-import { QueueModel } from "../entity/QueueModel";
-import { UserModel } from "../entity/UserModel";
-import { UserCourseModel } from "../entity/UserCourseModel";
 import { QuestionModel } from "../entity/QuestionModel";
+import {
+  QuestionFactory,
+  QueueFactory,
+  UserFactory,
+  TACourseFactory,
+} from "../factory";
+import { QuestionStatusKeys } from "@template/common";
 
 describe("Queue Routes", () => {
   setupDBTest();
@@ -14,77 +15,71 @@ describe("Queue Routes", () => {
   const expectWithServer = withServer(getServer);
 
   describe("/queues/{queue_id}/questions", () => {
-    it("GET fundies success", async () => {
-      const course = await CourseModel.create({
-        name: "CS 2500",
-        icalUrl: "fudies1.com",
-      }).save();
-      const queue = await QueueModel.create({
-        room: "WVH 605",
-        courseId: course.id,
-      }).save();
-      const user = await UserModel.create({
-        username: "eddyTheDockerGodLi",
-        email: "li.e@northeastern.edu",
-        name: "Eddy Li",
-        photoURL:
-          "https://prod-web.neu.edu/wasapp/EnterprisePhotoService/PhotoServlet?vid=CCS&er=471f2d695fbb8a00ee740ad3ea910453986aec81ddaecf889ae98b3a1858597b12650afd0d4e59c561172f76cb1946eec217ed89bd4074c0",
-      }).save();
-      const userCourse = await UserCourseModel.create({
-        userId: user.id,
-        courseId: course.id,
-      }).save();
-      const question = await QuestionModel.create({
-        queueId: queue.id,
-        text: "Help pls",
-        creatorId: userCourse.id,
-        createdAt: new Date(2020, 16, 5),
-        questionType: QuestionType.Other,
-        status: "Queued",
-      }).save();
-      await expectWithServer({
+    it("GET question success", async () => {
+      const q = await QuestionFactory.create({ text: "Help pls" });
+
+      const request = await getServer().inject({
         method: "get",
-        url: "/api/v1/queues/1/questions",
-        result: [
-          {
-            closedAt: null,
-            createdAt: new Date(2020, 16, 5),
-            creator: {
-              id: 1,
-              name: "Eddy Li",
-              photoURL:
-                "https://prod-web.neu.edu/wasapp/EnterprisePhotoService/PhotoServlet?vid=CCS&er=471f2d695fbb8a00ee740ad3ea910453986aec81ddaecf889ae98b3a1858597b12650afd0d4e59c561172f76cb1946eec217ed89bd4074c0",
-            },
-            helpedAt: null,
-            id: 1,
-            questionType: "Other",
-            status: "Queued",
-            taHelped: null,
-            text: "Help pls",
-          },
-        ],
+        url: `/api/v1/queues/${q.id}/questions`,
       });
+      expect(request.statusCode).toEqual(200);
+      expect(request.result).toMatchObject([
+        {
+          closedAt: null,
+          creator: {
+            id: 1,
+            name: "John Doe the 1th",
+            photoURL: "https://pics/1",
+          },
+          helpedAt: null,
+          id: 1,
+          questionType: "Other",
+          status: "Queued",
+          taHelped: null,
+          text: "Help pls",
+        },
+      ]);
     });
     // TODO: is this test supposed to fail now?
-    it("GET fundies fail", async () => {
-      await expectWithServer({
+    it("GET questions fail with non-exisitant queue", async () => {
+      const request = await getServer().inject({
         method: "get",
         url: "/api/v1/queues/999/questions",
-        statusCode: 404,
-        result: "no questions were found",
       });
+      expect(request.statusCode).toEqual(404);
+      expect(request.result).toEqual("Queue not found");
+    });
+    it("GET questions returns empty list", async () => {
+      const queue = await QueueFactory.create();
+      const request = await getServer().inject({
+        method: "get",
+        url: `/api/v1/queues/${queue.id}/questions`,
+      });
+      expect(request.statusCode).toEqual(200);
+      expect(request.result).toEqual([]);
     });
     it("POST new question", async () => {
-      await expectWithServer({
+      const queue = await QueueFactory.create();
+
+      expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(0);
+      const request = await getServer().inject({
         method: "post",
-        url: "/api/v1/queues/45/questions",
+        url: `/api/v1/queues/${queue.id}/questions`,
         payload: {
           text: "Don't know recursion",
           questionType: "Concept",
         },
-        statusCode: 200,
-        result: MOCK_CREATE_QUESTION_RESPONSE,
       });
+      expect(request.statusCode).toEqual(201);
+      expect(request.result).toMatchObject({
+        text: "Don't know recursion",
+        taHelped: null,
+        helpedAt: null,
+        closedAt: null,
+        questionType: "Concept",
+        status: "Drafting",
+      });
+      expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(1);
     });
     it("POST new question fails with bad params", async () => {
       await expectWithServer({
@@ -103,11 +98,143 @@ describe("Queue Routes", () => {
 
   describe("/queues/{queue_id}/questions/:question_id", () => {
     it("GET question that exists", async () => {
-      await expectWithServer({
-        method: "get",
-        url: "/api/v1/queues/169/questions/1",
-        result: MOCK_GET_QUESTION_RESPONSE,
+      const question = await QuestionFactory.create({
+        text: "Recursion is wrecking me",
       });
+      const request = await getServer().inject({
+        method: "get",
+        url: `/api/v1/queues/${question.queueId}/questions/${question.id}`,
+      });
+      expect(request.statusCode).toEqual(200);
+      expect(request.result).toMatchObject({
+        closedAt: null,
+        creator: {
+          id: 1,
+          name: "John Doe the 2th",
+          photoURL: "https://pics/2",
+        },
+        helpedAt: null,
+        id: 1,
+        questionType: "Other",
+        status: "Queued",
+        taHelped: null,
+        text: "Recursion is wrecking me",
+      });
+    });
+    it("GET question not found", async () => {
+      const queue = await QueueFactory.create();
+      const request = await getServer().inject({
+        method: "get",
+        url: `/api/v1/queues/${queue.id}/questions/1`,
+      });
+      expect(request.statusCode).toEqual(404);
+      expect(request.result).toEqual("Question not found");
+    });
+    it("GET question - queue not found", async () => {
+      const request = await getServer().inject({
+        method: "get",
+        url: `/api/v1/queues/10/questions/1`,
+      });
+      expect(request.statusCode).toEqual(404);
+      expect(request.result).toEqual("Queue not found");
+    });
+    it("PATCH question as student updates it", async () => {
+      const q = await QuestionFactory.create({ text: "Help pls" });
+
+      const request = await getServer().inject({
+        method: "patch",
+        url: `/api/v1/queues/${q.queueId}/questions/${q.id}`,
+        payload: {
+          text: "NEW TEXT",
+        },
+      });
+      expect(request.statusCode).toEqual(200);
+      expect(request.result).toMatchObject({ id: q.id, text: "NEW TEXT" });
+      expect(await QuestionModel.findOne({ id: q.id })).toMatchObject({
+        text: "NEW TEXT",
+      });
+    });
+    it.skip("PATCH taHelped as student is not allowed", async () => {
+      const q = await QuestionFactory.create({ text: "Help pls" });
+      const ta = await UserFactory.create();
+      await TACourseFactory.create({ course: q.queue.course, user: ta });
+
+      const request = await getServer().inject({
+        method: "patch",
+        url: `/api/v1/queues/${q.queueId}/questions/${q.id}`,
+        payload: {
+          taHelped: {
+            id: ta.id,
+            name: ta.name,
+          },
+        },
+      });
+      expect(request.statusCode).toEqual(401);
+    });
+    it.skip("PATCH status to helping as student not allowed", async () => {
+      const q = await QuestionFactory.create({ text: "Help pls" });
+
+      const request = await getServer().inject({
+        method: "patch",
+        url: `/api/v1/queues/${q.queueId}/questions/${q.id}`,
+        payload: {
+          status: QuestionStatusKeys.Helping,
+        },
+      });
+      expect(request.statusCode).toEqual(401);
+    });
+    it("PATCH status to helping as TA works", async () => {
+      const q = await QuestionFactory.create({ text: "Help pls" });
+      const ta = await UserFactory.create();
+      await TACourseFactory.create({ course: q.queue.course, user: ta });
+
+      const request = await getServer().inject({
+        method: "patch",
+        url: `/api/v1/queues/${q.queueId}/questions/${q.id}`,
+        payload: {
+          status: QuestionStatusKeys.Helping,
+        },
+      });
+      expect(request.statusCode).toEqual(200);
+      expect(request.result).toMatchObject({
+        status: QuestionStatusKeys.Helping,
+      });
+    });
+    it.skip("PATCH status to Resolved as TA works", async () => {
+      const q = await QuestionFactory.create({ text: "Help pls" });
+      const ta = await UserFactory.create();
+      await TACourseFactory.create({ course: q.queue.course, user: ta });
+
+      const request = await getServer().inject({
+        method: "patch",
+        url: `/api/v1/queues/${q.queueId}/questions/${q.id}`,
+        payload: {
+          status: QuestionStatusKeys.Resolved,
+        },
+      });
+      expect(request.statusCode).toEqual(200);
+      expect(request.result).toMatchObject({
+        status: QuestionStatusKeys.Resolved,
+        taHelped: ta,
+      });
+    });
+    it.skip("PATCH anything other than status as TA not allowed", async () => {
+      const q = await QuestionFactory.create({ text: "Help pls" });
+      const ta = await UserFactory.create();
+      await TACourseFactory.create({ course: q.queue.course, user: ta });
+
+      const request = await getServer().inject({
+        method: "patch",
+        url: `/api/v1/queues/${q.queueId}/questions/${q.id}`,
+        payload: {
+          text: "bonjour",
+        },
+      });
+      expect(request.statusCode).toEqual(401);
+    });
+    it.skip("PATCH question fails when you are not the question creator", async () => {
+      // TODO
+      // expect(request.statusCode).toEqual(401);
     });
   });
 });

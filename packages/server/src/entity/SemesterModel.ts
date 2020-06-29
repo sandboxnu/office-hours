@@ -20,5 +20,5 @@ export class SemesterModel extends BaseEntity {
   year: number;
 
   @OneToMany((type) => CourseModel, (course) => course.semester)
-  courses: Promise<CourseModel[]>;
+  courses: CourseModel[];
 }

@@ -1,11 +1,8 @@
 import "reflect-metadata";
 import Hapi from "@hapi/hapi";
-import io from "socket.io";
-import { clubRoutes } from "./api/clubRoutes";
 import { profileRoutes } from "./api/profileRoutes";
 import { courseRoutes } from "./api/courseRoutes";
 import { queueRoutes } from "./api/queueRoutes";
-import websocketManager from "./websocketManager";
 
 // Just initialize, don't start
 export async function init() {
@@ -14,19 +11,28 @@ export async function init() {
     host: "localhost",
   });
   // Add routes
-  server.route(clubRoutes);
   server.route(profileRoutes);
   server.route(courseRoutes);
   server.route(queueRoutes);
 
-  // Bind socketio to http server
-  websocketManager.bindSocketIO(io(server.listener));
-
+  // Error logging
   await server.register({
     plugin: require("hapi-dev-errors"),
     options: {
       showErrors: process.env.NODE_ENV !== "production",
     },
+  });
+  // Request logging
+  server.events.on("response", (request) => {
+    console.log(
+      request.info.remoteAddress +
+        ": " +
+        request.method.toUpperCase() +
+        " " +
+        request.path +
+        " --> " +
+        (request.response as any).statusCode
+    );
   });
   await server.initialize();
   return server;

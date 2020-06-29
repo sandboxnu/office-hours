@@ -121,7 +121,12 @@ export default function QuestionForm({
         Be as descriptive and specific as possible in your answer. If your
         question matches another student’s, your wait time may be reduced.
       </QuestionCaption>
-
+      <QuestionText>Where in the room are you located?</QuestionText>
+      <Input.TextArea
+        placeholder="Outside room, by the couches"
+        autoSize={{ minRows: 1, maxRows: 1 }}
+      />
+      <QuestionCaption></QuestionCaption>
       <div>
         <FormButton
           type="primary"

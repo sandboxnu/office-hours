@@ -1,5 +1,10 @@
 entity: UserModel
 items:
+  user0:
+    username: "test_user"
+    email: "test_user@husky.neu.edu"
+    name: "Test User"
+    photoURL: "www.photoURL.com"
   user1:
     username: "xXmyHomiESt3nz69Xx"
     email: "stenzel.w@northeastern.edu"

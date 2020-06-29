@@ -1,5 +1,5 @@
 entity: SemesterModel
 items:
-  semester1:
+  semester0:
     season: "Fall"
     year: 2020

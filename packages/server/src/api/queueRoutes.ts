@@ -11,16 +11,16 @@ import {
   UserPartial,
   QuestionStatus,
   QuestionStatusKeys,
+  QuestionType,
+  CreateQuestionParams,
 } from "@template/common";
-import { MOCK_CREATE_QUESTION_RESPONSE } from "../mocks/createQuestion";
 import {
   MOCK_STUDENT_UPDATE_QUESTION_RESPONSE,
   MOCK_TA_UPDATE_QUESTION,
 } from "../mocks/updateQuestion";
-import { MOCK_GET_QUESTION_RESPONSE } from "../mocks/getQuestion";
 import { QuestionModel } from "../entity/QuestionModel";
-import { UserCourseModel } from "../entity/UserCourseModel";
 import { UserModel } from "../entity/UserModel";
+import { QueueModel } from "../entity/QueueModel";
 
 export const queueRoutes: ServerRoute[] = [
   {
@@ -32,6 +32,13 @@ export const queueRoutes: ServerRoute[] = [
     ): Promise<ListQuestionsResponse | ResponseObject> => {
       // todo: need a way to return different data, if TA vs. student hits endpoint.
       // for now, just return the student response
+      const queueSize = await QueueModel.count({
+        where: { id: request.params.queue_id },
+      });
+      // Check that the queue exists
+      if (queueSize === 0) {
+        return h.response("Queue not found").code(404);
+      }
 
       const questions = await QuestionModel.find({
         where: [
@@ -39,14 +46,10 @@ export const queueRoutes: ServerRoute[] = [
             queueId: request.params.queue_id,
           },
         ],
-        relations: ["creator", "taHelped", "creator.user"],
+        relations: ["creator", "taHelped"],
       });
 
-      if (questions.length === 0) {
-        return h.response("no questions were found").code(404);
-      }
-
-      return await Promise.all(questions.map(questionModelToQuestion));
+      return questions.map(questionModelToQuestion);
     },
     options: {
       response: {
@@ -59,11 +62,39 @@ export const queueRoutes: ServerRoute[] = [
   {
     method: "POST",
     path: "/api/v1/queues/{queue_id}/questions",
+    // TODO: Add request validations
     handler: async (
-      request
+      request,
+      h
     ): Promise<CreateQuestionResponse | ResponseObject> => {
-      // TODO: Add request validations
-      return MOCK_CREATE_QUESTION_RESPONSE;
+      // TODO: Remove this once we implemntent user authentication
+      const DEFAULT_USER = await UserModel.create({
+        id: 42,
+        username: "test_user",
+        email: "test_user@husky.neu.edu",
+        name: "Test User",
+        photoURL: "www.photoURL.com",
+      }).save();
+      const queueSize = await QueueModel.count({
+        where: { id: request.params.queue_id },
+      });
+      // Check that the queue exists
+      if (queueSize === 0) {
+        return h.response("Queue not found").code(404);
+      }
+      // TODO: Check that the user posting the question is a member of the course
+
+      const { text, questionType } = request.payload as CreateQuestionParams;
+      const question = await QuestionModel.create({
+        queueId: parseInt(request.params.queue_id),
+        creator: DEFAULT_USER,
+        text,
+        questionType,
+        status: QuestionStatusKeys.Drafting,
+      }).save();
+
+      question.creator = DEFAULT_USER;
+      return h.response(questionModelToQuestion(question)).code(201);
     },
     options: {
       response: {
@@ -80,8 +111,25 @@ export const queueRoutes: ServerRoute[] = [
   {
     method: "GET",
     path: "/api/v1/queues/{queue_id}/questions/{question_id}",
-    handler: async (request): Promise<GetQuestionResponse | ResponseObject> => {
-      return MOCK_GET_QUESTION_RESPONSE;
+    handler: async (
+      request,
+      h
+    ): Promise<GetQuestionResponse | ResponseObject> => {
+      const queueSize = await QueueModel.count({
+        where: { id: request.params.queue_id },
+      });
+      // Check that the queue exists
+      if (queueSize === 0) {
+        return h.response("Queue not found").code(404);
+      }
+      const question = await QuestionModel.findOne(request.params.question_id, {
+        relations: ["creator", "taHelped"],
+      });
+      if (question === undefined) {
+        return h.response("Question not found").code(404);
+      }
+
+      return questionModelToQuestion(question);
     },
     options: {
       response: {
@@ -93,17 +141,23 @@ export const queueRoutes: ServerRoute[] = [
     method: "PATCH",
     path: "/api/v1/queues/{queue_id}/questions/{question_id}",
     handler: async (
-      request
+      request,
+      h
     ): Promise<UpdateQuestionResponse | ResponseObject> => {
       const { text, questionType } = request.payload as UpdateQuestionParams; // Question: Do we want to take in the whole question as a param?
+      const { queue_id, question_id } = request.params;
       // TODO: Check that the question_id belongs to the user or a TA that is currently helping with the given queue_id
       // TODO: Use user type to dertermine wether or not we should include the text in the response
-      if (text || questionType) {
-        // If student called the api
-        return MOCK_STUDENT_UPDATE_QUESTION_RESPONSE;
-      } else {
-        return MOCK_TA_UPDATE_QUESTION;
+      let question = await QuestionModel.findOne({
+        where: { queueId: queue_id, id: question_id },
+        relations: ["creator"],
+      });
+      if (question === undefined) {
+        return h.response("").code(404);
       }
+      question = Object.assign(question, request.payload);
+      await question.save();
+      return questionModelToQuestion(question);
     },
     options: {
       response: {
@@ -122,17 +176,15 @@ export const queueRoutes: ServerRoute[] = [
 
 // for some reason, JOI.allow(null) means the property has to exist, but can be null
 
-async function questionModelToQuestion(qm: QuestionModel): Promise<Question> {
+function questionModelToQuestion(qm: QuestionModel): Question {
   return {
-    creator: await userModelToUserPartial(await (await qm.creator).user),
+    creator: userModelToUserPartial(qm.creator),
     id: qm.id,
     createdAt: qm.createdAt,
     status: parseStatus(qm.status),
     text: qm.text,
     // qm.taHelped: types says is nonnullable, but it is nullable
-    taHelped:
-      (await qm.taHelped) &&
-      (await userCourseModelToUserPartial(await qm.taHelped)),
+    taHelped: qm.taHelped ? userModelToUserPartial(qm.taHelped) : null,
     closedAt: qm.closedAt,
     questionType: qm.questionType,
     // TODO: helpedAt: property not required in types, but required by JOI
@@ -140,23 +192,12 @@ async function questionModelToQuestion(qm: QuestionModel): Promise<Question> {
   };
 }
 
-async function userModelToUserPartial(um: UserModel): Promise<UserPartial> {
+function userModelToUserPartial(um: UserModel): UserPartial {
   return {
     id: um.id,
     name: um.name,
     // TODO: photoURL: property not required in types, but required by JOI
     photoURL: um.photoURL,
-  };
-}
-
-async function userCourseModelToUserPartial(
-  ucm: UserCourseModel
-): Promise<UserPartial> {
-  return {
-    id: (await ucm.user).id,
-    name: (await ucm.user).name,
-    // TODO: photoURL: property not required in types, but required by JOI
-    photoURL: (await ucm.user).photoURL,
   };
 }
 

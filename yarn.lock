@@ -10132,6 +10132,11 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
+typeorm-factory@^0.0.14:
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/typeorm-factory/-/typeorm-factory-0.0.14.tgz#bbc56a61684238ac9e3a1c88cbab508efe422ba1"
+  integrity sha512-PdCEnprw2YDbFJ50mCtPr+IOQa5Y9Yv7l3DDmqNEJPROwK48znvQEHVRA9bWR2ByjaZDfmRMWo7+/Q+WkDPOgw==
+
 typeorm-fixtures-cli@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/typeorm-fixtures-cli/-/typeorm-fixtures-cli-1.6.0.tgz#7ead0522b7656f659f3a3da798c40c9c62ddc6ea"

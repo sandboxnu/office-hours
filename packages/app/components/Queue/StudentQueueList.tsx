@@ -79,6 +79,7 @@ export default function StudentQueueList({
 
   const closeEditModal = useCallback(() => {
     setPopupEditQuestion(false);
+    setIsJoining(false);
   }, []);
 
   const renderEditableQuestion = () => {
@@ -89,6 +90,8 @@ export default function StudentQueueList({
           position={3}
           type={studentQuestion.questionType}
           text={studentQuestion.text}
+          location={"Outside room, by the couches"} // doesn't exist on question rn
+          photoUrl={studentQuestion.creator.photoURL}
           openEdit={openEditModal}
         />
       </Col>
@@ -119,9 +122,11 @@ export default function StudentQueueList({
         <Col flex="auto" order={screens.lg === false ? 2 : 1}>
           <Row justify="space-between">
             <QueueTitle>Queue 1</QueueTitle>
-            <Button type="primary" size="large" onClick={joinQueueOpenModal}>
-              Join Queue
-            </Button>
+            {!studentQuestion && (
+              <Button type="primary" size="large" onClick={joinQueueOpenModal}>
+                Join Queue
+              </Button>
+            )}
           </Row>
           <StudentHeaderCard bordered={false}>
             <CenterRow justify="space-between">

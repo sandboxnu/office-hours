@@ -3,7 +3,7 @@ import Joi from "@hapi/joi";
 import { CourseSchema, QueueSchema, CourseQueueSchema } from "../joi";
 import { CourseModel } from "../entity/CourseModel";
 import { QueueModel } from "../entity/QueueModel";
-import { pick, cloneDeep } from "lodash";
+import { pick } from "lodash";
 import {
   TAUpdateStatusParams,
   TAUpdateStatusResponse,
@@ -28,7 +28,7 @@ export const courseRoutes: ServerRoute[] = [
       });
       return {
         name: course.name,
-        officeHours: (await course.officeHours).map((e) =>
+        officeHours: course.officeHours.map((e) =>
           pick(e, ["id", "title", "room", "startTime", "endTime"])
         ),
       };
