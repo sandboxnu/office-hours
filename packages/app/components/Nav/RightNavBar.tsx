@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { Avatar, Menu } from "antd";
 import { UserOutlined } from "@ant-design/icons";
+import Link from "next/link";
 
 const SubMenu = Menu.SubMenu;
 const MenuItemGroup = Menu.ItemGroup;
@@ -20,17 +21,13 @@ const MenuItem = styled(Menu.Item)`
   }
 `;
 
-const MenuItemLink = styled.a`
-  padding: 10px 15px;
-`;
-
 export default function RightNavBar() {
   return (
     <HorizontalMenu mode="horizontal">
       <MenuItem key="mail">
-        <MenuItemLink href="/login">
+        <Link href="/login" as="/login">
           <Avatar size={32} icon={<UserOutlined />} />
-        </MenuItemLink>
+        </Link>
       </MenuItem>
     </HorizontalMenu>
   );
