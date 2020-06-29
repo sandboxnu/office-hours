@@ -1,13 +1,14 @@
 import { ResponseObject, ServerRoute } from "@hapi/hapi";
 import { DesktopNotifBody } from "@template/common";
 import * as dotenv from "dotenv";
-import { Twilio } from "twilio";
+import twilio, { Twilio } from "twilio";
 import { DeepPartial } from "typeorm";
 import * as webPush from "web-push";
 import { DesktopNotifModel } from "../entity/DesktopNotifModel";
 import { PhoneNotifModel } from "../entity/PhoneNotifModel";
 import { UserModel } from "../entity/UserModel";
 import { DesktopNotifPayload, PhoneNotifPayload } from "../joi";
+import { PhoneNumberInstance } from "twilio/lib/rest/lookups/v1/phoneNumber";
 
 // configure env vars for VAPID + Twilio
 dotenv.config();
@@ -31,7 +32,7 @@ if (
     process.env.PUBLICKEY,
     process.env.PRIVATEKEY
   );
-  twilioClient = new Twilio(
+  twilioClient = twilio(
     process.env.TWILIOACCOUNTSID,
     process.env.TWILIOAUTHTOKEN
   );
@@ -69,10 +70,22 @@ export const notifRoutes: ServerRoute[] = [
     handler: async (request, h): Promise<string | ResponseObject> => {
       const payload = request.payload as { phoneNumber: string };
 
+      let phoneNumber: string;
+      try {
+        phoneNumber = (
+          await twilioClient.lookups.phoneNumbers(payload.phoneNumber).fetch()
+        ).phoneNumber;
+      } catch (err) {
+        // if the phone number is not found, then endpoint should return invalid
+        return h.response("invalid phone number").code(400);
+      }
+
+      // todo: need to verify that the user owns the phone number before adding it
       await PhoneNotifModel.create({
-        phoneNumber: payload.phoneNumber,
+        phoneNumber,
         userId: Number(request.params.user_id),
       }).save();
+
       return h
         .response(
           JSON.stringify("registration success for " + payload.phoneNumber)
@@ -102,9 +115,9 @@ export const notifRoutes: ServerRoute[] = [
         ...notifModelsOfUser.desktopNotifs.map(async (nm) =>
           desktopNotifyUser(nm, "joe mama")
         ),
-        ...notifModelsOfUser.phoneNotifs.map(async (pn) =>
-          phoneNotifyUser(pn, "have u heard of ligma?")
-        ),
+        ...notifModelsOfUser.phoneNotifs.map(async (pn) => {
+          phoneNotifyUser(pn, "have u heard of ligma?");
+        }),
       ]);
 
       return h.response().code(200);
