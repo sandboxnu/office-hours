@@ -15,9 +15,7 @@ const urlB64ToUint8Array = (base64String) => {
   return outputArray;
 };
 
-// todo: figure out how to do this
-const ORIGIN = `http://localhost:3000`;
-const SERVER_URL = (s) => `${ORIGIN}/api/v1/notifications/${s}`;
+const SERVER_URL = (s) => `/api/v1/notifications/${s}`;
 // todo: replace with actual user id.
 const USER_ID = 1;
 
