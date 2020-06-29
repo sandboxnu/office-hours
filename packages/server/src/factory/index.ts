@@ -1,8 +1,10 @@
-import { Factory } from "typeorm-factory";
-import { QuestionModel } from "../entity/QuestionModel";
 import { QuestionType } from "@template/common";
-import { QueueModel } from "../entity/QueueModel";
+import { Factory } from "typeorm-factory";
 import { CourseModel } from "../entity/CourseModel";
+import { DesktopNotifModel } from "../entity/DesktopNotifModel";
+import { PhoneNotifModel } from "../entity/PhoneNotifModel";
+import { QuestionModel } from "../entity/QuestionModel";
+import { QueueModel } from "../entity/QueueModel";
 import { SemesterModel } from "../entity/SemesterModel";
 import { UserModel } from "../entity/UserModel";
 
@@ -31,3 +33,15 @@ export const QuestionFactory = new Factory(QuestionModel)
   .attr("questionType", QuestionType.Other)
   .assocOne("queue", QueueFactory)
   .assocOne("creator", UserFactory);
+
+export const PhoneNotifFactory = new Factory(PhoneNotifModel).attr(
+  "phoneNumber",
+  "+12223334444"
+);
+
+export const DesktopNotifFactory = new Factory(DesktopNotifModel)
+  .attr("endpoint", "gooooooogle.com")
+  .attr("expirationTime", new Date(1836, 3, 6))
+  .attr("p256dh", "some_key")
+  .attr("auth", "keeeeeeey")
+  .assocOne("user", UserFactory);

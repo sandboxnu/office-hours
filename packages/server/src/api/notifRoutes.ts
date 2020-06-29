@@ -51,10 +51,7 @@ export const notifRoutes: ServerRoute[] = [
     path: "/api/v1/notifications/desktop/register/{user_id}", // TODO:   make this not a param for the users lmaoooooooo soI don't spam alex with sugondese
     handler: async (request, h): Promise<string | ResponseObject> => {
       const payload = request.payload as DesktopNotifBody;
-      console.debug(
-        "registering user for desktop notifications with endpoint:",
-        payload.endpoint
-      );
+
       await DesktopNotifModel.create(
         toDBmodel(payload, Number(request.params.user_id))
       ).save();
@@ -71,10 +68,7 @@ export const notifRoutes: ServerRoute[] = [
     path: "/api/v1/notifications/phone/register/{user_id}", // TODO:   make this not a param for the users lmaoooooooo soI don't spam alex with sugondese
     handler: async (request, h): Promise<string | ResponseObject> => {
       const payload = request.payload as { phoneNumber: string };
-      console.debug(
-        "registering user for phone notifications with number:",
-        payload.phoneNumber
-      );
+
       await PhoneNotifModel.create({
         phoneNumber: payload.phoneNumber,
         userId: Number(request.params.user_id),
@@ -125,9 +119,7 @@ export async function desktopNotifyUser(
 ) {
   try {
     await webPush.sendNotification(fromDBmodel(nm), message);
-    console.debug("notifying user with endpoint:", fromDBmodel(nm).endpoint);
   } catch (error) {
-    console.debug("removing user for reason:", error.body);
     await DesktopNotifModel.remove(nm);
   }
 }
@@ -141,7 +133,6 @@ export async function phoneNotifyUser(pn: PhoneNotifModel, message: string) {
         from: process.env.TWILIOPHONENUMBER,
         to: pn.phoneNumber,
       }));
-    console.log("texting user: ", pn.phoneNumber);
   } catch (error) {
     console.error("problem sending message", error);
   }
