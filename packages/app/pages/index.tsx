@@ -6,7 +6,7 @@ import ClubList from "../components/ClubList";
 import { socket } from "../utils/socket";
 import { API } from "@template/api-client";
 import { Club, WSMessageType } from "@template/common";
-import { Button } from "antd";
+import { Button, Input } from "antd";
 import styled from "styled-components";
 import { register, unregister } from "next-offline/runtime";
 
@@ -73,6 +73,9 @@ export default function Home({ clubs }: HomeProps) {
   };
   // end web push code
 
+  // todo: use actual user id
+  const user_id = 1;
+
   return (
     <div>
       <Head>
@@ -102,12 +105,23 @@ export default function Home({ clubs }: HomeProps) {
       Try opening this page in another tab
       <br />
       Click Add a Club and watch it update on both tabs.
-      <Button size="large" onClick={checkBrowserAndRequestNotifications}>
-        Request Notification Permission
-      </Button>
-      <Button size="large" onClick={() => API.notif.notify_user(1)}>
-        Test Notify
-      </Button>
+      <div style={{ flexDirection: "row-reverse" }}>
+        <Button size="large" onClick={checkBrowserAndRequestNotifications}>
+          Request Notification Permission
+        </Button>
+        <Button size="large" onClick={() => API.notif.notify_user(user_id)}>
+          Test Notify
+        </Button>
+      </div>
+      <Input
+        placeholder="phone number"
+        style={{ width: 200 }}
+        onPressEnter={(value) => {
+          return API.notif.phone.register(user_id, {
+            phoneNumber: (value.target as any).value,
+          });
+        }}
+      ></Input>
     </div>
   );
 }
