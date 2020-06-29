@@ -10,10 +10,12 @@
     "dev:db:reset": "echo 'DROP DATABASE dev;' | psql -U postgres -h localhost && echo 'CREATE DATABASE dev;' | psql -U postgres -h localhost"
   },
   "dependencies": {
+    "@hapi/cookie": "^11.0.1",
     "@hapi/hapi": "^19.1.1",
     "@hapi/joi": "^17.1.1",
     "@template/common": "*",
     "axios": "^0.19.2",
+    "dotenv": "^8.2.0",
     "hapi-dev-errors": "^4.0.0",
     "lodash": "^4.17.15",
     "node-ical": "^0.11.3",
@@ -25,6 +27,7 @@
   },
   "devDependencies": {
     "@babel/node": "^7.8.7",
+    "@types/hapi__cookie": "^10.1.0",
     "@types/hapi__hapi": "^19.0.3",
     "@types/jest": "^25.2.2",
     "@types/lodash": "^4.14.153",
