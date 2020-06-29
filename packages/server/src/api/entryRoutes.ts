@@ -9,7 +9,7 @@ export const entryRoutes: ServerRoute[] = [
     path: "/api/v1/entry",
     handler: async (request, h) => {
       request.cookieAuth.set({ id: request.query.userId });
-      return h.redirect("/today");
+      return h.redirect("/");
     },
     options: {
       auth: false,
