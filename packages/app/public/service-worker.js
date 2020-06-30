@@ -23,8 +23,6 @@ const USER_ID = 1;
 
 const saveSubscription = async (subscription, user_id) => {
   const URL = SERVER_URL(`register`) + "/" + user_id;
-  console.log("joe mama");
-  console.log(JSON.stringify(subscription));
   const response = await fetch(URL, {
     method: "post",
     headers: {
@@ -44,18 +42,14 @@ self.addEventListener("activate", async () => {
     const applicationServerKey = urlB64ToUint8Array(PUBLICKEY);
     const options = { applicationServerKey, userVisibleOnly: true };
     const subscription = await self.registration.pushManager.subscribe(options);
-    console.log("here");
     const response = await saveSubscription(subscription, USER_ID);
-    console.log(response);
   } catch (err) {
-    console.log("Error", err);
+    console.error("Error", err);
   }
 });
 
 self.addEventListener("push", async function (event) {
   if (event.data) {
-    // todo: remove later
-    console.log("Push event!! ", event.data.text());
     try {
       await showLocalNotification(
         // todo: change mssg
@@ -69,7 +63,7 @@ self.addEventListener("push", async function (event) {
       );
     }
   } else {
-    console.log("Push event but no data");
+    console.warn("Push event but no data");
   }
 });
 
