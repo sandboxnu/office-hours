@@ -9,7 +9,6 @@ services:
       - ./docker-postgresql-multiple-databases:/docker-entrypoint-initdb.d
       - pg:/var/lib/postgresql/data
     environment:
-      - PGDATA=/var/lib/postgresql/data/pgdata
       - POSTGRES_MULTIPLE_DATABASES=dev,test
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=

@@ -1,4 +1,4 @@
-import { QuestionType } from "@template/common";
+import { QuestionType, Role } from "@template/common";
 import { Factory } from "typeorm-factory";
 import { CourseModel } from "../entity/CourseModel";
 import { DesktopNotifModel } from "../entity/DesktopNotifModel";
@@ -6,6 +6,7 @@ import { PhoneNotifModel } from "../entity/PhoneNotifModel";
 import { QuestionModel } from "../entity/QuestionModel";
 import { QueueModel } from "../entity/QueueModel";
 import { SemesterModel } from "../entity/SemesterModel";
+import { UserCourseModel } from "../entity/UserCourseModel";
 import { UserModel } from "../entity/UserModel";
 
 export const UserFactory = new Factory(UserModel)
@@ -13,6 +14,16 @@ export const UserFactory = new Factory(UserModel)
   .sequence("email", (i) => `user${i}@neu.edu`)
   .sequence("name", (i) => `John Doe the ${i}th`)
   .sequence("photoURL", (i) => `https://pics/${i}`);
+
+export const StudentCourseFactory = new Factory(UserCourseModel).attr(
+  "role",
+  Role.STUDENT
+);
+
+export const TACourseFactory = new Factory(UserCourseModel).attr(
+  "role",
+  Role.TA
+);
 
 export const SemesterFactory = new Factory(SemesterModel)
   .attr("season", "Fall")
@@ -22,6 +33,11 @@ export const CourseFactory = new Factory(CourseModel)
   .attr("name", "CS 2500")
   .attr("icalURL", "hi.com")
   .assocOne("semester", SemesterFactory);
+
+export const UserCourseFactory = new Factory(UserCourseModel)
+  .assocOne("user", UserFactory)
+  .assocOne("course", CourseFactory)
+  .attr("role", Role.STUDENT);
 
 export const QueueFactory = new Factory(QueueModel)
   .sequence("room", (i) => `WVH ${i}`)

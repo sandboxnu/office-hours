@@ -1,8 +1,5 @@
 import Axios, { AxiosInstance } from "axios";
 import {
-  GetClubResponse,
-  CreateClubParams,
-  CreateClubResponse,
   GetProfileResponse,
   GetCourseResponse,
   TAUpdateStatusResponse,
@@ -20,14 +17,6 @@ import {
 
 class APIClient {
   private axios: AxiosInstance;
-  club = {
-    index: async (): Promise<GetClubResponse> => {
-      return (await this.axios.get("/api/club")).data;
-    },
-    create: async (params: CreateClubParams): Promise<CreateClubResponse> => {
-      return (await this.axios.post("/api/club", params)).data;
-    },
-  };
   profile = {
     index: async (): Promise<GetProfileResponse> => {
       return (await this.axios.get(`/api/v1/profile`)).data;
