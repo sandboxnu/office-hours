@@ -1,24 +1,62 @@
-import Head from "next/head";
+import { API } from "@template/api-client";
 import { User } from "@template/common";
+import { Button } from "antd";
+import { register } from "next-offline/runtime";
 import Router from "next/router";
 import { useProfile } from "../hooks/useProfile";
 
 export default function Home() {
   const profile: User = useProfile();
 
-  if (profile) {
-    Router.push(
-      "/class/[cid]/today",
-      "/class/" + profile.courses[0].course.id + "/today"
-    );
-  }
+  // if (profile) {
+  //   Router.push(
+  //     "/class/[cid]/today",
+  //     "/class/" + profile.courses[0].course.id + "/today"
+  //   );
+  // }
+  // web push code
+  const check = () => {
+    if (!("serviceWorker" in navigator)) {
+      throw new Error("No Service Worker support!");
+    }
+    if (!("PushManager" in window)) {
+      throw new Error("No Push API Support!");
+    }
+  };
+
+  const requestNotificationPermission = async () => {
+    if (Notification.permission === "granted") {
+      console.log(`permission previously granted`);
+    } else if (Notification.permission === "denied") {
+      console.log("permission previously denied");
+    } else if (Notification.permission === "default") {
+      console.log("permission not set > requesting");
+      await window.Notification.requestPermission();
+    }
+  };
+
+  const checkBrowserAndRequestNotifications = async () => {
+    check();
+    // try to get notification permissions
+    await requestNotificationPermission();
+    // get rid of old service worker, and then try and re-register.
+    // just kidding, this breaks Chrome for some reason (ai ya).
+    // unregister();
+    // have to use setTimeout because unregister does async things, but is sync
+    setTimeout(() => {
+      register();
+    }, 500);
+  };
+  // end web push code
 
   return (
     <div>
-      <Head>
-        <title>Khoury Office Hours</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <Button size="large" onClick={checkBrowserAndRequestNotifications}>
+        Request Notification Permission
+      </Button>
+      <Button size="large" onClick={() => API.notif.notify_user(1)}>
+        Test Notify
+      </Button>
     </div>
   );
 }

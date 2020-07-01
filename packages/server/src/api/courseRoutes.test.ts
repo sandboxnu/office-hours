@@ -1,4 +1,9 @@
-import { setupDBTest, setupServerTest, withServer } from "../testUtils";
+import {
+  setupDBTest,
+  setupServerTest,
+  withServer,
+  injectAsUser,
+} from "../testUtils";
 import { OfficeHourModel } from "../entity/OfficeHourModel";
 import { CourseModel } from "../entity/CourseModel";
 import {
@@ -10,9 +15,11 @@ import { QuestionModel } from "../entity/QuestionModel";
 import { UserModel } from "../entity/UserModel";
 import { UserCourseModel } from "../entity/UserCourseModel";
 import { QuestionType } from "@template/common";
+import { UserFactory } from "../factory";
+
+setupDBTest();
 
 describe("/api/v1/courses/course_id/schedule", () => {
-  setupDBTest();
   const getServer = setupServerTest();
 
   it("gets matthias's office hours", async () => {
@@ -27,7 +34,8 @@ describe("/api/v1/courses/course_id/schedule", () => {
       endTime: new Date(1999, 4, 20),
       courseId: course.id,
     }).save();
-    const get = await getServer().inject({
+    const user = await UserFactory.create();
+    const get = await injectAsUser(getServer(), user, {
       method: "get",
       url: `/api/v1/courses/${course.id}/schedule`,
     });
@@ -48,7 +56,6 @@ describe("/api/v1/courses/course_id/schedule", () => {
 });
 
 describe("Course Routes", () => {
-  setupDBTest();
   const getServer = setupServerTest();
   const expectWithServer = withServer(getServer);
 
@@ -80,9 +87,9 @@ describe("Course Routes", () => {
       questionType: QuestionType.Other,
       status: "Queued",
     }).save();
-    const get = await getServer().inject({
+    const get = await injectAsUser(getServer(), user, {
       method: "get",
-      url: `/api/v1/courses/1/queues`,
+      url: `/api/v1/courses/${queue.id}/queues`,
     });
     expect(get.statusCode).toEqual(200);
     expect(get.result).toEqual([

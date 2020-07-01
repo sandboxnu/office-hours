@@ -1,5 +1,5 @@
 import { AppProps } from "next/app";
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import "antd/dist/antd.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "../styles/global.css";

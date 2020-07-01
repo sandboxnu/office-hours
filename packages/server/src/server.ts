@@ -1,8 +1,13 @@
-import "reflect-metadata";
 import Hapi from "@hapi/hapi";
-import { profileRoutes } from "./api/profileRoutes";
+import * as hde from "hapi-dev-errors";
+import "reflect-metadata";
 import { courseRoutes } from "./api/courseRoutes";
+import { notifRoutes } from "./api/notifRoutes";
+import { profileRoutes } from "./api/profileRoutes";
 import { queueRoutes } from "./api/queueRoutes";
+import { UserModel } from "./entity/UserModel";
+import { entryRoutes } from "./api/entryRoutes";
+import { env } from "./env";
 
 // Just initialize, don't start
 export async function init() {
@@ -10,30 +15,55 @@ export async function init() {
     port: 3002,
     host: "localhost",
   });
+
+  // Cookie auth
+  await server.register(require("@hapi/cookie"));
+
+  server.auth.strategy("session", "cookie", {
+    cookie: {
+      name: "office-hours",
+      password: env.COOKIE_PASSWORD,
+      isSecure: env.NODE_ENV === "production",
+    },
+    validateFunc: async (request, session) => {
+      const user = await UserModel.findOne((session as any).id);
+      if (!user) {
+        return { valid: false };
+      }
+      return { valid: true, credentials: user };
+    },
+  });
+  server.auth.default("session");
+
   // Add routes
   server.route(profileRoutes);
   server.route(courseRoutes);
   server.route(queueRoutes);
+  server.route(notifRoutes);
+  server.route(entryRoutes);
 
   // Error logging
   await server.register({
-    plugin: require("hapi-dev-errors"),
+    plugin: hde,
     options: {
-      showErrors: process.env.NODE_ENV !== "production",
+      showErrors: env.NODE_ENV !== "production",
     },
   });
   // Request logging
-  server.events.on("response", (request) => {
-    console.log(
-      request.info.remoteAddress +
-        ": " +
-        request.method.toUpperCase() +
-        " " +
-        request.path +
-        " --> " +
-        (request.response as any).statusCode
-    );
-  });
+  if (env.NODE_ENV !== "test") {
+    server.events.on("response", (request) => {
+      console.log(
+        request.info.remoteAddress +
+          ": " +
+          request.method.toUpperCase() +
+          " " +
+          request.path +
+          " --> " +
+          (request.response as any).statusCode
+      );
+    });
+  }
+
   await server.initialize();
   return server;
 }

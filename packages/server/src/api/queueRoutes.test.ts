@@ -1,24 +1,25 @@
-import { setupServerTest, withServer, setupDBTest } from "../testUtils";
-import { MOCK_GET_QUESTION_RESPONSE } from "../mocks/getQuestion";
+
+import { QuestionStatusKeys } from "@template/common";
 import { QuestionModel } from "../entity/QuestionModel";
 import {
   QuestionFactory,
   QueueFactory,
-  UserFactory,
-  TACourseFactory,
+
+  TACourseFactory, UserFactory
 } from "../factory";
-import { QuestionStatusKeys } from "@template/common";
+import { setupDBTest, setupServerTest, withServer, injectAsUser } from "../testUtils";
 
 describe("Queue Routes", () => {
   setupDBTest();
   const getServer = setupServerTest();
   const expectWithServer = withServer(getServer);
 
+  // TODO: Make sure we specifiy what type of user we are creating with the UserFactory
   describe("/queues/{queue_id}/questions", () => {
     it("GET question success", async () => {
       const q = await QuestionFactory.create({ text: "Help pls" });
-
-      const request = await getServer().inject({
+      const user = await UserFactory.create();
+      const request = await injectAsUser(getServer(), user, {
         method: "get",
         url: `/api/v1/queues/${q.id}/questions`,
       });
@@ -40,9 +41,9 @@ describe("Queue Routes", () => {
         },
       ]);
     });
-    // TODO: is this test supposed to fail now?
     it("GET questions fail with non-exisitant queue", async () => {
-      const request = await getServer().inject({
+      const user = await UserFactory.create();
+      const request = await injectAsUser(getServer(), user, {
         method: "get",
         url: "/api/v1/queues/999/questions",
       });
@@ -51,7 +52,9 @@ describe("Queue Routes", () => {
     });
     it("GET questions returns empty list", async () => {
       const queue = await QueueFactory.create();
-      const request = await getServer().inject({
+      const user = await UserFactory.create();
+
+      const request = await injectAsUser(getServer(), user, {
         method: "get",
         url: `/api/v1/queues/${queue.id}/questions`,
       });
@@ -60,9 +63,9 @@ describe("Queue Routes", () => {
     });
     it("POST new question", async () => {
       const queue = await QueueFactory.create();
-
       expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(0);
-      const request = await getServer().inject({
+      const user = await UserFactory.create();
+      const request = await injectAsUser(getServer(), user, {
         method: "post",
         url: `/api/v1/queues/${queue.id}/questions`,
         payload: {
@@ -101,7 +104,9 @@ describe("Queue Routes", () => {
       const question = await QuestionFactory.create({
         text: "Recursion is wrecking me",
       });
-      const request = await getServer().inject({
+      // Q: How do we make the data for this user is consistent? I'm not sure we can pass values into the sequence for the user
+      const user = await UserFactory.create();
+      const request = await injectAsUser(getServer(), user, {
         method: "get",
         url: `/api/v1/queues/${question.queueId}/questions/${question.id}`,
       });
@@ -110,8 +115,8 @@ describe("Queue Routes", () => {
         closedAt: null,
         creator: {
           id: 1,
-          name: "John Doe the 2th",
-          photoURL: "https://pics/2",
+          name: "John Doe the 7th",
+          photoURL: "https://pics/7",
         },
         helpedAt: null,
         id: 1,
@@ -123,7 +128,8 @@ describe("Queue Routes", () => {
     });
     it("GET question not found", async () => {
       const queue = await QueueFactory.create();
-      const request = await getServer().inject({
+      const user = await UserFactory.create();
+      const request = await injectAsUser(getServer(), user, {
         method: "get",
         url: `/api/v1/queues/${queue.id}/questions/1`,
       });
@@ -131,7 +137,8 @@ describe("Queue Routes", () => {
       expect(request.result).toEqual("Question not found");
     });
     it("GET question - queue not found", async () => {
-      const request = await getServer().inject({
+      const user = await UserFactory.create();
+      const request = await injectAsUser(getServer(), user, {
         method: "get",
         url: `/api/v1/queues/10/questions/1`,
       });
@@ -141,7 +148,8 @@ describe("Queue Routes", () => {
     it("PATCH question as student updates it", async () => {
       const q = await QuestionFactory.create({ text: "Help pls" });
 
-      const request = await getServer().inject({
+      const user = await UserFactory.create();
+      const request = await injectAsUser(getServer(), user, {
         method: "patch",
         url: `/api/v1/queues/${q.queueId}/questions/${q.id}`,
         payload: {
@@ -159,7 +167,7 @@ describe("Queue Routes", () => {
       const ta = await UserFactory.create();
       await TACourseFactory.create({ course: q.queue.course, user: ta });
 
-      const request = await getServer().inject({
+      const request = await injectAsUser(getServer(), ta, {
         method: "patch",
         url: `/api/v1/queues/${q.queueId}/questions/${q.id}`,
         payload: {
@@ -188,7 +196,7 @@ describe("Queue Routes", () => {
       const ta = await UserFactory.create();
       await TACourseFactory.create({ course: q.queue.course, user: ta });
 
-      const request = await getServer().inject({
+      const request = await injectAsUser(getServer(), ta, {
         method: "patch",
         url: `/api/v1/queues/${q.queueId}/questions/${q.id}`,
         payload: {
