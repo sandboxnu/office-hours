@@ -8,6 +8,7 @@ import Link from "next/link";
 import { API } from "@template/api-client";
 import useSWR from "swr";
 import { useProfile } from "../../hooks/useProfile";
+import Settings from "./Settings/Profile";
 
 const Container = styled.div`
   width: 1440px;
@@ -173,9 +174,7 @@ export default function NavBar({ courseId }: NavBarProps) {
                 </Menu.Item>
               )}
               <Menu.Item key="login">
-                <Link href="/login" as="/login">
-                  <a>Login</a>
-                </Link>
+                <Settings />
               </Menu.Item>
             </Menu>
           </Drawer>
