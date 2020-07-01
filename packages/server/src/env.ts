@@ -3,8 +3,7 @@ import path from "path";
 import fs from "fs";
 import { without } from "lodash";
 
-const KEYS = [
-  "NODE_ENV",
+const REQUIRED_KEYS = [
   "PUBLICKEY",
   "PRIVATEKEY",
   "EMAIL",
@@ -13,7 +12,7 @@ const KEYS = [
   "TWILIOPHONENUMBER",
   "COOKIE_PASSWORD",
 ] as const;
-type KeyUnion = typeof KEYS[number];
+type KeyUnion = typeof REQUIRED_KEYS[number] | "NODE_ENV";
 type Env = Record<KeyUnion, string>;
 
 const shouldUseDevEnv =
@@ -26,7 +25,7 @@ dotenv.config({
   ),
 });
 
-const missing = without(KEYS, ...Object.keys(process.env));
+const missing = without(REQUIRED_KEYS, ...Object.keys(process.env));
 
 if (missing.length > 0) {
   throw new Error(`Missing keys in environment: ${missing}`);
