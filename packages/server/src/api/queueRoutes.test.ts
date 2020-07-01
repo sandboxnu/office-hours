@@ -1,12 +1,5 @@
 
 import { QuestionStatusKeys } from "@template/common";
-import {
-  setupServerTest,
-  withServer,
-  setupDBTest,
-  injectAsUser,
-} from "../testUtils";
-import { MOCK_GET_QUESTION_RESPONSE } from "../mocks/getQuestion";
 import { QuestionModel } from "../entity/QuestionModel";
 import {
   QuestionFactory,
@@ -14,7 +7,7 @@ import {
 
   TACourseFactory, UserFactory
 } from "../factory";
-import { setupDBTest, setupServerTest, withServer } from "../testUtils";
+import { setupDBTest, setupServerTest, withServer, injectAsUser } from "../testUtils";
 
 describe("Queue Routes", () => {
   setupDBTest();
