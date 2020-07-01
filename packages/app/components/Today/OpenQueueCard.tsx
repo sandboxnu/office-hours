@@ -1,4 +1,7 @@
-import { Avatar, Button, Card } from "antd";
+import { EditOutlined } from "@ant-design/icons";
+import { API } from "@template/api-client";
+import { Avatar, Button, Card, Input } from "antd";
+import { useState } from "react";
 import styled from "styled-components";
 import { QueuePartial } from "../../../common/index";
 
@@ -16,7 +19,14 @@ const AvatarContainer = styled.div`
   float: left;
 `;
 
+const EditOutlinedFloatedRight = styled(EditOutlined)`
+  float: right;
+`;
+
+const updateNotes = () => {};
+
 const OpenQueueCard = ({ queue }: OpenQueueCard) => {
+  const [editingNotes, setEditingNotes] = useState(false);
   const staffList = queue.staffList;
   return (
     <PaddedCard
@@ -31,10 +41,47 @@ const OpenQueueCard = ({ queue }: OpenQueueCard) => {
 
       {queue.notes && (
         <div>
-          <b>Staff Notes:</b>
-          <p>{queue.notes}</p>
+          <div>
+            <b>Staff Notes:</b>
+            <EditOutlinedFloatedRight
+              onClick={() => {
+                console.log("fuck");
+                setEditingNotes(true);
+              }}
+            />
+          </div>
+          {editingNotes ? (
+            <Input
+              defaultValue={queue.notes}
+              onPressEnter={(value) => {
+                API.queues.updateNotes(queue.id, (value.target as any).value);
+                queue.notes = (value.target as any).value;
+                setEditingNotes(false);
+              }}
+            />
+          ) : (
+            <p>{queue.notes}</p>
+          )}
         </div>
       )}
+      {!queue.notes &&
+        (editingNotes ? (
+          <Input
+            defaultValue={queue.notes}
+            onPressEnter={(value) => {
+              API.queues.updateNotes(queue.id, (value.target as any).value);
+              queue.notes = (value.target as any).value;
+              setEditingNotes(false);
+            }}
+          />
+        ) : (
+          <EditOutlinedFloatedRight
+            onClick={() => {
+              console.log("fuck");
+              setEditingNotes(true);
+            }}
+          />
+        ))}
 
       {staffList.map((staffMember) => (
         <AvatarContainer key={staffMember.id}>

@@ -1,18 +1,18 @@
-import Axios, { AxiosInstance } from "axios";
 import {
-  GetProfileResponse,
-  GetCourseResponse,
-  TAUpdateStatusResponse,
-  GetQuestionResponse,
-  CreateQuestionResponse,
   CreateQuestionParams,
-  UpdateQuestionParams,
-  ListQuestionsResponse,
-  UpdateQuestionResponse,
+  CreateQuestionResponse,
   GetCourseQueuesResponse,
-  QueuePartial,
+  GetCourseResponse,
+  GetProfileResponse,
+  GetQuestionResponse,
+  ListQuestionsResponse,
   NotifBody,
+  QueuePartial,
+  TAUpdateStatusResponse,
+  UpdateQuestionParams,
+  UpdateQuestionResponse,
 } from "@template/common";
+import Axios, { AxiosInstance } from "axios";
 
 class APIClient {
   private axios: AxiosInstance;
@@ -90,6 +90,11 @@ class APIClient {
       ).data;
       parseQuestionDates(question);
       return question;
+    },
+  };
+  queues = {
+    updateNotes: async (queueId: number, notes: string) => {
+      await this.axios.patch(`/api/v1/queues/${queueId}`, { notes });
     },
   };
   notif = {
