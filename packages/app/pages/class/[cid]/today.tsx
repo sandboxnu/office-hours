@@ -1,12 +1,12 @@
-import { Button, Col, PageHeader, Row, Result } from "antd";
-import useSWR from "swr";
-import Schedule from "./schedule";
 import { API } from "@template/api-client";
+import { Button, Col, Result, Row } from "antd";
+import { useRouter } from "next/router";
 import styled from "styled-components";
+import useSWR from "swr";
+import NavBar from "../../../components/Nav/NavBar";
 import OpenQueueCard from "../../../components/Today/OpenQueueCard";
 import { useProfile } from "../../../hooks/useProfile";
-import { useRouter } from "next/router";
-import NavBar from "../../../components/Nav/NavBar";
+import Schedule from "./schedule";
 
 const CreateQueueButton = styled(Button)`
   float: right;
@@ -41,7 +41,7 @@ export default function Today() {
         <Row gutter={25}>
           <Col md={12} xs={24}>
             {data?.map((q) => (
-              <OpenQueueCard key={q.id} queue={q} />
+              <OpenQueueCard key={q.id} queue={q} isTA={isTA} />
             ))}
             {isTA && (
               <CreateQueueButton type="default" size={"large"}>

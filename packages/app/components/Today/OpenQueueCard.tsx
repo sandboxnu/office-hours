@@ -7,6 +7,7 @@ import { QueuePartial } from "../../../common/index";
 
 type OpenQueueCard = {
   queue: QueuePartial;
+  isTA: boolean;
 };
 
 const PaddedCard = styled(Card)`
@@ -23,9 +24,7 @@ const EditOutlinedFloatedRight = styled(EditOutlined)`
   float: right;
 `;
 
-const updateNotes = () => {};
-
-const OpenQueueCard = ({ queue }: OpenQueueCard) => {
+const OpenQueueCard = ({ queue, isTA }: OpenQueueCard) => {
   const [editingNotes, setEditingNotes] = useState(false);
   const staffList = queue.staffList;
   return (
@@ -43,12 +42,13 @@ const OpenQueueCard = ({ queue }: OpenQueueCard) => {
         <div>
           <div>
             <b>Staff Notes:</b>
-            <EditOutlinedFloatedRight
-              onClick={() => {
-                console.log("fuck");
-                setEditingNotes(true);
-              }}
-            />
+            {isTA && (
+              <EditOutlinedFloatedRight
+                onClick={() => {
+                  setEditingNotes(true);
+                }}
+              />
+            )}
           </div>
           {editingNotes ? (
             <Input
@@ -75,12 +75,13 @@ const OpenQueueCard = ({ queue }: OpenQueueCard) => {
             }}
           />
         ) : (
-          <EditOutlinedFloatedRight
-            onClick={() => {
-              console.log("fuck");
-              setEditingNotes(true);
-            }}
-          />
+          isTA && (
+            <EditOutlinedFloatedRight
+              onClick={() => {
+                setEditingNotes(true);
+              }}
+            />
+          )
         ))}
 
       {staffList.map((staffMember) => (
