@@ -1,7 +1,7 @@
 const path = require("path");
 const withTM = require("next-transpile-modules");
 const withPlugins = require("next-compose-plugins");
-const webpack = require("webpack");
+const withOffline = require("next-offline");
 
 function withCustomWebpack(config = {}) {
   config.webpack = (config, ...rest) => {
@@ -23,6 +23,7 @@ function withCustomWebpack(config = {}) {
 const plugins = [
   [withTM, { transpileModules: ["@template"] }],
   [withCustomWebpack],
+  [withOffline, { dontGenerateSw: true }],
 ];
 
 const config = {};

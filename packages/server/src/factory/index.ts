@@ -1,11 +1,12 @@
-import { Factory } from "typeorm-factory";
-import { QuestionModel } from "../entity/QuestionModel";
+
 import { QuestionType, Role } from "@template/common";
-import { QueueModel } from "../entity/QueueModel";
+import { Factory } from "typeorm-factory";
 import { CourseModel } from "../entity/CourseModel";
+import { QuestionModel } from "../entity/QuestionModel";
+import { QueueModel } from "../entity/QueueModel";
 import { SemesterModel } from "../entity/SemesterModel";
-import { UserModel } from "../entity/UserModel";
 import { UserCourseModel } from "../entity/UserCourseModel";
+import { UserModel } from "../entity/UserModel";
 
 export const UserFactory = new Factory(UserModel)
   .sequence("username", (i) => `user${i}`)
