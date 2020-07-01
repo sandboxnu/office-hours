@@ -8,12 +8,12 @@ import { useProfile } from "../hooks/useProfile";
 export default function Home() {
   const profile: User = useProfile();
 
-  if (profile) {
-    Router.push(
-      "/class/[cid]/today",
-      "/class/" + profile.courses[0].course.id + "/today"
-    );
-  }
+  // if (profile) {
+  //   Router.push(
+  //     "/class/[cid]/today",
+  //     "/class/" + profile.courses[0].course.id + "/today"
+  //   );
+  // }
   // web push code
   const check = () => {
     if (!("serviceWorker" in navigator)) {
