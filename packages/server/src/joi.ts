@@ -93,6 +93,7 @@ export const CourseQueueSchema = Joi.array().items(
     room: Joi.string(),
     staffList: Joi.array().items(UserPartialSchema),
     queueSize: Joi.number(),
+    notes: Joi.string().optional(),
   })
 );
 
@@ -100,4 +101,8 @@ export const NotifPayload = Joi.object({
   endpoint: Joi.string(),
   expirationTime: Joi.date().allow(null).optional(),
   keys: Joi.object({ p256dh: Joi.string(), auth: Joi.string() }),
+});
+
+export const QueueNotePayload = Joi.object({
+  notes: Joi.string(),
 });

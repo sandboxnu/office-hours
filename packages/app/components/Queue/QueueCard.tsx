@@ -1,6 +1,6 @@
-import { Role, Question } from "@template/common";
-import { Card, Row, Col, Avatar, Tag } from "antd";
-import { UserOutlined, RightOutlined } from "@ant-design/icons";
+import { RightOutlined, UserOutlined } from "@ant-design/icons";
+import { Question, Role } from "@template/common";
+import { Avatar, Card, Col, Row, Tag } from "antd";
 import styled from "styled-components";
 
 const HorizontalTACard = styled(Card)`

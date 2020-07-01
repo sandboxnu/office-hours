@@ -1,6 +1,6 @@
 import { Avatar, Button, Card } from "antd";
-import { QueuePartial } from "../../../common/index";
 import styled from "styled-components";
+import { QueuePartial } from "../../../common/index";
 
 type OpenQueueCard = {
   queue: QueuePartial;
@@ -28,6 +28,14 @@ const OpenQueueCard = ({ queue }: OpenQueueCard) => {
       }
     >
       <h1>{queue.room}</h1>
+
+      {queue.notes && (
+        <div>
+          <b>Staff Notes:</b>
+          <p>{queue.notes}</p>
+        </div>
+      )}
+
       {staffList.map((staffMember) => (
         <AvatarContainer key={staffMember.id}>
           <Avatar size={128} src={staffMember.photoURL} shape="square" />

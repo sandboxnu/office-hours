@@ -1,4 +1,3 @@
-
 import { QuestionType, Role } from "@template/common";
 import { Factory } from "typeorm-factory";
 import { CourseModel } from "../entity/CourseModel";
@@ -40,7 +39,8 @@ export const UserCourseFactory = new Factory(UserCourseModel)
 
 export const QueueFactory = new Factory(QueueModel)
   .sequence("room", (i) => `WVH ${i}`)
-  .assocOne("course", CourseFactory);
+  .assocOne("course", CourseFactory)
+  .attr("notes", "alex's brain is smooth today, he's taking it off");
 
 export const QuestionFactory = new Factory(QuestionModel)
   .sequence("text", (i) => `question ${i}`)
