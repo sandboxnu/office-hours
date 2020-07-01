@@ -50,17 +50,19 @@ export async function init() {
     },
   });
   // Request logging
-  server.events.on("response", (request) => {
-    console.log(
-      request.info.remoteAddress +
-        ": " +
-        request.method.toUpperCase() +
-        " " +
-        request.path +
-        " --> " +
-        (request.response as any).statusCode
-    );
-  });
+  if (env.NODE_ENV !== "test") {
+    server.events.on("response", (request) => {
+      console.log(
+        request.info.remoteAddress +
+          ": " +
+          request.method.toUpperCase() +
+          " " +
+          request.path +
+          " --> " +
+          (request.response as any).statusCode
+      );
+    });
+  }
 
   await server.initialize();
   return server;
