@@ -1,26 +1,16 @@
 import { ResponseObject, ServerRoute } from "@hapi/hapi";
 import { NotifBody } from "@template/common";
-import * as dotenv from "dotenv";
 import { DeepPartial } from "typeorm";
 import * as webPush from "web-push";
 import { NotifModel } from "../entity/NotifModel";
 import { NotifPayload } from "../joi";
+import { env } from "../env";
 
-// configure env vars for VAPID
-dotenv.config();
-
-// if env vars not found, then throw an error early
-if (!process.env.EMAIL || !process.env.PUBLICKEY || !process.env.PRIVATEKEY) {
-  throw new Error(
-    "please add a .env file with keys+email in packages/server. ask alex/eddy for deets."
-  );
-} else {
-  webPush.setVapidDetails(
-    process.env.EMAIL,
-    process.env.PUBLICKEY,
-    process.env.PRIVATEKEY
-  );
-}
+webPush.setVapidDetails(
+  env.EMAIL,
+  env.PUBLICKEY,
+  env.PRIVATEKEY
+);
 
 export const notifRoutes: ServerRoute[] = [
   {
@@ -28,7 +18,7 @@ export const notifRoutes: ServerRoute[] = [
     method: "GET",
     path: "/api/v1/notifications/credentials",
     handler: (request, h) => {
-      return JSON.stringify(process.env.PUBLICKEY);
+      return JSON.stringify(env.PUBLICKEY);
     },
   },
   {

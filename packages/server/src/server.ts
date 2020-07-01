@@ -6,19 +6,8 @@ import { notifRoutes } from "./api/notifRoutes";
 import { profileRoutes } from "./api/profileRoutes";
 import { queueRoutes } from "./api/queueRoutes";
 import { UserModel } from "./entity/UserModel";
-import path from "path";
-import fs from "fs";
-import dotenv from "dotenv";
 import { entryRoutes } from "./api/entryRoutes";
-const shouldUseDevEnv =
-  process.env.NODE_ENV !== "production" &&
-  !fs.existsSync(path.resolve(__dirname, "../.env"));
-dotenv.config({
-  path: path.resolve(
-    __dirname,
-    shouldUseDevEnv ? "../.env.development" : "../.env"
-  ),
-});
+import { env } from "./env";
 
 // Just initialize, don't start
 export async function init() {
@@ -33,8 +22,8 @@ export async function init() {
   server.auth.strategy("session", "cookie", {
     cookie: {
       name: "office-hours",
-      password: process.env.COOKIE_PASSWORD,
-      isSecure: process.env.NODE_ENV === "production",
+      password: env.COOKIE_PASSWORD,
+      isSecure: env.NODE_ENV === "production",
     },
     validateFunc: async (request, session) => {
       const user = await UserModel.findOne((session as any).id);
@@ -57,7 +46,7 @@ export async function init() {
   await server.register({
     plugin: hde,
     options: {
-      showErrors: process.env.NODE_ENV !== "production",
+      showErrors: env.NODE_ENV !== "production",
     },
   });
   // Request logging
