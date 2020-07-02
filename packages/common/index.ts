@@ -204,7 +204,6 @@ export type Question = {
   closedAt?: Date;
   questionType?: QuestionType;
   status: QuestionStatus;
-  position: number;
 };
 
 // Question Types

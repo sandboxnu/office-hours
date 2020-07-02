@@ -15,7 +15,7 @@ import StudentQueueList from "../../../../components/Queue/StudentQueueList";
 import TAQueueList from "../../../../components/Queue/TAQueueList";
 import { useProfile } from "../../../../hooks/useProfile";
 import { useRouter } from "next/router";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 
 // TODO: replace this with profile role from endpoint
 const ROLE: Role = Role.STUDENT;
@@ -41,13 +41,6 @@ export default function Queue({}: QueueProps) {
   const questions: Question[] = data;
   const helpingQuestions: Question[] = [];
   const groupQuestions: Question[] = [];
-
-  const getQueueIdFromCourse = async (courseId) => {
-    const q = await API.course.queues(courseId);
-    if (q) {
-      setQueueId(q[0].id);
-    }
-  };
 
   /**
    * Filters through the fetched list of questions to fill the helpingQuestions and groupQuestions arrays
@@ -98,9 +91,8 @@ export default function Queue({}: QueueProps) {
    * Creates a new Question draft for a student who has joined the queue.
    */
   const joinQueue = async () => {
-    setStudentQuestion(questions[0]);
     // API call to join queue, question marked as draft
-    const q = await API.questions.create(1, {
+    const q = await API.questions.create(Number(qid), {
       text: "fake text",
       questionType: QuestionType.Bug, // endpoint needs to be changed to allow empty questionType for drafts
       // for the moment I am defaulting this data so that there is no error
@@ -108,9 +100,6 @@ export default function Queue({}: QueueProps) {
 
     if (q) {
       setQuestionDraftId(q.id);
-
-      //update the student's question
-      setStudentQuestion(q);
     }
   };
 
@@ -120,7 +109,7 @@ export default function Queue({}: QueueProps) {
   const leaveQueue = async () => {
     setIsJoining(false);
 
-    await API.questions.update(Number(qid), questionDraftId, {
+    await API.questions.update(Number(qid), studentQuestion.id, {
       status: ClosedQuestionStatus.Deleted,
     });
 
@@ -139,7 +128,6 @@ export default function Queue({}: QueueProps) {
 
     if (q) {
       setIsJoining(false);
-      setStudentQuestion(q);
     }
   };
 
@@ -162,8 +150,7 @@ export default function Queue({}: QueueProps) {
 
     if (q) {
       // update helping state if none left
-      //temporary
-      // setHelpingQuestions([question]);
+      mutate(`/api/v1/queues/${qid}/questions`, { ...data });
     }
   };
 
@@ -185,7 +172,7 @@ export default function Queue({}: QueueProps) {
               joinQueue={joinQueue}
               questions={questions}
               helpingQuestions={helpingQuestions}
-              studentQuestion={studentQuestion} // temporary
+              studentQuestion={studentQuestion}
               leaveQueue={leaveQueue}
               finishQuestion={finishQuestion}
             />

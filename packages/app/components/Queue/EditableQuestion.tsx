@@ -65,6 +65,7 @@ interface EditableQuestionProps {
   location: string;
   photoUrl: string;
   openEdit: () => void;
+  leaveQueue: () => void;
 }
 export default function EditableQuestion({
   position,
@@ -73,6 +74,7 @@ export default function EditableQuestion({
   location,
   photoUrl,
   openEdit,
+  leaveQueue,
 }: EditableQuestionProps) {
   return (
     <div>
@@ -101,11 +103,15 @@ export default function EditableQuestion({
               <FullWidthButton>AFK</FullWidthButton>
             </Col>
             <Col span={12}>
-              <FullWidthButton>EDIT BUTTON</FullWidthButton>
+              <FullWidthButton onClick={openEdit}>
+                EDIT QUESTION
+              </FullWidthButton>
             </Col>
           </Row>
           <Row>
-            <FullWidthButton danger>LEAVE THE QUEUE</FullWidthButton>
+            <FullWidthButton danger onClick={leaveQueue}>
+              LEAVE THE QUEUE
+            </FullWidthButton>
           </Row>
         </EditableQuestionCard>
       </Row>

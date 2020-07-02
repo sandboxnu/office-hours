@@ -93,6 +93,7 @@ export default function StudentQueueList({
           location={"Outside room, by the couches"} // doesn't exist on question rn
           photoUrl={studentQuestion.creator.photoURL}
           openEdit={openEditModal}
+          leaveQueue={leaveQueue}
         />
       </Col>
     );
