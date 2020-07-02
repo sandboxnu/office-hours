@@ -192,6 +192,7 @@ export interface QueuePartial {
  * @param closedAt - The date string for the time that the TA finished helping the Student.
  * @param questionType - The question type helps distinguish question for TA's and data insights.
  * @param status - The current status of the question in the queue.
+ * @param position - The current position of this question in the queue.
  */
 export type Question = {
   id: number;
@@ -208,6 +209,7 @@ export type Question = {
 // Question Types
 export enum QuestionType {
   Concept = "Concept",
+  Clarification = "Clarification",
   Testing = "Testing",
   Bug = "Bug",
   Setup = "Setup",
