@@ -26,12 +26,12 @@ const EditOutlinedFloatedRight = styled(EditOutlined)`
 
 const OpenQueueCard = ({ queue, isTA }: OpenQueueCard) => {
   const [editingNotes, setEditingNotes] = useState(false);
+  const [updatedNotes, setUpdatedNotes] = useState(queue.notes);
   const staffList = queue.staffList;
 
-  const updateNotes = (value: any) => {
-    const notes = (value.target as any).value;
-    API.queues.updateNotes(queue.id, notes);
-    queue.notes = notes;
+  const updateNotes = () => {
+    API.queues.updateNotes(queue.id, updatedNotes);
+    queue.notes = updatedNotes;
     setEditingNotes(false);
   };
 
@@ -46,7 +46,25 @@ const OpenQueueCard = ({ queue, isTA }: OpenQueueCard) => {
     >
       <h1>{queue.room}</h1>
 
-      {queue.notes && (
+      {editingNotes ? (
+        <div>
+          <b>Staff Notes:</b>
+          <Button
+            type="primary"
+            size="small"
+            onClick={updateNotes}
+            style={{ float: "right" }}
+          >
+            Save
+          </Button>
+          <Input
+            defaultValue={queue.notes}
+            onPressEnter={updateNotes}
+            value={updatedNotes}
+            onChange={(e) => setUpdatedNotes(e.target.value as any)}
+          />
+        </div>
+      ) : queue.notes ? (
         <div>
           <div>
             <b>Staff Notes:</b>
@@ -58,25 +76,15 @@ const OpenQueueCard = ({ queue, isTA }: OpenQueueCard) => {
               />
             )}
           </div>
-          {editingNotes ? (
-            <Input defaultValue={queue.notes} onPressEnter={updateNotes} />
-          ) : (
-            <p>{queue.notes}</p>
-          )}
+          <p>{queue.notes}</p>
         </div>
+      ) : (
+        <EditOutlinedFloatedRight
+          onClick={() => {
+            setEditingNotes(true);
+          }}
+        />
       )}
-      {!queue.notes &&
-        (editingNotes ? (
-          <Input onPressEnter={updateNotes} />
-        ) : (
-          isTA && (
-            <EditOutlinedFloatedRight
-              onClick={() => {
-                setEditingNotes(true);
-              }}
-            />
-          )
-        ))}
 
       {staffList.map((staffMember) => (
         <AvatarContainer key={staffMember.id}>
