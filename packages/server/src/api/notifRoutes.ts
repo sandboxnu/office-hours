@@ -8,7 +8,6 @@ import { DesktopNotifModel } from "../entity/DesktopNotifModel";
 import { PhoneNotifModel } from "../entity/PhoneNotifModel";
 import { UserModel } from "../entity/UserModel";
 import { DesktopNotifPayload, PhoneNotifPayload } from "../joi";
-import { PhoneNumberInstance } from "twilio/lib/rest/lookups/v1/phoneNumber";
 
 // configure env vars for VAPID + Twilio
 dotenv.config();

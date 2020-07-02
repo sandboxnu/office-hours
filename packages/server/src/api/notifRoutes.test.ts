@@ -1,15 +1,20 @@
+import { AuthCredentials } from "@hapi/hapi";
 import { DesktopNotifModel } from "../entity/DesktopNotifModel";
 import { PhoneNotifModel } from "../entity/PhoneNotifModel";
 import { UserModel } from "../entity/UserModel";
+import { UserFactory } from "../factory";
 import { setupDBTest, setupServerTest } from "../testUtils";
 
-describe("/api/v1/notifications/desktop/credentials", () => {
+describe("/api/v1/notifications/credentials", () => {
+  setupDBTest();
   const getServer = setupServerTest();
 
   it("gets a public key (this test should always pass since we should always have an env installed to be hapi)", async () => {
+    const user = await UserFactory.create();
     const get = await getServer().inject({
       method: "get",
-      url: "/api/v1/notifications/desktop/credentials",
+      url: "/api/v1/notifications/credentials",
+      auth: { strategy: "session", credentials: user as AuthCredentials },
     });
     expect(get.statusCode).toEqual(200);
     expect(get.result).toBeTruthy();
@@ -34,6 +39,7 @@ describe("/api/v1/notifications/desktop/register/{user_id}", () => {
     const post = await getServer().inject({
       method: "post",
       url: `/api/v1/notifications/desktop/register/${user1.id}`,
+      auth: { strategy: "session", credentials: user1 as AuthCredentials },
       payload: {
         endpoint: "biggoogle.com",
         expirationTime: dateInPayload,

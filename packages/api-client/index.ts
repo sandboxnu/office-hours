@@ -1,19 +1,19 @@
-import Axios, { AxiosInstance } from "axios";
 import {
-  GetProfileResponse,
-  GetCourseResponse,
-  TAUpdateStatusResponse,
-  GetQuestionResponse,
-  CreateQuestionResponse,
   CreateQuestionParams,
-  UpdateQuestionParams,
-  ListQuestionsResponse,
-  UpdateQuestionResponse,
-  GetCourseQueuesResponse,
-  QueuePartial,
+  CreateQuestionResponse,
   DesktopNotifBody,
+  GetCourseQueuesResponse,
+  GetCourseResponse,
+  GetProfileResponse,
+  GetQuestionResponse,
+  ListQuestionsResponse,
   PhoneNotifBody,
+  QueuePartial,
+  TAUpdateStatusResponse,
+  UpdateQuestionParams,
+  UpdateQuestionResponse,
 } from "@template/common";
+import Axios, { AxiosInstance } from "axios";
 
 class APIClient {
   private axios: AxiosInstance;

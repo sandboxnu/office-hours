@@ -1,4 +1,9 @@
-import { setupServerTest, withServer, setupDBTest } from "../testUtils";
+import {
+  setupServerTest,
+  withServer,
+  setupDBTest,
+  injectAsUser,
+} from "../testUtils";
 import { UserFactory, CourseFactory } from "../factory";
 import { UserCourseModel } from "../entity/UserCourseModel";
 import { Role } from "@template/common";
@@ -22,9 +27,9 @@ describe("Profile Routes", () => {
         course: softwareDevelopemnt,
         role: Role.TA,
       }).save();
-      const get = await getServer().inject({
+      const get = await injectAsUser(getServer(), user, {
         method: "get",
-        url: "/api/v1/profile",
+        url: `/api/v1/profile`,
       });
       expect(get.statusCode).toEqual(200);
       expect(get.result).toEqual({

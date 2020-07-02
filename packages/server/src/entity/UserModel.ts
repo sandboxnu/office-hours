@@ -1,13 +1,13 @@
 import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
   BaseEntity,
+  Column,
+  Entity,
   OneToMany,
+  PrimaryGeneratedColumn,
 } from "typeorm";
-import { UserCourseModel } from "./UserCourseModel";
 import { DesktopNotifModel } from "./DesktopNotifModel";
 import { PhoneNotifModel } from "./PhoneNotifModel";
+import { UserCourseModel } from "./UserCourseModel";
 
 @Entity("user_model")
 export class UserModel extends BaseEntity {
