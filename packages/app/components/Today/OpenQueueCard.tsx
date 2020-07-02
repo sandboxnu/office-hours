@@ -27,6 +27,16 @@ const EditOutlinedFloatedRight = styled(EditOutlined)`
 const OpenQueueCard = ({ queue, isTA }: OpenQueueCard) => {
   const [editingNotes, setEditingNotes] = useState(false);
   const staffList = queue.staffList;
+
+  const updateNotes = (value: any) => {
+    const notes = (value.target as any).value;
+    if (notes) {
+      API.queues.updateNotes(queue.id, notes);
+      queue.notes = notes;
+    }
+    setEditingNotes(false);
+  };
+
   return (
     <PaddedCard
       title={staffList.map((staffMember) => staffMember.name).join(", ")}
@@ -51,14 +61,7 @@ const OpenQueueCard = ({ queue, isTA }: OpenQueueCard) => {
             )}
           </div>
           {editingNotes ? (
-            <Input
-              defaultValue={queue.notes}
-              onPressEnter={(value) => {
-                API.queues.updateNotes(queue.id, (value.target as any).value);
-                queue.notes = (value.target as any).value;
-                setEditingNotes(false);
-              }}
-            />
+            <Input onPressEnter={updateNotes} />
           ) : (
             <p>{queue.notes}</p>
           )}
@@ -66,14 +69,7 @@ const OpenQueueCard = ({ queue, isTA }: OpenQueueCard) => {
       )}
       {!queue.notes &&
         (editingNotes ? (
-          <Input
-            defaultValue={queue.notes}
-            onPressEnter={(value) => {
-              API.queues.updateNotes(queue.id, (value.target as any).value);
-              queue.notes = (value.target as any).value;
-              setEditingNotes(false);
-            }}
-          />
+          <Input defaultValue={queue.notes} onPressEnter={updateNotes} />
         ) : (
           isTA && (
             <EditOutlinedFloatedRight
