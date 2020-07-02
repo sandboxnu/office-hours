@@ -34,8 +34,9 @@ export default function Queue({}: QueueProps) {
   const router = useRouter();
   const { cid, qid } = router.query;
 
-  const { data, error } = useSWR(`/api/v1/queues/${qid}/questions`, async () =>
-    API.questions.index(Number(qid))
+  const { data, error } = useSWR(
+    qid ? `/api/v1/queues/${qid}/questions` : null,
+    async () => API.questions.index(Number(qid))
   );
 
   const questions: Question[] = data;
