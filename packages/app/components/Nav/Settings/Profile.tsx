@@ -27,9 +27,5 @@ const content = (
 interface SettingsProps {}
 
 export default function Settings({}: SettingsProps) {
-  return (
-    <Popover content={content} placement={"bottomRight"}>
-      <Button></Button>
-    </Popover>
-  );
+  return <Popover content={content} placement={"bottomRight"} />;
 }
