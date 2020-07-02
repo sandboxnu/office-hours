@@ -172,10 +172,7 @@ export const queueRoutes: ServerRoute[] = [
     path: "/api/v1/queues/{queue_id}",
     handler: async (request, h) => {
       const queueModel = await QueueModel.findOne(request.params.queue_id);
-      console.log(request.payload);
-
       queueModel.notes = request.payload["notes"];
-
       await queueModel.save();
       return h.response().code(200);
     },

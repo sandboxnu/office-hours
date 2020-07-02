@@ -30,10 +30,8 @@ const OpenQueueCard = ({ queue, isTA }: OpenQueueCard) => {
 
   const updateNotes = (value: any) => {
     const notes = (value.target as any).value;
-    if (notes) {
-      API.queues.updateNotes(queue.id, notes);
-      queue.notes = notes;
-    }
+    API.queues.updateNotes(queue.id, notes);
+    queue.notes = notes;
     setEditingNotes(false);
   };
 
@@ -61,7 +59,7 @@ const OpenQueueCard = ({ queue, isTA }: OpenQueueCard) => {
             )}
           </div>
           {editingNotes ? (
-            <Input onPressEnter={updateNotes} />
+            <Input defaultValue={queue.notes} onPressEnter={updateNotes} />
           ) : (
             <p>{queue.notes}</p>
           )}
@@ -69,7 +67,7 @@ const OpenQueueCard = ({ queue, isTA }: OpenQueueCard) => {
       )}
       {!queue.notes &&
         (editingNotes ? (
-          <Input defaultValue={queue.notes} onPressEnter={updateNotes} />
+          <Input onPressEnter={updateNotes} />
         ) : (
           isTA && (
             <EditOutlinedFloatedRight
