@@ -174,7 +174,9 @@ export default function NavBar({ courseId }: NavBarProps) {
                 </Menu.Item>
               )}
               <Menu.Item key="login">
-                <Settings />
+                <Link href="/login" as="/login">
+                  <a>Login</a>
+                </Link>
               </Menu.Item>
             </Menu>
           </Drawer>
