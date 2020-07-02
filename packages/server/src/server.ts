@@ -5,7 +5,7 @@ import { courseRoutes } from "./api/courseRoutes";
 import { notifRoutes } from "./api/notifRoutes";
 import { profileRoutes } from "./api/profileRoutes";
 import { queueRoutes } from "./api/queueRoutes";
-import { UserModel } from "./entity/UserModel";
+import { UserModel } from "../../nest-server/src/entities/UserModel";
 import { entryRoutes } from "./api/entryRoutes";
 import { env } from "./env";
 

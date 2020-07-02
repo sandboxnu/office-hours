@@ -1,8 +1,8 @@
-import { NotifModel } from "../entity/NotifModel";
-import { UserModel } from "../entity/UserModel";
+import { NotifModel } from "../../../nest-server/src/entities/NotifModel";
+import { UserModel } from "../../../nest-server/src/entities/UserModel";
 import { setupDBTest, setupServerTest } from "../testUtils";
 import { AuthCredentials } from "@hapi/hapi";
-import { UserFactory } from "../factory";
+import { UserFactory } from "../../../nest-server/src/factory";
 
 describe("/api/v1/notifications/credentials", () => {
   setupDBTest();

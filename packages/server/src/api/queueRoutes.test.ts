@@ -1,12 +1,12 @@
 
 import { QuestionStatusKeys } from "@template/common";
-import { QuestionModel } from "../entity/QuestionModel";
+import { QuestionModel } from "../../../nest-server/src/entities/QuestionModel";
 import {
   QuestionFactory,
   QueueFactory,
 
   TACourseFactory, UserFactory
-} from "../factory";
+} from "../../../nest-server/src/factory";
 import { setupDBTest, setupServerTest, withServer, injectAsUser } from "../testUtils";
 
 describe("Queue Routes", () => {

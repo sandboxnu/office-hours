@@ -2,7 +2,7 @@ import { ServerRoute } from "@hapi/hapi";
 import { UserSchema } from "../joi";
 import { GetProfileResponse } from "@template/common";
 import { pick } from "lodash";
-import { UserModel } from "../entity/UserModel";
+import { UserModel } from "../../../nest-server/src/entities/UserModel";
 
 export const profileRoutes: ServerRoute[] = [
   {

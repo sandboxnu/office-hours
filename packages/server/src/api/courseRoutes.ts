@@ -1,8 +1,8 @@
 import { ServerRoute, ResponseObject } from "@hapi/hapi";
 import Joi from "@hapi/joi";
 import { CourseSchema, QueueSchema, CourseQueueSchema } from "../joi";
-import { CourseModel } from "../entity/CourseModel";
-import { QueueModel } from "../entity/QueueModel";
+import { CourseModel } from "../../../nest-server/src/entities/CourseModel";
+import { QueueModel } from "../../../nest-server/src/entities/QueueModel";
 import { pick } from "lodash";
 import {
   TAUpdateStatusParams,
@@ -16,7 +16,7 @@ import {
   MOCK_TA_UPDATE_STATUS_DEPARTED_RESPONSE,
 } from "../mocks/taUpdateStatus";
 import { MOCK_GET_COURSE_RESPONSE } from "../mocks/getCourse";
-import { QuestionModel } from "../entity/QuestionModel";
+import { QuestionModel } from "../../../nest-server/src/entities/QuestionModel";
 
 export const courseRoutes: ServerRoute[] = [
   {

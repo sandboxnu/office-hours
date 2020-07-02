@@ -1,21 +1,23 @@
+
 import {
   setupDBTest,
   setupServerTest,
   withServer,
   injectAsUser,
 } from "../testUtils";
-import { OfficeHourModel } from "../entity/OfficeHourModel";
-import { CourseModel } from "../entity/CourseModel";
+import { OfficeHourModel } from "../../../nest-server/src/entities/OfficeHourModel";
+import { CourseModel } from "../../../nest-server/src/entities/CourseModel";
 import {
   MOCK_TA_UPDATE_STATUS_ARRIVED_RESPONSE,
   MOCK_TA_UPDATE_STATUS_DEPARTED_RESPONSE,
 } from "../mocks/taUpdateStatus";
-import { QueueModel } from "../entity/QueueModel";
-import { QuestionModel } from "../entity/QuestionModel";
-import { UserModel } from "../entity/UserModel";
-import { UserCourseModel } from "../entity/UserCourseModel";
+import { QueueModel } from "../../../nest-server/src/entities/QueueModel";
+import { QuestionModel } from "../../../nest-server/src/entities/QuestionModel";
+import { UserModel } from "../../../nest-server/src/entities/UserModel";
+import { UserCourseModel } from "../../../nest-server/src/entities/UserCourseModel";
 import { QuestionType } from "@template/common";
-import { UserFactory } from "../factory";
+import { UserFactory } from "../../../nest-server/src/factory";
+
 
 setupDBTest();
 

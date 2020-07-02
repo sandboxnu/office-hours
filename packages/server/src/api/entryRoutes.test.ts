@@ -1,5 +1,5 @@
 import { setupDBTest, setupServerTest } from "../testUtils";
-import { UserFactory } from "../factory";
+import { UserFactory } from "../../../nest-server/src/factory";
 
 describe("Queue Routes", () => {
   setupDBTest();

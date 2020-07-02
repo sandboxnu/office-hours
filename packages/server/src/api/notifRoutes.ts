@@ -2,7 +2,7 @@ import { ResponseObject, ServerRoute } from "@hapi/hapi";
 import { NotifBody } from "@template/common";
 import { DeepPartial } from "typeorm";
 import * as webPush from "web-push";
-import { NotifModel } from "../entity/NotifModel";
+import { NotifModel } from "../../../nest-server/src/entities/NotifModel";
 import { NotifPayload } from "../joi";
 import { env } from "../env";
 

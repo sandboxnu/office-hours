@@ -4,8 +4,8 @@ import {
   setupDBTest,
   injectAsUser,
 } from "../testUtils";
-import { UserFactory, CourseFactory } from "../factory";
-import { UserCourseModel } from "../entity/UserCourseModel";
+import { UserFactory, CourseFactory } from "../../../nest-server/src/factory";
+import { UserCourseModel } from "../../../nest-server/src/entities/UserCourseModel";
 import { Role } from "@template/common";
 
 describe("Profile Routes", () => {

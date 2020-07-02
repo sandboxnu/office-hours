@@ -2,12 +2,12 @@ import { createConnection, Connection } from "typeorm";
 import { init } from "./server";
 import path from "path";
 import { Server, ServerInjectOptions, AuthCredentials } from "@hapi/hapi";
-import { CourseModel } from "./entity/CourseModel";
-import { QueueModel } from "./entity/QueueModel";
-import { UserModel } from "./entity/UserModel";
-import { UserFactory } from "./factory";
-import { UserCourseModel } from "./entity/UserCourseModel";
-import { QuestionModel } from "./entity/QuestionModel";
+import { CourseModel } from "../../nest-server/src/entities/CourseModel";
+import { QueueModel } from "../../nest-server/src/entities/QueueModel";
+import { UserModel } from "../../nest-server/src/entities/UserModel";
+import { UserFactory } from "../../nest-server/src/factory";
+import { UserCourseModel } from "../../nest-server/src/entities/UserCourseModel";
+import { QuestionModel } from "../../nest-server/src/entities/QuestionModel";
 import { QuestionType } from "@template/common";
 import hapiAuthCookie from "@hapi/cookie";
 

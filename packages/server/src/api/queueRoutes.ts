@@ -18,9 +18,9 @@ import {
   MOCK_STUDENT_UPDATE_QUESTION_RESPONSE,
   MOCK_TA_UPDATE_QUESTION,
 } from "../mocks/updateQuestion";
-import { QuestionModel } from "../entity/QuestionModel";
-import { UserModel } from "../entity/UserModel";
-import { QueueModel } from "../entity/QueueModel";
+import { QuestionModel } from "../../../nest-server/src/entities/QuestionModel";
+import { UserModel } from "../../../nest-server/src/entities/UserModel";
+import { QueueModel } from "../../../nest-server/src/entities/QueueModel";
 
 export const queueRoutes: ServerRoute[] = [
   {
