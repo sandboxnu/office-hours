@@ -102,19 +102,19 @@ export default function StudentQueueList({
   const leaveQueueAndClose = useCallback(() => {
     leaveQueue();
     closeEditModal();
-  }, []);
+  }, [leaveQueue, closeEditModal]);
 
   const joinQueueOpenModal = useCallback(() => {
     joinQueue();
     openEditModal();
-  }, []);
+  }, [joinQueue, openEditModal]);
 
   const finishQuestionAndClose = useCallback(
     (qt: QuestionType, text: string) => {
       finishQuestion(qt, text);
       closeEditModal();
     },
-    []
+    [finishQuestion, closeEditModal]
   );
 
   return (

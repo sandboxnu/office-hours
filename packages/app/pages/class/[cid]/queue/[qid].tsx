@@ -34,12 +34,11 @@ export default function Queue({}: QueueProps) {
   const router = useRouter();
   const { cid, qid } = router.query;
 
-  const { data, error } = useSWR(
+  const { data: questions, error } = useSWR(
     qid ? `/api/v1/queues/${qid}/questions` : null,
     async () => API.questions.index(Number(qid))
   );
 
-  const questions: Question[] = data;
   const helpingQuestions: Question[] = [];
   const groupQuestions: Question[] = [];
 
@@ -68,7 +67,7 @@ export default function Queue({}: QueueProps) {
   const [isJoining, setIsJoining] = useState<boolean>(false);
   const [questionDraftId, setQuestionDraftId] = useState<number>(null);
   const studentQuestion =
-    profile && data && data.find((q) => q.creator.id === profile.id);
+    profile && questions && questions.find((q) => q.creator.id === profile.id);
 
   // TA queue state variables
   const [openPopup, setOpenPopup] = useState<boolean>(false);
@@ -121,15 +120,17 @@ export default function Queue({}: QueueProps) {
    * Finishes creating a given question by updating the draft.
    */
   const finishQuestion = async (text: string, questionType: QuestionType) => {
-    const q = await API.questions.update(Number(qid), studentQuestion.id, {
+    const updateStudent = {
       text: text,
       questionType: questionType,
       status: OpenQuestionStatus.Queued,
-    });
-
-    if (q) {
-      setIsJoining(false);
-    }
+    };
+    const q = await API.questions.update(Number(qid), studentQuestion.id, updateStudent);
+    setIsJoining(false);
+    const newQuestions = questions.map((q) =>
+      q.id === studentQuestion.id ? { ...q, updateStudent } : q
+    );
+    mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
   };
 
   /**
@@ -145,14 +146,13 @@ export default function Queue({}: QueueProps) {
     question: Question,
     status: QuestionStatus
   ) => {
-    const q = await API.questions.update(Number(qid), question.id, {
+    await API.questions.update(Number(qid), question.id, {
       status: status,
     });
-
-    if (q) {
-      // update helping state if none left
-      mutate(`/api/v1/queues/${qid}/questions`, { ...data });
-    }
+    const newQuestions = questions.map((q) =>
+      q.id === question.id ? { ...q, status } : q
+    );
+    mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
   };
 
   /**
