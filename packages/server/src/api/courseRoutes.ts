@@ -1,8 +1,8 @@
 import { ServerRoute, ResponseObject } from "@hapi/hapi";
 import Joi from "@hapi/joi";
 import { CourseSchema, QueueSchema, CourseQueueSchema } from "../joi";
-import { CourseModel } from "../../../nest-server/src/entities/CourseModel";
-import { QueueModel } from "../../../nest-server/src/entities/QueueModel";
+import { Course } from "../../../nest-server/src/course/course.entity";
+import { Queue } from "../../../nest-server/src/queue/queue.entity";
 import { pick } from "lodash";
 import {
   TAUpdateStatusParams,
@@ -16,14 +16,14 @@ import {
   MOCK_TA_UPDATE_STATUS_DEPARTED_RESPONSE,
 } from "../mocks/taUpdateStatus";
 import { MOCK_GET_COURSE_RESPONSE } from "../mocks/getCourse";
-import { QuestionModel } from "../../../nest-server/src/entities/QuestionModel";
+import { Question } from "../../../nest-server/src/question/question.entity";
 
 export const courseRoutes: ServerRoute[] = [
   {
     method: "GET",
     path: "/api/v1/courses/{course_id}/schedule",
     handler: async (request, h): Promise<GetCourseResponse> => {
-      const course = await CourseModel.findOne(request.params.course_id, {
+      const course = await Course.findOne(request.params.course_id, {
         relations: ["officeHours"],
       });
       return {
@@ -43,14 +43,14 @@ export const courseRoutes: ServerRoute[] = [
     method: "GET",
     path: "/api/v1/courses/{course_id}/queues",
     handler: async (request, h): Promise<GetCourseQueuesResponse> => {
-      const queues = await QueueModel.find({
+      const queues = await Queue.find({
         // TODO: Add another where clause to get only the open queues
         // Pseudo code: { staffList > 1 || there are currently open office hours }
         where: { course_id: request.params.course_id },
       });
 
       for (let queue of queues) {
-        queue["queueSize"] = await QuestionModel.count({
+        queue["queueSize"] = await Question.count({
           where: { queueId: queue.id },
         });
         // TODO: Fill this in with real data

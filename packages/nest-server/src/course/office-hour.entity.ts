@@ -7,16 +7,16 @@ import {
   JoinColumn,
   OneToMany,
 } from "typeorm";
-import { CourseModel } from "./CourseModel";
+import { Course } from "./course.entity";
 
 @Entity("office_hour")
-export class OfficeHourModel extends BaseEntity {
+export class OfficeHour extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne((type) => CourseModel, (course) => course.officeHours)
+  @ManyToOne((type) => Course, (course) => course.officeHours)
   @JoinColumn({ name: "courseId" })
-  course: CourseModel;
+  course: Course;
 
   @Column({ nullable: true })
   courseId: number;

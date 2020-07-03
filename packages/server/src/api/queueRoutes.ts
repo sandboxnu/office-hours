@@ -18,9 +18,9 @@ import {
   MOCK_STUDENT_UPDATE_QUESTION_RESPONSE,
   MOCK_TA_UPDATE_QUESTION,
 } from "../mocks/updateQuestion";
-import { QuestionModel } from "../../../nest-server/src/entities/QuestionModel";
-import { UserModel } from "../../../nest-server/src/entities/UserModel";
-import { QueueModel } from "../../../nest-server/src/entities/QueueModel";
+import { Question } from "../../../nest-server/src/question/question.entity";
+import { User } from "../../../nest-server/src/profile/user.entity";
+import { Queue } from "../../../nest-server/src/queue/queue.entity";
 
 export const queueRoutes: ServerRoute[] = [
   {
@@ -32,7 +32,7 @@ export const queueRoutes: ServerRoute[] = [
     ): Promise<ListQuestionsResponse | ResponseObject> => {
       // todo: need a way to return different data, if TA vs. student hits endpoint.
       // for now, just return the student response
-      const queueSize = await QueueModel.count({
+      const queueSize = await Queue.count({
         where: { id: request.params.queue_id },
       });
       // Check that the queue exists
@@ -40,7 +40,7 @@ export const queueRoutes: ServerRoute[] = [
         return h.response("Queue not found").code(404);
       }
 
-      const questions = await QuestionModel.find({
+      const questions = await Question.find({
         where: [
           {
             queueId: request.params.queue_id,
@@ -68,14 +68,14 @@ export const queueRoutes: ServerRoute[] = [
       h
     ): Promise<CreateQuestionResponse | ResponseObject> => {
       // TODO: Remove this once we implemntent user authentication
-      const DEFAULT_USER = await UserModel.create({
+      const DEFAULT_USER = await User.create({
         id: 42,
         username: "test_user",
         email: "test_user@husky.neu.edu",
         name: "Test User",
         photoURL: "www.photoURL.com",
       }).save();
-      const queueSize = await QueueModel.count({
+      const queueSize = await Queue.count({
         where: { id: request.params.queue_id },
       });
       // Check that the queue exists
@@ -85,7 +85,7 @@ export const queueRoutes: ServerRoute[] = [
       // TODO: Check that the user posting the question is a member of the course
 
       const { text, questionType } = request.payload as CreateQuestionParams;
-      const question = await QuestionModel.create({
+      const question = await Question.create({
         queueId: parseInt(request.params.queue_id),
         creator: DEFAULT_USER,
         text,
@@ -115,14 +115,14 @@ export const queueRoutes: ServerRoute[] = [
       request,
       h
     ): Promise<GetQuestionResponse | ResponseObject> => {
-      const queueSize = await QueueModel.count({
+      const queueSize = await Queue.count({
         where: { id: request.params.queue_id },
       });
       // Check that the queue exists
       if (queueSize === 0) {
         return h.response("Queue not found").code(404);
       }
-      const question = await QuestionModel.findOne(request.params.question_id, {
+      const question = await Question.findOne(request.params.question_id, {
         relations: ["creator", "taHelped"],
       });
       if (question === undefined) {
@@ -148,7 +148,7 @@ export const queueRoutes: ServerRoute[] = [
       const { queue_id, question_id } = request.params;
       // TODO: Check that the question_id belongs to the user or a TA that is currently helping with the given queue_id
       // TODO: Use user type to dertermine wether or not we should include the text in the response
-      let question = await QuestionModel.findOne({
+      let question = await Question.findOne({
         where: { queueId: queue_id, id: question_id },
         relations: ["creator"],
       });
@@ -176,7 +176,7 @@ export const queueRoutes: ServerRoute[] = [
 
 // for some reason, JOI.allow(null) means the property has to exist, but can be null
 
-function questionModelToQuestion(qm: QuestionModel): Question {
+function questionModelToQuestion(qm: Question): Question {
   return {
     creator: userModelToUserPartial(qm.creator),
     id: qm.id,
@@ -192,7 +192,7 @@ function questionModelToQuestion(qm: QuestionModel): Question {
   };
 }
 
-function userModelToUserPartial(um: UserModel): UserPartial {
+function userModelToUserPartial(um: User): UserPartial {
   return {
     id: um.id,
     name: um.name,

@@ -2,7 +2,7 @@ import { ResponseObject, ServerRoute } from "@hapi/hapi";
 import { NotifBody } from "@template/common";
 import { DeepPartial } from "typeorm";
 import * as webPush from "web-push";
-import { NotifModel } from "../../../nest-server/src/entities/NotifModel";
+import { Notif } from "../../../nest-server/src/notification/notif.entity";
 import { NotifPayload } from "../joi";
 import { env } from "../env";
 
@@ -27,7 +27,7 @@ export const notifRoutes: ServerRoute[] = [
     handler: async (request, h): Promise<string | ResponseObject> => {
       const payload = request.payload as NotifBody;
       console.debug("registering user with endpoint:", payload.endpoint);
-      await NotifModel.create(
+      await Notif.create(
         toDBmodel(payload, Number(request.params.user_id))
       ).save();
       return h.response(JSON.stringify("registration success")).code(200);
@@ -43,7 +43,7 @@ export const notifRoutes: ServerRoute[] = [
     path: "/api/v1/notifications/notify_user/{user_id}",
     handler: async (request, h) => {
       const user_id = request.params.user_id;
-      const notifModelsOfUser = await NotifModel.find({
+      const notifModelsOfUser = await Notif.find({
         where: {
           userId: user_id,
         },
@@ -58,7 +58,7 @@ export const notifRoutes: ServerRoute[] = [
             );
           } catch (error) {
             console.debug("removing user for reason:", error.body);
-            await NotifModel.remove(nm);
+            await Notif.remove(nm);
           }
         })
       );
@@ -71,7 +71,7 @@ export const notifRoutes: ServerRoute[] = [
  * converts from DB model instance to subscription format
  * @param nm the DB model
  */
-function fromDBmodel(nm: NotifModel): NotifBody & { id: Number } {
+function fromDBmodel(nm: Notif): NotifBody & { id: Number } {
   return {
     id: nm.id,
     endpoint: nm.endpoint,
@@ -88,7 +88,7 @@ function fromDBmodel(nm: NotifModel): NotifBody & { id: Number } {
  * @param payload the subscription object
  * @param uid the user id
  */
-function toDBmodel(payload: NotifBody, uid: number): DeepPartial<NotifModel> {
+function toDBmodel(payload: NotifBody, uid: number): DeepPartial<Notif> {
   return {
     endpoint: payload.endpoint,
     expirationTime: payload.expirationTime && new Date(payload.expirationTime),

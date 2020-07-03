@@ -2,12 +2,12 @@ import { createConnection, Connection } from "typeorm";
 import { init } from "./server";
 import path from "path";
 import { Server, ServerInjectOptions, AuthCredentials } from "@hapi/hapi";
-import { CourseModel } from "../../nest-server/src/entities/CourseModel";
-import { QueueModel } from "../../nest-server/src/entities/QueueModel";
-import { UserModel } from "../../nest-server/src/entities/UserModel";
+import { Course } from "../../nest-server/src/course/course.entity";
+import { Queue } from "../../nest-server/src/queue/queue.entity";
+import { User } from "../../nest-server/src/profile/user.entity";
 import { UserFactory } from "../../nest-server/src/factory";
-import { UserCourseModel } from "../../nest-server/src/entities/UserCourseModel";
-import { QuestionModel } from "../../nest-server/src/entities/QuestionModel";
+import { UserCourse } from "../../nest-server/src/profile/user-course.entity";
+import { Question } from "../../nest-server/src/question/question.entity";
 import { QuestionType } from "@template/common";
 import hapiAuthCookie from "@hapi/cookie";
 
@@ -78,7 +78,7 @@ export function withServer(server) {
 
 export async function injectAsUser(
   server: Server,
-  user: UserModel,
+  user: User,
   opts: ServerInjectOptions
 ) {
   return await server.inject({

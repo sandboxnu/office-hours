@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { CourseController } from './course.controller';
 
-import { OfficeHour } from './office-hour.entity';
+import { OfficeHour } from '../course/office-hour.entity';
 import { Course } from './course.entity';
 import { UserFactory } from '../factory';
 

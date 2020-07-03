@@ -7,17 +7,17 @@ import {
   JoinColumn,
   OneToMany,
 } from "typeorm";
-import { CourseModel } from "./CourseModel";
-import { QuestionModel } from "./QuestionModel";
+import { Course } from "../course/course.entity";
+import { Question } from "../question/question.entity";
 
 @Entity("queue_model")
-export class QueueModel extends BaseEntity {
+export class Queue extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne((type) => CourseModel, (course) => course.queues)
+  @ManyToOne((type) => Course, (course) => course.queues)
   @JoinColumn({ name: "courseId" })
-  course: CourseModel;
+  course: Course;
 
   @Column({ nullable: true })
   courseId: number;
@@ -25,8 +25,8 @@ export class QueueModel extends BaseEntity {
   @Column("text")
   room: string;
 
-  @OneToMany((type) => QuestionModel, (qm) => qm.queue)
-  questions: QuestionModel[];
+  @OneToMany((type) => Question, (qm) => qm.queue)
+  questions: Question[];
 
   // TODO: eventually figure out how staff get sent to FE as well
 }

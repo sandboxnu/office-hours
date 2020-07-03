@@ -5,16 +5,16 @@ import {
   withServer,
   injectAsUser,
 } from "../testUtils";
-import { OfficeHour } from "../../../nest-server/src/course/office-hour.entity";
-import { Course } from "../../../nest-server/src/course/course.entity";
+import { OfficeHourModel } from "../../../nest-server/src/entities/OfficeHourModel";
+import { CourseModel } from "../../../nest-server/src/entities/CourseModel";
 import {
   MOCK_TA_UPDATE_STATUS_ARRIVED_RESPONSE,
   MOCK_TA_UPDATE_STATUS_DEPARTED_RESPONSE,
 } from "../mocks/taUpdateStatus";
-import { Queue } from "../../../nest-server/src/queue/queue.entity";
-import { Question } from "../../../nest-server/src/question/question.entity";
-import { User } from "../../../nest-server/src/profile/user.entity";
-import { UserCourse } from "../../../nest-server/src/profile/user-course.entity";
+import { QueueModel } from "../../../nest-server/src/entities/QueueModel";
+import { QuestionModel } from "../../../nest-server/src/entities/QuestionModel";
+import { UserModel } from "../../../nest-server/src/entities/UserModel";
+import { UserCourseModel } from "../../../nest-server/src/entities/UserCourseModel";
 import { QuestionType } from "@template/common";
 import { UserFactory } from "../../../nest-server/src/factory";
 
@@ -25,11 +25,11 @@ describe("/api/v1/courses/course_id/schedule", () => {
   const getServer = setupServerTest();
 
   it("gets matthias's office hours", async () => {
-    const course = await Course.create({
+    const course = await CourseModel.create({
       name: "CS 2500",
       icalURL: "testest.com/water-sausage",
     }).save();
-    await OfficeHour.create({
+    await OfficeHourModel.create({
       title: "Matthias's Special Office Hours",
       room: "WVH 308",
       startTime: new Date(1970, 4, 20),
@@ -62,26 +62,26 @@ describe("Course Routes", () => {
   const expectWithServer = withServer(getServer);
 
   it("/courses/{course_id}/queues", async () => {
-    const course = await Course.create({
+    const course = await CourseModel.create({
       name: "CS 2500",
       icalURL: "fudies1.com",
     }).save();
-    const queue = await Queue.create({
+    const queue = await QueueModel.create({
       room: "WVH 605",
       courseId: course.id,
     }).save();
-    const user = await User.create({
+    const user = await UserModel.create({
       username: "eddyTheDockerGodLi",
       email: "li.e@northeastern.edu",
       name: "Eddy Li",
       photoURL:
         "https://prod-web.neu.edu/wasapp/EnterprisePhotoService/PhotoServlet?vid=CCS&er=471f2d695fbb8a00ee740ad3ea910453986aec81ddaecf889ae98b3a1858597b12650afd0d4e59c561172f76cb1946eec217ed89bd4074c0",
     }).save();
-    const userCourse = await UserCourse.create({
+    const userCourse = await UserCourseModel.create({
       userId: user.id,
       courseId: course.id,
     }).save();
-    const question = await Question.create({
+    const question = await QuestionModel.create({
       queueId: queue.id,
       text: "Help pls",
       creatorId: userCourse.id,

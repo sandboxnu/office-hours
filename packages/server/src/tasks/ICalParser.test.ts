@@ -1,8 +1,8 @@
 import { parseIcal, updateCalendarForCourse } from "./ICalParser";
 import iCal from "node-ical";
 import { setupDBTest } from "../testUtils";
-import { CourseModel } from "../../../nest-server/src/entities/CourseModel";
-import { OfficeHourModel } from "../../../nest-server/src/entities/OfficeHourModel";
+import { Course } from "../../../nest-server/src/course/course.entity";
+import { OfficeHour } from "../../../nest-server/src/course/office-hour.entity";
 
 // oopsah
 const parsedICS = iCal.parseICS(`BEGIN:VCALENDAR
@@ -104,13 +104,13 @@ describe("parseIcal", () => {
 describe("updateCalendarForCourse", () => {
   setupDBTest();
   it("adds office hour rows for the course", async () => {
-    const course = await CourseModel.create({
+    const course = await Course.create({
       name: "CS 2510",
       icalURL: "your mom",
     }).save();
     await updateCalendarForCourse(course);
 
-    const ohs = await OfficeHourModel.find({ where: { courseId: course.id } });
+    const ohs = await OfficeHour.find({ where: { courseId: course.id } });
 
     expect(ohs).toMatchObject([
       {

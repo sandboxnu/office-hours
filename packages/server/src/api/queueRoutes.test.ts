@@ -1,6 +1,6 @@
 
 import { QuestionStatusKeys } from "@template/common";
-import { QuestionModel } from "../../../nest-server/src/entities/QuestionModel";
+import { Question } from "../../../nest-server/src/question/question.entity";
 import {
   QuestionFactory,
   QueueFactory,
@@ -63,7 +63,7 @@ describe("Queue Routes", () => {
     });
     it("POST new question", async () => {
       const queue = await QueueFactory.create();
-      expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(0);
+      expect(await Question.count({ where: { queueId: 1 } })).toEqual(0);
       const user = await UserFactory.create();
       const request = await injectAsUser(getServer(), user, {
         method: "post",
@@ -82,7 +82,7 @@ describe("Queue Routes", () => {
         questionType: "Concept",
         status: "Drafting",
       });
-      expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(1);
+      expect(await Question.count({ where: { queueId: 1 } })).toEqual(1);
     });
     it("POST new question fails with bad params", async () => {
       await expectWithServer({
@@ -158,7 +158,7 @@ describe("Queue Routes", () => {
       });
       expect(request.statusCode).toEqual(200);
       expect(request.result).toMatchObject({ id: q.id, text: "NEW TEXT" });
-      expect(await QuestionModel.findOne({ id: q.id })).toMatchObject({
+      expect(await Question.findOne({ id: q.id })).toMatchObject({
         text: "NEW TEXT",
       });
     });

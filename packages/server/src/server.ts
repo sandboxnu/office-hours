@@ -5,7 +5,7 @@ import { courseRoutes } from "./api/courseRoutes";
 import { notifRoutes } from "./api/notifRoutes";
 import { profileRoutes } from "./api/profileRoutes";
 import { queueRoutes } from "./api/queueRoutes";
-import { UserModel } from "../../nest-server/src/entities/UserModel";
+import { User } from "../../nest-server/src/profile/user.entity";
 import { entryRoutes } from "./api/entryRoutes";
 import { env } from "./env";
 
@@ -26,7 +26,7 @@ export async function init() {
       isSecure: env.NODE_ENV === "production",
     },
     validateFunc: async (request, session) => {
-      const user = await UserModel.findOne((session as any).id);
+      const user = await User.findOne((session as any).id);
       if (!user) {
         return { valid: false };
       }

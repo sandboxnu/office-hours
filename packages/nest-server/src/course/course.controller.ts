@@ -1,4 +1,14 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
+import {Connection} from 'typeorm'
+import { Course } from './course.entity';
 
 @Controller('course')
-export class CourseController {}
+export class CourseController {
+
+  constructor(private connection: Connection){ }
+
+  @Get()
+  async testing(): Promise<string> {
+    return (await Course.findOne(1)).name
+  }
+}

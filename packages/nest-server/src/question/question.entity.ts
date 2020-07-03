@@ -7,19 +7,19 @@ import {
   JoinColumn,
   CreateDateColumn,
 } from "typeorm";
-import { UserCourseModel } from "./UserCourseModel";
-import { QueueModel } from "./QueueModel";
+import { UserCourse } from "../profile/user-course.entity";
+import { Queue } from "../queue/queue.entity";
 import { QuestionType, QuestionStatus } from "@template/common";
-import { UserModel } from "./UserModel";
+import { User } from "../profile/user.entity";
 
 @Entity("question_model")
-export class QuestionModel extends BaseEntity {
+export class Question extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne((type) => QueueModel, (q) => q.questions)
+  @ManyToOne((type) => Queue, (q) => q.questions)
   @JoinColumn({ name: "queueId" })
-  queue: QueueModel;
+  queue: Queue;
 
   @Column({ nullable: true })
   queueId: number;
@@ -27,16 +27,16 @@ export class QuestionModel extends BaseEntity {
   @Column("text")
   text: string;
 
-  @ManyToOne((type) => UserModel)
+  @ManyToOne((type) => User)
   @JoinColumn({ name: "creatorId" })
-  creator: UserModel;
+  creator: User;
 
   @Column({ nullable: true })
   creatorId: number;
 
-  @ManyToOne((type) => UserModel)
+  @ManyToOne((type) => User)
   @JoinColumn({ name: "taHelpedId" })
-  taHelped: UserModel;
+  taHelped: User;
 
   @Column({ nullable: true })
   taHelpedId: number;

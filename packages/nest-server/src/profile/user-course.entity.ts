@@ -7,26 +7,26 @@ import {
   JoinColumn,
   OneToMany,
 } from "typeorm";
-import { CourseModel } from "./CourseModel";
-import { QueueModel } from "./QueueModel";
+import { Course } from "../course/course.entity";
+import { Queue } from "../queue/queue.entity";
 import { QuestionType, Role } from "@template/common";
-import { UserModel } from "./UserModel";
+import { User } from "./user.entity";
 
 @Entity("user_course_model")
-export class UserCourseModel extends BaseEntity {
+export class UserCourse extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne((type) => UserModel, (user) => user.courses)
+  @ManyToOne((type) => User, (user) => user.courses)
   @JoinColumn({ name: "userId" })
-  user: UserModel;
+  user: User;
 
   @Column({ nullable: true })
   userId: number;
 
-  @ManyToOne((type) => CourseModel, (course) => course.userCourses)
+  @ManyToOne((type) => Course, (course) => course.userCourses)
   @JoinColumn({ name: "courseId" })
-  course: CourseModel;
+  course: Course;
 
   @Column({ nullable: true })
   courseId: number;

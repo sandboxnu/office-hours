@@ -1,6 +1,6 @@
 import { ServerRoute } from "@hapi/hapi";
 import Joi from "@hapi/joi";
-import { UserCourseModel } from "../../../nest-server/src/entities/UserCourseModel";
+import { UserCourse } from "../../../nest-server/src/profile/user-course.entity";
 
 export const entryRoutes: ServerRoute[] = [
   {

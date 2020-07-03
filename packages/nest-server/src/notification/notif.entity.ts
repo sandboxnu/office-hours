@@ -6,10 +6,10 @@ import {
   ManyToOne,
   JoinColumn,
 } from "typeorm";
-import { UserModel } from "./UserModel";
+import { User } from "../profile/user.entity";
 
 @Entity("notif_model")
-export class NotifModel extends BaseEntity {
+export class Notif extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -25,9 +25,9 @@ export class NotifModel extends BaseEntity {
   @Column("text")
   auth: string;
 
-  @ManyToOne((type) => UserModel, (user) => user.notifs)
+  @ManyToOne((type) => User, (user) => user.notifs)
   @JoinColumn({ name: "userId" })
-  user: UserModel;
+  user: User;
 
   @Column({ nullable: true })
   userId: number;

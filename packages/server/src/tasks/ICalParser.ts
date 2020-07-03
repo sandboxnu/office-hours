@@ -1,9 +1,9 @@
 import ical, { CalendarComponent, CalendarResponse, VEvent } from "node-ical";
-import { OfficeHourModel } from "../../../nest-server/src/entities/OfficeHourModel";
-import { CourseModel } from "../../../nest-server/src/entities/CourseModel";
+import { OfficeHour } from "../../../nest-server/src/course/office-hour.entity";
+import { Course } from "../../../nest-server/src/course/course.entity";
 import { DeepPartial } from "typeorm";
 
-type CreateOfficeHour = DeepPartial<OfficeHourModel>[];
+type CreateOfficeHour = DeepPartial<OfficeHour>[];
 
 /**
  * Takes parsed information of ical file and stuffs it into a list of OfficeHourModels
@@ -36,9 +36,9 @@ export function parseIcal(
  * Updates the OfficeHours for a given Course by rescraping ical
  * @param course to parse
  */
-export async function updateCalendarForCourse(course: CourseModel) {
+export async function updateCalendarForCourse(course: Course) {
   const officeHours = parseIcal(await ical.fromURL(course.icalURL), course.id);
-  await OfficeHourModel.save(officeHours.map((e) => OfficeHourModel.create(e)));
+  await OfficeHour.save(officeHours.map((e) => OfficeHour.create(e)));
 }
 
 // TODO: add soemthign that will craete room table

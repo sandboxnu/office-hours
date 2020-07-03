@@ -1,5 +1,5 @@
-import { NotifModel } from "../../../nest-server/src/entities/NotifModel";
-import { UserModel } from "../../../nest-server/src/entities/UserModel";
+import { Notif } from "../../../nest-server/src/notification/notif.entity";
+import { User } from "../../../nest-server/src/profile/user.entity";
 import { setupDBTest, setupServerTest } from "../testUtils";
 import { AuthCredentials } from "@hapi/hapi";
 import { UserFactory } from "../../../nest-server/src/factory";
@@ -25,7 +25,7 @@ describe("/api/v1/notifications/register/{user_id}", () => {
   const getServer = setupServerTest();
 
   it("registers a user + webpush endpoint, tests it's in the db", async () => {
-    const user1 = await UserModel.create({
+    const user1 = await User.create({
       username: "ripHapi",
       email: "ripHapi@bigsad.com",
       name: "Hapi EOL",
@@ -51,7 +51,7 @@ describe("/api/v1/notifications/register/{user_id}", () => {
 
     expect(post.statusCode).toBe(200);
 
-    const notifModels = await NotifModel.findOne();
+    const notifModels = await Notif.findOne();
     expect(notifModels).toEqual({
       auth: "some_key_as_well",
       endpoint: "biggoogle.com",

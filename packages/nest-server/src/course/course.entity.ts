@@ -7,10 +7,10 @@ import {
   ManyToOne,
   JoinColumn,
 } from "typeorm";
-import { OfficeHourModel } from "./OfficeHourModel";
-import { QueueModel } from "./QueueModel";
-import { UserCourseModel } from "./UserCourseModel";
-import { SemesterModel } from "./SemesterModel";
+import { OfficeHour } from "./office-hour.entity";
+import { Queue } from "../queue/queue.entity";
+import { UserCourse } from "../profile/user-course.entity";
+import { Semester } from "./semester.entity";
 
 /**
  * Represents a course in the context of office hours.
@@ -27,15 +27,15 @@ import { SemesterModel } from "./SemesterModel";
 }*/
 
 @Entity("course_model")
-export class CourseModel extends BaseEntity {
+export class Course extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToMany((type) => OfficeHourModel, (oh) => oh.course)
-  officeHours: OfficeHourModel[];
+  @OneToMany((type) => OfficeHour, (oh) => oh.course)
+  officeHours: OfficeHour[];
 
-  @OneToMany((type) => QueueModel, (q) => q.course)
-  queues: QueueModel[];
+  @OneToMany((type) => Queue, (q) => q.course)
+  queues: Queue[];
 
   @Column("text")
   name: string;
@@ -43,12 +43,12 @@ export class CourseModel extends BaseEntity {
   @Column("text")
   icalURL: string;
 
-  @OneToMany((type) => UserCourseModel, (ucm) => ucm.course)
-  userCourses: UserCourseModel;
+  @OneToMany((type) => UserCourse, (ucm) => ucm.course)
+  userCourses: UserCourse;
 
-  @ManyToOne((type) => SemesterModel, (semester) => semester.courses)
+  @ManyToOne((type) => Semester, (semester) => semester.courses)
   @JoinColumn({ name: "semesterId" })
-  semester: SemesterModel;
+  semester: Semester;
 
   @Column({ nullable: true })
   // TODO: can we make these not nullable and work with TypeORM

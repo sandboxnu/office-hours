@@ -5,7 +5,7 @@ import {
   injectAsUser,
 } from "../testUtils";
 import { UserFactory, CourseFactory } from "../../../nest-server/src/factory";
-import { UserCourseModel } from "../../../nest-server/src/entities/UserCourseModel";
+import { UserCourse } from "../../../nest-server/src/profile/user-course.entity";
 import { Role } from "@template/common";
 
 describe("Profile Routes", () => {
@@ -16,13 +16,13 @@ describe("Profile Routes", () => {
     it("GET profile", async () => {
       let user = await UserFactory.create();
       let fundies = await CourseFactory.create({ name: "CS 2500" });
-      await UserCourseModel.create({
+      await UserCourse.create({
         user,
         course: fundies,
         role: Role.STUDENT,
       }).save();
       let softwareDevelopemnt = await CourseFactory.create({ name: "CS 4500" });
-      await UserCourseModel.create({
+      await UserCourse.create({
         user,
         course: softwareDevelopemnt,
         role: Role.TA,
