@@ -7,7 +7,7 @@ import * as webPush from "web-push";
 import { DesktopNotifModel } from "../entity/DesktopNotifModel";
 import { PhoneNotifModel } from "../entity/PhoneNotifModel";
 import { UserModel } from "../entity/UserModel";
-import { DesktopNotifPayload, PhoneNotifPayload } from "../joi";
+import { DesktopNotifPayload } from "../joi";
 
 // configure env vars for VAPID + Twilio
 dotenv.config();
@@ -91,11 +91,11 @@ export const notifRoutes: ServerRoute[] = [
         )
         .code(200);
     },
-    options: {
+    /*options: {
       validate: {
         payload: PhoneNotifPayload.options({ presence: "required" }),
       },
-    },
+    },*/
   },
   {
     method: "POST",
