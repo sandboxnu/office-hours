@@ -16,7 +16,7 @@ export class CourseController {
     });
     return {
       name: course.name,
-      officeHours: course.officeHours.map(e =>
+      officeHours: course.officeHours.map((e) =>
         pick(e, ['id', 'title', 'room', 'startTime', 'endTime']),
       ),
       queues: await Promise.all(

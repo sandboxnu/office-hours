@@ -3,18 +3,6 @@ export enum WSMessageType {
   Refresh = "ref",
 }
 
-// API base data types
-export type Club = { name: string; rating: number; id: number };
-
-// API route Params and Responses
-export type GetClubResponse = Club[];
-
-export type CreateClubParams = { name: string; rating: number };
-export type CreateClubResponse = Club;
-
-// Office Hours Response Types
-export type GetProfileResponse = User;
-
 // export type GetCourseResponse = Course;
 
 export interface GetCourseResponse {
@@ -28,6 +16,10 @@ export interface GetCourseResponse {
   }>;
   queues: QueuePartial[];
 }
+
+export type GetCourseQueuesResponse = QueuePartial[];
+
+export type GetQueueResponse = QueuePartial;
 
 export type ListQuestionsResponse = Question[];
 
