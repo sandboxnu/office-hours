@@ -15,6 +15,7 @@ import { UserCourse } from './profile/user-course.entity';
 import { Question } from './question/question.entity';
 import { Queue } from './queue/queue.entity';
 import { Notif } from './notification/notif.entity';
+import { QuestionModule } from './question/question.module';
 
 @Module({
   imports: [
@@ -25,13 +26,23 @@ import { Notif } from './notification/notif.entity';
       username: 'postgres',
       password: '',
       database: 'dev',
-      entities: [Course, OfficeHour, Semester, Notif, User, UserCourse, Question, Queue],
+      entities: [
+        Course,
+        OfficeHour,
+        Semester,
+        Notif,
+        User,
+        UserCourse,
+        Question,
+        Queue,
+      ],
       synchronize: true,
     }),
     ProfileModule,
     CourseModule,
     QueueModule,
     NotificationModule,
+    QuestionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

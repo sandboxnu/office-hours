@@ -50,35 +50,22 @@ class APIClient {
       return questions;
     },
     create: async (
-      queueId: number,
       params: CreateQuestionParams
     ): Promise<CreateQuestionResponse> => {
-      const question = (
-        await this.axios.post(`/api/v1/queues/${queueId}/questions`, params)
-      ).data;
+      const question = (await this.axios.post(`/api/v1/questions`, params))
+        .data;
       parseQuestionDates(question);
       return question;
     },
-    get: async (
-      queueId: number,
-      questionId: number
-    ): Promise<GetQuestionResponse> => {
-      return (
-        await this.axios.get(
-          `/api/v1/queues/${queueId}/questions/${questionId}`
-        )
-      ).data;
+    get: async (questionId: number): Promise<GetQuestionResponse> => {
+      return (await this.axios.get(`/api/v1/questions/${questionId}`)).data;
     },
     update: async (
-      queueId: number,
       questionId: number,
       params: UpdateQuestionParams
     ): Promise<UpdateQuestionResponse> => {
       const question = (
-        await this.axios.patch(
-          `/api/v1/queues/${queueId}/questions/${questionId}`,
-          params
-        )
+        await this.axios.patch(`/api/v1/questions/${questionId}`, params)
       ).data;
       parseQuestionDates(question);
       return question;
