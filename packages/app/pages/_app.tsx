@@ -1,11 +1,11 @@
-import { AppProps } from "next/app";
-import { Fragment, useEffect } from "react";
-import "antd/dist/antd.css";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import "../styles/global.css";
-import useSWR from "swr";
 import { API } from "@template/api-client";
+import "antd/dist/antd.css";
+import { AppProps } from "next/app";
+import { Fragment } from "react";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import useSWR from "swr";
 import { ProfileContext } from "../contexts/ProfileContextProvider";
+import "../styles/global.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const { data, error } = useSWR(`/api/v1/profile`, async () =>

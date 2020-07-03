@@ -2,11 +2,11 @@ import Hapi from "@hapi/hapi";
 import * as hde from "hapi-dev-errors";
 import "reflect-metadata";
 import { courseRoutes } from "./api/courseRoutes";
+import { entryRoutes } from "./api/entryRoutes";
 import { notifRoutes } from "./api/notifRoutes";
 import { profileRoutes } from "./api/profileRoutes";
 import { queueRoutes } from "./api/queueRoutes";
 import { UserModel } from "./entity/UserModel";
-import { entryRoutes } from "./api/entryRoutes";
 import { env } from "./env";
 
 // Just initialize, don't start

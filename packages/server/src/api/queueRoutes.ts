@@ -32,14 +32,6 @@ export const queueRoutes: ServerRoute[] = [
     ): Promise<ListQuestionsResponse | ResponseObject> => {
       // todo: need a way to return different data, if TA vs. student hits endpoint.
       // for now, just return the student response
-      const queueSize = await QueueModel.count({
-        where: { id: request.params.queue_id },
-      });
-      // Check that the queue exists
-      if (queueSize === 0) {
-        return h.response("Queue not found").code(404);
-      }
-
       const questions = await QuestionModel.find({
         where: [
           {
