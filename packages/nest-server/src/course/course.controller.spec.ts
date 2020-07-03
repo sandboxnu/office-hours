@@ -5,7 +5,7 @@ import { CourseController } from './course.controller';
 
 import { OfficeHour } from './office-hour.entity';
 import { Course } from './course.entity';
-import { UserFactory } from '../factory';
+import { UserFactory } from '../../test/factory';
 
 describe('Course Controller', () => {
   let app: INestApplication;
