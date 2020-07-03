@@ -15,7 +15,7 @@ import React from "react";
 
 const PopoverContainer = styled.div`
   width: 270px;
-  height: 220px;
+  height: 215px;
 `;
 
 const LableText = styled.div`
@@ -38,8 +38,8 @@ const InputContainer = styled.div`
 `;
 
 const CenteredIcon = styled.div`
-  margin-left: 130px;
-  margin-top: 10px;
+  margin-left: 125px;
+  margin-top: 25px;
 `;
 
 export default function Settings() {
