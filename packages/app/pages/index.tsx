@@ -2,6 +2,7 @@ import { API } from "@template/api-client";
 import { User } from "@template/common";
 import { Button, Input } from "antd";
 import { register } from "next-offline/runtime";
+import Router from "next/router";
 import { useProfile } from "../hooks/useProfile";
 
 export default function Home() {
