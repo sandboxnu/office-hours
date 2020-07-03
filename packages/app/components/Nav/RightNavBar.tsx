@@ -29,13 +29,7 @@ const MenuItem = styled(Menu.Item)`
 export default function RightNavBar() {
   return (
     <HorizontalMenu mode="horizontal">
-      <MenuItem key="mail">
-        <Settings>
-          <Button type="primary">
-            <Avatar size={32} icon={<UserOutlined />} />
-          </Button>
-        </Settings>
-      </MenuItem>
+      <Settings />
     </HorizontalMenu>
   );
 }
