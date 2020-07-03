@@ -9,7 +9,6 @@ import {
   UpdateQuestionParams,
   ListQuestionsResponse,
   UpdateQuestionResponse,
-  GetCourseQueuesResponse,
   QueuePartial,
   NotifBody,
 } from "@template/common";
@@ -30,13 +29,6 @@ class APIClient {
         parseOfficeHourDates(officeHour)
       );
       return course;
-    },
-    queues: async (courseId: number): Promise<GetCourseQueuesResponse> => {
-      const queues = (
-        await this.axios.get(`/api/v1/courses/${courseId}/queues`)
-      ).data;
-      queues.forEach((q: QueuePartial) => parseQueueDates(q));
-      return queues;
     },
   };
   taStatus = {
