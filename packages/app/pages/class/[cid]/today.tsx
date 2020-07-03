@@ -1,12 +1,12 @@
+import { Button, Col, Row, Result } from "antd";
+import useSWR, { mutate } from "swr";
+import Schedule from "./schedule";
 import { API } from "@template/api-client";
-import { Button, Col, Result, Row } from "antd";
-import { useRouter } from "next/router";
 import styled from "styled-components";
-import useSWR from "swr";
 import NavBar from "../../../components/Nav/NavBar";
 import OpenQueueCard from "../../../components/Today/OpenQueueCard";
 import { useProfile } from "../../../hooks/useProfile";
-import Schedule from "./schedule";
+import { useRouter } from "next/router";
 
 const CreateQueueButton = styled(Button)`
   float: right;
@@ -22,6 +22,12 @@ export default function Today() {
   const { data, error } = useSWR(`api/v1/courses/${cid}/queues`, async () =>
     API.course.queues(Number(cid))
   );
+
+  const updateQueueNotes = async (queueId, notes) => {
+    await API.queues.updateNotes(queueId, notes);
+    const newQueues = data.map((q) => (q.id === queueId ? { ...q, notes } : q));
+    mutate(`api/v1/courses/${cid}/queues`, newQueues);
+  };
 
   const isTA = true; // TODO: temp
 
@@ -41,7 +47,12 @@ export default function Today() {
         <Row gutter={25}>
           <Col md={12} xs={24}>
             {data?.map((q) => (
-              <OpenQueueCard key={q.id} queue={q} isTA={isTA} />
+              <OpenQueueCard
+                key={q.id}
+                queue={q}
+                isTA={isTA}
+                updateQueueNotes={updateQueueNotes}
+              />
             ))}
             {isTA && (
               <CreateQueueButton type="default" size={"large"}>

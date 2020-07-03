@@ -8,6 +8,7 @@ import { QueuePartial } from "../../../common/index";
 type OpenQueueCard = {
   queue: QueuePartial;
   isTA: boolean;
+  updateQueueNotes: Function;
 };
 
 const PaddedCard = styled(Card)`
@@ -24,15 +25,14 @@ const EditOutlinedFloatedRight = styled(EditOutlined)`
   float: right;
 `;
 
-const OpenQueueCard = ({ queue, isTA }: OpenQueueCard) => {
+const OpenQueueCard = ({ queue, isTA, updateQueueNotes }: OpenQueueCard) => {
   const [editingNotes, setEditingNotes] = useState(false);
   const [updatedNotes, setUpdatedNotes] = useState(queue.notes);
   const staffList = queue.staffList;
 
-  const updateNotes = () => {
-    API.queues.updateNotes(queue.id, updatedNotes);
-    queue.notes = updatedNotes;
+  const handleUpdate = () => {
     setEditingNotes(false);
+    updateQueueNotes(queue.id, updatedNotes);
   };
 
   return (
@@ -52,14 +52,14 @@ const OpenQueueCard = ({ queue, isTA }: OpenQueueCard) => {
           <Button
             type="primary"
             size="small"
-            onClick={updateNotes}
+            onClick={handleUpdate}
             style={{ float: "right" }}
           >
             Save
           </Button>
           <Input
             defaultValue={queue.notes}
-            onPressEnter={updateNotes}
+            onPressEnter={handleUpdate}
             value={updatedNotes}
             onChange={(e) => setUpdatedNotes(e.target.value as any)}
           />
