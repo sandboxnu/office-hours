@@ -35,7 +35,11 @@ export type ListQuestionsResponse = Question[];
 
 export type GetQuestionResponse = Question;
 
-export type CreateQuestionParams = { text: string; questionType: QuestionType };
+export type CreateQuestionParams = {
+  text: string;
+  questionType: QuestionType;
+  queueId: number;
+};
 export type CreateQuestionResponse = Question;
 
 export type UpdateQuestionParams = {
