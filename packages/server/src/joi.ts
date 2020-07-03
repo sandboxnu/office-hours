@@ -97,12 +97,17 @@ export const CourseQueueSchema = Joi.array().items(
   })
 );
 
-export const NotifPayload = Joi.object({
+export const DesktopNotifPayload = Joi.object({
   endpoint: Joi.string(),
   expirationTime: Joi.date().allow(null).optional(),
   keys: Joi.object({ p256dh: Joi.string(), auth: Joi.string() }),
 });
 
+
 export const QueueNotePayload = Joi.object({
   notes: Joi.string().optional().allow("").allow(null),
+});
+                                           
+export const PhoneNotifPayload = Joi.object({
+  phoneNumber: Joi.string(),
 });

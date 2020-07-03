@@ -1,12 +1,13 @@
 import {
   CreateQuestionParams,
   CreateQuestionResponse,
+  DesktopNotifBody,
   GetCourseQueuesResponse,
   GetCourseResponse,
   GetProfileResponse,
   GetQuestionResponse,
   ListQuestionsResponse,
-  NotifBody,
+  PhoneNotifBody,
   QueuePartial,
   TAUpdateStatusResponse,
   UpdateQuestionParams,
@@ -101,14 +102,30 @@ class APIClient {
     notify_user: async (userId: number): Promise<void> => {
       await this.axios.post(`/api/v1/notifications/notify_user/${userId}`);
     },
-    credentials: async (): Promise<string> => {
-      return this.axios.get("/api/v1/notifications/credentials");
+    desktop: {
+      credentials: async (): Promise<string> => {
+        return this.axios.get("/api/v1/notifications/desktop/credentials");
+      },
+      register: async (
+        userId: number,
+        payload: DesktopNotifBody
+      ): Promise<string> => {
+        return this.axios.post(
+          `/api/v1/notifications/desktop/register/${userId}`,
+          payload
+        );
+      },
     },
-    register: async (userId: number, payload: NotifBody): Promise<string> => {
-      return this.axios.post(
-        `/api/v1/notifications/register/${userId}`,
-        payload
-      );
+    phone: {
+      register: async (
+        userId: number,
+        payload: PhoneNotifBody
+      ): Promise<string> => {
+        return this.axios.post(
+          `/api/v1/notifications/phone/register/${userId}`,
+          payload
+        );
+      },
     },
   };
   constructor(baseURL: string = "") {

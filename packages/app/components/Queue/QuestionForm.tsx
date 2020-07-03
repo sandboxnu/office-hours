@@ -1,7 +1,7 @@
-import { QuestionType } from "@template/common";
+import { Question, QuestionType } from "@template/common";
 import { Button, Input, Radio, Alert } from "antd";
 import styled from "styled-components";
-import { useState } from "react";
+import { useContext, useState, useMemo, useEffect } from "react";
 import { RadioChangeEvent } from "antd/lib/radio";
 import React from "react";
 
@@ -40,24 +40,32 @@ const FormButton = styled(Button)`
 `;
 
 interface QuestionFormProps {
+  question: Question;
   leaveQueue: () => void;
   finishQuestion: (text: string, questionType: QuestionType) => void;
 }
 
 export default function QuestionForm({
+  question,
   leaveQueue,
   finishQuestion,
 }: QuestionFormProps) {
-  const [questionType, setQuestionType] = useState<QuestionType | undefined>(
-    undefined
+  const [questionTypeInput, setQuestionTypeInput] = useState<QuestionType>(
+    null
   );
-  const [questionText, setQuestionText] = useState<string | undefined>(
-    undefined
-  );
+
+  const [questionText, setQuestionText] = useState<string>("");
+
+  useEffect(() => {
+    if (question) {
+      setQuestionText(question.text);
+      setQuestionTypeInput(question.questionType);
+    }
+  }, [question]);
 
   // on question type change, update the question type state
   const onCategoryChange = (e: RadioChangeEvent) => {
-    setQuestionType(e.target.value);
+    setQuestionTypeInput(e.target.value);
   };
 
   // on question text change, update the question text state
@@ -69,8 +77,8 @@ export default function QuestionForm({
 
   // on button submit click, conditionally choose to go back to the queue
   const onClickSubmit = () => {
-    if (!!questionType && questionText && questionText !== "") {
-      finishQuestion(questionText, questionType);
+    if (questionTypeInput && questionText && questionText !== "") {
+      finishQuestion(questionText, questionTypeInput);
     }
   };
 
@@ -92,6 +100,9 @@ export default function QuestionForm({
         style={{ marginBottom: 48 }}
       >
         <Radio.Button value={QuestionType.Concept}>Concept</Radio.Button>
+        <Radio.Button value={QuestionType.Clarification}>
+          Clarification
+        </Radio.Button>
         <Radio.Button value={QuestionType.Testing}>Testing</Radio.Button>
         <Radio.Button value={QuestionType.Bug}>Bug</Radio.Button>
         <Radio.Button value={QuestionType.Setup}>Setup</Radio.Button>
@@ -100,20 +111,25 @@ export default function QuestionForm({
 
       <QuestionText>What do you need help with?</QuestionText>
       <Input.TextArea
-        placeholder="I’m having trouble understanding list abstractions, particularly in the
-        context of Assignment 5."
-        autoSize={{ minRows: 3 }}
+        value={questionText}
+        placeholder="I’m having trouble understanding list abstractions, particularly in Assignment 5."
+        autoSize={{ minRows: 3, maxRows: 6 }}
         onChange={onQuestionTextChange}
       />
       <QuestionCaption>
         Be as descriptive and specific as possible in your answer. If your
         question matches another student’s, your wait time may be reduced.
       </QuestionCaption>
-
+      <QuestionText>Where in the room are you located?</QuestionText>
+      <Input.TextArea
+        placeholder="Outside room, by the couches"
+        autoSize={{ minRows: 1, maxRows: 1 }}
+      />
+      <QuestionCaption></QuestionCaption>
       <div>
         <FormButton
           type="primary"
-          disabled={!questionType || !questionText || questionText === ""}
+          disabled={!questionTypeInput || !questionText || questionText === ""}
           onClick={onClickSubmit}
         >
           Finish
