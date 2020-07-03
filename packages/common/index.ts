@@ -19,6 +19,8 @@ export interface GetCourseResponse {
 
 export type GetCourseQueuesResponse = QueuePartial[];
 
+export type GetQueueResponse = QueuePartial;
+
 export type ListQuestionsResponse = Question[];
 
 export type GetQuestionResponse = Question;
