@@ -3,8 +3,8 @@ import {
   OneToMany, PrimaryGeneratedColumn
 } from "typeorm";
 import { UserCourse } from "./user-course.entity";
-import { DesktopNotif } from "src/notification/desktop-notif.entity";
-import { PhoneNotif } from "src/notification/phone-notif.entity";
+import { DesktopNotif } from "../notification/desktop-notif.entity";
+import { PhoneNotif } from "../notification/phone-notif.entity";
 
 @Entity("user_model")
 export class User extends BaseEntity {
