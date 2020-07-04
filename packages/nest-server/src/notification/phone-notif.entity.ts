@@ -6,7 +6,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { User } from "src/profile/user.entity";
+import { User } from "../profile/user.entity";
 
 @Entity("phone_notif_model")
 export class PhoneNotif extends BaseEntity {
