@@ -26,8 +26,10 @@ export interface GetCourseResponse {
     startTime: Date;
     endTime: Date;
   }>;
-  queues?: QueuePartial[];
+  queues: QueuePartial[];
 }
+
+export type GetQueueResponse = QueuePartial;
 
 export type GetCourseQueuesResponse = QueuePartial[];
 
