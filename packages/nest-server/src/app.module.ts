@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CourseController } from './course/course.controller';
@@ -36,7 +37,7 @@ import { PhoneNotif } from './notification/phone-notif.entity';
         Question,
         Queue,
         DesktopNotif,
-        PhoneNotif
+        PhoneNotif,
       ],
       synchronize: true,
     }),
@@ -45,6 +46,13 @@ import { PhoneNotif } from './notification/phone-notif.entity';
     QueueModule,
     NotificationModule,
     QuestionModule,
+    ConfigModule.forRoot({
+      envFilePath: [
+        '.env',
+        process.env.NODE_ENV === 'development' ? '.env.development' : '',
+      ],
+      isGlobal: true
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
