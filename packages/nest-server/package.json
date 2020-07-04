@@ -53,6 +53,8 @@
     "ts-loader": "^6.2.1",
     "ts-node": "^8.6.2",
     "tsconfig-paths": "^3.9.0",
+    "typeorm-factory": "^0.0.14",
+    "typeorm-fixtures-cli": "^1.7.0",
     "typescript": "^3.7.4"
   },
   "jest": {
