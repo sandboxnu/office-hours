@@ -2,7 +2,7 @@ import { StudentCourseFactory, UserFactory, CourseFactory } from "./util/factori
 import { setupIntegrationTest } from "./util/testUtils";
 import { ProfileModule } from "../src/profile/profile.module";
 
-describe("Profile Integration ", () => {
+describe("Profile Integration", () => {
   const supertest = setupIntegrationTest(ProfileModule)
 
   describe('GET /profile', () => {

@@ -17,3 +17,21 @@ Object {
   "photoURL": "https://pics/1",
 }
 `;
+
+exports[`Profile Integration GET /profile returns the logged-in user profile 1`] = `
+Object {
+  "courses": Array [
+    Object {
+      "course": Object {
+        "id": 1,
+        "name": "CS 2500",
+      },
+      "role": "student",
+    },
+  ],
+  "email": "user1@neu.edu",
+  "id": 1,
+  "name": "John Doe the 1th",
+  "photoURL": "https://pics/1",
+}
+`;

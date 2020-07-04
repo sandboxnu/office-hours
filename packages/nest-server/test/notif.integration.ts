@@ -6,7 +6,7 @@ import {
 import { setupIntegrationTest } from './util/testUtils';
 import { ProfileModule } from '../src/profile/profile.module';
 import { DesktopNotif } from '../src/notification/desktop-notif.entity';
-import { PhoneNotif } from 'src/notification/phone-notif.entity';
+import { PhoneNotif } from '../src/notification/phone-notif.entity';
 
 describe('Notif Integration', () => {
   const supertest = setupIntegrationTest(ProfileModule);
