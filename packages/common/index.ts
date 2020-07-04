@@ -3,6 +3,18 @@ export enum WSMessageType {
   Refresh = "ref",
 }
 
+// API base data types
+export type Club = { name: string; rating: number; id: number };
+
+// API route Params and Responses
+export type GetClubResponse = Club[];
+
+export type CreateClubParams = { name: string; rating: number };
+export type CreateClubResponse = Club;
+
+// Office Hours Response Types
+export type GetProfileResponse = User;
+
 // export type GetCourseResponse = Course;
 
 export interface GetCourseResponse {
@@ -14,22 +26,16 @@ export interface GetCourseResponse {
     startTime: Date;
     endTime: Date;
   }>;
-  queues: QueuePartial[];
+  queues?: Queue[];
 }
 
 export type GetCourseQueuesResponse = QueuePartial[];
-
-export type GetQueueResponse = QueuePartial;
 
 export type ListQuestionsResponse = Question[];
 
 export type GetQuestionResponse = Question;
 
-export type CreateQuestionParams = {
-  text: string;
-  questionType: QuestionType;
-  queueId: number;
-};
+export type CreateQuestionParams = { text: string; questionType: QuestionType };
 export type CreateQuestionResponse = Question;
 
 export type UpdateQuestionParams = {
@@ -262,11 +268,15 @@ interface Semester {
  */
 export type Season = "Fall" | "Spring" | "Summer 1" | "Summer 2";
 
-export type NotifBody = {
+export type DesktopNotifBody = {
   endpoint: string;
   expirationTime?: Date;
   keys: {
     p256dh: string;
     auth: string;
   };
+};
+
+export type PhoneNotifBody = {
+  phoneNumber: string;
 };
