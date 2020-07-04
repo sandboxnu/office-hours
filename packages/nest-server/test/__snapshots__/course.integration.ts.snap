@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CourseController (e2e) GET /courses/:id gets office hours and queues 1`] = `
+Object {
+  "name": "CS 2500",
+  "officeHours": Array [
+    Object {
+      "endTime": "2020-05-20T15:30:00.000Z",
+      "id": 1,
+      "room": "WVH 101",
+      "startTime": "2020-05-20T14:00:00.000Z",
+      "title": "Alex & Stanley",
+    },
+  ],
+  "queues": Array [],
+}
+`;

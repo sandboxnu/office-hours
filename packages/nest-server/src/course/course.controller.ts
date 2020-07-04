@@ -3,7 +3,7 @@ import { pick } from 'lodash';
 import { Connection } from 'typeorm';
 import { Course } from './course.entity';
 import { GetCourseResponse } from '@template/common';
-import { Question } from 'src/question/question.entity';
+import { Question } from '../question/question.entity';
 
 @Controller('courses')
 export class CourseController {

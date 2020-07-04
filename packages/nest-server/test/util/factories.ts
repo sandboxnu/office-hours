@@ -7,6 +7,7 @@ import { Queue } from "../../src/queue/queue.entity";
 import { Semester } from "../../src/course/semester.entity";
 import { UserCourse } from "../../src/profile/user-course.entity";
 import { User } from "../../src/profile/user.entity";
+import { OfficeHour } from "../../src/course/office-hour.entity";
 
 export const UserFactory = new Factory(User)
   .sequence("username", (i) => `user${i}`)
@@ -28,10 +29,17 @@ export const SemesterFactory = new Factory(Semester)
   .attr("season", "Fall")
   .attr("year", 2020);
 
+export const OfficeHourFactory = new Factory(OfficeHour)
+  .attr('title', 'Alex & Stanley')
+  .attr('room', 'WVH 101')
+  .attr('startTime', new Date(2020, 4, 20, 10, 0, 0))
+  .attr('endTime', new Date(2020, 4, 20, 11, 30, 0))
+
 export const CourseFactory = new Factory(Course)
   .attr("name", "CS 2500")
   .attr("icalURL", "hi.com")
-  .assocOne("semester", SemesterFactory);
+  .assocOne("semester", SemesterFactory)
+  .assocMany('officeHours', OfficeHourFactory)
 
 export const UserCourseFactory = new Factory(UserCourse)
   .assocOne("user", UserFactory)
