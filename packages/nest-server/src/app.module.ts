@@ -14,8 +14,9 @@ import { User } from './profile/user.entity';
 import { UserCourse } from './profile/user-course.entity';
 import { Question } from './question/question.entity';
 import { Queue } from './queue/queue.entity';
-import { Notif } from './notification/notif.entity';
 import { QuestionModule } from './question/question.module';
+import { DesktopNotif } from './notification/desktop-notif.entity';
+import { PhoneNotif } from './notification/phone-notif.entity';
 
 @Module({
   imports: [
@@ -30,11 +31,12 @@ import { QuestionModule } from './question/question.module';
         Course,
         OfficeHour,
         Semester,
-        Notif,
         User,
         UserCourse,
         Question,
         Queue,
+        DesktopNotif,
+        PhoneNotif
       ],
       synchronize: true,
     }),
