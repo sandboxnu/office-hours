@@ -2,8 +2,9 @@ import {
   BaseEntity, Column, Entity,
   OneToMany, PrimaryGeneratedColumn
 } from "typeorm";
-import { Notif } from "../notification/notif.entity";
 import { UserCourse } from "./user-course.entity";
+import { DesktopNotif } from "src/notification/desktop-notif.entity";
+import { PhoneNotif } from "src/notification/phone-notif.entity";
 
 @Entity("user_model")
 export class User extends BaseEntity {
@@ -25,6 +26,9 @@ export class User extends BaseEntity {
   @OneToMany((type) => UserCourse, (ucm) => ucm.user)
   courses: UserCourse[];
 
-  @OneToMany((type) => Notif, (notif) => notif.user)
-  notifs: Notif[];
+  @OneToMany((type) => DesktopNotif, (notif) => notif.user)
+  desktopNotifs: DesktopNotif[];
+
+  @OneToMany((type) => PhoneNotif, (notif) => notif.user)
+  phoneNotifs: PhoneNotif[];
 }
