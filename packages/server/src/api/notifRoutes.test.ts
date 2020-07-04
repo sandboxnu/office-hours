@@ -5,7 +5,7 @@ import { UserModel } from "../entity/UserModel";
 import { UserFactory } from "../factory";
 import { setupDBTest, setupServerTest } from "../testUtils";
 
-describe("/api/v1/notifications/credentials", () => {
+describe("/api/v1/notifications/desktop/credentials", () => {
   setupDBTest();
   const getServer = setupServerTest();
 
@@ -13,7 +13,7 @@ describe("/api/v1/notifications/credentials", () => {
     const user = await UserFactory.create();
     const get = await getServer().inject({
       method: "get",
-      url: "/api/v1/notifications/credentials",
+      url: "/api/v1/notifications/desktop/credentials",
       auth: { strategy: "session", credentials: user as AuthCredentials },
     });
     expect(get.statusCode).toEqual(200);
@@ -69,7 +69,7 @@ describe("/api/v1/notifications/phone/register/{user_id}", () => {
   setupDBTest();
   const getServer = setupServerTest();
 
-  it("registers a user_i & phone number, tests it's in the db", async () => {
+  it("registers a user & phone number, tests it's in the db", async () => {
     const user1 = await UserModel.create({
       username: "twilioistrello",
       email: "trello@twilio.com",
