@@ -1,4 +1,4 @@
-entity: SemesterModel
+entity: Semester
 items:
   semester0:
     season: "Fall"

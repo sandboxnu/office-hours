@@ -1,4 +1,4 @@
-entity: UserCourseModel
+entity: UserCourse
 items:
   ucm0:
     userId: "@user0"
