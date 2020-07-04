@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CourseController (e2e) GET /courses/:id gets office hours and queues 1`] = `
+exports[`Course Integraiton GET /courses/:id gets office hours and queues 1`] = `
 Object {
   "name": "CS 2500",
   "officeHours": Array [

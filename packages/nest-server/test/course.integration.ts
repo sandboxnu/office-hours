@@ -2,7 +2,7 @@ import { setupIntegrationTest } from './util/testUtils';
 import { CourseModule } from '../src/course/course.module';
 import { CourseFactory, OfficeHourFactory } from './util/factories';
 
-describe('CourseController (e2e)', () => {
+describe('Course Integraiton', () => {
   const supertest = setupIntegrationTest(CourseModule);
 
   describe('GET /courses/:id', () => {
