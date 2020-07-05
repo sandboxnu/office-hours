@@ -24,7 +24,7 @@ export default function Today() {
   );
 
   const updateQueueNotes = async (queueId, notes) => {
-    API.queues.updateNotes(queueId, notes);
+    await API.queues.updateNotes(queueId, notes);
     const newQueues = data.map((q) => (q.id === queueId ? { ...q, notes } : q));
     mutate(`api/v1/courses/${cid}/queues`, newQueues);
   };
