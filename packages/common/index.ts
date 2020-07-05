@@ -1,3 +1,5 @@
+import { IsEnum, IsString, IsInt, IsOptional } from "class-validator";
+
 export enum WSMessageType {
   Count = "count",
   Refresh = "ref",
@@ -5,57 +7,6 @@ export enum WSMessageType {
 
 // API base data types
 export type Club = { name: string; rating: number; id: number };
-
-// API route Params and Responses
-export type GetClubResponse = Club[];
-
-export type CreateClubParams = { name: string; rating: number };
-export type CreateClubResponse = Club;
-
-// Office Hours Response Types
-export type GetProfileResponse = User;
-
-// export type GetCourseResponse = Course;
-
-export interface GetCourseResponse {
-  name: string;
-  officeHours: Array<{
-    id: number;
-    title: string;
-    room: string;
-    startTime: Date;
-    endTime: Date;
-  }>;
-  queues: QueuePartial[];
-}
-
-export type GetQueueResponse = QueuePartial;
-
-export type GetCourseQueuesResponse = QueuePartial[];
-
-export type ListQuestionsResponse = Question[];
-
-export type GetQuestionResponse = Question;
-
-export type CreateQuestionParams = {
-  text: string;
-  questionType: QuestionType;
-  queueId: number;
-};
-export type CreateQuestionResponse = Question;
-
-export type UpdateQuestionParams = {
-  text?: string;
-  questionType?: QuestionType;
-  status?: QuestionStatus;
-};
-export type UpdateQuestionResponse = Question;
-
-export type TAUpdateStatusParams = {
-  room: string;
-  status: "arrived" | "departed";
-}; // Note: Room might become an ID
-export type TAUpdateStatusResponse = Queue;
 
 /////////////////////////
 // API Base Data Types //
@@ -134,6 +85,11 @@ export enum Role {
   STUDENT = "student",
   TA = "ta",
   PROFESSOR = "professor",
+}
+
+export enum TAStatus {
+  ARRIVED = "arrived",
+  DEPARTED = "departed",
 }
 
 /**
@@ -286,3 +242,71 @@ export type DesktopNotifBody = {
 export type PhoneNotifBody = {
   phoneNumber: string;
 };
+
+// =================== API Route Types ===========================
+// API route Params and Responses
+export type GetClubResponse = Club[];
+
+export type CreateClubParams = { name: string; rating: number };
+export type CreateClubResponse = Club;
+
+// Office Hours Response Types
+export type GetProfileResponse = User;
+
+// export type GetCourseResponse = Course;
+
+export interface GetCourseResponse {
+  name: string;
+  officeHours: Array<{
+    id: number;
+    title: string;
+    room: string;
+    startTime: Date;
+    endTime: Date;
+  }>;
+  queues: QueuePartial[];
+}
+
+export type GetQueueResponse = QueuePartial;
+
+export type GetCourseQueuesResponse = QueuePartial[];
+
+export type ListQuestionsResponse = Question[];
+
+export type GetQuestionResponse = Question;
+
+export class CreateQuestionParams {
+  @IsString()
+  text: string;
+
+  @IsEnum(QuestionType)
+  questionType: QuestionType;
+
+  @IsInt()
+  queueId: number;
+}
+export type CreateQuestionResponse = Question;
+
+export class UpdateQuestionParams {
+  @IsString()
+  @IsOptional()
+  text?: string;
+
+  @IsEnum(QuestionType)
+  @IsOptional()
+  questionType?: QuestionType;
+
+  @IsInt()
+  @IsOptional()
+  queueId?: number;
+}
+export type UpdateQuestionResponse = Question;
+
+export class TAUpdateStatusParams {
+  @IsString()
+  room: string;
+
+  @IsEnum(TAStatus)
+  status: TAStatus;
+} // Note: Room might become an ID
+export type TAUpdateStatusResponse = Queue;

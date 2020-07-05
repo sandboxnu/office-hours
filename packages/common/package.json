@@ -7,6 +7,24 @@
     "build": "babel --root-mode upward -d dist -x '.ts' *.ts"
   },
   "dependencies": {
+    "class-validator": "^0.12.2",
     "typescript": "^3.8.3"
+  },
+  "babel": {
+    "plugins": [
+      "babel-plugin-transform-typescript-metadata",
+      [
+        "@babel/plugin-proposal-decorators",
+        {
+          "legacy": true
+        }
+      ],
+      [
+        "@babel/plugin-proposal-class-properties",
+        {
+          "loose": true
+        }
+      ]
+    ]
   }
 }

@@ -92,7 +92,8 @@ export default function Queue({}: QueueProps) {
    */
   const joinQueue = async () => {
     // API call to join queue, question marked as draft
-    const q = await API.questions.create(Number(qid), {
+    const q = await API.questions.create({
+      queueId: Number(qid),
       text: "fake text",
       questionType: QuestionType.Bug, // endpoint needs to be changed to allow empty questionType for drafts
       // for the moment I am defaulting this data so that there is no error

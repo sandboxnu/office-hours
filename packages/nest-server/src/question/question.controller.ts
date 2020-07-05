@@ -41,9 +41,9 @@ export class QuestionController {
 
   @Post()
   async createQuestion(
-    @Body() body,
+    @Body() body: CreateQuestionParams,
   ): Promise<CreateQuestionResponse | HttpException> {
-    const { text, questionType, queueId } = body as CreateQuestionParams;
+    const { text, questionType, queueId } = body;
     // TODO: Remove this once we implemntent user authentication
     const DEFAULT_USER = await User.create({
       id: 42,
@@ -76,9 +76,9 @@ export class QuestionController {
   @Patch(':questionId')
   async updateQuestion(
     @Param('questionId') questionId,
-    @Body() body,
+    @Body() body: UpdateQuestionParams,
   ): Promise<UpdateQuestionResponse | HttpException> {
-    const { text, questionType } = body as UpdateQuestionParams; // Question: Do we want to take in the whole question as a param?
+    const { text, questionType } = body; // Question: Do we want to take in the whole question as a param?
     // TODO: Check that the question_id belongs to the user or a TA that is currently helping with the given queue_id
     // TODO: Use user type to dertermine wether or not we should include the text in the response
     let question = await Question.findOne({
