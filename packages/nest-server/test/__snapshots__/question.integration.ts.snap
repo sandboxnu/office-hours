@@ -3,22 +3,17 @@
 exports[`Question Integration GET /questions/:id gets a question with the given id 1`] = `
 Object {
   "closedAt": null,
-  "createdAt": "2020-07-05T19:38:38.102Z",
+  "createdAt": "2020-03-01T05:00:00.000Z",
   "creator": Object {
-    "email": "user1@neu.edu",
     "id": 1,
     "name": "John Doe the 1th",
     "photoURL": "https://pics/1",
-    "username": "user1",
   },
-  "creatorId": 1,
   "helpedAt": null,
   "id": 1,
   "questionType": "Other",
-  "queueId": 1,
   "status": "Queued",
   "taHelped": null,
-  "taHelpedId": null,
   "text": "Help pls",
 }
 `;
