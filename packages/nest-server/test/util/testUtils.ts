@@ -1,5 +1,4 @@
 import { Connection } from 'typeorm';
-import * as path from 'path';
 import { ConfigModule } from '@nestjs/config';
 import { INestApplication, Type } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -28,12 +27,7 @@ export function setupIntegrationTest(
           synchronize: true,
         }),
         ConfigModule.forRoot({
-          envFilePath: [
-            path.resolve(__dirname, '../../src/.env'),
-            process.env.NODE_ENV !== 'production'
-              ? path.resolve(__dirname, '../../src/.env.development')
-              : '',
-          ],
+          envFilePath: ['.env', '.env.development'],
           isGlobal: true,
         }),
       ],

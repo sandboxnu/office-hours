@@ -3,7 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CourseController } from './course/course.controller';
 import { ProfileModule } from './profile/profile.module';
 import { CourseModule } from './course/course.module';
 import { Course } from './course/course.entity';
@@ -47,11 +46,8 @@ import { PhoneNotif } from './notification/phone-notif.entity';
     NotificationModule,
     QuestionModule,
     ConfigModule.forRoot({
-      envFilePath: [
-        '.env',
-        process.env.NODE_ENV === 'development' ? '.env.development' : '',
-      ],
-      isGlobal: true
+      envFilePath: ['.env', '.env.development'],
+      isGlobal: true,
     }),
   ],
   controllers: [AppController],
