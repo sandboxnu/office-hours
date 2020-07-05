@@ -1,19 +1,9 @@
 import styled from "styled-components";
-import {
-  Popover,
-  Switch,
-  Row,
-  Input,
-  Button,
-  Avatar,
-  Menu,
-  InputNumber,
-} from "antd";
+import { Popover, Switch, Row, Input, Button, Avatar, message } from "antd";
 import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
 import Link from "next/link";
-import React from "react";
-import useSWR from "swr";
-import { API } from "@template/api-client";
+import React, { useState } from "react";
+import { register, unregister } from "next-offline/runtime";
 
 const PopoverContainer = styled.div`
   width: 270px;
@@ -64,26 +54,54 @@ const requestNotificationPermission = async () => {
   }
 };
 
-const checkBrowserAndRequestNotifications = async () => {
-  check();
-  // try to get notification permissions
-  await requestNotificationPermission();
-  // get rid of old service worker, and then try and re-register.
-  // just kidding, this breaks Chrome for some reason (ai ya).
-  // unregister();
-  // have to use setTimeout because unregister does async things, but is sync
-  setTimeout(() => {
-    register();
-  }, 500);
-};
-
 export default function Settings() {
   // first get initial data using useSWR (or from profile)
   // todo: replace these constants with hits to useSWR call to profile
   const user_id = 1;
-  const desktopNotifToggled = true;
-  const phoneNotifToggled = false;
-  const phoneNumbers = [`+12223334444`];
+  const [desktopNotifToggled, setDesktopNotifToggled] = useState<boolean>(true);
+  const [phoneNotifToggled, setPhoneNotifToggled] = useState<boolean>(false);
+  const [phoneNumber, setPhoneNumber] = useState<string>("+12223334444");
+
+  const onDesktopNotifToggle = async (toggle: boolean) => {
+    if (toggle) {
+      check();
+      // try to get notification permissions
+      await requestNotificationPermission();
+      // get rid of old service worker, and then try and re-register.
+      // just kidding, this breaks Chrome for some reason (ai ya).
+      // unregister();
+      // have to use setTimeout because unregister does async things, but is sync
+      setTimeout(() => {
+        register();
+      }, 500);
+
+      setDesktopNotifToggled(true);
+    } else {
+      unregister();
+      setDesktopNotifToggled(false);
+    }
+  };
+
+  const onPhoneNotifToggle = async (toggle: boolean) => {
+    if (toggle) {
+      if (!phoneNumber) {
+        message.warning("Must enter phone number to enable text notifications");
+        setPhoneNotifToggled(false);
+      } else {
+        try {
+          //todo: change when ligma branch is merged
+          //await API.notif.phone.register(user_id, phoneNumbers[0]);
+          setPhoneNotifToggled(true);
+        } catch (e) {
+          message.error(e.body);
+          setPhoneNotifToggled(false);
+        }
+      }
+    } else {
+      //todo: add phone unregister endpoint
+      setPhoneNotifToggled(false);
+    }
+  };
 
   return (
     <div>
@@ -95,8 +113,8 @@ export default function Settings() {
               <SwitchContainer>
                 {" "}
                 <Switch
-                  defaultChecked={desktopNotifToggled}
-                  onChange={async () => API.notif.register(user_id)}
+                  checked={desktopNotifToggled}
+                  onChange={onDesktopNotifToggle}
                 />{" "}
               </SwitchContainer>
             </Row>
@@ -104,14 +122,23 @@ export default function Settings() {
               <LableText> Text Notifications </LableText>
               <SwitchContainer>
                 {" "}
-                <Switch defaultChecked={phoneNotifToggled} />{" "}
+                <Switch
+                  checked={phoneNotifToggled}
+                  onChange={onPhoneNotifToggle}
+                />{" "}
               </SwitchContainer>
             </Row>
             <Row>
               <LableText> Phone </LableText>
               <InputContainer>
                 {" "}
-                <Input placeholder={"XXX-XXX-XXXX"} />{" "}
+                <Input
+                  value={phoneNumber}
+                  onChange={(newNum) => {
+                    setPhoneNumber(newNum.target.value);
+                  }}
+                  placeholder={"XXX-XXX-XXXX"}
+                />{" "}
               </InputContainer>
             </Row>
             <Row>
