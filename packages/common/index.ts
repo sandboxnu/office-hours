@@ -1,4 +1,5 @@
 import { IsEnum, IsString, IsInt, IsOptional } from "class-validator";
+import 'reflect-metadata'
 
 export enum WSMessageType {
   Count = "count",
