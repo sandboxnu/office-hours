@@ -12,6 +12,8 @@ import {
 import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import React from "react";
+import useSWR from "swr";
+import { API } from "@template/api-client";
 
 const PopoverContainer = styled.div`
   width: 270px;
@@ -42,7 +44,47 @@ const CenteredIcon = styled.div`
   margin-top: 25px;
 `;
 
+const check = () => {
+  if (!("serviceWorker" in navigator)) {
+    throw new Error("No Service Worker support!");
+  }
+  if (!("PushManager" in window)) {
+    throw new Error("No Push API Support!");
+  }
+};
+
+const requestNotificationPermission = async () => {
+  if (Notification.permission === "granted") {
+    console.log(`permission previously granted`);
+  } else if (Notification.permission === "denied") {
+    console.log("permission previously denied");
+  } else if (Notification.permission === "default") {
+    console.log("permission not set > requesting");
+    await window.Notification.requestPermission();
+  }
+};
+
+const checkBrowserAndRequestNotifications = async () => {
+  check();
+  // try to get notification permissions
+  await requestNotificationPermission();
+  // get rid of old service worker, and then try and re-register.
+  // just kidding, this breaks Chrome for some reason (ai ya).
+  // unregister();
+  // have to use setTimeout because unregister does async things, but is sync
+  setTimeout(() => {
+    register();
+  }, 500);
+};
+
 export default function Settings() {
+  // first get initial data using useSWR (or from profile)
+  // todo: replace these constants with hits to useSWR call to profile
+  const user_id = 1;
+  const desktopNotifToggled = true;
+  const phoneNotifToggled = false;
+  const phoneNumbers = [`+12223334444`];
+
   return (
     <div>
       <Popover
@@ -52,14 +94,17 @@ export default function Settings() {
               <LableText> Web Notifications </LableText>
               <SwitchContainer>
                 {" "}
-                <Switch defaultChecked={false} />{" "}
+                <Switch
+                  defaultChecked={desktopNotifToggled}
+                  onChange={async () => API.notif.register(user_id)}
+                />{" "}
               </SwitchContainer>
             </Row>
             <Row>
               <LableText> Text Notifications </LableText>
               <SwitchContainer>
                 {" "}
-                <Switch defaultChecked={false} />{" "}
+                <Switch defaultChecked={phoneNotifToggled} />{" "}
               </SwitchContainer>
             </Row>
             <Row>
