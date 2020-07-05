@@ -1,11 +1,11 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as webPush from 'web-push';
-import twilio from 'twilio';
+import * as twilio from 'twilio';
 import { DesktopNotif } from './desktop-notif.entity';
 import { PhoneNotif } from './phone-notif.entity';
 import { DeepPartial } from 'typeorm';
-import { User } from 'src/profile/user.entity';
+import { User } from '../profile/user.entity';
 
 @Injectable()
 export class NotificationService {

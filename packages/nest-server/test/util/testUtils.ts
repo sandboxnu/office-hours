@@ -1,10 +1,14 @@
-import {  Connection } from 'typeorm';
+import { Connection } from 'typeorm';
+import * as path from 'path';
+import { ConfigModule } from '@nestjs/config';
 import { INestApplication, Type } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as supertest from 'supertest';
 
-export function setupIntegrationTest(module: Type<any>): () => supertest.SuperTest<supertest.Test> {
+export function setupIntegrationTest(
+  module: Type<any>,
+): () => supertest.SuperTest<supertest.Test> {
   let app: INestApplication;
   let conn: Connection;
 
@@ -23,10 +27,19 @@ export function setupIntegrationTest(module: Type<any>): () => supertest.SuperTe
           entities: ['./**/*.entity.ts'],
           synchronize: true,
         }),
+        ConfigModule.forRoot({
+          envFilePath: [
+            path.resolve(__dirname, '../../src/.env'),
+            process.env.NODE_ENV !== 'production'
+              ? path.resolve(__dirname, '../../src/.env.development')
+              : '',
+          ],
+          isGlobal: true,
+        }),
       ],
     }).compile();
     app = testModule.createNestApplication();
-    conn = testModule.get<Connection>(Connection)
+    conn = testModule.get<Connection>(Connection);
     await app.init();
   });
 
@@ -36,8 +49,8 @@ export function setupIntegrationTest(module: Type<any>): () => supertest.SuperTe
   });
 
   beforeEach(async () => {
-    await conn.synchronize(true)
-  })
+    await conn.synchronize(true);
+  });
 
   return () => supertest(app.getHttpServer());
 }

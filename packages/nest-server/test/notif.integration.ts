@@ -1,15 +1,13 @@
 import {
-  StudentCourseFactory,
   UserFactory,
-  CourseFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
-import { ProfileModule } from '../src/profile/profile.module';
 import { DesktopNotif } from '../src/notification/desktop-notif.entity';
 import { PhoneNotif } from '../src/notification/phone-notif.entity';
+import { NotificationModule } from '../src/notification/notification.module';
 
 describe('Notif Integration', () => {
-  const supertest = setupIntegrationTest(ProfileModule);
+  const supertest = setupIntegrationTest(NotificationModule);
 
   describe('GET /notifications/desktop/credentials', () => {
     it('gets a public key', async () => {
