@@ -1,6 +1,7 @@
 import { Avatar, Button, Card } from "antd";
 import { QueuePartial } from "../../../common/index";
 import styled from "styled-components";
+import Link from "next/link";
 
 type OpenQueueCard = {
   queue: QueuePartial;
@@ -22,9 +23,11 @@ const OpenQueueCard = ({ queue }: OpenQueueCard) => {
     <PaddedCard
       title={staffList.map((staffMember) => staffMember.name).join(", ")}
       extra={
-        <Button type="primary" size={"middle"}>
-          Join Queue
-        </Button>
+        <Link href="queue/[qid]" as={`queue/${queue.id}`}>
+          <Button type="primary" size={"middle"}>
+            Join Queue
+          </Button>
+        </Link>
       }
     >
       <h1>{queue.room}</h1>
