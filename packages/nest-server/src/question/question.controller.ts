@@ -7,6 +7,8 @@ import {
   HttpException,
   Patch,
   NotFoundException,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import {
   CreateQuestionResponse,
@@ -22,6 +24,7 @@ import { Question } from './question.entity';
 import { User } from '../profile/user.entity';
 
 @Controller('questions')
+@UseInterceptors(ClassSerializerInterceptor)
 export class QuestionController {
   constructor(private connection: Connection) {}
 

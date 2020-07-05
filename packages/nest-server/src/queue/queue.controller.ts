@@ -15,16 +15,15 @@ import {
 import { Question } from '../question/question.entity';
 
 @Controller('queues')
+@UseInterceptors(ClassSerializerInterceptor)
 export class QueueController {
   constructor(private connection: Connection) {}
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':queueId')
   async getQueue(@Param('queueId') queueId: string): Promise<GetQueueResponse> {
     return Queue.findOne(queueId, { relations: ['questions'] });
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':queueId/questions')
   async getQuestions(
     @Param('queueId') queueId: string,

@@ -257,6 +257,7 @@ export type GetProfileResponse = User;
 // export type GetCourseResponse = Course;
 
 export interface GetCourseResponse {
+  id: number;
   name: string;
   officeHours: Array<{
     id: number;

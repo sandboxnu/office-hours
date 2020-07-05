@@ -2,6 +2,7 @@
 
 exports[`Course Integraiton GET /courses/:id gets office hours and queues 1`] = `
 Object {
+  "id": 1,
   "name": "CS 2500",
   "officeHours": Array [
     Object {

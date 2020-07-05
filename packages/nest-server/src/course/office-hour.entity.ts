@@ -8,6 +8,7 @@ import {
   OneToMany,
 } from "typeorm";
 import { Course } from "./course.entity";
+import { Exclude } from 'class-transformer';
 
 @Entity("office_hour")
 export class OfficeHour extends BaseEntity {
@@ -16,9 +17,11 @@ export class OfficeHour extends BaseEntity {
 
   @ManyToOne((type) => Course, (course) => course.officeHours)
   @JoinColumn({ name: "courseId" })
+  @Exclude()
   course: Course;
 
   @Column({ nullable: true })
+  @Exclude()
   courseId: number;
 
   @Column("text")
