@@ -14,8 +14,6 @@ describe('Notif Integration', () => {
       const res = await supertest()
         .get('/notifications/desktop/credentials')
         .expect(200)
-        .expect('keyhaha')
-      
     });
   });
 
@@ -23,8 +21,8 @@ describe('Notif Integration', () => {
     it("registers a user + webpush endpoint, tests it's in the db", async () => {
       const user = await UserFactory.create();
       const expirDate = new Date(2020, 1, 2);
-      supertest()
-        .post(`/notifications/desktop/register${user.id}`)
+      await supertest()
+        .post(`/notifications/desktop/register/${user.id}`)
         .send({
           endpoint: 'biggoogle.com',
           expirationTime: expirDate,
@@ -33,7 +31,7 @@ describe('Notif Integration', () => {
             auth: 'some_key_as_well',
           },
         })
-        .expect(200);
+        .expect(201);
       expect(await DesktopNotif.findOne()).toEqual({
         auth: 'some_key_as_well',
         endpoint: 'biggoogle.com',
@@ -49,15 +47,15 @@ describe('Notif Integration', () => {
   describe('POST /notifications/phone/register/:user_id', () => {
     it("registers a user & phone number, tests it's in the db", async () => {
       const user = await UserFactory.create();
-      supertest()
+      await supertest()
         .post(`/notifications/phone/register/${user.id}`)
-        .send({ phoneNumber: '+12345678900' })
-        .expect(200);
+        .send({ phoneNumber: '+16175551212' })
+        .expect(201);
 
       const notifModel = await PhoneNotif.findOne();
       expect(notifModel).toEqual({
         id: 1,
-        phoneNumber: '+12345678900',
+        phoneNumber: '+16175551212',
         user: undefined,
         userId: 1,
       });
@@ -80,7 +78,7 @@ describe('Notif Integration', () => {
             auth: 'some_key_as_well',
           },
         })
-        .expect(200);
+        .expect(201);
 
       await supertest().post(`/notifications/notify_user/${user.id}`);
 

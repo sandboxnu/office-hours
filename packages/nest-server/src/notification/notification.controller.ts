@@ -3,7 +3,7 @@ import { DesktopNotifBody } from '@template/common';
 import { DesktopNotif } from './desktop-notif.entity';
 import { NotificationService } from './notification.service';
 
-@Controller('notification')
+@Controller('notifications')
 export class NotificationController {
   constructor(private notifService: NotificationService) {}
 
