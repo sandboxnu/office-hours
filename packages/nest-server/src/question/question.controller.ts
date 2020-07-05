@@ -15,10 +15,10 @@ import {
   UpdateQuestionResponse,
   UpdateQuestionParams,
 } from '@template/common';
-import { Queue } from 'src/queue/queue.entity';
+import { Queue } from '../queue/queue.entity';
 import { Connection } from 'typeorm';
 import { Question } from './question.entity';
-import { User } from 'src/profile/user.entity';
+import { User } from '../profile/user.entity';
 import { Http2ServerResponse } from 'http2';
 
 @Controller('questions')
@@ -28,11 +28,14 @@ export class QuestionController {
   @Get(':questionId')
   async getQuestion(
     @Param('questionId') questionId,
-  ): Promise<GetQuestionResponse> {
+  ): Promise<GetQuestionResponse | HttpException> {
     const question = await Question.findOne(questionId, {
       relations: ['creator', 'taHelped'],
     });
 
+    if (question === undefined) {
+      return new HttpException('Question not found', 404);
+    }
     return question;
   }
 
