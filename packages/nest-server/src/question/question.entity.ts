@@ -7,6 +7,7 @@ import {
   JoinColumn,
   CreateDateColumn,
 } from "typeorm";
+import { Exclude } from 'class-transformer';
 import { UserCourse } from "../profile/user-course.entity";
 import { Queue } from "../queue/queue.entity";
 import { QuestionType, QuestionStatus } from "@template/common";
@@ -19,9 +20,11 @@ export class Question extends BaseEntity {
 
   @ManyToOne((type) => Queue, (q) => q.questions)
   @JoinColumn({ name: "queueId" })
+  @Exclude()
   queue: Queue;
 
   @Column({ nullable: true })
+  @Exclude()
   queueId: number;
 
   @Column("text")
@@ -32,6 +35,7 @@ export class Question extends BaseEntity {
   creator: User;
 
   @Column({ nullable: true })
+  @Exclude()
   creatorId: number;
 
   @ManyToOne((type) => User)
@@ -39,6 +43,7 @@ export class Question extends BaseEntity {
   taHelped: User;
 
   @Column({ nullable: true })
+  @Exclude()
   taHelpedId: number;
 
   @CreateDateColumn()
