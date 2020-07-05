@@ -6,6 +6,7 @@ import {
   Body,
   HttpException,
   Patch,
+  NotFoundException,
 } from '@nestjs/common';
 import {
   CreateQuestionResponse,
@@ -19,7 +20,6 @@ import { Queue } from '../queue/queue.entity';
 import { Connection } from 'typeorm';
 import { Question } from './question.entity';
 import { User } from '../profile/user.entity';
-import { Http2ServerResponse } from 'http2';
 
 @Controller('questions')
 export class QuestionController {
@@ -28,13 +28,13 @@ export class QuestionController {
   @Get(':questionId')
   async getQuestion(
     @Param('questionId') questionId,
-  ): Promise<GetQuestionResponse | HttpException> {
+  ): Promise<GetQuestionResponse> {
     const question = await Question.findOne(questionId, {
       relations: ['creator', 'taHelped'],
     });
 
     if (question === undefined) {
-      return new HttpException('Question not found', 404);
+      throw new NotFoundException()
     }
     return question;
   }
@@ -42,7 +42,7 @@ export class QuestionController {
   @Post()
   async createQuestion(
     @Body() body: CreateQuestionParams,
-  ): Promise<CreateQuestionResponse | HttpException> {
+  ): Promise<CreateQuestionResponse> {
     const { text, questionType, queueId } = body;
     // TODO: Remove this once we implemntent user authentication
     const DEFAULT_USER = await User.create({
@@ -57,7 +57,7 @@ export class QuestionController {
     });
     // Check that the queue exists
     if (queueSize === 0) {
-      return new HttpException('Queue not found', 404);
+      throw new NotFoundException();
     }
     // TODO: Check that the user posting the question is a member of the course
 
@@ -77,7 +77,7 @@ export class QuestionController {
   async updateQuestion(
     @Param('questionId') questionId,
     @Body() body: UpdateQuestionParams,
-  ): Promise<UpdateQuestionResponse | HttpException> {
+  ): Promise<UpdateQuestionResponse> {
     const { text, questionType } = body; // Question: Do we want to take in the whole question as a param?
     // TODO: Check that the question_id belongs to the user or a TA that is currently helping with the given queue_id
     // TODO: Use user type to dertermine wether or not we should include the text in the response
@@ -86,9 +86,9 @@ export class QuestionController {
       relations: ['creator'],
     });
     if (question === undefined) {
-      return new HttpException('Question not found', 404);
+      throw new NotFoundException();
     }
-    question = Object.assign(question, body);
+    question = Object.assign(question, {text, questionType});
     await question.save();
     return question;
   }

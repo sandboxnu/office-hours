@@ -14,8 +14,7 @@ describe('Question Integration', () => {
       expect(response.body).toMatchSnapshot();
     });
     it('fails to get a non-existent question', async () => {
-      const response = await supertest().get(`/questions/999`).expect(404);
-      expect(response.body).toEqual('Question not found');
+      await supertest().get(`/questions/999`).expect(404);
     });
   });
 
@@ -41,7 +40,7 @@ describe('Question Integration', () => {
       expect(await Question.count({ where: { queueId: 1 } })).toEqual(1);
     });
     it('post question fails with non-existent queue', async () => {
-      const response = await supertest()
+      await supertest()
         .post('/questions')
         .send({
           text: "Don't know recursion",
@@ -49,17 +48,15 @@ describe('Question Integration', () => {
           queueId: 999,
         })
         .expect(404);
-      expect(response.body).toEqual('Queue not found');
     });
     // this test can be done once we figure out validation
     it.skip('post question fails with bad params', async () => {
-      const response = await supertest()
+      await supertest()
         .post('/questions')
         .send({
           question: 'I need help',
         })
         .expect(404);
-      expect(response.body).toEqual('Question not found');
     });
   });
 
@@ -82,13 +79,12 @@ describe('Question Integration', () => {
       });
     });
     it('fails to update a non-existent question', async () => {
-      const response = await supertest()
+      await supertest()
         .patch(`/questions/999`)
         .send({
           text: 'NEW TEXT',
         })
         .expect(404);
-      expect(response.body).toEqual('Question not found');
     });
   });
 });
