@@ -161,7 +161,7 @@ export type Question = {
   creator: UserPartial;
   text?: string;
   taHelped?: UserPartial;
-  createdAt: Date;
+  createdAt: Date; // TODO: remove this field, frontend doesn't need it
   helpedAt?: Date;
   closedAt?: Date;
   questionType?: QuestionType;
