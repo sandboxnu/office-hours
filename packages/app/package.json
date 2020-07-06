@@ -33,6 +33,7 @@
     "@types/react-big-calendar": "^0.24.2",
     "@types/socket.io-client": "^1.4.32",
     "babel-plugin-styled-components": "^1.10.7",
+    "eslint-plugin-react": "^7.20.3",
     "jest": "^26.0.1",
     "typescript": "^3.8.3"
   },
