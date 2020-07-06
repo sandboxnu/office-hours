@@ -93,6 +93,11 @@ class APIClient {
       return question;
     },
   };
+  queues = {
+    updateNotes: async (queueId: number, notes: string) => {
+      await this.axios.patch(`/api/v1/queues/${queueId}`, { notes });
+    },
+  };
   notif = {
     notify_user: async (userId: number): Promise<void> => {
       await this.axios.post(`/api/v1/notifications/notify_user/${userId}`);

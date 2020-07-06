@@ -1,13 +1,18 @@
-
 import { QuestionStatusKeys } from "@template/common";
 import { QuestionModel } from "../entity/QuestionModel";
+import { QueueModel } from "../entity/QueueModel";
 import {
   QuestionFactory,
   QueueFactory,
-
-  TACourseFactory, UserFactory
+  TACourseFactory,
+  UserFactory,
 } from "../factory";
-import { setupDBTest, setupServerTest, withServer, injectAsUser } from "../testUtils";
+import {
+  injectAsUser,
+  setupDBTest,
+  setupServerTest,
+  withServer,
+} from "../testUtils";
 
 describe("Queue Routes", () => {
   setupDBTest();
@@ -99,6 +104,29 @@ describe("Queue Routes", () => {
     });
   });
 
+  describe("/api/v1/queues/{queue_id}", () => {
+    it("BASIC TEST CAUSE RIP HAPI", async () => {
+      const user = await UserFactory.create();
+      const question = await QuestionFactory.create({
+        text: "Recursion is wrecking me",
+      });
+
+      const request = await injectAsUser(getServer(), user, {
+        method: "patch",
+        url: `/api/v1/queues/${question.queueId}`,
+        payload: {
+          notes: "dajin really loves sucking nuts from sugondese",
+        },
+      });
+
+      expect(request.statusCode).toEqual(200);
+      const queueModel = await QueueModel.findOne(question.queueId);
+      expect(queueModel.notes).toBe(
+        "dajin really loves sucking nuts from sugondese"
+      );
+    });
+  });
+
   describe("/queues/{queue_id}/questions/:question_id", () => {
     it("GET question that exists", async () => {
       const question = await QuestionFactory.create({
@@ -115,8 +143,8 @@ describe("Queue Routes", () => {
         closedAt: null,
         creator: {
           id: 1,
-          name: "John Doe the 7th",
-          photoURL: "https://pics/7",
+          name: "John Doe the 9th",
+          photoURL: "https://pics/9",
         },
         helpedAt: null,
         id: 1,

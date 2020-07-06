@@ -1,22 +1,21 @@
-import { ServerRoute, ResponseObject } from "@hapi/hapi";
+import { ResponseObject, ServerRoute } from "@hapi/hapi";
 import Joi from "@hapi/joi";
-import { CourseSchema, QueueSchema, CourseQueueSchema } from "../joi";
-import { CourseModel } from "../entity/CourseModel";
-import { QueueModel } from "../entity/QueueModel";
-import { pick } from "lodash";
 import {
+  GetCourseQueuesResponse,
+  GetCourseResponse,
   TAUpdateStatusParams,
   TAUpdateStatusResponse,
-  GetCourseResponse,
-  GetCourseQueuesResponse,
-  OpenQuestionStatus,
 } from "@template/common";
+import { pick } from "lodash";
+import { CourseModel } from "../entity/CourseModel";
+import { QuestionModel } from "../entity/QuestionModel";
+import { QueueModel } from "../entity/QueueModel";
+import { CourseQueueSchema, CourseSchema, QueueSchema } from "../joi";
+import { MOCK_GET_COURSE_RESPONSE } from "../mocks/getCourse";
 import {
   MOCK_TA_UPDATE_STATUS_ARRIVED_RESPONSE,
   MOCK_TA_UPDATE_STATUS_DEPARTED_RESPONSE,
 } from "../mocks/taUpdateStatus";
-import { MOCK_GET_COURSE_RESPONSE } from "../mocks/getCourse";
-import { QuestionModel } from "../entity/QuestionModel";
 
 export const courseRoutes: ServerRoute[] = [
   {
@@ -58,7 +57,7 @@ export const courseRoutes: ServerRoute[] = [
       }
 
       return queues.map((queue: any) =>
-        pick(queue, ["id", "room", "staffList", "queueSize"])
+        pick(queue, ["id", "room", "staffList", "queueSize", "notes"])
       );
     },
     options: {
