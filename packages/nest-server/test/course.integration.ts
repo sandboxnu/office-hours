@@ -1,5 +1,5 @@
 import { setupIntegrationTest } from './util/testUtils';
-import { CourseModule } from '../src/course/course.module';
+import {CourseModule } from '../src/course/course.module';
 import { CourseFactory, OfficeHourFactory } from './util/factories';
 
 describe('Course Integraiton', () => {
