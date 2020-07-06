@@ -2,6 +2,7 @@ import { Avatar, Button, Card } from "antd";
 import { QueuePartial } from "../../../common/index";
 import styled from "styled-components";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 type OpenQueueCard = {
   queue: QueuePartial;
@@ -18,12 +19,17 @@ const AvatarContainer = styled.div`
 `;
 
 const OpenQueueCard = ({ queue }: OpenQueueCard) => {
+  const router = useRouter();
+  const { cid } = router.query;
   const staffList = queue.staffList;
   return (
     <PaddedCard
       title={staffList.map((staffMember) => staffMember.name).join(", ")}
       extra={
-        <Link href="queue/[qid]" as={`queue/${queue.id}`}>
+        <Link
+          href="/class/[cid]/queue/[qid]"
+          as={`/class/${cid}/queue/${queue.id}`}
+        >
           <Button type="primary" size={"middle"}>
             Join Queue
           </Button>
