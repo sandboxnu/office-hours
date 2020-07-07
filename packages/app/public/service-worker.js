@@ -1,4 +1,12 @@
-// taken from https://medium.com/izettle-engineering/beginners-guide-to-web-push-notifications-using-service-workers-cb3474a17679
+"use strict";
+
+// some code taken from https://medium.com/izettle-engineering/beginners-guide-to-web-push-notifications-using-service-workers-cb3474a17679
+
+// important constants
+// todo: replace with actual user id.
+const USER_ID = 1;
+const ENDPOINT_REGISTER = `api/v1/notifications/desktop/register/${USER_ID}`;
+const ENDPOINT_CREDENTIALS = `api/v1/notifications/desktop/credentials`;
 
 // urlB64ToUint8Array is a magic function that will encode the base64 public key
 // to Array buffer which is needed by the subscription option
@@ -15,13 +23,8 @@ const urlB64ToUint8Array = (base64String) => {
   return outputArray;
 };
 
-const SERVER_URL = (s) => `/api/v1/notifications/${s}`;
-// todo: replace with actual user id.
-const USER_ID = 1;
-
 const saveSubscription = async (subscription, user_id) => {
-  const URL = SERVER_URL(`register`) + "/" + user_id;
-  const response = await fetch(URL, {
+  const response = await fetch(ENDPOINT_REGISTER, {
     method: "post",
     headers: {
       "Content-Type": "application/json",
@@ -34,9 +37,7 @@ const saveSubscription = async (subscription, user_id) => {
 self.addEventListener("activate", async () => {
   // This will be called only once when the service worker is installed for first time.
   try {
-    const URL = SERVER_URL(`credentials`);
-    // todo: is there a better way to get the body?
-    const PUBLICKEY = await (await fetch(URL)).json();
+    const PUBLICKEY = await (await fetch(ENDPOINT_CREDENTIALS)).json();
     const applicationServerKey = urlB64ToUint8Array(PUBLICKEY);
     const options = { applicationServerKey, userVisibleOnly: true };
     const subscription = await self.registration.pushManager.subscribe(options);
