@@ -49,6 +49,10 @@ const HeaderRow = styled(Row)`
   margin-bottom: 64px;
 `;
 
+const FullWidthButton = styled(Button)`
+  width: 95%;
+`;
+
 interface StudentQueueListProps {
   joinQueue: () => void;
   leaveQueue: () => void;
@@ -122,18 +126,41 @@ export default function StudentQueueList({
     <div>
       <Row gutter={[64, 64]}>
         <Col flex="auto" order={screens.lg === false ? 2 : 1}>
+          <Row>
+            {hasDraftInProgress && (
+              <Alert
+                message="Incomplete Question"
+                description={
+                  <Row>
+                    <Col span={14}>
+                      Your spot in queue has been temporarily reserved. Please
+                      finish describing your question to receive help and finish
+                      joining the queue.
+                    </Col>
+                    <Col span={2}></Col>
+                    <Col span={4}>
+                      <FullWidthButton type="primary">
+                        Continue Drafting
+                      </FullWidthButton>
+                    </Col>
+                    <Col span={4}>
+                      <FullWidthButton type="primary">
+                        Delete Draft
+                      </FullWidthButton>
+                    </Col>
+                  </Row>
+                }
+                type="warning"
+                showIcon
+              />
+            )}
+          </Row>
           <Row justify="space-between">
             <QueueTitle>Queue 1</QueueTitle>
             {!studentQuestion && (
               <Button type="primary" size="large" onClick={joinQueueOpenModal}>
                 Join Queue
               </Button>
-            )}
-            {hasDraftInProgress && (
-              <Alert
-                message="Incomplete Question"
-                description="Your spot in queue has been temporarily reserved. Please finish describing your question to receive help and finish joining the queue."
-              />
             )}
           </Row>
           <StudentHeaderCard bordered={false}>
