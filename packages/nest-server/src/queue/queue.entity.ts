@@ -17,10 +17,7 @@ export class Queue extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(
-    type => Course,
-    course => course.queues,
-  )
+  @ManyToOne((type) => Course, (course) => course.queues)
   @JoinColumn({ name: 'courseId' })
   course: Course;
 
@@ -31,10 +28,7 @@ export class Queue extends BaseEntity {
   @Column('text')
   room: string;
 
-  @OneToMany(
-    type => Question,
-    qm => qm.queue,
-  )
+  @OneToMany((type) => Question, (qm) => qm.queue)
   @Exclude()
   questions: Question[];
 
@@ -58,7 +52,9 @@ export class Queue extends BaseEntity {
 
   @Expose()
   get queueSize(): number {
-    return this.questions.filter(q => q.status in OpenQuestionStatus).length;
+    return (
+      this.questions?.filter((q) => q.status in OpenQuestionStatus).length || 0
+    );
   }
   // TODO: eventually figure out how staff get sent to FE as well
 }

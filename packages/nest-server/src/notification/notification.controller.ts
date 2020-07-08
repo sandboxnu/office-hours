@@ -1,9 +1,11 @@
-import { Controller, Get, Body, Post, Param } from '@nestjs/common';
+import { Controller, Get, Body, Post, Param, UseGuards } from '@nestjs/common';
 import { DesktopNotifBody } from '@template/common';
 import { DesktopNotif } from './desktop-notif.entity';
 import { NotificationService } from './notification.service';
+import { JwtAuthGuard } from '../profile/jwt-auth.guard';
 
 @Controller('notifications')
+@UseGuards(JwtAuthGuard)
 export class NotificationController {
   constructor(private notifService: NotificationService) {}
 
@@ -20,7 +22,7 @@ export class NotificationController {
       p256dh: body.keys.p256dh,
       auth: body.keys.auth,
       userId: params.user_id,
-    })
+    });
     return 'registration success';
   }
 

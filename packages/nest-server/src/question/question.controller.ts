@@ -9,6 +9,7 @@ import {
   NotFoundException,
   UseInterceptors,
   ClassSerializerInterceptor,
+  UseGuards,
 } from '@nestjs/common';
 import {
   CreateQuestionResponse,
@@ -22,8 +23,10 @@ import { Queue } from '../queue/queue.entity';
 import { Connection } from 'typeorm';
 import { Question } from './question.entity';
 import { User } from '../profile/user.entity';
+import { JwtAuthGuard } from '../profile/jwt-auth.guard';
 
 @Controller('questions')
+@UseGuards(JwtAuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class QuestionController {
   constructor(private connection: Connection) {}
@@ -37,7 +40,7 @@ export class QuestionController {
     });
 
     if (question === undefined) {
-      throw new NotFoundException()
+      throw new NotFoundException();
     }
     return question;
   }
@@ -91,7 +94,7 @@ export class QuestionController {
     if (question === undefined) {
       throw new NotFoundException();
     }
-    question = Object.assign(question, {text, questionType});
+    question = Object.assign(question, { text, questionType });
     await question.save();
     return question;
   }
