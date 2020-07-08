@@ -1,8 +1,25 @@
 describe("Edit Queue Notes", () => {
-  it("can sucsessfully edit queue notes as a ta", () => {
+  it("can successfully edit queue notes as a ta", () => {
+    cy.server();
+    cy.route("GET", "/api/v1/profile", "fixture:student_profile");
+    cy.route(
+      "GET",
+      "/api/v1/courses/1/queues",
+      "fixture:queue_routes_no_notes"
+    );
+    cy.route("PATCH", "/api/v1/queues/1", {});
+
     cy.visit("/class/1/today");
-    cy.get("button").contains("Login as TA").click();
-    cy.getCookie("office-hours").should("exist");
-    // cy.location('pathname').should('contain', '/today')  TODO: Get login redirect working
+    cy.get("svg[data-icon='edit']").click();
+
+    cy.route(
+      "GET",
+      "/api/v1/courses/1/queues",
+      "fixture:queue_route_with_notes"
+    );
+
+    cy.get("input").click().type("alex has a smooth brain{enter}");
+
+    cy.get("p").contains("alex has a smooth brain");
   });
 });

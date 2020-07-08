@@ -1,6 +1,5 @@
 import { ServerRoute } from "@hapi/hapi";
 import Joi from "@hapi/joi";
-import { UserCourseModel } from "../entity/UserCourseModel";
 
 export const entryRoutes: ServerRoute[] = [
   {
