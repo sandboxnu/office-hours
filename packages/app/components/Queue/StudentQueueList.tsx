@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useCallback } from "react";
 import { Question, Role, QuestionType } from "@template/common";
 import styled from "styled-components";
-import { Row, Col, Card, Button, Grid, Modal } from "antd";
+import { Row, Col, Card, Button, Grid, Modal, Alert } from "antd";
 import QueueCard from "./QueueCard";
 import EditableQuestion from "./EditableQuestion";
 import QuestionForm from "./QuestionForm";
@@ -72,6 +72,7 @@ export default function StudentQueueList({
   const screens = useBreakpoint();
   const [popupEditQuestion, setPopupEditQuestion] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
+  const [hasDraftInProgress, setHasDraftInProgress] = useState(true);
 
   const openEditModal = useCallback(() => {
     setPopupEditQuestion(true);
@@ -127,6 +128,12 @@ export default function StudentQueueList({
               <Button type="primary" size="large" onClick={joinQueueOpenModal}>
                 Join Queue
               </Button>
+            )}
+            {hasDraftInProgress && (
+              <Alert
+                message="Incomplete Question"
+                description="Your spot in queue has been temporarily reserved. Please finish describing your question to receive help and finish joining the queue."
+              />
             )}
           </Row>
           <StudentHeaderCard bordered={false}>
