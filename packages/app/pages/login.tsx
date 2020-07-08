@@ -1,8 +1,7 @@
-import styled from "styled-components";
-import { Form, Input, Button, Checkbox, Divider } from "antd";
-import React, { useState } from "react";
+import { Button, Divider } from "antd";
 import Link from "next/link";
-import NavBar from "../components/Nav/NavBar";
+import React, { useState } from "react";
+import styled from "styled-components";
 
 const Container = styled.div`
   width: auto;

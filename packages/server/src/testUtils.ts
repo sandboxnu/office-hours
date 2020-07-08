@@ -1,15 +1,9 @@
-import { createConnection, Connection } from "typeorm";
-import { init } from "./server";
+import { AuthCredentials, Server, ServerInjectOptions } from "@hapi/hapi";
 import path from "path";
-import { Server, ServerInjectOptions, AuthCredentials } from "@hapi/hapi";
-import { CourseModel } from "./entity/CourseModel";
-import { QueueModel } from "./entity/QueueModel";
+import { Connection, createConnection } from "typeorm";
 import { UserModel } from "./entity/UserModel";
 import { UserFactory } from "./factory";
-import { UserCourseModel } from "./entity/UserCourseModel";
-import { QuestionModel } from "./entity/QuestionModel";
-import { QuestionType } from "@template/common";
-import hapiAuthCookie from "@hapi/cookie";
+import { init } from "./server";
 
 export function setupServerTest(): () => Server {
   let server: Server;

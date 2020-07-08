@@ -1,26 +1,21 @@
-import { ServerRoute, ResponseObject } from "@hapi/hapi";
+import { ResponseObject, ServerRoute } from "@hapi/hapi";
 import Joi from "@hapi/joi";
-import { QuestionSchema } from "../joi";
 import {
-  ListQuestionsResponse,
+  CreateQuestionParams,
   CreateQuestionResponse,
-  UpdateQuestionParams,
   GetQuestionResponse,
-  UpdateQuestionResponse,
+  ListQuestionsResponse,
   Question,
-  UserPartial,
   QuestionStatus,
   QuestionStatusKeys,
-  QuestionType,
-  CreateQuestionParams,
+  UpdateQuestionParams,
+  UpdateQuestionResponse,
+  UserPartial,
 } from "@template/common";
-import {
-  MOCK_STUDENT_UPDATE_QUESTION_RESPONSE,
-  MOCK_TA_UPDATE_QUESTION,
-} from "../mocks/updateQuestion";
 import { QuestionModel } from "../entity/QuestionModel";
-import { UserModel } from "../entity/UserModel";
 import { QueueModel } from "../entity/QueueModel";
+import { UserModel } from "../entity/UserModel";
+import { QuestionSchema, QueueNotePayload } from "../joi";
 
 export const queueRoutes: ServerRoute[] = [
   {
@@ -161,6 +156,21 @@ export const queueRoutes: ServerRoute[] = [
           questionType: Joi.string(),
           status: Joi.string(),
         }).required(),
+      },
+    },
+  },
+  {
+    method: "PATCH",
+    path: "/api/v1/queues/{queue_id}",
+    handler: async (request, h) => {
+      const queueModel = await QueueModel.findOne(request.params.queue_id);
+      queueModel.notes = request.payload["notes"];
+      await queueModel.save();
+      return h.response().code(200);
+    },
+    options: {
+      validate: {
+        payload: QueueNotePayload,
       },
     },
   },

@@ -13,6 +13,7 @@ import { useCallback, useState, useEffect, Fragment } from "react";
 import { API } from "@template/api-client";
 import StudentQueueList from "../../../../components/Queue/StudentQueueList";
 import TAQueueList from "../../../../components/Queue/TAQueueList";
+import NavBar from "../../../../components/Nav/NavBar";
 import { useProfile } from "../../../../hooks/useProfile";
 import { useRouter } from "next/router";
 import useSWR, { mutate } from "swr";
@@ -125,7 +126,11 @@ export default function Queue({}: QueueProps) {
       questionType: questionType,
       status: OpenQuestionStatus.Queued,
     };
-    const q = await API.questions.update(Number(qid), studentQuestion.id, updateStudent);
+    const q = await API.questions.update(
+      Number(qid),
+      studentQuestion.id,
+      updateStudent
+    );
     setIsJoining(false);
     const newQuestions = questions.map((q) =>
       q.id === studentQuestion.id ? { ...q, updateStudent } : q
@@ -165,42 +170,45 @@ export default function Queue({}: QueueProps) {
 
   if (questions) {
     return (
-      <Container>
-        <Fragment>
-          {Role.STUDENT === ROLE ? (
-            <StudentQueueList
-              onOpenClick={onOpenClick}
-              joinQueue={joinQueue}
-              questions={questions}
-              helpingQuestions={helpingQuestions}
-              studentQuestion={studentQuestion}
-              leaveQueue={leaveQueue}
-              finishQuestion={finishQuestion}
-            />
-          ) : (
-            <TAQueueList
-              onOpenClick={onOpenClick}
-              joinQueue={joinQueue}
-              updateQuestionTA={updateQuestionTA}
-              alertStudent={alertStudent}
-              questions={questions}
-              helpingQuestions={helpingQuestions}
-              groupQuestions={groupQuestions}
-            />
-          )}
-          {ROLE === "ta" && currentQuestion && (
-            <StudentPopupCard
-              onClose={onCloseClick}
-              email="takayama.a@northeastern.edu" //need a way to access this. or the user
-              wait={20} //figure out later
-              question={currentQuestion}
-              location="Outside by the printer" // need a way to access this
-              visible={openPopup}
-              updateQuestion={updateQuestionTA}
-            />
-          )}
-        </Fragment>
-      </Container>
+      <div>
+        <NavBar courseId={Number(cid)} />
+        <Container>
+          <Fragment>
+            {Role.STUDENT === ROLE ? (
+              <StudentQueueList
+                onOpenClick={onOpenClick}
+                joinQueue={joinQueue}
+                questions={questions}
+                helpingQuestions={helpingQuestions}
+                studentQuestion={studentQuestion}
+                leaveQueue={leaveQueue}
+                finishQuestion={finishQuestion}
+              />
+            ) : (
+              <TAQueueList
+                onOpenClick={onOpenClick}
+                joinQueue={joinQueue}
+                updateQuestionTA={updateQuestionTA}
+                alertStudent={alertStudent}
+                questions={questions}
+                helpingQuestions={helpingQuestions}
+                groupQuestions={groupQuestions}
+              />
+            )}
+            {ROLE === "ta" && currentQuestion && (
+              <StudentPopupCard
+                onClose={onCloseClick}
+                email="takayama.a@northeastern.edu" //need a way to access this. or the user
+                wait={20} //figure out later
+                question={currentQuestion}
+                location="Outside by the printer" // need a way to access this
+                visible={openPopup}
+                updateQuestion={updateQuestionTA}
+              />
+            )}
+          </Fragment>
+        </Container>
+      </div>
     );
   } else {
     return null;

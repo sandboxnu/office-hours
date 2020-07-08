@@ -1,21 +1,21 @@
-import {
-  setupDBTest,
-  setupServerTest,
-  withServer,
-  injectAsUser,
-} from "../testUtils";
-import { OfficeHourModel } from "../entity/OfficeHourModel";
+import { QuestionType } from "@template/common";
 import { CourseModel } from "../entity/CourseModel";
+import { OfficeHourModel } from "../entity/OfficeHourModel";
+import { QuestionModel } from "../entity/QuestionModel";
+import { QueueModel } from "../entity/QueueModel";
+import { UserCourseModel } from "../entity/UserCourseModel";
+import { UserModel } from "../entity/UserModel";
+import { UserFactory } from "../factory";
 import {
   MOCK_TA_UPDATE_STATUS_ARRIVED_RESPONSE,
   MOCK_TA_UPDATE_STATUS_DEPARTED_RESPONSE,
 } from "../mocks/taUpdateStatus";
-import { QueueModel } from "../entity/QueueModel";
-import { QuestionModel } from "../entity/QuestionModel";
-import { UserModel } from "../entity/UserModel";
-import { UserCourseModel } from "../entity/UserCourseModel";
-import { QuestionType } from "@template/common";
-import { UserFactory } from "../factory";
+import {
+  injectAsUser,
+  setupDBTest,
+  setupServerTest,
+  withServer,
+} from "../testUtils";
 
 setupDBTest();
 
@@ -95,6 +95,7 @@ describe("Course Routes", () => {
     expect(get.result).toEqual([
       {
         id: 1,
+        notes: null,
         queueSize: 1,
         room: "WVH 605",
         staffList: [

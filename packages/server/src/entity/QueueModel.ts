@@ -1,11 +1,11 @@
 import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
   BaseEntity,
-  ManyToOne,
+  Column,
+  Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
+  PrimaryGeneratedColumn,
 } from "typeorm";
 import { CourseModel } from "./CourseModel";
 import { QuestionModel } from "./QuestionModel";
@@ -27,6 +27,9 @@ export class QueueModel extends BaseEntity {
 
   @OneToMany((type) => QuestionModel, (qm) => qm.queue)
   questions: QuestionModel[];
+
+  @Column("text", { nullable: true })
+  notes: string;
 
   // TODO: eventually figure out how staff get sent to FE as well
 }
