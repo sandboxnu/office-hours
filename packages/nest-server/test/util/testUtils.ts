@@ -4,6 +4,8 @@ import { INestApplication, Type } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as supertest from 'supertest';
+import * as cookieParser from 'cookie-parser';
+import { ProfileModule } from '../../src/profile/profile.module';
 
 export function setupIntegrationTest(
   module: Type<any>,
@@ -15,6 +17,7 @@ export function setupIntegrationTest(
     const testModule = await Test.createTestingModule({
       imports: [
         module,
+        ProfileModule,
         // Use the e2e_test database to run the tests
         TypeOrmModule.forRoot({
           type: 'postgres',
@@ -33,6 +36,7 @@ export function setupIntegrationTest(
       ],
     }).compile();
     app = testModule.createNestApplication();
+    app.use(cookieParser());
     conn = testModule.get<Connection>(Connection);
     await app.init();
   });

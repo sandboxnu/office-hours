@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   UseGuards,
+  UnauthorizedException,
 } from '@nestjs/common';
 import {
   CreateQuestionResponse,
@@ -18,12 +19,15 @@ import {
   CreateQuestionParams,
   UpdateQuestionResponse,
   UpdateQuestionParams,
+  Role,
 } from '@template/common';
 import { Queue } from '../queue/queue.entity';
-import { Connection } from 'typeorm';
+import { Connection, In } from 'typeorm';
 import { Question } from './question.entity';
 import { User } from '../profile/user.entity';
 import { JwtAuthGuard } from '../profile/jwt-auth.guard';
+import { UserId } from '../profile/user.decorator';
+import { UserCourse } from '../profile/user-course.entity';
 
 @Controller('questions')
 @UseGuards(JwtAuthGuard)
@@ -83,19 +87,50 @@ export class QuestionController {
   async updateQuestion(
     @Param('questionId') questionId: number,
     @Body() body: UpdateQuestionParams,
+    @UserId() userId: number,
   ): Promise<UpdateQuestionResponse> {
-    const { text, questionType } = body; // Question: Do we want to take in the whole question as a param?
     // TODO: Check that the question_id belongs to the user or a TA that is currently helping with the given queue_id
     // TODO: Use user type to dertermine wether or not we should include the text in the response
     let question = await Question.findOne({
       where: { id: questionId },
-      relations: ['creator'],
+      relations: ['creator', 'queue'],
     });
     if (question === undefined) {
       throw new NotFoundException();
     }
-    question = Object.assign(question, { text, questionType });
-    await question.save();
-    return question;
+
+    const isCreator = userId === question.creatorId;
+
+    if (isCreator) {
+      // Creator can always edit
+      question = Object.assign(question, body);
+      await question.save();
+      return question;
+    }
+
+    // If not creator, check if user is TA/PROF of course of question
+    const isTaOrProf =
+      (await UserCourse.count({
+        where: {
+          userId,
+          courseId: question.queue.courseId,
+          role: In([Role.TA, Role.PROFESSOR]),
+        },
+      })) > 0;
+
+    if (isTaOrProf) {
+      if (Object.keys(body) !== ['status']) {
+        throw new UnauthorizedException(
+          'TA/Professors can only edit question status',
+        );
+      }
+      question = Object.assign(question, body);
+      await question.save();
+      return question;
+    } else {
+      throw new UnauthorizedException(
+        'Logged-in user does not have edit access',
+      );
+    }
   }
 }

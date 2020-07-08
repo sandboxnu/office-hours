@@ -1,5 +1,5 @@
 import { IsEnum, IsString, IsInt, IsOptional } from "class-validator";
-import 'reflect-metadata'
+import "reflect-metadata";
 
 export enum WSMessageType {
   Count = "count",
@@ -245,6 +245,7 @@ export type PhoneNotifBody = {
 };
 
 // =================== API Route Types ===========================
+// On backend, validated with https://docs.nestjs.com/techniques/validation
 // API route Params and Responses
 export type GetClubResponse = Club[];
 
@@ -301,6 +302,10 @@ export class UpdateQuestionParams {
   @IsInt()
   @IsOptional()
   queueId?: number;
+
+  @IsEnum(QuestionStatusKeys)
+  @IsOptional()
+  status?: QuestionStatus;
 }
 export type UpdateQuestionResponse = Question;
 
