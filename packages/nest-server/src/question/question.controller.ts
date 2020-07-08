@@ -33,7 +33,7 @@ export class QuestionController {
 
   @Get(':questionId')
   async getQuestion(
-    @Param('questionId') questionId,
+    @Param('questionId') questionId: number,
   ): Promise<GetQuestionResponse> {
     const question = await Question.findOne(questionId, {
       relations: ['creator', 'taHelped'],
@@ -81,7 +81,7 @@ export class QuestionController {
 
   @Patch(':questionId')
   async updateQuestion(
-    @Param('questionId') questionId,
+    @Param('questionId') questionId: number,
     @Body() body: UpdateQuestionParams,
   ): Promise<UpdateQuestionResponse> {
     const { text, questionType } = body; // Question: Do we want to take in the whole question as a param?

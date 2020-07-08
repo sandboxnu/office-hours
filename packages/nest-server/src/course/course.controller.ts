@@ -18,8 +18,8 @@ export class CourseController {
   constructor(private connection: Connection) {}
 
   @Get(':id')
-  async get(@Param() params): Promise<GetCourseResponse> {
-    return await Course.findOne(params.id, {
+  async get(@Param('id') id: number): Promise<GetCourseResponse> {
+    return await Course.findOne(id, {
       relations: ['officeHours', 'queues'],
     });
   }
