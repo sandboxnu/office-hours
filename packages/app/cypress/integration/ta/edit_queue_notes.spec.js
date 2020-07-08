@@ -1,6 +1,9 @@
 describe("Edit Queue Notes", () => {
   it("can successfully edit queue notes as a ta", () => {
     cy.server();
+    /*cy.request("http://localhost:3000/api/v1/profile").then((response) => {
+      cy.writeFile("cypress/fixtures/test_profile.json", response.body);
+    });*/
     cy.route("GET", "/api/v1/profile", "fixture:student_profile");
     cy.route(
       "GET",
