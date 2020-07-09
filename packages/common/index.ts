@@ -142,6 +142,7 @@ export interface QueuePartial {
   room: string;
   staffList: UserPartial[];
   queueSize: number;
+  notes?: string;
   // TODO: Add wait time?
 }
 
@@ -317,3 +318,6 @@ export class TAUpdateStatusParams {
   status: TAStatus;
 } // Note: Room might become an ID
 export type TAUpdateStatusResponse = Queue;
+export type QueueNotePayloadType = {
+  notes: string;
+};

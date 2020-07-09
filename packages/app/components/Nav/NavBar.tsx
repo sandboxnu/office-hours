@@ -128,7 +128,7 @@ export default function NavBar({ courseId }: NavBarProps) {
     return (
       <Nav>
         <LogoContainer>
-          <Logo href={`/class/${courseId}/today`}>{course.name}</Logo>
+          <Logo href={`/course/${courseId}/today`}>{course.name}</Logo>
         </LogoContainer>
         <MenuCon>
           <LeftMenu>
@@ -150,14 +150,17 @@ export default function NavBar({ courseId }: NavBarProps) {
           >
             <Menu>
               <Menu.Item key="today">
-                <Link href="/class/[cid]/today" as={`/class/${courseId}/today`}>
+                <Link
+                  href="/course/[cid]/today"
+                  as={`/course/${courseId}/today`}
+                >
                   <a>Today</a>
                 </Link>
               </Menu.Item>
               <Menu.Item key="schedule">
                 <Link
-                  href="/class/[cid]/schedule"
-                  as={`/class/${courseId}/schedule`}
+                  href="/course/[cid]/schedule"
+                  as={`/course/${courseId}/schedule`}
                 >
                   <a>Schedule</a>
                 </Link>
@@ -165,8 +168,8 @@ export default function NavBar({ courseId }: NavBarProps) {
               {queueId && (
                 <Menu.Item key="queue">
                   <Link
-                    href="/class/[cid]/queue/[qid]"
-                    as={`/class/${courseId}/queue/${queueId}`}
+                    href="/course/[cid]/queue/[qid]"
+                    as={`/course/${courseId}/queue/${queueId}`}
                   >
                     <a>Queue</a>
                   </Link>
