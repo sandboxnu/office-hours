@@ -6,10 +6,9 @@ import {
   ClosedQuestionStatus,
   QuestionType,
   QuestionStatus,
-  UserCourse,
 } from "@template/common";
 import StudentPopupCard from "../../../../components/Queue/StudentPopupCard";
-import { useCallback, useState, useEffect, Fragment } from "react";
+import { useCallback, useState, Fragment } from "react";
 import { API } from "@template/api-client";
 import StudentQueueList from "../../../../components/Queue/StudentQueueList";
 import TAQueueList from "../../../../components/Queue/TAQueueList";
@@ -28,9 +27,7 @@ const Container = styled.div`
   }
 `;
 
-interface QueueProps {}
-
-export default function Queue({}: QueueProps) {
+export default function Queue() {
   const profile = useProfile();
   const router = useRouter();
   const { cid, qid } = router.query;
@@ -48,7 +45,7 @@ export default function Queue({}: QueueProps) {
    */
   const filterHelpingGroup = () => {
     if (questions) {
-      for (let q of questions) {
+      for (const q of questions) {
         if (
           q.status === OpenQuestionStatus.Helping
           // question.taHelped &&
@@ -111,7 +108,7 @@ export default function Queue({}: QueueProps) {
   const leaveQueue = async () => {
     setIsJoining(false);
 
-    await API.questions.update(Number(qid), studentQuestion.id, {
+    await API.questions.update(studentQuestion.id, {
       status: ClosedQuestionStatus.Deleted,
     });
 
@@ -127,11 +124,7 @@ export default function Queue({}: QueueProps) {
       questionType: questionType,
       status: OpenQuestionStatus.Queued,
     };
-    const q = await API.questions.update(
-      Number(qid),
-      studentQuestion.id,
-      updateStudent
-    );
+    const q = await API.questions.update(studentQuestion.id, updateStudent);
     setIsJoining(false);
     const newQuestions = questions.map((q) =>
       q.id === studentQuestion.id ? { ...q, updateStudent } : q
@@ -152,7 +145,7 @@ export default function Queue({}: QueueProps) {
     question: Question,
     status: QuestionStatus
   ) => {
-    await API.questions.update(Number(qid), question.id, {
+    await API.questions.update(question.id, {
       status: status,
     });
     const newQuestions = questions.map((q) =>
