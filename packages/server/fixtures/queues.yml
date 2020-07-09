@@ -1,0 +1,5 @@
+entity: Queue
+items:
+  queue0:
+    courseId: '@course0'
+    room: 'RY 154'

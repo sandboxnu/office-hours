@@ -1,0 +1,14 @@
+entity: OfficeHour
+items:
+  oh0:
+    title: 'OH - Will'
+    room: 'RY 154'
+    startTime: '{{date.recent}}'
+    endTime: '{{date.recent(-.1)}}'
+    courseId: '@course0'
+  oh1:
+    title: 'OH - Grisha'
+    room: 'KA 110'
+    startTime: '{{date.future(.0011)}}'
+    endTime: '{{date.future(.001)}}'
+    courseId: '@course0'

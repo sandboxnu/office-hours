@@ -6,7 +6,7 @@ module.exports = {
   synchronize: process.env.NODE_ENV !== "production",
   logging: process.env.NODE_ENV !== "production",
   entities: [
-    path.resolve(__dirname, "packages/nest-server/src/**/*.entity{.js,.ts}"),
+    path.resolve(__dirname, "packages/server/src/**/*.entity{.js,.ts}"),
   ],
   migrations: [
     path.resolve(__dirname, "packages/server/src/migration/**/*{.js,.ts}"),

@@ -1,0 +1,9 @@
+entity: Question
+items:
+  question0:
+    queueId: '@queue0'
+    text: 'Recursion is wrecking me'
+    createdAt: '{{date.recent}}'
+    questionType: 'Other'
+    status: 'Queued'
+    creatorId: '@user0'
