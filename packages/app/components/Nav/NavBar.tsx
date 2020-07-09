@@ -115,7 +115,7 @@ export default function NavBar({ courseId }: NavBarProps) {
   );
 
   const queueId =
-    course.queues && course.queues.length > 0 && course.queues[0].id;
+    course?.queues && course.queues.length > 0 && course.queues[0].id;
 
   const showDrawer = () => {
     setVisible(true);
