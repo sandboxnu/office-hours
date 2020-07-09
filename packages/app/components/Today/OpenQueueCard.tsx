@@ -7,7 +7,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { QueuePartial } from "../../../common/index";
 
-
 type OpenQueueCard = {
   queue: QueuePartial;
   isTA: boolean;

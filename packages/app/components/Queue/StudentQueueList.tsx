@@ -1,5 +1,10 @@
 import React, { useMemo, useState, useCallback } from "react";
-import { Question, Role, QuestionType } from "@template/common";
+import {
+  Question,
+  Role,
+  QuestionType,
+  QuestionStatusKeys,
+} from "@template/common";
 import styled from "styled-components";
 import { Row, Col, Card, Button, Grid, Modal, Alert } from "antd";
 import QueueCard from "./QueueCard";
@@ -57,6 +62,7 @@ interface StudentQueueListProps {
   joinQueue: () => void;
   leaveQueue: () => void;
   finishQuestion: (questionType: QuestionType, questionText: string) => void;
+  updateQuestion: (question: Question, questionID: number) => void;
   onOpenClick: (question: Question) => void;
   questions: Question[];
   helpingQuestions: Question[];
@@ -67,6 +73,7 @@ export default function StudentQueueList({
   onOpenClick,
   leaveQueue,
   finishQuestion,
+  updateQuestion,
   joinQueue,
   studentQuestion,
   questions,
@@ -122,38 +129,53 @@ export default function StudentQueueList({
     [finishQuestion, closeEditModal]
   );
 
+  const deleteDraft = () => {
+    window.localStorage.removeItem("draftQuestion");
+    setHasDraftInProgress(false);
+  };
+
+  const continueDraft = () => {
+    const questionFromStorage = window.localStorage.getItem("draftQuestion");
+    const storedQuestion: Question = JSON.parse(questionFromStorage);
+
+    updateQuestion(storedQuestion, studentQuestion.id);
+    setPopupEditQuestion(true);
+  };
+
   return (
     <div>
       <Row gutter={[64, 64]}>
         <Col flex="auto" order={screens.lg === false ? 2 : 1}>
           <Row>
-            {hasDraftInProgress && (
-              <Alert
-                message="Incomplete Question"
-                description={
-                  <Row>
-                    <Col span={14}>
-                      Your spot in queue has been temporarily reserved. Please
-                      finish describing your question to receive help and finish
-                      joining the queue.
-                    </Col>
-                    <Col span={2}></Col>
-                    <Col span={4}>
-                      <FullWidthButton type="primary">
-                        Continue Drafting
-                      </FullWidthButton>
-                    </Col>
-                    <Col span={4}>
-                      <FullWidthButton type="primary">
-                        Delete Draft
-                      </FullWidthButton>
-                    </Col>
-                  </Row>
-                }
-                type="warning"
-                showIcon
-              />
-            )}
+            {isJoining &&
+              hasDraftInProgress &&
+              studentQuestion.status === QuestionStatusKeys.Drafting && (
+                <Alert
+                  message="Incomplete Question"
+                  description={
+                    <Row>
+                      <Col span={14}>
+                        Your spot in queue has been temporarily reserved. Please
+                        finish describing your question to receive help and
+                        finish joining the queue.
+                      </Col>
+                      <Col span={2}></Col>
+                      <Col span={4}>
+                        <FullWidthButton type="primary" onClick={continueDraft}>
+                          Continue Drafting
+                        </FullWidthButton>
+                      </Col>
+                      <Col span={4}>
+                        <FullWidthButton type="primary" onClick={deleteDraft}>
+                          Delete Draft
+                        </FullWidthButton>
+                      </Col>
+                    </Row>
+                  }
+                  type="warning"
+                  showIcon
+                />
+              )}
           </Row>
           <Row justify="space-between">
             <QueueTitle>Queue 1</QueueTitle>

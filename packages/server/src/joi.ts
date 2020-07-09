@@ -103,11 +103,10 @@ export const DesktopNotifPayload = Joi.object({
   keys: Joi.object({ p256dh: Joi.string(), auth: Joi.string() }),
 });
 
-
 export const QueueNotePayload = Joi.object({
   notes: Joi.string().optional().allow("").allow(null),
 });
-                                           
+
 export const PhoneNotifPayload = Joi.object({
   phoneNumber: Joi.string(),
 });

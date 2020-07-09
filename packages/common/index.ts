@@ -281,7 +281,7 @@ export type DesktopNotifBody = {
 export type QueueNotePayloadType = {
   notes: string;
 };
-  
+
 export type PhoneNotifBody = {
   phoneNumber: string;
 };
