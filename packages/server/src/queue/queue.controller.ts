@@ -8,9 +8,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { Queue } from './queue.entity';
+import { QueueModel } from './queue.entity';
 import { GetQueueResponse, ListQuestionsResponse } from '@template/common';
-import { Question } from '../question/question.entity';
+import { QuestionModel } from '../question/question.entity';
 import { JwtAuthGuard } from '../profile/jwt-auth.guard';
 
 @Controller('queues')
@@ -21,7 +21,7 @@ export class QueueController {
 
   @Get(':queueId')
   async getQueue(@Param('queueId') queueId: string): Promise<GetQueueResponse> {
-    return Queue.findOne(queueId, { relations: ['questions'] });
+    return QueueModel.findOne(queueId, { relations: ['questions'] });
   }
 
   @Get(':queueId/questions')
@@ -30,7 +30,7 @@ export class QueueController {
   ): Promise<ListQuestionsResponse> {
     // todo: need a way to return different data, if TA vs. student hits endpoint.
     // for now, just return the student response
-    const queueSize = await Queue.count({
+    const queueSize = await QueueModel.count({
       where: { id: queueId },
     });
     // Check that the queue exists
@@ -38,7 +38,7 @@ export class QueueController {
       throw new NotFoundException();
     }
 
-    return await Question.find({
+    return await QuestionModel.find({
       where: [
         {
           queueId: queueId,

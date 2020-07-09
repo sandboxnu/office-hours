@@ -7,7 +7,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { Course } from './course.entity';
+import { CourseModel } from './course.entity';
 import { GetCourseResponse } from '@template/common';
 import { JwtAuthGuard } from '../profile/jwt-auth.guard';
 
@@ -19,7 +19,7 @@ export class CourseController {
 
   @Get(':id')
   async get(@Param('id') id: number): Promise<GetCourseResponse> {
-    return await Course.findOne(id, {
+    return await CourseModel.findOne(id, {
       relations: ['officeHours', 'queues'],
     });
   }

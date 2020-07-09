@@ -6,19 +6,19 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from '../profile/user.entity';
+import { UserModel } from '../profile/user.entity';
 
 @Entity('phone_notif_model')
-export class PhoneNotif extends BaseEntity {
+export class PhoneNotifModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column('text')
   phoneNumber: string;
 
-  @ManyToOne((type) => User, (user) => user.phoneNotifs)
+  @ManyToOne((type) => UserModel, (user) => user.phoneNotifs)
   @JoinColumn({ name: 'userId' })
-  user: User;
+  user: UserModel;
 
   @Column({ nullable: true })
   userId: number;

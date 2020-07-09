@@ -2,7 +2,7 @@ import { Controller, Get, Res, Query, UseGuards } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { Connection } from 'typeorm';
-import { User as UserModel } from './user.entity';
+import { UserModel } from './user.entity';
 import { pick } from 'lodash';
 import { GetProfileResponse } from '@template/common';
 import { JwtAuthGuard } from './jwt-auth.guard';

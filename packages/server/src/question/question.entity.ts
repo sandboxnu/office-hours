@@ -8,20 +8,20 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { UserCourse } from '../profile/user-course.entity';
-import { Queue } from '../queue/queue.entity';
+import { UserCourseModel } from '../profile/user-course.entity';
+import { QueueModel } from '../queue/queue.entity';
 import { QuestionType, QuestionStatus } from '@template/common';
-import { User } from '../profile/user.entity';
+import { UserModel } from '../profile/user.entity';
 
 @Entity('question_model')
-export class Question extends BaseEntity {
+export class QuestionModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne((type) => Queue, (q) => q.questions)
+  @ManyToOne((type) => QueueModel, (q) => q.questions)
   @JoinColumn({ name: 'queueId' })
   @Exclude()
-  queue: Queue;
+  queue: QueueModel;
 
   @Column({ nullable: true })
   @Exclude()
@@ -30,17 +30,17 @@ export class Question extends BaseEntity {
   @Column('text')
   text: string;
 
-  @ManyToOne((type) => User)
+  @ManyToOne((type) => UserModel)
   @JoinColumn({ name: 'creatorId' })
-  creator: User;
+  creator: UserModel;
 
   @Column({ nullable: true })
   @Exclude()
   creatorId: number;
 
-  @ManyToOne((type) => User)
+  @ManyToOne((type) => UserModel)
   @JoinColumn({ name: 'taHelpedId' })
-  taHelped: User;
+  taHelped: UserModel;
 
   @Column({ nullable: true })
   @Exclude()

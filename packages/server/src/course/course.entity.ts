@@ -7,10 +7,10 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { OfficeHour } from './office-hour.entity';
-import { Queue } from '../queue/queue.entity';
-import { UserCourse } from '../profile/user-course.entity';
-import { Semester } from './semester.entity';
+import { OfficeHourModel } from './office-hour.entity';
+import { QueueModel } from '../queue/queue.entity';
+import { UserCourseModel } from '../profile/user-course.entity';
+import { SemesterModel } from './semester.entity';
 import { Exclude } from 'class-transformer';
 
 /**
@@ -28,15 +28,15 @@ import { Exclude } from 'class-transformer';
 }*/
 
 @Entity('course_model')
-export class Course extends BaseEntity {
+export class CourseModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToMany((type) => OfficeHour, (oh) => oh.course)
-  officeHours: OfficeHour[];
+  @OneToMany((type) => OfficeHourModel, (oh) => oh.course)
+  officeHours: OfficeHourModel[];
 
-  @OneToMany((type) => Queue, (q) => q.course)
-  queues: Queue[];
+  @OneToMany((type) => QueueModel, (q) => q.course)
+  queues: QueueModel[];
 
   @Column('text')
   name: string;
@@ -45,14 +45,14 @@ export class Course extends BaseEntity {
   @Exclude()
   icalURL: string;
 
-  @OneToMany((type) => UserCourse, (ucm) => ucm.course)
+  @OneToMany((type) => UserCourseModel, (ucm) => ucm.course)
   @Exclude()
-  userCourses: UserCourse;
+  userCourses: UserCourseModel;
 
-  @ManyToOne((type) => Semester, (semester) => semester.courses)
+  @ManyToOne((type) => SemesterModel, (semester) => semester.courses)
   @JoinColumn({ name: 'semesterId' })
   @Exclude()
-  semester: Semester;
+  semester: SemesterModel;
 
   @Column({ nullable: true })
   @Exclude()

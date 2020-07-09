@@ -6,10 +6,10 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Season } from '@template/common';
-import { Course } from './course.entity';
+import { CourseModel } from './course.entity';
 
 @Entity('semester_model')
-export class Semester extends BaseEntity {
+export class SemesterModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -19,6 +19,6 @@ export class Semester extends BaseEntity {
   @Column()
   year: number;
 
-  @OneToMany((type) => Course, (course) => course.semester)
-  courses: Course[];
+  @OneToMany((type) => CourseModel, (course) => course.semester)
+  courses: CourseModel[];
 }

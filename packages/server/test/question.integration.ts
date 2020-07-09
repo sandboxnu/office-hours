@@ -1,7 +1,7 @@
 import { QuestionFactory, UserFactory, QueueFactory } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
 import { QuestionModule } from '../src/question/question.module';
-import { Question } from '../src/question/question.entity';
+import { QuestionModel } from '../src/question/question.entity';
 import { QuestionType } from '@template/common';
 
 describe('Question Integration', () => {
@@ -23,7 +23,7 @@ describe('Question Integration', () => {
   describe('POST /questions', () => {
     it('posts a new question', async () => {
       const queue = await QueueFactory.create();
-      expect(await Question.count({ where: { queueId: 1 } })).toEqual(0);
+      expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(0);
       const response = await supertest({ userId: 99 })
         .post('/questions')
         .send({
@@ -39,7 +39,7 @@ describe('Question Integration', () => {
         questionType: 'Concept',
         status: 'Drafting',
       });
-      expect(await Question.count({ where: { queueId: 1 } })).toEqual(1);
+      expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(1);
     });
     it('post question fails with non-existent queue', async () => {
       await supertest({ userId: 99 })
@@ -76,7 +76,7 @@ describe('Question Integration', () => {
         id: q.id,
         text: 'NEW TEXT',
       });
-      expect(await Question.findOne({ id: q.id })).toMatchObject({
+      expect(await QuestionModel.findOne({ id: q.id })).toMatchObject({
         text: 'NEW TEXT',
       });
     });

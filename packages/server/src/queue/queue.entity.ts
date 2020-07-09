@@ -7,19 +7,19 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
-import { Course } from '../course/course.entity';
-import { Question } from '../question/question.entity';
+import { CourseModel } from '../course/course.entity';
+import { QuestionModel } from '../question/question.entity';
 import { UserPartial, OpenQuestionStatus } from '@template/common';
 import { Exclude, Expose } from 'class-transformer';
 
 @Entity('queue_model')
-export class Queue extends BaseEntity {
+export class QueueModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne((type) => Course, (course) => course.queues)
+  @ManyToOne((type) => CourseModel, (course) => course.queues)
   @JoinColumn({ name: 'courseId' })
-  course: Course;
+  course: CourseModel;
 
   @Column({ nullable: true })
   @Exclude()
@@ -28,9 +28,9 @@ export class Queue extends BaseEntity {
   @Column('text')
   room: string;
 
-  @OneToMany((type) => Question, (qm) => qm.queue)
+  @OneToMany((type) => QuestionModel, (qm) => qm.queue)
   @Exclude()
-  questions: Question[];
+  questions: QuestionModel[];
 
   @Expose()
   get staffList(): UserPartial[] {

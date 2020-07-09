@@ -8,10 +8,10 @@ import {
   AfterInsert,
   AfterLoad,
 } from 'typeorm';
-import { User } from '../profile/user.entity';
+import { UserModel } from '../profile/user.entity';
 
 @Entity('desktop_notif_model')
-export class DesktopNotif extends BaseEntity {
+export class DesktopNotifModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -27,9 +27,9 @@ export class DesktopNotif extends BaseEntity {
   @Column('text')
   auth: string;
 
-  @ManyToOne((type) => User, (user) => user.desktopNotifs)
+  @ManyToOne((type) => UserModel, (user) => user.desktopNotifs)
   @JoinColumn({ name: 'userId' })
-  user: User;
+  user: UserModel;
 
   @Column({ nullable: true })
   userId: number;

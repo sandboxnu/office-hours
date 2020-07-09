@@ -2,10 +2,10 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as webPush from 'web-push';
 import * as twilio from 'twilio';
-import { DesktopNotif } from './desktop-notif.entity';
-import { PhoneNotif } from './phone-notif.entity';
+import { DesktopNotifModel } from './desktop-notif.entity';
+import { PhoneNotifModel } from './phone-notif.entity';
 import { DeepPartial, Connection } from 'typeorm';
-import { User } from '../profile/user.entity';
+import { UserModel } from '../profile/user.entity';
 
 @Injectable()
 export class NotificationService {
@@ -28,8 +28,8 @@ export class NotificationService {
     this.desktopPublicKey = this.configService.get('PUBLICKEY');
   }
 
-  async registerDesktop(info: DeepPartial<DesktopNotif>) {
-    await DesktopNotif.create(info).save();
+  async registerDesktop(info: DeepPartial<DesktopNotifModel>) {
+    await DesktopNotifModel.create(info).save();
   }
 
   async registerPhone(phoneNumber: string, userId: number) {
@@ -43,7 +43,7 @@ export class NotificationService {
     }
 
     // todo: need to verify that the user owns the phone number before adding it
-    await PhoneNotif.create({
+    await PhoneNotifModel.create({
       phoneNumber,
       userId,
     }).save();
@@ -51,7 +51,7 @@ export class NotificationService {
 
   // Notify user on all platforms
   async notifyUser(userId: number) {
-    const notifModelsOfUser = await User.findOne({
+    const notifModelsOfUser = await UserModel.findOne({
       where: {
         id: userId,
       },
@@ -70,7 +70,7 @@ export class NotificationService {
   }
 
   // notifies a user via desktop notification
-  async notifyDesktop(nm: DesktopNotif, message: string) {
+  async notifyDesktop(nm: DesktopNotifModel, message: string) {
     try {
       await webPush.sendNotification(
         {
@@ -83,12 +83,12 @@ export class NotificationService {
         message,
       );
     } catch (error) {
-      await DesktopNotif.remove(nm);
+      await DesktopNotifModel.remove(nm);
     }
   }
 
   // notifies a user via phone number
-  async notifyPhone(pn: PhoneNotif, message: string) {
+  async notifyPhone(pn: PhoneNotifModel, message: string) {
     try {
       this.twilioClient &&
         (await this.twilioClient.messages.create({

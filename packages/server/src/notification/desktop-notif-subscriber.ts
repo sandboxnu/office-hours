@@ -4,12 +4,12 @@ import {
   Connection,
   InsertEvent,
 } from 'typeorm';
-import { DesktopNotif } from './desktop-notif.entity';
+import { DesktopNotifModel } from './desktop-notif.entity';
 import { NotificationService } from './notification.service';
 
 @EventSubscriber()
 export class DesktopNotifSubscriber
-  implements EntitySubscriberInterface<DesktopNotif> {
+  implements EntitySubscriberInterface<DesktopNotifModel> {
   notifService: NotificationService;
   constructor(connection: Connection, notifService: NotificationService) {
     this.notifService = notifService;
@@ -17,10 +17,10 @@ export class DesktopNotifSubscriber
   }
 
   listenTo() {
-    return DesktopNotif;
+    return DesktopNotifModel;
   }
 
-  async afterInsert(event: InsertEvent<DesktopNotif>) {
+  async afterInsert(event: InsertEvent<DesktopNotifModel>) {
     console.log(`BEFORE DESKTOPNOTIF INSERTED: `, event.entity);
     await this.notifService.notifyDesktop(
       event.entity,

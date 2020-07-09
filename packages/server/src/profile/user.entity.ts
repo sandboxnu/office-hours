@@ -6,12 +6,12 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { UserCourse } from './user-course.entity';
-import { DesktopNotif } from '../notification/desktop-notif.entity';
-import { PhoneNotif } from '../notification/phone-notif.entity';
+import { UserCourseModel } from './user-course.entity';
+import { DesktopNotifModel } from '../notification/desktop-notif.entity';
+import { PhoneNotifModel } from '../notification/phone-notif.entity';
 
 @Entity('user_model')
-export class User extends BaseEntity {
+export class UserModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -29,15 +29,15 @@ export class User extends BaseEntity {
   @Column('text')
   photoURL: string;
 
-  @OneToMany((type) => UserCourse, (ucm) => ucm.user)
+  @OneToMany((type) => UserCourseModel, (ucm) => ucm.user)
   @Exclude()
-  courses: UserCourse[];
+  courses: UserCourseModel[];
 
-  @OneToMany((type) => DesktopNotif, (notif) => notif.user)
+  @OneToMany((type) => DesktopNotifModel, (notif) => notif.user)
   @Exclude()
-  desktopNotifs: DesktopNotif[];
+  desktopNotifs: DesktopNotifModel[];
 
-  @OneToMany((type) => PhoneNotif, (notif) => notif.user)
+  @OneToMany((type) => PhoneNotifModel, (notif) => notif.user)
   @Exclude()
-  phoneNotifs: PhoneNotif[];
+  phoneNotifs: PhoneNotifModel[];
 }

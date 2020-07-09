@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import ical, { CalendarComponent, CalendarResponse, VEvent } from 'node-ical';
 import { DeepPartial, Connection } from 'typeorm';
-import { OfficeHour } from './office-hour.entity';
-import { Course } from './course.entity';
+import { OfficeHourModel } from './office-hour.entity';
+import { CourseModel } from './course.entity';
 
-type CreateOfficeHour = DeepPartial<OfficeHour>[];
+type CreateOfficeHour = DeepPartial<OfficeHourModel>[];
 
 @Injectable()
 export class IcalService {
@@ -33,11 +33,13 @@ export class IcalService {
    * Updates the OfficeHours for a given Course by rescraping ical
    * @param course to parse
    */
-  public async updateCalendarForCourse(course: Course): Promise<void> {
+  public async updateCalendarForCourse(course: CourseModel): Promise<void> {
     const officeHours = this.parseIcal(
       await ical.fromURL(course.icalURL),
       course.id,
     );
-    await OfficeHour.save(officeHours.map((e) => OfficeHour.create(e)));
+    await OfficeHourModel.save(
+      officeHours.map((e) => OfficeHourModel.create(e)),
+    );
   }
 }

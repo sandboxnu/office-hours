@@ -7,18 +7,18 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
-import { Course } from './course.entity';
+import { CourseModel } from './course.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity('office_hour')
-export class OfficeHour extends BaseEntity {
+export class OfficeHourModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne((type) => Course, (course) => course.officeHours)
+  @ManyToOne((type) => CourseModel, (course) => course.officeHours)
   @JoinColumn({ name: 'courseId' })
   @Exclude()
-  course: Course;
+  course: CourseModel;
 
   @Column({ nullable: true })
   @Exclude()

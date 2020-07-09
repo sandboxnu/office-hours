@@ -21,13 +21,13 @@ import {
   UpdateQuestionParams,
   Role,
 } from '@template/common';
-import { Queue } from '../queue/queue.entity';
+import { QueueModel } from '../queue/queue.entity';
 import { Connection, In } from 'typeorm';
-import { Question } from './question.entity';
-import { User } from '../profile/user.entity';
+import { QuestionModel } from './question.entity';
+import { UserModel } from '../profile/user.entity';
 import { JwtAuthGuard } from '../profile/jwt-auth.guard';
 import { UserId } from '../profile/user.decorator';
-import { UserCourse } from '../profile/user-course.entity';
+import { UserCourseModel } from '../profile/user-course.entity';
 
 @Controller('questions')
 @UseGuards(JwtAuthGuard)
@@ -39,7 +39,7 @@ export class QuestionController {
   async getQuestion(
     @Param('questionId') questionId: number,
   ): Promise<GetQuestionResponse> {
-    const question = await Question.findOne(questionId, {
+    const question = await QuestionModel.findOne(questionId, {
       relations: ['creator', 'taHelped'],
     });
 
@@ -55,14 +55,14 @@ export class QuestionController {
   ): Promise<CreateQuestionResponse> {
     const { text, questionType, queueId } = body;
     // TODO: Remove this once we implemntent user authentication
-    const DEFAULT_USER = await User.create({
+    const DEFAULT_USER = await UserModel.create({
       id: 42,
       username: 'test_user',
       email: 'test_user@husky.neu.edu',
       name: 'Test User',
       photoURL: 'www.photoURL.com',
     }).save();
-    const queueSize = await Queue.count({
+    const queueSize = await QueueModel.count({
       where: { id: queueId },
     });
     // Check that the queue exists
@@ -71,7 +71,7 @@ export class QuestionController {
     }
     // TODO: Check that the user posting the question is a member of the course
 
-    const question = await Question.create({
+    const question = await QuestionModel.create({
       queueId: queueId,
       creator: DEFAULT_USER,
       text,
@@ -91,7 +91,7 @@ export class QuestionController {
   ): Promise<UpdateQuestionResponse> {
     // TODO: Check that the question_id belongs to the user or a TA that is currently helping with the given queue_id
     // TODO: Use user type to dertermine wether or not we should include the text in the response
-    let question = await Question.findOne({
+    let question = await QuestionModel.findOne({
       where: { id: questionId },
       relations: ['creator', 'queue'],
     });
@@ -110,7 +110,7 @@ export class QuestionController {
 
     // If not creator, check if user is TA/PROF of course of question
     const isTaOrProf =
-      (await UserCourse.count({
+      (await UserCourseModel.count({
         where: {
           userId,
           courseId: question.queue.courseId,

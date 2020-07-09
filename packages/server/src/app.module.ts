@@ -5,18 +5,18 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProfileModule } from './profile/profile.module';
 import { CourseModule } from './course/course.module';
-import { Course } from './course/course.entity';
+import { CourseModel } from './course/course.entity';
 import { QueueModule } from './queue/queue.module';
 import { NotificationModule } from './notification/notification.module';
-import { OfficeHour } from './course/office-hour.entity';
-import { Semester } from './course/semester.entity';
-import { User } from './profile/user.entity';
-import { UserCourse } from './profile/user-course.entity';
-import { Question } from './question/question.entity';
-import { Queue } from './queue/queue.entity';
+import { OfficeHourModel } from './course/office-hour.entity';
+import { SemesterModel } from './course/semester.entity';
+import { UserModel } from './profile/user.entity';
+import { UserCourseModel } from './profile/user-course.entity';
+import { QuestionModel } from './question/question.entity';
+import { QueueModel } from './queue/queue.entity';
 import { QuestionModule } from './question/question.module';
-import { DesktopNotif } from './notification/desktop-notif.entity';
-import { PhoneNotif } from './notification/phone-notif.entity';
+import { DesktopNotifModel } from './notification/desktop-notif.entity';
+import { PhoneNotifModel } from './notification/phone-notif.entity';
 
 @Module({
   imports: [
@@ -28,15 +28,15 @@ import { PhoneNotif } from './notification/phone-notif.entity';
       password: '',
       database: 'dev',
       entities: [
-        Course,
-        OfficeHour,
-        Semester,
-        User,
-        UserCourse,
-        Question,
-        Queue,
-        DesktopNotif,
-        PhoneNotif,
+        CourseModel,
+        OfficeHourModel,
+        SemesterModel,
+        UserModel,
+        UserCourseModel,
+        QuestionModel,
+        QueueModel,
+        DesktopNotifModel,
+        PhoneNotifModel,
       ],
       synchronize: true,
     }),

@@ -1,7 +1,7 @@
 import { UserFactory } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
-import { DesktopNotif } from '../src/notification/desktop-notif.entity';
-import { PhoneNotif } from '../src/notification/phone-notif.entity';
+import { DesktopNotifModel } from '../src/notification/desktop-notif.entity';
+import { PhoneNotifModel } from '../src/notification/phone-notif.entity';
 import { NotificationModule } from '../src/notification/notification.module';
 
 describe('Notif Integration', () => {
@@ -30,7 +30,7 @@ describe('Notif Integration', () => {
           },
         })
         .expect(201);
-      expect(await DesktopNotif.findOne()).toEqual({
+      expect(await DesktopNotifModel.findOne()).toEqual({
         auth: 'some_key_as_well',
         endpoint: 'biggoogle.com',
         expirationTime: expirDate,
@@ -50,7 +50,7 @@ describe('Notif Integration', () => {
         .send({ phoneNumber: '+16175551212' })
         .expect(201);
 
-      const notifModel = await PhoneNotif.findOne();
+      const notifModel = await PhoneNotifModel.findOne();
       expect(notifModel).toEqual({
         id: 1,
         phoneNumber: '+16175551212',
@@ -82,7 +82,7 @@ describe('Notif Integration', () => {
         `/notifications/notify_user/${user.id}`,
       );
 
-      const notifModels = await DesktopNotif.find();
+      const notifModels = await DesktopNotifModel.find();
       expect(notifModels).toEqual([]);
     });
   });
