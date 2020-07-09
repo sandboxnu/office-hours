@@ -11,6 +11,6 @@ export const User = createParamDecorator<string[]>(
 export const UserId = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    return request.user.userId;
+    return Number(request.user.userId);
   },
 );
