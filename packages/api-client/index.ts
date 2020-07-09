@@ -22,9 +22,7 @@ class APIClient {
   };
   course = {
     get: async (courseId: number): Promise<GetCourseResponse> => {
-      const course = (
-        await this.axios.get(`/api/v1/courses/${courseId}/schedule`)
-      ).data;
+      const course = (await this.axios.get(`/api/v1/courses/${courseId}`)).data;
       course.officeHours.forEach((officeHour: any) =>
         parseOfficeHourDates(officeHour)
       );
@@ -85,7 +83,7 @@ class APIClient {
       );
     },
   };
-  constructor(baseURL: string = "") {
+  constructor(baseURL = "") {
     this.axios = Axios.create({ baseURL: baseURL });
   }
 }

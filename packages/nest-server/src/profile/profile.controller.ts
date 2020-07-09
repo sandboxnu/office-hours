@@ -35,6 +35,6 @@ export class ProfileController {
   @Get('/entry')
   enterFromKhoury(@Res() res: Response, @Query('userId') userId: number): void {
     const token = this.jwtService.sign({ userId });
-    res.cookie('auth_token', token).status(200).send();
+    res.cookie('auth_token', token).redirect(302, '/');
   }
 }

@@ -19,8 +19,9 @@ export default function Today() {
   const router = useRouter();
   const { cid } = router.query;
 
-  const { data, error } = useSWR(`api/v1/courses/${cid}/queue`, async () =>
-    API.course.queues(Number(cid))
+  const { data, error } = useSWR(
+    `api/v1/courses/${cid}/queue`,
+    async () => cid && API.course.get(Number(cid))
   );
 
   const isTA = true; // TODO: temp
@@ -40,7 +41,7 @@ export default function Today() {
         <NavBar courseId={Number(cid)} />
         <Row gutter={25}>
           <Col md={12} xs={24}>
-            {data?.map((q) => (
+            {data?.queues?.map((q) => (
               <OpenQueueCard key={q.id} queue={q} />
             ))}
             {isTA && (
