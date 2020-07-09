@@ -107,15 +107,15 @@ interface NavBarProps {
 }
 
 export default function NavBar({ courseId }: NavBarProps) {
-  const profile = useProfile();
   const [visible, setVisible] = useState<boolean>(false);
 
-  const { data, error } = useSWR(`api/v1/courses/${courseId}/queue`, async () =>
-    API.course.queues(courseId)
+  const { data: course, error } = useSWR(
+    `api/v1/courses/${courseId}`,
+    async () => API.course.get(courseId)
   );
 
-  const course = profile.courses.find((c) => c.course.id === courseId).course;
-  const queueId = data && data.length > 0 && data[0].id;
+  const queueId =
+    course.queues && course.queues.length > 0 && course.queues[0].id;
 
   const showDrawer = () => {
     setVisible(true);

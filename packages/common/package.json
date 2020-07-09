@@ -27,5 +27,10 @@
         }
       ]
     ]
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/plugin-proposal-decorators": "^7.10.4",
+    "babel-plugin-transform-typescript-metadata": "^0.3.0"
   }
 }

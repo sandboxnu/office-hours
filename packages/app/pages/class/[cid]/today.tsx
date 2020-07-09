@@ -20,7 +20,7 @@ export default function Today() {
   const { cid } = router.query;
 
   const { data, error } = useSWR(
-    `api/v1/courses/${cid}/queue`,
+    `api/v1/courses/${cid}`,
     async () => cid && API.course.get(Number(cid))
   );
 
