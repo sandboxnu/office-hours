@@ -8,6 +8,6 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1');
   app.useGlobalPipes(new ValidationPipe());
   app.use(cookieParser());
-  await app.listen(3000);
+  await app.listen(3002);
 }
 bootstrap();
