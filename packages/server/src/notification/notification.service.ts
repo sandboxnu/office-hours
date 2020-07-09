@@ -4,7 +4,7 @@ import * as webPush from 'web-push';
 import * as twilio from 'twilio';
 import { DesktopNotif } from './desktop-notif.entity';
 import { PhoneNotif } from './phone-notif.entity';
-import { DeepPartial } from 'typeorm';
+import { DeepPartial, Connection } from 'typeorm';
 import { User } from '../profile/user.entity';
 
 @Injectable()
@@ -12,7 +12,10 @@ export class NotificationService {
   private twilioClient: twilio.Twilio;
   desktopPublicKey: string;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private connection: Connection,
+    private configService: ConfigService,
+  ) {
     this.twilioClient = twilio(
       this.configService.get('TWILIOACCOUNTSID'),
       this.configService.get('TWILIOAUTHTOKEN'),
