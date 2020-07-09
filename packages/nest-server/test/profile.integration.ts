@@ -15,7 +15,9 @@ describe('Profile Integration', () => {
       const fundies = await CourseFactory.create({ name: 'CS 2500' });
       await StudentCourseFactory.create({ course: fundies, user });
 
-      const res = await supertest().get('/profile').expect(200);
+      const res = await supertest({ userId: user.id })
+        .get('/profile')
+        .expect(200);
       expect(res.body).toMatchSnapshot();
     });
 

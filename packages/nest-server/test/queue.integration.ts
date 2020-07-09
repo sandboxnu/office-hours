@@ -10,7 +10,9 @@ describe('Queue Integration', () => {
       const queue = await QueueFactory.create({
         questions: [await QuestionFactory.create()],
       });
-      const res = await supertest().get(`/queues/${queue.id}`).expect(200);
+      const res = await supertest({ userId: 99 })
+        .get(`/queues/${queue.id}`)
+        .expect(200);
       expect(res.body).toMatchSnapshot();
     });
 
@@ -24,7 +26,7 @@ describe('Queue Integration', () => {
       });
       await QuestionFactory.create({ text: 'not in queue' });
 
-      const res = await supertest()
+      const res = await supertest({ userId: 99 })
         .get(`/queues/${queue.id}/questions`)
         .expect(200);
       expect(res.body).toMatchSnapshot();

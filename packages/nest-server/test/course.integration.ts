@@ -9,7 +9,7 @@ describe('Course Integraiton', () => {
       const course = await CourseFactory.create({
         officeHours: [await OfficeHourFactory.create()],
       });
-      const response = await supertest()
+      const response = await supertest({ userId: 1 })
         .get(`/courses/${course.id}`)
         .expect(200);
 

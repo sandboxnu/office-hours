@@ -1,6 +1,4 @@
-import {
-  UserFactory,
-} from './util/factories';
+import { UserFactory } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
 import { DesktopNotif } from '../src/notification/desktop-notif.entity';
 import { PhoneNotif } from '../src/notification/phone-notif.entity';
@@ -11,9 +9,9 @@ describe('Notif Integration', () => {
 
   describe('GET /notifications/desktop/credentials', () => {
     it('gets a public key', async () => {
-      const res = await supertest()
+      const res = await supertest({ userId: 99 })
         .get('/notifications/desktop/credentials')
-        .expect(200)
+        .expect(200);
     });
   });
 
@@ -21,7 +19,7 @@ describe('Notif Integration', () => {
     it("registers a user + webpush endpoint, tests it's in the db", async () => {
       const user = await UserFactory.create();
       const expirDate = new Date(2020, 1, 2);
-      await supertest()
+      await supertest({ userId: 99 })
         .post(`/notifications/desktop/register/${user.id}`)
         .send({
           endpoint: 'biggoogle.com',
@@ -47,7 +45,7 @@ describe('Notif Integration', () => {
   describe('POST /notifications/phone/register/:user_id', () => {
     it("registers a user & phone number, tests it's in the db", async () => {
       const user = await UserFactory.create();
-      await supertest()
+      await supertest({ userId: 99 })
         .post(`/notifications/phone/register/${user.id}`)
         .send({ phoneNumber: '+16175551212' })
         .expect(201);
@@ -68,7 +66,7 @@ describe('Notif Integration', () => {
       const user = await UserFactory.create();
       const expirDate = new Date(2020, 2, 3);
 
-      await supertest()
+      await supertest({ userId: 99 })
         .post(`/notifications/desktop/register/${user.id}`)
         .send({
           endpoint: 'biggoogle.com',
@@ -80,7 +78,9 @@ describe('Notif Integration', () => {
         })
         .expect(201);
 
-      await supertest().post(`/notifications/notify_user/${user.id}`);
+      await supertest({ userId: 99 }).post(
+        `/notifications/notify_user/${user.id}`,
+      );
 
       const notifModels = await DesktopNotif.find();
       expect(notifModels).toEqual([]);

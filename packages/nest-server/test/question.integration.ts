@@ -10,11 +10,13 @@ describe('Question Integration', () => {
   describe('GET /questions/:id', () => {
     it('gets a question with the given id', async () => {
       const q = await QuestionFactory.create({ text: 'Help pls' });
-      const response = await supertest().get(`/questions/${q.id}`).expect(200);
+      const response = await supertest({ userId: 99 })
+        .get(`/questions/${q.id}`)
+        .expect(200);
       expect(response.body).toMatchSnapshot();
     });
     it('fails to get a non-existent question', async () => {
-      await supertest().get(`/questions/999`).expect(404);
+      await supertest({ userId: 99 }).get(`/questions/999`).expect(404);
     });
   });
 
@@ -22,7 +24,7 @@ describe('Question Integration', () => {
     it('posts a new question', async () => {
       const queue = await QueueFactory.create();
       expect(await Question.count({ where: { queueId: 1 } })).toEqual(0);
-      const response = await supertest()
+      const response = await supertest({ userId: 99 })
         .post('/questions')
         .send({
           text: "Don't know recursion",
@@ -40,7 +42,7 @@ describe('Question Integration', () => {
       expect(await Question.count({ where: { queueId: 1 } })).toEqual(1);
     });
     it('post question fails with non-existent queue', async () => {
-      await supertest()
+      await supertest({ userId: 99 })
         .post('/questions')
         .send({
           text: "Don't know recursion",
@@ -51,7 +53,7 @@ describe('Question Integration', () => {
     });
     // this test can be done once we figure out validation
     it.skip('post question fails with bad params', async () => {
-      await supertest()
+      await supertest({ userId: 99 })
         .post('/questions')
         .send({
           question: 'I need help',
@@ -64,7 +66,7 @@ describe('Question Integration', () => {
     it('updates a question', async () => {
       const q = await QuestionFactory.create({ text: 'Help pls' });
 
-      const response = await supertest()
+      const response = await supertest({ userId: 99 })
         .patch(`/questions/${q.id}`)
         .send({
           text: 'NEW TEXT',
@@ -79,7 +81,7 @@ describe('Question Integration', () => {
       });
     });
     it('fails to update a non-existent question', async () => {
-      await supertest()
+      await supertest({ userId: 99 })
         .patch(`/questions/999`)
         .send({
           text: 'NEW TEXT',
