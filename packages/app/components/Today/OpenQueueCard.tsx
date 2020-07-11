@@ -17,11 +17,6 @@ const PaddedCard = styled(Card)`
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
 `;
 
-const AvatarContainer = styled.div`
-  padding-right: 25px;
-  float: left;
-`;
-
 const EditOutlinedFloatedRight = styled(EditOutlined)`
   float: right;
 `;
@@ -48,6 +43,17 @@ const HeaderText = styled.div`
   color: #bfbfbf;
   font-variant: small-caps;
   margin-bottom: 8px;
+`;
+
+const AvatarWithMargin = styled(Avatar)`
+  margin-right: 25px;
+`;
+
+const OpenQueueButton = styled(Button)`
+  background-color: #3684c6;
+  border-radius: 6px;
+  color: white;
+  font-weight: 500;
 `;
 
 const OpenQueueCard = ({ queue, isTA, updateQueueNotes }: OpenQueueCard) => {
@@ -124,11 +130,27 @@ const OpenQueueCard = ({ queue, isTA, updateQueueNotes }: OpenQueueCard) => {
       <br />
 
       <HeaderText>checked-in staff</HeaderText>
-      {staffList.map((staffMember) => (
-        <AvatarContainer key={staffMember.id}>
-          <Avatar size={128} src={staffMember.photoURL} shape="circle" />
-        </AvatarContainer>
-      ))}
+
+      <Row justify="space-between" align="bottom">
+        <div>
+          {staffList.map((staffMember) => (
+            <AvatarWithMargin
+              key={staffMember.id}
+              size={96}
+              src={staffMember.photoURL}
+              shape="circle"
+            />
+          ))}
+        </div>
+        <Button
+          onClick={() => {
+            setEditingNotes(true);
+          }}
+        >
+          Edit Notes
+        </Button>
+        <OpenQueueButton size={"large"}>Open Queue</OpenQueueButton>
+      </Row>
     </PaddedCard>
   );
 };
