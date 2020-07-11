@@ -47,8 +47,6 @@ export class QueueController {
       where: [
         {
           queueId: queueId,
-        },
-        {
           status: Not(In(Object.values(ClosedQuestionStatus))),
         },
       ],
