@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { IcalService } from './ical.service';
-import iCal from 'node-ical';
+import * as iCal from 'node-ical';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 // oopsah
 const parsedICS = iCal.parseICS(`BEGIN:VCALENDAR
@@ -80,6 +81,7 @@ describe('IcalService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [TypeOrmModule.forRoot()],
       providers: [IcalService],
     }).compile();
 
