@@ -1,22 +1,21 @@
-import styled from "styled-components";
-import {
-  Role,
-  Question,
-  OpenQuestionStatus,
-  ClosedQuestionStatus,
-  QuestionType,
-  QuestionStatus,
-  UserCourse,
-} from "@template/common";
-import StudentPopupCard from "../../../../components/Queue/StudentPopupCard";
-import { useCallback, useState, useEffect, Fragment } from "react";
 import { API } from "@template/api-client";
+import {
+  ClosedQuestionStatus,
+  OpenQuestionStatus,
+  Question,
+  QuestionStatus,
+  QuestionType,
+  Role,
+} from "@template/common";
+import { useRouter } from "next/router";
+import { Fragment, useCallback, useState } from "react";
+import styled from "styled-components";
+import useSWR, { mutate } from "swr";
+import NavBar from "../../../../components/Nav/NavBar";
+import StudentPopupCard from "../../../../components/Queue/StudentPopupCard";
 import StudentQueueList from "../../../../components/Queue/StudentQueueList";
 import TAQueueList from "../../../../components/Queue/TAQueueList";
-import NavBar from "../../../../components/Nav/NavBar";
 import { useProfile } from "../../../../hooks/useProfile";
-import { useRouter } from "next/router";
-import useSWR, { mutate } from "swr";
 
 // TODO: replace this with profile role from endpoint
 const ROLE: Role = Role.STUDENT;

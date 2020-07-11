@@ -1,12 +1,9 @@
 import { EditOutlined } from "@ant-design/icons";
-import { API } from "@template/api-client";
-import { Avatar, Button, Card, Input } from "antd";
+import { Avatar, Button, Card, Input, Row } from "antd";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import styled from "styled-components";
-import Link from "next/link";
-import { useRouter } from "next/router";
 import { QueuePartial } from "../../../common/index";
-
 
 type OpenQueueCard = {
   queue: QueuePartial;
@@ -16,16 +13,41 @@ type OpenQueueCard = {
 
 const PaddedCard = styled(Card)`
   margin-bottom: 25px;
+  border-radius: 6px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
 `;
 
 const AvatarContainer = styled.div`
-  padding-left: 25px;
   padding-right: 25px;
   float: left;
 `;
 
 const EditOutlinedFloatedRight = styled(EditOutlined)`
   float: right;
+`;
+
+const HeaderDiv = styled.div`
+  font-size: 24px;
+  font-weight: 500;
+  color: #212934;
+`;
+
+const QuestionNumberSpan = styled.span`
+  font-size: 24px;
+`;
+
+const QueueSizeColorDiv = styled.div`
+  color: #212934;
+  font-size: 16px;
+`;
+
+const HeaderText = styled.div`
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 600;
+  color: #bfbfbf;
+  font-variant: small-caps;
+  margin-bottom: 8px;
 `;
 
 const OpenQueueCard = ({ queue, isTA, updateQueueNotes }: OpenQueueCard) => {
@@ -43,23 +65,26 @@ const OpenQueueCard = ({ queue, isTA, updateQueueNotes }: OpenQueueCard) => {
 
   return (
     <PaddedCard
+      headStyle={{ background: "#F3F5F7" }}
       title={staffList.map((staffMember) => staffMember.name).join(", ")}
       extra={
-        <Link
-          href="/class/[cid]/queue/[qid]"
-          as={`/class/${cid}/queue/${queue.id}`}
-        >
-          <Button type="primary" size={"middle"}>
-            Join Queue
-          </Button>
-        </Link>
+        <div>
+          //TODO: eventually time might be here. But that day is not today. Ask
+          Chinese Man
+        </div>
       }
     >
-      <h1>{queue.room}</h1>
+      <Row justify="space-between">
+        <HeaderDiv>{queue.room}</HeaderDiv>
+        <QueueSizeColorDiv>
+          <QuestionNumberSpan>{queue.queueSize}</QuestionNumberSpan> in queue
+        </QueueSizeColorDiv>
+      </Row>
+      <br />
 
       {editingNotes ? (
         <div>
-          <b>Staff Notes:</b>
+          <HeaderText>staff notes</HeaderText>
           <Button
             type="primary"
             size="small"
@@ -78,7 +103,7 @@ const OpenQueueCard = ({ queue, isTA, updateQueueNotes }: OpenQueueCard) => {
       ) : queue.notes ? (
         <div>
           <div>
-            <b>Staff Notes:</b>
+            <HeaderText>staff notes</HeaderText>
             {isTA && (
               <EditOutlinedFloatedRight
                 onClick={() => {
@@ -96,10 +121,12 @@ const OpenQueueCard = ({ queue, isTA, updateQueueNotes }: OpenQueueCard) => {
           }}
         />
       )}
+      <br />
 
+      <HeaderText>checked-in staff</HeaderText>
       {staffList.map((staffMember) => (
         <AvatarContainer key={staffMember.id}>
-          <Avatar size={128} src={staffMember.photoURL} shape="square" />
+          <Avatar size={128} src={staffMember.photoURL} shape="circle" />
         </AvatarContainer>
       ))}
     </PaddedCard>
