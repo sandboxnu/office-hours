@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ProfileModule } from './profile/profile.module';
 import { CourseModule } from './course/course.module';
 import { CourseModel } from './course/course.entity';
@@ -50,7 +48,5 @@ import { PhoneNotifModel } from './notification/phone-notif.entity';
       isGlobal: true,
     }),
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
