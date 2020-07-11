@@ -8,8 +8,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Connection } from 'typeorm';
+import { Not, In } from 'typeorm';
 import { QueueModel } from './queue.entity';
-import { GetQueueResponse, ListQuestionsResponse } from '@template/common';
+import {
+  GetQueueResponse,
+  ListQuestionsResponse,
+  ClosedQuestionStatus,
+} from '@template/common';
 import { QuestionModel } from '../question/question.entity';
 import { JwtAuthGuard } from '../profile/jwt-auth.guard';
 
@@ -42,6 +47,9 @@ export class QueueController {
       where: [
         {
           queueId: queueId,
+        },
+        {
+          status: Not(In(Object.values(ClosedQuestionStatus))),
         },
       ],
       relations: ['creator', 'taHelped'],
