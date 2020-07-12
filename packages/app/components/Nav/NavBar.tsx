@@ -1,14 +1,12 @@
 import styled from "styled-components";
-import React, { Component, useState, useEffect } from "react";
+import React, { useState } from "react";
 import LeftNavBar from "./LeftNavBar";
 import { Drawer, Button, Menu } from "antd";
 import RightNavBar from "./RightNavBar";
-import { Course, User, UserCourse, CoursePartial } from "@template/common";
 import Link from "next/link";
 import { API } from "@template/api-client";
 import useSWR from "swr";
 import { useProfile } from "../../hooks/useProfile";
-import Settings from "./Settings/Profile";
 
 const Container = styled.div`
   width: 1440px;

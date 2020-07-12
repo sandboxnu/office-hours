@@ -111,40 +111,36 @@ export default function Settings() {
             <Row>
               <LableText> Web Notifications </LableText>
               <SwitchContainer>
-                {" "}
                 <Switch
                   checked={desktopNotifToggled}
                   onChange={onDesktopNotifToggle}
-                />{" "}
+                />
               </SwitchContainer>
             </Row>
             <Row>
               <LableText> Text Notifications </LableText>
               <SwitchContainer>
-                {" "}
                 <Switch
                   checked={phoneNotifToggled}
                   onChange={onPhoneNotifToggle}
-                />{" "}
+                />
               </SwitchContainer>
             </Row>
             <Row>
               <LableText> Phone </LableText>
               <InputContainer>
-                {" "}
                 <Input
                   value={phoneNumber}
                   onChange={(newNum) => {
                     setPhoneNumber(newNum.target.value);
                   }}
                   placeholder={"XXX-XXX-XXXX"}
-                />{" "}
+                />
               </InputContainer>
             </Row>
             <Row>
               <Link href="/login" as="/login">
                 <CenteredIcon>
-                  {" "}
                   <Avatar size={44} icon={<LogoutOutlined />} />{" "}
                 </CenteredIcon>
               </Link>
