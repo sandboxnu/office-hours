@@ -1,6 +1,5 @@
 import { ResponseObject, ServerRoute } from "@hapi/hapi";
 import { DesktopNotifBody } from "@template/common";
-import * as dotenv from "dotenv";
 import twilio, { Twilio } from "twilio";
 import { DeepPartial } from "typeorm";
 import * as webPush from "web-push";
@@ -8,33 +7,25 @@ import { DesktopNotifModel } from "../entity/DesktopNotifModel";
 import { PhoneNotifModel } from "../entity/PhoneNotifModel";
 import { UserModel } from "../entity/UserModel";
 import { DesktopNotifPayload } from "../joi";
+import { env } from "../env";
 
-// configure env vars for VAPID + Twilio
-dotenv.config();
 let twilioClient: undefined | Twilio;
 
 // if env vars not found, then throw an error early
 if (
-  !process.env.EMAIL ||
-  !process.env.PUBLICKEY ||
-  !process.env.PRIVATEKEY ||
-  !process.env.TWILIOACCOUNTSID ||
-  !process.env.TWILIOAUTHTOKEN ||
-  !process.env.TWILIOPHONENUMBER
+  !env.EMAIL ||
+  !env.PUBLICKEY ||
+  !env.PRIVATEKEY ||
+  !env.TWILIOACCOUNTSID ||
+  !env.TWILIOAUTHTOKEN ||
+  !env.TWILIOPHONENUMBER
 ) {
   throw new Error(
     "please add a .env file with keys+email in packages/server. ask alex/eddy for deets. also twilio stuff"
   );
 } else {
-  webPush.setVapidDetails(
-    process.env.EMAIL,
-    process.env.PUBLICKEY,
-    process.env.PRIVATEKEY
-  );
-  twilioClient = twilio(
-    process.env.TWILIOACCOUNTSID,
-    process.env.TWILIOAUTHTOKEN
-  );
+  webPush.setVapidDetails(env.EMAIL, env.PUBLICKEY, env.PRIVATEKEY);
+  twilioClient = twilio(env.TWILIOACCOUNTSID, env.TWILIOAUTHTOKEN);
 }
 
 export const notifRoutes: ServerRoute[] = [
@@ -43,7 +34,7 @@ export const notifRoutes: ServerRoute[] = [
     method: "GET",
     path: "/api/v1/notifications/desktop/credentials",
     handler: (request, h) => {
-      return JSON.stringify(process.env.PUBLICKEY);
+      return JSON.stringify(env.PUBLICKEY);
     },
   },
   {
@@ -142,7 +133,7 @@ export async function phoneNotifyUser(pn: PhoneNotifModel, message: string) {
     twilioClient &&
       (await twilioClient.messages.create({
         body: message,
-        from: process.env.TWILIOPHONENUMBER,
+        from: env.TWILIOPHONENUMBER,
         to: pn.phoneNumber,
       }));
   } catch (error) {
