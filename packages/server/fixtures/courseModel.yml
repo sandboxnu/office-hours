@@ -1,4 +1,4 @@
-entity: Course
+entity: CourseModel
 items:
   course0:
     name: 'CS 2500'

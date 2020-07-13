@@ -1,4 +1,4 @@
-entity: User
+entity: UserModel
 items:
   user0:
     username: 'test_user'

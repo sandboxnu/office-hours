@@ -1,4 +1,4 @@
-entity: Question
+entity: QuestionModel
 items:
   question0:
     queueId: '@queue0'

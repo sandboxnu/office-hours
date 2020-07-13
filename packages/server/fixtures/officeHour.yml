@@ -1,4 +1,4 @@
-entity: OfficeHour
+entity: OfficeHourModel
 items:
   oh0:
     title: 'OH - Will'
