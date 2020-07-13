@@ -126,22 +126,24 @@ export default function Settings() {
                 />
               </SwitchContainer>
             </Row>
-            <Row>
-              <LableText> Phone </LableText>
-              <InputContainer>
-                <Input
-                  value={phoneNumber}
-                  onChange={(newNum) => {
-                    setPhoneNumber(newNum.target.value);
-                  }}
-                  placeholder={"XXX-XXX-XXXX"}
-                />
-              </InputContainer>
-            </Row>
+            {phoneNotifToggled && (
+              <Row>
+                <LableText> Phone </LableText>
+                <InputContainer>
+                  <Input
+                    value={phoneNumber}
+                    onChange={(newNum) => {
+                      setPhoneNumber(newNum.target.value);
+                    }}
+                    placeholder={"XXX-XXX-XXXX"}
+                  />
+                </InputContainer>
+              </Row>
+            )}
             <Row>
               <Link href="/login" as="/login">
-                <CenteredIcon>
-                  <Avatar size={44} icon={<LogoutOutlined />} />{" "}
+                <CenteredIcon style={{ cursor: "pointer" }}>
+                  <Avatar size={44} icon={<LogoutOutlined />} />
                 </CenteredIcon>
               </Link>
             </Row>
