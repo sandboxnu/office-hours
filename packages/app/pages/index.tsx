@@ -1,6 +1,6 @@
 import { API } from "@template/api-client";
 import { User } from "@template/common";
-import { Button } from "antd";
+import { Button, Input } from "antd";
 import { register } from "next-offline/runtime";
 import Router from "next/router";
 import { useProfile } from "../hooks/useProfile";
@@ -8,12 +8,13 @@ import { useProfile } from "../hooks/useProfile";
 export default function Home() {
   const profile: User = useProfile();
 
-  // if (profile) {
-  //   Router.push(
-  //     "/class/[cid]/today",
-  //     "/class/" + profile.courses[0].course.id + "/today"
-  //   );
-  // }
+  if (profile) {
+    Router.push(
+      "/course/[cid]/today",
+      "/course/" + profile.courses[0].course.id + "/today"
+    );
+  }
+
   // web push code
   const check = () => {
     if (!("serviceWorker" in navigator)) {
@@ -40,7 +41,6 @@ export default function Home() {
     // try to get notification permissions
     await requestNotificationPermission();
     // get rid of old service worker, and then try and re-register.
-    // just kidding, this breaks Chrome for some reason (ai ya).
     // unregister();
     // have to use setTimeout because unregister does async things, but is sync
     setTimeout(() => {
@@ -49,14 +49,28 @@ export default function Home() {
   };
   // end web push code
 
+  // todo: use actual user id
+  const user_id = 1;
+
   return (
     <div>
-      <Button size="large" onClick={checkBrowserAndRequestNotifications}>
-        Request Notification Permission
-      </Button>
-      <Button size="large" onClick={() => API.notif.notify_user(1)}>
-        Test Notify
-      </Button>
+      <div style={{ flexDirection: "row-reverse" }}>
+        <Button size="large" onClick={checkBrowserAndRequestNotifications}>
+          Request Notification Permission
+        </Button>
+        <Button size="large" onClick={() => API.notif.notify_user(user_id)}>
+          Test Notify
+        </Button>
+      </div>
+      <Input
+        placeholder="phone number"
+        style={{ width: 200 }}
+        onPressEnter={(value) => {
+          return API.notif.phone.register(user_id, {
+            phoneNumber: (value.target as any).value,
+          });
+        }}
+      ></Input>
     </div>
   );
 }

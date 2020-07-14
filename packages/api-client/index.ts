@@ -1,18 +1,17 @@
-import Axios, { AxiosInstance } from "axios";
 import {
-  GetProfileResponse,
-  GetCourseResponse,
-  TAUpdateStatusResponse,
-  GetQuestionResponse,
-  CreateQuestionResponse,
   CreateQuestionParams,
-  UpdateQuestionParams,
+  CreateQuestionResponse,
+  DesktopNotifBody,
+  GetCourseResponse,
+  GetProfileResponse,
+  GetQuestionResponse,
   ListQuestionsResponse,
+  PhoneNotifBody,
+  TAUpdateStatusResponse,
+  UpdateQuestionParams,
   UpdateQuestionResponse,
-  GetCourseQueuesResponse,
-  QueuePartial,
-  NotifBody,
 } from "@template/common";
+import Axios, { AxiosInstance } from "axios";
 
 class APIClient {
   private axios: AxiosInstance;
@@ -23,20 +22,11 @@ class APIClient {
   };
   course = {
     get: async (courseId: number): Promise<GetCourseResponse> => {
-      const course = (
-        await this.axios.get(`/api/v1/courses/${courseId}/schedule`)
-      ).data;
+      const course = (await this.axios.get(`/api/v1/courses/${courseId}`)).data;
       course.officeHours.forEach((officeHour: any) =>
         parseOfficeHourDates(officeHour)
       );
       return course;
-    },
-    queues: async (courseId: number): Promise<GetCourseQueuesResponse> => {
-      const queues = (
-        await this.axios.get(`/api/v1/courses/${courseId}/queues`)
-      ).data;
-      queues.forEach((q: QueuePartial) => parseQueueDates(q));
-      return queues;
     },
   };
   taStatus = {
@@ -58,55 +48,63 @@ class APIClient {
       return questions;
     },
     create: async (
-      queueId: number,
       params: CreateQuestionParams
     ): Promise<CreateQuestionResponse> => {
-      const question = (
-        await this.axios.post(`/api/v1/queues/${queueId}/questions`, params)
-      ).data;
+      const question = (await this.axios.post(`/api/v1/questions`, params))
+        .data;
       parseQuestionDates(question);
       return question;
     },
-    get: async (
-      queueId: number,
-      questionId: number
-    ): Promise<GetQuestionResponse> => {
-      return (
-        await this.axios.get(
-          `/api/v1/queues/${queueId}/questions/${questionId}`
-        )
-      ).data;
+    get: async (questionId: number): Promise<GetQuestionResponse> => {
+      return (await this.axios.get(`/api/v1/questions/${questionId}`)).data;
     },
     update: async (
-      queueId: number,
       questionId: number,
       params: UpdateQuestionParams
     ): Promise<UpdateQuestionResponse> => {
       const question = (
-        await this.axios.patch(
-          `/api/v1/queues/${queueId}/questions/${questionId}`,
-          params
-        )
+        await this.axios.patch(`/api/v1/questions/${questionId}`, params)
       ).data;
       parseQuestionDates(question);
       return question;
+    },
+  };
+  queues = {
+    updateNotes: async (queueId: number, notes: string) => {
+      await this.axios.patch(`/api/v1/queues/${queueId}`, { notes });
     },
   };
   notif = {
     notify_user: async (userId: number): Promise<void> => {
       await this.axios.post(`/api/v1/notifications/notify_user/${userId}`);
     },
-    credentials: async (): Promise<string> => {
-      return this.axios.get("/api/v1/notifications/credentials");
+    desktop: {
+      credentials: async (): Promise<string> => {
+        return this.axios.get("/api/v1/notifications/desktop/credentials");
+      },
+      register: async (
+        userId: number,
+        payload: DesktopNotifBody
+      ): Promise<string> => {
+        return this.axios.post(
+          `/api/v1/notifications/desktop/register/${userId}`,
+          payload
+        );
+      },
     },
-    register: async (userId: number, payload: NotifBody): Promise<string> => {
-      return this.axios.post(
-        `/api/v1/notifications/register/${userId}`,
-        payload
-      );
+    phone: {
+      register: async (
+        userId: number,
+        payload: PhoneNotifBody
+      ): Promise<string> => {
+        return this.axios.post(
+          `/api/v1/notifications/phone/register/${userId}`,
+          payload
+        );
+      },
     },
   };
-  constructor(baseURL: string = "") {
+  constructor(baseURL = "") {
     this.axios = Axios.create({ baseURL: baseURL });
   }
 }

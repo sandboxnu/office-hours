@@ -1,10 +1,10 @@
 entity: UserCourseModel
 items:
   ucm0:
-    userId: "@user0"
-    courseId: "@course0"
-    role: "student"
+    userId: '@user0'
+    courseId: '@course0'
+    role: 'student'
   ucm1:
-    userId: "@user1"
-    courseId: "@course0"
-    role: "ta"
+    userId: '@user1'
+    courseId: '@course0'
+    role: 'ta'

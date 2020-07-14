@@ -1,8 +1,7 @@
-import styled from "styled-components";
-import { Form, Input, Button, Checkbox, Divider } from "antd";
-import React, { useState } from "react";
+import { Button, Divider } from "antd";
 import Link from "next/link";
-import NavBar from "../components/Nav/NavBar";
+import React, { useState } from "react";
+import styled from "styled-components";
 
 const Container = styled.div`
   width: auto;
@@ -50,7 +49,7 @@ export default function Login({}: LoginProps) {
         <Divider plain>
           <h3>For Development Use Only</h3>
         </Divider>
-        <Link href="/api/v1/entry?userId=1">
+        <Link href="/api/v1/profile/entry?userId=1">
           <Button
             style={{ marginRight: "15px" }}
             type="default"
@@ -60,7 +59,7 @@ export default function Login({}: LoginProps) {
             Login as <b>Student</b>
           </Button>
         </Link>
-        <Link href="/api/v1/entry?userId=2">
+        <Link href="/api/v1/profile/entry?userId=2">
           <Button type="default" htmlType="submit" onClick={onSubmit}>
             Login as <b>TA</b>
           </Button>
