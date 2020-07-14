@@ -93,7 +93,10 @@ export default function StudentQueueList({
       <Col xs={24} lg={10} xxl={6} order={screens.lg === false ? 1 : 2}>
         <StudentHeaderCard
           bodyStyle={{ paddingLeft: 0 }}
-          style={{ paddingLeft: 0, marginTop: "46px" }}
+          style={{
+            paddingLeft: 0,
+            marginTop: screens.lg === false ? 0 : "46px",
+          }}
           bordered={false}
         >
           <HeaderText>your question</HeaderText>
