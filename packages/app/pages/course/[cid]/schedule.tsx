@@ -8,16 +8,22 @@ import { useProfile } from "../../../hooks/useProfile";
 import { useRouter } from "next/router";
 import NavBar from "../../../components/Nav/NavBar";
 
+const Container = styled.div`
+  margin: 32px 64px;
+  @media (max-width: 768px) {
+    margin: 32px 24px;
+  }
+`;
+
 const ScheduleCalendar = styled(Calendar)`
   height: 70vh;
 `;
 
 type ScheduleProps = {
   today?: boolean;
-  viewType: View;
 };
 
-export default function Schedule({ today, viewType }: ScheduleProps) {
+export default function Schedule({ today }: ScheduleProps) {
   const profile = useProfile();
   const router = useRouter();
   const { cid } = router.query;
@@ -44,11 +50,22 @@ export default function Schedule({ today, viewType }: ScheduleProps) {
     return (
       <div>
         {!today && <NavBar courseId={Number(cid)} />}
-        <ScheduleCalendar
-          localizer={momentLocalizer(moment)}
-          events={myEvents}
-          defaultView={viewType}
-        />
+        {!today && (
+          <Container>
+            <ScheduleCalendar
+              localizer={momentLocalizer(moment)}
+              events={myEvents}
+              defaultView={"week"}
+            />
+          </Container>
+        )}
+        {today && (
+          <ScheduleCalendar
+            localizer={momentLocalizer(moment)}
+            events={myEvents}
+            defaultView={"day"}
+          />
+        )}
       </div>
     );
   } else {

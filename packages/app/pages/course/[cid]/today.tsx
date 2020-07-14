@@ -81,7 +81,7 @@ export default function Today() {
               ))}
             </Col>
             <Col md={12} sm={24}>
-              <Schedule today={true} viewType={"day"} />
+              <Schedule today={true} />
             </Col>
           </Row>
         </Container>
