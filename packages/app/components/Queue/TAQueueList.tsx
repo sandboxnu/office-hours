@@ -54,6 +54,37 @@ const Placeholder = styled.div`
 
 const AlertButton = styled(Button)`
   margin-right: 12px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #da3236;
+  background: #f8f9fa;
+  border: 1px solid #cfd6de;
+  border-radius: 6px;
+`;
+
+const FinishButton = styled(Button)`
+  font-weight: 500;
+  font-size: 14px;
+  background: #3684c6;
+  border-radius: 6px;
+`;
+
+const CheckInOutButton = styled(Button)`
+  font-weight: 500;
+  font-size: 14px;
+  color: #da3236;
+  background: #f8f9fa;
+  border: 1px solid #cfd6de;
+  border-radius: 6px;
+`;
+
+const HelpNextButton = styled(Button)`
+  font-weight: 500;
+  font-size: 14px;
+  color: #212934;
+  border: 1px solid #cfd6de;
+  border-radius: 6px;
+  margin-right: 16px;
 `;
 
 const HeaderRow = styled(Row)`
@@ -185,9 +216,13 @@ export default function TAQueueList({
             <AlertButton danger size="large" onClick={alertHelpingAll}>
               Alert All
             </AlertButton>
-            <Button type="primary" size="large" onClick={finishHelpingAll}>
+            <FinishButton
+              type="primary"
+              size="large"
+              onClick={finishHelpingAll}
+            >
               Finish All
-            </Button>
+            </FinishButton>
           </div>
         </HeaderRow>
         {helpingQuestions &&
@@ -215,6 +250,12 @@ export default function TAQueueList({
         <Col flex="auto" order={screens.lg === false ? 2 : 1}>
           <Row justify="space-between">
             <QueueTitle>{room}</QueueTitle>
+            <Row>
+              <HelpNextButton size="large">Help Next</HelpNextButton>
+              <CheckInOutButton danger size="large">
+                Check Out
+              </CheckInOutButton>
+            </Row>
           </Row>
           {!helping && renderTAHeader()}
           {helping && renderHelpingHeader()}
