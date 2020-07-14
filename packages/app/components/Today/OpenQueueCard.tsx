@@ -1,3 +1,4 @@
+import React from "react";
 import { EditOutlined } from "@ant-design/icons";
 import { Avatar, Button, Card, Input, Row } from "antd";
 import { useRouter } from "next/router";
@@ -12,13 +13,10 @@ type OpenQueueCard = {
 };
 
 const PaddedCard = styled(Card)`
+  margin-top: 32px;
   margin-bottom: 25px;
   border-radius: 6px;
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
-`;
-
-const EditOutlinedFloatedRight = styled(EditOutlined)`
-  float: right;
 `;
 
 const HeaderDiv = styled.div`
@@ -54,6 +52,33 @@ const OpenQueueButton = styled(Button)`
   border-radius: 6px;
   color: white;
   font-weight: 500;
+  font-size: 14px;
+  margin-left: 16px;
+`;
+
+const EditNotesButton = styled(Button)`
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+`;
+
+const SaveButton = styled(Button)`
+  background: #2a9187;
+  border-radius: 6px;
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+`;
+
+const ExtraText = styled.div`
+  color: #8895a6;
+  font-size: 14px;
+  font-weight: normal;
+`;
+
+const NotesInput = styled(Input)`
+  border-radius: 6px;
+  border: 1px solid #b8c4ce;
 `;
 
 const OpenQueueCard = ({ queue, isTA, updateQueueNotes }: OpenQueueCard) => {
@@ -73,12 +98,7 @@ const OpenQueueCard = ({ queue, isTA, updateQueueNotes }: OpenQueueCard) => {
     <PaddedCard
       headStyle={{ background: "#F3F5F7" }}
       title={staffList.map((staffMember) => staffMember.name).join(", ")}
-      extra={
-        <div>
-          //TODO: eventually time might be here. But that day is not today. Ask
-          Chinese Man
-        </div>
-      }
+      extra={<ExtraText>//TODO: 3:00 - 5:00</ExtraText>}
     >
       <Row justify="space-between">
         <HeaderDiv>{queue.room}</HeaderDiv>
@@ -91,41 +111,20 @@ const OpenQueueCard = ({ queue, isTA, updateQueueNotes }: OpenQueueCard) => {
       {editingNotes ? (
         <div>
           <HeaderText>staff notes</HeaderText>
-          <Button
-            type="primary"
-            size="small"
-            onClick={handleUpdate}
-            style={{ float: "right" }}
-          >
-            Save
-          </Button>
-          <Input
+          <NotesInput
             defaultValue={queue.notes}
             onPressEnter={handleUpdate}
             value={updatedNotes}
             onChange={(e) => setUpdatedNotes(e.target.value as any)}
           />
         </div>
-      ) : queue.notes ? (
-        <div>
-          <div>
-            <HeaderText>staff notes</HeaderText>
-            {isTA && (
-              <EditOutlinedFloatedRight
-                onClick={() => {
-                  setEditingNotes(true);
-                }}
-              />
-            )}
-          </div>
-          <p>{queue.notes}</p>
-        </div>
       ) : (
-        <EditOutlinedFloatedRight
-          onClick={() => {
-            setEditingNotes(true);
-          }}
-        />
+        queue.notes && (
+          <React.Fragment>
+            <HeaderText style={{ marginBottom: 0 }}>staff notes</HeaderText>
+            <div>{queue.notes}</div>
+          </React.Fragment>
+        )
       )}
       <br />
 
@@ -142,14 +141,26 @@ const OpenQueueCard = ({ queue, isTA, updateQueueNotes }: OpenQueueCard) => {
             />
           ))}
         </div>
-        <Button
-          onClick={() => {
-            setEditingNotes(true);
-          }}
-        >
-          Edit Notes
-        </Button>
-        <OpenQueueButton size={"large"}>Open Queue</OpenQueueButton>
+        {editingNotes && (
+          <SaveButton onClick={handleUpdate} size="large">
+            Save Changes
+          </SaveButton>
+        )}
+        {!editingNotes && (
+          <Row>
+            <EditNotesButton
+              size="large"
+              onClick={() => {
+                setEditingNotes(true);
+              }}
+            >
+              Edit Notes
+            </EditNotesButton>
+            <OpenQueueButton type="primary" size="large">
+              Open Queue
+            </OpenQueueButton>
+          </Row>
+        )}
       </Row>
     </PaddedCard>
   );

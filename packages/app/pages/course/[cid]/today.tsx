@@ -16,9 +16,17 @@ const Container = styled.div`
 `;
 
 const CreateQueueButton = styled(Button)`
-  float: right;
-  background-color: #4cbb17;
+  background: #2a9187;
+  border-radius: 6px;
   color: white;
+  font-weight: 500;
+  font-size: 14px;
+`;
+
+const Title = styled.div`
+  font-weight: 500;
+  font-size: 30px;
+  color: #212934;
 `;
 
 export default function Today() {
@@ -53,8 +61,16 @@ export default function Today() {
       <div>
         <NavBar courseId={Number(cid)} />
         <Container>
-          <Row gutter={25}>
+          <Row gutter={64}>
             <Col md={12} xs={24}>
+              <Row justify="space-between">
+                <Title>Current Office Hours</Title>
+                {isTA && (
+                  <CreateQueueButton type="default" size="large">
+                    Create Queue
+                  </CreateQueueButton>
+                )}
+              </Row>
               {data?.map((q) => (
                 <OpenQueueCard
                   key={q.id}
@@ -63,11 +79,6 @@ export default function Today() {
                   updateQueueNotes={updateQueueNotes}
                 />
               ))}
-              {isTA && (
-                <CreateQueueButton type="default" size={"large"}>
-                  Create Queue
-                </CreateQueueButton>
-              )}
             </Col>
             <Col md={12} sm={24}>
               <Schedule today={true} viewType={"day"} />
