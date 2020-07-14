@@ -11,6 +11,17 @@ import { addGlobalsToApp } from '../../src/bootstrap';
 export interface SupertestOptions {
   userId?: number;
 }
+export const TestTypeOrmModule = 
+TypeOrmModule.forRoot({
+  type: 'postgres',
+  host: 'localhost',
+  port: 5432,
+  username: 'postgres',
+  password: '',
+  database: 'test',
+  entities: ['./**/*.entity.ts'],
+  synchronize: true,
+});
 
 export function setupIntegrationTest(
   module: Type<any>,
@@ -24,17 +35,7 @@ export function setupIntegrationTest(
       imports: [
         module,
         ProfileModule,
-        // Use the e2e_test database to run the tests
-        TypeOrmModule.forRoot({
-          type: 'postgres',
-          host: 'localhost',
-          port: 5432,
-          username: 'postgres',
-          password: '',
-          database: 'test',
-          entities: ['./**/*.entity.ts'],
-          synchronize: true,
-        }),
+        TestTypeOrmModule,
         ConfigModule.forRoot({
           envFilePath: ['.env', '.env.development'],
           isGlobal: true,
