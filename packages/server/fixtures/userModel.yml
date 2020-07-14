@@ -1,17 +1,17 @@
 entity: UserModel
 items:
   user0:
-    username: "test_user"
-    email: "test_user@husky.neu.edu"
-    name: "Test User"
-    photoURL: "www.photoURL.com"
+    username: 'test_user'
+    email: 'test_user@husky.neu.edu'
+    name: 'Test User'
+    photoURL: 'www.photoURL.com'
   user1:
-    username: "xXmyHomiESt3nz69Xx"
-    email: "stenzel.w@northeastern.edu"
-    name: "Will Stenzel"
-    photoURL: "https://i.imgur.com/UrYRn0c.jpg"
+    username: 'xXmyHomiESt3nz69Xx'
+    email: 'stenzel.w@northeastern.edu'
+    name: 'Will Stenzel'
+    photoURL: 'https://i.imgur.com/UrYRn0c.jpg'
   user2:
-    username: "SrsProgrammerFreshmanLiuS"
-    email: "liu.sta@husky.neu.edu"
-    name: "Stanley Liu"
-    photoURL: "https://i.imgur.com/iyQyUiN.jpeg"
+    username: 'SrsProgrammerFreshmanLiuS'
+    email: 'liu.sta@husky.neu.edu'
+    name: 'Stanley Liu'
+    photoURL: 'https://i.imgur.com/iyQyUiN.jpeg'

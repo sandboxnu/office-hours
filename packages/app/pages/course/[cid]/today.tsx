@@ -34,15 +34,18 @@ export default function Today() {
   const router = useRouter();
   const { cid } = router.query;
 
-  const { data, error } = useSWR(`api/v1/courses/${cid}/queues`, async () =>
-    API.course.queues(Number(cid))
+  const { data, error } = useSWR(
+    `api/v1/courses/${cid}`,
+    async () => cid && API.course.get(Number(cid))
   );
 
   const updateQueueNotes = async (queueId, notes) => {
-    const newQueues = data.map((q) => (q.id === queueId ? { ...q, notes } : q));
-    mutate(`api/v1/courses/${cid}/queues`, newQueues, false);
+    const newQueues =
+      data && data.queues.map((q) => (q.id === queueId ? { ...q, notes } : q));
+
+    mutate(`api/v1/courses/${cid}`, { ...data, queues: newQueues }, false);
     await API.queues.updateNotes(queueId, notes);
-    mutate(`api/v1/courses/${cid}/queues`);
+    mutate(`api/v1/courses/${cid}`);
   };
 
   const isTA = true; // TODO: temp
@@ -71,7 +74,7 @@ export default function Today() {
                   </CreateQueueButton>
                 )}
               </Row>
-              {data?.map((q) => (
+              {data?.queues?.map((q) => (
                 <OpenQueueCard
                   key={q.id}
                   queue={q}

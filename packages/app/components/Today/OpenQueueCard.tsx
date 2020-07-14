@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import styled from "styled-components";
 import { QueuePartial } from "../../../common/index";
+import Link from "next/link";
 
 type OpenQueueCard = {
   queue: QueuePartial;
@@ -158,9 +159,14 @@ const OpenQueueCard = ({ queue, isTA, updateQueueNotes }: OpenQueueCard) => {
                 Edit Notes
               </EditNotesButton>
             )}
-            <OpenQueueButton type="primary" size="large">
-              Open Queue
-            </OpenQueueButton>
+            <Link
+              href="/course/[cid]/queue/[qid]"
+              as={`/course/${cid}/queue/${queue.id}`}
+            >
+              <OpenQueueButton type="primary" size="large">
+                Open Queue
+              </OpenQueueButton>
+            </Link>
           </Row>
         )}
       </Row>

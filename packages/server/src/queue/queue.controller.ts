@@ -1,36 +1,40 @@
 import {
-  ClassSerializerInterceptor,
   Controller,
   Get,
-  NotFoundException,
+  Patch,
   Param,
-  UseGuards,
+  NotFoundException,
+  ClassSerializerInterceptor,
   UseInterceptors,
-} from "@nestjs/common";
+  UseGuards,
+  Body,
+} from '@nestjs/common';
+import { Connection } from 'typeorm';
+import { Not, In } from 'typeorm';
+import { QueueModel } from './queue.entity';
 import {
-  ClosedQuestionStatus,
   GetQueueResponse,
   ListQuestionsResponse,
-} from "@template/common";
-import { Connection, In, Not } from "typeorm";
-import { JwtAuthGuard } from "../profile/jwt-auth.guard";
-import { QuestionModel } from "../question/question.entity";
-import { QueueModel } from "./queue.entity";
+  ClosedQuestionStatus,
+  UpdateQueueNotesParams,
+} from '@template/common';
+import { QuestionModel } from '../question/question.entity';
+import { JwtAuthGuard } from '../profile/jwt-auth.guard';
 
-@Controller("queues")
+@Controller('queues')
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class QueueController {
   constructor(private connection: Connection) {}
 
-  @Get(":queueId")
-  async getQueue(@Param("queueId") queueId: string): Promise<GetQueueResponse> {
-    return QueueModel.findOne(queueId, { relations: ["questions"] });
+  @Get(':queueId')
+  async getQueue(@Param('queueId') queueId: string): Promise<GetQueueResponse> {
+    return QueueModel.findOne(queueId, { relations: ['questions'] });
   }
 
-  @Get(":queueId/questions")
+  @Get(':queueId/questions')
   async getQuestions(
-    @Param("queueId") queueId: string
+    @Param('queueId') queueId: string,
   ): Promise<ListQuestionsResponse> {
     // todo: need a way to return different data, if TA vs. student hits endpoint.
     // for now, just return the student response
@@ -49,7 +53,25 @@ export class QueueController {
           status: Not(In(Object.values(ClosedQuestionStatus))),
         },
       ],
-      relations: ["creator", "taHelped"],
+      relations: ['creator', 'taHelped'],
     });
+  }
+
+  @Patch(':queueId')
+  async updateQueue(
+    @Param('queueId') queueId: number,
+    @Body() body: UpdateQueueNotesParams,
+    // TODO: Add TA/Prof protection on endpoint
+  ) {
+    let queue = await QueueModel.findOne({
+      where: { id: queueId },
+    });
+    if (queue === undefined) {
+      throw new NotFoundException();
+    }
+
+    queue.notes = body.notes;
+    await queue.save();
+    return queue;
   }
 }
