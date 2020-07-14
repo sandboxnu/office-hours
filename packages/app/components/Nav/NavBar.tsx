@@ -1,18 +1,11 @@
 import styled from "styled-components";
-import React, { Component, useState, useEffect } from "react";
+import React, { useState } from "react";
 import LeftNavBar from "./LeftNavBar";
 import { Drawer, Button, Menu } from "antd";
 import RightNavBar from "./RightNavBar";
-import { Course, User, UserCourse, CoursePartial } from "@template/common";
 import Link from "next/link";
 import { API } from "@template/api-client";
 import useSWR from "swr";
-import { useProfile } from "../../hooks/useProfile";
-
-const Container = styled.div`
-  width: 1440px;
-  height: 64px;
-`;
 
 const Nav = styled.nav`
   padding: 0px 0px;
@@ -107,15 +100,15 @@ interface NavBarProps {
 }
 
 export default function NavBar({ courseId }: NavBarProps) {
-  const profile = useProfile();
   const [visible, setVisible] = useState<boolean>(false);
 
-  const { data, error } = useSWR(`api/v1/courses/${courseId}/queue`, async () =>
-    API.course.queues(courseId)
+  const { data: course, error } = useSWR(
+    `api/v1/courses/${courseId}`,
+    async () => API.course.get(courseId)
   );
 
-  const course = profile.courses.find((c) => c.course.id === courseId).course;
-  const queueId = data && data.length > 0 && data[0].id;
+  const queueId =
+    course?.queues && course.queues.length > 0 && course.queues[0].id;
 
   const showDrawer = () => {
     setVisible(true);

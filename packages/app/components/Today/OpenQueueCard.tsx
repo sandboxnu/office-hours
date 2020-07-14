@@ -7,7 +7,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { QueuePartial } from "../../../common/index";
 
-
 type OpenQueueCard = {
   queue: QueuePartial;
   isTA: boolean;
@@ -46,8 +45,8 @@ const OpenQueueCard = ({ queue, isTA, updateQueueNotes }: OpenQueueCard) => {
       title={staffList.map((staffMember) => staffMember.name).join(", ")}
       extra={
         <Link
-          href="/class/[cid]/queue/[qid]"
-          as={`/class/${cid}/queue/${queue.id}`}
+          href="/course/[cid]/queue/[qid]"
+          as={`/course/${cid}/queue/${queue.id}`}
         >
           <Button type="primary" size={"middle"}>
             Join Queue
