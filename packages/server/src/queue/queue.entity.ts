@@ -32,6 +32,9 @@ export class QueueModel extends BaseEntity {
   @Exclude()
   questions: QuestionModel[];
 
+  @Column('text', { nullable: true })
+  notes: string;
+
   @Expose()
   get staffList(): UserPartial[] {
     // TODO get real data?

@@ -1,11 +1,13 @@
 import {
   Controller,
   Get,
+  Patch,
   Param,
   NotFoundException,
   ClassSerializerInterceptor,
   UseInterceptors,
   UseGuards,
+  Body,
 } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { Not, In } from 'typeorm';
@@ -14,6 +16,7 @@ import {
   GetQueueResponse,
   ListQuestionsResponse,
   ClosedQuestionStatus,
+  UpdateQueueNotesParams,
 } from '@template/common';
 import { QuestionModel } from '../question/question.entity';
 import { JwtAuthGuard } from '../profile/jwt-auth.guard';
@@ -52,5 +55,23 @@ export class QueueController {
       ],
       relations: ['creator', 'taHelped'],
     });
+  }
+
+  @Patch(':queueId')
+  async updateQueue(
+    @Param('queueId') queueId: number,
+    @Body() body: UpdateQueueNotesParams,
+    // TODO: Add TA/Prof protection on endpoint
+  ) {
+    let queue = await QueueModel.findOne({
+      where: { id: queueId },
+    });
+    if (queue === undefined) {
+      throw new NotFoundException();
+    }
+
+    queue.notes = body.notes;
+    await queue.save();
+    return queue;
   }
 }

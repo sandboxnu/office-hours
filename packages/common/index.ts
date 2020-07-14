@@ -321,3 +321,8 @@ export type TAUpdateStatusResponse = Queue;
 export type QueueNotePayloadType = {
   notes: string;
 };
+
+export class UpdateQueueNotesParams {
+  @IsString()
+  notes: string;
+}
