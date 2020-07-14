@@ -4,9 +4,9 @@ import { INestApplication, Type } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as supertest from 'supertest';
-import * as cookieParser from 'cookie-parser';
 import { ProfileModule } from '../../src/profile/profile.module';
 import { JwtService } from '@nestjs/jwt';
+import { addGlobalsToApp } from '../../src/bootstrap';
 
 export interface SupertestOptions {
   userId?: number;
@@ -42,7 +42,7 @@ export function setupIntegrationTest(
       ],
     }).compile();
     app = testModule.createNestApplication();
-    app.use(cookieParser());
+    addGlobalsToApp(app);
     jwtService = testModule.get<JwtService>(JwtService);
     conn = testModule.get<Connection>(Connection);
     await app.init();

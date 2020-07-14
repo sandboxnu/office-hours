@@ -1,8 +1,14 @@
-import { QuestionFactory, UserFactory, QueueFactory } from './util/factories';
+import {
+  QuestionFactory,
+  QueueFactory,
+  TACourseFactory,
+  UserFactory,
+  StudentCourseFactory,
+} from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
 import { QuestionModule } from '../src/question/question.module';
 import { QuestionModel } from '../src/question/question.entity';
-import { QuestionType } from '@template/common';
+import { QuestionType, QuestionStatusKeys } from '@template/common';
 
 describe('Question Integration', () => {
   const supertest = setupIntegrationTest(QuestionModule);
@@ -51,22 +57,22 @@ describe('Question Integration', () => {
         })
         .expect(404);
     });
-    // this test can be done once we figure out validation
-    it.skip('post question fails with bad params', async () => {
+    it('post question fails with bad params', async () => {
       await supertest({ userId: 99 })
         .post('/questions')
         .send({
-          question: 'I need help',
+          text: 'I need help',
+          questionType: 'bad param!',
         })
-        .expect(404);
+        .expect(400);
     });
   });
 
   describe('PATCH /questions/:id', () => {
-    it('updates a question', async () => {
+    it('as student crator, edit a question', async () => {
       const q = await QuestionFactory.create({ text: 'Help pls' });
 
-      const response = await supertest({ userId: 99 })
+      const response = await supertest({ userId: q.creatorId })
         .patch(`/questions/${q.id}`)
         .send({
           text: 'NEW TEXT',
@@ -88,106 +94,91 @@ describe('Question Integration', () => {
         })
         .expect(404);
     });
-    /*
-    it("PATCH question as student updates it", async () => {
-      const q = await QuestionFactory.create({ text: "Help pls" });
-
-      const user = await UserFactory.create();
-      const request = await injectAsUser(getServer(), user, {
-        method: "patch",
-        url: `/api/v1/queues/${q.queueId}/questions/${q.id}`,
-        payload: {
-          text: "NEW TEXT",
-        },
-      });
-      expect(request.statusCode).toEqual(200);
-      expect(request.result).toMatchObject({ id: q.id, text: "NEW TEXT" });
-      expect(await Question.findOne({ id: q.id })).toMatchObject({
-        text: "NEW TEXT",
-      });
-    });
-    it.skip("PATCH taHelped as student is not allowed", async () => {
-      const q = await QuestionFactory.create({ text: "Help pls" });
+    it('PATCH taHelped as student is not allowed', async () => {
+      const q = await QuestionFactory.create({ text: 'Help pls' });
       const ta = await UserFactory.create();
       await TACourseFactory.create({ course: q.queue.course, user: ta });
 
-      const request = await injectAsUser(getServer(), ta, {
-        method: "patch",
-        url: `/api/v1/queues/${q.queueId}/questions/${q.id}`,
-        payload: {
+      await supertest({ userId: q.creatorId })
+        .patch(`/questions/${q.id}`)
+        .send({
           taHelped: {
             id: ta.id,
             name: ta.name,
           },
-        },
-      });
-      expect(request.statusCode).toEqual(401);
+        })
+        .expect(400);
     });
-    it.skip("PATCH status to helping as student not allowed", async () => {
-      const q = await QuestionFactory.create({ text: "Help pls" });
+    it('PATCH status to helping as student not allowed', async () => {
+      const q = await QuestionFactory.create({ text: 'Help pls' });
 
-      const request = await getServer().inject({
-        method: "patch",
-        url: `/api/v1/queues/${q.queueId}/questions/${q.id}`,
-        payload: {
+      await supertest({ userId: q.creatorId })
+        .patch(`/questions/${q.id}`)
+        .send({
           status: QuestionStatusKeys.Helping,
-        },
-      });
-      expect(request.statusCode).toEqual(401);
+        })
+        .expect(401);
     });
-    it("PATCH status to helping as TA works", async () => {
-      const q = await QuestionFactory.create({ text: "Help pls" });
+    it('PATCH status to helping as TA works', async () => {
+      const q = await QuestionFactory.create({ text: 'Help pls' });
       const ta = await UserFactory.create();
       await TACourseFactory.create({ course: q.queue.course, user: ta });
 
-      const request = await injectAsUser(getServer(), ta, {
-        method: "patch",
-        url: `/api/v1/queues/${q.queueId}/questions/${q.id}`,
-        payload: {
+      const res = await supertest({ userId: ta.id })
+        .patch(`/questions/${q.id}`)
+        .send({
           status: QuestionStatusKeys.Helping,
-        },
-      });
-      expect(request.statusCode).toEqual(200);
-      expect(request.result).toMatchObject({
+        })
+        .expect(200);
+      expect(res.body).toMatchObject({
         status: QuestionStatusKeys.Helping,
       });
     });
-    it.skip("PATCH status to Resolved as TA works", async () => {
-      const q = await QuestionFactory.create({ text: "Help pls" });
+    it('PATCH status to Resolved as TA works', async () => {
+      const q = await QuestionFactory.create({
+        text: 'Help pls',
+        status: 'Queued',
+      });
       const ta = await UserFactory.create();
       await TACourseFactory.create({ course: q.queue.course, user: ta });
 
-      const request = await getServer().inject({
-        method: "patch",
-        url: `/api/v1/queues/${q.queueId}/questions/${q.id}`,
-        payload: {
+      const res = await supertest({ userId: ta.id })
+        .patch(`/questions/${q.id}`)
+        .send({
           status: QuestionStatusKeys.Resolved,
-        },
-      });
-      expect(request.statusCode).toEqual(200);
-      expect(request.result).toMatchObject({
+        })
+        .expect(200);
+      expect(res.body).toMatchObject({
         status: QuestionStatusKeys.Resolved,
-        taHelped: ta,
+        taHelped: { id: ta.id, name: ta.name, photoURL: ta.photoURL },
       });
     });
-    it.skip("PATCH anything other than status as TA not allowed", async () => {
-      const q = await QuestionFactory.create({ text: "Help pls" });
+    it('PATCH anything other than status as TA not allowed', async () => {
+      const q = await QuestionFactory.create({ text: 'Help pls' });
       const ta = await UserFactory.create();
       await TACourseFactory.create({ course: q.queue.course, user: ta });
 
-      const request = await getServer().inject({
-        method: "patch",
-        url: `/api/v1/queues/${q.queueId}/questions/${q.id}`,
-        payload: {
-          text: "bonjour",
-        },
+      await supertest({ userId: ta.id })
+        .patch(`/questions/${q.id}`)
+        .send({
+          text: 'bonjour',
+        })
+        .expect(401);
+    });
+    it('PATCH question fails when you are not the question creator', async () => {
+      const q = await QuestionFactory.create({ text: 'Help pls' });
+      const student = await UserFactory.create();
+      await StudentCourseFactory.create({
+        course: q.queue.course,
+        user: student,
       });
-      expect(request.statusCode).toEqual(401);
+
+      await supertest({ userId: student.id })
+        .patch(`/questions/${q.id}`)
+        .send({
+          text: 'bonjour',
+        })
+        .expect(401);
     });
-    it.skip("PATCH question fails when you are not the question creator", async () => {
-      // TODO
-      // expect(request.statusCode).toEqual(401);
-    });
-    */
   });
 });

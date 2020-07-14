@@ -4,7 +4,6 @@ import {
   Get,
   Post,
   Body,
-  HttpException,
   Patch,
   NotFoundException,
   UseInterceptors,
@@ -20,6 +19,8 @@ import {
   UpdateQuestionResponse,
   UpdateQuestionParams,
   Role,
+  OpenQuestionStatus,
+  ClosedQuestionStatus,
 } from '@template/common';
 import { QueueModel } from '../queue/queue.entity';
 import { Connection, In } from 'typeorm';
@@ -103,6 +104,11 @@ export class QuestionController {
 
     if (isCreator) {
       // Creator can always edit
+      if (body.status === OpenQuestionStatus.Helping) {
+        throw new UnauthorizedException(
+          'Students cannot mark question helping',
+        );
+      }
       question = Object.assign(question, body);
       await question.save();
       return question;
@@ -119,12 +125,16 @@ export class QuestionController {
       })) > 0;
 
     if (isTaOrProf) {
-      if (Object.keys(body) !== ['status']) {
+      if (Object.keys(body).length !== 1 || Object.keys(body)[0] !== 'status') {
         throw new UnauthorizedException(
           'TA/Professors can only edit question status',
         );
       }
       question = Object.assign(question, body);
+      // Set TA as taHelped if resolving their question
+      if (body.status === ClosedQuestionStatus.Resolved) {
+        question.taHelped = await UserModel.findOne(userId);
+      }
       await question.save();
       return question;
     } else {
