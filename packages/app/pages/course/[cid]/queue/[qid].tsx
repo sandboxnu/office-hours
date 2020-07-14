@@ -34,10 +34,16 @@ export default function Queue({}: QueueProps) {
   const router = useRouter();
   const { cid, qid } = router.query;
 
-  const { data: questions, error } = useSWR(
+  const { data: questions, error: questionsError } = useSWR(
     qid ? `/api/v1/queues/${qid}/questions` : null,
     async () => API.questions.index(Number(qid))
   );
+  const { data: queues, error: queuesError } = useSWR(
+    qid ? `/api/v1/courses/${cid}/queues` : null,
+    async () => API.course.queues(Number(cid))
+  );
+  const queueRoom: string =
+    queues && queues.find((q) => q.id === Number(qid)).room;
 
   const helpingQuestions: Question[] = [];
   const groupQuestions: Question[] = [];
@@ -175,6 +181,7 @@ export default function Queue({}: QueueProps) {
           <Fragment>
             {Role.STUDENT === ROLE ? (
               <StudentQueueList
+                room={queueRoom}
                 onOpenClick={onOpenClick}
                 joinQueue={joinQueue}
                 questions={questions}
@@ -185,6 +192,7 @@ export default function Queue({}: QueueProps) {
               />
             ) : (
               <TAQueueList
+                room={queueRoom}
                 onOpenClick={onOpenClick}
                 joinQueue={joinQueue}
                 updateQuestionTA={updateQuestionTA}

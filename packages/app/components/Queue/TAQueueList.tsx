@@ -15,9 +15,9 @@ const { useBreakpoint } = Grid;
 
 const StatusText = styled.div`
   font-size: 14px;
+  font-weight: 500;
   line-height: 22px;
-  font-weight: 600;
-  color: #bfbfbf;
+  color: #8895a6;
   font-variant: small-caps;
   width: 96px;
   float: right;
@@ -31,17 +31,16 @@ const TAHeaderCard = styled(Card)`
 
 const HeaderText = styled.div`
   font-size: 14px;
+  font-weight: 500;
   line-height: 22px;
-  font-weight: 600;
-  color: #bfbfbf;
+  color: #8895a6;
   font-variant: small-caps;
 `;
 
-const QueueTitle = styled.h1`
-  font-weight: 600;
+const QueueTitle = styled.div`
+  font-weight: 500;
   font-size: 30px;
-  line-height: 38px;
-  color: #262626;
+  color: #212934;
 `;
 
 const CenterRow = styled(Row)`
@@ -62,6 +61,7 @@ const HeaderRow = styled(Row)`
 `;
 
 interface QueueListProps {
+  room: string;
   onOpenClick: (question: Question) => void;
   joinQueue: () => void;
   updateQuestionTA: (question: Question, status: QuestionStatus) => void;
@@ -72,6 +72,7 @@ interface QueueListProps {
 }
 
 export default function TAQueueList({
+  room,
   onOpenClick,
   joinQueue,
   updateQuestionTA,
@@ -213,7 +214,7 @@ export default function TAQueueList({
       <Row gutter={[64, 64]}>
         <Col flex="auto" order={screens.lg === false ? 2 : 1}>
           <Row justify="space-between">
-            <QueueTitle>Queue 1</QueueTitle>
+            <QueueTitle>{room}</QueueTitle>
           </Row>
           {!helping && renderTAHeader()}
           {helping && renderHelpingHeader()}

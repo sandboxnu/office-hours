@@ -148,14 +148,16 @@ const OpenQueueCard = ({ queue, isTA, updateQueueNotes }: OpenQueueCard) => {
         )}
         {!editingNotes && (
           <Row>
-            <EditNotesButton
-              size="large"
-              onClick={() => {
-                setEditingNotes(true);
-              }}
-            >
-              Edit Notes
-            </EditNotesButton>
+            {isTA && (
+              <EditNotesButton
+                size="large"
+                onClick={() => {
+                  setEditingNotes(true);
+                }}
+              >
+                Edit Notes
+              </EditNotesButton>
+            )}
             <OpenQueueButton type="primary" size="large">
               Open Queue
             </OpenQueueButton>
