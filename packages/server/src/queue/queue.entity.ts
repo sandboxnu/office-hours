@@ -34,6 +34,7 @@ export class QueueModel extends BaseEntity {
 
   @Expose()
   get staffList(): UserPartial[] {
+    // TODO get real data?
     return [
       {
         id: 54,
