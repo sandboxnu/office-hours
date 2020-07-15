@@ -3,6 +3,8 @@ import { API } from "@template/api-client";
 import { Avatar, Button, Card, Input } from "antd";
 import { useState } from "react";
 import styled from "styled-components";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { QueuePartial } from "../../../common/index";
 
 type OpenQueueCard = {
@@ -28,6 +30,9 @@ const EditOutlinedFloatedRight = styled(EditOutlined)`
 const OpenQueueCard = ({ queue, isTA, updateQueueNotes }: OpenQueueCard) => {
   const [editingNotes, setEditingNotes] = useState(false);
   const [updatedNotes, setUpdatedNotes] = useState(queue.notes);
+  const router = useRouter();
+  const { cid } = router.query;
+
   const staffList = queue.staffList;
 
   const handleUpdate = () => {
@@ -39,9 +44,14 @@ const OpenQueueCard = ({ queue, isTA, updateQueueNotes }: OpenQueueCard) => {
     <PaddedCard
       title={staffList.map((staffMember) => staffMember.name).join(", ")}
       extra={
-        <Button type="primary" size={"middle"}>
-          Join Queue
-        </Button>
+        <Link
+          href="/course/[cid]/queue/[qid]"
+          as={`/course/${cid}/queue/${queue.id}`}
+        >
+          <Button type="primary" size={"middle"}>
+            Join Queue
+          </Button>
+        </Link>
       }
     >
       <h1>{queue.room}</h1>

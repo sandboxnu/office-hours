@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Avatar, Menu } from "antd";
+import { Avatar, Button, Menu } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import Link from "next/link";
+import Settings from "./Settings/Profile";
 
 const SubMenu = Menu.SubMenu;
 const MenuItemGroup = Menu.ItemGroup;
@@ -21,14 +22,14 @@ const MenuItem = styled(Menu.Item)`
   }
 `;
 
+<Link href="/login" as="/login">
+  <Avatar size={32} icon={<UserOutlined />} />
+</Link>;
+
 export default function RightNavBar() {
   return (
     <HorizontalMenu mode="horizontal">
-      <MenuItem key="mail">
-        <Link href="/login" as="/login">
-          <Avatar size={32} icon={<UserOutlined />} />
-        </Link>
-      </MenuItem>
+      <Settings />
     </HorizontalMenu>
   );
 }
