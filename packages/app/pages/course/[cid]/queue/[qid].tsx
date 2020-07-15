@@ -65,9 +65,6 @@ export default function Queue() {
 
   filterHelpingGroup();
 
-  // Student queue state variables
-  const [isJoining, setIsJoining] = useState<boolean>(false);
-
   const studentQuestion =
     profile && questions && questions.find((q) => q.creator.id === profile.id);
 
@@ -85,16 +82,11 @@ export default function Queue() {
     setOpenPopup(false);
   }, []);
 
-  /**
-   * Student functions to support queue operations.
-   */
-
   const joinQueue = async () => {
-    // API call to join queue, question marked as draft
     const createdQuestion = await API.questions.create({
       queueId: Number(qid),
-      text: "fake text",
-      questionType: QuestionType.Bug, // endpoint needs to be changed to allow empty questionType for drafts
+      text: "",
+      questionType: QuestionType.Bug, // TODO: endpoint needs to be changed to allow empty questionType for drafts
       // for the moment I am defaulting this data so that there is no error
     });
 
@@ -103,8 +95,6 @@ export default function Queue() {
   };
 
   const leaveQueue = async () => {
-    setIsJoining(false);
-
     await API.questions.update(studentQuestion.id, {
       status: ClosedQuestionStatus.Deleted,
     });
@@ -112,17 +102,13 @@ export default function Queue() {
     mutate(`/api/v1/queues/${qid}/questions`);
   };
 
-  /**
-   * Finishes creating a given question by updating the draft.
-   */
   const finishQuestion = async (text: string, questionType: QuestionType) => {
     const updateStudent = {
       text: text,
       questionType: questionType,
       status: OpenQuestionStatus.Queued,
     };
-    const q = await API.questions.update(studentQuestion.id, updateStudent);
-    setIsJoining(false);
+    await API.questions.update(studentQuestion.id, updateStudent);
     const newQuestions = questions.map((q) =>
       q.id === studentQuestion.id ? { ...q, updateStudent } : q
     );
@@ -151,10 +137,7 @@ export default function Queue() {
     mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
   };
 
-  /**
-   * Sends a push notification to the student with the given Question
-   * @param question the question to be notified
-   */
+  // TODO: yup
   const alertStudent = (question: Question) => {
     // Send API request to trigger notification
   };
