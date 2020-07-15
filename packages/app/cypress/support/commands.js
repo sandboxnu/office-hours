@@ -23,3 +23,22 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+// Q: doest cy.server(); need to be run before this?
+// or could it be added to a before each in a the support file so it runs before each test
+Cypress.Commands.add("mock", (method, url, fixture) => {
+  // if update is selected, listen to route, then udpate the write the data to a fixture
+  if (procces.env.UPDATE_SNAPSHOTS) {
+    const fixtureName = fixture.split(":").pop();
+    cy.route(method, url).then((response) => {
+      cy.writeFile(`cypress/fixtures/${fixutreName}.json`, response.body);
+    });
+  } else if (!process.env.USE_REAL_API) {
+    cy.route(method, url, fixture);
+  }
+  // else - do nothing, the api will return the data we need
+});
+
+Cypress.Commands.add("login", (userType) => {
+  // TODO
+});

@@ -11,7 +11,7 @@ describe("Edit Queue Notes", () => {
     cy.visit("/course/1/today");
     cy.get("svg[data-icon='edit']").click();
 
-    cy.route(
+    cy.mock(
       "GET",
       "/api/v1/courses/1/queues",
       "fixture:queue_route_with_notes"
