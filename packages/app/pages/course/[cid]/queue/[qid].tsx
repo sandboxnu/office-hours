@@ -17,9 +17,6 @@ import StudentQueueList from "../../../../components/Queue/StudentQueueList";
 import TAQueueList from "../../../../components/Queue/TAQueueList";
 import { useProfile } from "../../../../hooks/useProfile";
 
-// TODO: replace this with profile role from endpoint
-const ROLE: Role = Role.STUDENT;
-
 const Container = styled.div`
   margin: 32px 64px;
   @media (max-width: 768px) {
@@ -31,6 +28,7 @@ export default function Queue() {
   const profile = useProfile();
   const router = useRouter();
   const { cid, qid } = router.query;
+  const role = profile?.courses.find((e) => e.course.id === Number(cid)).role;
 
   const { data: questions, error: questionsError } = useSWR(
     qid ? `/api/v1/queues/${qid}/questions` : null,
@@ -167,7 +165,7 @@ export default function Queue() {
         <NavBar courseId={Number(cid)} />
         <Container>
           <Fragment>
-            {Role.STUDENT === ROLE ? (
+            {Role.STUDENT === role ? (
               <StudentQueueList
                 room={queueRoom}
                 onOpenClick={onOpenClick}
@@ -190,7 +188,7 @@ export default function Queue() {
                 groupQuestions={groupQuestions}
               />
             )}
-            {ROLE === "ta" && currentQuestion && (
+            {role === "ta" && currentQuestion && (
               <StudentPopupCard
                 onClose={onCloseClick}
                 email="takayama.a@northeastern.edu" //need a way to access this. or the user
