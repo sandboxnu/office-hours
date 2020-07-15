@@ -126,7 +126,7 @@ export default function TAQueueList({
    * Marks every question currently being helped by this TA as finished.
    */
   const finishHelpingAll = () => {
-    for (let question of helpingQuestions) {
+    for (const question of helpingQuestions) {
       updateQuestionTA(question, ClosedQuestionStatus.Resolved);
     }
   };
@@ -136,7 +136,7 @@ export default function TAQueueList({
    * @param selected the given list of questions to help
    */
   const addQuestionsToHelp = (selected: Question[]) => {
-    for (let question of selected) {
+    for (const question of selected) {
       updateQuestionTA(question, OpenQuestionStatus.Helping);
     }
   };
