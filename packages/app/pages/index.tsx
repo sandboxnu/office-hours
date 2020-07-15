@@ -7,8 +7,8 @@ export default function Home() {
 
   if (profile) {
     Router.push(
-      "/class/[cid]/today",
-      "/class/" + profile.courses[0].course.id + "/today"
+      "/course/[cid]/today",
+      "/course/" + profile.courses[0].course.id + "/today"
     );
   }
 
