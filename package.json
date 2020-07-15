@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "cypress:run": "yarn workspace @template/app cypress:run",
+    "cypress:open": "yarn workspace @template/app cypress:open",
     "dev": "concurrently -n \"common,server,app,proxy\" \"yarn workspace @template/common dev\" \"yarn workspace @template/server dev\" \"yarn workspace @template/app dev\" \"yarn dev:proxy\"",
     "dev:proxy": "node infrastructure/dev/devProxy.js",
     "tsc": "yarn workspaces run tsc",
