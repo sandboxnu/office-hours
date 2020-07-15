@@ -1,9 +1,9 @@
-import styled from "styled-components";
-import { Popover, Switch, Row, Input, Button, Avatar, message } from "antd";
-import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
+import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
+import { Avatar, Button, Input, message, Popover, Row, Switch } from "antd";
+import { register, unregister } from "next-offline/runtime";
 import Link from "next/link";
 import React, { useState } from "react";
-import { register, unregister } from "next-offline/runtime";
+import styled from "styled-components";
 
 const PopoverContainer = styled.div`
   width: 270px;
@@ -57,7 +57,7 @@ const requestNotificationPermission = async () => {
 export default function Settings() {
   // first get initial data using useSWR (or from profile)
   // todo: replace these constants with hits to useSWR call to profile
-  const user_id = 1;
+
   const [desktopNotifToggled, setDesktopNotifToggled] = useState<boolean>(true);
   const [phoneNotifToggled, setPhoneNotifToggled] = useState<boolean>(false);
   const [phoneNumber, setPhoneNumber] = useState<string>("+12223334444");

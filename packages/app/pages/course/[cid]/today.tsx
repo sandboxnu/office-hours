@@ -1,11 +1,12 @@
 import { API } from "@template/api-client";
+import { Role } from "@template/common";
 import { Button, Col, Result, Row } from "antd";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 import useSWR, { mutate } from "swr";
 import NavBar from "../../../components/Nav/NavBar";
 import OpenQueueCard from "../../../components/Today/OpenQueueCard";
-import { useProfile } from "../../../hooks/useProfile";
+import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import Schedule from "./schedule";
 
 const Container = styled.div`
@@ -30,9 +31,9 @@ const Title = styled.div`
 `;
 
 export default function Today() {
-  const profile = useProfile();
   const router = useRouter();
   const { cid } = router.query;
+  const role = useRoleInCourse(Number(cid));
 
   const { data, error } = useSWR(
     `api/v1/courses/${cid}`,
@@ -48,8 +49,6 @@ export default function Today() {
     mutate(`api/v1/courses/${cid}`);
   };
 
-  const isTA = true; // TODO: temp
-
   if (error) {
     return (
       <Result
@@ -59,7 +58,7 @@ export default function Today() {
     );
   }
 
-  if (profile) {
+  if (role) {
     return (
       <div>
         <NavBar courseId={Number(cid)} />
@@ -68,7 +67,7 @@ export default function Today() {
             <Col md={12} xs={24}>
               <Row justify="space-between">
                 <Title>Current Office Hours</Title>
-                {isTA && (
+                {role === Role.TA && (
                   <CreateQueueButton type="default" size="large">
                     Create Queue
                   </CreateQueueButton>
@@ -78,7 +77,7 @@ export default function Today() {
                 <OpenQueueCard
                   key={q.id}
                   queue={q}
-                  isTA={isTA}
+                  isTA={role === Role.TA}
                   updateQueueNotes={updateQueueNotes}
                 />
               ))}
