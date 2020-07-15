@@ -11,8 +11,7 @@ import { addGlobalsToApp } from '../../src/bootstrap';
 export interface SupertestOptions {
   userId?: number;
 }
-export const TestTypeOrmModule = 
-TypeOrmModule.forRoot({
+export const TestTypeOrmModule = TypeOrmModule.forRoot({
   type: 'postgres',
   host: 'localhost',
   port: 5432,
