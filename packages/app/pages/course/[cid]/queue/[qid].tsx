@@ -1,21 +1,21 @@
-import styled from "styled-components";
-import {
-  Role,
-  Question,
-  OpenQuestionStatus,
-  ClosedQuestionStatus,
-  QuestionType,
-  QuestionStatus,
-} from "@template/common";
-import StudentPopupCard from "../../../../components/Queue/StudentPopupCard";
-import { useCallback, useState, Fragment } from "react";
 import { API } from "@template/api-client";
+import {
+  ClosedQuestionStatus,
+  OpenQuestionStatus,
+  Question,
+  QuestionStatus,
+  QuestionType,
+  Role,
+} from "@template/common";
+import { useRouter } from "next/router";
+import { Fragment, useCallback, useState } from "react";
+import styled from "styled-components";
+import useSWR, { mutate } from "swr";
+import NavBar from "../../../../components/Nav/NavBar";
+import StudentPopupCard from "../../../../components/Queue/StudentPopupCard";
 import StudentQueueList from "../../../../components/Queue/StudentQueueList";
 import TAQueueList from "../../../../components/Queue/TAQueueList";
-import NavBar from "../../../../components/Nav/NavBar";
 import { useProfile } from "../../../../hooks/useProfile";
-import { useRouter } from "next/router";
-import useSWR, { mutate } from "swr";
 
 // TODO: replace this with profile role from endpoint
 const ROLE: Role = Role.STUDENT;
@@ -32,10 +32,16 @@ export default function Queue() {
   const router = useRouter();
   const { cid, qid } = router.query;
 
-  const { data: questions, error } = useSWR(
+  const { data: questions, error: questionsError } = useSWR(
     qid ? `/api/v1/queues/${qid}/questions` : null,
     async () => API.questions.index(Number(qid))
   );
+  const { data: course, error: queuesError } = useSWR(
+    qid ? `/api/v1/courses/${cid}` : null,
+    async () => API.course.get(Number(cid))
+  );
+  const queueRoom: string =
+    course && course.queues.find((q) => q.id === Number(qid)).room;
 
   const helpingQuestions: Question[] = [];
   const groupQuestions: Question[] = [];
@@ -170,6 +176,7 @@ export default function Queue() {
           <Fragment>
             {Role.STUDENT === ROLE ? (
               <StudentQueueList
+                room={queueRoom}
                 onOpenClick={onOpenClick}
                 joinQueue={joinQueue}
                 questions={questions}
@@ -180,6 +187,7 @@ export default function Queue() {
               />
             ) : (
               <TAQueueList
+                room={queueRoom}
                 onOpenClick={onOpenClick}
                 joinQueue={joinQueue}
                 updateQuestionTA={updateQuestionTA}

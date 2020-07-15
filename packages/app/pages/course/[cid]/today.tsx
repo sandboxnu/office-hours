@@ -1,17 +1,32 @@
-import { Button, Col, Row, Result } from "antd";
-import useSWR, { mutate } from "swr";
-import Schedule from "./schedule";
 import { API } from "@template/api-client";
+import { Button, Col, Result, Row } from "antd";
+import { useRouter } from "next/router";
 import styled from "styled-components";
+import useSWR, { mutate } from "swr";
 import NavBar from "../../../components/Nav/NavBar";
 import OpenQueueCard from "../../../components/Today/OpenQueueCard";
 import { useProfile } from "../../../hooks/useProfile";
-import { useRouter } from "next/router";
+import Schedule from "./schedule";
+
+const Container = styled.div`
+  margin: 32px 64px;
+  @media (max-width: 768px) {
+    margin: 32px 24px;
+  }
+`;
 
 const CreateQueueButton = styled(Button)`
-  float: right;
-  background-color: #4cbb17;
+  background: #2a9187;
+  border-radius: 6px;
   color: white;
+  font-weight: 500;
+  font-size: 14px;
+`;
+
+const Title = styled.div`
+  font-weight: 500;
+  font-size: 30px;
+  color: #212934;
 `;
 
 export default function Today() {
@@ -48,26 +63,31 @@ export default function Today() {
     return (
       <div>
         <NavBar courseId={Number(cid)} />
-        <Row gutter={25}>
-          <Col md={12} xs={24}>
-            {data?.queues?.map((q) => (
-              <OpenQueueCard
-                key={q.id}
-                queue={q}
-                isTA={isTA}
-                updateQueueNotes={updateQueueNotes}
-              />
-            ))}
-            {isTA && (
-              <CreateQueueButton type="default" size={"large"}>
-                Create Queue
-              </CreateQueueButton>
-            )}
-          </Col>
-          <Col md={12} sm={24}>
-            <Schedule today={true} viewType={"day"} />
-          </Col>
-        </Row>
+        <Container>
+          <Row gutter={64}>
+            <Col md={12} xs={24}>
+              <Row justify="space-between">
+                <Title>Current Office Hours</Title>
+                {isTA && (
+                  <CreateQueueButton type="default" size="large">
+                    Create Queue
+                  </CreateQueueButton>
+                )}
+              </Row>
+              {data?.queues?.map((q) => (
+                <OpenQueueCard
+                  key={q.id}
+                  queue={q}
+                  isTA={isTA}
+                  updateQueueNotes={updateQueueNotes}
+                />
+              ))}
+            </Col>
+            <Col md={12} sm={24}>
+              <Schedule today={true} />
+            </Col>
+          </Row>
+        </Container>
       </div>
     );
   } else {
