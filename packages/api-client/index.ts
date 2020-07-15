@@ -68,6 +68,9 @@ class APIClient {
       parseQuestionDates(question);
       return question;
     },
+    notify: async (questionId: number): Promise<void> => {
+      await this.axios.post(`/api/v1/questions/${questionId}/notify`);
+    },
   };
   queues = {
     updateNotes: async (queueId: number, notes: string) => {

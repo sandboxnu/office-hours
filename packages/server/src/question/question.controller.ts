@@ -23,6 +23,7 @@ import {
   UpdateQuestionResponse,
 } from '@template/common';
 import { Connection, In } from 'typeorm';
+import { NotificationService } from '../notification/notification.service';
 import { JwtAuthGuard } from '../profile/jwt-auth.guard';
 import { UserCourseModel } from '../profile/user-course.entity';
 import { User, UserId } from '../profile/user.decorator';
@@ -34,7 +35,10 @@ import { QuestionModel } from './question.entity';
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class QuestionController {
-  constructor(private connection: Connection) {}
+  constructor(
+    private connection: Connection,
+    private notifService: NotificationService,
+  ) {}
 
   @Get(':questionId')
   async getQuestion(
@@ -149,5 +153,35 @@ export class QuestionController {
         'Logged-in user does not have edit access',
       );
     }
+  }
+
+  @Post(':questionId/notify')
+  async notify(
+    @Param('questionId') questionId: number,
+    @UserId() userId: number,
+  ): Promise<void> {
+    const question = await QuestionModel.findOne(questionId, {
+      relations: ['queue'],
+    });
+
+    const isUserTAOfCourse =
+      (await UserCourseModel.count({
+        where: {
+          role: Role.TA,
+          courseId: question.queue.courseId,
+          userId: userId,
+        },
+      })) === 1;
+
+    if (!isUserTAOfCourse) {
+      throw new UnauthorizedException(
+        "bruh you ain't a TA no spamming peeps for u xD",
+      );
+    }
+
+    this.notifService.notifyUser(
+      question.creatorId, // TODO: Stanley think of a better message
+      "Heyo TA is comin fo yo' ass",
+    );
   }
 }
