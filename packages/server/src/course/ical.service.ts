@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import ical, { CalendarComponent, CalendarResponse, VEvent } from 'node-ical';
 import { DeepPartial, Connection } from 'typeorm';
 import { OfficeHourModel } from './office-hour.entity';
@@ -41,5 +42,11 @@ export class IcalService {
     await OfficeHourModel.save(
       officeHours.map((e) => OfficeHourModel.create(e)),
     );
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  public async updateAllCourses(): Promise<void> {
+    const courses = await CourseModel.find();
+    await Promise.all(courses.map(this.updateCalendarForCourse));
   }
 }
