@@ -1,20 +1,40 @@
-[
-  {
-    "id": 1,
-    "room": "RY 154",
-    "staffList": [
-      {
-        "id": 54,
-        "name": "Will Stenzel",
-        "photoURL": "https://prod-web.neu.edu/wasapp/EnterprisePhotoService/PhotoServlet?vid=CCS&er=24f4b12cccbf875c7740bbfed45a993900cf0d08d11aa07c84780b3a3501f3bacca4eb33ed5effee8aa2dd195750cfbc9884dd5f2ac62c8f"
-      },
-      {
-        "id": 42,
-        "name": "Grisha Zaytsev",
-        "photoURL": "https://prod-web.neu.edu/wasapp/EnterprisePhotoService/PhotoServlet?vid=CCS&er=471f2d695fbb8a00ee740ad3ea910453986aec81ddaecf889ae98b3a1858597b12650afd0d4e59c561172f76cb1946eec217ed89bd4074c0"
-      }
-    ],
-    "queueSize": 1,
-    "notes": ""
-  }
-]
+{
+  "id": 1,
+  "name": "CS 2500",
+  "officeHours": [
+    {
+      "id": 1,
+      "title": "OH - Will",
+      "room": "RY 154",
+      "startTime": "2020-07-14T20:43:43.000Z",
+      "endTime": "2020-07-15T04:06:04.000Z"
+    },
+    {
+      "id": 2,
+      "title": "OH - Grisha",
+      "room": "KA 110",
+      "startTime": "2020-07-15T07:19:09.000Z",
+      "endTime": "2020-07-15T11:40:18.000Z"
+    }
+  ],
+  "queues": [
+    {
+      "id": 1,
+      "room": "RY 154",
+      "notes": "alex has a smooth brain",
+      "staffList": [
+        {
+          "id": 54,
+          "name": "Will Stenzel",
+          "photoURL": "https://prod-web.neu.edu/wasapp/EnterprisePhotoService/PhotoServlet?vid=CCS&er=24f4b12cccbf875c7740bbfed45a993900cf0d08d11aa07c84780b3a3501f3bacca4eb33ed5effee8aa2dd195750cfbc9884dd5f2ac62c8f"
+        },
+        {
+          "id": 42,
+          "name": "Grisha Zaytsev",
+          "photoURL": "https://prod-web.neu.edu/wasapp/EnterprisePhotoService/PhotoServlet?vid=CCS&er=471f2d695fbb8a00ee740ad3ea910453986aec81ddaecf889ae98b3a1858597b12650afd0d4e59c561172f76cb1946eec217ed89bd4074c0"
+        }
+      ],
+      "queueSize": 0
+    }
+  ]
+}

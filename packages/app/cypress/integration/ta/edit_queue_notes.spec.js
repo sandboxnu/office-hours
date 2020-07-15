@@ -5,14 +5,10 @@ describe("Edit Queue Notes", () => {
       cy.writeFile("cypress/fixtures/test_profile.json", response.body);
     });*/
     cy.route("GET", "/api/v1/profile", "fixture:student_profile");
-    cy.route(
-      "GET",
-      "/api/v1/courses/1/queues",
-      "fixture:queue_routes_no_notes"
-    );
+    cy.route("GET", "/api/v1/courses/1", "fixture:queue_routes_no_notes");
     cy.route("PATCH", "/api/v1/queues/1", {});
 
-    cy.visit("/class/1/today");
+    cy.visit("/course/1/today");
     cy.get("svg[data-icon='edit']").click();
 
     cy.route(

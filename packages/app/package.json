@@ -11,6 +11,7 @@
     "@ant-design/icons": "^4.2.1",
     "antd": "^4.2.4",
     "axios": "^0.19.2",
+    "eslint-plugin-cypress": "^2.11.1",
     "next": "^9.4.0",
     "next-compose-plugins": "^2.2.0",
     "next-offline": "^5.0.2",
