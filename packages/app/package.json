@@ -5,7 +5,9 @@
     "dev": "next -p 3001",
     "build": "next build",
     "start": "next start -p 3001",
-    "test": "jest"
+    "test": "jest",
+    "cypress:run": "npx cypress run",
+    "cypress:open": "npx cypress open"
   },
   "dependencies": {
     "@ant-design/icons": "^4.2.1",
