@@ -17,9 +17,6 @@ import StudentQueueList from "../../../../components/Queue/StudentQueueList";
 import TAQueueList from "../../../../components/Queue/TAQueueList";
 import { useProfile } from "../../../../hooks/useProfile";
 
-// TODO: replace this with profile role from endpoint
-const ROLE: Role = Role.STUDENT;
-
 const Container = styled.div`
   margin: 32px 64px;
   @media (max-width: 768px) {
@@ -31,6 +28,7 @@ export default function Queue() {
   const profile = useProfile();
   const router = useRouter();
   const { cid, qid } = router.query;
+  const role = profile?.courses.find((e) => e.course.id === Number(cid)).role;
 
   const { data: questions, error: questionsError } = useSWR(
     qid ? `/api/v1/queues/${qid}/questions` : null,
@@ -67,9 +65,6 @@ export default function Queue() {
 
   filterHelpingGroup();
 
-  // Student queue state variables
-  const [isJoining, setIsJoining] = useState<boolean>(false);
-
   const studentQuestion =
     profile && questions && questions.find((q) => q.creator.id === profile.id);
 
@@ -87,16 +82,11 @@ export default function Queue() {
     setOpenPopup(false);
   }, []);
 
-  /**
-   * Student functions to support queue operations.
-   */
-
   const joinQueue = async () => {
-    // API call to join queue, question marked as draft
     const createdQuestion = await API.questions.create({
       queueId: Number(qid),
-      text: "fake text",
-      questionType: QuestionType.Bug, // endpoint needs to be changed to allow empty questionType for drafts
+      text: "",
+      questionType: QuestionType.Bug, // TODO: endpoint needs to be changed to allow empty questionType for drafts
       // for the moment I am defaulting this data so that there is no error
     });
 
@@ -105,8 +95,6 @@ export default function Queue() {
   };
 
   const leaveQueue = async () => {
-    setIsJoining(false);
-
     await API.questions.update(studentQuestion.id, {
       status: ClosedQuestionStatus.Deleted,
     });
@@ -114,17 +102,13 @@ export default function Queue() {
     mutate(`/api/v1/queues/${qid}/questions`);
   };
 
-  /**
-   * Finishes creating a given question by updating the draft.
-   */
   const finishQuestion = async (text: string, questionType: QuestionType) => {
     const updateStudent = {
       text: text,
       questionType: questionType,
       status: OpenQuestionStatus.Queued,
     };
-    const q = await API.questions.update(studentQuestion.id, updateStudent);
-    setIsJoining(false);
+    await API.questions.update(studentQuestion.id, updateStudent);
     const newQuestions = questions.map((q) =>
       q.id === studentQuestion.id ? { ...q, updateStudent } : q
     );
@@ -153,10 +137,7 @@ export default function Queue() {
     mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
   };
 
-  /**
-   * Sends a push notification to the student with the given Question
-   * @param question the question to be notified
-   */
+  // TODO: yup
   const alertStudent = (question: Question) => {
     // Send API request to trigger notification
   };
@@ -167,7 +148,7 @@ export default function Queue() {
         <NavBar courseId={Number(cid)} />
         <Container>
           <Fragment>
-            {Role.STUDENT === ROLE ? (
+            {Role.STUDENT === role ? (
               <StudentQueueList
                 room={queueRoom}
                 onOpenClick={onOpenClick}
@@ -190,7 +171,7 @@ export default function Queue() {
                 groupQuestions={groupQuestions}
               />
             )}
-            {ROLE === "ta" && currentQuestion && (
+            {role === Role.TA && currentQuestion && (
               <StudentPopupCard
                 onClose={onCloseClick}
                 email="takayama.a@northeastern.edu" //need a way to access this. or the user
