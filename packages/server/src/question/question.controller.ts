@@ -1,34 +1,34 @@
 import {
-  Controller,
-  Param,
-  Get,
-  Post,
   Body,
-  Patch,
-  NotFoundException,
-  UseInterceptors,
   ClassSerializerInterceptor,
-  UseGuards,
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
   UnauthorizedException,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
+  ClosedQuestionStatus,
+  CreateQuestionParams,
   CreateQuestionResponse,
   GetQuestionResponse,
-  QuestionStatusKeys,
-  CreateQuestionParams,
-  UpdateQuestionResponse,
-  UpdateQuestionParams,
-  Role,
   OpenQuestionStatus,
-  ClosedQuestionStatus,
+  QuestionStatusKeys,
+  Role,
+  UpdateQuestionParams,
+  UpdateQuestionResponse,
 } from '@template/common';
-import { QueueModel } from '../queue/queue.entity';
 import { Connection, In } from 'typeorm';
-import { QuestionModel } from './question.entity';
-import { UserModel } from '../profile/user.entity';
 import { JwtAuthGuard } from '../profile/jwt-auth.guard';
-import { UserId } from '../profile/user.decorator';
 import { UserCourseModel } from '../profile/user-course.entity';
+import { User, UserId } from '../profile/user.decorator';
+import { UserModel } from '../profile/user.entity';
+import { QueueModel } from '../queue/queue.entity';
+import { QuestionModel } from './question.entity';
 
 @Controller('questions')
 @UseGuards(JwtAuthGuard)
@@ -53,34 +53,41 @@ export class QuestionController {
   @Post()
   async createQuestion(
     @Body() body: CreateQuestionParams,
+    @User() user: UserModel,
   ): Promise<CreateQuestionResponse> {
     const { text, questionType, queueId } = body;
-    // TODO: Remove this once we implemntent user authentication
-    const DEFAULT_USER = await UserModel.create({
-      id: 42,
-      username: 'test_user',
-      email: 'test_user@husky.neu.edu',
-      name: 'Test User',
-      photoURL: 'www.photoURL.com',
-    }).save();
-    const queueSize = await QueueModel.count({
+
+    const queue = await QueueModel.findOne({
       where: { id: queueId },
     });
-    // Check that the queue exists
-    if (queueSize === 0) {
+
+    if (!queue) {
       throw new NotFoundException();
     }
-    // TODO: Check that the user posting the question is a member of the course
+
+    const isUserInCourse =
+      (await UserCourseModel.count({
+        where: {
+          role: Role.STUDENT,
+          courseId: queue.courseId,
+          userId: user.id,
+        },
+      })) === 1;
+
+    if (!isUserInCourse) {
+      throw new UnauthorizedException(
+        "Can't post question to course you're not in!",
+      );
+    }
 
     const question = await QuestionModel.create({
       queueId: queueId,
-      creator: DEFAULT_USER,
+      creator: user,
       text,
       questionType,
       status: QuestionStatusKeys.Drafting,
     }).save();
 
-    question.creator = DEFAULT_USER;
     return question;
   }
 

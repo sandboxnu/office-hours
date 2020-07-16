@@ -69,7 +69,7 @@ export default function Queue() {
 
   // Student queue state variables
   const [isJoining, setIsJoining] = useState<boolean>(false);
-  const [questionDraftId, setQuestionDraftId] = useState<number>(null);
+
   const studentQuestion =
     profile && questions && questions.find((q) => q.creator.id === profile.id);
 
@@ -91,26 +91,19 @@ export default function Queue() {
    * Student functions to support queue operations.
    */
 
-  /**
-   * Creates a new Question draft for a student who has joined the queue.
-   */
   const joinQueue = async () => {
     // API call to join queue, question marked as draft
-    const q = await API.questions.create({
+    const createdQuestion = await API.questions.create({
       queueId: Number(qid),
       text: "fake text",
       questionType: QuestionType.Bug, // endpoint needs to be changed to allow empty questionType for drafts
       // for the moment I am defaulting this data so that there is no error
     });
 
-    if (q) {
-      setQuestionDraftId(q.id);
-    }
+    const newQuestions = [...questions, createdQuestion];
+    mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
   };
 
-  /**
-   * Deletes existing Question draft for a student who has left the queue.
-   */
   const leaveQueue = async () => {
     setIsJoining(false);
 
@@ -118,7 +111,7 @@ export default function Queue() {
       status: ClosedQuestionStatus.Deleted,
     });
 
-    setQuestionDraftId(null);
+    mutate(`/api/v1/queues/${qid}/questions`);
   };
 
   /**
