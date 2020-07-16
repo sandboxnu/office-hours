@@ -34,6 +34,7 @@ export class CourseController {
     @Param('room') room: string,
     @User() user: UserModel,
   ): Promise<QueuePartial> {
+    // TODO: ensure the user is a TA c'mon
     let queue = await QueueModel.findOne(
       {
         room,
