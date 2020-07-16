@@ -1,7 +1,7 @@
-import { Controller, Get, Body, Post, Param, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { DesktopNotifBody } from '@template/common';
-import { NotificationService } from './notification.service';
 import { JwtAuthGuard } from '../profile/jwt-auth.guard';
+import { NotificationService } from './notification.service';
 
 @Controller('notifications')
 @UseGuards(JwtAuthGuard)
@@ -37,9 +37,13 @@ export class NotificationController {
     return `registration success for ${body.phoneNumber}`;
   }
 
+  // TODO: GET RID OF THIS
   @Post('/notify_user/:user_id')
   async notifyUser(@Param('user_id') user_id: number): Promise<string> {
-    await this.notifService.notifyUser(user_id);
+    await this.notifService.notifyUser(
+      user_id,
+      "bruh if you're still tryna test notifications, ligma balls, FUCK FUCK FUCK FUCK FUCK, sugondese, hot cheetos",
+    );
     return 'notified';
   }
 }
