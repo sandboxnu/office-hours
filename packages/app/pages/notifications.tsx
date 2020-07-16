@@ -2,7 +2,6 @@ import { API } from "@template/api-client";
 import { User } from "@template/common";
 import { Button, Input } from "antd";
 import { register } from "next-offline/runtime";
-import Router from "next/router";
 import { useProfile } from "../hooks/useProfile";
 
 export default function Notifications() {
@@ -42,16 +41,13 @@ export default function Notifications() {
   };
   // end web push code
 
-  // todo: use actual user id
-  const user_id = 1;
-
   return (
     <div>
       <div style={{ flexDirection: "row-reverse" }}>
         <Button size="large" onClick={checkBrowserAndRequestNotifications}>
           Request Notification Permission
         </Button>
-        <Button size="large" onClick={() => API.notif.notify_user(user_id)}>
+        <Button size="large" onClick={() => API.notif.notify_user(profile.id)}>
           Test Notify
         </Button>
       </div>
@@ -59,7 +55,7 @@ export default function Notifications() {
         placeholder="phone number"
         style={{ width: 200 }}
         onPressEnter={(value) => {
-          return API.notif.phone.register(user_id, {
+          return API.notif.phone.register(profile.id, {
             phoneNumber: (value.target as any).value,
           });
         }}

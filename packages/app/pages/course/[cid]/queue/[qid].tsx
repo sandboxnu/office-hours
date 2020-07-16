@@ -16,6 +16,7 @@ import StudentPopupCard from "../../../../components/Queue/StudentPopupCard";
 import StudentQueueList from "../../../../components/Queue/StudentQueueList";
 import TAQueueList from "../../../../components/Queue/TAQueueList";
 import { useProfile } from "../../../../hooks/useProfile";
+import { useRoleInCourse } from "../../../../hooks/useRoleInCourse";
 
 const Container = styled.div`
   margin: 32px 64px;
@@ -28,7 +29,7 @@ export default function Queue() {
   const profile = useProfile();
   const router = useRouter();
   const { cid, qid } = router.query;
-  const role = profile?.courses.find((e) => e.course.id === Number(cid)).role;
+  const role = useRoleInCourse(Number(cid));
 
   const { data: questions, error: questionsError } = useSWR(
     qid ? `/api/v1/queues/${qid}/questions` : null,
@@ -38,32 +39,15 @@ export default function Queue() {
     qid ? `/api/v1/courses/${cid}` : null,
     async () => API.course.get(Number(cid))
   );
+
   const queueRoom: string =
     course && course.queues.find((q) => q.id === Number(qid)).room;
-
-  const helpingQuestions: Question[] = [];
-  const groupQuestions: Question[] = [];
-
-  /**
-   * Filters through the fetched list of questions to fill the helpingQuestions and groupQuestions arrays
-   */
-  const filterHelpingGroup = () => {
-    if (questions) {
-      for (const q of questions) {
-        if (
-          q.status === OpenQuestionStatus.Helping
-          // question.taHelped &&
-          // question.taHelped.id === profile.id
-        ) {
-          helpingQuestions.push(q);
-        } else {
-          groupQuestions.push(q);
-        }
-      }
-    }
-  };
-
-  filterHelpingGroup();
+  const helpingQuestions: Question[] = questions?.filter(
+    (question) => question.status === OpenQuestionStatus.Helping
+  );
+  const groupQuestions: Question[] = questions?.filter(
+    (question) => question.status !== OpenQuestionStatus.Helping
+  );
 
   const studentQuestion =
     profile && questions && questions.find((q) => q.creator.id === profile.id);

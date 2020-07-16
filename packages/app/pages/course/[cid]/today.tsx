@@ -1,12 +1,13 @@
 import { Role } from "@template/common";
 import { API } from "@template/api-client";
+import { Role } from "@template/common";
 import { Button, Col, Result, Row } from "antd";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 import useSWR, { mutate } from "swr";
 import NavBar from "../../../components/Nav/NavBar";
 import OpenQueueCard from "../../../components/Today/OpenQueueCard";
-import { useProfile } from "../../../hooks/useProfile";
+import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import Schedule from "./schedule";
 
 const Container = styled.div`
@@ -31,12 +32,10 @@ const Title = styled.div`
 `;
 
 export default function Today() {
-  const profile = useProfile();
   const router = useRouter();
   const { cid } = router.query;
-  const role: Role = profile?.courses.find((e) => e.course.id === Number(cid))
-    .role;
-
+  const role = useRoleInCourse(Number(cid));
+  
   const { data, error } = useSWR(
     `api/v1/courses/${cid}`,
     async () => cid && API.course.get(Number(cid))
@@ -60,7 +59,7 @@ export default function Today() {
     );
   }
 
-  if (profile) {
+  if (role) {
     return (
       <div>
         <NavBar courseId={Number(cid)} />
