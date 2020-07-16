@@ -171,7 +171,7 @@ export default function Queue() {
                 groupQuestions={groupQuestions}
               />
             )}
-            {role === "ta" && currentQuestion && (
+            {role === Role.TA && currentQuestion && (
               <StudentPopupCard
                 onClose={onCloseClick}
                 email="takayama.a@northeastern.edu" //need a way to access this. or the user
