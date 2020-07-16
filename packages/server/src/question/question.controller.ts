@@ -167,6 +167,7 @@ export class QuestionController {
     const isUserTAOfCourse =
       (await UserCourseModel.count({
         where: {
+          // TODO: somehow store and check that the notifying TA is the one helping?
           role: Role.TA,
           courseId: question.queue.courseId,
           userId: userId,
