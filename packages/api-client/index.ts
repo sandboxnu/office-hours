@@ -30,13 +30,20 @@ class APIClient {
     },
   };
   taStatus = {
-    update: async (courseId: number): Promise<TAUpdateStatusResponse> => {
+    checkIn: async (
+      courseId: number,
+      room: string
+    ): Promise<TAUpdateStatusResponse> => {
       const queue = (
-        await this.axios.patch(`/api/v1/courses/${courseId}/ta/change_status`)
+        await this.axios.post(`/api/v1/courses/${courseId}/ta_location/${room}`)
       ).data;
-      parseQueueDates(queue);
-      queue.questions.forEach((question: any) => parseQuestionDates(question));
       return queue;
+    },
+    delete: async (courseId: number, room: string): Promise<void> => {
+      //TODO:
+      await this.axios.delete(
+        `/api/v1/courses/${courseId}/ta_location/${room}`
+      );
     },
   };
   questions = {
