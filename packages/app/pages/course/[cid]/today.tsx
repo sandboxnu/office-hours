@@ -1,3 +1,4 @@
+import { Role } from "@template/common";
 import { API } from "@template/api-client";
 import { Button, Col, Result, Row } from "antd";
 import { useRouter } from "next/router";
@@ -33,6 +34,8 @@ export default function Today() {
   const profile = useProfile();
   const router = useRouter();
   const { cid } = router.query;
+  const role: Role = profile?.courses.find((e) => e.course.id === Number(cid))
+    .role;
 
   const { data, error } = useSWR(
     `api/v1/courses/${cid}`,
@@ -47,8 +50,6 @@ export default function Today() {
     await API.queues.updateNotes(queueId, notes);
     mutate(`api/v1/courses/${cid}`);
   };
-
-  const isTA = true; // TODO: temp
 
   if (error) {
     return (
@@ -68,7 +69,7 @@ export default function Today() {
             <Col md={12} xs={24}>
               <Row justify="space-between">
                 <Title>Current Office Hours</Title>
-                {isTA && (
+                {role === Role.TA && (
                   <CreateQueueButton type="default" size="large">
                     Create Queue
                   </CreateQueueButton>
@@ -78,7 +79,7 @@ export default function Today() {
                 <OpenQueueCard
                   key={q.id}
                   queue={q}
-                  isTA={isTA}
+                  isTA={role === Role.TA}
                   updateQueueNotes={updateQueueNotes}
                 />
               ))}
