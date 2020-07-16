@@ -174,9 +174,7 @@ export class QuestionController {
       })) === 1;
 
     if (!isUserTAOfCourse) {
-      throw new UnauthorizedException(
-        "bruh you ain't a TA no spamming peeps for u xD",
-      );
+      throw new UnauthorizedException('Only TA can send alerts');
     }
 
     this.notifService.notifyUser(
