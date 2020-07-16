@@ -1,12 +1,12 @@
-import { Role } from "@template/common";
 import { API } from "@template/api-client";
 import { Role } from "@template/common";
-import { Button, Col, Result, Row } from "antd";
+import { Col, Result, Row } from "antd";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 import useSWR, { mutate } from "swr";
 import NavBar from "../../../components/Nav/NavBar";
 import OpenQueueCard from "../../../components/Today/OpenQueueCard";
+import TACheckinButton from "../../../components/Today/TACheckinButton";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import Schedule from "./schedule";
 
@@ -15,14 +15,6 @@ const Container = styled.div`
   @media (max-width: 768px) {
     margin: 32px 24px;
   }
-`;
-
-const CreateQueueButton = styled(Button)`
-  background: #2a9187;
-  border-radius: 6px;
-  color: white;
-  font-weight: 500;
-  font-size: 14px;
 `;
 
 const Title = styled.div`
@@ -35,7 +27,7 @@ export default function Today() {
   const router = useRouter();
   const { cid } = router.query;
   const role = useRoleInCourse(Number(cid));
-  
+
   const { data, error } = useSWR(
     `api/v1/courses/${cid}`,
     async () => cid && API.course.get(Number(cid))
@@ -68,11 +60,7 @@ export default function Today() {
             <Col md={12} xs={24}>
               <Row justify="space-between">
                 <Title>Current Office Hours</Title>
-                {role === Role.TA && (
-                  <CreateQueueButton type="default" size="large">
-                    Create Queue
-                  </CreateQueueButton>
-                )}
+                {role === Role.TA && <TACheckinButton courseId={Number(cid)} />}
               </Row>
               {data?.queues?.map((q) => (
                 <OpenQueueCard
