@@ -1,11 +1,11 @@
+import React from "react";
 import { EditOutlined } from "@ant-design/icons";
-import { API } from "@template/api-client";
-import { Avatar, Button, Card, Input } from "antd";
+import { Avatar, Button, Card, Input, Row } from "antd";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import styled from "styled-components";
-import Link from "next/link";
-import { useRouter } from "next/router";
 import { QueuePartial } from "../../../common/index";
+import Link from "next/link";
 
 type OpenQueueCard = {
   queue: QueuePartial;
@@ -14,17 +14,72 @@ type OpenQueueCard = {
 };
 
 const PaddedCard = styled(Card)`
+  margin-top: 32px;
   margin-bottom: 25px;
+  border-radius: 6px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
 `;
 
-const AvatarContainer = styled.div`
-  padding-left: 25px;
-  padding-right: 25px;
-  float: left;
+const HeaderDiv = styled.div`
+  font-size: 24px;
+  font-weight: 500;
+  color: #212934;
 `;
 
-const EditOutlinedFloatedRight = styled(EditOutlined)`
-  float: right;
+const QuestionNumberSpan = styled.span`
+  font-size: 24px;
+`;
+
+const QueueSizeColorDiv = styled.div`
+  color: #212934;
+  font-size: 16px;
+`;
+
+const HeaderText = styled.div`
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 600;
+  color: #bfbfbf;
+  font-variant: small-caps;
+  margin-bottom: 8px;
+`;
+
+const AvatarWithMargin = styled(Avatar)`
+  margin-right: 25px;
+`;
+
+const OpenQueueButton = styled(Button)`
+  background-color: #3684c6;
+  border-radius: 6px;
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+  margin-left: 16px;
+`;
+
+const EditNotesButton = styled(Button)`
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+`;
+
+const SaveButton = styled(Button)`
+  background: #2a9187;
+  border-radius: 6px;
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+`;
+
+const ExtraText = styled.div`
+  color: #8895a6;
+  font-size: 14px;
+  font-weight: normal;
+`;
+
+const NotesInput = styled(Input)`
+  border-radius: 6px;
+  border: 1px solid #b8c4ce;
 `;
 
 const OpenQueueCard = ({ queue, isTA, updateQueueNotes }: OpenQueueCard) => {
@@ -42,65 +97,79 @@ const OpenQueueCard = ({ queue, isTA, updateQueueNotes }: OpenQueueCard) => {
 
   return (
     <PaddedCard
+      headStyle={{ background: "#F3F5F7" }}
       title={staffList.map((staffMember) => staffMember.name).join(", ")}
-      extra={
-        <Link
-          href="/course/[cid]/queue/[qid]"
-          as={`/course/${cid}/queue/${queue.id}`}
-        >
-          <Button type="primary" size={"middle"}>
-            Join Queue
-          </Button>
-        </Link>
-      }
+      extra={<ExtraText>//TODO: 3:00 - 5:00</ExtraText>}
     >
-      <h1>{queue.room}</h1>
+      <Row justify="space-between">
+        <HeaderDiv>{queue.room}</HeaderDiv>
+        <QueueSizeColorDiv>
+          <QuestionNumberSpan>{queue.queueSize}</QuestionNumberSpan> in queue
+        </QueueSizeColorDiv>
+      </Row>
+      <br />
 
       {editingNotes ? (
         <div>
-          <b>Staff Notes:</b>
-          <Button
-            type="primary"
-            size="small"
-            onClick={handleUpdate}
-            style={{ float: "right" }}
-          >
-            Save
-          </Button>
-          <Input
+          <HeaderText>staff notes</HeaderText>
+          <NotesInput
             defaultValue={queue.notes}
             onPressEnter={handleUpdate}
             value={updatedNotes}
             onChange={(e) => setUpdatedNotes(e.target.value as any)}
           />
         </div>
-      ) : queue.notes ? (
+      ) : (
+        queue.notes && (
+          <React.Fragment>
+            <HeaderText style={{ marginBottom: 0 }}>staff notes</HeaderText>
+            <div>{queue.notes}</div>
+          </React.Fragment>
+        )
+      )}
+      <br />
+
+      <HeaderText>checked-in staff</HeaderText>
+
+      <Row justify="space-between" align="bottom">
         <div>
-          <div>
-            <b>Staff Notes:</b>
+          {staffList.map((staffMember) => (
+            <AvatarWithMargin
+              key={staffMember.id}
+              size={96}
+              src={staffMember.photoURL}
+              shape="circle"
+            />
+          ))}
+        </div>
+        {editingNotes && (
+          <SaveButton onClick={handleUpdate} size="large">
+            Save Changes
+          </SaveButton>
+        )}
+        {!editingNotes && (
+          <Row>
             {isTA && (
-              <EditOutlinedFloatedRight
+              <EditNotesButton
+                size="large"
                 onClick={() => {
                   setEditingNotes(true);
                 }}
-              />
+              >
+                Edit Notes
+              </EditNotesButton>
             )}
-          </div>
-          <p>{queue.notes}</p>
-        </div>
-      ) : (
-        <EditOutlinedFloatedRight
-          onClick={() => {
-            setEditingNotes(true);
-          }}
-        />
-      )}
-
-      {staffList.map((staffMember) => (
-        <AvatarContainer key={staffMember.id}>
-          <Avatar size={128} src={staffMember.photoURL} shape="square" />
-        </AvatarContainer>
-      ))}
+            <Link
+              href="/course/[cid]/queue/[qid]"
+              as={`/course/${cid}/queue/${queue.id}`}
+            >
+              <OpenQueueButton type="primary" size="large">
+                Open Queue
+              </OpenQueueButton>
+            </Link>
+          </Row>
+        )}
+      </Row>
     </PaddedCard>
   );
 };

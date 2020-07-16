@@ -3,6 +3,15 @@ import styled from "styled-components";
 import { Button, Tooltip, Card, Row, Col, Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 
+const EditableQuestionCard = styled(Card)`
+  margin-bottom: 8px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+  background: #ffffff;
+  border-radius: 6px;
+  color: #595959;
+  font-size: 14px;
+`;
+
 const SpotNum = styled.div`
   font-style: normal;
   font-weight: 500;
@@ -11,51 +20,40 @@ const SpotNum = styled.div`
   margin-bottom: 20px;
 `;
 
-const QuestionText = styled.div`
-  margin-bottom: 4px;
-  font-size: 12px;
-  line-height: 20px;
-  color: #595959;
-`;
-
-const EditButton = styled(Button)`
-  float: right;
-`;
-
-const EditableQuestionCard = styled(Card)`
-  width: 370px;
-`;
-
 const HeadingText = styled.div`
-  font-style: normal;
-  font-weight: 600;
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: 500;
   line-height: 22px;
-  color: #bfbfbf;
+  color: #8895a6;
   font-variant: small-caps;
-  margin-bottom: 5px;
 `;
 
 const InfoText = styled.div`
   font-style: normal;
   font-weight: normal;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 22px;
   color: #595959;
   margin-bottom: 20px;
 `;
 
-const FullWidthButton = styled(Button)`
+const BottomButton = styled(Button)`
   width: 100%;
+  color: #da3236;
+  font-weight: 500;
+  font-size: 14px;
+  background: #f8f9fa;
+  border: 1px solid #cfd6de;
+  border-radius: 6px;
 `;
 
-const HeaderText = styled.div`
-  margin-top: 13px;
-  margin-bottom: 13px;
-  font-size: 12px;
-  line-height: 22px;
-  font-weight: 600;
-  color: #bfbfbf;
+const TopButton = styled(Button)`
+  width: 100%;
+  color: #5f6b79;
+  font-weight: 500;
+  font-size: 14px;
+  border: 1px solid #cfd6de;
+  border-radius: 6px;
 `;
 
 interface EditableQuestionProps {
@@ -77,44 +75,35 @@ export default function EditableQuestion({
   leaveQueue,
 }: EditableQuestionProps) {
   return (
-    <div>
+    <EditableQuestionCard>
       <Row>
-        <HeaderText>YOUR QUESTION</HeaderText>
+        <Col span={7}>
+          <Avatar size={64} icon={<UserOutlined />} />
+        </Col>
+        <Col span={17}>
+          <HeadingText>your spot</HeadingText>
+          <SpotNum>{position}rd</SpotNum>
+          <HeadingText>type</HeadingText>
+          <InfoText>{type}</InfoText>
+          <HeadingText>question</HeadingText>
+          <InfoText>{text}</InfoText>
+          <HeadingText>location</HeadingText>
+          <InfoText>{location}</InfoText>
+        </Col>
+      </Row>
+      <Row style={{ marginTop: 16 }} gutter={[8, 8]}>
+        <Col span={12}>
+          <TopButton>AFK</TopButton>
+        </Col>
+        <Col span={12}>
+          <TopButton onClick={openEdit}>Edit Question</TopButton>
+        </Col>
       </Row>
       <Row>
-        <EditableQuestionCard>
-          <Row>
-            <Col span={6}>
-              <Avatar size={56} icon={<UserOutlined />} />
-            </Col>
-            <Col span={18}>
-              <HeadingText>YOUR SPOT</HeadingText>
-              <SpotNum>{position}rd</SpotNum>
-              <HeadingText>TYPE</HeadingText>
-              <InfoText>{type}</InfoText>
-              <HeadingText>QUESTION</HeadingText>
-              <InfoText>{text}</InfoText>
-              <HeadingText>LOCATION</HeadingText>
-              <InfoText>{location}</InfoText>
-            </Col>
-          </Row>
-          <Row gutter={[8, 8]}>
-            <Col span={12}>
-              <FullWidthButton>AFK</FullWidthButton>
-            </Col>
-            <Col span={12}>
-              <FullWidthButton onClick={openEdit}>
-                EDIT QUESTION
-              </FullWidthButton>
-            </Col>
-          </Row>
-          <Row>
-            <FullWidthButton danger onClick={leaveQueue}>
-              LEAVE THE QUEUE
-            </FullWidthButton>
-          </Row>
-        </EditableQuestionCard>
+        <BottomButton danger onClick={leaveQueue}>
+          Leave Queue
+        </BottomButton>
       </Row>
-    </div>
+    </EditableQuestionCard>
   );
 }

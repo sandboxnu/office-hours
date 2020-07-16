@@ -63,7 +63,7 @@ export class QueueController {
     @Body() body: UpdateQueueNotesParams,
     // TODO: Add TA/Prof protection on endpoint
   ) {
-    let queue = await QueueModel.findOne({
+    const queue = await QueueModel.findOne({
       where: { id: queueId },
     });
     if (queue === undefined) {

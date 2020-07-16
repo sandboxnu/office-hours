@@ -9,9 +9,9 @@ const { useBreakpoint } = Grid;
 
 const StatusText = styled.div`
   font-size: 14px;
+  font-weight: 500;
   line-height: 22px;
-  font-weight: 600;
-  color: #bfbfbf;
+  color: #8895a6;
   font-variant: small-caps;
   width: 96px;
   float: right;
@@ -27,17 +27,16 @@ const StudentHeaderCard = styled(Card)`
 
 const HeaderText = styled.div`
   font-size: 14px;
+  font-weight: 500;
   line-height: 22px;
-  font-weight: 600;
-  color: #bfbfbf;
+  color: #8895a6;
   font-variant: small-caps;
 `;
 
-const QueueTitle = styled.h1`
-  font-weight: 600;
+const QueueTitle = styled.div`
+  font-weight: 500;
   font-size: 30px;
-  line-height: 38px;
-  color: #262626;
+  color: #212934;
 `;
 
 const CenterRow = styled(Row)`
@@ -45,11 +44,17 @@ const CenterRow = styled(Row)`
   justify-content: space-between;
 `;
 
-const HeaderRow = styled(Row)`
-  margin-bottom: 64px;
+const JoinButton = styled(Button)`
+  background-color: #3684c6;
+  border-radius: 6px;
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+  margin-left: 16px;
 `;
 
 interface StudentQueueListProps {
+  room: string;
   joinQueue: () => void;
   leaveQueue: () => void;
   finishQuestion: (questionType: QuestionType, questionText: string) => void;
@@ -60,6 +65,7 @@ interface StudentQueueListProps {
 }
 
 export default function StudentQueueList({
+  room,
   onOpenClick,
   leaveQueue,
   finishQuestion,
@@ -85,7 +91,16 @@ export default function StudentQueueList({
   const renderEditableQuestion = () => {
     return (
       <Col xs={24} lg={10} xxl={6} order={screens.lg === false ? 1 : 2}>
-        <HeaderRow></HeaderRow>
+        <StudentHeaderCard
+          bodyStyle={{ paddingLeft: 0 }}
+          style={{
+            paddingLeft: 0,
+            marginTop: screens.lg === false ? 0 : "46px",
+          }}
+          bordered={false}
+        >
+          <HeaderText>your question</HeaderText>
+        </StudentHeaderCard>
         <EditableQuestion
           position={3}
           type={studentQuestion.questionType}
@@ -122,11 +137,15 @@ export default function StudentQueueList({
       <Row gutter={[64, 64]}>
         <Col flex="auto" order={screens.lg === false ? 2 : 1}>
           <Row justify="space-between">
-            <QueueTitle>Queue 1</QueueTitle>
+            <QueueTitle>{room}</QueueTitle>
             {!studentQuestion && (
-              <Button type="primary" size="large" onClick={joinQueueOpenModal}>
+              <JoinButton
+                type="primary"
+                size="large"
+                onClick={joinQueueOpenModal}
+              >
                 Join Queue
-              </Button>
+              </JoinButton>
             )}
           </Row>
           <StudentHeaderCard bordered={false}>
