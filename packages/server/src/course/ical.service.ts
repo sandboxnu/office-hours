@@ -39,6 +39,7 @@ export class IcalService {
       await ical.fromURL(course.icalURL),
       course.id,
     );
+    await OfficeHourModel.delete({ courseId: course.id });
     await OfficeHourModel.save(
       officeHours.map((e) => OfficeHourModel.create(e)),
     );
