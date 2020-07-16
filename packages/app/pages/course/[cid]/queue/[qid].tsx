@@ -137,9 +137,8 @@ export default function Queue() {
     mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
   };
 
-  // TODO: yup
-  const alertStudent = (question: Question) => {
-    // Send API request to trigger notification
+  const alertStudent = async (question: Question) => {
+    await API.questions.notify(question.id);
   };
 
   if (questions) {
