@@ -1,3 +1,4 @@
+import { Role } from "@template/common";
 import { API } from "@template/api-client";
 import { Role } from "@template/common";
 import { Button, Col, Result, Row } from "antd";
@@ -34,7 +35,7 @@ export default function Today() {
   const router = useRouter();
   const { cid } = router.query;
   const role = useRoleInCourse(Number(cid));
-
+  
   const { data, error } = useSWR(
     `api/v1/courses/${cid}`,
     async () => cid && API.course.get(Number(cid))
