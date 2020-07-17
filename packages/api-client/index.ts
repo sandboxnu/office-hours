@@ -5,6 +5,7 @@ import {
   GetCourseResponse,
   GetProfileResponse,
   GetQuestionResponse,
+  GetQueueResponse,
   ListQuestionsResponse,
   PhoneNotifBody,
   TAUpdateStatusResponse,
@@ -80,6 +81,9 @@ class APIClient {
     },
   };
   queues = {
+    get: async (queueId: number): Promise<GetQueueResponse> => {
+      return await this.axios.get(`/api/v1/queues/${queueId}`);
+    },
     updateNotes: async (queueId: number, notes: string) => {
       await this.axios.patch(`/api/v1/queues/${queueId}`, { notes });
     },

@@ -4,12 +4,14 @@ import {
   Get,
   Param,
   Post,
+  UnauthorizedException,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { GetCourseResponse, QueuePartial } from '@template/common';
+import { GetCourseResponse, QueuePartial, Role } from '@template/common';
 import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../profile/jwt-auth.guard';
+import { UserCourseModel } from '../profile/user-course.entity';
 import { User } from '../profile/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
@@ -34,7 +36,22 @@ export class CourseController {
     @Param('room') room: string,
     @User() user: UserModel,
   ): Promise<QueuePartial> {
-    // TODO: ensure the user is a TA c'mon
+    // TODO: think of a neat way to make this abstracted
+    const isTAInCourse =
+      (await UserCourseModel.count({
+        where: {
+          role: Role.TA,
+          courseId: courseId,
+          userId: user.id,
+        },
+      })) === 1;
+
+    if (!isTAInCourse) {
+      throw new UnauthorizedException(
+        "Can't check in to office hours for a course you're not a TA of!",
+      );
+    }
+
     let queue = await QueueModel.findOne(
       {
         room,
@@ -47,6 +64,7 @@ export class CourseController {
       queue = await QueueModel.create({
         room,
         courseId,
+        staffList: [],
       }).save();
     }
 

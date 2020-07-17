@@ -22,6 +22,9 @@ export default function TACheckinButton({
 
   const [viewCheckinModal, setViewCheckinModal] = useState(false);
   const [value, setValue] = useState(0);
+  const [customRoom, setCustomRoom] = useState("");
+
+  const canSubmitCustomRoom = !(value === -1 && !customRoom);
 
   const { data } = useSWR(
     `api/v1/courses/${courseId}`,
@@ -33,6 +36,20 @@ export default function TACheckinButton({
     height: "30px",
     lineHeight: "30px",
   };
+
+  async function checkInTA() {
+    if (canSubmitCustomRoom) {
+      const redirectID = await API.taStatus.checkIn(
+        courseId,
+        value === -1 ? customRoom : data?.queues[value].room
+      );
+
+      router.push(
+        "/course/[cid]/queue/[qid]",
+        `/course/${courseId}/queue/${redirectID.id}`
+      );
+    }
+  }
 
   return (
     <>
@@ -47,19 +64,10 @@ export default function TACheckinButton({
       <Modal
         title="Time to Check In! :D 🐱o(=•ェ•=)m"
         visible={viewCheckinModal}
-        onOk={async () => {
-          const redirectID = await API.taStatus.checkIn(
-            courseId,
-            data?.queues[value].room
-          );
-
-          router.push(
-            "/course/[cid]/queue/[qid]",
-            `/course/${courseId}/queue/${redirectID.id}`
-          );
-        }}
+        onOk={checkInTA}
         onCancel={() => setViewCheckinModal(false)}
         okText="Check In"
+        okButtonProps={{ disabled: !canSubmitCustomRoom }}
       >
         <h3>Which room are you in?</h3>
         <Radio.Group value={value} onChange={(e) => setValue(e.target.value)}>
@@ -71,7 +79,12 @@ export default function TACheckinButton({
           <Radio style={radioStyle} value={-1}>
             Other...
             {value === -1 ? (
-              <Input style={{ width: 100, marginLeft: 10 }} />
+              <Input
+                onChange={(v) => setCustomRoom(v.target.value)}
+                value={customRoom}
+                style={{ width: 100, marginLeft: 10 }}
+                onPressEnter={checkInTA}
+              />
             ) : null}
           </Radio>
         </Radio.Group>
