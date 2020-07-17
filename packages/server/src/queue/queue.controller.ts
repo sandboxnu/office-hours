@@ -28,7 +28,9 @@ export class QueueController {
 
   @Get(':queueId')
   async getQueue(@Param('queueId') queueId: string): Promise<GetQueueResponse> {
-    return QueueModel.findOne(queueId, { relations: ['questions'] });
+    return QueueModel.findOne(queueId, {
+      relations: ['questions', 'staffList'],
+    });
   }
 
   @Get(':queueId/questions')
