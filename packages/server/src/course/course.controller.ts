@@ -1,6 +1,7 @@
 import {
   ClassSerializerInterceptor,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -72,5 +73,23 @@ export class CourseController {
     await queue.save();
 
     return queue;
+  }
+
+  @Delete(':id/ta_location/:room')
+  async checkOut(
+    @Param('id') courseId: number,
+    @Param('room') room: string,
+    @User() user: UserModel,
+  ): Promise<void> {
+    const queue = await QueueModel.findOne(
+      {
+        room,
+        courseId,
+      },
+      { relations: ['staffList'] },
+    );
+
+    queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
+    await queue.save();
   }
 }
