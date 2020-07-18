@@ -52,6 +52,7 @@ export class NotificationService {
     await this.notifyPhone(
       phoneNotifModel,
       "You've signed up for phone notifications for Khoury Office Hours. To verify your number, please respond to this message with YES. To unsubscribe, respond to this message with NO or STOP",
+      true,
     );
   }
 
@@ -70,7 +71,7 @@ export class NotificationService {
         this.notifyDesktop(nm, message),
       ),
       ...notifModelsOfUser.phoneNotifs.map(async (pn) => {
-        this.notifyPhone(pn, message);
+        this.notifyPhone(pn, message, false);
       }),
     ]);
   }
@@ -94,16 +95,22 @@ export class NotificationService {
   }
 
   // notifies a user via phone number
-  async notifyPhone(pn: PhoneNotifModel, message: string): Promise<void> {
-    try {
-      this.twilioClient &&
-        (await this.twilioClient.messages.create({
-          body: message,
-          from: this.configService.get('TWILIOPHONENUMBER'),
-          to: pn.phoneNumber,
-        }));
-    } catch (error) {
-      console.error('problem sending message', error);
+  async notifyPhone(
+    pn: PhoneNotifModel,
+    message: string,
+    verificationMethod: boolean,
+  ): Promise<void> {
+    if (verificationMethod || pn.verified) {
+      try {
+        this.twilioClient &&
+          (await this.twilioClient.messages.create({
+            body: message,
+            from: this.configService.get('TWILIOPHONENUMBER'),
+            to: pn.phoneNumber,
+          }));
+      } catch (error) {
+        console.error('problem sending message', error);
+      }
     }
   }
 
