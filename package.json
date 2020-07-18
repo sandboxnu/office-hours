@@ -14,8 +14,9 @@
     "dev:db:down": "docker-compose -f infrastructure/dev/docker-compose.yml down",
     "dev:db:seed": "yarn workspace @template/server dev:db:seed",
     "dev:db:reset": "yarn workspace @template/server run dev:db:reset",
-    "prod:start": "docker-compose -f infrastructure/prod/docker-compose.yml up --build -d",
-    "prod:stop": "docker-compose -f infrastructure/prod/docker-compose.yml down"
+    "build": "yarn workspaces run build",
+    "prod:start": "pm2 start ./infrastructure/prod/ecosystem.config.js",
+    "prod:stop": "pm2 del ./infrastructure/prod/ecosystem.config.js"
   },
   "workspaces": {
     "packages": [
@@ -46,5 +47,8 @@
     "projects": [
       "<rootDir>/packages/*"
     ]
+  },
+  "dependencies": {
+    "pm2": "^4.4.0"
   }
 }

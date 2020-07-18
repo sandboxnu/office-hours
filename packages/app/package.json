@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "next -p 3001",
     "build": "next build",
-    "start": "next start -p 3001",
+    "prod:start": "next start -p 3001",
     "test": "jest",
     "cypress:run": "npx cypress run",
     "cypress:open": "npx cypress open"
