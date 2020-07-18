@@ -33,11 +33,7 @@ export class NotificationService {
     await DesktopNotifModel.create(info).save();
   }
 
-  async registerPhone(
-    phoneNumber: string,
-    userId: number,
-    response: Response,
-  ): Promise<void> {
+  async registerPhone(phoneNumber: string, userId: number): Promise<void> {
     try {
       phoneNumber = (
         await this.twilioClient.lookups.phoneNumbers(phoneNumber).fetch()
@@ -47,19 +43,16 @@ export class NotificationService {
       throw new BadRequestException('phone number invalid');
     }
 
-    await PhoneNotifModel.create({
+    const phoneNotifModel = await PhoneNotifModel.create({
       phoneNumber,
       userId,
       verified: false,
     }).save();
 
-    const MessagingResponse = require('twilio').twiml.MessagingResponse;
-    const twiml = new MessagingResponse();
-    twiml.message(
+    await this.notifyPhone(
+      phoneNotifModel,
       "You've signed up for phone notifications for Khoury Office Hours. To verify your number, please respond to this message with YES. To unsubscribe, respond to this message with NO or STOP",
     );
-    response.writeHead(200, { 'Content-Type': 'text/xml' });
-    response.end(twiml.toString());
   }
 
   // Notify user on all platforms
@@ -112,5 +105,53 @@ export class NotificationService {
     } catch (error) {
       console.error('problem sending message', error);
     }
+  }
+
+  async verifyPhone(
+    phoneNumber: string,
+    message: string,
+    response: Response,
+  ): Promise<void> {
+    const MessagingResponse = require('twilio').twiml.MessagingResponse;
+    const twiml = new MessagingResponse();
+
+    if (message !== 'YES' && message !== 'NO' && message !== 'STOP') {
+      twiml.message(
+        'Please respond with either YES or NO. Text STOP at any time to stop receiving text messages',
+      );
+      response.writeHead(200, { 'Content-Type': 'text/xml' });
+      response.end(twiml.toString());
+      return;
+    }
+
+    const phoneNotif = await PhoneNotifModel.findOne({
+      where: { phoneNumber: phoneNumber },
+    });
+
+    if (!phoneNotif) {
+      twiml.message(
+        'Could not find an Office Hours account with your phone number.',
+      );
+    } else if (message === 'NO' || message === 'STOP') {
+      // might not need stop -- Twilio might auto do that for us? a little crazy but that's ok
+      await PhoneNotifModel.delete(phoneNotif);
+      twiml.message(
+        "You've unregistered from text notifications for Khoury Office Hours. Feel free to re-register any time through the website",
+      );
+    } else if (phoneNotif.verified) {
+      twiml.message(
+        "You've already been verified to receive text notifications from Khoury Office Hours!",
+      );
+    } else {
+      phoneNotif.verified = true;
+      await phoneNotif.save();
+
+      twiml.message(
+        'Thank you for verifying your number with Khoury Office Hours! You are now signed up for text notifications!',
+      );
+    }
+    response.writeHead(200, { 'Content-Type': 'text/xml' });
+    response.end(twiml.toString());
+    return;
   }
 }
