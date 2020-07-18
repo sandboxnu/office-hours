@@ -10,6 +10,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { GetCourseResponse, QueuePartial, Role } from '@template/common';
+import { uniq } from 'lodash';
 import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../profile/jwt-auth.guard';
 import { UserCourseModel } from '../profile/user-course.entity';
@@ -42,27 +43,29 @@ export class CourseController {
       )
       .map((e) => e.room);
 
-    const queues = (
-      await QueueModel.find({
-        where: {
-          courseId: id,
-        },
-        relations: ['staffList'],
-      })
-    )
-      .filter((e) => e.staffList.length > 0 || rooms.includes(e.room))
-      .map((e) => {
-        if (rooms.includes(e.room)) {
-          const oh = course.officeHours.find((f) => f.room === e.room);
-          e.time = {
-            start: oh.startTime,
-            end: oh.endTime,
-          };
-        }
-        return e;
-      });
+    const queues = await QueueModel.find({
+      where: {
+        courseId: id,
+      },
+      relations: ['staffList'],
+    });
 
-    course.queues = queues;
+    const nonEmptyQueues = queues.filter((e) => e.staffList.length > 0);
+
+    const queuesHappeningNow = [];
+
+    for (const q of queues) {
+      const oh = course.officeHours.find((f) => f.room === q.room);
+      if (oh) {
+        q.time = {
+          start: oh.startTime,
+          end: oh.endTime,
+        };
+        queuesHappeningNow.push(q);
+      }
+    }
+
+    course.queues = uniq([...nonEmptyQueues, ...queuesHappeningNow]);
     return course;
   }
 

@@ -37,7 +37,7 @@ import { QueueModule } from './queue/queue.module';
         PhoneNotifModel,
       ],
       synchronize: true,
-      logging: true,
+      logging: process.env.NODE_ENV !== 'production',
     }),
     ProfileModule,
     CourseModule,
