@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ProfileModule } from './profile/profile.module';
 import { CourseModule } from './course/course.module';
 import { CourseModel } from './course/course.entity';
@@ -18,22 +18,26 @@ import { PhoneNotifModel } from './notification/phone-notif.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      url: process.env.DB_URL || 'postgres://postgres@localhost:5432/dev',
-      entities: [
-        CourseModel,
-        OfficeHourModel,
-        SemesterModel,
-        UserModel,
-        UserCourseModel,
-        QuestionModel,
-        QueueModel,
-        DesktopNotifModel,
-        PhoneNotifModel,
-      ],
-      synchronize: true,
-      keepConnectionAlive: true,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        type: 'postgres',
+        url: configService.get('DB_URL'),
+        entities: [
+          CourseModel,
+          OfficeHourModel,
+          SemesterModel,
+          UserModel,
+          UserCourseModel,
+          QuestionModel,
+          QueueModel,
+          DesktopNotifModel,
+          PhoneNotifModel,
+        ],
+        synchronize: true,
+        keepConnectionAlive: true,
+      }),
     }),
     ProfileModule,
     CourseModule,
@@ -41,7 +45,10 @@ import { PhoneNotifModel } from './notification/phone-notif.entity';
     NotificationModule,
     QuestionModule,
     ConfigModule.forRoot({
-      envFilePath: ['.env', '.env.development'],
+      envFilePath: [
+        '.env',
+        ...(process.env.NODE_ENV !== 'production' ? ['.env.development'] : []),
+      ],
       isGlobal: true,
     }),
   ],
