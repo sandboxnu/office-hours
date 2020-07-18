@@ -37,6 +37,7 @@ import { PhoneNotifModel } from './notification/phone-notif.entity';
         PhoneNotifModel,
       ],
       synchronize: true,
+      keepConnectionAlive: true,
     }),
     ProfileModule,
     CourseModule,
