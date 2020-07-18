@@ -13,15 +13,44 @@ import { setupIntegrationTest } from './util/testUtils';
 describe('Course Integration', () => {
   const supertest = setupIntegrationTest(CourseModule);
   describe('GET /courses/:id', () => {
-    it('gets office hours and queues', async () => {
+    it('gets office hours no queues, since no queue is happening right now', async () => {
       const course = await CourseFactory.create({
         officeHours: [await OfficeHourFactory.create()],
       });
+      await QueueFactory.create();
+      // will not load b/c office hours aren't happening right now
+      // (unless you go back in time and run these tests )
       const response = await supertest({ userId: 1 })
         .get(`/courses/${course.id}`)
         .expect(200);
 
       expect(response.body).toMatchSnapshot();
+    });
+
+    it('gets office hours and queues since time is now and rooms are same', async () => {
+      const course = await CourseFactory.create({
+        officeHours: [
+          await OfficeHourFactory.create({
+            startTime: new Date(),
+            endTime: new Date(new Date().valueOf() + 4500000),
+            room: "Matthias's Office",
+          }),
+          await OfficeHourFactory.create(),
+        ],
+      });
+
+      await QueueFactory.create({
+        room: "Matthias's Office",
+        course: course,
+      });
+
+      const response = await supertest({ userId: 1 })
+        .get(`/courses/${course.id}`)
+        .expect(200);
+
+      expect(response.body).toMatchObject({
+        queues: [{ id: 1 }],
+      });
     });
   });
 

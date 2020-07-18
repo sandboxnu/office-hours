@@ -26,9 +26,33 @@ export class CourseController {
 
   @Get(':id')
   async get(@Param('id') id: number): Promise<GetCourseResponse> {
-    return await CourseModel.findOne(id, {
-      relations: ['officeHours', 'queues', 'queues.staffList'],
+    // TODO: for all course endpoint, check if they're a student or a TA
+    const course = await CourseModel.findOne(id, {
+      relations: ['officeHours'],
     });
+
+    const now = new Date();
+    const MS_IN_MINUTE = 60000;
+
+    const rooms = course.officeHours
+      .filter(
+        (e) =>
+          e.startTime.valueOf() - 15 * MS_IN_MINUTE < now.valueOf() &&
+          e.endTime.valueOf() + 1 * MS_IN_MINUTE > now.valueOf(),
+      )
+      .map((e) => e.room);
+
+    const queues = (
+      await QueueModel.find({
+        where: {
+          courseId: id,
+        },
+        relations: ['staffList'],
+      })
+    ).filter((e) => e.staffList.length > 0 || rooms.includes(e.room));
+
+    course.queues = queues;
+    return course;
   }
 
   @Post(':id/ta_location/:room')
