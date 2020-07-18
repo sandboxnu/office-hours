@@ -8,7 +8,6 @@ const nodeExternals = require('webpack-node-externals');
 const StartServerPlugin = require('start-server-webpack-plugin');
 
 module.exports = function (options) {
-  console.log(options);
   return {
     ...options,
     entry: ['webpack/hot/poll?100', options.entry],
