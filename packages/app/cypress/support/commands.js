@@ -27,18 +27,36 @@
 // Q: doest cy.server(); need to be run before this?
 // or could it be added to a before each in a the support file so it runs before each test
 Cypress.Commands.add("mock", (method, url, fixture) => {
-  // if update is selected, listen to route, then udpate the write the data to a fixture
-  if (procces.env.UPDATE_SNAPSHOTS) {
-    const fixtureName = fixture.split(":").pop();
-    cy.route(method, url).then((response) => {
-      cy.writeFile(`cypress/fixtures/${fixutreName}.json`, response.body);
-    });
-  } else if (!process.env.USE_REAL_API) {
+  // if the live api is not being used, return the mock fixture  data
+  if (!Cypress.env("LIVE_API")) {
     cy.route(method, url, fixture);
+    return;
+  } else if (Cypress.env("UPDATE_FIXTURES")) {
+    const fixtureName = fixture.split(":").pop();
+    // listen to route, then udpate the write the data to a fixture
+    cy.route({
+      method: method,
+      url: url,
+      onResponse: (xhr) => {
+        Cypress.once("command:end", (command) => {
+          cy.writeFile(
+            `cypress/fixtures/${fixtureName}.json`,
+            xhr.response.body
+          );
+        });
+      },
+    });
+    return;
   }
-  // else - do nothing, the api will return the data we need
 });
 
 Cypress.Commands.add("login", (userType) => {
-  // TODO
+  if (!Cypress.env("LIVE_API")) {
+    return;
+  }
+  if (userType === "student") {
+    cy.request("/api/v1/profile/entry?userId=1");
+  } else if (userType == "ta") {
+    cy.request("/api/v1/profile/entry?userId=2");
+  }
 });
