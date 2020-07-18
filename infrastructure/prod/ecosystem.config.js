@@ -17,11 +17,11 @@ module.exports = {
     staging: {
       user: "ubuntu",
       host: "128.31.24.252",
-      ref: "origin/master",
+      ref: "origin/pm2",
       repo: "https://github.com/sandboxnu/office-hours.git",
       path: "/var/www",
       "pre-deploy-local": "",
-      "post-deploy": "yarn i && yarn build && yarn prod:start",
+      "post-deploy": "yarn && yarn build && yarn prod:start",
       "pre-setup": "",
     },
   },
