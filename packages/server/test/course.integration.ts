@@ -28,11 +28,12 @@ describe('Course Integration', () => {
     });
 
     it('gets office hours and queues since time is now and rooms are same', async () => {
+      const now = new Date();
       const course = await CourseFactory.create({
         officeHours: [
           await OfficeHourFactory.create({
-            startTime: new Date(),
-            endTime: new Date(new Date().valueOf() + 4500000),
+            startTime: now,
+            endTime: new Date(now.valueOf() + 4500000),
             room: "Matthias's Office",
           }),
           await OfficeHourFactory.create(),
@@ -49,7 +50,7 @@ describe('Course Integration', () => {
         .expect(200);
 
       expect(response.body).toMatchObject({
-        queues: [{ id: 1 }],
+        queues: [{ id: 1, time: { start: now.toISOString() } }],
       });
     });
   });

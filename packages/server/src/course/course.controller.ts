@@ -49,7 +49,18 @@ export class CourseController {
         },
         relations: ['staffList'],
       })
-    ).filter((e) => e.staffList.length > 0 || rooms.includes(e.room));
+    )
+      .filter((e) => e.staffList.length > 0 || rooms.includes(e.room))
+      .map((e) => {
+        if (rooms.includes(e.room)) {
+          const oh = course.officeHours.find((f) => f.room === e.room);
+          e.time = {
+            start: oh.startTime,
+            end: oh.endTime,
+          };
+        }
+        return e;
+      });
 
     course.queues = queues;
     return course;
