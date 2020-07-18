@@ -1,11 +1,9 @@
-import React from "react";
-import { EditOutlined } from "@ant-design/icons";
 import { Avatar, Button, Card, Input, Row } from "antd";
+import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { QueuePartial } from "../../../common/index";
-import Link from "next/link";
 
 type OpenQueueCard = {
   queue: QueuePartial;
@@ -82,7 +80,11 @@ const NotesInput = styled(Input)`
   border: 1px solid #b8c4ce;
 `;
 
-const OpenQueueCard = ({ queue, isTA, updateQueueNotes }: OpenQueueCard) => {
+const OpenQueueCard = ({
+  queue,
+  isTA,
+  updateQueueNotes,
+}: OpenQueueCard): ReactElement => {
   const [editingNotes, setEditingNotes] = useState(false);
   const [updatedNotes, setUpdatedNotes] = useState(queue.notes);
   const router = useRouter();
@@ -99,7 +101,19 @@ const OpenQueueCard = ({ queue, isTA, updateQueueNotes }: OpenQueueCard) => {
     <PaddedCard
       headStyle={{ background: "#F3F5F7" }}
       title={staffList.map((staffMember) => staffMember.name).join(", ")}
-      extra={<ExtraText>//TODO: 3:00 - 5:00</ExtraText>}
+      extra={
+        <ExtraText>
+          {queue.time
+            ? `${queue.time?.start.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })} - ${queue.time?.end.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}`
+            : `TODO: custom queue text here Stanley`}
+        </ExtraText>
+      }
     >
       <Row justify="space-between">
         <HeaderDiv>{queue.room}</HeaderDiv>

@@ -2,6 +2,7 @@ import { API } from "@template/api-client";
 import { Role } from "@template/common";
 import { Col, Result, Row } from "antd";
 import { useRouter } from "next/router";
+import { ReactElement } from "react";
 import styled from "styled-components";
 import useSWR, { mutate } from "swr";
 import NavBar from "../../../components/Nav/NavBar";
@@ -23,7 +24,7 @@ const Title = styled.div`
   color: #212934;
 `;
 
-export default function Today() {
+export default function Today(): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
   const role = useRoleInCourse(Number(cid));
@@ -33,7 +34,7 @@ export default function Today() {
     async () => cid && API.course.get(Number(cid))
   );
 
-  const updateQueueNotes = async (queueId, notes) => {
+  const updateQueueNotes = async (queueId: number, notes: string) => {
     const newQueues =
       data && data.queues.map((q) => (q.id === queueId ? { ...q, notes } : q));
 
