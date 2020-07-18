@@ -20,11 +20,7 @@ import { PhoneNotifModel } from './notification/phone-notif.entity';
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: '',
-      database: 'dev',
+      url: process.env.DB_URL || 'postgres://postgres@localhost:5432/dev',
       entities: [
         CourseModel,
         OfficeHourModel,
