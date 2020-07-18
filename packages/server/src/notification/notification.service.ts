@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Response } from 'express';
 import * as twilio from 'twilio';
 import { Connection, DeepPartial } from 'typeorm';
 import * as webPush from 'web-push';
@@ -32,7 +33,11 @@ export class NotificationService {
     await DesktopNotifModel.create(info).save();
   }
 
-  async registerPhone(phoneNumber: string, userId: number) {
+  async registerPhone(
+    phoneNumber: string,
+    userId: number,
+    response: Response,
+  ): Promise<void> {
     try {
       phoneNumber = (
         await this.twilioClient.lookups.phoneNumbers(phoneNumber).fetch()
@@ -42,11 +47,19 @@ export class NotificationService {
       throw new BadRequestException('phone number invalid');
     }
 
-    // todo: need to verify that the user owns the phone number before adding it
     await PhoneNotifModel.create({
       phoneNumber,
       userId,
+      verified: false,
     }).save();
+
+    const MessagingResponse = require('twilio').twiml.MessagingResponse;
+    const twiml = new MessagingResponse();
+    twiml.message(
+      "You've signed up for phone notifications for Khoury Office Hours. To verify your number, please respond to this message with YES. To unsubscribe, respond to this message with NO or STOP",
+    );
+    response.writeHead(200, { 'Content-Type': 'text/xml' });
+    response.end(twiml.toString());
   }
 
   // Notify user on all platforms
