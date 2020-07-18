@@ -5,12 +5,18 @@ module.exports = {
       script: "npm",
       args: "run prod:start",
       cwd: "./packages/app",
+      env: {
+        NODE_ENV: "production",
+      },
     },
     {
       name: "server",
       script: "npm",
       args: "run prod:start",
       cwd: "./packages/server",
+      env: {
+        NODE_ENV: "production",
+      },
     },
   ],
   deploy: {
