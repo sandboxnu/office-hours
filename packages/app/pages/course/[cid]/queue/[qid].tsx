@@ -90,7 +90,6 @@ export default function Queue() {
     const updateStudent = {
       text: text,
       questionType: questionType,
-      status: OpenQuestionStatus.Queued,
     };
     await API.questions.update(studentQuestion.id, updateStudent);
     const newQuestions = questions.map((q) =>
