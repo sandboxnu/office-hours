@@ -90,7 +90,6 @@ export default function Queue() {
     const updateStudent = {
       text: text,
       questionType: questionType,
-      status: OpenQuestionStatus.Queued,
     };
     await API.questions.update(studentQuestion.id, updateStudent);
     const newQuestions = questions.map((q) =>
@@ -119,6 +118,7 @@ export default function Queue() {
       q.id === question.id ? { ...q, status } : q
     );
     mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
+    setOpenPopup(false);
   };
 
   const alertStudent = async (question: Question) => {
