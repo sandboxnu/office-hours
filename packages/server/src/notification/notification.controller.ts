@@ -2,19 +2,25 @@ import {
   Body,
   Controller,
   Get,
+  Header,
+  Headers,
   Param,
   Post,
-  Res,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { DesktopNotifBody } from '@template/common';
-import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
+import { DesktopNotifBody, TwilioBody } from '@template/common';
+import * as twilio from 'twilio';
 import { JwtAuthGuard } from '../profile/jwt-auth.guard';
 import { NotificationService } from './notification.service';
 
 @Controller('notifications')
 export class NotificationController {
-  constructor(private notifService: NotificationService) {}
+  constructor(
+    private notifService: NotificationService,
+    private configService: ConfigService,
+  ) {}
 
   @Get('desktop/credentials')
   @UseGuards(JwtAuthGuard)
@@ -60,12 +66,26 @@ export class NotificationController {
   }
 
   @Post('/phone/verify')
+  @Header('Content-Type', 'text/xml')
   async verifyPhoneUser(
-    @Body() body: any, // no built-in type seems to exist :/. Can type from JSON blob sent to dajin
-    @Res() response: Response,
+    @Body() body: TwilioBody,
+    @Headers('x-twilio-signature') twilioSignature: string,
   ): Promise<void> {
     const message = body.Body.trim().toUpperCase();
     const senderNumber = body.From;
+
+    const twilioAuthToken = this.configService.get('TWILIOAUTHTOKEN');
+
+    const isValidated = twilio.validateRequest(
+      twilioAuthToken,
+      twilioSignature.trim(),
+      'https://28a88b3af262.ngrok.io/api/v1/notifications/phone/verify',
+      body,
+    );
+
+    if (!isValidated) {
+      throw new UnauthorizedException('Message not from Twilio');
+    }
 
     const messageToUser = await this.notifService.verifyPhone(
       senderNumber,
@@ -74,7 +94,7 @@ export class NotificationController {
     const MessagingResponse = require('twilio').twiml.MessagingResponse;
     const twiml = new MessagingResponse();
     twiml.message(messageToUser);
-    response.writeHead(200, { 'Content-Type': 'text/xml' });
-    response.end(twiml.toString());
+
+    return twiml.toString();
   }
 }

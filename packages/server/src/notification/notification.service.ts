@@ -127,16 +127,14 @@ export class NotificationService {
   }
 
   async verifyPhone(phoneNumber: string, message: string): Promise<string> {
-    if (message !== 'YES' && message !== 'NO' && message !== 'STOP') {
-      return phoneResponses.WRONG_MESSAGE;
-    }
-
     const phoneNotif = await PhoneNotifModel.findOne({
       where: { phoneNumber: phoneNumber },
     });
 
     if (!phoneNotif) {
       return phoneResponses.COULD_NOT_FIND_NUMBER;
+    } else if (message !== 'YES' && message !== 'NO' && message !== 'STOP') {
+      return phoneResponses.WRONG_MESSAGE;
     } else if (message === 'NO' || message === 'STOP') {
       // did some more digging, STOP just stops messages completely, we'll never receive it
       // so uh... there's probably a way to do that
