@@ -36,7 +36,9 @@ describe('Course Integration', () => {
             endTime: new Date(now.valueOf() + 4500000),
             room: "Matthias's Office",
           }),
-          await OfficeHourFactory.create(),
+          await OfficeHourFactory.create({
+            room: "Matthias's Office", // aren't gotten cause the time isn't now
+          }),
         ],
       });
 

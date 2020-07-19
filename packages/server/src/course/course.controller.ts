@@ -35,13 +35,11 @@ export class CourseController {
     const now = new Date();
     const MS_IN_MINUTE = 60000;
 
-    const rooms = course.officeHours
-      .filter(
-        (e) =>
-          e.startTime.valueOf() - 15 * MS_IN_MINUTE < now.valueOf() &&
-          e.endTime.valueOf() + 1 * MS_IN_MINUTE > now.valueOf(),
-      )
-      .map((e) => e.room);
+    const officeHoursHappeningNow = course.officeHours.filter(
+      (e) =>
+        e.startTime.valueOf() - 15 * MS_IN_MINUTE < now.valueOf() &&
+        e.endTime.valueOf() + 1 * MS_IN_MINUTE > now.valueOf(),
+    );
 
     const queues = await QueueModel.find({
       where: {
@@ -55,7 +53,7 @@ export class CourseController {
     const queuesHappeningNow = [];
 
     for (const q of queues) {
-      const oh = course.officeHours.find((f) => f.room === q.room);
+      const oh = officeHoursHappeningNow.find((f) => f.room === q.room);
       if (oh) {
         q.time = {
           start: oh.startTime,
