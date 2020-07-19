@@ -36,14 +36,16 @@ describe('Course Integration', () => {
             endTime: new Date(now.valueOf() + 4500000),
             room: "Matthias's Office",
           }),
-          await OfficeHourFactory.create({
-            room: "Matthias's Office", // aren't gotten cause the time isn't now
-          }),
+          await OfficeHourFactory.create(), // aren't loaded cause time off
         ],
       });
 
       await QueueFactory.create({
         room: "Matthias's Office",
+        course: course,
+      });
+
+      await QueueFactory.create({
         course: course,
       });
 
