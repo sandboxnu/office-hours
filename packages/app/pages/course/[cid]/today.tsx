@@ -1,6 +1,5 @@
 import { Role } from "@template/common";
 import { API } from "@template/api-client";
-import { Role } from "@template/common";
 import { Button, Col, Result, Row } from "antd";
 import { useRouter } from "next/router";
 import styled from "styled-components";
