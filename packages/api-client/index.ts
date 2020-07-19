@@ -40,8 +40,7 @@ class APIClient {
       ).data;
       return queue;
     },
-    delete: async (courseId: number, room: string): Promise<void> => {
-      //TODO:
+    checkOut: async (courseId: number, room: string): Promise<void> => {
       await this.axios.delete(
         `/api/v1/courses/${courseId}/ta_location/${room}`
       );
@@ -82,7 +81,7 @@ class APIClient {
   };
   queues = {
     get: async (queueId: number): Promise<GetQueueResponse> => {
-      return await this.axios.get(`/api/v1/queues/${queueId}`);
+      return (await this.axios.get(`/api/v1/queues/${queueId}`)).data;
     },
     updateNotes: async (queueId: number, notes: string) => {
       await this.axios.patch(`/api/v1/queues/${queueId}`, { notes });

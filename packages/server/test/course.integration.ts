@@ -1,4 +1,5 @@
 import { CourseModule } from '../src/course/course.module';
+import { QueueModel } from '../src/queue/queue.entity';
 import {
   CourseFactory,
   OfficeHourFactory,
@@ -51,7 +52,7 @@ describe('Course Integration', () => {
 
       await supertest({ userId: student.id })
         .post(`/courses/${queue.course.id}/ta_location/${queue.room}`)
-        .expect(500);
+        .expect(401);
     });
 
     it('checks TA into a new queue', async () => {
@@ -68,6 +69,54 @@ describe('Course Integration', () => {
         id: 1,
         room: 'The Alamo',
         staffList: [{ id: ta.id }],
+      });
+    });
+  });
+
+  describe('DELETE, /courses/:id/ta_location/:room', () => {
+    it('tests TA is deleted from queue if exists', async () => {
+      const ta = await UserFactory.create();
+      const queue = await QueueFactory.create({
+        room: 'The Alamo',
+        staffList: [ta],
+      });
+      const tcf = await TACourseFactory.create({
+        course: queue.course,
+        user: ta,
+      });
+
+      expect(
+        (await QueueModel.findOne({}, { relations: ['staffList'] })).staffList
+          .length,
+      ).toEqual(1);
+
+      await supertest({ userId: ta.id })
+        .delete(`/courses/${tcf.courseId}/ta_location/The Alamo`)
+        .expect(200);
+
+      expect(
+        await QueueModel.findOne({}, { relations: ['staffList'] }),
+      ).toMatchObject({
+        staffList: [],
+      });
+    });
+
+    it('tests nothing happens if ta not in queue', async () => {
+      const ta = await UserFactory.create();
+      const queue = await QueueFactory.create({ room: 'The Alamo' });
+      const tcf = await TACourseFactory.create({
+        course: queue.course,
+        user: ta,
+      });
+
+      await supertest({ userId: ta.id })
+        .delete(`/courses/${tcf.courseId}/ta_location/The Alamo`)
+        .expect(200);
+
+      expect(
+        await QueueModel.findOne({}, { relations: ['staffList'] }),
+      ).toMatchObject({
+        staffList: [],
       });
     });
   });
