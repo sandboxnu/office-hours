@@ -59,7 +59,6 @@ export default function QuestionForm({
 
   useEffect(() => {
     if (question) {
-      window.localStorage.setItem("draftQuestion", JSON.stringify(question));
       setQuestionText(question.text);
       setQuestionTypeInput(question.questionType);
     }
@@ -88,9 +87,8 @@ export default function QuestionForm({
   ) => {
     setQuestionText(event.target.value);
 
-    const questionFromStorage = JSON.parse(
-      window.localStorage.getItem("draftQuestion")
-    );
+    const questionFromStorage =
+      JSON.parse(window.localStorage.getItem("draftQuestion")) ?? {};
 
     window.localStorage.setItem(
       "draftQuestion",

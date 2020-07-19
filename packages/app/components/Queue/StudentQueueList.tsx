@@ -132,7 +132,8 @@ export default function StudentQueueList({
 
   const leaveQueueAndClose = useCallback(() => {
     //delete draft when they leave the queue
-    deleteDraft();
+    window.localStorage.removeItem("draftQuestion");
+    setHasDraftInProgress(false);
     leaveQueue();
     closeEditModal();
   }, [leaveQueue, closeEditModal]);
@@ -145,7 +146,8 @@ export default function StudentQueueList({
   const finishQuestionAndClose = useCallback(
     (qt: QuestionType, text: string) => {
       //finish draft when question is finalized
-      deleteDraft();
+      window.localStorage.removeItem("draftQuestion");
+      setHasDraftInProgress(false);
       finishQuestion(qt, text);
       closeEditModal();
     },
@@ -158,7 +160,6 @@ export default function StudentQueueList({
   };
 
   const continueDraft = () => {
-    console.log(storedQuestion);
     updateQuestion(storedQuestion, studentQuestion.id);
     setPopupEditQuestion(true);
   };
