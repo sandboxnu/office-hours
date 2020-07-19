@@ -5,6 +5,10 @@ import styled from "styled-components";
 
 const HorizontalTACard = styled(Card)`
   margin-bottom: 8px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+  background: #ffffff;
+  border-radius: 6px;
+  color: #595959;
 
   &:hover {
     cursor: pointer;
@@ -13,8 +17,12 @@ const HorizontalTACard = styled(Card)`
 
 const HorizontalStudentCard = styled(Card)`
   margin-bottom: 8px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+  background: #ffffff;
+  border-radius: 6px;
   padding-left: 8px;
   padding-right: 8px;
+  color: #595959;
 `;
 
 const Photo = styled(Avatar)`
@@ -47,6 +55,10 @@ const StatusTag = styled(Tag)`
   text-align: center;
   float: right;
   margin-right: 0;
+  background: #f9f0ff;
+  border: 1px solid #d3adf7;
+  box-sizing: border-box;
+  border-radius: 4px;
 `;
 
 const CenterRow = styled(Row)`

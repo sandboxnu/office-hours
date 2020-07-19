@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Question Integration GET /questions/:id gets a question with the given id 1`] = `
+Object {
+  "closedAt": null,
+  "createdAt": "2020-03-01T05:00:00.000Z",
+  "creator": Object {
+    "id": 1,
+    "name": "John Doe the 1th",
+    "photoURL": "https://pics/1",
+  },
+  "helpedAt": null,
+  "id": 1,
+  "questionType": "Other",
+  "status": "Queued",
+  "taHelped": null,
+  "text": "Help pls",
+}
+`;

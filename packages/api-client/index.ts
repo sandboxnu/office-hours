@@ -2,13 +2,11 @@ import {
   CreateQuestionParams,
   CreateQuestionResponse,
   DesktopNotifBody,
-  GetCourseQueuesResponse,
   GetCourseResponse,
   GetProfileResponse,
   GetQuestionResponse,
   ListQuestionsResponse,
   PhoneNotifBody,
-  QueuePartial,
   TAUpdateStatusResponse,
   UpdateQuestionParams,
   UpdateQuestionResponse,
@@ -24,20 +22,11 @@ class APIClient {
   };
   course = {
     get: async (courseId: number): Promise<GetCourseResponse> => {
-      const course = (
-        await this.axios.get(`/api/v1/courses/${courseId}/schedule`)
-      ).data;
+      const course = (await this.axios.get(`/api/v1/courses/${courseId}`)).data;
       course.officeHours.forEach((officeHour: any) =>
         parseOfficeHourDates(officeHour)
       );
       return course;
-    },
-    queues: async (courseId: number): Promise<GetCourseQueuesResponse> => {
-      const queues = (
-        await this.axios.get(`/api/v1/courses/${courseId}/queues`)
-      ).data;
-      queues.forEach((q: QueuePartial) => parseQueueDates(q));
-      return queues;
     },
   };
   taStatus = {
@@ -59,38 +48,28 @@ class APIClient {
       return questions;
     },
     create: async (
-      queueId: number,
       params: CreateQuestionParams
     ): Promise<CreateQuestionResponse> => {
-      const question = (
-        await this.axios.post(`/api/v1/queues/${queueId}/questions`, params)
-      ).data;
+      const question = (await this.axios.post(`/api/v1/questions`, params))
+        .data;
       parseQuestionDates(question);
       return question;
     },
-    get: async (
-      queueId: number,
-      questionId: number
-    ): Promise<GetQuestionResponse> => {
-      return (
-        await this.axios.get(
-          `/api/v1/queues/${queueId}/questions/${questionId}`
-        )
-      ).data;
+    get: async (questionId: number): Promise<GetQuestionResponse> => {
+      return (await this.axios.get(`/api/v1/questions/${questionId}`)).data;
     },
     update: async (
-      queueId: number,
       questionId: number,
       params: UpdateQuestionParams
     ): Promise<UpdateQuestionResponse> => {
       const question = (
-        await this.axios.patch(
-          `/api/v1/queues/${queueId}/questions/${questionId}`,
-          params
-        )
+        await this.axios.patch(`/api/v1/questions/${questionId}`, params)
       ).data;
       parseQuestionDates(question);
       return question;
+    },
+    notify: async (questionId: number): Promise<void> => {
+      await this.axios.post(`/api/v1/questions/${questionId}/notify`);
     },
   };
   queues = {
@@ -128,7 +107,7 @@ class APIClient {
       },
     },
   };
-  constructor(baseURL: string = "") {
+  constructor(baseURL = "") {
     this.axios = Axios.create({ baseURL: baseURL });
   }
 }

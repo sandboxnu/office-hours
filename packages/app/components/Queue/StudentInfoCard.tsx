@@ -10,6 +10,8 @@ import {
 
 const HelpCard = styled(Card)`
   margin-bottom: 16px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
 `;
 
 const Email = styled.div`
@@ -17,19 +19,20 @@ const Email = styled.div`
   font-weight: normal;
   font-size: 12px;
   line-height: 20px;
-  color: #bfbfbf;
+  color: #8895a6;
 `;
 
 const Name = styled.div`
   font-weight: 500;
   font-size: 14px;
+  color: #212934;
 `;
 
 const HeadingText = styled.div`
-  color: #bfbfbf;
-  font-weight: 600;
   font-size: 12px;
+  font-weight: 500;
   line-height: 22px;
+  color: #8895a6;
   font-variant: small-caps;
 `;
 
@@ -37,16 +40,35 @@ const BodyText = styled.div`
   font-weight: normal;
   font-size: 12px;
   line-height: 20px;
-  color: #595959;
+  color: #212934;
   margin-bottom: 16px;
 `;
 
-const HalfButton = styled(Button)`
+const AlertButton = styled(Button)`
   width: 48%;
+  font-weight: 500;
+  font-size: 14px;
+  color: #5f6b79;
+  border: 1px solid #cfd6de;
+  border-radius: 6px;
+`;
+
+const CantFindButton = styled(Button)`
+  width: 48%;
+  font-weight: 500;
+  font-size: 14px;
+  color: #da3236;
+  background: #f8f9fa;
+  border: 1px solid #cfd6de;
+  border-radius: 6px;
 `;
 
 const FinishButton = styled(Button)`
   margin-top: 12px;
+  font-weight: 500;
+  font-size: 14px;
+  background: #3684c6;
+  border-radius: 6px;
 `;
 
 interface StudentInfoCardProps {
@@ -62,7 +84,7 @@ const StudentInfoCard = ({
 }: StudentInfoCardProps) => {
   return (
     <HelpCard
-      headStyle={{ padding: "0 16px" }}
+      headStyle={{ padding: "0 16px", borderStyle: "none" }}
       bodyStyle={{ padding: "16px" }}
       title={
         <Row justify="space-between">
@@ -84,13 +106,13 @@ const StudentInfoCard = ({
       </Row>
 
       <Row justify="space-between">
-        <HalfButton onClick={() => alertStudent(question)}>Alert</HalfButton>
-        <HalfButton
+        <AlertButton onClick={() => alertStudent(question)}>Alert</AlertButton>
+        <CantFindButton
           danger
           onClick={() => updateQuestion(question, ClosedQuestionStatus.NoShow)}
         >
           Can't Find
-        </HalfButton>
+        </CantFindButton>
       </Row>
       <FinishButton
         block

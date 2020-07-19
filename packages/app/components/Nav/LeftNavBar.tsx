@@ -28,20 +28,20 @@ export default function LeftNavBar({ courseId, queueId }: LeftNavBarProps) {
   return (
     <HorizontalMenu mode="horizontal">
       <MenuItem key="today">
-        <Link href="/class/[cid]/today" as={`/class/${courseId}/today`}>
+        <Link href="/course/[cid]/today" as={`/course/${courseId}/today`}>
           <a>Today</a>
         </Link>
       </MenuItem>
       <MenuItem key="week">
-        <Link href="/class/[cid]/schedule" as={`/class/${courseId}/schedule`}>
+        <Link href="/course/[cid]/schedule" as={`/course/${courseId}/schedule`}>
           <a>Schedule</a>
         </Link>
       </MenuItem>
       {queueId && (
         <MenuItem key="queue">
           <Link
-            href="/class/[cid]/queue/[qid]"
-            as={`/class/${courseId}/queue/${queueId}`}
+            href="/course/[cid]/queue/[qid]"
+            as={`/course/${courseId}/queue/${queueId}`}
           >
             <a>Queue</a>
           </Link>

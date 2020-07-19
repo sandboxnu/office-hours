@@ -1,5 +1,5 @@
 entity: QueueModel
 items:
   queue0:
-    courseId: "@course0"
-    room: "RY 154"
+    courseId: '@course0'
+    room: 'RY 154'

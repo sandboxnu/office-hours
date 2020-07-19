@@ -5,12 +5,15 @@
     "dev": "next -p 3001",
     "build": "next build",
     "start": "next start -p 3001",
-    "test": "jest"
+    "test": "jest",
+    "cypress:run": "npx cypress run",
+    "cypress:open": "npx cypress open"
   },
   "dependencies": {
     "@ant-design/icons": "^4.2.1",
     "antd": "^4.2.4",
     "axios": "^0.19.2",
+    "eslint-plugin-cypress": "^2.11.1",
     "next": "^9.4.0",
     "next-compose-plugins": "^2.2.0",
     "next-offline": "^5.0.2",
@@ -34,6 +37,9 @@
     "@types/react-big-calendar": "^0.24.2",
     "@types/socket.io-client": "^1.4.32",
     "babel-plugin-styled-components": "^1.10.7",
+    "cypress": "^4.9.0",
+    "eslint-plugin-react": "^7.20.3",
+    "eslint-plugin-react-hooks": "^4.0.5",
     "jest": "^26.0.1",
     "typescript": "^3.8.3"
   },
