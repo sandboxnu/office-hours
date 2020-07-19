@@ -118,6 +118,7 @@ export default function Queue() {
       q.id === question.id ? { ...q, status } : q
     );
     mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
+    setOpenPopup(false);
   };
 
   const alertStudent = async (question: Question) => {
