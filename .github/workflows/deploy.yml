@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy Staging
 
 on:
   push:
@@ -19,5 +19,5 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "12"
-      - name: "pm2 deploy"
-        run: "npx pm2 deploy infrastructure/prod/ecosystem.config.js update"
+      - name: "pm2 deploy to staging"
+        run: "npx pm2 deploy infrastructure/prod/ecosystem.config.js staging update"
