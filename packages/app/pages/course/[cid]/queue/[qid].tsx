@@ -100,6 +100,24 @@ export default function Queue() {
   };
 
   /**
+   * Updates a given question to the draft question
+   * @param question the question being modified
+   * @param status the updated status
+   */
+  const updateQuestionDraft = async (question: Question) => {
+    await API.questions.update(question.id, {
+      questionType: question.questionType,
+      text: question.text,
+      queueId: Number(qid),
+    });
+
+    const newQuestions = questions.map((q) =>
+      q.id === question.id ? { ...q, status } : q
+    );
+    mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
+  };
+
+  /**
    * TA functions to support queue operations
    */
 
@@ -141,6 +159,7 @@ export default function Queue() {
                 studentQuestion={studentQuestion}
                 leaveQueue={leaveQueue}
                 finishQuestion={finishQuestion}
+                updateQuestion={updateQuestionDraft}
               />
             ) : (
               <TAQueueList
