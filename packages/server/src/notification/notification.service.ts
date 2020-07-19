@@ -1,12 +1,24 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Response } from 'express';
 import * as twilio from 'twilio';
 import { Connection, DeepPartial } from 'typeorm';
 import * as webPush from 'web-push';
 import { UserModel } from '../profile/user.entity';
 import { DesktopNotifModel } from './desktop-notif.entity';
 import { PhoneNotifModel } from './phone-notif.entity';
+
+const phoneResponses = {
+  WRONG_MESSAGE:
+    'Please respond with either YES or NO. Text STOP at any time to stop receiving text messages',
+  COULD_NOT_FIND_NUMBER:
+    'Could not find an Office Hours account with your phone number.',
+  UNREGISTER:
+    "You've unregistered from text notifications for Khoury Office Hours. Feel free to re-register any time through the website",
+  DUPLICATE:
+    "You've already been verified to receive text notifications from Khoury Office Hours!",
+  OK:
+    'Thank you for verifying your number with Khoury Office Hours! You are now signed up for text notifications!',
+};
 
 @Injectable()
 export class NotificationService {
@@ -98,9 +110,9 @@ export class NotificationService {
   async notifyPhone(
     pn: PhoneNotifModel,
     message: string,
-    verificationMethod: boolean,
+    force: boolean,
   ): Promise<void> {
-    if (verificationMethod || pn.verified) {
+    if (force || pn.verified) {
       try {
         this.twilioClient &&
           (await this.twilioClient.messages.create({
@@ -114,21 +126,9 @@ export class NotificationService {
     }
   }
 
-  async verifyPhone(
-    phoneNumber: string,
-    message: string,
-    response: Response,
-  ): Promise<void> {
-    const MessagingResponse = require('twilio').twiml.MessagingResponse;
-    const twiml = new MessagingResponse();
-
+  async verifyPhone(phoneNumber: string, message: string): Promise<string> {
     if (message !== 'YES' && message !== 'NO' && message !== 'STOP') {
-      twiml.message(
-        'Please respond with either YES or NO. Text STOP at any time to stop receiving text messages',
-      );
-      response.writeHead(200, { 'Content-Type': 'text/xml' });
-      response.end(twiml.toString());
-      return;
+      return phoneResponses.WRONG_MESSAGE;
     }
 
     const phoneNotif = await PhoneNotifModel.findOne({
@@ -136,29 +136,18 @@ export class NotificationService {
     });
 
     if (!phoneNotif) {
-      twiml.message(
-        'Could not find an Office Hours account with your phone number.',
-      );
+      return phoneResponses.COULD_NOT_FIND_NUMBER;
     } else if (message === 'NO' || message === 'STOP') {
-      // might not need stop -- Twilio might auto do that for us? a little crazy but that's ok
+      // did some more digging, STOP just stops messages completely, we'll never receive it
+      // so uh... there's probably a way to do that
       await PhoneNotifModel.delete(phoneNotif);
-      twiml.message(
-        "You've unregistered from text notifications for Khoury Office Hours. Feel free to re-register any time through the website",
-      );
+      return phoneResponses.UNREGISTER;
     } else if (phoneNotif.verified) {
-      twiml.message(
-        "You've already been verified to receive text notifications from Khoury Office Hours!",
-      );
+      return phoneResponses.DUPLICATE;
     } else {
       phoneNotif.verified = true;
       await phoneNotif.save();
-
-      twiml.message(
-        'Thank you for verifying your number with Khoury Office Hours! You are now signed up for text notifications!',
-      );
+      return phoneResponses.OK;
     }
-    response.writeHead(200, { 'Content-Type': 'text/xml' });
-    response.end(twiml.toString());
-    return;
   }
 }

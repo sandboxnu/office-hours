@@ -4,12 +4,11 @@ import {
   Get,
   Param,
   Post,
-  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
 import { DesktopNotifBody } from '@template/common';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { JwtAuthGuard } from '../profile/jwt-auth.guard';
 import { NotificationService } from './notification.service';
 
@@ -62,12 +61,20 @@ export class NotificationController {
 
   @Post('/phone/verify')
   async verifyPhoneUser(
-    @Req() request: Request,
+    @Body() body: any, // no built-in type seems to exist :/. Can type from JSON blob sent to dajin
     @Res() response: Response,
   ): Promise<void> {
-    const message = request.body.Body.trim().toUpperCase();
-    const senderNumber = request.body.From;
+    const message = body.Body.trim().toUpperCase();
+    const senderNumber = body.From;
 
-    this.notifService.verifyPhone(senderNumber, message, response);
+    const messageToUser = await this.notifService.verifyPhone(
+      senderNumber,
+      message,
+    );
+    const MessagingResponse = require('twilio').twiml.MessagingResponse;
+    const twiml = new MessagingResponse();
+    twiml.message(messageToUser);
+    response.writeHead(200, { 'Content-Type': 'text/xml' });
+    response.end(twiml.toString());
   }
 }
