@@ -84,7 +84,7 @@ export default function StudentQueueList({
   studentQuestion,
   questions,
   helpingQuestions,
-}: StudentQueueListProps) {
+}: StudentQueueListProps): JSX.Element {
   const helping = helpingQuestions.length !== 0;
   const screens = useBreakpoint();
   const [popupEditQuestion, setPopupEditQuestion] = useState(false);
