@@ -1,4 +1,4 @@
-import { IsEnum, IsString, IsInt, IsOptional } from "class-validator";
+import { IsEnum, IsInt, IsOptional, IsString } from "class-validator";
 import "reflect-metadata";
 
 export enum WSMessageType {
@@ -86,11 +86,6 @@ export enum Role {
   STUDENT = "student",
   TA = "ta",
   PROFESSOR = "professor",
-}
-
-export enum TAStatus {
-  ARRIVED = "arrived",
-  DEPARTED = "departed",
 }
 
 /**
@@ -310,14 +305,7 @@ export class UpdateQuestionParams {
 }
 export type UpdateQuestionResponse = Question;
 
-export class TAUpdateStatusParams {
-  @IsString()
-  room: string;
-
-  @IsEnum(TAStatus)
-  status: TAStatus;
-} // Note: Room might become an ID
-export type TAUpdateStatusResponse = Queue;
+export type TAUpdateStatusResponse = QueuePartial;
 export type QueueNotePayloadType = {
   notes: string;
 };

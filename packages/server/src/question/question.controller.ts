@@ -69,6 +69,7 @@ export class QuestionController {
       throw new NotFoundException();
     }
 
+    // TODO: think of a neat way to make this abstracted
     const isUserInCourse =
       (await UserCourseModel.count({
         where: {

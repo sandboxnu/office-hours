@@ -32,16 +32,17 @@ export default function Queue() {
   const role = useRoleInCourse(Number(cid));
 
   const { data: questions, error: questionsError } = useSWR(
-    qid ? `/api/v1/queues/${qid}/questions` : null,
+    qid && `/api/v1/queues/${qid}/questions`,
     async () => API.questions.index(Number(qid))
   );
-  const { data: course, error: queuesError } = useSWR(
-    qid ? `/api/v1/courses/${cid}` : null,
-    async () => API.course.get(Number(cid))
-  );
 
-  const queueRoom: string =
-    course && course.queues.find((q) => q.id === Number(qid)).room;
+  const { data: queue, error: queuesError } = useSWR(
+    qid && `/api/v1/queues/${qid}`,
+    async () => API.queues.get(Number(qid))
+  );
+  // TODO: put room name on this page somewhere so we know where we are :)
+  const queueRoom: string = queue?.room;
+
   const helpingQuestions: Question[] = questions?.filter(
     (question) => question.status === OpenQuestionStatus.Helping
   );
