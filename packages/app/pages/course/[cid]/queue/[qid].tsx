@@ -127,7 +127,9 @@ export default function Queue() {
           <>
             {Role.STUDENT === role ? (
               <StudentQueueList
-                room={""}
+                room={
+                  "" /* TODO: fix up the student queue list so that it uses SWR same way the TA one does*/
+                }
                 onOpenClick={onOpenClick}
                 joinQueue={joinQueue}
                 questions={questions}
