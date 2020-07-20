@@ -1,13 +1,15 @@
-import { Role } from "@template/common";
 import { API } from "@template/api-client";
-import { Button, Col, Result, Row } from "antd";
+import { Role } from "@template/common";
+import { Col, Result, Row } from "antd";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 import useSWR, { mutate } from "swr";
 import NavBar from "../../../components/Nav/NavBar";
 import OpenQueueCard from "../../../components/Today/OpenQueueCard";
+import TACheckinButton from "../../../components/Today/TACheckinButton";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import Schedule from "./schedule";
+import { ReactElement } from "react";
 
 const Container = styled.div`
   margin: 32px 64px;
@@ -16,21 +18,13 @@ const Container = styled.div`
   }
 `;
 
-const CreateQueueButton = styled(Button)`
-  background: #2a9187;
-  border-radius: 6px;
-  color: white;
-  font-weight: 500;
-  font-size: 14px;
-`;
-
 const Title = styled.div`
   font-weight: 500;
   font-size: 30px;
   color: #212934;
 `;
 
-export default function Today() {
+export default function Today(): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
   const role = useRoleInCourse(Number(cid));
@@ -40,7 +34,10 @@ export default function Today() {
     async () => cid && API.course.get(Number(cid))
   );
 
-  const updateQueueNotes = async (queueId, notes) => {
+  const updateQueueNotes = async (
+    queueId: number,
+    notes: string
+  ): Promise<void> => {
     const newQueues =
       data && data.queues.map((q) => (q.id === queueId ? { ...q, notes } : q));
 
@@ -67,11 +64,7 @@ export default function Today() {
             <Col md={12} xs={24}>
               <Row justify="space-between">
                 <Title>Current Office Hours</Title>
-                {role === Role.TA && (
-                  <CreateQueueButton type="default" size="large">
-                    Create Queue
-                  </CreateQueueButton>
-                )}
+                {role === Role.TA && <TACheckinButton courseId={Number(cid)} />}
               </Row>
               {data?.queues?.map((q) => (
                 <OpenQueueCard

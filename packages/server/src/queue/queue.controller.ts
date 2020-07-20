@@ -1,25 +1,24 @@
 import {
+  Body,
+  ClassSerializerInterceptor,
   Controller,
   Get,
-  Patch,
-  Param,
   NotFoundException,
-  ClassSerializerInterceptor,
-  UseInterceptors,
+  Param,
+  Patch,
   UseGuards,
-  Body,
+  UseInterceptors,
 } from '@nestjs/common';
-import { Connection } from 'typeorm';
-import { Not, In } from 'typeorm';
-import { QueueModel } from './queue.entity';
 import {
+  ClosedQuestionStatus,
   GetQueueResponse,
   ListQuestionsResponse,
-  ClosedQuestionStatus,
   UpdateQueueNotesParams,
 } from '@template/common';
-import { QuestionModel } from '../question/question.entity';
+import { Connection, In, Not } from 'typeorm';
 import { JwtAuthGuard } from '../profile/jwt-auth.guard';
+import { QuestionModel } from '../question/question.entity';
+import { QueueModel } from './queue.entity';
 
 @Controller('queues')
 @UseGuards(JwtAuthGuard)
@@ -29,7 +28,9 @@ export class QueueController {
 
   @Get(':queueId')
   async getQueue(@Param('queueId') queueId: string): Promise<GetQueueResponse> {
-    return QueueModel.findOne(queueId, { relations: ['questions'] });
+    return QueueModel.findOne(queueId, {
+      relations: ['questions', 'staffList'],
+    });
   }
 
   @Get(':queueId/questions')
@@ -62,7 +63,7 @@ export class QueueController {
     @Param('queueId') queueId: number,
     @Body() body: UpdateQueueNotesParams,
     // TODO: Add TA/Prof protection on endpoint
-  ) {
+  ): Promise<QueueModel> {
     const queue = await QueueModel.findOne({
       where: { id: queueId },
     });

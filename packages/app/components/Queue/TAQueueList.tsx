@@ -1,14 +1,18 @@
+import { API } from "@template/api-client";
 import {
-  Role,
+  ClosedQuestionStatus,
+  OpenQuestionStatus,
   Question,
   QuestionStatus,
-  OpenQuestionStatus,
-  ClosedQuestionStatus,
+  Role,
 } from "@template/common";
-import { Button, Row, Card, Col, Grid } from "antd";
+import { Button, Card, Col, Grid, Row } from "antd";
+import { ReactElement } from "react";
 import styled from "styled-components";
-import QueueCard from "./QueueCard";
+import useSWR from "swr";
+import { useProfile } from "../../hooks/useProfile";
 import GroupQuestions from "./GroupQuestions";
+import QueueCard from "./QueueCard";
 import StudentInfoCard from "./StudentInfoCard";
 
 const { useBreakpoint } = Grid;
@@ -69,11 +73,20 @@ const FinishButton = styled(Button)`
   border-radius: 6px;
 `;
 
-const CheckInOutButton = styled(Button)`
+const CheckOutButton = styled(Button)`
   font-weight: 500;
   font-size: 14px;
   color: #da3236;
   background: #f8f9fa;
+  border: 1px solid #cfd6de;
+  border-radius: 6px;
+`;
+
+const CheckInButton = styled(Button)`
+  font-weight: 500;
+  font-size: 14px;
+  color: white;
+  background: #2a9187;
   border: 1px solid #cfd6de;
   border-radius: 6px;
 `;
@@ -91,29 +104,35 @@ const HeaderRow = styled(Row)`
   margin-bottom: 64px;
 `;
 
-interface QueueListProps {
-  room: string;
+interface TAQueueListProps {
+  qid: number;
   onOpenClick: (question: Question) => void;
-  joinQueue: () => void;
   updateQuestionTA: (question: Question, status: QuestionStatus) => void;
   alertStudent: (question: Question) => void;
   questions: Question[];
   helpingQuestions: Question[];
   groupQuestions: Question[];
+  courseId: number;
 }
 
 export default function TAQueueList({
-  room,
+  qid,
   onOpenClick,
-  joinQueue,
   updateQuestionTA,
   alertStudent,
   questions,
   helpingQuestions,
   groupQuestions,
-}: QueueListProps) {
+  courseId,
+}: TAQueueListProps): ReactElement {
   const helping = helpingQuestions.length !== 0;
   const screens = useBreakpoint();
+  const user = useProfile();
+
+  const { data: queue, error: queuesError, mutate: mutateQueue } = useSWR(
+    qid && `/api/v1/queues/${qid}`,
+    async () => API.queues.get(Number(qid))
+  );
 
   /**
    * Sends a push notification alert to every question currently being helped.
@@ -249,12 +268,31 @@ export default function TAQueueList({
       <Row gutter={[64, 64]}>
         <Col flex="auto" order={screens.lg === false ? 2 : 1}>
           <Row justify="space-between">
-            <QueueTitle>{room}</QueueTitle>
+            <QueueTitle>{queue?.room}</QueueTitle>
             <Row>
               <HelpNextButton size="large">Help Next</HelpNextButton>
-              <CheckInOutButton danger size="large">
-                Check Out
-              </CheckInOutButton>
+              {queue?.staffList.some((e) => e.id === user.id) ? (
+                <CheckOutButton
+                  danger
+                  size="large"
+                  onClick={async () => {
+                    await API.taStatus.checkOut(courseId, queue?.room);
+                    mutateQueue();
+                  }}
+                >
+                  Check Out
+                </CheckOutButton>
+              ) : (
+                <CheckInButton
+                  onClick={async () => {
+                    await API.taStatus.checkIn(courseId, queue?.room);
+                    mutateQueue();
+                  }}
+                  size="large"
+                >
+                  Check In
+                </CheckInButton>
+              )}
             </Row>
           </Row>
           {!helping && renderTAHeader()}
