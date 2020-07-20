@@ -24,7 +24,6 @@ type ScheduleProps = {
 };
 
 export default function Schedule({ today }: ScheduleProps) {
-  const profile = useProfile();
   const router = useRouter();
   const { cid } = router.query;
 
@@ -46,29 +45,25 @@ export default function Schedule({ today }: ScheduleProps) {
       end: e.endTime,
     })) ?? [];
 
-  if (profile) {
-    return (
-      <div>
-        {!today && <NavBar courseId={Number(cid)} />}
-        {!today && (
-          <Container>
-            <ScheduleCalendar
-              localizer={momentLocalizer(moment)}
-              events={myEvents}
-              defaultView={"week"}
-            />
-          </Container>
-        )}
-        {today && (
+  return (
+    <div>
+      {!today && <NavBar courseId={Number(cid)} />}
+      {!today && (
+        <Container>
           <ScheduleCalendar
             localizer={momentLocalizer(moment)}
             events={myEvents}
-            defaultView={"day"}
+            defaultView={"week"}
           />
-        )}
-      </div>
-    );
-  } else {
-    return null;
-  }
+        </Container>
+      )}
+      {today && (
+        <ScheduleCalendar
+          localizer={momentLocalizer(moment)}
+          events={myEvents}
+          defaultView={"day"}
+        />
+      )}
+    </div>
+  );
 }
