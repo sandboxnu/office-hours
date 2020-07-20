@@ -46,8 +46,11 @@ sudo apt -y install postgresql-11
 
 Setup
 
+Create a random password to substitue in below!
+
 ```
-sudo -u postgres psql -c 'CREATE USER server; CREATE DATABASE prod'
+sudo -u postgres psql -c "CREATE USER server WITH PASSWORD '<PASSWORD>'"
+sudo -u postgres psql -c "CREATE DATABASE prod"
 ```
 
 ### Setup NGINX
@@ -67,9 +70,10 @@ sudo -u postgres psql -c 'CREATE USER server; CREATE DATABASE prod'
 
 From your local machine:
 
-2. Edit the pm2 file from your local machine to have the IP + Environment (prod or staging). Commit and push.
-3. Setup: `pm2 deploy infrastructure/prod/ecosystem.config.js <ENVIRONMENT> setup`
-4. Deploy: `pm2 deploy infrastructure/prod/ecosystem.config.js <ENVIRONMENT>`
+2. Install pm2 locally `yarn global add pm2`
+3. Edit the pm2 file from your local machine to have the IP + Environment (prod or staging). Commit and push.
+4. Setup: `pm2 deploy infrastructure/prod/ecosystem.config.js <ENVIRONMENT> setup`
+5. Deploy: `pm2 deploy infrastructure/prod/ecosystem.config.js <ENVIRONMENT>`
 
 ### Add SSH Key for Continuous Deployment
 
