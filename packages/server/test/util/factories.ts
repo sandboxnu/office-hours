@@ -1,12 +1,12 @@
 import { QuestionType, Role } from '@template/common';
 import { Factory } from 'typeorm-factory';
 import { CourseModel } from '../../src/course/course.entity';
-import { QuestionModel } from '../../src/question/question.entity';
-import { QueueModel } from '../../src/queue/queue.entity';
+import { OfficeHourModel } from '../../src/course/office-hour.entity';
 import { SemesterModel } from '../../src/course/semester.entity';
 import { UserCourseModel } from '../../src/profile/user-course.entity';
 import { UserModel } from '../../src/profile/user.entity';
-import { OfficeHourModel } from '../../src/course/office-hour.entity';
+import { QuestionModel } from '../../src/question/question.entity';
+import { QueueModel } from '../../src/queue/queue.entity';
 
 export const UserFactory = new Factory(UserModel)
   .sequence('username', (i) => `user${i}`)
@@ -31,8 +31,8 @@ export const SemesterFactory = new Factory(SemesterModel)
 export const OfficeHourFactory = new Factory(OfficeHourModel)
   .attr('title', 'Alex & Stanley')
   .attr('room', 'WVH 101')
-  .attr('startTime', new Date(2020, 4, 20, 10, 0, 0))
-  .attr('endTime', new Date(2020, 4, 20, 11, 30, 0));
+  .attr('startTime', new Date('2020-05-20T14:00:00.000Z'))
+  .attr('endTime', new Date('2020-05-20T15:30:00.000Z'));
 
 export const CourseFactory = new Factory(CourseModel)
   .attr('name', 'CS 2500')
@@ -53,6 +53,6 @@ export const QuestionFactory = new Factory(QuestionModel)
   .sequence('text', (i) => `question ${i}`)
   .attr('status', 'Queued')
   .attr('questionType', QuestionType.Other)
-  .attr('createdAt', new Date(2020, 2, 1))
+  .attr('createdAt', new Date('2020-03-01T05:00:00.000Z'))
   .assocOne('queue', QueueFactory)
   .assocOne('creator', UserFactory);

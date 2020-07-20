@@ -1,14 +1,14 @@
+import { QuestionStatusKeys, QuestionType } from '@template/common';
+import { QuestionModel } from '../src/question/question.entity';
+import { QuestionModule } from '../src/question/question.module';
 import {
   QuestionFactory,
   QueueFactory,
+  StudentCourseFactory,
   TACourseFactory,
   UserFactory,
-  StudentCourseFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
-import { QuestionModule } from '../src/question/question.module';
-import { QuestionModel } from '../src/question/question.entity';
-import { QuestionType, QuestionStatusKeys } from '@template/common';
 
 describe('Question Integration', () => {
   const supertest = setupIntegrationTest(QuestionModule);
@@ -29,8 +29,10 @@ describe('Question Integration', () => {
   describe('POST /questions', () => {
     it('posts a new question', async () => {
       const queue = await QueueFactory.create();
+      const user = await UserFactory.create();
+      await StudentCourseFactory.create({ user, courseId: queue.courseId });
       expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(0);
-      const response = await supertest({ userId: 99 })
+      const response = await supertest({ userId: user.id })
         .post('/questions')
         .send({
           text: "Don't know recursion",

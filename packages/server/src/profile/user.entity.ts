@@ -1,14 +1,16 @@
+import { Exclude } from 'class-transformer';
 import {
   BaseEntity,
   Column,
   Entity,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Exclude } from 'class-transformer';
-import { UserCourseModel } from './user-course.entity';
 import { DesktopNotifModel } from '../notification/desktop-notif.entity';
 import { PhoneNotifModel } from '../notification/phone-notif.entity';
+import { QueueModel } from '../queue/queue.entity';
+import { UserCourseModel } from './user-course.entity';
 
 @Entity('user_model')
 export class UserModel extends BaseEntity {
@@ -40,4 +42,8 @@ export class UserModel extends BaseEntity {
   @OneToMany((type) => PhoneNotifModel, (notif) => notif.user)
   @Exclude()
   phoneNotifs: PhoneNotifModel[];
+
+  @Exclude()
+  @ManyToMany((type) => QueueModel, (queue) => queue.staffList)
+  queues: QueueModel[];
 }
