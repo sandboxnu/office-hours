@@ -23,7 +23,7 @@ module.exports = {
     staging: {
       user: "ubuntu",
       host: "128.31.24.252",
-      ref: "origin/pm2",
+      ref: "origin/master",
       repo: "https://github.com/sandboxnu/office-hours.git",
       path: "/var/www",
       "pre-deploy-local": "",
@@ -33,7 +33,7 @@ module.exports = {
     production: {
       user: "ubuntu",
       host: "128.31.25.65",
-      ref: "origin/pm2",
+      ref: "origin/master",
       repo: "https://github.com/sandboxnu/office-hours.git",
       path: "/var/www",
       "pre-deploy-local": "",
