@@ -16,7 +16,8 @@
     "dev:db:reset": "yarn workspace @template/server run dev:db:reset",
     "build": "yarn workspace @template/server run build && yarn workspace @template/app run build",
     "prod:start": "pm2 start ./infrastructure/prod/ecosystem.config.js",
-    "prod:stop": "pm2 del ./infrastructure/prod/ecosystem.config.js"
+    "prod:stop": "pm2 del ./infrastructure/prod/ecosystem.config.js",
+    "deploy": "pm2 deploy infrastructure/prod/ecosystem.config.js"
   },
   "workspaces": {
     "packages": [
