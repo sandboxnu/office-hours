@@ -1,24 +1,17 @@
 import styled from "styled-components";
-import React, { useState } from "react";
+import React, { useState, ReactElement } from "react";
 import LeftNavBar from "./LeftNavBar";
 import { Drawer, Button, Menu } from "antd";
-import RightNavBar from "./RightNavBar";
 import Link from "next/link";
 import { API } from "@template/api-client";
 import useSWR from "swr";
-import { useProfile } from "../../hooks/useProfile";
-import Settings from "./Settings/Profile";
-
-const Container = styled.div`
-  width: 1440px;
-  height: 64px;
-`;
+import Settings from ".//Settings";
 
 const Nav = styled.nav`
   padding: 0px 0px;
   background: #fff;
   border-bottom: solid 1px #e8e8e8;
-  overflow: auto;
+  display: flex;
 
   @media (max-width: 767px) {
     padding: 0px 16px;
@@ -26,8 +19,9 @@ const Nav = styled.nav`
 `;
 
 const LogoContainer = styled.div`
-  width: 225px;
-  float: left;
+  flex: 225px 0 0;
+  display: flex;
+  align-items: center;
 `;
 
 const Logo = styled.a`
@@ -35,7 +29,6 @@ const Logo = styled.a`
   font-size: 20px;
   font-weight: 500;
   color: #262626;
-  padding: 19px 0px;
   padding-left: 64px;
   text-transform: capitalize;
 
@@ -46,20 +39,21 @@ const Logo = styled.a`
 `;
 
 const MenuCon = styled.div`
-  width: calc(100% - 225px);
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding-left: 0px;
-  float: left;
 `;
 
 const LeftMenu = styled.div`
-  float: left;
   @media (max-width: 767px) {
     display: none;
   }
 `;
 
 const RightMenu = styled.div`
-  float: right;
+  margin-right: 15px;
   @media (max-width: 767px) {
     display: none;
   }
@@ -106,7 +100,7 @@ interface NavBarProps {
   courseId: number;
 }
 
-export default function NavBar({ courseId }: NavBarProps) {
+export default function NavBar({ courseId }: NavBarProps): ReactElement {
   const [visible, setVisible] = useState<boolean>(false);
 
   const { data: course, error } = useSWR(
@@ -124,64 +118,59 @@ export default function NavBar({ courseId }: NavBarProps) {
     setVisible(false);
   };
 
-  if (course) {
-    return (
-      <Nav>
-        <LogoContainer>
+  return (
+    <Nav>
+      <LogoContainer>
+        {course && (
           <Logo href={`/course/${courseId}/today`}>{course.name}</Logo>
-        </LogoContainer>
-        <MenuCon>
-          <LeftMenu>
-            <LeftNavBar courseId={courseId} queueId={queueId} />
-          </LeftMenu>
-          <RightMenu>
-            <RightNavBar />
-          </RightMenu>
-          <BarsMenu type="primary" onClick={showDrawer}>
-            <BarsButton></BarsButton>
-          </BarsMenu>
-          <Drawer
-            title="Course"
-            placement="right"
-            visible={visible}
-            closable={false}
-            onClose={onClose}
-            bodyStyle={{ padding: "12px" }}
-          >
-            <Menu>
-              <Menu.Item key="today">
+        )}
+      </LogoContainer>
+      <MenuCon>
+        <LeftMenu>
+          <LeftNavBar courseId={courseId} queueId={queueId} />
+        </LeftMenu>
+        <RightMenu>
+          <Settings />
+        </RightMenu>
+        <BarsMenu type="primary" onClick={showDrawer}>
+          <BarsButton></BarsButton>
+        </BarsMenu>
+        <Drawer
+          title="Course"
+          placement="right"
+          visible={visible}
+          closable={false}
+          onClose={onClose}
+          bodyStyle={{ padding: "12px" }}
+        >
+          <Menu>
+            <Menu.Item key="today">
+              <Link href="/course/[cid]/today" as={`/course/${courseId}/today`}>
+                <a>Today</a>
+              </Link>
+            </Menu.Item>
+            <Menu.Item key="schedule">
+              <Link
+                href="/course/[cid]/schedule"
+                as={`/course/${courseId}/schedule`}
+              >
+                <a>Schedule</a>
+              </Link>
+            </Menu.Item>
+            {queueId && (
+              <Menu.Item key="queue">
                 <Link
-                  href="/course/[cid]/today"
-                  as={`/course/${courseId}/today`}
+                  href="/course/[cid]/queue/[qid]"
+                  as={`/course/${courseId}/queue/${queueId}`}
                 >
-                  <a>Today</a>
+                  <a>Queue</a>
                 </Link>
               </Menu.Item>
-              <Menu.Item key="schedule">
-                <Link
-                  href="/course/[cid]/schedule"
-                  as={`/course/${courseId}/schedule`}
-                >
-                  <a>Schedule</a>
-                </Link>
-              </Menu.Item>
-              {queueId && (
-                <Menu.Item key="queue">
-                  <Link
-                    href="/course/[cid]/queue/[qid]"
-                    as={`/course/${courseId}/queue/${queueId}`}
-                  >
-                    <a>Queue</a>
-                  </Link>
-                </Menu.Item>
-              )}
-              <Settings />
-            </Menu>
-          </Drawer>
-        </MenuCon>
-      </Nav>
-    );
-  } else {
-    return null;
-  }
+            )}
+            <Settings />
+          </Menu>
+        </Drawer>
+      </MenuCon>
+    </Nav>
+  );
 }
