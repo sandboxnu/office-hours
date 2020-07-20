@@ -31,7 +31,7 @@ export default function Queue() {
   const { cid, qid } = router.query;
   const role = useRoleInCourse(Number(cid));
 
-  const { data: questions, error: questionsError } = useSWR(
+  const { data: questions = [], error: questionsError } = useSWR(
     qid && `/api/v1/queues/${qid}/questions`,
     async () => API.questions.index(Number(qid))
   );
@@ -123,43 +123,39 @@ export default function Queue() {
     <div>
       <NavBar courseId={Number(cid)} />
       <Container>
-        {questions && (
-          <>
-            {Role.STUDENT === role ? (
-              <StudentQueueList
-                room={""}
-                onOpenClick={onOpenClick}
-                joinQueue={joinQueue}
-                questions={questions}
-                helpingQuestions={helpingQuestions}
-                studentQuestion={studentQuestion}
-                leaveQueue={leaveQueue}
-                finishQuestion={finishQuestion}
-              />
-            ) : (
-              <TAQueueList
-                qid={Number(qid)}
-                onOpenClick={onOpenClick}
-                updateQuestionTA={updateQuestionTA}
-                alertStudent={alertStudent}
-                questions={questions}
-                helpingQuestions={helpingQuestions}
-                groupQuestions={groupQuestions}
-                courseId={Number(cid)}
-              />
-            )}
-            {role === Role.TA && currentQuestion && (
-              <StudentPopupCard
-                onClose={onCloseClick}
-                email="takayama.a@northeastern.edu" //need a way to access this. or the user
-                wait={20} //figure out later
-                question={currentQuestion}
-                location="Outside by the printer" // need a way to access this
-                visible={openPopup}
-                updateQuestion={updateQuestionTA}
-              />
-            )}
-          </>
+        {Role.STUDENT === role ? (
+          <StudentQueueList
+            room={""}
+            onOpenClick={onOpenClick}
+            joinQueue={joinQueue}
+            questions={questions}
+            helpingQuestions={helpingQuestions}
+            studentQuestion={studentQuestion}
+            leaveQueue={leaveQueue}
+            finishQuestion={finishQuestion}
+          />
+        ) : (
+          <TAQueueList
+            qid={Number(qid)}
+            onOpenClick={onOpenClick}
+            updateQuestionTA={updateQuestionTA}
+            alertStudent={alertStudent}
+            questions={questions}
+            helpingQuestions={helpingQuestions}
+            groupQuestions={groupQuestions}
+            courseId={Number(cid)}
+          />
+        )}
+        {role === Role.TA && currentQuestion && (
+          <StudentPopupCard
+            onClose={onCloseClick}
+            email="takayama.a@northeastern.edu" //need a way to access this. or the user
+            wait={20} //figure out later
+            question={currentQuestion}
+            location="Outside by the printer" // need a way to access this
+            visible={openPopup}
+            updateQuestion={updateQuestionTA}
+          />
         )}
       </Container>
     </div>
