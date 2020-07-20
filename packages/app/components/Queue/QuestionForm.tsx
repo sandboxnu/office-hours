@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { RadioChangeEvent } from "antd/lib/radio";
 import React from "react";
-import { pick } from "lodash";
 
 const Container = styled.div`
   max-width: 960px;

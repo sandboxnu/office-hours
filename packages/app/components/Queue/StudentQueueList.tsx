@@ -1,10 +1,5 @@
-import React, { useMemo, useState, useCallback } from "react";
-import {
-  Question,
-  Role,
-  QuestionType,
-  QuestionStatusKeys,
-} from "@template/common";
+import React, { useState, useCallback } from "react";
+import { Question, Role, QuestionType } from "@template/common";
 import styled from "styled-components";
 import { Row, Col, Card, Button, Grid, Modal, Alert } from "antd";
 import QueueCard from "./QueueCard";
