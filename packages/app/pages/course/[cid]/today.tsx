@@ -5,7 +5,9 @@ import { useRouter } from "next/router";
 import styled from "styled-components";
 import useSWR, { mutate } from "swr";
 import NavBar from "../../../components/Nav/NavBar";
-import OpenQueueCard from "../../../components/Today/OpenQueueCard";
+import OpenQueueCard, {
+  OpenQueueCardSkeleton,
+} from "../../../components/Today/OpenQueueCard";
 import TACheckinButton from "../../../components/Today/TACheckinButton";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import Schedule from "./schedule";
@@ -71,7 +73,7 @@ export default function Today(): ReactElement {
                 updateQueueNotes={updateQueueNotes}
               />
             ))}
-            {!data && <Skeleton />}
+            {!data && <OpenQueueCardSkeleton />}
           </Col>
           <Col md={12} sm={24}>
             <Schedule today={true} />
