@@ -28,7 +28,7 @@ export default function Schedule({ today }: ScheduleProps) {
   const router = useRouter();
   const { cid } = router.query;
 
-  const { data, error } = useSWR(`api/v1/courses/${cid}/schedule`, async () =>
+  const { data, error } = useSWR(cid && `api/v1/courses/${cid}`, async () =>
     API.course.get(Number(cid))
   );
 

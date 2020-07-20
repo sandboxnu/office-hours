@@ -104,7 +104,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
   const [visible, setVisible] = useState<boolean>(false);
 
   const { data: course, error } = useSWR(
-    `api/v1/courses/${courseId}`,
+    courseId && `api/v1/courses/${courseId}`,
     async () => API.course.get(courseId)
   );
 
