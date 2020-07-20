@@ -8,6 +8,7 @@ import {
 import { Avatar, Button, Col, Drawer, Row, Tag, Tooltip } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
+import UpdateQuestionPopover from "./UpdateQuestionPopover";
 
 const FullWidth = styled.div`
   margin-top: 32px;
@@ -107,17 +108,16 @@ const StudentPopupCard = ({
           <Tooltip
             title={!isStaffCheckedIn && "You must check in to help students!"}
           >
-            <RemoveButton
-              danger
-              block
-              onClick={() => {
+            <UpdateQuestionPopover
+              onConfirm={() => {
                 onClose();
                 updateQuestion(question, ClosedQuestionStatus.Deleted);
               }}
-              disabled={!isStaffCheckedIn}
             >
-              Remove from Queue
-            </RemoveButton>
+              <RemoveButton danger block disabled={!isStaffCheckedIn}>
+                Remove from Queue
+              </RemoveButton>
+            </UpdateQuestionPopover>
           </Tooltip>
           <Tooltip
             title={!isStaffCheckedIn && "You must check in to help students!"}
