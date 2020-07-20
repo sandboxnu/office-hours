@@ -105,20 +105,21 @@ const StudentPopupCard = ({
       onClose={onClose}
       footer={
         <ButtonDiv>
-          <Tooltip
-            title={!isStaffCheckedIn && "You must check in to help students!"}
+          <UpdateQuestionPopover
+            onConfirm={() => {
+              onClose();
+              updateQuestion(question, ClosedQuestionStatus.Deleted);
+            }}
           >
-            <UpdateQuestionPopover
-              onConfirm={() => {
-                onClose();
-                updateQuestion(question, ClosedQuestionStatus.Deleted);
-              }}
+            <Tooltip
+              title={!isStaffCheckedIn && "You must check in to help students!"}
             >
               <RemoveButton danger block disabled={!isStaffCheckedIn}>
                 Remove from Queue
               </RemoveButton>
-            </UpdateQuestionPopover>
-          </Tooltip>
+            </Tooltip>
+          </UpdateQuestionPopover>
+
           <Tooltip
             title={!isStaffCheckedIn && "You must check in to help students!"}
           >
