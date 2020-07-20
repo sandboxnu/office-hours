@@ -1,6 +1,6 @@
 import { API } from "@template/api-client";
 import { Role } from "@template/common";
-import { Col, Result, Row, Skeleton } from "antd";
+import { Col, Result, Row } from "antd";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 import useSWR, { mutate } from "swr";

@@ -1,3 +1,5 @@
 import { bootstrap } from './bootstrap';
 
-bootstrap();
+declare const module: any;
+
+bootstrap(module.hot);

@@ -6,8 +6,5 @@
     "axios": "^0.19.2",
     "@template/common": "*",
     "typescript": "^3.8.3"
-  },
-  "scripts": {
-    "build": "babel --root-mode upward -d dist -x '.ts' *.ts"
   }
 }
