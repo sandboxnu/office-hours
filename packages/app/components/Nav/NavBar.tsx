@@ -12,9 +12,11 @@ const Nav = styled.nav`
   background: #fff;
   border-bottom: solid 1px #e8e8e8;
   display: flex;
+  height: 67px;
 
   @media (max-width: 767px) {
     padding: 0px 16px;
+    height: 50px;
   }
 `;
 
@@ -60,7 +62,6 @@ const RightMenu = styled.div`
 `;
 
 const BarsMenu = styled(Button)`
-  float: right;
   height: 32px;
   padding: 6px;
   margin-top: 8px;
@@ -132,45 +133,45 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
         <RightMenu>
           <Settings />
         </RightMenu>
-        <BarsMenu type="primary" onClick={showDrawer}>
-          <BarsButton></BarsButton>
-        </BarsMenu>
-        <Drawer
-          title="Course"
-          placement="right"
-          visible={visible}
-          closable={false}
-          onClose={onClose}
-          bodyStyle={{ padding: "12px" }}
-        >
-          <Menu>
-            <Menu.Item key="today">
-              <Link href="/course/[cid]/today" as={`/course/${courseId}/today`}>
-                <a>Today</a>
-              </Link>
-            </Menu.Item>
-            <Menu.Item key="schedule">
-              <Link
-                href="/course/[cid]/schedule"
-                as={`/course/${courseId}/schedule`}
-              >
-                <a>Schedule</a>
-              </Link>
-            </Menu.Item>
-            {queueId && (
-              <Menu.Item key="queue">
-                <Link
-                  href="/course/[cid]/queue/[qid]"
-                  as={`/course/${courseId}/queue/${queueId}`}
-                >
-                  <a>Queue</a>
-                </Link>
-              </Menu.Item>
-            )}
-            <Settings />
-          </Menu>
-        </Drawer>
       </MenuCon>
+      <BarsMenu type="primary" onClick={showDrawer}>
+        <BarsButton />
+      </BarsMenu>
+      <Drawer
+        title="Course"
+        placement="right"
+        visible={visible}
+        closable={false}
+        onClose={onClose}
+        bodyStyle={{ padding: "12px" }}
+      >
+        <Menu>
+          <Menu.Item key="today">
+            <Link href="/course/[cid]/today" as={`/course/${courseId}/today`}>
+              <a>Today</a>
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="schedule">
+            <Link
+              href="/course/[cid]/schedule"
+              as={`/course/${courseId}/schedule`}
+            >
+              <a>Schedule</a>
+            </Link>
+          </Menu.Item>
+          {queueId && (
+            <Menu.Item key="queue">
+              <Link
+                href="/course/[cid]/queue/[qid]"
+                as={`/course/${courseId}/queue/${queueId}`}
+              >
+                <a>Queue</a>
+              </Link>
+            </Menu.Item>
+          )}
+          <Settings />
+        </Menu>
+      </Drawer>
     </Nav>
   );
 }
