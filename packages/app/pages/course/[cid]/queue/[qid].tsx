@@ -107,6 +107,7 @@ export default function Queue() {
     const newQuestions = questions.map((q) =>
       q.id === question.id ? { ...q, status } : q
     );
+
     mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
   };
 

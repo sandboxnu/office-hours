@@ -75,6 +75,7 @@ export default function QuestionForm({
     window.localStorage.setItem(
       "draftQuestion",
       JSON.stringify({
+        id: question.id,
         ...questionFromStorage,
         questionType: e.target.value,
       })
@@ -93,6 +94,7 @@ export default function QuestionForm({
     window.localStorage.setItem(
       "draftQuestion",
       JSON.stringify({
+        id: question.id,
         ...questionFromStorage,
         text: event.target.value,
       })
