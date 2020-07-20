@@ -9,6 +9,7 @@ import OpenQueueCard from "../../../components/Today/OpenQueueCard";
 import TACheckinButton from "../../../components/Today/TACheckinButton";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import Schedule from "./schedule";
+import { ReactElement } from "react";
 
 const Container = styled.div`
   margin: 32px 64px;
@@ -23,7 +24,7 @@ const Title = styled.div`
   color: #212934;
 `;
 
-export default function Today() {
+export default function Today(): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
   const role = useRoleInCourse(Number(cid));
@@ -33,7 +34,10 @@ export default function Today() {
     async () => cid && API.course.get(Number(cid))
   );
 
-  const updateQueueNotes = async (queueId, notes) => {
+  const updateQueueNotes = async (
+    queueId: number,
+    notes: string
+  ): Promise<void> => {
     const newQueues =
       data && data.queues.map((q) => (q.id === queueId ? { ...q, notes } : q));
 
