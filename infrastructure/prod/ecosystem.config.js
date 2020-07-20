@@ -30,5 +30,15 @@ module.exports = {
       "post-deploy": "yarn && yarn build && yarn prod:start",
       "pre-setup": "",
     },
+    production: {
+      user: "ubuntu",
+      host: "128.31.25.65",
+      ref: "origin/pm2",
+      repo: "https://github.com/sandboxnu/office-hours.git",
+      path: "/var/www",
+      "pre-deploy-local": "",
+      "post-deploy": "yarn && yarn build && yarn prod:start",
+      "pre-setup": "",
+    },
   },
 };
