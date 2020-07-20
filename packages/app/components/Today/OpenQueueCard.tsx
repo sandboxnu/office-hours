@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, Input, Row } from "antd";
+import { Avatar, Button, Card, Input, Row, Tooltip } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
@@ -139,12 +139,13 @@ const OpenQueueCard = ({
       <Row justify="space-between" align="bottom">
         <div>
           {staffList.map((staffMember) => (
-            <AvatarWithMargin
-              key={staffMember.id}
-              size={96}
-              src={staffMember.photoURL}
-              shape="circle"
-            />
+            <Tooltip key={staffMember.id} title={staffMember.name}>
+              <AvatarWithMargin
+                size={96}
+                src={staffMember.photoURL}
+                shape="circle"
+              />
+            </Tooltip>
           ))}
         </div>
         {editingNotes && (
