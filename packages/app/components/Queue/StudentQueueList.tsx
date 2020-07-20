@@ -238,7 +238,7 @@ export default function StudentQueueList({
             );
           })}
         </Col>
-        {studentQuestion && renderEditableQuestion()}
+        {!hasDraftInProgress && studentQuestion && renderEditableQuestion()}
         <Modal
           visible={
             (isJoining && !hasDraftInProgress) ||
