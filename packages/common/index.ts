@@ -276,13 +276,13 @@ export type GetQuestionResponse = Question;
 
 export class CreateQuestionParams {
   @IsString()
-  text: string;
+  text!: string;
 
   @IsEnum(QuestionType)
-  questionType: QuestionType;
+  questionType!: QuestionType;
 
   @IsInt()
-  queueId: number;
+  queueId!: number;
 }
 export type CreateQuestionResponse = Question;
 
@@ -312,7 +312,7 @@ export type QueueNotePayloadType = {
 
 export class UpdateQueueNotesParams {
   @IsString()
-  notes: string;
+  notes!: string;
 }
 
 export interface TwilioBody {
