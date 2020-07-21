@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, Input, Row, Skeleton } from "antd";
+import { Avatar, Button, Card, Input, Row, Skeleton, Tooltip } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
@@ -134,17 +134,22 @@ const OpenQueueCard = ({
       )}
       <br />
 
-      <HeaderText>checked-in staff</HeaderText>
+      {
+        staffList.length > 1 && (
+          <HeaderText>checked-in staff</HeaderText>
+        ) /*todo: add better text*/
+      }
 
       <Row justify="space-between" align="bottom">
         <div>
           {staffList.map((staffMember) => (
-            <AvatarWithMargin
-              key={staffMember.id}
-              size={96}
-              src={staffMember.photoURL}
-              shape="circle"
-            />
+            <Tooltip key={staffMember.id} title={staffMember.name}>
+              <AvatarWithMargin
+                size={96}
+                src={staffMember.photoURL}
+                shape="circle"
+              />
+            </Tooltip>
           ))}
         </div>
         {editingNotes && (

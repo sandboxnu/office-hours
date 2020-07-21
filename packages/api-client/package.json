@@ -2,6 +2,9 @@
   "name": "@template/api-client",
   "version": "0.1.0",
   "main": "index.js",
+  "scripts": {
+    "tsc": "tsc -b"
+  },
   "dependencies": {
     "axios": "^0.19.2",
     "@template/common": "*",
