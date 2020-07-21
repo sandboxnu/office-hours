@@ -303,11 +303,7 @@ export default function TAQueueList({
                   !isStaffCheckedIn && "You must check in to help students!"
                 }
               >
-                <HelpNextButton
-                  disabled={!isStaffCheckedIn}
-                  size="large"
-                  tooltip="test"
-                >
+                <HelpNextButton disabled={!isStaffCheckedIn} size="large">
                   Help Next
                 </HelpNextButton>
               </Tooltip>
