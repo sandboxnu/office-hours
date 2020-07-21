@@ -1,12 +1,13 @@
-import { Row, Button, Avatar, Tag, Col, Drawer } from "antd";
-import styled from "styled-components";
 import { UserOutlined } from "@ant-design/icons";
 import {
-  Question,
-  QuestionStatus,
   ClosedQuestionStatus,
   OpenQuestionStatus,
+  Question,
+  QuestionStatus,
 } from "@template/common";
+import { Avatar, Button, Col, Drawer, Row, Tag, Tooltip } from "antd";
+import { ReactElement } from "react";
+import styled from "styled-components";
 
 const FullWidth = styled.div`
   margin-top: 32px;
@@ -81,6 +82,7 @@ interface StudentPopupCardProps {
   location: string;
   visible: boolean;
   question: Question;
+  isStaffCheckedIn: boolean;
 }
 
 const StudentPopupCard = ({
@@ -91,7 +93,8 @@ const StudentPopupCard = ({
   location,
   question,
   visible,
-}: StudentPopupCardProps) => {
+  isStaffCheckedIn,
+}: StudentPopupCardProps): ReactElement => {
   return (
     <Drawer
       placement="right"
@@ -101,23 +104,35 @@ const StudentPopupCard = ({
       onClose={onClose}
       footer={
         <ButtonDiv>
-          <RemoveButton
-            danger
-            block
-            onClick={() => {
-              onClose();
-              updateQuestion(question, ClosedQuestionStatus.Deleted);
-            }}
+          <Tooltip
+            title={!isStaffCheckedIn && "You must check in to help students!"}
           >
-            Remove from Queue
-          </RemoveButton>
-          <Button
-            block
-            type="primary"
-            onClick={() => updateQuestion(question, OpenQuestionStatus.Helping)}
+            <RemoveButton
+              danger
+              block
+              onClick={() => {
+                onClose();
+                updateQuestion(question, ClosedQuestionStatus.Deleted);
+              }}
+              disabled={!isStaffCheckedIn}
+            >
+              Remove from Queue
+            </RemoveButton>
+          </Tooltip>
+          <Tooltip
+            title={!isStaffCheckedIn && "You must check in to help students!"}
           >
-            Help
-          </Button>
+            <Button
+              block
+              type="primary"
+              onClick={() =>
+                updateQuestion(question, OpenQuestionStatus.Helping)
+              }
+              disabled={!isStaffCheckedIn}
+            >
+              Help
+            </Button>
+          </Tooltip>
         </ButtonDiv>
       }
     >

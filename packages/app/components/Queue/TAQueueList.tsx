@@ -4,16 +4,17 @@ import {
   OpenQuestionStatus,
   Question,
   QuestionStatus,
-  Role,
 } from "@template/common";
-import { Button, Card, Col, Grid, Row } from "antd";
-import { ReactElement } from "react";
+import { Button, Card, Col, Grid, Row, Tooltip } from "antd";
+import { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { useProfile } from "../../hooks/useProfile";
 import GroupQuestions from "./GroupQuestions";
-import QueueCard from "./QueueCard";
 import StudentInfoCard from "./StudentInfoCard";
+import StudentPopupCard from "./StudentPopupCard";
+import TAHelpingCard from "./TAHelpingCard";
+import TAQueueCard from "./TAQueueCard";
 
 const { useBreakpoint } = Grid;
 
@@ -106,8 +107,7 @@ const HeaderRow = styled(Row)`
 
 interface TAQueueListProps {
   qid: number;
-  onOpenClick: (question: Question) => void;
-  updateQuestionTA: (question: Question, status: QuestionStatus) => void;
+
   alertStudent: (question: Question) => void;
   questions: Question[];
   helpingQuestions: Question[];
@@ -117,8 +117,7 @@ interface TAQueueListProps {
 
 export default function TAQueueList({
   qid,
-  onOpenClick,
-  updateQuestionTA,
+
   alertStudent,
   questions,
   helpingQuestions,
@@ -133,6 +132,33 @@ export default function TAQueueList({
     qid && `/api/v1/queues/${qid}`,
     async () => API.queues.get(Number(qid))
   );
+
+  const [openPopup, setOpenPopup] = useState<boolean>(false);
+  const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
+
+  const onOpenClick = useCallback((question: Question): void => {
+    setCurrentQuestion(question);
+    setOpenPopup(true);
+  }, []);
+
+  const onCloseClick = useCallback((): void => {
+    setCurrentQuestion(null);
+    setOpenPopup(false);
+  }, []);
+
+  const updateQuestionTA = async (
+    question: Question,
+    status: QuestionStatus
+  ) => {
+    await API.questions.update(question.id, {
+      status: status,
+    });
+    const newQuestions = questions.map((q) =>
+      q.id === question.id ? { ...q, status } : q
+    );
+    mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
+    setOpenPopup(false);
+  };
 
   /**
    * Sends a push notification alert to every question currently being helped.
@@ -159,6 +185,8 @@ export default function TAQueueList({
       updateQuestionTA(question, OpenQuestionStatus.Helping);
     }
   };
+
+  const isStaffCheckedIn = queue?.staffList.some((e) => e.id === user.id);
 
   /**
    * Renders the card headers for a TA who is not yet helping someone.
@@ -270,8 +298,16 @@ export default function TAQueueList({
           <Row justify="space-between">
             <QueueTitle>{queue?.room}</QueueTitle>
             <Row>
-              <HelpNextButton size="large">Help Next</HelpNextButton>
-              {queue?.staffList.some((e) => e.id === user.id) ? (
+              <Tooltip
+                title={
+                  !isStaffCheckedIn && "You must check in to help students!"
+                }
+              >
+                <HelpNextButton disabled={!isStaffCheckedIn} size="large">
+                  Help Next
+                </HelpNextButton>
+              </Tooltip>
+              {isStaffCheckedIn ? (
                 <CheckOutButton
                   danger
                   size="large"
@@ -298,14 +334,11 @@ export default function TAQueueList({
           {!helping && renderTAHeader()}
           {helping && renderHelpingHeader()}
           {questions.map((question: Question, index: number) => {
-            const creator = question.creator;
-            return (
-              <QueueCard
-                key={question.id}
-                helping={helping}
-                role={Role.TA}
+            return helping ? (
+              <TAHelpingCard rank={index + 1} question={question} />
+            ) : (
+              <TAQueueCard
                 rank={index + 1}
-                waitTime={30} //figure out later
                 question={question}
                 onOpen={onOpenClick}
               />
@@ -314,6 +347,18 @@ export default function TAQueueList({
         </Col>
         {helping && renderHelpingTitle()}
       </Row>
+      {currentQuestion && (
+        <StudentPopupCard
+          onClose={onCloseClick}
+          email="takayama.a@northeastern.edu" //need a way to access this. or the user
+          wait={20} //figure out later
+          question={currentQuestion}
+          location="Outside by the printer" // need a way to access this
+          visible={openPopup}
+          updateQuestion={updateQuestionTA}
+          isStaffCheckedIn={isStaffCheckedIn}
+        />
+      )}
     </div>
   );
 }
