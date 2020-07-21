@@ -1,18 +1,11 @@
-name: Lint and Typescript
+name: Lint
 
 on: pull_request
 
 jobs:
-  setup:
+  prettier:
     name: setup
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        cmd:
-          - "yarn pretty-quick --branch --check"
-          - "yarn lint"
-          - "yarn tsc"
     steps:
       - uses: actions/checkout@v2
       - name: install node v12
@@ -20,4 +13,26 @@ jobs:
         with:
           node-version: 12
       - run: yarn install
-      - run: ${{matrix.cmd}}
+      - run: yarn pretty-quick --branch --check
+  lint:
+    name: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: install node v12
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - run: yarn install
+      - run: yarn lint
+  typescript:
+    name: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: install node v12
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - run: yarn install
+      - run: yarn tsc
