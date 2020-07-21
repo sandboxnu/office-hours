@@ -134,7 +134,11 @@ const OpenQueueCard = ({
       )}
       <br />
 
-      {staffList.length > 1 && <HeaderText>checked-in staff</HeaderText>}
+      {
+        staffList.length > 1 && (
+          <HeaderText>checked-in staff</HeaderText>
+        ) /*todo: add better text*/
+      }
 
       <Row justify="space-between" align="bottom">
         <div>
