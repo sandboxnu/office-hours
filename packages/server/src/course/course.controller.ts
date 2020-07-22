@@ -52,9 +52,9 @@ export class CourseController {
 
     const queuesHappeningNow = [];
 
-    for (const q of queues) {
-      const oh = officeHoursHappeningNow.find((f) => f.room === q.room);
-      if (oh) {
+    for (const oh of officeHoursHappeningNow) {
+      const q = queues.find((q) => q.room === oh.room);
+      if (q) {
         q.time = {
           start: oh.startTime,
           end: oh.endTime,
