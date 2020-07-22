@@ -78,6 +78,7 @@ export default function StudentQueueList({
     qid && `/api/v1/queues/${qid}/questions`,
     async () => API.questions.index(Number(qid))
   );
+
   const studentQuestion =
     profile && questions && questions.find((q) => q.creator.id === profile.id);
 
