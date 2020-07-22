@@ -113,7 +113,7 @@ const OpenQueueCard = ({
               })} - ${queue.time?.end.toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit",
-              })}`
+              })}` // TODO: make it more clear that we're displaying in local time zones
             : `TODO: custom queue text here Stanley`}
         </ExtraText>
       }
