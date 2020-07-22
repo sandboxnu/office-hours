@@ -46,7 +46,7 @@ export const UserCourseFactory = new Factory(UserCourseModel)
   .attr('role', Role.STUDENT);
 
 export const QueueFactory = new Factory(QueueModel)
-  .sequence('room', (i) => `WVH ${i}`)
+  .attr('room', `WVH 101`)
   .assocOne('course', CourseFactory);
 
 export const QuestionFactory = new Factory(QuestionModel)

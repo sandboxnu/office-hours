@@ -2,6 +2,7 @@ import { API } from "@template/api-client";
 import { Role } from "@template/common";
 import { Col, Result, Row } from "antd";
 import { useRouter } from "next/router";
+import { ReactElement } from "react";
 import styled from "styled-components";
 import useSWR, { mutate } from "swr";
 import NavBar from "../../../components/Nav/NavBar";
@@ -11,7 +12,6 @@ import OpenQueueCard, {
 import TACheckinButton from "../../../components/Today/TACheckinButton";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import Schedule from "./schedule";
-import { ReactElement } from "react";
 
 const Container = styled.div`
   margin: 32px 64px;

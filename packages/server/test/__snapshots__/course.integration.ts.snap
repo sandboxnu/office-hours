@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Course Integration GET /courses/:id gets office hours and queues 1`] = `
+exports[`Course Integration GET /courses/:id gets office hours no queues, since no queue is happening right now 1`] = `
 Object {
   "id": 1,
   "name": "CS 2500",
@@ -22,7 +22,7 @@ Object {
   "id": 1,
   "notes": null,
   "queueSize": 0,
-  "room": "WVH 1",
+  "room": "WVH 101",
   "staffList": Array [
     Object {
       "id": 1,

@@ -42,6 +42,11 @@ export class QueueModel extends BaseEntity {
   @JoinTable()
   staffList: UserModel[];
 
+  time?: {
+    start: Date;
+    end: Date;
+  };
+
   @Expose()
   get queueSize(): number {
     return (
