@@ -107,24 +107,13 @@ const HeaderRow = styled(Row)`
 
 interface TAQueueListProps {
   qid: number;
-
-  alertStudent: (question: Question) => void;
-  questions: Question[];
-  helpingQuestions: Question[];
-  groupQuestions: Question[];
   courseId: number;
 }
 
 export default function TAQueueList({
   qid,
-
-  alertStudent,
-  questions,
-  helpingQuestions,
-  groupQuestions,
   courseId,
 }: TAQueueListProps): ReactElement {
-  const helping = helpingQuestions.length !== 0;
   const screens = useBreakpoint();
   const user = useProfile();
 
@@ -132,6 +121,23 @@ export default function TAQueueList({
     qid && `/api/v1/queues/${qid}`,
     async () => API.queues.get(Number(qid))
   );
+
+  const { data: questions, error: questionsError } = useSWR(
+    qid && `/api/v1/queues/${qid}/questions`,
+    async () => API.questions.index(Number(qid))
+  );
+
+  const alertStudent = async (question: Question) => {
+    await API.questions.notify(question.id);
+  };
+
+  const helpingQuestions: Question[] = questions?.filter(
+    (question) => question.status === OpenQuestionStatus.Helping
+  );
+  const groupQuestions: Question[] = questions?.filter(
+    (question) => question.status !== OpenQuestionStatus.Helping
+  );
+  const helping = helpingQuestions?.length !== 0;
 
   const [openPopup, setOpenPopup] = useState<boolean>(false);
   const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
@@ -153,7 +159,7 @@ export default function TAQueueList({
     await API.questions.update(question.id, {
       status: status,
     });
-    const newQuestions = questions.map((q) =>
+    const newQuestions = questions?.map((q) =>
       q.id === question.id ? { ...q, status } : q
     );
     mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
@@ -333,7 +339,7 @@ export default function TAQueueList({
           </Row>
           {!helping && renderTAHeader()}
           {helping && renderHelpingHeader()}
-          {questions.map((question: Question, index: number) => {
+          {questions?.map((question: Question, index: number) => {
             return helping ? (
               <TAHelpingCard rank={index + 1} question={question} />
             ) : (

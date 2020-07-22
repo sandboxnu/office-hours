@@ -1,7 +1,10 @@
-import { Question, QuestionType } from "@template/common";
+import { API } from "@template/api-client";
+import { ClosedQuestionStatus, Question, QuestionType } from "@template/common";
 import { Button, Card, Col, Grid, Modal, Row } from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
+import useSWR, { mutate } from "swr";
+import { useProfile } from "../../hooks/useProfile";
 import EditableQuestion from "./EditableQuestion";
 import QuestionForm from "./QuestionForm";
 import StudentQueueCard from "./StudentQueueCard";
@@ -54,23 +57,61 @@ const JoinButton = styled(Button)`
 `;
 
 interface StudentQueueListProps {
-  room: string;
-  joinQueue: () => void;
-  leaveQueue: () => void;
-  finishQuestion: (questionType: QuestionType, questionText: string) => void;
-  questions: Question[];
-
-  studentQuestion: Question;
+  qid: number;
 }
 
 export default function StudentQueueList({
-  room,
-  leaveQueue,
-  finishQuestion,
-  joinQueue,
-  studentQuestion,
-  questions,
+  qid,
 }: StudentQueueListProps): ReactElement {
+  const profile = useProfile();
+
+  const { data: queue, error: queuesError, mutate: mutateQueue } = useSWR(
+    qid && `/api/v1/queues/${qid}`,
+    async () => API.queues.get(Number(qid))
+  );
+
+  const { data: questions, error: questionsError } = useSWR(
+    qid && `/api/v1/queues/${qid}/questions`,
+    async () => API.questions.index(Number(qid))
+  );
+  const studentQuestion =
+    profile && questions && questions.find((q) => q.creator.id === profile.id);
+
+  const joinQueue = useCallback(async () => {
+    const createdQuestion = await API.questions.create({
+      queueId: Number(qid),
+      text: "",
+      questionType: QuestionType.Bug, // TODO: endpoint needs to be changed to allow empty questionType for drafts
+      // for the moment I am defaulting this data so that there is no error
+    });
+
+    const newQuestions = [...questions, createdQuestion];
+    mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
+  }, [qid, questions]);
+
+  const leaveQueue = useCallback(async () => {
+    await API.questions.update(studentQuestion?.id, {
+      status: ClosedQuestionStatus.Deleted,
+    });
+
+    mutate(`/api/v1/queues/${qid}/questions`);
+  }, [qid, studentQuestion?.id]);
+
+  const finishQuestion = useCallback(
+    async (text: string, questionType: QuestionType) => {
+      const updateStudent = {
+        text: text,
+        questionType: questionType,
+      };
+      await API.questions.update(studentQuestion?.id, updateStudent);
+      const newQuestions = questions?.map((q) =>
+        q.id === studentQuestion?.id ? { ...q, updateStudent } : q
+      );
+      mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
+    },
+    [qid, questions, studentQuestion?.id]
+  );
+
   const screens = useBreakpoint();
   const [popupEditQuestion, setPopupEditQuestion] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
@@ -122,7 +163,7 @@ export default function StudentQueueList({
 
   const finishQuestionAndClose = useCallback(
     (qt: QuestionType, text: string) => {
-      finishQuestion(qt, text);
+      finishQuestion(text, qt);
       closeEditModal();
     },
     [finishQuestion, closeEditModal]
@@ -133,7 +174,7 @@ export default function StudentQueueList({
       <Row gutter={[64, 64]}>
         <Col flex="auto" order={screens.lg === false ? 2 : 1}>
           <Row justify="space-between">
-            <QueueTitle>{room}</QueueTitle>
+            <QueueTitle>{queue?.room}</QueueTitle>
             {!studentQuestion && (
               <JoinButton
                 type="primary"
@@ -163,7 +204,7 @@ export default function StudentQueueList({
               </Col>
             </CenterRow>
           </StudentHeaderCard>
-          {questions.map((question: Question, index: number) => {
+          {questions?.map((question: Question, index: number) => {
             return (
               <StudentQueueCard
                 key={question.id}
