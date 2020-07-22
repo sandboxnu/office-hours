@@ -4,10 +4,9 @@ import {
   Question,
   QuestionStatus,
 } from "@template/common";
-import { Avatar, Button, Card, Col, Row } from "antd";
+import { Avatar, Button, Card, Col, Popconfirm, Row } from "antd";
 import React from "react";
 import styled from "styled-components";
-import UpdateQuestionPopover from "./UpdateQuestionPopover";
 
 const HelpCard = styled(Card)`
   margin-bottom: 16px;
@@ -108,13 +107,16 @@ const StudentInfoCard = ({
 
       <Row justify="space-between">
         <AlertButton onClick={() => alertStudent(question)}>Alert</AlertButton>
-        <UpdateQuestionPopover
+        <Popconfirm
+          title={`Are you sure you want to mark this question as "Can't find"? This will remove the student from the queue`}
+          okText="Yes"
+          cancelText="No"
           onConfirm={() => {
             updateQuestion(question, ClosedQuestionStatus.NoShow);
           }}
         >
           <CantFindButton danger>Can&apos;t Find</CantFindButton>
-        </UpdateQuestionPopover>
+        </Popconfirm>
       </Row>
       <FinishButton
         block

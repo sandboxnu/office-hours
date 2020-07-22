@@ -5,10 +5,18 @@ import {
   Question,
   QuestionStatus,
 } from "@template/common";
-import { Avatar, Button, Col, Drawer, Row, Tag, Tooltip } from "antd";
+import {
+  Avatar,
+  Button,
+  Col,
+  Drawer,
+  Popconfirm,
+  Row,
+  Tag,
+  Tooltip,
+} from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
-import UpdateQuestionPopover from "./UpdateQuestionPopover";
 
 const FullWidth = styled.div`
   margin-top: 32px;
@@ -105,21 +113,23 @@ const StudentPopupCard = ({
       onClose={onClose}
       footer={
         <ButtonDiv>
-          <UpdateQuestionPopover
-            onConfirm={() => {
-              onClose();
-              updateQuestion(question, ClosedQuestionStatus.Deleted);
-            }}
+          <Tooltip
+            title={!isStaffCheckedIn && "You must check in to help students!"}
           >
-            <Tooltip
-              title={!isStaffCheckedIn && "You must check in to help students!"}
+            <Popconfirm
+              title="Are you sure you want to delete this question from the queue?"
+              okText="Yes"
+              cancelText="No"
+              onConfirm={() => {
+                onClose();
+                updateQuestion(question, ClosedQuestionStatus.Deleted);
+              }}
             >
               <RemoveButton danger block disabled={!isStaffCheckedIn}>
                 Remove from Queue
               </RemoveButton>
-            </Tooltip>
-          </UpdateQuestionPopover>
-
+            </Popconfirm>
+          </Tooltip>
           <Tooltip
             title={!isStaffCheckedIn && "You must check in to help students!"}
           >
