@@ -26,9 +26,8 @@ export default function TACheckinButton({
 
   const canSubmitCustomRoom = !(value === -1 && !customRoom);
 
-  const { data } = useSWR(
-    `api/v1/courses/${courseId}`,
-    async () => courseId && API.course.get(Number(courseId))
+  const { data } = useSWR(courseId && `api/v1/courses/${courseId}`, async () =>
+    API.course.get(Number(courseId))
   );
 
   const radioStyle = {

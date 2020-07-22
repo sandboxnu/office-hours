@@ -1,9 +1,13 @@
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
-import { Avatar, Button, Input, message, Popover, Row, Switch } from "antd";
+import { Avatar, Input, message, Popover, Row, Switch } from "antd";
 import { register, unregister } from "next-offline/runtime";
 import Link from "next/link";
 import React, { useState } from "react";
 import styled from "styled-components";
+
+const AvatarButton = styled.div`
+  cursor: pointer;
+`;
 
 const PopoverContainer = styled.div`
   width: 270px;
@@ -104,59 +108,57 @@ export default function Settings() {
   };
 
   return (
-    <div>
-      <Popover
-        content={
-          <PopoverContainer>
+    <Popover
+      content={
+        <PopoverContainer>
+          <Row>
+            <LableText> Web Notifications </LableText>
+            <SwitchContainer>
+              <Switch
+                checked={desktopNotifToggled}
+                onChange={onDesktopNotifToggle}
+              />
+            </SwitchContainer>
+          </Row>
+          <Row>
+            <LableText> Text Notifications </LableText>
+            <SwitchContainer>
+              <Switch
+                checked={phoneNotifToggled}
+                onChange={onPhoneNotifToggle}
+              />
+            </SwitchContainer>
+          </Row>
+          {phoneNotifToggled && (
             <Row>
-              <LableText> Web Notifications </LableText>
-              <SwitchContainer>
-                <Switch
-                  checked={desktopNotifToggled}
-                  onChange={onDesktopNotifToggle}
+              <LableText> Phone </LableText>
+              <InputContainer>
+                <Input
+                  value={phoneNumber}
+                  onChange={(newNum) => {
+                    setPhoneNumber(newNum.target.value);
+                  }}
+                  placeholder={"XXX-XXX-XXXX"}
                 />
-              </SwitchContainer>
+              </InputContainer>
             </Row>
-            <Row>
-              <LableText> Text Notifications </LableText>
-              <SwitchContainer>
-                <Switch
-                  checked={phoneNotifToggled}
-                  onChange={onPhoneNotifToggle}
-                />
-              </SwitchContainer>
-            </Row>
-            {phoneNotifToggled && (
-              <Row>
-                <LableText> Phone </LableText>
-                <InputContainer>
-                  <Input
-                    value={phoneNumber}
-                    onChange={(newNum) => {
-                      setPhoneNumber(newNum.target.value);
-                    }}
-                    placeholder={"XXX-XXX-XXXX"}
-                  />
-                </InputContainer>
-              </Row>
-            )}
-            <Row>
-              <Link href="/login" as="/login">
-                <CenteredIcon style={{ cursor: "pointer" }}>
-                  <Avatar size={44} icon={<LogoutOutlined />} />
-                </CenteredIcon>
-              </Link>
-            </Row>
-          </PopoverContainer>
-        }
-        title="User Settings"
-        placement={"bottomRight"}
-        trigger="click"
-      >
-        <Button type="link">
-          <Avatar size={47} icon={<UserOutlined />} />
-        </Button>
-      </Popover>
-    </div>
+          )}
+          <Row>
+            <Link href="/login" as="/login">
+              <CenteredIcon style={{ cursor: "pointer" }}>
+                <Avatar size={44} icon={<LogoutOutlined />} />
+              </CenteredIcon>
+            </Link>
+          </Row>
+        </PopoverContainer>
+      }
+      title="User Settings"
+      placement={"bottomRight"}
+      trigger="click"
+    >
+      <AvatarButton type="link">
+        <Avatar size={47} icon={<UserOutlined />} />
+      </AvatarButton>
+    </Popover>
   );
 }
