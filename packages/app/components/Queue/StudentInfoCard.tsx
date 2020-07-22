@@ -1,12 +1,12 @@
-import React from "react";
-import styled from "styled-components";
-import { Card, Row, Col, Avatar, Button } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import {
+  ClosedQuestionStatus,
   Question,
   QuestionStatus,
-  ClosedQuestionStatus,
 } from "@template/common";
+import { Avatar, Button, Card, Col, Popconfirm, Row } from "antd";
+import React from "react";
+import styled from "styled-components";
 
 const HelpCard = styled(Card)`
   margin-bottom: 16px;
@@ -107,12 +107,16 @@ const StudentInfoCard = ({
 
       <Row justify="space-between">
         <AlertButton onClick={() => alertStudent(question)}>Alert</AlertButton>
-        <CantFindButton
-          danger
-          onClick={() => updateQuestion(question, ClosedQuestionStatus.NoShow)}
+        <Popconfirm
+          title={`Are you sure you want to mark this question as "Can't find"? This will remove the student from the queue`}
+          okText="Yes"
+          cancelText="No"
+          onConfirm={() => {
+            updateQuestion(question, ClosedQuestionStatus.NoShow);
+          }}
         >
-          Can't Find
-        </CantFindButton>
+          <CantFindButton danger>Can&apos;t Find</CantFindButton>
+        </Popconfirm>
       </Row>
       <FinishButton
         block

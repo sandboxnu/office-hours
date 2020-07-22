@@ -5,7 +5,16 @@ import {
   Question,
   QuestionStatus,
 } from "@template/common";
-import { Avatar, Button, Col, Drawer, Row, Tag, Tooltip } from "antd";
+import {
+  Avatar,
+  Button,
+  Col,
+  Drawer,
+  Popconfirm,
+  Row,
+  Tag,
+  Tooltip,
+} from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
 
@@ -107,17 +116,19 @@ const StudentPopupCard = ({
           <Tooltip
             title={!isStaffCheckedIn && "You must check in to help students!"}
           >
-            <RemoveButton
-              danger
-              block
-              onClick={() => {
+            <Popconfirm
+              title="Are you sure you want to delete this question from the queue?"
+              okText="Yes"
+              cancelText="No"
+              onConfirm={() => {
                 onClose();
                 updateQuestion(question, ClosedQuestionStatus.Deleted);
               }}
-              disabled={!isStaffCheckedIn}
             >
-              Remove from Queue
-            </RemoveButton>
+              <RemoveButton danger block disabled={!isStaffCheckedIn}>
+                Remove from Queue
+              </RemoveButton>
+            </Popconfirm>
           </Tooltip>
           <Tooltip
             title={!isStaffCheckedIn && "You must check in to help students!"}
