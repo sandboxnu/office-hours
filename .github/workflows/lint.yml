@@ -4,7 +4,7 @@ on: pull_request
 
 jobs:
   prettier:
-    name: setup
+    name: prettier
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -15,7 +15,7 @@ jobs:
       - run: yarn install
       - run: yarn pretty-quick --branch --check
   lint:
-    name: setup
+    name: lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -26,7 +26,7 @@ jobs:
       - run: yarn install
       - run: yarn lint
   typescript:
-    name: setup
+    name: typescript
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
