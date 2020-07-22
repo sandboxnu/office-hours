@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CourseModel } from './course/course.entity';
 import { CourseModule } from './course/course.module';
@@ -18,26 +18,26 @@ import { QueueModule } from './queue/queue.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: '',
-      database: 'dev',
-      entities: [
-        CourseModel,
-        OfficeHourModel,
-        SemesterModel,
-        UserModel,
-        UserCourseModel,
-        QuestionModel,
-        QueueModel,
-        DesktopNotifModel,
-        PhoneNotifModel,
-      ],
-      synchronize: true,
-      logging: process.env.NODE_ENV !== 'production',
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        type: 'postgres',
+        url: configService.get('DB_URL'),
+        entities: [
+          CourseModel,
+          OfficeHourModel,
+          SemesterModel,
+          UserModel,
+          UserCourseModel,
+          QuestionModel,
+          QueueModel,
+          DesktopNotifModel,
+          PhoneNotifModel,
+        ],
+        synchronize: true,
+        keepConnectionAlive: true,
+      }),
     }),
     ProfileModule,
     CourseModule,
@@ -45,7 +45,10 @@ import { QueueModule } from './queue/queue.module';
     NotificationModule,
     QuestionModule,
     ConfigModule.forRoot({
-      envFilePath: ['.env', '.env.development'],
+      envFilePath: [
+        '.env',
+        ...(process.env.NODE_ENV !== 'production' ? ['.env.development'] : []),
+      ],
       isGlobal: true,
     }),
   ],

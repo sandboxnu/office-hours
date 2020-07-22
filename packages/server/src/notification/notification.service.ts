@@ -7,6 +7,19 @@ import { UserModel } from '../profile/user.entity';
 import { DesktopNotifModel } from './desktop-notif.entity';
 import { PhoneNotifModel } from './phone-notif.entity';
 
+const phoneResponses = {
+  WRONG_MESSAGE:
+    'Please respond with either YES or NO. Text STOP at any time to stop receiving text messages',
+  COULD_NOT_FIND_NUMBER:
+    'Could not find an Office Hours account with your phone number.',
+  UNREGISTER:
+    "You've unregistered from text notifications for Khoury Office Hours. Feel free to re-register any time through the website",
+  DUPLICATE:
+    "You've already been verified to receive text notifications from Khoury Office Hours!",
+  OK:
+    'Thank you for verifying your number with Khoury Office Hours! You are now signed up for text notifications!',
+};
+
 @Injectable()
 export class NotificationService {
   private twilioClient: twilio.Twilio;
@@ -32,7 +45,7 @@ export class NotificationService {
     await DesktopNotifModel.create(info).save();
   }
 
-  async registerPhone(phoneNumber: string, userId: number) {
+  async registerPhone(phoneNumber: string, userId: number): Promise<void> {
     try {
       phoneNumber = (
         await this.twilioClient.lookups.phoneNumbers(phoneNumber).fetch()
@@ -42,11 +55,17 @@ export class NotificationService {
       throw new BadRequestException('phone number invalid');
     }
 
-    // todo: need to verify that the user owns the phone number before adding it
-    await PhoneNotifModel.create({
+    const phoneNotifModel = await PhoneNotifModel.create({
       phoneNumber,
       userId,
+      verified: false,
     }).save();
+
+    await this.notifyPhone(
+      phoneNotifModel,
+      "You've signed up for phone notifications for Khoury Office Hours. To verify your number, please respond to this message with YES. To unsubscribe, respond to this message with NO or STOP",
+      true,
+    );
   }
 
   // Notify user on all platforms
@@ -64,7 +83,7 @@ export class NotificationService {
         this.notifyDesktop(nm, message),
       ),
       ...notifModelsOfUser.phoneNotifs.map(async (pn) => {
-        this.notifyPhone(pn, message);
+        this.notifyPhone(pn, message, false);
       }),
     ]);
   }
@@ -88,16 +107,45 @@ export class NotificationService {
   }
 
   // notifies a user via phone number
-  async notifyPhone(pn: PhoneNotifModel, message: string): Promise<void> {
-    try {
-      this.twilioClient &&
-        (await this.twilioClient.messages.create({
-          body: message,
-          from: this.configService.get('TWILIOPHONENUMBER'),
-          to: pn.phoneNumber,
-        }));
-    } catch (error) {
-      console.error('problem sending message', error);
+  async notifyPhone(
+    pn: PhoneNotifModel,
+    message: string,
+    force: boolean,
+  ): Promise<void> {
+    if (force || pn.verified) {
+      try {
+        this.twilioClient &&
+          (await this.twilioClient.messages.create({
+            body: message,
+            from: this.configService.get('TWILIOPHONENUMBER'),
+            to: pn.phoneNumber,
+          }));
+      } catch (error) {
+        console.error('problem sending message', error);
+      }
+    }
+  }
+
+  async verifyPhone(phoneNumber: string, message: string): Promise<string> {
+    const phoneNotif = await PhoneNotifModel.findOne({
+      where: { phoneNumber: phoneNumber },
+    });
+
+    if (!phoneNotif) {
+      return phoneResponses.COULD_NOT_FIND_NUMBER;
+    } else if (message !== 'YES' && message !== 'NO' && message !== 'STOP') {
+      return phoneResponses.WRONG_MESSAGE;
+    } else if (message === 'NO' || message === 'STOP') {
+      // did some more digging, STOP just stops messages completely, we'll never receive it
+      // so uh... there's probably a way to do that
+      await PhoneNotifModel.delete(phoneNotif);
+      return phoneResponses.UNREGISTER;
+    } else if (phoneNotif.verified) {
+      return phoneResponses.DUPLICATE;
+    } else {
+      phoneNotif.verified = true;
+      await phoneNotif.save();
+      return phoneResponses.OK;
     }
   }
 }

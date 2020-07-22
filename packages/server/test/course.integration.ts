@@ -135,7 +135,7 @@ describe('Course Integration', () => {
       });
     });
 
-    it('tests error happens if ta not in queue', async () => {
+    it('tests nothing happens if ta not in queue', async () => {
       const ta = await UserFactory.create();
       const queue = await QueueFactory.create({ room: 'The Alamo' });
       const tcf = await TACourseFactory.create({

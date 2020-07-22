@@ -1,7 +1,15 @@
 {
-  "id": 1,
-  "email": "test_user@husky.neu.edu",
-  "name": "Test User",
-  "photoURL": "www.photoURL.com",
-  "courses": [{ "course": { "id": 1, "name": "CS 2500" }, "role": "student" }]
+  "id": 2,
+  "email": "stenzel.w@northeastern.edu",
+  "name": "Will Stenzel",
+  "photoURL": "https://prod-web.neu.edu/wasapp/EnterprisePhotoService/PhotoServlet?vid=CCS&er=0b2884680c33dae82b5dcf3bb12bfbf2bfd8a22fef75e9611dca66b0b100549e578d27fe47e25e7d123781f721ac1c760ea864e391e3cc80",
+  "courses": [
+    {
+      "course": {
+        "id": 1,
+        "name": "CS 2500"
+      },
+      "role": "ta"
+    }
+  ]
 }

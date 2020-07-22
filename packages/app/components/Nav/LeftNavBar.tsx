@@ -1,8 +1,6 @@
-import React, { Component } from "react";
+import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { Menu } from "antd";
-const SubMenu = Menu.SubMenu;
-const MenuItemGroup = Menu.ItemGroup;
 import Link from "next/link";
 
 const HorizontalMenu = styled(Menu)`
@@ -24,7 +22,10 @@ interface LeftNavBarProps {
   queueId: number;
 }
 
-export default function LeftNavBar({ courseId, queueId }: LeftNavBarProps) {
+export default function LeftNavBar({
+  courseId,
+  queueId,
+}: LeftNavBarProps): ReactElement {
   return (
     <HorizontalMenu mode="horizontal">
       <MenuItem key="today">

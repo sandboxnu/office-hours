@@ -8,3 +8,7 @@ items:
     userId: '@user1'
     courseId: '@course0'
     role: 'ta'
+  ucm2:
+    userId: '@user2'
+    courseId: '@course0'
+    role: 'student'

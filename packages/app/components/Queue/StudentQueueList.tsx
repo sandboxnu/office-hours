@@ -1,10 +1,10 @@
-import React, { useMemo, useState, useCallback } from "react";
-import { Question, Role, QuestionType } from "@template/common";
+import { Question, QuestionType } from "@template/common";
+import { Button, Card, Col, Grid, Modal, Row } from "antd";
+import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
-import { Row, Col, Card, Button, Grid, Modal } from "antd";
-import QueueCard from "./QueueCard";
 import EditableQuestion from "./EditableQuestion";
 import QuestionForm from "./QuestionForm";
+import StudentQueueCard from "./StudentQueueCard";
 const { useBreakpoint } = Grid;
 
 const StatusText = styled.div`
@@ -58,23 +58,19 @@ interface StudentQueueListProps {
   joinQueue: () => void;
   leaveQueue: () => void;
   finishQuestion: (questionType: QuestionType, questionText: string) => void;
-  onOpenClick: (question: Question) => void;
   questions: Question[];
-  helpingQuestions: Question[];
+
   studentQuestion: Question;
 }
 
 export default function StudentQueueList({
   room,
-  onOpenClick,
   leaveQueue,
   finishQuestion,
   joinQueue,
   studentQuestion,
   questions,
-  helpingQuestions,
-}: StudentQueueListProps) {
-  const helping = helpingQuestions.length !== 0;
+}: StudentQueueListProps): ReactElement {
   const screens = useBreakpoint();
   const [popupEditQuestion, setPopupEditQuestion] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
@@ -169,14 +165,11 @@ export default function StudentQueueList({
           </StudentHeaderCard>
           {questions.map((question: Question, index: number) => {
             return (
-              <QueueCard
+              <StudentQueueCard
                 key={question.id}
-                helping={helping}
-                role={Role.STUDENT}
                 rank={index + 1}
-                waitTime={30} //figure out later
+                waitTime={30} //TODO: figure out later
                 question={question}
-                onOpen={onOpenClick}
               />
             );
           })}

@@ -3,10 +3,11 @@
     "target": "es5",
     "module": "commonjs",
     "strict": true,
+    "outDir": "dist",
     "isolatedModules": true,
-    "noEmit": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "composite": true
   },
   "exclude": ["node_modules", "dist"],
   "include": ["**/*.ts"]

@@ -43,6 +43,7 @@ export class UserModel extends BaseEntity {
   @Exclude()
   phoneNotifs: PhoneNotifModel[];
 
+  @Exclude()
   @ManyToMany((type) => QueueModel, (queue) => queue.staffList)
   queues: QueueModel[];
 }

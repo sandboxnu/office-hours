@@ -7,11 +7,10 @@
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "dev": "nest start --watch --preserveWatchOutput",
+    "build": "nest build --webpack --webpackPath webpack.config.js",
+    "dev": "nest build --webpack --webpackPath webpack-hmr.config.js",
     "dev:debug": "nest start --debug --watch",
-    "start": "node dist/main",
+    "prod:start": "node dist/main",
     "test": "yarn test:unit && yarn test:integration",
     "test:unit": "jest",
     "test:cov": "jest --coverage",
@@ -61,6 +60,7 @@
     "eslint-plugin-import": "^2.20.1",
     "jest": "26.0.1",
     "prettier": "^1.19.1",
+    "start-server-webpack-plugin": "^2.2.5",
     "supertest": "^4.0.2",
     "ts-jest": "26.1.0",
     "ts-loader": "^6.2.1",
@@ -68,7 +68,8 @@
     "tsconfig-paths": "^3.9.0",
     "typeorm-factory": "^0.0.14",
     "typeorm-fixtures-cli": "^1.7.0",
-    "typescript": "^3.7.4"
+    "typescript": "^3.7.4",
+    "webpack-node-externals": "^2.5.0"
   },
   "jest": {
     "moduleFileExtensions": [
