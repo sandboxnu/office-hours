@@ -29,8 +29,12 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
-cypress.env.json
 .env
+
+# cypresss
+/cypress/screenshots
+/cypress/videos
+cypress.env.json
 
 .now
 .idea/

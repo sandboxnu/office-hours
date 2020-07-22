@@ -5,7 +5,8 @@ import { AppModule } from './app.module';
 import { LoggingInterceptor } from './logging.interceptor';
 import { StripUndefinedPipe } from './stripUndefined.pipe';
 
-export async function bootstrap(): Promise<void> {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export async function bootstrap(hot: any): Promise<void> {
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
@@ -13,6 +14,11 @@ export async function bootstrap(): Promise<void> {
   app.setGlobalPrefix('api/v1');
   app.useGlobalInterceptors(new LoggingInterceptor());
   await app.listen(3002);
+
+  if (hot) {
+    hot.accept();
+    hot.dispose(() => app.close());
+  }
 }
 
 // Global settings that should be true in prod and in integration tests

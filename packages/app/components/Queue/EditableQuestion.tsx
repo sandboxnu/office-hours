@@ -1,7 +1,8 @@
-import { Question, QuestionType } from "@template/common";
-import styled from "styled-components";
-import { Button, Tooltip, Card, Row, Col, Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
+import { QuestionType } from "@template/common";
+import { Avatar, Button, Card, Col, Popconfirm, Row } from "antd";
+import { ReactElement } from "react";
+import styled from "styled-components";
 
 const EditableQuestionCard = styled(Card)`
   margin-bottom: 8px;
@@ -73,12 +74,12 @@ export default function EditableQuestion({
   photoUrl,
   openEdit,
   leaveQueue,
-}: EditableQuestionProps) {
+}: EditableQuestionProps): ReactElement {
   return (
     <EditableQuestionCard>
       <Row>
         <Col span={7}>
-          <Avatar size={64} icon={<UserOutlined />} />
+          <Avatar src={photoUrl} size={64} icon={<UserOutlined />} />
         </Col>
         <Col span={17}>
           <HeadingText>your spot</HeadingText>
@@ -99,11 +100,16 @@ export default function EditableQuestion({
           <TopButton onClick={openEdit}>Edit Question</TopButton>
         </Col>
       </Row>
-      <Row>
-        <BottomButton danger onClick={leaveQueue}>
-          Leave Queue
-        </BottomButton>
-      </Row>
+      <Popconfirm
+        title={`Are you sure you want to leave the queue?`}
+        okText="Yes"
+        cancelText="No"
+        onConfirm={leaveQueue}
+      >
+        <Row>
+          <BottomButton danger>Leave Queue</BottomButton>
+        </Row>
+      </Popconfirm>
     </EditableQuestionCard>
   );
 }

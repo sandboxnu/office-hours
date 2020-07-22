@@ -1,10 +1,13 @@
-import React, { useState, useCallback } from "react";
-import { Question, Role, QuestionType } from "@template/common";
+import { API } from "@template/api-client";
+import { ClosedQuestionStatus, Question, QuestionType } from "@template/common";
+import { Button, Card, Col, Grid, Modal, Row, Alert } from "antd";
+import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
-import { Row, Col, Card, Button, Grid, Modal, Alert } from "antd";
-import QueueCard from "./QueueCard";
+import useSWR, { mutate } from "swr";
+import { useProfile } from "../../hooks/useProfile";
 import EditableQuestion from "./EditableQuestion";
 import QuestionForm from "./QuestionForm";
+import StudentQueueCard from "./StudentQueueCard";
 const { useBreakpoint } = Grid;
 
 const StatusText = styled.div`
@@ -58,29 +61,80 @@ const FullWidthButton = styled(Button)`
 `;
 
 interface StudentQueueListProps {
-  room: string;
-  joinQueue: () => void;
-  leaveQueue: () => void;
-  finishQuestion: (questionType: QuestionType, questionText: string) => void;
-  updateQuestion: (question: Question, questionID: number) => void;
-  onOpenClick: (question: Question) => void;
-  questions: Question[];
-  helpingQuestions: Question[];
-  studentQuestion: Question;
+  qid: number;
 }
 
 export default function StudentQueueList({
-  room,
-  onOpenClick,
-  leaveQueue,
-  finishQuestion,
-  updateQuestion,
-  joinQueue,
-  studentQuestion,
-  questions,
-  helpingQuestions,
-}: StudentQueueListProps): JSX.Element {
-  const helping = helpingQuestions.length !== 0;
+  qid,
+}: StudentQueueListProps): ReactElement {
+  const profile = useProfile();
+
+  const { data: queue, error: queuesError, mutate: mutateQueue } = useSWR(
+    qid && `/api/v1/queues/${qid}`,
+    async () => API.queues.get(Number(qid))
+  );
+
+  const { data: questions, error: questionsError } = useSWR(
+    qid && `/api/v1/queues/${qid}/questions`,
+    async () => API.questions.index(Number(qid))
+  );
+  const studentQuestion =
+    profile && questions && questions.find((q) => q.creator.id === profile.id);
+
+  const joinQueue = useCallback(async () => {
+    const createdQuestion = await API.questions.create({
+      queueId: Number(qid),
+      text: "",
+      questionType: QuestionType.Bug, // TODO: endpoint needs to be changed to allow empty questionType for drafts
+      // for the moment I am defaulting this data so that there is no error
+    });
+
+    const newQuestions = [...questions, createdQuestion];
+    mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
+  }, [qid, questions]);
+
+  const leaveQueue = useCallback(async () => {
+    await API.questions.update(studentQuestion?.id, {
+      status: ClosedQuestionStatus.Deleted,
+    });
+
+    mutate(`/api/v1/queues/${qid}/questions`);
+  }, [qid, studentQuestion?.id]);
+
+  const finishQuestion = useCallback(
+    async (text: string, questionType: QuestionType) => {
+      const updateStudent = {
+        text: text,
+        questionType: questionType,
+      };
+      await API.questions.update(studentQuestion?.id, updateStudent);
+      const newQuestions = questions?.map((q) =>
+        q.id === studentQuestion?.id ? { ...q, updateStudent } : q
+      );
+      mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
+    },
+    [qid, questions, studentQuestion?.id]
+  );
+
+  /**
+   * Updates a given question to the draft question
+   * @param question the question being modified
+   * @param status the updated status
+   */
+  const updateQuestionDraft = async (question: Question) => {
+    await API.questions.update(question.id, {
+      questionType: question.questionType,
+      text: question.text,
+      queueId: Number(qid),
+    });
+
+    const newQuestions = questions.map((q) =>
+      q.id === question.id ? { ...q, status } : q
+    );
+
+    mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
+  };
+
   const screens = useBreakpoint();
   const [popupEditQuestion, setPopupEditQuestion] = useState(false);
   const [isJoining, setIsJoining] = useState(true);
@@ -143,7 +197,7 @@ export default function StudentQueueList({
       //finish draft when question is finalized
       window.localStorage.removeItem("draftQuestion");
       setHasDraftInProgress(false);
-      finishQuestion(qt, text);
+      finishQuestion(text, qt);
       closeEditModal();
     },
     [finishQuestion, closeEditModal]
@@ -155,7 +209,7 @@ export default function StudentQueueList({
   };
 
   const continueDraft = () => {
-    updateQuestion(storedQuestion, studentQuestion.id);
+    updateQuestionDraft(storedQuestion);
     setPopupEditQuestion(true);
   };
 
@@ -194,7 +248,7 @@ export default function StudentQueueList({
             )}
           </Row>
           <Row justify="space-between">
-            <QueueTitle>{room}</QueueTitle>
+            <QueueTitle>{queue?.room}</QueueTitle>
             {!studentQuestion && (
               <JoinButton
                 type="primary"
@@ -224,16 +278,13 @@ export default function StudentQueueList({
               </Col>
             </CenterRow>
           </StudentHeaderCard>
-          {questions.map((question: Question, index: number) => {
+          {questions?.map((question: Question, index: number) => {
             return (
-              <QueueCard
+              <StudentQueueCard
                 key={question.id}
-                helping={helping}
-                role={Role.STUDENT}
                 rank={index + 1}
-                waitTime={30} //figure out later
+                waitTime={30} //TODO: figure out later
                 question={question}
-                onOpen={onOpenClick}
               />
             );
           })}

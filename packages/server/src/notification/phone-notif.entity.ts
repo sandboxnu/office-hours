@@ -22,4 +22,7 @@ export class PhoneNotifModel extends BaseEntity {
 
   @Column({ nullable: true })
   userId: number;
+
+  @Column()
+  verified: boolean;
 }

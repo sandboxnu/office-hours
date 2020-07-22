@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, Input, Row } from "antd";
+import { Avatar, Button, Card, Input, Row, Skeleton, Tooltip } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
@@ -104,7 +104,19 @@ const OpenQueueCard = ({
         staffList.map((staffMember) => staffMember.name).join(", ") ||
         "No Staff Checked In!"
       }
-      extra={<ExtraText>//TODO: 3:00 - 5:00</ExtraText>}
+      extra={
+        <ExtraText>
+          {queue.time
+            ? `${queue.time?.start.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })} - ${queue.time?.end.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}` // TODO: make it more clear that we're displaying in local time zones
+            : `TODO: custom queue text here Stanley`}
+        </ExtraText>
+      }
     >
       <Row justify="space-between">
         <HeaderDiv>{queue.room}</HeaderDiv>
@@ -134,17 +146,22 @@ const OpenQueueCard = ({
       )}
       <br />
 
-      <HeaderText>checked-in staff</HeaderText>
+      {
+        staffList.length > 1 && (
+          <HeaderText>checked-in staff</HeaderText>
+        ) /*todo: add better text*/
+      }
 
       <Row justify="space-between" align="bottom">
         <div>
           {staffList.map((staffMember) => (
-            <AvatarWithMargin
-              key={staffMember.id}
-              size={96}
-              src={staffMember.photoURL}
-              shape="circle"
-            />
+            <Tooltip key={staffMember.id} title={staffMember.name}>
+              <AvatarWithMargin
+                size={96}
+                src={staffMember.photoURL}
+                shape="circle"
+              />
+            </Tooltip>
           ))}
         </div>
         {editingNotes && (
@@ -180,3 +197,15 @@ const OpenQueueCard = ({
 };
 
 export default OpenQueueCard;
+
+export function OpenQueueCardSkeleton(): ReactElement {
+  return (
+    <PaddedCard>
+      <Skeleton paragraph={{ rows: 2 }} />
+      <Row justify="space-between" align="bottom">
+        <Skeleton.Avatar size={96} />
+        <Skeleton.Button size="large" />
+      </Row>
+    </PaddedCard>
+  );
+}

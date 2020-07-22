@@ -8,6 +8,7 @@ import {
   GetQueueResponse,
   ListQuestionsResponse,
   PhoneNotifBody,
+  QueuePartial,
   TAUpdateStatusResponse,
   UpdateQuestionParams,
   UpdateQuestionResponse,
@@ -27,6 +28,12 @@ class APIClient {
       course.officeHours.forEach((officeHour: any) =>
         parseOfficeHourDates(officeHour)
       );
+      course.queues.forEach((q: QueuePartial) => {
+        if (q.time) {
+          q.time.start = new Date(q.time.start);
+          q.time.end = new Date(q.time.end);
+        }
+      });
       return course;
     },
   };

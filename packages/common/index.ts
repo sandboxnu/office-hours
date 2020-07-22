@@ -138,6 +138,10 @@ export interface QueuePartial {
   staffList: UserPartial[];
   queueSize: number;
   notes?: string;
+  time?: {
+    start: Date;
+    end: Date;
+  };
   // TODO: Add wait time?
 }
 
@@ -276,13 +280,13 @@ export type GetQuestionResponse = Question;
 
 export class CreateQuestionParams {
   @IsString()
-  text: string;
+  text!: string;
 
   @IsEnum(QuestionType)
-  questionType: QuestionType;
+  questionType!: QuestionType;
 
   @IsInt()
-  queueId: number;
+  queueId!: number;
 }
 export type CreateQuestionResponse = Question;
 
@@ -312,5 +316,27 @@ export type QueueNotePayloadType = {
 
 export class UpdateQueueNotesParams {
   @IsString()
-  notes: string;
+  notes!: string;
+}
+
+export interface TwilioBody {
+  ToCountry: string;
+  ToState: string;
+  SmsMessageSid: string;
+  NumMedia: string;
+  ToCity: string;
+  FromZip: string;
+  SmsSid: string;
+  FromState: string;
+  SmsStatus: string;
+  FromCity: string;
+  Body: string;
+  FromCountry: string;
+  To: string;
+  ToZip: string;
+  NumSegments: string;
+  MessageSid: string;
+  AccountSid: string;
+  From: string;
+  ApiVersion: string;
 }
