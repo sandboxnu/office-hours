@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, Input, Row, Tooltip } from "antd";
+import { Avatar, Button, Card, Input, Row, Skeleton, Tooltip } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
@@ -185,3 +185,15 @@ const OpenQueueCard = ({
 };
 
 export default OpenQueueCard;
+
+export function OpenQueueCardSkeleton(): ReactElement {
+  return (
+    <PaddedCard>
+      <Skeleton paragraph={{ rows: 2 }} />
+      <Row justify="space-between" align="bottom">
+        <Skeleton.Avatar size={96} />
+        <Skeleton.Button size="large" />
+      </Row>
+    </PaddedCard>
+  );
+}

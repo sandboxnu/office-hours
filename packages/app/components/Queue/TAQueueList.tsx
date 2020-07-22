@@ -46,6 +46,11 @@ const QueueTitle = styled.div`
   font-weight: 500;
   font-size: 30px;
   color: #212934;
+
+  // unicode zero width space character to prevent layout shifting during loading
+  &:before {
+    content: "\\200b";
+  }
 `;
 
 const CenterRow = styled(Row)`
@@ -301,7 +306,7 @@ export default function TAQueueList({
     <div>
       <Row gutter={[64, 64]}>
         <Col flex="auto" order={screens.lg === false ? 2 : 1}>
-          <Row justify="space-between">
+          <Row justify="space-between" align="middle">
             <QueueTitle>{queue?.room}</QueueTitle>
             <Row>
               <Tooltip
