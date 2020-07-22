@@ -118,7 +118,12 @@ export class QuestionController {
       // Creator can always edit
       if (body.status === OpenQuestionStatus.Helping) {
         throw new UnauthorizedException(
-          'Students cannot mark question helping',
+          'Students cannot mark question as helping',
+        );
+      }
+      if (body.status === ClosedQuestionStatus.Resolved) {
+        throw new UnauthorizedException(
+          'Students cannot mark question as resolved',
         );
       }
       question = Object.assign(question, body);
@@ -142,9 +147,22 @@ export class QuestionController {
           'TA/Professors can only edit question status',
         );
       }
+      // If the taHelped is already set, make sure the same ta updates the status
+      if (question.taHelped?.id !== userId) {
+        if (question.status === OpenQuestionStatus.Helping) {
+          throw new UnauthorizedException(
+            'Another TA is currently helping with this question',
+          );
+        }
+        if (question.status === ClosedQuestionStatus.Resolved) {
+          throw new UnauthorizedException(
+            'Another TA has already resolved this question',
+          );
+        }
+      }
       question = Object.assign(question, body);
-      // Set TA as taHelped if resolving their question
-      if (body.status === ClosedQuestionStatus.Resolved) {
+      // Set TA as taHelped when the TA starts helping the student
+      if (body.status === OpenQuestionStatus.Helping) {
         question.taHelped = await UserModel.findOne(userId);
       }
       await question.save();
