@@ -5,17 +5,19 @@
   "scripts": {
     "cypress:run": "yarn workspace @template/app cypress:run",
     "cypress:open": "yarn workspace @template/app cypress:open",
-    "dev": "concurrently -n \"common,server,app,proxy\" \"yarn workspace @template/common dev\" \"yarn workspace @template/server dev\" \"yarn workspace @template/app dev\" \"yarn dev:proxy\"",
+    "dev": "concurrently -n \"server,app,proxy\" \"yarn workspace @template/server dev\" \"yarn workspace @template/app dev\" \"yarn dev:proxy\"",
     "dev:proxy": "node infrastructure/dev/devProxy.js",
     "tsc": "yarn workspaces run tsc",
-    "lint": "eslint 'packages/**/*.ts*' --ignore-path .gitignore --fix",
+    "lint": "eslint packages/ --ext .ts,.tsx --ignore-path .gitignore",
     "test": "yarn workspace @template/app test && yarn workspace @template/server test",
     "dev:db:up": "docker-compose -f infrastructure/dev/docker-compose.yml up -d && yarn dev:db:seed",
     "dev:db:down": "docker-compose -f infrastructure/dev/docker-compose.yml down",
     "dev:db:seed": "yarn workspace @template/server dev:db:seed",
     "dev:db:reset": "yarn workspace @template/server run dev:db:reset",
-    "prod:start": "docker-compose -f infrastructure/prod/docker-compose.yml up --build -d",
-    "prod:stop": "docker-compose -f infrastructure/prod/docker-compose.yml down"
+    "build": "yarn workspace @template/server run build && yarn workspace @template/app run build",
+    "prod:start": "pm2 start ./infrastructure/prod/ecosystem.config.js",
+    "prod:stop": "pm2 del ./infrastructure/prod/ecosystem.config.js",
+    "deploy": "pm2 deploy infrastructure/prod/ecosystem.config.js"
   },
   "workspaces": {
     "packages": [
@@ -46,5 +48,8 @@
     "projects": [
       "<rootDir>/packages/*"
     ]
+  },
+  "dependencies": {
+    "pm2": "^4.4.0"
   }
 }

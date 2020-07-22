@@ -2,12 +2,12 @@
   "name": "@template/api-client",
   "version": "0.1.0",
   "main": "index.js",
+  "scripts": {
+    "tsc": "tsc -b"
+  },
   "dependencies": {
     "axios": "^0.19.2",
     "@template/common": "*",
     "typescript": "^3.8.3"
-  },
-  "scripts": {
-    "build": "babel --root-mode upward -d dist -x '.ts' *.ts"
   }
 }

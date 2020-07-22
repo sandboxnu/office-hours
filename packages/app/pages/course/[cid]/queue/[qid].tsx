@@ -28,7 +28,7 @@ export default function Queue() {
   const { cid, qid } = router.query;
   const role = useRoleInCourse(Number(cid));
 
-  const { data: questions, error: questionsError } = useSWR(
+  const { data: questions = [], error: questionsError } = useSWR(
     qid && `/api/v1/queues/${qid}/questions`,
     async () => API.questions.index(Number(qid))
   );
@@ -83,28 +83,24 @@ export default function Queue() {
     <div>
       <NavBar courseId={Number(cid)} />
       <Container>
-        {questions && (
-          <>
-            {Role.STUDENT === role ? (
-              <StudentQueueList
-                room={""}
-                joinQueue={joinQueue}
-                questions={questions}
-                studentQuestion={studentQuestion}
-                leaveQueue={leaveQueue}
-                finishQuestion={finishQuestion}
-              />
-            ) : (
-              <TAQueueList
-                qid={Number(qid)}
-                alertStudent={alertStudent}
-                questions={questions}
-                helpingQuestions={helpingQuestions}
-                groupQuestions={groupQuestions}
-                courseId={Number(cid)}
-              />
-            )}
-          </>
+        {Role.STUDENT === role ? (
+          <StudentQueueList
+            room={""}
+            joinQueue={joinQueue}
+            questions={questions}
+            studentQuestion={studentQuestion}
+            leaveQueue={leaveQueue}
+            finishQuestion={finishQuestion}
+          />
+        ) : (
+          <TAQueueList
+            qid={Number(qid)}
+            alertStudent={alertStudent}
+            questions={questions}
+            helpingQuestions={helpingQuestions}
+            groupQuestions={groupQuestions}
+            courseId={Number(cid)}
+          />
         )}
       </Container>
     </div>
