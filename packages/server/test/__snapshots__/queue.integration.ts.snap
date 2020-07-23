@@ -16,6 +16,7 @@ Array [
     "closedAt": null,
     "createdAt": "2020-03-01T05:00:00.000Z",
     "creator": Object {
+      "email": "user2@neu.edu",
       "id": 1,
       "name": "John Doe the 2th",
       "photoURL": "https://pics/2",

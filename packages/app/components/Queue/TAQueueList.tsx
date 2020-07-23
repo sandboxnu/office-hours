@@ -361,7 +361,7 @@ export default function TAQueueList({
       {currentQuestion && (
         <StudentPopupCard
           onClose={onCloseClick}
-          email="takayama.a@northeastern.edu" //need a way to access this. or the user
+          email={currentQuestion.creator.email} //need a way to access this. or the user
           wait={20} //figure out later
           question={currentQuestion}
           location="Outside by the printer" // need a way to access this

@@ -39,6 +39,7 @@ export type User = {
  */
 export type UserPartial = {
   id: number;
+  email: string;
   name: string;
   photoURL?: string;
 };

@@ -5,6 +5,7 @@ Object {
   "closedAt": null,
   "createdAt": "2020-03-01T05:00:00.000Z",
   "creator": Object {
+    "email": "user1@neu.edu",
     "id": 1,
     "name": "John Doe the 1th",
     "photoURL": "https://pics/1",
