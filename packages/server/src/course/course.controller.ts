@@ -18,12 +18,16 @@ import { User } from '../profile/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { CourseModel } from './course.entity';
+import { QueueService } from '../queue/queue.service';
 
 @Controller('courses')
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class CourseController {
-  constructor(private connection: Connection) {}
+  constructor(
+    private connection: Connection,
+    private queueService: QueueService,
+  ) {}
 
   @Get(':id')
   async get(@Param('id') id: number): Promise<GetCourseResponse> {
@@ -127,5 +131,8 @@ export class CourseController {
 
     queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
     await queue.save();
+
+    // Clean up queue if necessary
+    await this.queueService.cleanQueue(queue.id);
   }
 }
