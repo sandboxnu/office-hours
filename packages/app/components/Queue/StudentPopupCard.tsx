@@ -86,7 +86,6 @@ const BodyText = styled.div`
 interface StudentPopupCardProps {
   updateQuestion: (question: Question, status: QuestionStatus) => void;
   onClose: () => void;
-  email: string;
   wait: number;
   visible: boolean;
   question: Question;
@@ -96,7 +95,6 @@ interface StudentPopupCardProps {
 const StudentPopupCard = ({
   updateQuestion,
   onClose,
-  email,
   wait,
   question,
   visible,
@@ -134,9 +132,14 @@ const StudentPopupCard = ({
             <Button
               block
               type="primary"
-              onClick={() =>
-                updateQuestion(question, OpenQuestionStatus.Helping)
-              }
+              onClick={() => {
+                updateQuestion(question, OpenQuestionStatus.Helping);
+                if (question.online) {
+                  window.open(
+                    `https://teams.microsoft.com/l/chat/0/0?users=${question.creator.email}`
+                  );
+                }
+              }}
               disabled={!isStaffCheckedIn}
             >
               Help
