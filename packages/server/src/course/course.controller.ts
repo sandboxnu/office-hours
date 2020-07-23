@@ -5,7 +5,6 @@ import {
   Get,
   Param,
   Post,
-  UnauthorizedException,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -18,9 +17,10 @@ import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { CourseModel } from './course.entity';
 import { Roles } from './course-roles.decorator';
+import { RolesGuard } from './course-roles.guard';
 
 @Controller('courses')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class CourseController {
   constructor(private connection: Connection) {}
