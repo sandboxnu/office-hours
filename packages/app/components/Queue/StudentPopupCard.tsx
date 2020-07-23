@@ -88,7 +88,6 @@ interface StudentPopupCardProps {
   onClose: () => void;
   email: string;
   wait: number;
-  location: string;
   visible: boolean;
   question: Question;
   isStaffCheckedIn: boolean;
@@ -99,7 +98,6 @@ const StudentPopupCard = ({
   onClose,
   email,
   wait,
-  location,
   question,
   visible,
   isStaffCheckedIn,
@@ -152,7 +150,7 @@ const StudentPopupCard = ({
 
         <InfoTextDiv>
           <Title>{question.creator.name}</Title>
-          <Email>{email}</Email>
+          <Email>{question.creator.email}</Email>
         </InfoTextDiv>
 
         <StatusTag color="purple">{question.status}</StatusTag>
@@ -174,7 +172,9 @@ const StudentPopupCard = ({
         </FullWidth>
         <FullWidth>
           <HeadingText>location</HeadingText>
-          <BodyText>{location}</BodyText>
+          <BodyText>
+            {question.location || (question.online && "Online")}
+          </BodyText>
         </FullWidth>
       </Container>
     </Drawer>

@@ -168,6 +168,8 @@ export type Question = {
   closedAt?: Date;
   questionType?: QuestionType;
   status: QuestionStatus;
+  location?: string;
+  online?: boolean;
 };
 
 // Question Types

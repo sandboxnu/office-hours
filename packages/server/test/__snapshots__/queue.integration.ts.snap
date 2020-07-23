@@ -23,6 +23,8 @@ Array [
     },
     "helpedAt": null,
     "id": 1,
+    "location": null,
+    "online": null,
     "questionType": "Other",
     "status": "Queued",
     "taHelped": null,
