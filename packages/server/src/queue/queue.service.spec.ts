@@ -24,12 +24,13 @@ describe('QueueService', () => {
     it('queue remains the same if any staff are checked in', async () => {
       const ta = await UserFactory.create();
       const queue = await QueueFactory.create({ staffList: [ta] });
-      const question = await QuestionFactory.create({
+      await QuestionFactory.create({
         status: OpenQuestionStatus.Queued,
         queue: queue,
       });
 
-      service.cleanQueue(queue.id);
+      await service.cleanQueue(queue.id);
+      const question = await QuestionModel.findOne({});
       expect(question.status).toEqual('Queued');
     });
 
