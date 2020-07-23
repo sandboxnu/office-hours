@@ -89,7 +89,7 @@ const StudentInfoCard = ({
       title={
         <Row justify="space-between">
           <Name>{question.creator.name}</Name>
-          <Email>takayama.a@northeastern.edu</Email>
+          <Email>{question.creator.email}</Email>
         </Row>
       }
     >

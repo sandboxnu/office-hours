@@ -39,6 +39,7 @@ export type User = {
  */
 export type UserPartial = {
   id: number;
+  email: string;
   name: string;
   photoURL?: string;
 };
@@ -167,6 +168,8 @@ export type Question = {
   closedAt?: Date;
   questionType?: QuestionType;
   status: QuestionStatus;
+  location?: string;
+  online?: boolean;
 };
 
 // Question Types
