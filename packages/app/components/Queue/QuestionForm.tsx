@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { RadioChangeEvent } from "antd/lib/radio";
 import React from "react";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
 
 const Container = styled.div`
   max-width: 960px;
@@ -50,6 +51,11 @@ export default function QuestionForm({
   leaveQueue,
   finishQuestion,
 }: QuestionFormProps): JSX.Element {
+  const [storageQuestion, setStoredQuestion, removeValue] = useLocalStorage(
+    "draftQuestion",
+    null
+  );
+
   const [questionTypeInput, setQuestionTypeInput] = useState<QuestionType>(
     null
   );
@@ -67,9 +73,7 @@ export default function QuestionForm({
   const onCategoryChange = (e: RadioChangeEvent) => {
     setQuestionTypeInput(e.target.value);
 
-    const questionFromStorage = JSON.parse(
-      window.localStorage.getItem("draftQuestion")
-    );
+    const questionFromStorage = storageQuestion ?? {};
 
     window.localStorage.setItem(
       "draftQuestion",
@@ -87,8 +91,7 @@ export default function QuestionForm({
   ) => {
     setQuestionText(event.target.value);
 
-    const questionFromStorage =
-      JSON.parse(window.localStorage.getItem("draftQuestion")) ?? {};
+    const questionFromStorage = storageQuestion ?? {};
 
     window.localStorage.setItem(
       "draftQuestion",

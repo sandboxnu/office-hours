@@ -8,6 +8,7 @@ import { useProfile } from "../../hooks/useProfile";
 import EditableQuestion from "./EditableQuestion";
 import QuestionForm from "./QuestionForm";
 import StudentQueueCard from "./StudentQueueCard";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
 const { useBreakpoint } = Grid;
 
 const StatusText = styled.div`
@@ -139,8 +140,12 @@ export default function StudentQueueList({
   const screens = useBreakpoint();
   const [popupEditQuestion, setPopupEditQuestion] = useState(false);
   const [isJoining, setIsJoining] = useState(true);
-  const questionFromStorage = window.localStorage.getItem("draftQuestion");
-  const storedQuestion: Question = JSON.parse(questionFromStorage);
+
+  const [storedQuestion, setStoredQuestion, removeValue] = useLocalStorage(
+    "draftQuestion",
+    null
+  );
+
   const [hasDraftInProgress, setHasDraftInProgress] = useState(
     storedQuestion ? true : false
   );
@@ -182,11 +187,11 @@ export default function StudentQueueList({
 
   const leaveQueueAndClose = useCallback(() => {
     //delete draft when they leave the queue
-    window.localStorage.removeItem("draftQuestion");
+    removeValue();
     setHasDraftInProgress(false);
     leaveQueue();
     closeEditModal();
-  }, [leaveQueue, closeEditModal]);
+  }, [removeValue, leaveQueue, closeEditModal]);
 
   const joinQueueOpenModal = useCallback(() => {
     joinQueue();
@@ -196,16 +201,16 @@ export default function StudentQueueList({
   const finishQuestionAndClose = useCallback(
     (qt: QuestionType, text: string) => {
       //finish draft when question is finalized
-      window.localStorage.removeItem("draftQuestion");
+      removeValue();
       setHasDraftInProgress(false);
       finishQuestion(text, qt);
       closeEditModal();
     },
-    [finishQuestion, closeEditModal]
+    [removeValue, finishQuestion, closeEditModal]
   );
 
   const deleteDraft = () => {
-    window.localStorage.removeItem("draftQuestion");
+    removeValue();
     setHasDraftInProgress(false);
   };
 
