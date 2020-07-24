@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserModel } from '../profile/user.entity';
-import { RolesGuard } from 'guards/role.guard';
+import { RolesGuard } from '../guards/role.guard';
 
 @Injectable()
 export class CourseRolesGuard extends RolesGuard {

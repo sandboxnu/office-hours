@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { UserModel } from '../profile/user.entity';
-import { RolesGuard } from 'guards/role.guard';
 import { QuestionModel } from './question.entity';
-import { QueueModel } from 'queue/queue.entity';
+import { QueueModel } from '../queue/queue.entity';
+import { RolesGuard } from '../guards/role.guard';
 
 @Injectable()
 export class QuestionRolesGuard extends RolesGuard {

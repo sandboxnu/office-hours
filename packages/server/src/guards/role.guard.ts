@@ -1,4 +1,9 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { UserModel } from '../profile/user.entity';
 
@@ -30,12 +35,22 @@ export abstract class RolesGuard implements CanActivate {
     });
 
     if (!userCourse) {
-      return false;
+      throw new UnauthorizedException(
+        'You cannot access a course you are not in',
+      );
     }
 
     const remaining = roles.filter((role) => {
       return userCourse.role.toString() === role;
     });
+
+    if (remaining.length <= 0) {
+      throw new UnauthorizedException(
+        `You must have one of roles [${roles.join(
+          ', ',
+        )}] to access this course`,
+      );
+    }
 
     return remaining.length > 0;
   }

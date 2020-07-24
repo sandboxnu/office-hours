@@ -30,7 +30,7 @@ import { User, UserId } from '../profile/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { QuestionModel } from './question.entity';
-import { Roles } from 'profile/roles.decorator';
+import { Roles } from '../profile/roles.decorator';
 import { QuestionRolesGuard } from './question-role.guard';
 
 @Controller('questions')

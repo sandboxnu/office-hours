@@ -21,7 +21,7 @@ import { JwtAuthGuard } from '../profile/jwt-auth.guard';
 import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from './queue.entity';
 import { QueueRolesGuard } from './queue-role.guard';
-import { Roles } from 'profile/roles.decorator';
+import { Roles } from '../profile/roles.decorator';
 
 @Controller('queues')
 @UseGuards(JwtAuthGuard, QueueRolesGuard)
