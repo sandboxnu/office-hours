@@ -21,6 +21,5 @@
     "**/*.tsx",
     "pages/help",
     "**/cypress/*"
-  ],
-  "references": [{ "path": "../common" }]
+  ]
 }
