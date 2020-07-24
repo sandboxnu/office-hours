@@ -7,15 +7,29 @@ import {
   StudentCourseFactory,
   TACourseFactory,
   UserFactory,
+  CourseFactory,
+  UserCourseFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
+import { QueueModel } from 'queue/queue.entity';
 
 describe('Question Integration', () => {
   const supertest = setupIntegrationTest(QuestionModule);
 
   describe('GET /questions/:id', () => {
     it('gets a question with the given id', async () => {
-      const q = await QuestionFactory.create({ text: 'Help pls' });
+      const q = await QuestionFactory.create({
+        text: 'Help pls',
+        queue: await QueueModel.create({
+          course: await CourseFactory.create(),
+        }),
+      });
+
+      await UserCourseFactory.create({
+        user: await UserFactory.create(),
+        course: q.queue.course,
+      });
+
       const response = await supertest({ userId: 99 })
         .get(`/questions/${q.id}`)
         .expect(200);
