@@ -30,6 +30,7 @@ import { User, UserId } from '../profile/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { QuestionModel } from './question.entity';
+import { Roles } from 'profile/roles.decorator';
 
 @Controller('questions')
 @UseGuards(JwtAuthGuard)
@@ -43,10 +44,21 @@ export class QuestionController {
   @Get(':questionId')
   async getQuestion(
     @Param('questionId') questionId: number,
+    @User(['courses']) user: UserModel,
   ): Promise<GetQuestionResponse> {
     const question = await QuestionModel.findOne(questionId, {
       relations: ['creator', 'taHelped'],
     });
+
+    const userRoleInCourse = user.courses.find(
+      (course) => course.id === question.queue.courseId,
+    ).role;
+
+    if (userRoleInCourse === Role.STUDENT && question.creatorId !== user.id) {
+      throw new UnauthorizedException(
+        'You do not have permission to access a question that is not yours',
+      );
+    }
 
     if (question === undefined) {
       throw new NotFoundException();
@@ -55,6 +67,7 @@ export class QuestionController {
   }
 
   @Post()
+  @Roles(Role.STUDENT)
   async createQuestion(
     @Body() body: CreateQuestionParams,
     @User() user: UserModel,
@@ -69,22 +82,6 @@ export class QuestionController {
       throw new NotFoundException();
     }
 
-    // TODO: think of a neat way to make this abstracted
-    const isUserInCourse =
-      (await UserCourseModel.count({
-        where: {
-          role: Role.STUDENT,
-          courseId: queue.courseId,
-          userId: user.id,
-        },
-      })) === 1;
-
-    if (!isUserInCourse) {
-      throw new UnauthorizedException(
-        "Can't post question to course you're not in!",
-      );
-    }
-
     const question = await QuestionModel.create({
       queueId: queueId,
       creator: user,
@@ -97,6 +94,7 @@ export class QuestionController {
   }
 
   @Patch(':questionId')
+  @Roles(Role.STUDENT, Role.TA, Role.PROFESSOR)
   async updateQuestion(
     @Param('questionId') questionId: number,
     @Body() body: UpdateQuestionParams,
@@ -175,27 +173,13 @@ export class QuestionController {
   }
 
   @Post(':questionId/notify')
-  async notify(
-    @Param('questionId') questionId: number,
-    @UserId() userId: number,
-  ): Promise<void> {
+  @Roles(Role.TA, Role.PROFESSOR)
+  async notify(@Param('questionId') questionId: number): Promise<void> {
     const question = await QuestionModel.findOne(questionId, {
       relations: ['queue'],
     });
 
-    const isUserTAOfCourse =
-      (await UserCourseModel.count({
-        where: {
-          // TODO: somehow store and check that the notifying TA is the one helping?
-          role: Role.TA,
-          courseId: question.queue.courseId,
-          userId: userId,
-        },
-      })) === 1;
-
-    if (!isUserTAOfCourse) {
-      throw new UnauthorizedException('Only TA can send alerts');
-    }
+    // TODO: somehow store and check that the notifying TA is the one helping? new UnauthorizedException('Only TA can send alerts');
 
     this.notifService.notifyUser(
       question.creatorId, // TODO: Stanley think of a better message

@@ -16,7 +16,7 @@ import { User } from '../profile/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { CourseModel } from './course.entity';
-import { Roles } from './course-roles.decorator';
+import { Roles } from '../profile/roles.decorator';
 import { RolesGuard } from './course-roles.guard';
 
 @Controller('courses')

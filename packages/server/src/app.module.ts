@@ -15,6 +15,7 @@ import { QuestionModel } from './question/question.entity';
 import { QuestionModule } from './question/question.module';
 import { QueueModel } from './queue/queue.entity';
 import { QueueModule } from './queue/queue.module';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
