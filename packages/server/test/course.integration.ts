@@ -7,6 +7,7 @@ import {
   StudentCourseFactory,
   TACourseFactory,
   UserFactory,
+  UserCourseFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
 
@@ -18,6 +19,11 @@ describe('Course Integration', () => {
         officeHours: [await OfficeHourFactory.create()],
       });
       await QueueFactory.create();
+
+      await UserCourseFactory.create({
+        user: await UserFactory.create(),
+        course: course,
+      });
       // will not load b/c office hours aren't happening right now
       // (unless you go back in time and run these tests )
       const response = await supertest({ userId: 1 })
@@ -46,6 +52,11 @@ describe('Course Integration', () => {
       });
 
       await QueueFactory.create({
+        course: course,
+      });
+
+      await UserCourseFactory.create({
+        user: await UserFactory.create(),
         course: course,
       });
 
