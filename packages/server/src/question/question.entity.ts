@@ -60,6 +60,9 @@ export class QuestionModel extends BaseEntity {
   @Column('text')
   status: QuestionStatus;
 
-  @Column('text')
+  @Column({ nullable: true })
   location: string;
+
+  @Column({ nullable: true })
+  online: boolean;
 }

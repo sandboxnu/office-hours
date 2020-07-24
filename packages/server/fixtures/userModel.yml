@@ -15,3 +15,8 @@ items:
     email: 'liu.sta@husky.neu.edu'
     name: 'Stanley Liu'
     photoURL: 'https://i.imgur.com/iyQyUiN.jpeg'
+  user3:
+    username: 'online_user'
+    email: 'chu.daj@northeastern.edu'
+    name: 'NU Flex'
+    photoURL: 'https://i.imgur.com/iyQyUiN.jpeg'

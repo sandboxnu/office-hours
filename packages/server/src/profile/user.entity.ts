@@ -22,7 +22,6 @@ export class UserModel extends BaseEntity {
   username: string;
 
   @Column('text')
-  @Exclude()
   email: string;
 
   @Column('text')
