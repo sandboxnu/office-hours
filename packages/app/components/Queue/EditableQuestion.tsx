@@ -1,6 +1,7 @@
 import { UserOutlined } from "@ant-design/icons";
 import { QuestionType } from "@template/common";
 import { Avatar, Button, Card, Col, Popconfirm, Row } from "antd";
+import numbro from "numbro";
 import { ReactElement } from "react";
 import styled from "styled-components";
 
@@ -83,7 +84,11 @@ export default function EditableQuestion({
         </Col>
         <Col span={17}>
           <HeadingText>your spot</HeadingText>
-          <SpotNum>{position}rd</SpotNum>
+          <SpotNum>
+            {numbro(position).format({
+              output: "ordinal",
+            })}
+          </SpotNum>
           <HeadingText>type</HeadingText>
           <InfoText>{type}</InfoText>
           <HeadingText>question</HeadingText>

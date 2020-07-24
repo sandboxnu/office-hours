@@ -139,10 +139,10 @@ export default function StudentQueueList({
           <HeaderText>your question</HeaderText>
         </StudentHeaderCard>
         <EditableQuestion
-          position={3}
+          position={questions.indexOf(studentQuestion) + 1}
           type={studentQuestion.questionType}
           text={studentQuestion.text}
-          location={"Outside room, by the couches"} // doesn't exist on question rn
+          location={"Outside room, by the couches"} //TODO:  doesn't exist on question rn
           photoUrl={studentQuestion.creator.photoURL}
           openEdit={openEditModal}
           leaveQueue={leaveQueue}
