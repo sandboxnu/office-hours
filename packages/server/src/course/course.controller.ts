@@ -17,10 +17,10 @@ import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { CourseModel } from './course.entity';
 import { Roles } from '../profile/roles.decorator';
-import { RolesGuard } from './course-roles.guard';
+import { CourseRolesGuard } from './course-roles.guard';
 
 @Controller('courses')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, CourseRolesGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class CourseController {
   constructor(private connection: Connection) {}

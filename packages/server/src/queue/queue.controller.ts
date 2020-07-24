@@ -14,19 +14,23 @@ import {
   GetQueueResponse,
   ListQuestionsResponse,
   UpdateQueueNotesParams,
+  Role,
 } from '@template/common';
 import { Connection, In, Not } from 'typeorm';
 import { JwtAuthGuard } from '../profile/jwt-auth.guard';
 import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from './queue.entity';
+import { QueueRolesGuard } from './queue-role.guard';
+import { Roles } from 'profile/roles.decorator';
 
 @Controller('queues')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, QueueRolesGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class QueueController {
   constructor(private connection: Connection) {}
 
   @Get(':queueId')
+  @Roles(Role.TA, Role.PROFESSOR, Role.STUDENT)
   async getQueue(@Param('queueId') queueId: string): Promise<GetQueueResponse> {
     return QueueModel.findOne(queueId, {
       relations: ['questions', 'staffList'],
@@ -34,6 +38,7 @@ export class QueueController {
   }
 
   @Get(':queueId/questions')
+  @Roles(Role.TA, Role.PROFESSOR, Role.STUDENT)
   async getQuestions(
     @Param('queueId') queueId: string,
   ): Promise<ListQuestionsResponse> {
@@ -59,10 +64,10 @@ export class QueueController {
   }
 
   @Patch(':queueId')
+  @Roles(Role.TA, Role.PROFESSOR)
   async updateQueue(
     @Param('queueId') queueId: number,
     @Body() body: UpdateQueueNotesParams,
-    // TODO: Add TA/Prof protection on endpoint
   ): Promise<QueueModel> {
     const queue = await QueueModel.findOne({
       where: { id: queueId },
