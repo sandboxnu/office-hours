@@ -97,13 +97,8 @@ export default function EditableQuestion({
           <InfoText>{location}</InfoText>
         </Col>
       </Row>
-      <Row style={{ marginTop: 16 }} gutter={[8, 8]}>
-        <Col span={12}>
-          <TopButton>AFK</TopButton>
-        </Col>
-        <Col span={12}>
-          <TopButton onClick={openEdit}>Edit Question</TopButton>
-        </Col>
+      <Row style={{ marginBottom: 8 }}>
+        <TopButton onClick={openEdit}>Edit Question</TopButton>
       </Row>
       <Popconfirm
         title={`Are you sure you want to leave the queue?`}

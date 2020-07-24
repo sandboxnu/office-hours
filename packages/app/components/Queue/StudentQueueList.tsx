@@ -103,6 +103,7 @@ export default function StudentQueueList({
         text: text,
         questionType: questionType,
       };
+      console.log(updateStudent, "test");
       await API.questions.update(studentQuestion?.id, updateStudent);
       const newQuestions = questions?.map((q) =>
         q.id === studentQuestion?.id ? { ...q, updateStudent } : q
@@ -142,7 +143,9 @@ export default function StudentQueueList({
           position={questions.indexOf(studentQuestion) + 1}
           type={studentQuestion.questionType}
           text={studentQuestion.text}
-          location={"Outside room, by the couches"} //TODO:  doesn't exist on question rn
+          location={
+            studentQuestion.location ? studentQuestion.location : "Online"
+          }
           photoUrl={studentQuestion.creator.photoURL}
           openEdit={openEditModal}
           leaveQueue={leaveQueue}
@@ -162,7 +165,7 @@ export default function StudentQueueList({
   }, [joinQueue, openEditModal]);
 
   const finishQuestionAndClose = useCallback(
-    (qt: QuestionType, text: string) => {
+    (text: string, qt: QuestionType) => {
       finishQuestion(text, qt);
       closeEditModal();
     },
@@ -211,6 +214,7 @@ export default function StudentQueueList({
                 rank={index + 1}
                 waitTime={30} //TODO: figure out later
                 question={question}
+                highlighted={studentQuestion === question}
               />
             );
           })}

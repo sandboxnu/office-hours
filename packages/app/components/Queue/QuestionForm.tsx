@@ -1,9 +1,8 @@
 import { Question, QuestionType } from "@template/common";
-import { Button, Input, Radio, Alert } from "antd";
-import styled from "styled-components";
-import { useContext, useState, useMemo, useEffect } from "react";
+import { Alert, Button, Input, Radio } from "antd";
 import { RadioChangeEvent } from "antd/lib/radio";
-import React from "react";
+import React, { ReactElement, useEffect, useState } from "react";
+import styled from "styled-components";
 
 const Container = styled.div`
   max-width: 960px;
@@ -49,11 +48,10 @@ export default function QuestionForm({
   question,
   leaveQueue,
   finishQuestion,
-}: QuestionFormProps) {
+}: QuestionFormProps): ReactElement {
   const [questionTypeInput, setQuestionTypeInput] = useState<QuestionType>(
     null
   );
-
   const [questionText, setQuestionText] = useState<string>("");
 
   useEffect(() => {
