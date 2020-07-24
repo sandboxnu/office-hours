@@ -1,13 +1,17 @@
-import { IsEnum, IsInt, IsOptional, IsString } from "class-validator";
+import {
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  IsBoolean,
+  ValidateNested,
+} from "class-validator";
 import "reflect-metadata";
 
 export enum WSMessageType {
   Count = "count",
   Refresh = "ref",
 }
-
-// API base data types
-export type Club = { name: string; rating: number; id: number };
 
 /////////////////////////
 // API Base Data Types //
@@ -29,6 +33,9 @@ export type User = {
   name: string;
   photoURL: string;
   courses: UserCourse[];
+  desktopNotifsEnabled: boolean;
+  phoneNotifsEnabled: boolean;
+  phoneNumber: string;
 };
 
 /**
@@ -250,13 +257,21 @@ export type PhoneNotifBody = {
 // =================== API Route Types ===========================
 // On backend, validated with https://docs.nestjs.com/techniques/validation
 // API route Params and Responses
-export type GetClubResponse = Club[];
-
-export type CreateClubParams = { name: string; rating: number };
-export type CreateClubResponse = Club;
 
 // Office Hours Response Types
 export type GetProfileResponse = User;
+
+export class PatchProfileParams {
+  @IsBoolean()
+  @IsOptional()
+  desktopNotifsEnabled?: boolean;
+  @IsBoolean()
+  @IsOptional()
+  phoneNotifsEnabled?: boolean;
+  @IsString()
+  @IsOptional()
+  phoneNumber?: string;
+}
 
 // export type GetCourseResponse = Course;
 

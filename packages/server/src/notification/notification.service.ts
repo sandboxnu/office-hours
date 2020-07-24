@@ -20,6 +20,7 @@ const phoneResponses = {
     'Thank you for verifying your number with Khoury Office Hours! You are now signed up for text notifications!',
 };
 
+//TODO test this service omg
 @Injectable()
 export class NotificationService {
   private twilioClient: twilio.Twilio;
@@ -55,11 +56,28 @@ export class NotificationService {
       throw new BadRequestException('phone number invalid');
     }
 
-    const phoneNotifModel = await PhoneNotifModel.create({
-      phoneNumber,
+    let phoneNotifModel = await PhoneNotifModel.findOne({
       userId,
-      verified: false,
-    }).save();
+      phoneNumber,
+    });
+
+    if (phoneNotifModel) {
+      // Phone number has not changed
+      if (phoneNotifModel.phoneNumber === phoneNumber) {
+        return;
+      } else {
+        // Need to just change it
+        phoneNotifModel.phoneNumber = phoneNumber;
+        phoneNotifModel.verified = false;
+        await phoneNotifModel.save();
+      }
+    } else {
+      phoneNotifModel = await PhoneNotifModel.create({
+        phoneNumber,
+        userId,
+        verified: false,
+      }).save();
+    }
 
     await this.notifyPhone(
       phoneNotifModel,
@@ -74,18 +92,20 @@ export class NotificationService {
       where: {
         id: userId,
       },
-      relations: ['desktopNotifs', 'phoneNotifs'],
+      relations: ['desktopNotifs', 'phoneNotif'],
     });
 
     // run the promises concurrently
-    await Promise.all([
-      ...notifModelsOfUser.desktopNotifs.map(async (nm) =>
-        this.notifyDesktop(nm, message),
-      ),
-      ...notifModelsOfUser.phoneNotifs.map(async (pn) => {
-        this.notifyPhone(pn, message, false);
-      }),
-    ]);
+    if (notifModelsOfUser.desktopNotifsEnabled) {
+      await Promise.all(
+        notifModelsOfUser.desktopNotifs.map(async (nm) =>
+          this.notifyDesktop(nm, message),
+        ),
+      );
+    }
+    if (notifModelsOfUser.phoneNotif && notifModelsOfUser.phoneNotifsEnabled) {
+      this.notifyPhone(notifModelsOfUser.phoneNotif, message, false);
+    }
   }
 
   // notifies a user via desktop notification
