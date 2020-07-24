@@ -51,7 +51,7 @@ export default function QuestionForm({
   leaveQueue,
   finishQuestion,
 }: QuestionFormProps): ReactElement {
-  const [storageQuestion, setStoredQuestion, removeValue] = useLocalStorage(
+  const [storageQuestion, setStoredQuestion] = useLocalStorage(
     "draftQuestion",
     null
   );
