@@ -10,8 +10,10 @@ export class QueueRolesGuard extends RolesGuard {
     request: any,
   ): Promise<{ courseId: number; user: UserModel }> {
     const queue = await QueueModel.findOne(request.params.queueId);
-    const courseId = queue.course.id;
-    const user = request.user;
+    const courseId = queue.courseId;
+    const user = await UserModel.findOne(request.user.userId, {
+      relations: ['courses'],
+    });
     return { courseId, user };
   }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserModel } from '../profile/user.entity';
 import { RolesGuard } from 'guards/role.guard';
 import { QuestionModel } from './question.entity';
+import { QueueModel } from 'queue/queue.entity';
 
 @Injectable()
 export class QuestionRolesGuard extends RolesGuard {
@@ -10,8 +11,11 @@ export class QuestionRolesGuard extends RolesGuard {
     request: any,
   ): Promise<{ courseId: number; user: UserModel }> {
     const question = await QuestionModel.findOne(request.params.questionId);
-    const courseId = question.queue.course.id;
-    const user = request.user;
+    const queue = await QueueModel.findOne(question.queueId);
+    const courseId = queue.courseId;
+    const user = await UserModel.findOne(request.user.userId, {
+      relations: ['courses'],
+    });
     return { courseId, user };
   }
 }
