@@ -5,7 +5,7 @@ Object {
   "id": 2,
   "notes": null,
   "queueSize": 1,
-  "room": "WVH 2",
+  "room": "WVH 101",
   "staffList": Array [],
 }
 `;
