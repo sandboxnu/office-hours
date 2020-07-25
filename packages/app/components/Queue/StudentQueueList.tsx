@@ -157,9 +157,9 @@ export default function StudentQueueList({
   );
 
   const [hasDraftInProgress, setHasDraftInProgress] = useState(
-    storedQuestion || studentQuestion?.status === OpenQuestionStatus.Drafting
-      ? true
-      : false
+    !!(
+      storedQuestion || studentQuestion?.status === OpenQuestionStatus.Drafting
+    )
   );
 
   const openEditModal = useCallback(async () => {
