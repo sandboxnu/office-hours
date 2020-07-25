@@ -318,7 +318,7 @@ export default function StudentQueueList({
           })}
         </Col>
         {studentQuestion && renderEditableQuestion()}
-        <Modal
+        <QuestionForm
           visible={
             (questions &&
               !studentQuestion &&
@@ -327,17 +327,12 @@ export default function StudentQueueList({
             // && studentQuestion.status !== QuestionStatusKeys.Drafting)
             popupEditQuestion
           }
-          closable={true}
-          onCancel={closeEditModal}
-          footer={<div></div>}
-        >
-          <QuestionForm
-            question={studentQuestion}
-            leaveQueue={leaveQueueAndClose}
-            finishQuestion={finishQuestionAndClose}
-            position={questions?.indexOf(studentQuestion) + 1}
-          />
-        </Modal>
+          question={studentQuestion}
+          leaveQueue={leaveQueueAndClose}
+          finishQuestion={finishQuestionAndClose}
+          position={questions?.indexOf(studentQuestion) + 1}
+          cancel={closeEditModal}
+        />
       </Row>
     </div>
   );
