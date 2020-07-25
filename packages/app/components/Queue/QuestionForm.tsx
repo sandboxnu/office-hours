@@ -69,6 +69,7 @@ export default function QuestionForm({
   const [questionText, setQuestionText] = useState<string>(
     question?.text || ""
   );
+
   const [isOnline, setIsOnline] = useState(question?.isOnline || false);
   const [location, setLocation] = useState(question?.location || "");
 
@@ -86,7 +87,7 @@ export default function QuestionForm({
     const questionFromStorage = storageQuestion ?? {};
 
     setStoredQuestion({
-      id: question.id,
+      id: question?.id,
       ...questionFromStorage,
       questionType: e.target.value,
     });
@@ -100,7 +101,7 @@ export default function QuestionForm({
 
     const questionFromStorage = storageQuestion ?? {};
     setStoredQuestion({
-      id: question.id,
+      id: question?.id,
       ...questionFromStorage,
       text: event.target.value,
     });
@@ -180,10 +181,9 @@ export default function QuestionForm({
       {!isOnline && (
         <div>
           <QuestionText>Where in the room are you located?</QuestionText>
-          <Input.TextArea
+          <Input
             value={location}
             placeholder="Outside room, by the couches"
-            autoSize={{ minRows: 1, maxRows: 1 }}
             onChange={(e) => {
               setLocation(e.target.value);
             }}

@@ -1,5 +1,10 @@
 import { API } from "@template/api-client";
-import { ClosedQuestionStatus, Question, QuestionType } from "@template/common";
+import {
+  ClosedQuestionStatus,
+  OpenQuestionStatus,
+  Question,
+  QuestionType,
+} from "@template/common";
 import { Alert, Button, Card, Col, Grid, Modal, Row } from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
@@ -70,38 +75,30 @@ export default function StudentQueueList({
 }: StudentQueueListProps): ReactElement {
   const profile = useProfile();
 
-  const { data: queue, error: queuesError, mutate: mutateQueue } = useSWR(
+  const { data: queue, error: queuesError } = useSWR(
     qid && `/api/v1/queues/${qid}`,
     async () => API.queues.get(Number(qid))
   );
 
-  const { data: questions, error: questionsError } = useSWR(
-    qid && `/api/v1/queues/${qid}/questions`,
-    async () => API.questions.index(Number(qid))
+  const {
+    data: questions,
+    error: questionsError,
+    mutate: mutateQuestions,
+  } = useSWR(qid && `/api/v1/queues/${qid}/questions`, async () =>
+    API.questions.index(Number(qid))
   );
 
   const studentQuestion =
     profile && questions && questions.find((q) => q.creator.id === profile.id);
-
-  const joinQueue = useCallback(async () => {
-    const createdQuestion = await API.questions.create({
-      queueId: Number(qid),
-      text: "",
-      questionType: QuestionType.Bug, // TODO: endpoint needs to be changed to allow empty questionType for drafts
-      // for the moment I am defaulting this data so that there is no error
-    });
-
-    const newQuestions = [...questions, createdQuestion];
-    mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
-  }, [qid, questions]);
 
   const leaveQueue = useCallback(async () => {
     await API.questions.update(studentQuestion?.id, {
       status: ClosedQuestionStatus.Deleted,
     });
 
-    mutate(`/api/v1/queues/${qid}/questions`);
-  }, [qid, studentQuestion?.id]);
+    setIsJoining(false);
+    await mutateQuestions();
+  }, [studentQuestion?.id, mutateQuestions]);
 
   const finishQuestion = useCallback(
     async (
@@ -115,14 +112,15 @@ export default function StudentQueueList({
         questionType,
         isOnline,
         location: isOnline ? "" : location,
+        status: OpenQuestionStatus.Queued,
       };
       await API.questions.update(studentQuestion?.id, updateStudent);
       const newQuestions = questions?.map((q: Question) =>
         q.id === studentQuestion?.id ? { ...q, updateStudent } : q
       );
-      mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
+      mutateQuestions(newQuestions);
     },
-    [qid, questions, studentQuestion?.id]
+    [questions, studentQuestion?.id, mutateQuestions]
   );
 
   /**
@@ -146,7 +144,12 @@ export default function StudentQueueList({
 
   const screens = useBreakpoint();
   const [popupEditQuestion, setPopupEditQuestion] = useState(false);
-  const [isJoining, setIsJoining] = useState(true);
+
+  const [isJoining, setIsJoining] = useState(
+    questions &&
+      studentQuestion &&
+      studentQuestion?.status !== OpenQuestionStatus.Queued
+  );
 
   const [storedQuestion, setStoredQuestion, removeValue] = useLocalStorage(
     "draftQuestion",
@@ -154,12 +157,15 @@ export default function StudentQueueList({
   );
 
   const [hasDraftInProgress, setHasDraftInProgress] = useState(
-    storedQuestion ? true : false
+    storedQuestion || studentQuestion?.status === OpenQuestionStatus.Drafting
+      ? true
+      : false
   );
 
-  const openEditModal = useCallback(() => {
+  const openEditModal = useCallback(async () => {
+    mutate(`/api/v1/queues/${qid}/questions`);
     setPopupEditQuestion(true);
-  }, []);
+  }, [qid]);
 
   const closeEditModal = useCallback(() => {
     setPopupEditQuestion(false);
@@ -180,7 +186,7 @@ export default function StudentQueueList({
           <HeaderText>your question</HeaderText>
         </StudentHeaderCard>
         <EditableQuestion
-          position={questions.indexOf(studentQuestion) + 1}
+          position={questions?.indexOf(studentQuestion) + 1}
           type={studentQuestion.questionType}
           text={studentQuestion.text}
           location={
@@ -202,10 +208,17 @@ export default function StudentQueueList({
     closeEditModal();
   }, [removeValue, leaveQueue, closeEditModal]);
 
-  const joinQueueOpenModal = useCallback(() => {
-    joinQueue();
-    openEditModal();
-  }, [joinQueue, openEditModal]);
+  const joinQueueOpenModal = useCallback(async () => {
+    const createdQuestion = await API.questions.create({
+      queueId: Number(qid),
+      text: "",
+      questionType: QuestionType.Bug, // TODO: endpoint needs to be changed to allow empty questionType for drafts
+      // for the moment I am defaulting this data so that there is no error
+    });
+    const newQuestions = [...questions, createdQuestion];
+    await mutateQuestions(newQuestions);
+    setPopupEditQuestion(true);
+  }, [mutateQuestions, qid, questions]);
 
   const finishQuestionAndClose = useCallback(
     (text: string, qt: QuestionType, isOnline: boolean, location: string) => {
@@ -304,10 +317,13 @@ export default function StudentQueueList({
             );
           })}
         </Col>
-        {!hasDraftInProgress && studentQuestion && renderEditableQuestion()}
+        {studentQuestion && renderEditableQuestion()}
         <Modal
           visible={
-            (isJoining && !hasDraftInProgress) ||
+            (questions &&
+              !studentQuestion &&
+              isJoining &&
+              !hasDraftInProgress) ||
             // && studentQuestion.status !== QuestionStatusKeys.Drafting)
             popupEditQuestion
           }
