@@ -2,8 +2,9 @@ import { Question, QuestionType } from "@template/common";
 import { Alert, Button, Input, Radio } from "antd";
 import { RadioChangeEvent } from "antd/lib/radio";
 import numbro from "numbro";
-import React, { ReactElement, useEffect, useState } from "react";
+import { default as React, ReactElement, useEffect, useState } from "react";
 import styled from "styled-components";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
 
 const Container = styled.div`
   max-width: 960px;
@@ -57,6 +58,11 @@ export default function QuestionForm({
   finishQuestion,
   position,
 }: QuestionFormProps): ReactElement {
+  const [storageQuestion, setStoredQuestion] = useLocalStorage(
+    "draftQuestion",
+    null
+  );
+
   const [questionTypeInput, setQuestionTypeInput] = useState<QuestionType>(
     question?.questionType || null
   );
@@ -74,6 +80,14 @@ export default function QuestionForm({
   // on question type change, update the question type state
   const onCategoryChange = (e: RadioChangeEvent) => {
     setQuestionTypeInput(e.target.value);
+
+    const questionFromStorage = storageQuestion ?? {};
+
+    setStoredQuestion({
+      id: question.id,
+      ...questionFromStorage,
+      questionType: e.target.value,
+    });
   };
 
   // on question text change, update the question text state
@@ -81,6 +95,13 @@ export default function QuestionForm({
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     setQuestionText(event.target.value);
+
+    const questionFromStorage = storageQuestion ?? {};
+    setStoredQuestion({
+      id: question.id,
+      ...questionFromStorage,
+      text: event.target.value,
+    });
   };
 
   // on button submit click, conditionally choose to go back to the queue
