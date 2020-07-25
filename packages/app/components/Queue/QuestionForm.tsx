@@ -1,6 +1,7 @@
 import { Question, QuestionType } from "@template/common";
 import { Alert, Button, Input, Radio } from "antd";
 import { RadioChangeEvent } from "antd/lib/radio";
+import numbro from "numbro";
 import React, { ReactElement, useEffect, useState } from "react";
 import styled from "styled-components";
 
@@ -47,15 +48,17 @@ interface QuestionFormProps {
     isOnline: boolean,
     location: string
   ) => void;
+  position: number;
 }
 
 export default function QuestionForm({
   question,
   leaveQueue,
   finishQuestion,
+  position,
 }: QuestionFormProps): ReactElement {
   const [questionTypeInput, setQuestionTypeInput] = useState<QuestionType>(
-    question.questionType || null
+    question?.questionType || null
   );
   const [questionText, setQuestionText] = useState<string>(question.text || "");
   const [isOnline, setIsOnline] = useState(question.isOnline || false);
@@ -98,7 +101,9 @@ export default function QuestionForm({
   return (
     <Container>
       <Alert
-        message="You are currently 12th in queue"
+        message={`You are currently ${numbro(position).format({
+          output: "ordinal",
+        })} in queue`}
         description="Your spot in queue has been temporarily reserved. Please describe your question to finish joining the queue."
         type="success"
         showIcon

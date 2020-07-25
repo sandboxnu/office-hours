@@ -236,6 +236,7 @@ export default function StudentQueueList({
             question={studentQuestion}
             leaveQueue={leaveQueueAndClose}
             finishQuestion={finishQuestionAndClose}
+            position={questions?.indexOf(studentQuestion) + 1}
           />
         </Modal>
       </Row>
