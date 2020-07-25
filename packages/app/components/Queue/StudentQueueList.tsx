@@ -98,14 +98,22 @@ export default function StudentQueueList({
   }, [qid, studentQuestion?.id]);
 
   const finishQuestion = useCallback(
-    async (text: string, questionType: QuestionType) => {
+    async (
+      text: string,
+      questionType: QuestionType,
+      isOnline: boolean,
+      location: string
+    ) => {
       const updateStudent = {
-        text: text,
-        questionType: questionType,
+        text,
+        questionType,
+        isOnline,
+        location: isOnline ? "" : location,
       };
-      console.log(updateStudent, "test");
+      console.log("here");
       await API.questions.update(studentQuestion?.id, updateStudent);
-      const newQuestions = questions?.map((q) =>
+      console.log("here4");
+      const newQuestions = questions?.map((q: Question) =>
         q.id === studentQuestion?.id ? { ...q, updateStudent } : q
       );
       mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
@@ -165,8 +173,8 @@ export default function StudentQueueList({
   }, [joinQueue, openEditModal]);
 
   const finishQuestionAndClose = useCallback(
-    (text: string, qt: QuestionType) => {
-      finishQuestion(text, qt);
+    (text: string, qt: QuestionType, isOnline: boolean, location: string) => {
+      finishQuestion(text, qt, isOnline, location);
       closeEditModal();
     },
     [finishQuestion, closeEditModal]

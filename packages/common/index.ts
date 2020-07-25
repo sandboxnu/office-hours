@@ -1,4 +1,10 @@
-import { IsEnum, IsInt, IsOptional, IsString } from "class-validator";
+import {
+  IsBoolean,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+} from "class-validator";
 import "reflect-metadata";
 
 export enum WSMessageType {
@@ -309,6 +315,14 @@ export class UpdateQuestionParams {
   @IsEnum(QuestionStatusKeys)
   @IsOptional()
   status?: QuestionStatus;
+
+  @IsBoolean()
+  @IsOptional()
+  isOnline?: boolean;
+
+  @IsString()
+  @IsOptional()
+  location?: string;
 }
 export type UpdateQuestionResponse = Question;
 

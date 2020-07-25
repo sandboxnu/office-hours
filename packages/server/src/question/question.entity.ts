@@ -64,5 +64,5 @@ export class QuestionModel extends BaseEntity {
   location: string;
 
   @Column({ nullable: true })
-  online: boolean;
+  isOnline: boolean;
 }

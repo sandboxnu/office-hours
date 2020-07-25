@@ -30,7 +30,7 @@ const QuestionCaption = styled.div`
   font-size: 14px;
   line-height: 22px;
   color: #8c8c8c;
-  margin-bottom: 80px;
+  margin-bottom: 32px;
 `;
 
 const FormButton = styled(Button)`
@@ -41,7 +41,12 @@ const FormButton = styled(Button)`
 interface QuestionFormProps {
   question: Question;
   leaveQueue: () => void;
-  finishQuestion: (text: string, questionType: QuestionType) => void;
+  finishQuestion: (
+    text: string,
+    questionType: QuestionType,
+    isOnline: boolean,
+    location: string
+  ) => void;
 }
 
 export default function QuestionForm({
@@ -53,6 +58,8 @@ export default function QuestionForm({
     null
   );
   const [questionText, setQuestionText] = useState<string>("");
+  const [isOnline, setIsOnline] = useState(false);
+  const [location, setLocation] = useState("");
 
   useEffect(() => {
     if (question) {
@@ -76,7 +83,15 @@ export default function QuestionForm({
   // on button submit click, conditionally choose to go back to the queue
   const onClickSubmit = () => {
     if (questionTypeInput && questionText && questionText !== "") {
-      finishQuestion(questionText, questionTypeInput);
+      finishQuestion(questionText, questionTypeInput, isOnline, location);
+    }
+  };
+
+  const onOfflineOrInPersonChange = (e: RadioChangeEvent) => {
+    if (e.target.value === "Online") {
+      setIsOnline(true);
+    } else {
+      setIsOnline(false);
     }
   };
 
@@ -118,13 +133,35 @@ export default function QuestionForm({
         Be as descriptive and specific as possible in your answer. If your
         question matches another student’s, your wait time may be reduced.
       </QuestionCaption>
-      <QuestionText>Where in the room are you located?</QuestionText>
-      <Input.TextArea
-        placeholder="Outside room, by the couches"
-        autoSize={{ minRows: 1, maxRows: 1 }}
-      />
-      <QuestionCaption></QuestionCaption>
-      <div>
+      <QuestionText>Where are you joining office hours?</QuestionText>
+
+      <Radio.Group
+        style={{ marginBottom: "16px" }}
+        onChange={onOfflineOrInPersonChange}
+      >
+        <Radio style={{ display: "block" }} value={"In person"}>
+          In Person
+        </Radio>
+        <Radio style={{ display: "block" }} value={"Online"}>
+          Online
+        </Radio>
+      </Radio.Group>
+
+      {!isOnline && (
+        <div>
+          <QuestionText>Where in the room are you located?</QuestionText>
+          <Input.TextArea
+            placeholder="Outside room, by the couches"
+            autoSize={{ minRows: 1, maxRows: 1 }}
+            onChange={(e) => {
+              setLocation(e.target.value);
+            }}
+          />
+          <QuestionCaption></QuestionCaption>
+        </div>
+      )}
+
+      <div style={{ display: "block" }}>
         <FormButton
           type="primary"
           disabled={!questionTypeInput || !questionText || questionText === ""}
