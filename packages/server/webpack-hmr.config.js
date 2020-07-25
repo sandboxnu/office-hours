@@ -18,6 +18,7 @@ module.exports = function (options) {
         additionalModuleDirs: [path.resolve(__dirname, '../../node_modules')], // handle yarn workspaces https://github.com/liady/webpack-node-externals/issues/39
       }),
     ],
+    devtool: 'source-map',
     module: {
       rules: [
         {
@@ -32,10 +33,16 @@ module.exports = function (options) {
         },
       ],
     },
+    devtool: 'source-map',
     plugins: [
       ...options.plugins,
       new webpack.HotModuleReplacementPlugin(),
       new webpack.WatchIgnorePlugin([/\.js$/, /\.d\.ts$/]),
+      new webpack.BannerPlugin({
+        banner: 'require("source-map-support").install();',
+        raw: true,
+        entryOnly: false,
+      }),
       new StartServerPlugin({ name: options.output.filename }),
     ],
   };

@@ -1,6 +1,7 @@
 {
   "name": "@template/app",
   "version": "0.1.0",
+  "private": true,
   "scripts": {
     "dev": "next -p 3001",
     "build": "next build",
@@ -8,7 +9,7 @@
     "test": "jest",
     "cypress:run": "npx cypress run",
     "cypress:open": "npx cypress open",
-    "tsc": "tsc -b"
+    "tsc": "tsc"
   },
   "dependencies": {
     "@ant-design/icons": "^4.2.1",
