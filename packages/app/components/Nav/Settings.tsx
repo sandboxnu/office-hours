@@ -156,7 +156,7 @@ export default function Settings() {
       placement={"bottomRight"}
       trigger="click"
     >
-      <AvatarButton type="link">
+      <AvatarButton>
         <Avatar size={47} icon={<UserOutlined />} />
       </AvatarButton>
     </Popover>
