@@ -195,7 +195,12 @@ export default function QuestionForm({
       <div style={{ display: "block" }}>
         <FormButton
           type="primary"
-          disabled={!questionTypeInput || !questionText || questionText === ""}
+          disabled={
+            !questionTypeInput ||
+            !questionText ||
+            questionText === "" ||
+            (!isOnline && !location.trim())
+          }
           onClick={onClickSubmit}
         >
           Finish
