@@ -21,7 +21,6 @@ export class DesktopNotifSubscriber
   }
 
   async afterInsert(event: InsertEvent<DesktopNotifModel>) {
-    console.log(`BEFORE DESKTOPNOTIF INSERTED: `, event.entity);
     await this.notifService.notifyDesktop(
       event.entity,
       "You've successfully signed up for desktop notifications!",
