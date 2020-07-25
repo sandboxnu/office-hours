@@ -8,7 +8,8 @@ import {
   OneToMany,
 } from 'typeorm';
 import { CourseModel } from './course.entity';
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
+import { QueueModel } from '../queue/queue.entity';
 
 @Entity('office_hour')
 export class OfficeHourModel extends BaseEntity {
@@ -24,15 +25,28 @@ export class OfficeHourModel extends BaseEntity {
   @Exclude()
   courseId: number;
 
-  @Column('text')
-  title: string;
+  @ManyToOne((type) => QueueModel, (queue) => queue.officeHours, {
+    eager: true,
+  })
+  @JoinColumn({ name: 'queueId' })
+  @Exclude()
+  queue: QueueModel;
+
+  @Column({ nullable: true })
+  @Exclude()
+  queueId: number;
 
   @Column('text')
-  room: string;
+  title: string;
 
   @Column()
   startTime: Date;
 
   @Column()
   endTime: Date;
+
+  @Expose()
+  get room(): string {
+    return this.queue.room;
+  }
 }
