@@ -43,6 +43,7 @@ export class QueueModel extends BaseEntity {
   @JoinTable()
   staffList: UserModel[];
 
+  // TODO: Remove the the time attribute from the queue
   time?: {
     start: Date;
     end: Date;
