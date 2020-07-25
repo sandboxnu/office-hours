@@ -12,3 +12,7 @@ items:
     userId: '@user2'
     courseId: '@course0'
     role: 'student'
+  ucm3:
+    userId: '@user3'
+    courseId: '@course0'
+    role: 'student'
