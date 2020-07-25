@@ -4,12 +4,22 @@ import { DesktopNotifModel } from '../src/notification/desktop-notif.entity';
 import { PhoneNotifModel } from '../src/notification/phone-notif.entity';
 import { NotificationModule } from '../src/notification/notification.module';
 
+const createMsg = jest.fn();
+jest.mock('twilio', () => () => ({
+  lookups: {
+    phoneNumbers: (p: string) => ({ fetch: () => ({ phoneNumber: p }) }),
+  },
+  messages: {
+    create: createMsg,
+  },
+}));
+
 describe('Notif Integration', () => {
   const supertest = setupIntegrationTest(NotificationModule);
 
   describe('GET /notifications/desktop/credentials', () => {
     it('gets a public key', async () => {
-      const res = await supertest({ userId: 99 })
+      await supertest({ userId: 99 })
         .get('/notifications/desktop/credentials')
         .expect(200);
     });
@@ -44,17 +54,19 @@ describe('Notif Integration', () => {
 
   describe('POST /notifications/phone/register/:user_id', () => {
     it("registers a user & phone number, tests it's in the db", async () => {
+      createMsg.mockClear();
       const user = await UserFactory.create();
       await supertest({ userId: 99 })
         .post(`/notifications/phone/register/${user.id}`)
         .send({ phoneNumber: '+16175551212' })
         .expect(201);
 
+      expect(createMsg.mock.calls.length).toEqual(1)
       const notifModel = await PhoneNotifModel.findOne();
       expect(notifModel).toEqual({
         id: 1,
         phoneNumber: '+16175551212',
-        user: undefined,
+        verified: false,
         userId: 1,
       });
     });
@@ -63,7 +75,7 @@ describe('Notif Integration', () => {
   describe('POST notifications/notify_user/:user_id', () => {
     it('tests that invalid endpoints for web push get deleted in db', async () => {
       // TODO this could be a unit test!
-      const user = await UserFactory.create();
+      const user = await UserFactory.create({ desktopNotifsEnabled: true });
       const expirDate = new Date(2020, 2, 3);
 
       await supertest({ userId: 99 })
