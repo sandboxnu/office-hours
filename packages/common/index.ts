@@ -266,6 +266,7 @@ export class UpdateProfileParams {
   @IsBoolean()
   @IsOptional()
   desktopNotifsEnabled?: boolean;
+  
   @IsBoolean()
   @IsOptional()
   phoneNotifsEnabled?: boolean;
