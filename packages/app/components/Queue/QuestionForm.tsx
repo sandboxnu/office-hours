@@ -29,6 +29,11 @@ const FormButton = styled(Button)`
   margin-left: 8px;
 `;
 
+const SaveChangesButton = styled(Button)`
+  margin-left: 8px;
+  background: #3684c6;
+`;
+
 interface QuestionFormProps {
   visible: boolean;
   question: Question;
@@ -131,7 +136,7 @@ export default function QuestionForm({
           ) : (
             <FormButton onClick={cancel}>Cancel</FormButton>
           )}
-          <FormButton
+          <SaveChangesButton
             type="primary"
             disabled={
               !questionTypeInput ||
@@ -142,7 +147,7 @@ export default function QuestionForm({
             onClick={onClickSubmit}
           >
             {drafting ? "Finish" : "Save Changes"}
-          </FormButton>
+          </SaveChangesButton>
         </div>
       }
     >
