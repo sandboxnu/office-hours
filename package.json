@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "postinstall": "rimraf node_modules/@types/react-native",
     "cypress:run": "yarn workspace @template/app cypress:run",
     "cypress:open": "yarn workspace @template/app cypress:open",
     "dev": "concurrently -n \"server,app,proxy\" \"yarn workspace @template/server dev\" \"yarn workspace @template/app dev\" \"yarn dev:proxy\"",
@@ -50,6 +51,7 @@
     ]
   },
   "dependencies": {
-    "pm2": "^4.4.0"
+    "pm2": "^4.4.0",
+    "rimraf": "^3.0.2"
   }
 }
