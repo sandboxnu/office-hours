@@ -1,9 +1,10 @@
 import { Question, QuestionType } from "@template/common";
 import { Button, Input, Radio, Alert } from "antd";
 import styled from "styled-components";
-import { useContext, useState, useMemo, useEffect } from "react";
+import { useState, useEffect, ReactElement } from "react";
 import { RadioChangeEvent } from "antd/lib/radio";
 import React from "react";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
 
 const Container = styled.div`
   max-width: 960px;
@@ -49,7 +50,12 @@ export default function QuestionForm({
   question,
   leaveQueue,
   finishQuestion,
-}: QuestionFormProps) {
+}: QuestionFormProps): ReactElement {
+  const [storageQuestion, setStoredQuestion] = useLocalStorage(
+    "draftQuestion",
+    null
+  );
+
   const [questionTypeInput, setQuestionTypeInput] = useState<QuestionType>(
     null
   );
@@ -66,6 +72,14 @@ export default function QuestionForm({
   // on question type change, update the question type state
   const onCategoryChange = (e: RadioChangeEvent) => {
     setQuestionTypeInput(e.target.value);
+
+    const questionFromStorage = storageQuestion ?? {};
+
+    setStoredQuestion({
+      id: question.id,
+      ...questionFromStorage,
+      questionType: e.target.value,
+    });
   };
 
   // on question text change, update the question text state
@@ -73,6 +87,13 @@ export default function QuestionForm({
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     setQuestionText(event.target.value);
+
+    const questionFromStorage = storageQuestion ?? {};
+    setStoredQuestion({
+      id: question.id,
+      ...questionFromStorage,
+      text: event.target.value,
+    });
   };
 
   // on button submit click, conditionally choose to go back to the queue
@@ -98,6 +119,7 @@ export default function QuestionForm({
         onChange={onCategoryChange}
         buttonStyle="solid"
         style={{ marginBottom: 48 }}
+        value={questionTypeInput}
       >
         <Radio.Button value={QuestionType.Concept}>Concept</Radio.Button>
         <Radio.Button value={QuestionType.Clarification}>
