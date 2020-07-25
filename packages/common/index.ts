@@ -296,6 +296,12 @@ export class CreateQuestionParams {
 
   @IsInt()
   queueId!: number;
+
+  @IsBoolean()
+  isOnline!: boolean;
+
+  @IsString()
+  location!: string;
 }
 export type CreateQuestionResponse = Question;
 

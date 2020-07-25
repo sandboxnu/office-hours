@@ -66,9 +66,11 @@ export default function QuestionForm({
   const [questionTypeInput, setQuestionTypeInput] = useState<QuestionType>(
     question?.questionType || null
   );
-  const [questionText, setQuestionText] = useState<string>(question.text || "");
-  const [isOnline, setIsOnline] = useState(question.isOnline || false);
-  const [location, setLocation] = useState(question.location || "");
+  const [questionText, setQuestionText] = useState<string>(
+    question?.text || ""
+  );
+  const [isOnline, setIsOnline] = useState(question?.isOnline || false);
+  const [location, setLocation] = useState(question?.location || "");
 
   useEffect(() => {
     if (question) {
