@@ -20,7 +20,7 @@ const NameContainer = styled.div`
 `;
 
 const bodyStyle = {
-  backgroundColor: "#7FDBFF",
+  backgroundColor: "#F6FFED",
 };
 
 interface StudentQueueCardProps {
