@@ -1,4 +1,4 @@
-import { Calendar, momentLocalizer, View } from "react-big-calendar";
+import { Calendar, momentLocalizer, CalendarProps } from "react-big-calendar";
 import moment from "moment";
 import useSWR from "swr";
 import { API } from "@template/api-client";
@@ -15,7 +15,7 @@ const Container = styled.div`
   }
 `;
 
-const ScheduleCalendar = styled(Calendar)`
+const ScheduleCalendar = styled(Calendar)<CalendarProps>`
   height: 70vh;
 `;
 
