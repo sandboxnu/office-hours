@@ -2,6 +2,10 @@
   "name": "@template/common",
   "version": "0.1.0",
   "main": "dist/index.js",
+  "private": true,
+  "scripts": {
+    "tsc": "tsc"
+  },
   "dependencies": {
     "class-validator": "^0.12.2",
     "reflect-metadata": "^0.1.13",

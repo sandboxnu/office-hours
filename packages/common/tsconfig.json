@@ -1,14 +1,4 @@
 {
-  "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
-    "strict": true,
-    "outDir": "dist",
-    "isolatedModules": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "composite": true
-  },
-  "exclude": ["node_modules", "dist"],
-  "include": ["**/*.ts"]
+  "extends": "../../tsconfig.json",
+  "include": ["index.ts"]
 }
