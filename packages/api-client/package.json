@@ -1,9 +1,10 @@
 {
   "name": "@template/api-client",
   "version": "0.1.0",
+  "private": true,
   "main": "index.js",
   "scripts": {
-    "tsc": "tsc -b"
+    "tsc": "tsc"
   },
   "dependencies": {
     "axios": "^0.19.2",
