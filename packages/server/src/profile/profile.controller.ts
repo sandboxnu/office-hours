@@ -12,7 +12,7 @@ import { Response } from 'express';
 import { Connection } from 'typeorm';
 import { UserModel } from './user.entity';
 import { pick } from 'lodash';
-import { GetProfileResponse, PatchProfileParams } from '@template/common';
+import { GetProfileResponse, UpdateProfileParams } from '@template/common';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { User } from './user.decorator';
 import { NotificationService } from '../notification/notification.service';
@@ -58,7 +58,7 @@ export class ProfileController {
   @UseGuards(JwtAuthGuard)
   @Patch()
   async patch(
-    @Body() userPatch: PatchProfileParams,
+    @Body() userPatch: UpdateProfileParams,
     @User(['courses', 'courses.course', 'phoneNotif']) user: UserModel,
   ): Promise<GetProfileResponse> {
     user = Object.assign(user, userPatch);

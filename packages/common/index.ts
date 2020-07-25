@@ -4,7 +4,8 @@ import {
   IsOptional,
   IsString,
   IsBoolean,
-  ValidateNested,
+  ValidateIf,
+  IsNotEmpty,
 } from "class-validator";
 import "reflect-metadata";
 
@@ -261,15 +262,17 @@ export type PhoneNotifBody = {
 // Office Hours Response Types
 export type GetProfileResponse = User;
 
-export class PatchProfileParams {
+export class UpdateProfileParams {
   @IsBoolean()
   @IsOptional()
   desktopNotifsEnabled?: boolean;
   @IsBoolean()
   @IsOptional()
   phoneNotifsEnabled?: boolean;
+
+  @ValidateIf(o=>o.phoneNotifsEnabled)
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   phoneNumber?: string;
 }
 

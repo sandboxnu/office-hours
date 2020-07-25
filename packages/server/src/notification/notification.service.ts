@@ -1,11 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as twilio from 'twilio';
 import { Connection, DeepPartial } from 'typeorm';
 import * as webPush from 'web-push';
 import { UserModel } from '../profile/user.entity';
 import { DesktopNotifModel } from './desktop-notif.entity';
 import { PhoneNotifModel } from './phone-notif.entity';
+import { TwilioService } from './twilio/twilio.service';
+import twilio from 'twilio';
 
 const phoneResponses = {
   WRONG_MESSAGE:
@@ -23,17 +24,13 @@ const phoneResponses = {
 //TODO test this service omg
 @Injectable()
 export class NotificationService {
-  private twilioClient: twilio.Twilio;
   desktopPublicKey: string;
 
   constructor(
     private connection: Connection,
     private configService: ConfigService,
+    private twilioService: TwilioService
   ) {
-    this.twilioClient = twilio(
-      this.configService.get('TWILIOACCOUNTSID'),
-      this.configService.get('TWILIOAUTHTOKEN'),
-    );
     webPush.setVapidDetails(
       this.configService.get('EMAIL'),
       this.configService.get('PUBLICKEY'),
@@ -47,12 +44,7 @@ export class NotificationService {
   }
 
   async registerPhone(phoneNumber: string, userId: number): Promise<void> {
-    try {
-      phoneNumber = (
-        await this.twilioClient.lookups.phoneNumbers(phoneNumber).fetch()
-      ).phoneNumber;
-    } catch (err) {
-      // if the phone number is not found, then endpoint should return invalid
+    if(!this.twilioService.isPhoneNumberReal) {
       throw new BadRequestException('phone number invalid');
     }
 
@@ -134,12 +126,7 @@ export class NotificationService {
   ): Promise<void> {
     if (force || pn.verified) {
       try {
-        this.twilioClient &&
-          (await this.twilioClient.messages.create({
-            body: message,
-            from: this.configService.get('TWILIOPHONENUMBER'),
-            to: pn.phoneNumber,
-          }));
+        await this.twilioService.sendSMS(pn.phoneNumber, message);
       } catch (error) {
         console.error('problem sending message', error);
       }
