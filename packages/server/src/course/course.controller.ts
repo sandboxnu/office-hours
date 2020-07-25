@@ -33,41 +33,39 @@ export class CourseController {
   async get(@Param('id') id: number): Promise<GetCourseResponse> {
     // TODO: for all course endpoint, check if they're a student or a TA
     const course = await CourseModel.findOne(id, {
-      relations: ['officeHours'],
+      relations: [
+        'officeHours',
+        'queues',
+        'queues.staffList',
+        'queues.officeHours',
+      ],
     });
 
     const now = new Date();
     const MS_IN_MINUTE = 60000;
 
-    const officeHoursHappeningNow = course.officeHours.filter(
-      (e) =>
-        e.startTime.valueOf() - 15 * MS_IN_MINUTE < now.valueOf() &&
-        e.endTime.valueOf() + 1 * MS_IN_MINUTE > now.valueOf(),
-    );
+    // Set all the queues which should be "Open"
+    course.queues = course.queues.filter((queue) => {
+      const areStaffPresent = queue.staffList.length > 0;
+      if (areStaffPresent) {
+        return true;
+      }
 
-    const queues = await QueueModel.find({
-      where: {
-        courseId: id,
-      },
-      relations: ['staffList'],
+      const currentOfficeHour = queue.officeHours.find(
+        (e) =>
+          e.startTime.valueOf() - 15 * MS_IN_MINUTE < now.valueOf() &&
+          e.endTime.valueOf() + 1 * MS_IN_MINUTE > now.valueOf(),
+      );
+      // TODO: Remove the the time attribute from the queue
+      if (currentOfficeHour) {
+        queue.time = {
+          start: currentOfficeHour.startTime,
+          end: currentOfficeHour.endTime,
+        };
+      }
+      return !!currentOfficeHour;
     });
 
-    const nonEmptyQueues = queues.filter((e) => e.staffList.length > 0);
-
-    const queuesHappeningNow = [];
-
-    for (const oh of officeHoursHappeningNow) {
-      const q = queues.find((q) => q.room === oh.room);
-      if (q) {
-        q.time = {
-          start: oh.startTime,
-          end: oh.endTime,
-        };
-        queuesHappeningNow.push(q);
-      }
-    }
-
-    course.queues = uniq([...nonEmptyQueues, ...queuesHappeningNow]);
     return course;
   }
 
