@@ -12,7 +12,7 @@ import {
   TAUpdateStatusResponse,
   UpdateQuestionParams,
   UpdateQuestionResponse,
-  PatchProfileParams,
+  UpdateProfileParams,
 } from "@template/common";
 import Axios, { AxiosInstance } from "axios";
 
@@ -22,7 +22,7 @@ class APIClient {
     index: async (): Promise<GetProfileResponse> => {
       return (await this.axios.get(`/api/v1/profile`)).data;
     },
-    patch: async (body: PatchProfileParams): Promise<GetProfileResponse> => {
+    patch: async (body: UpdateProfileParams): Promise<GetProfileResponse> => {
       return (await this.axios.patch(`/api/v1/profile`, body)).data;
     },
   };
