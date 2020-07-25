@@ -110,9 +110,7 @@ export default function StudentQueueList({
         isOnline,
         location: isOnline ? "" : location,
       };
-      console.log("here");
       await API.questions.update(studentQuestion?.id, updateStudent);
-      console.log("here4");
       const newQuestions = questions?.map((q: Question) =>
         q.id === studentQuestion?.id ? { ...q, updateStudent } : q
       );

@@ -79,7 +79,6 @@ class APIClient {
       const question = (
         await this.axios.patch(`/api/v1/questions/${questionId}`, params)
       ).data;
-      console.log("here2");
       parseQuestionDates(question);
       return question;
     },
