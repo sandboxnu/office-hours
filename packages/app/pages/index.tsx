@@ -12,5 +12,5 @@ export default function Home() {
     );
   }
 
-  return "insert loading circle here";
+  return "";
 }
