@@ -104,7 +104,6 @@ export class QuestionController {
   ): Promise<UpdateQuestionResponse> {
     // TODO: Check that the question_id belongs to the user or a TA that is currently helping with the given queue_id
     // TODO: Use user type to dertermine wether or not we should include the text in the response
-    console.log('backend');
     let question = await QuestionModel.findOne({
       where: { id: questionId },
       relations: ['creator', 'queue'],

@@ -175,7 +175,7 @@ export type Question = {
   questionType?: QuestionType;
   status: QuestionStatus;
   location?: string;
-  online?: boolean;
+  isOnline?: boolean;
 };
 
 // Question Types

@@ -5,7 +5,7 @@ Object {
   "id": 2,
   "notes": null,
   "queueSize": 1,
-  "room": "WVH 2",
+  "room": "WVH 101",
   "staffList": Array [],
 }
 `;
@@ -23,8 +23,8 @@ Array [
     },
     "helpedAt": null,
     "id": 1,
+    "isOnline": null,
     "location": null,
-    "online": null,
     "questionType": "Other",
     "status": "Queued",
     "taHelped": null,

@@ -55,11 +55,11 @@ export default function QuestionForm({
   finishQuestion,
 }: QuestionFormProps): ReactElement {
   const [questionTypeInput, setQuestionTypeInput] = useState<QuestionType>(
-    null
+    question.questionType || null
   );
-  const [questionText, setQuestionText] = useState<string>("");
-  const [isOnline, setIsOnline] = useState(false);
-  const [location, setLocation] = useState("");
+  const [questionText, setQuestionText] = useState<string>(question.text || "");
+  const [isOnline, setIsOnline] = useState(question.isOnline || false);
+  const [location, setLocation] = useState(question.location || "");
 
   useEffect(() => {
     if (question) {
@@ -108,6 +108,7 @@ export default function QuestionForm({
 
       <QuestionText>What category does your question fall under?</QuestionText>
       <Radio.Group
+        value={questionTypeInput}
         onChange={onCategoryChange}
         buttonStyle="solid"
         style={{ marginBottom: 48 }}
@@ -138,6 +139,7 @@ export default function QuestionForm({
       <Radio.Group
         style={{ marginBottom: "16px" }}
         onChange={onOfflineOrInPersonChange}
+        value={isOnline ? "Online" : "In person"}
       >
         <Radio style={{ display: "block" }} value={"In person"}>
           In Person
@@ -151,6 +153,7 @@ export default function QuestionForm({
         <div>
           <QuestionText>Where in the room are you located?</QuestionText>
           <Input.TextArea
+            value={location}
             placeholder="Outside room, by the couches"
             autoSize={{ minRows: 1, maxRows: 1 }}
             onChange={(e) => {
