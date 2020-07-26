@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserModel } from '../profile/user.entity';
 import { RolesGuard } from '../guards/role.guard';
 
@@ -13,6 +13,11 @@ export class CourseRolesGuard extends RolesGuard {
     });
 
     const courseId = request.params.id;
+
+    if (!user || !courseId) {
+      throw new UnauthorizedException('Must be logged into a course');
+    }
+
     return { courseId, user };
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserModel } from '../profile/user.entity';
 import { RolesGuard } from '../guards/role.guard';
 import { QueueModel } from './queue.entity';
@@ -14,6 +14,10 @@ export class QueueRolesGuard extends RolesGuard {
     const user = await UserModel.findOne(request.user.userId, {
       relations: ['courses'],
     });
+
+    if (!user || !courseId) {
+      throw new UnauthorizedException('Must be logged into a course');
+    }
     return { courseId, user };
   }
 }
