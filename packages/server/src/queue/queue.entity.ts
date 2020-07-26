@@ -49,9 +49,12 @@ export class QueueModel extends BaseEntity {
 
   @Expose()
   get queueSize(): number {
-    return (
-      this.questions?.filter((q) => q.status in OpenQuestionStatus).length || 0
-    );
+    if (!this.questions) {
+      throw new Error(
+        "Questions weren't loaded when trying to grab queue size",
+      );
+    }
+    return this.questions?.filter((q) => q.status in OpenQuestionStatus).length;
   }
   // TODO: eventually figure out how staff get sent to FE as well
 }

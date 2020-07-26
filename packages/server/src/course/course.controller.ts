@@ -45,7 +45,7 @@ export class CourseController {
       where: {
         courseId: id,
       },
-      relations: ['staffList'],
+      relations: ['staffList', 'questions'],
     });
 
     const nonEmptyQueues = queues.filter((e) => e.staffList.length > 0);
