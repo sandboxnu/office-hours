@@ -43,7 +43,7 @@ export class QueueModel extends BaseEntity {
   @JoinTable()
   staffList: UserModel[];
 
-  // If you need to add time to queues check out this commit: [[ add commit link ]]
+  // If you need to add time to queues check out this commit: 995e82991587b2077d342b1df87a2665a21c3492
 
   @Exclude()
   @OneToMany((type) => OfficeHourModel, (oh) => oh.queue)

@@ -32,7 +32,7 @@ class APIClient {
       course.officeHours.forEach((officeHour: any) =>
         parseOfficeHourDates(officeHour)
       );
-      // If you need to add time to queues check out this commit:
+      // If you need to add time to queues check out this commit: 995e82991587b2077d342b1df87a2665a21c3492
       return course;
     },
   };
