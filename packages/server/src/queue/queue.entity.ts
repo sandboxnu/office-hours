@@ -45,11 +45,7 @@ export class QueueModel extends BaseEntity {
   @JoinTable()
   staffList: UserModel[];
 
-  // TODO: Remove the the time attribute from the queue
-  time?: {
-    start: Date;
-    end: Date;
-  };
+  // If you need to add time to queues check out this commit: 995e82991587b2077d342b1df87a2665a21c3492
 
   @Exclude()
   @OneToMany((type) => OfficeHourModel, (oh) => oh.queue)
