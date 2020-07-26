@@ -11,17 +11,19 @@ import {
   UserCourseFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
-import { QueueModel } from 'queue/queue.entity';
+import { QueueModel } from '../src/queue/queue.entity';
 
 describe('Question Integration', () => {
   const supertest = setupIntegrationTest(QuestionModule);
 
   describe('GET /questions/:id', () => {
     it('gets a question with the given id', async () => {
+      const course = await CourseFactory.create();
       const q = await QuestionFactory.create({
         text: 'Help pls',
         queue: await QueueModel.create({
-          course: await CourseFactory.create(),
+          course: course,
+          courseId: course.id,
         }),
       });
 
@@ -42,7 +44,8 @@ describe('Question Integration', () => {
 
   describe('POST /questions', () => {
     it('posts a new question', async () => {
-      const queue = await QueueFactory.create();
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ courseId: course.id });
       const user = await UserFactory.create();
       await StudentCourseFactory.create({ user, courseId: queue.courseId });
       expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(0);
@@ -74,11 +77,16 @@ describe('Question Integration', () => {
         .expect(404);
     });
     it('post question fails with bad params', async () => {
-      await supertest({ userId: 99 })
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ courseId: course.id });
+      const user = await UserFactory.create();
+      await StudentCourseFactory.create({ user, courseId: queue.courseId });
+      await supertest({ userId: user.id })
         .post('/questions')
         .send({
           text: 'I need help',
           questionType: 'bad param!',
+          queueId: 1, // even with bad params we still need a queue
         })
         .expect(400);
     });
@@ -86,7 +94,17 @@ describe('Question Integration', () => {
 
   describe('PATCH /questions/:id', () => {
     it('as student crator, edit a question', async () => {
-      const q = await QuestionFactory.create({ text: 'Help pls' });
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ courseId: course.id });
+      const user = await UserFactory.create();
+      await StudentCourseFactory.create({ user, courseId: queue.courseId });
+      const q = await QuestionFactory.create({
+        text: 'Help pls',
+        queueId: queue.id,
+        queue: queue,
+        creator: user,
+        creatorId: user.id,
+      });
 
       const response = await supertest({ userId: q.creatorId })
         .patch(`/questions/${q.id}`)

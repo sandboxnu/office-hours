@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserModel } from '../profile/user.entity';
 import { QuestionModel } from './question.entity';
 import { QueueModel } from '../queue/queue.entity';
@@ -10,12 +14,25 @@ export class QuestionRolesGuard extends RolesGuard {
   async setupData(
     request: any,
   ): Promise<{ courseId: number; user: UserModel }> {
-    const question = await QuestionModel.findOne(request.params.questionId);
-    const queue = await QueueModel.findOne(question.queueId);
+    let queueId = request.params.queueId;
+
+    //specific case when we are posting a new question to the queue
+    if (request.params.questionId && queueId) {
+      const question = await QuestionModel.findOne(request.params.questionId);
+      queueId = question.queueId;
+    }
+
+    const queue = await QueueModel.findOne(queueId);
+
+    // You cannot interact with a question in a nonexistent queue
+    if (!queue) {
+      throw new NotFoundException('This queue does not exist!');
+    }
     const courseId = queue.courseId;
     const user = await UserModel.findOne(request.user.userId, {
       relations: ['courses'],
     });
+
     return { courseId, user };
   }
 }

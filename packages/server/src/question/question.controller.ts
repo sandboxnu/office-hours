@@ -45,21 +45,10 @@ export class QuestionController {
   @Get(':questionId')
   async getQuestion(
     @Param('questionId') questionId: number,
-    @User(['courses']) user: UserModel,
   ): Promise<GetQuestionResponse> {
     const question = await QuestionModel.findOne(questionId, {
       relations: ['creator', 'taHelped'],
     });
-
-    const userRoleInCourse = user.courses.find(
-      (course) => course.id === question.queue.courseId,
-    ).role;
-
-    if (userRoleInCourse === Role.STUDENT && question.creatorId !== user.id) {
-      throw new UnauthorizedException(
-        'You do not have permission to access a question that is not yours',
-      );
-    }
 
     if (question === undefined) {
       throw new NotFoundException();
