@@ -5,9 +5,9 @@ import { ReactElement } from "react";
 import styled from "styled-components";
 import {
   CenterRow,
+  questionStatusToColor,
   StatusTag,
   Text,
-  questionStatusToColor,
 } from "./QueueCardSharedComponents";
 
 const HorizontalStudentCard = styled(Card)`
@@ -24,10 +24,15 @@ const NameContainer = styled.div`
   margin-left: 16px;
 `;
 
+const bodyStyle = {
+  backgroundColor: "#F6FFED",
+};
+
 interface StudentQueueCardProps {
   question: Question;
   waitTime: number;
   rank: number;
+  highlighted: boolean;
 }
 
 /**
@@ -37,9 +42,13 @@ export default function StudentQueueCard({
   question,
   waitTime,
   rank,
+  highlighted,
 }: StudentQueueCardProps): ReactElement {
   return (
-    <HorizontalStudentCard>
+    <HorizontalStudentCard
+      style={highlighted ? bodyStyle : {}}
+      bordered={!highlighted}
+    >
       <CenterRow justify="space-between">
         <Col span={1}>
           <Text>{rank}</Text>

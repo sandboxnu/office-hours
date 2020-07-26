@@ -134,7 +134,7 @@ const StudentPopupCard = ({
               type="primary"
               onClick={() => {
                 updateQuestion(question, OpenQuestionStatus.Helping);
-                if (question.online) {
+                if (question.isOnline) {
                   window.open(
                     `https://teams.microsoft.com/l/chat/0/0?users=${question.creator.email}`
                   );
@@ -176,7 +176,7 @@ const StudentPopupCard = ({
         <FullWidth>
           <HeadingText>location</HeadingText>
           <BodyText>
-            {question.location || (question.online && "Online")}
+            {question.location || (question.isOnline && "Online")}
           </BodyText>
         </FullWidth>
       </Container>
