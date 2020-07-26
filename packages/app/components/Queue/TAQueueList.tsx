@@ -45,7 +45,7 @@ const HeaderText = styled.div`
 
 const QueueTitle = styled.div`
   font-weight: 500;
-  font-size: 30px;
+  font-size: 24px;
   color: #212934;
 
   // unicode zero width space character to prevent layout shifting during loading
