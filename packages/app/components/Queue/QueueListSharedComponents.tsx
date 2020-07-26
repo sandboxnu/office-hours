@@ -26,7 +26,7 @@ export default function QueueListHeader({
         <QueueTitle>{queue?.room}</QueueTitle>
       </Col>
       <Col span={4}></Col>
-      {/* If you need times, check out TODO: */}
+      {/* If you need times, check out https://github.com/sandboxnu/office-hours/commit/24b4f2e0c9b80b8288f96ea85a8d48222dcff032 */}
       <Col span={4}>
         {queue?.staffList.length > 0 && (
           <>
