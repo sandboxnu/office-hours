@@ -200,6 +200,8 @@ export default function TAQueueList({
 
   const isStaffCheckedIn = queue?.staffList.some((e) => e.id === user.id);
 
+  const helpNext = async () => {};
+
   /**
    * Renders the card headers for a TA who is not yet helping someone.
    */

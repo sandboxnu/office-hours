@@ -264,7 +264,6 @@ export interface GetCourseResponse {
   officeHours: Array<{
     id: number;
     title: string;
-    room: string;
     startTime: Date;
     endTime: Date;
   }>;
