@@ -101,7 +101,9 @@ const StudentInfoCard = ({
           <HeadingText>question</HeadingText>
           <BodyText>{question.text ?? ""}</BodyText>
           <HeadingText>location</HeadingText>
-          <BodyText>Outside room, by the couches</BodyText>
+          <BodyText>
+            {question.isOnline ? "online" : question.location}
+          </BodyText>
         </Col>
       </Row>
 
