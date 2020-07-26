@@ -1,17 +1,16 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  BaseEntity,
-  ManyToOne,
-  JoinColumn,
-  CreateDateColumn,
-} from 'typeorm';
+import { QuestionStatus, QuestionType } from '@template/common';
 import { Exclude } from 'class-transformer';
-import { UserCourseModel } from '../profile/user-course.entity';
-import { QueueModel } from '../queue/queue.entity';
-import { QuestionType, QuestionStatus } from '@template/common';
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { UserModel } from '../profile/user.entity';
+import { QueueModel } from '../queue/queue.entity';
 
 @Entity('question_model')
 export class QuestionModel extends BaseEntity {
@@ -60,4 +59,10 @@ export class QuestionModel extends BaseEntity {
 
   @Column('text')
   status: QuestionStatus;
+
+  @Column({ nullable: true })
+  location: string;
+
+  @Column({ nullable: true })
+  isOnline: boolean;
 }

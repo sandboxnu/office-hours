@@ -89,7 +89,7 @@ const StudentInfoCard = ({
       title={
         <Row justify="space-between">
           <Name>{question.creator.name}</Name>
-          <Email>takayama.a@northeastern.edu</Email>
+          <Email>{question.creator.email}</Email>
         </Row>
       }
     >
@@ -101,7 +101,9 @@ const StudentInfoCard = ({
           <HeadingText>question</HeadingText>
           <BodyText>{question.text ?? ""}</BodyText>
           <HeadingText>location</HeadingText>
-          <BodyText>Outside room, by the couches</BodyText>
+          <BodyText>
+            {question.isOnline ? "online" : question.location}
+          </BodyText>
         </Col>
       </Row>
 

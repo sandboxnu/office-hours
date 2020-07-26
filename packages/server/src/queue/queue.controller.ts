@@ -29,9 +29,14 @@ export class QueueController {
 
   @Get(':queueId')
   async getQueue(@Param('queueId') queueId: string): Promise<GetQueueResponse> {
-    return QueueModel.findOne(queueId, {
-      relations: ['questions', 'staffList'],
+    const queue = await QueueModel.findOne(queueId, {
+      relations: ['staffList'],
     });
+
+    const questions = await QuestionModel.find({ where: { queueId } });
+
+    queue.questions = questions;
+    return queue;
   }
 
   @Get(':queueId/questions')
@@ -56,6 +61,9 @@ export class QueueController {
         },
       ],
       relations: ['creator', 'taHelped'],
+      order: {
+        createdAt: 'ASC',
+      },
     });
   }
 

@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import useSWR from "swr";
 import { API } from "@template/api-client";
 import Router from "next/router";
@@ -12,10 +11,7 @@ export const useProfile: Hook = () => {
   );
 
   // Redirect to login page (later Khoury Admin login) if API request returns an error or empty object
-  if (
-    error ||
-    (data && Object.keys(data).length === 0 && data.constructor === Object)
-  ) {
+  if (error?.response?.status === 401) {
     Router.push("/login");
   } else if (data) {
     return data;

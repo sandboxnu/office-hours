@@ -12,6 +12,7 @@ import {
   TAUpdateStatusResponse,
   UpdateQuestionParams,
   UpdateQuestionResponse,
+  UpdateProfileParams,
 } from "@template/common";
 import Axios, { AxiosInstance } from "axios";
 
@@ -20,6 +21,9 @@ class APIClient {
   profile = {
     index: async (): Promise<GetProfileResponse> => {
       return (await this.axios.get(`/api/v1/profile`)).data;
+    },
+    patch: async (body: UpdateProfileParams): Promise<GetProfileResponse> => {
+      return (await this.axios.patch(`/api/v1/profile`, body)).data;
     },
   };
   course = {

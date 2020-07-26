@@ -1,4 +1,8 @@
-import { QuestionStatusKeys, QuestionType } from '@template/common';
+import {
+  OpenQuestionStatus,
+  QuestionStatusKeys,
+  QuestionType,
+} from '@template/common';
 import { QuestionModel } from '../src/question/question.entity';
 import { QuestionModule } from '../src/question/question.module';
 import {
@@ -67,6 +71,32 @@ describe('Question Integration', () => {
           questionType: 'bad param!',
         })
         .expect(400);
+    });
+    it.only("can't create more than one open question at a time", async () => {
+      const user = await UserFactory.create();
+      const queue = await QueueFactory.create();
+      await StudentCourseFactory.create({
+        userId: user.id,
+        courseId: queue.courseId,
+      });
+      await QuestionFactory.create({
+        queueId: queue.id,
+        creator: user,
+        status: OpenQuestionStatus.Drafting,
+      });
+
+      const response = await supertest({ userId: user.id })
+        .post('/questions')
+        .send({
+          text: 'i need to know where the alamo is',
+          queueId: queue.id,
+          questionType: QuestionType.Bug,
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe(
+        "You can't create more than one question fuck ligma stanley",
+      );
     });
   });
 
