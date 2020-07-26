@@ -1,11 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as twilio from 'twilio';
 import { Connection, DeepPartial } from 'typeorm';
 import * as webPush from 'web-push';
 import { UserModel } from '../profile/user.entity';
 import { DesktopNotifModel } from './desktop-notif.entity';
 import { PhoneNotifModel } from './phone-notif.entity';
+import { TwilioService } from './twilio/twilio.service';
+import twilio from 'twilio';
 
 const phoneResponses = {
   WRONG_MESSAGE:
@@ -20,19 +21,16 @@ const phoneResponses = {
     'Thank you for verifying your number with Khoury Office Hours! You are now signed up for text notifications!',
 };
 
+//TODO test this service omg
 @Injectable()
 export class NotificationService {
-  private twilioClient: twilio.Twilio;
   desktopPublicKey: string;
 
   constructor(
     private connection: Connection,
     private configService: ConfigService,
+    private twilioService: TwilioService
   ) {
-    this.twilioClient = twilio(
-      this.configService.get('TWILIOACCOUNTSID'),
-      this.configService.get('TWILIOAUTHTOKEN'),
-    );
     webPush.setVapidDetails(
       this.configService.get('EMAIL'),
       this.configService.get('PUBLICKEY'),
@@ -46,20 +44,32 @@ export class NotificationService {
   }
 
   async registerPhone(phoneNumber: string, userId: number): Promise<void> {
-    try {
-      phoneNumber = (
-        await this.twilioClient.lookups.phoneNumbers(phoneNumber).fetch()
-      ).phoneNumber;
-    } catch (err) {
-      // if the phone number is not found, then endpoint should return invalid
+    if(!this.twilioService.isPhoneNumberReal) {
       throw new BadRequestException('phone number invalid');
     }
 
-    const phoneNotifModel = await PhoneNotifModel.create({
-      phoneNumber,
+    let phoneNotifModel = await PhoneNotifModel.findOne({
       userId,
-      verified: false,
-    }).save();
+      phoneNumber,
+    });
+
+    if (phoneNotifModel) {
+      // Phone number has not changed
+      if (phoneNotifModel.phoneNumber === phoneNumber) {
+        return;
+      } else {
+        // Need to just change it
+        phoneNotifModel.phoneNumber = phoneNumber;
+        phoneNotifModel.verified = false;
+        await phoneNotifModel.save();
+      }
+    } else {
+      phoneNotifModel = await PhoneNotifModel.create({
+        phoneNumber,
+        userId,
+        verified: false,
+      }).save();
+    }
 
     await this.notifyPhone(
       phoneNotifModel,
@@ -74,18 +84,20 @@ export class NotificationService {
       where: {
         id: userId,
       },
-      relations: ['desktopNotifs', 'phoneNotifs'],
+      relations: ['desktopNotifs', 'phoneNotif'],
     });
 
     // run the promises concurrently
-    await Promise.all([
-      ...notifModelsOfUser.desktopNotifs.map(async (nm) =>
-        this.notifyDesktop(nm, message),
-      ),
-      ...notifModelsOfUser.phoneNotifs.map(async (pn) => {
-        this.notifyPhone(pn, message, false);
-      }),
-    ]);
+    if (notifModelsOfUser.desktopNotifsEnabled) {
+      await Promise.all(
+        notifModelsOfUser.desktopNotifs.map(async (nm) =>
+          this.notifyDesktop(nm, message),
+        ),
+      );
+    }
+    if (notifModelsOfUser.phoneNotif && notifModelsOfUser.phoneNotifsEnabled) {
+      this.notifyPhone(notifModelsOfUser.phoneNotif, message, false);
+    }
   }
 
   // notifies a user via desktop notification
@@ -114,12 +126,7 @@ export class NotificationService {
   ): Promise<void> {
     if (force || pn.verified) {
       try {
-        this.twilioClient &&
-          (await this.twilioClient.messages.create({
-            body: message,
-            from: this.configService.get('TWILIOPHONENUMBER'),
-            to: pn.phoneNumber,
-          }));
+        await this.twilioService.sendSMS(pn.phoneNumber, message);
       } catch (error) {
         console.error('problem sending message', error);
       }

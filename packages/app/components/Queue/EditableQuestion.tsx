@@ -84,9 +84,7 @@ export default function EditableQuestion({
         </Col>
         <Col span={17}>
           <HeadingText>your spot</HeadingText>
-          <SpotNum>
-            {toOrdinal(position)}
-          </SpotNum>
+          <SpotNum>{toOrdinal(position)}</SpotNum>
           <HeadingText>type</HeadingText>
           <InfoText>{type}</InfoText>
           <HeadingText>question</HeadingText>
