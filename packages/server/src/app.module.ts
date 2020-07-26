@@ -15,6 +15,7 @@ import { QuestionModel } from './question/question.entity';
 import { QuestionModule } from './question/question.module';
 import { QueueModel } from './queue/queue.entity';
 import { QueueModule } from './queue/queue.module';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { QueueModule } from './queue/queue.module';
     QueueModule,
     NotificationModule,
     QuestionModule,
+    SeedModule, // Include this condidtionally, based on if the env is set
     ConfigModule.forRoot({
       envFilePath: [
         '.env',
