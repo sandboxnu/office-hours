@@ -149,4 +149,4 @@ function parseQuestionDates(question: any): void {
   question.closedAt ? (question.closedAt = new Date(question.closedAtt)) : null;
 }
 
-export const API = new APIClient(process.env.API_URL);
+export const API = new APIClient(process.env.NEXT_PUBLIC_API_URL);
