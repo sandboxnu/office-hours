@@ -47,6 +47,6 @@ export class OfficeHourModel extends BaseEntity {
 
   @Expose()
   get room(): string {
-    return this.queue.room;
+    return this.queue?.room;
   }
 }
