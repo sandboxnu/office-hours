@@ -27,7 +27,8 @@
     "react-dom": "16.13.1",
     "socket.io-client": "^2.3.0",
     "styled-components": "^5.1.0",
-    "swr": "^0.2.2"
+    "swr": "^0.2.2",
+    "use-onclickoutside": "^0.3.1"
   },
   "devDependencies": {
     "@babel/plugin-proposal-decorators": "^7.10.5",
