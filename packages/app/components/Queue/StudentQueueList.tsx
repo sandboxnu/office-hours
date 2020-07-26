@@ -270,10 +270,11 @@ export default function StudentQueueList({
                 />
               )}
             </Row>
-            <Row>
-              <QueueListHeader queue={queue} />
-              <Col span={10}></Col>
-              <Col span={2}>
+            <Row justify="space-between">
+              <Col>
+                <QueueListHeader queue={queue} />
+              </Col>
+              <Col>
                 {!studentQuestion && (
                   <JoinButton
                     type="primary"
@@ -284,14 +285,6 @@ export default function StudentQueueList({
                   </JoinButton>
                 )}
               </Col>
-            </Row>
-            <Row>
-              {queue?.notes && (
-                <div>
-                  <HeaderText>staff notes</HeaderText>
-                  {queue.notes}
-                </div>
-              )}
             </Row>
             {questions?.length === 0 ? (
               <h1 style={{ marginTop: "50px" }}>

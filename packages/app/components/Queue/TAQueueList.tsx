@@ -316,10 +316,11 @@ export default function TAQueueList({
       <div>
         <Row gutter={[64, 64]}>
           <Col flex="auto" order={screens.lg === false ? 2 : 1}>
-            <Row>
-              <QueueListHeader queue={queue} />
-              <Col span={8}></Col>
-              <Col span={4}>
+            <Row justify="space-between">
+              <Col>
+                <QueueListHeader queue={queue} />
+              </Col>
+              <Col>
                 <Tooltip
                   title={
                     !isStaffCheckedIn && "You must check in to help students!"
@@ -352,14 +353,6 @@ export default function TAQueueList({
                   </CheckInButton>
                 )}
               </Col>
-            </Row>
-            <Row>
-              {queue?.notes && (
-                <div>
-                  <HeaderText>staff notes</HeaderText>
-                  {queue.notes}
-                </div>
-              )}
             </Row>
             {!helping && renderTAHeader()}
             {helping && renderHelpingHeader()}
