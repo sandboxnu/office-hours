@@ -16,8 +16,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:integration": "jest --config ./test/jest-integration.json -i",
-    "dev:db:seed": "yarn fixtures -c ../../ormconfig.js fixtures/ --sync --require=ts-node/register",
-    "dev:db:reset": "echo 'DROP DATABASE dev;' | psql -U postgres -h localhost && echo 'CREATE DATABASE dev;' | psql -U postgres -h localhost"
+    "dev:db:seed": "yarn fixtures -c ./ormconfig.ts fixtures/ --sync --require=ts-node/register",
+    "dev:db:reset": "echo 'DROP DATABASE dev;' | psql -U postgres -h localhost && echo 'CREATE DATABASE dev;' | psql -U postgres -h localhost",
+    "typeorm": "ts-node node_modules/.bin/typeorm"
   },
   "dependencies": {
     "@nestjs/common": "^7.0.0",
@@ -29,8 +30,11 @@
     "@nestjs/schedule": "^0.4.0",
     "@nestjs/typeorm": "^7.1.0",
     "@template/common": "*",
+    "@types/bcrypt": "^3.0.0",
+    "bcrypt": "^5.0.0",
     "cookie-parser": "^1.4.5",
     "lodash": "^4.17.19",
+    "nestjs-admin": "^0.4.0",
     "node-ical": "^0.11.3",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
