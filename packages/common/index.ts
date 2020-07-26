@@ -217,6 +217,7 @@ export enum ClosedQuestionStatus {
   Deferred = "Deferred",
   NoShow = "NoShow",
   Deleted = "Deleted",
+  Stale = "Stale",
 }
 
 // Ticket Status - Represents a given status of as student's ticket
