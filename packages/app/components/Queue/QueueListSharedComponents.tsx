@@ -1,6 +1,5 @@
-import { ClockCircleFilled } from "@ant-design/icons";
 import { QueuePartial } from "@template/common";
-import { Col, Row, Tooltip, Avatar } from "antd";
+import { Avatar, Col, Tooltip } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
 
@@ -26,37 +25,8 @@ export default function QueueListHeader({
       <Col span={4}>
         <QueueTitle>{queue?.room}</QueueTitle>
       </Col>
-      <Col span={4}>
-        {queue?.time /*temp, if times get added res this, and clean it up*/ ? (
-          <Row align="middle">
-            <div
-              style={{
-                display: "inline-flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <ClockCircleFilled
-                style={{
-                  display: "inline-block",
-                  verticalAlign: "middle",
-                }}
-              />
-              <h3>
-                {queue?.time?.start.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-                aaa - bbb
-                {queue?.time?.end.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </h3>
-            </div>
-          </Row>
-        ) : null}
-      </Col>
+      <Col span={4}></Col>
+      {/* If you need times, check out TODO: */}
       <Col span={4}>
         {queue?.staffList.length > 0 && (
           <>

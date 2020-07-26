@@ -10,15 +10,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { GetCourseResponse, QueuePartial, Role } from '@template/common';
-import { uniq } from 'lodash';
 import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../profile/jwt-auth.guard';
 import { UserCourseModel } from '../profile/user-course.entity';
 import { User } from '../profile/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
-import { CourseModel } from './course.entity';
 import { QueueService } from '../queue/queue.service';
+import { CourseModel } from './course.entity';
 
 @Controller('courses')
 @UseGuards(JwtAuthGuard)
@@ -81,6 +80,7 @@ export class CourseController {
         room,
         courseId,
         staffList: [],
+        questions: [],
       }).save();
     }
 
