@@ -1,13 +1,13 @@
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
-import { Avatar, Input, message, Form, Modal, Row, Switch } from "antd";
-import { register, unregister } from "next-offline/runtime";
+import { API } from "@template/api-client";
+import { UpdateProfileParams } from "@template/common";
+import { Avatar, Form, Input, Modal, Row, Switch } from "antd";
+import { pick } from "lodash";
+import { register } from "next-offline/runtime";
 import Link from "next/link";
 import React, { useState } from "react";
-import { pick } from "lodash";
 import styled from "styled-components";
-import { API } from "@template/api-client";
 import useSWR from "swr";
-import { PatchProfileParams } from "@template/common";
 
 const AvatarButton = styled.div`
   cursor: pointer;
@@ -60,7 +60,7 @@ export default function Settings() {
   const [form] = Form.useForm();
   const [isOpen, setIsOpen] = useState(false);
 
-  const editProfile = async (updateProfile: PatchProfileParams) => {
+  const editProfile = async (updateProfile: UpdateProfileParams) => {
     const newProfile = { ...profile, ...updateProfile };
     mutate(newProfile, false);
     await API.profile.patch(

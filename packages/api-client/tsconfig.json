@@ -1,12 +1,4 @@
 {
-  "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
-    "strict": true,
-    "isolatedModules": true,
-    "noEmit": true
-  },
-  "exclude": ["node_modules", "dist"],
-  "include": ["**/*.ts"],
-  "references": [{ "path": "../common" }]
+  "extends": "../../tsconfig.json",
+  "include": ["index.ts"]
 }

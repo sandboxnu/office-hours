@@ -1,11 +1,11 @@
 import {
+  IsBoolean,
   IsEnum,
   IsInt,
+  IsNotEmpty,
   IsOptional,
   IsString,
-  IsBoolean,
   ValidateIf,
-  IsNotEmpty,
 } from "class-validator";
 import "reflect-metadata";
 
@@ -177,7 +177,7 @@ export type Question = {
   questionType?: QuestionType;
   status: QuestionStatus;
   location?: string;
-  online?: boolean;
+  isOnline?: boolean;
 };
 
 // Question Types
@@ -266,12 +266,12 @@ export class UpdateProfileParams {
   @IsBoolean()
   @IsOptional()
   desktopNotifsEnabled?: boolean;
-  
+
   @IsBoolean()
   @IsOptional()
   phoneNotifsEnabled?: boolean;
 
-  @ValidateIf(o=>o.phoneNotifsEnabled)
+  @ValidateIf((o) => o.phoneNotifsEnabled)
   @IsString()
   @IsNotEmpty()
   phoneNumber?: string;
@@ -309,6 +309,14 @@ export class CreateQuestionParams {
 
   @IsInt()
   queueId!: number;
+
+  @IsBoolean()
+  @IsOptional()
+  isOnline?: boolean;
+
+  @IsString()
+  @IsOptional()
+  location?: string;
 }
 export type CreateQuestionResponse = Question;
 
@@ -328,6 +336,14 @@ export class UpdateQuestionParams {
   @IsEnum(QuestionStatusKeys)
   @IsOptional()
   status?: QuestionStatus;
+
+  @IsBoolean()
+  @IsOptional()
+  isOnline?: boolean;
+
+  @IsString()
+  @IsOptional()
+  location?: string;
 }
 export type UpdateQuestionResponse = Question;
 

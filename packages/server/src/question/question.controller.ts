@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   ClassSerializerInterceptor,
   Controller,
@@ -85,6 +86,19 @@ export class QuestionController {
       );
     }
 
+    const userAlreadyHasOpenQuestion =
+      (await QuestionModel.count({
+        where: {
+          creatorId: user.id,
+          status: In(Object.values(OpenQuestionStatus)),
+        },
+      })) > 0;
+
+    if (userAlreadyHasOpenQuestion) {
+      throw new BadRequestException(
+        "You can't create more than one question fuck ligma stanley",
+      );
+    }
     const question = await QuestionModel.create({
       queueId: queueId,
       creator: user,

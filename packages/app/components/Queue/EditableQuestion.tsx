@@ -3,6 +3,7 @@ import { QuestionType } from "@template/common";
 import { Avatar, Button, Card, Col, Popconfirm, Row } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
+import { toOrdinal } from "../../utils/ordinal";
 
 const EditableQuestionCard = styled(Card)`
   margin-bottom: 8px;
@@ -83,7 +84,7 @@ export default function EditableQuestion({
         </Col>
         <Col span={17}>
           <HeadingText>your spot</HeadingText>
-          <SpotNum>{position}rd</SpotNum>
+          <SpotNum>{toOrdinal(position)}</SpotNum>
           <HeadingText>type</HeadingText>
           <InfoText>{type}</InfoText>
           <HeadingText>question</HeadingText>
@@ -92,13 +93,8 @@ export default function EditableQuestion({
           <InfoText>{location}</InfoText>
         </Col>
       </Row>
-      <Row style={{ marginTop: 16 }} gutter={[8, 8]}>
-        <Col span={12}>
-          <TopButton>AFK</TopButton>
-        </Col>
-        <Col span={12}>
-          <TopButton onClick={openEdit}>Edit Question</TopButton>
-        </Col>
+      <Row style={{ marginBottom: 8 }}>
+        <TopButton onClick={openEdit}>Edit Question</TopButton>
       </Row>
       <Popconfirm
         title={`Are you sure you want to leave the queue?`}
