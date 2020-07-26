@@ -311,81 +311,85 @@ export default function TAQueueList({
     );
   };
 
-  return (
-    <div>
-      <Row gutter={[64, 64]}>
-        <Col flex="auto" order={screens.lg === false ? 2 : 1}>
-          <Row>
-            <QueueListHeader queue={queue} />
-            <Col span={8}></Col>
-            <Col span={4}>
-              <Tooltip
-                title={
-                  !isStaffCheckedIn && "You must check in to help students!"
-                }
-              >
-                <HelpNextButton disabled={!isStaffCheckedIn} size="large">
-                  Help Next
-                </HelpNextButton>
-              </Tooltip>
-              {isStaffCheckedIn ? (
-                <CheckOutButton
-                  danger
-                  size="large"
-                  onClick={async () => {
-                    await API.taStatus.checkOut(courseId, queue?.room);
-                    mutateQueue();
-                  }}
+  if (queue && questions) {
+    return (
+      <div>
+        <Row gutter={[64, 64]}>
+          <Col flex="auto" order={screens.lg === false ? 2 : 1}>
+            <Row>
+              <QueueListHeader queue={queue} />
+              <Col span={8}></Col>
+              <Col span={4}>
+                <Tooltip
+                  title={
+                    !isStaffCheckedIn && "You must check in to help students!"
+                  }
                 >
-                  Check Out
-                </CheckOutButton>
-              ) : (
-                <CheckInButton
-                  onClick={async () => {
-                    await API.taStatus.checkIn(courseId, queue?.room);
-                    mutateQueue();
-                  }}
-                  size="large"
-                >
-                  Check In
-                </CheckInButton>
+                  <HelpNextButton disabled={!isStaffCheckedIn} size="large">
+                    Help Next
+                  </HelpNextButton>
+                </Tooltip>
+                {isStaffCheckedIn ? (
+                  <CheckOutButton
+                    danger
+                    size="large"
+                    onClick={async () => {
+                      await API.taStatus.checkOut(courseId, queue?.room);
+                      mutateQueue();
+                    }}
+                  >
+                    Check Out
+                  </CheckOutButton>
+                ) : (
+                  <CheckInButton
+                    onClick={async () => {
+                      await API.taStatus.checkIn(courseId, queue?.room);
+                      mutateQueue();
+                    }}
+                    size="large"
+                  >
+                    Check In
+                  </CheckInButton>
+                )}
+              </Col>
+            </Row>
+            <Row>
+              {queue?.notes && (
+                <div>
+                  <HeaderText>staff notes</HeaderText>
+                  {queue.notes}
+                </div>
               )}
-            </Col>
-          </Row>
-          <Row>
-            {queue?.notes && (
-              <div>
-                <HeaderText>staff notes</HeaderText>
-                {queue.notes}
-              </div>
-            )}
-          </Row>
-          {!helping && renderTAHeader()}
-          {helping && renderHelpingHeader()}
-          {questions?.map((question: Question, index: number) => {
-            return helping ? (
-              <TAHelpingCard rank={index + 1} question={question} />
-            ) : (
-              <TAQueueCard
-                rank={index + 1}
-                question={question}
-                onOpen={onOpenClick}
-              />
-            );
-          })}
-        </Col>
-        {helping && renderHelpingTitle()}
-      </Row>
-      {currentQuestion && (
-        <StudentPopupCard
-          onClose={onCloseClick}
-          wait={20} //figure out later
-          question={currentQuestion}
-          visible={openPopup}
-          updateQuestion={updateQuestionTA}
-          isStaffCheckedIn={isStaffCheckedIn}
-        />
-      )}
-    </div>
-  );
+            </Row>
+            {!helping && renderTAHeader()}
+            {helping && renderHelpingHeader()}
+            {questions?.map((question: Question, index: number) => {
+              return helping ? (
+                <TAHelpingCard rank={index + 1} question={question} />
+              ) : (
+                <TAQueueCard
+                  rank={index + 1}
+                  question={question}
+                  onOpen={onOpenClick}
+                />
+              );
+            })}
+          </Col>
+          {helping && renderHelpingTitle()}
+        </Row>
+        {currentQuestion && (
+          <StudentPopupCard
+            onClose={onCloseClick}
+            wait={20} //figure out later
+            question={currentQuestion}
+            visible={openPopup}
+            updateQuestion={updateQuestionTA}
+            isStaffCheckedIn={isStaffCheckedIn}
+          />
+        )}
+      </div>
+    );
+  } else {
+    return <div />;
+  }
 }
