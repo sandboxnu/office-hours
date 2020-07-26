@@ -14,7 +14,7 @@ export async function bootstrap(hot: any): Promise<void> {
   app.setGlobalPrefix('api/v1');
   app.useGlobalInterceptors(new LoggingInterceptor());
   if(process.env.NODE_ENV==='production'){
-    app.enableCors({origin: /\.sandboxneu\.vercel\.app/});
+    app.enableCors({origin: [/\.sandboxneu\.vercel\.app/, /\.sandboxneu\.now\.sh/]});
   }
   await app.listen(3002);
 
