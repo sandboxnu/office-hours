@@ -1,11 +1,12 @@
 import styled from "styled-components";
 import React, { useState, ReactElement } from "react";
-import LeftNavBar from "./LeftNavBar";
+import NavBarTabs, { NavBarTabsItem } from "./NavBarTabs";
 import { Drawer, Button, Menu } from "antd";
 import Link from "next/link";
 import { API } from "@template/api-client";
 import useSWR from "swr";
 import Settings from ".//Settings";
+import { useRouter } from "next/router";
 
 const Nav = styled.nav`
   padding: 0px 0px;
@@ -103,6 +104,7 @@ interface NavBarProps {
 
 export default function NavBar({ courseId }: NavBarProps): ReactElement {
   const [visible, setVisible] = useState<boolean>(false);
+  const { pathname } = useRouter();
 
   const { data: course, error } = useSWR(
     courseId && `api/v1/courses/${courseId}`,
@@ -119,6 +121,28 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     setVisible(false);
   };
 
+  const tabs: NavBarTabsItem[] = [
+    {
+      href: "/course/[cid]/today",
+      as: `/course/${courseId}/today`,
+      text: "Today",
+    },
+    {
+      href: "/course/[cid]/schedule",
+      as: `/course/${courseId}/schedule`,
+      text: "Schedule",
+    },
+    ...(queueId
+      ? [
+          {
+            href: "/course/[cid]/queue/[qid]",
+            as: `/course/${courseId}/queue/${queueId}`,
+            text: "Queue",
+          },
+        ]
+      : []),
+  ];
+
   return (
     <Nav>
       <LogoContainer>
@@ -128,7 +152,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
       </LogoContainer>
       <MenuCon>
         <LeftMenu>
-          <LeftNavBar courseId={courseId} queueId={queueId} />
+          <NavBarTabs horizontal currentHref={pathname} tabs={tabs} />
         </LeftMenu>
         <RightMenu>
           <Settings />
@@ -145,32 +169,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
         onClose={onClose}
         bodyStyle={{ padding: "12px" }}
       >
-        <Menu>
-          <Menu.Item key="today">
-            <Link href="/course/[cid]/today" as={`/course/${courseId}/today`}>
-              <a>Today</a>
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="schedule">
-            <Link
-              href="/course/[cid]/schedule"
-              as={`/course/${courseId}/schedule`}
-            >
-              <a>Schedule</a>
-            </Link>
-          </Menu.Item>
-          {queueId && (
-            <Menu.Item key="queue">
-              <Link
-                href="/course/[cid]/queue/[qid]"
-                as={`/course/${courseId}/queue/${queueId}`}
-              >
-                <a>Queue</a>
-              </Link>
-            </Menu.Item>
-          )}
-          <Settings />
-        </Menu>
+        <NavBarTabs currentHref={pathname} tabs={tabs} />
       </Drawer>
     </Nav>
   );
