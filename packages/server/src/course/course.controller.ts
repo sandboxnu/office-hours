@@ -10,7 +10,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { GetCourseResponse, QueuePartial, Role } from '@template/common';
-import { uniq } from 'lodash';
 import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../profile/jwt-auth.guard';
 import { UserCourseModel } from '../profile/user-course.entity';
@@ -37,6 +36,7 @@ export class CourseController {
         'officeHours',
         'queues',
         'queues.staffList',
+        'queues.questions',
         'queues.officeHours',
       ],
     });
@@ -73,7 +73,7 @@ export class CourseController {
         room,
         courseId,
       },
-      { relations: ['staffList'] },
+      { relations: ['staffList', 'questions'] },
     );
 
     if (!queue) {
@@ -81,6 +81,7 @@ export class CourseController {
         room,
         courseId,
         staffList: [],
+        questions: [],
       }).save();
     }
 
