@@ -147,10 +147,6 @@ export interface QueuePartial {
   staffList: UserPartial[];
   queueSize: number;
   notes?: string;
-  time?: {
-    start: Date;
-    end: Date;
-  };
   // TODO: Add wait time?
 }
 

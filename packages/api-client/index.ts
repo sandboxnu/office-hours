@@ -32,12 +32,7 @@ class APIClient {
       course.officeHours.forEach((officeHour: any) =>
         parseOfficeHourDates(officeHour)
       );
-      course.queues.forEach((q: QueuePartial) => {
-        if (q.time) {
-          q.time.start = new Date(q.time.start);
-          q.time.end = new Date(q.time.end);
-        }
-      });
+      // If you need to add time to queues check out this commit:
       return course;
     },
   };
