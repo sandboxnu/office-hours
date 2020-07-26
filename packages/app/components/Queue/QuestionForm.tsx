@@ -1,10 +1,10 @@
 import { Question, QuestionType } from "@template/common";
 import { Alert, Button, Input, Radio } from "antd";
 import { RadioChangeEvent } from "antd/lib/radio";
-import numbro from "numbro";
 import { default as React, ReactElement, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { toOrdinal } from "../../utils/ordinal";
 
 const Container = styled.div`
   max-width: 960px;
@@ -125,9 +125,7 @@ export default function QuestionForm({
   return (
     <Container>
       <Alert
-        message={`You are currently ${numbro(position).format({
-          output: "ordinal",
-        })} in queue`}
+        message={`You are currently ${toOrdinal(position)} in queue`}
         description="Your spot in queue has been temporarily reserved. Please describe your question to finish joining the queue."
         type="success"
         showIcon
