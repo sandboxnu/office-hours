@@ -81,3 +81,7 @@ Create or get existing ssh key for the CD environment (GH Actions)
 Add the public key to `~/.ssh/authorized_keys` or use `ssh-copy-id` utility from your local machine.
 
 https://www.ssh.com/ssh/copy-id
+
+### Add Certbot for HTTPS
+
+https://certbot.eff.org/lets-encrypt/ubuntubionic-nginx

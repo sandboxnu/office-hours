@@ -7,6 +7,7 @@ import * as supertest from 'supertest';
 import { ProfileModule } from '../../src/profile/profile.module';
 import { JwtService } from '@nestjs/jwt';
 import { addGlobalsToApp } from '../../src/bootstrap';
+import { TwilioService } from '../../src/notification/twilio/twilio.service';
 
 export interface SupertestOptions {
   userId?: number;
@@ -21,6 +22,12 @@ export const TestTypeOrmModule = TypeOrmModule.forRoot({
   entities: ['./**/*.entity.ts'],
   synchronize: true,
 });
+
+// Fake twilio so we don't try to text people in tests
+const mockTwilio = {
+  isPhoneNumberReal: async () => true,
+  sendSMS: async () => null,
+};
 
 export function setupIntegrationTest(
   module: Type<any>,
@@ -40,7 +47,10 @@ export function setupIntegrationTest(
           isGlobal: true,
         }),
       ],
-    }).compile();
+    })
+      .overrideProvider(TwilioService)
+      .useValue(mockTwilio)
+      .compile();
     app = testModule.createNestApplication();
     addGlobalsToApp(app);
     jwtService = testModule.get<JwtService>(JwtService);

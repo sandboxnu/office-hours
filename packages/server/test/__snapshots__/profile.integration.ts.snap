@@ -11,9 +11,11 @@ Object {
       "role": "student",
     },
   ],
+  "desktopNotifsEnabled": false,
   "email": "user1@neu.edu",
   "id": 1,
   "name": "John Doe the 1th",
+  "phoneNotifsEnabled": false,
   "photoURL": "https://pics/1",
 }
 `;

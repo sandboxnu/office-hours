@@ -21,6 +21,50 @@ describe('Profile Integration', () => {
       expect(res.body).toMatchSnapshot();
     });
 
-    it('returns 401 when not logged in', () => {});
+    it('returns 401 when not logged in', async () => {
+      await UserFactory.create();
+      await supertest().get('/profile').expect(401);
+    });
+  });
+
+  describe('PATCH /profile', () => {
+    it('enables desktop notifs', async () => {
+      const user = await UserFactory.create({
+        desktopNotifsEnabled: false,
+        phoneNotifsEnabled: false,
+      });
+      const res = await supertest({ userId: user.id })
+        .patch('/profile')
+        .send({ desktopNotifsEnabled: true })
+        .expect(200);
+      expect(res.body).toMatchObject({
+        desktopNotifsEnabled: true,
+        phoneNotifsEnabled: false,
+      });
+    });
+    it('enables phone notifs', async () => {
+      const user = await UserFactory.create({
+        desktopNotifsEnabled: false,
+        phoneNotifsEnabled: false,
+      });
+      const res = await supertest({ userId: user.id })
+        .patch('/profile')
+        .send({ phoneNotifsEnabled: true, phoneNumber: '911' })
+        .expect(200);
+      expect(res.body).toMatchObject({
+        desktopNotifsEnabled: false,
+        phoneNotifsEnabled: true,
+      });
+    });
+    it('does not let student enable without phone number', async () => {
+      const user = await UserFactory.create({
+        desktopNotifsEnabled: false,
+        phoneNotifsEnabled: false,
+      });
+      await supertest({ userId: user.id })
+        .patch('/profile')
+        .send({ phoneNotifsEnabled: true })
+        .expect(400);
+    });
   });
 });

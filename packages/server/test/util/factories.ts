@@ -30,7 +30,6 @@ export const SemesterFactory = new Factory(SemesterModel)
 
 export const OfficeHourFactory = new Factory(OfficeHourModel)
   .attr('title', 'Alex & Stanley')
-  .attr('room', 'WVH 101')
   .attr('startTime', new Date('2020-05-20T14:00:00.000Z'))
   .attr('endTime', new Date('2020-05-20T15:30:00.000Z'));
 
@@ -49,6 +48,8 @@ export const QueueFactory = new Factory(QueueModel)
   .attr('room', `WVH 101`)
   .assocOne('course', CourseFactory);
 
+// WARNING: DO NOT USE CREATORID. AS YOU SEE HERE, WE ONLY ACCEPT CREATOR
+//TODO: make it accept creatorId as well
 export const QuestionFactory = new Factory(QuestionModel)
   .sequence('text', (i) => `question ${i}`)
   .attr('status', 'Queued')

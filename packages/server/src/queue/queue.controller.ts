@@ -15,6 +15,7 @@ import {
   ListQuestionsResponse,
   UpdateQueueNotesParams,
   Role,
+  OpenQuestionStatus,
 } from '@template/common';
 import { Connection, In, Not } from 'typeorm';
 import { JwtAuthGuard } from '../profile/jwt-auth.guard';
@@ -32,9 +33,14 @@ export class QueueController {
   @Get(':queueId')
   @Roles(Role.TA, Role.PROFESSOR, Role.STUDENT)
   async getQueue(@Param('queueId') queueId: string): Promise<GetQueueResponse> {
-    return QueueModel.findOne(queueId, {
-      relations: ['questions', 'staffList'],
+    const queue = await QueueModel.findOne(queueId, {
+      relations: ['staffList'],
     });
+
+    const questions = await QuestionModel.find({ where: { queueId } });
+
+    queue.questions = questions;
+    return queue;
   }
 
   @Get(':queueId/questions')
@@ -56,10 +62,13 @@ export class QueueController {
       where: [
         {
           queueId: queueId,
-          status: Not(In(Object.values(ClosedQuestionStatus))),
+          status: In(Object.values(OpenQuestionStatus)),
         },
       ],
       relations: ['creator', 'taHelped'],
+      order: {
+        createdAt: 'ASC',
+      },
     });
   }
 

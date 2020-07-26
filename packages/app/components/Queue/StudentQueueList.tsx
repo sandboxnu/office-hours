@@ -1,14 +1,20 @@
 import { API } from "@template/api-client";
-import { ClosedQuestionStatus, Question, QuestionType } from "@template/common";
-import { Button, Card, Col, Grid, Modal, Row, Alert } from "antd";
+import {
+  ClosedQuestionStatus,
+  OpenQuestionStatus,
+  Question,
+  QuestionType,
+} from "@template/common";
+import { Alert, Button, Card, Col, Grid, Row } from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import useSWR, { mutate } from "swr";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useProfile } from "../../hooks/useProfile";
 import EditableQuestion from "./EditableQuestion";
 import QuestionForm from "./QuestionForm";
+import QueueListHeader from "./QueueListSharedComponents";
 import StudentQueueCard from "./StudentQueueCard";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
 const { useBreakpoint } = Grid;
 
 const StatusText = styled.div`
@@ -35,12 +41,6 @@ const HeaderText = styled.div`
   line-height: 22px;
   color: #8895a6;
   font-variant: small-caps;
-`;
-
-const QueueTitle = styled.div`
-  font-weight: 500;
-  font-size: 30px;
-  color: #212934;
 `;
 
 const CenterRow = styled(Row)`
@@ -70,52 +70,52 @@ export default function StudentQueueList({
 }: StudentQueueListProps): ReactElement {
   const profile = useProfile();
 
-  const { data: queue, error: queuesError, mutate: mutateQueue } = useSWR(
+  const { data: queue, error: queuesError } = useSWR(
     qid && `/api/v1/queues/${qid}`,
     async () => API.queues.get(Number(qid))
   );
 
-  const { data: questions, error: questionsError } = useSWR(
-    qid && `/api/v1/queues/${qid}/questions`,
-    async () => API.questions.index(Number(qid))
+  const {
+    data: questions,
+    error: questionsError,
+    mutate: mutateQuestions,
+  } = useSWR(qid && `/api/v1/queues/${qid}/questions`, async () =>
+    API.questions.index(Number(qid))
   );
 
   const studentQuestion =
     profile && questions && questions.find((q) => q.creator.id === profile.id);
-
-  const joinQueue = useCallback(async () => {
-    const createdQuestion = await API.questions.create({
-      queueId: Number(qid),
-      text: "",
-      questionType: QuestionType.Bug, // TODO: endpoint needs to be changed to allow empty questionType for drafts
-      // for the moment I am defaulting this data so that there is no error
-    });
-
-    const newQuestions = [...questions, createdQuestion];
-    mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
-  }, [qid, questions]);
 
   const leaveQueue = useCallback(async () => {
     await API.questions.update(studentQuestion?.id, {
       status: ClosedQuestionStatus.Deleted,
     });
 
-    mutate(`/api/v1/queues/${qid}/questions`);
-  }, [qid, studentQuestion?.id]);
+    setIsJoining(false);
+    await mutateQuestions();
+  }, [studentQuestion?.id, mutateQuestions]);
 
   const finishQuestion = useCallback(
-    async (text: string, questionType: QuestionType) => {
+    async (
+      text: string,
+      questionType: QuestionType,
+      isOnline: boolean,
+      location: string
+    ) => {
       const updateStudent = {
-        text: text,
-        questionType: questionType,
+        text,
+        questionType,
+        isOnline,
+        location: isOnline ? "" : location,
+        status: OpenQuestionStatus.Queued,
       };
       await API.questions.update(studentQuestion?.id, updateStudent);
-      const newQuestions = questions?.map((q) =>
+      const newQuestions = questions?.map((q: Question) =>
         q.id === studentQuestion?.id ? { ...q, updateStudent } : q
       );
-      mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
+      mutateQuestions(newQuestions);
     },
-    [qid, questions, studentQuestion?.id]
+    [questions, studentQuestion?.id, mutateQuestions]
   );
 
   /**
@@ -124,7 +124,7 @@ export default function StudentQueueList({
    * @param status the updated status
    */
   const updateQuestionDraft = async (question: Question) => {
-    await API.questions.update(question.id, {
+    await API.questions.update(question?.id, {
       questionType: question.questionType,
       text: question.text,
       queueId: Number(qid),
@@ -139,7 +139,12 @@ export default function StudentQueueList({
 
   const screens = useBreakpoint();
   const [popupEditQuestion, setPopupEditQuestion] = useState(false);
-  const [isJoining, setIsJoining] = useState(true);
+
+  const [isJoining, setIsJoining] = useState(
+    questions &&
+      studentQuestion &&
+      studentQuestion?.status !== OpenQuestionStatus.Queued
+  );
 
   const [storedQuestion, setStoredQuestion, removeValue] = useLocalStorage(
     "draftQuestion",
@@ -147,12 +152,15 @@ export default function StudentQueueList({
   );
 
   const [hasDraftInProgress, setHasDraftInProgress] = useState(
-    storedQuestion ? true : false
+    !!(
+      storedQuestion || studentQuestion?.status === OpenQuestionStatus.Drafting
+    )
   );
 
-  const openEditModal = useCallback(() => {
+  const openEditModal = useCallback(async () => {
+    mutate(`/api/v1/queues/${qid}/questions`);
     setPopupEditQuestion(true);
-  }, []);
+  }, [qid]);
 
   const closeEditModal = useCallback(() => {
     setPopupEditQuestion(false);
@@ -173,10 +181,12 @@ export default function StudentQueueList({
           <HeaderText>your question</HeaderText>
         </StudentHeaderCard>
         <EditableQuestion
-          position={3}
+          position={questions?.indexOf(studentQuestion) + 1}
           type={studentQuestion.questionType}
           text={studentQuestion.text}
-          location={"Outside room, by the couches"} // doesn't exist on question rn
+          location={
+            studentQuestion.location ? studentQuestion.location : "Online"
+          }
           photoUrl={studentQuestion.creator.photoURL}
           openEdit={openEditModal}
           leaveQueue={leaveQueue}
@@ -193,17 +203,23 @@ export default function StudentQueueList({
     closeEditModal();
   }, [removeValue, leaveQueue, closeEditModal]);
 
-  const joinQueueOpenModal = useCallback(() => {
-    joinQueue();
-    openEditModal();
-  }, [joinQueue, openEditModal]);
+  const joinQueueOpenModal = useCallback(async () => {
+    const createdQuestion = await API.questions.create({
+      queueId: Number(qid),
+      text: "",
+      questionType: QuestionType.Bug, // TODO: endpoint needs to be changed to allow empty questionType for drafts
+      // for the moment I am defaulting this data so that there is no error
+    });
+    const newQuestions = [...questions, createdQuestion];
+    await mutateQuestions(newQuestions);
+    setPopupEditQuestion(true);
+  }, [mutateQuestions, qid, questions]);
 
   const finishQuestionAndClose = useCallback(
-    (qt: QuestionType, text: string) => {
-      //finish draft when question is finalized
+    (text: string, qt: QuestionType, isOnline: boolean, location: string) => {
       removeValue();
       setHasDraftInProgress(false);
-      finishQuestion(text, qt);
+      finishQuestion(text, qt, isOnline, location);
       closeEditModal();
     },
     [removeValue, finishQuestion, closeEditModal]
@@ -253,37 +269,54 @@ export default function StudentQueueList({
               />
             )}
           </Row>
-          <Row justify="space-between">
-            <QueueTitle>{queue?.room}</QueueTitle>
-            {!studentQuestion && (
-              <JoinButton
-                type="primary"
-                size="large"
-                onClick={joinQueueOpenModal}
-              >
-                Join Queue
-              </JoinButton>
+          <Row>
+            <QueueListHeader queue={queue} />
+            <Col span={10}></Col>
+            <Col span={2}>
+              {!studentQuestion && (
+                <JoinButton
+                  type="primary"
+                  size="large"
+                  onClick={joinQueueOpenModal}
+                >
+                  Join Queue
+                </JoinButton>
+              )}
+            </Col>
+          </Row>
+          <Row>
+            {queue?.notes && (
+              <div>
+                <HeaderText>staff notes</HeaderText>
+                {queue.notes}
+              </div>
             )}
           </Row>
-          <StudentHeaderCard bordered={false}>
-            <CenterRow justify="space-between">
-              <Col span={1}>
-                <HeaderText>#</HeaderText>
-              </Col>
-              <Col xs={16} sm={11} lg={6}>
-                <HeaderText>name</HeaderText>
-              </Col>
-              <Col xs={0} lg={2}>
-                <HeaderText>type</HeaderText>
-              </Col>
-              <Col span={2}>
-                <HeaderText>wait</HeaderText>
-              </Col>
-              <Col xs={0} lg={2}>
-                <StatusText>status</StatusText>
-              </Col>
-            </CenterRow>
-          </StudentHeaderCard>
+          {questions?.length === 0 ? (
+            <h1 style={{ marginTop: "50px" }}>
+              There currently aren&apos;t any questions in the queue
+            </h1>
+          ) : (
+            <StudentHeaderCard bordered={false}>
+              <CenterRow justify="space-between">
+                <Col span={1}>
+                  <HeaderText>#</HeaderText>
+                </Col>
+                <Col xs={16} sm={11} lg={6}>
+                  <HeaderText>name</HeaderText>
+                </Col>
+                <Col xs={0} lg={2}>
+                  <HeaderText>type</HeaderText>
+                </Col>
+                <Col span={2}>
+                  <HeaderText>wait</HeaderText>
+                </Col>
+                <Col xs={0} lg={2}>
+                  <StatusText>status</StatusText>
+                </Col>
+              </CenterRow>
+            </StudentHeaderCard>
+          )}
           {questions?.map((question: Question, index: number) => {
             return (
               <StudentQueueCard
@@ -291,27 +324,27 @@ export default function StudentQueueList({
                 rank={index + 1}
                 waitTime={30} //TODO: figure out later
                 question={question}
+                highlighted={studentQuestion === question}
               />
             );
           })}
         </Col>
-        {!hasDraftInProgress && studentQuestion && renderEditableQuestion()}
-        <Modal
+        {studentQuestion && renderEditableQuestion()}
+        <QuestionForm
           visible={
-            (isJoining && !hasDraftInProgress) ||
+            (questions &&
+              !studentQuestion &&
+              isJoining &&
+              !hasDraftInProgress) ||
             // && studentQuestion.status !== QuestionStatusKeys.Drafting)
             popupEditQuestion
           }
-          closable={true}
-          onCancel={closeEditModal}
-          footer={<div></div>}
-        >
-          <QuestionForm
-            question={studentQuestion}
-            leaveQueue={leaveQueueAndClose}
-            finishQuestion={finishQuestionAndClose}
-          />
-        </Modal>
+          question={studentQuestion}
+          leaveQueue={leaveQueueAndClose}
+          finishQuestion={finishQuestionAndClose}
+          position={questions?.indexOf(studentQuestion) + 1}
+          cancel={closeEditModal}
+        />
       </Row>
     </div>
   );

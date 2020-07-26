@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { CourseController } from './course.controller';
+import { QueueModule } from '../queue/queue.module';
 
 @Module({
   controllers: [CourseController],
+  imports: [QueueModule],
 })
 export class CourseModule {}
