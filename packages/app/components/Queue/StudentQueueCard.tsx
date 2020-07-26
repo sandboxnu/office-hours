@@ -1,9 +1,14 @@
+import { UserOutlined } from "@ant-design/icons";
 import { Question } from "@template/common";
+import { Avatar, Card, Col } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
-import { Card, Col, Avatar } from "antd";
-import { UserOutlined } from "@ant-design/icons";
-import { CenterRow, Text, StatusTag } from "./QueueCardSharedComponents";
+import {
+  CenterRow,
+  StatusTag,
+  Text,
+  questionStatusToColor,
+} from "./QueueCardSharedComponents";
 
 const HorizontalStudentCard = styled(Card)`
   margin-bottom: 8px;
@@ -57,7 +62,9 @@ export default function StudentQueueCard({
           <Text>{waitTime}</Text>
         </Col>
         <Col xs={0} lg={2}>
-          <StatusTag color="purple">{question.status}</StatusTag>
+          <StatusTag color={questionStatusToColor(question.status)}>
+            {question.status}
+          </StatusTag>
         </Col>
       </CenterRow>
     </HorizontalStudentCard>

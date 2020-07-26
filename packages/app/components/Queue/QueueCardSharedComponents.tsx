@@ -1,4 +1,4 @@
-import { Question } from "@template/common";
+import { QuestionStatus, QuestionStatusKeys } from "@template/common";
 import { Avatar, Card, Row, Tag } from "antd";
 import styled from "styled-components";
 
@@ -40,8 +40,7 @@ export const StatusTag = styled(Tag)`
   text-align: center;
   float: right;
   margin-right: 0;
-  background: #f9f0ff;
-  border: 1px solid #d3adf7;
+  border: 1px solid;
   box-sizing: border-box;
   border-radius: 4px;
 `;
@@ -49,3 +48,16 @@ export const StatusTag = styled(Tag)`
 export const CenterRow = styled(Row)`
   align-items: center;
 `;
+
+export function questionStatusToColor(status: QuestionStatus): string {
+  switch (status) {
+    case QuestionStatusKeys.Helping:
+      return "gold";
+    case QuestionStatusKeys.NoShow:
+      return "red";
+    case QuestionStatusKeys.Drafting:
+      return "blue";
+    default:
+      return "purple";
+  }
+}
