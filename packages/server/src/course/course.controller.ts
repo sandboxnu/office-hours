@@ -41,30 +41,7 @@ export class CourseController {
       ],
     });
 
-    const now = new Date();
-    const MS_IN_MINUTE = 60000;
-
-    // Set all the queues which should be "Open"
-    course.queues = course.queues.filter((queue) => {
-      const areStaffPresent = queue.staffList.length > 0;
-      if (areStaffPresent) {
-        return true;
-      }
-
-      const currentOfficeHour = queue.officeHours.find(
-        (e) =>
-          e.startTime.valueOf() - 15 * MS_IN_MINUTE < now.valueOf() &&
-          e.endTime.valueOf() + 1 * MS_IN_MINUTE > now.valueOf(),
-      );
-      // TODO: Remove the the time attribute from the queue
-      if (currentOfficeHour) {
-        queue.time = {
-          start: currentOfficeHour.startTime,
-          end: currentOfficeHour.endTime,
-        };
-      }
-      return !!currentOfficeHour;
-    });
+    course.queues = course.queues.filter((queue) => queue.isOpen());
 
     return course;
   }
