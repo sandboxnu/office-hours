@@ -74,6 +74,11 @@ export default function Login({}: LoginProps) {
             Login as <b>TA</b>
           </Button>
         </Link>
+        <Link href="/api/v1/profile/entry?userId=5">
+          <Button type="default" htmlType="submit" onClick={onSubmit}>
+            Login as <b>TA 2</b>
+          </Button>
+        </Link>
       </LoginContainer>
     </Container>
   );

@@ -16,3 +16,7 @@ items:
     userId: '@user3'
     courseId: '@course0'
     role: 'student'
+  ucm4:
+    userId: '@user4'
+    courseId: '@course0'
+    role: 'ta'
