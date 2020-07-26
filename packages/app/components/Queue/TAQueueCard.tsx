@@ -6,6 +6,7 @@ import {
   CenterRow,
   HorizontalTACard,
   Photo,
+  questionStatusToColor,
   Rank,
   StatusTag,
   Text,
@@ -51,7 +52,9 @@ export default function TAQueueCard({
           </Text>
         </Col>
         <Col span={2}>
-          <StatusTag color="purple">{question.status}</StatusTag>
+          <StatusTag color={questionStatusToColor(question.status)}>
+            {question.status}
+          </StatusTag>
         </Col>
         <Col>
           <RightOutlined />
