@@ -11,9 +11,7 @@ export const useProfile: Hook = () => {
   );
 
   // Redirect to login page (later Khoury Admin login) if API request returns an error or empty object
-  if (
-    error?.response?.status === 401
-  ) {
+  if (error?.response?.status === 401) {
     Router.push("/login");
   } else if (data) {
     return data;

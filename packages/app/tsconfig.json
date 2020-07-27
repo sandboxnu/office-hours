@@ -14,13 +14,8 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
+    "experimentalDecorators": true
   },
   "exclude": ["node_modules", "dist", ".next", "out", "next.config.js"],
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/cypress/*"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/cypress/*"]
 }

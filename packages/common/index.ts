@@ -2,8 +2,10 @@ import {
   IsBoolean,
   IsEnum,
   IsInt,
+  IsNotEmpty,
   IsOptional,
   IsString,
+  ValidateIf,
 } from "class-validator";
 import "reflect-metadata";
 
@@ -11,9 +13,6 @@ export enum WSMessageType {
   Count = "count",
   Refresh = "ref",
 }
-
-// API base data types
-export type Club = { name: string; rating: number; id: number };
 
 /////////////////////////
 // API Base Data Types //
@@ -35,6 +34,9 @@ export type User = {
   name: string;
   photoURL: string;
   courses: UserCourse[];
+  desktopNotifsEnabled: boolean;
+  phoneNotifsEnabled: boolean;
+  phoneNumber: string;
 };
 
 /**
@@ -118,8 +120,6 @@ interface OfficeHourBlock {
  * @param id - The unique id number for a Queue.
  * @param course - The course that this office hours queue is for.
  * @param room - The full name of the building + room # that the current office hours queue is in.
- * @param createdAt - The date string for the opened on time (aka created on time) of this queue of this queue. Ex: "2019-09-21T12:00:00-04:00"
- * @param closedAt - The date string for the the closed on time for the queue.
  * @param staffList - The list of TA user's that are currently helping at office hours.
  * @param questions - The list of the students questions assocaited with the queue.
  */
@@ -127,8 +127,6 @@ export interface Queue {
   id: number;
   course: CoursePartial;
   room: string;
-  createdAt: Date;
-  closedAt?: Date;
   staffList: UserPartial[];
   questions: Question[];
 }
@@ -145,10 +143,6 @@ export interface QueuePartial {
   staffList: UserPartial[];
   queueSize: number;
   notes?: string;
-  time?: {
-    start: Date;
-    end: Date;
-  };
   // TODO: Add wait time?
 }
 
@@ -163,6 +157,8 @@ export interface QueuePartial {
  * @param questionType - The question type helps distinguish question for TA's and data insights.
  * @param status - The current status of the question in the queue.
  * @param position - The current position of this question in the queue.
+ * @param location - The location of the particular student, to help TA's find them
+ * @param isOnline - Wether or not the question will helped online or in-person
  */
 export type Question = {
   id: number;
@@ -188,22 +184,6 @@ export enum QuestionType {
   Other = "Other",
 }
 
-// TODO: See if we want to do it this way later
-// export type QuestionStatus =
-//   | {
-//       type: QuestionStatusType.Open;
-//       status: OpenQuestionStatus;
-//     }
-//   | {
-//       type: QuestionStatusType.Closed;
-//       status: ClosedQuestionStatus;
-//     };
-
-// export enum QuestionStatusType {
-//   Open = "Open",
-//   Closed = "Closed",
-// }
-
 export enum OpenQuestionStatus {
   Drafting = "Drafting",
   Queued = "Queued",
@@ -215,6 +195,7 @@ export enum ClosedQuestionStatus {
   Deferred = "Deferred",
   NoShow = "NoShow",
   Deleted = "Deleted",
+  Stale = "Stale",
 }
 
 // Ticket Status - Represents a given status of as student's ticket
@@ -256,13 +237,24 @@ export type PhoneNotifBody = {
 // =================== API Route Types ===========================
 // On backend, validated with https://docs.nestjs.com/techniques/validation
 // API route Params and Responses
-export type GetClubResponse = Club[];
-
-export type CreateClubParams = { name: string; rating: number };
-export type CreateClubResponse = Club;
 
 // Office Hours Response Types
 export type GetProfileResponse = User;
+
+export class UpdateProfileParams {
+  @IsBoolean()
+  @IsOptional()
+  desktopNotifsEnabled?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  phoneNotifsEnabled?: boolean;
+
+  @ValidateIf((o) => o.phoneNotifsEnabled)
+  @IsString()
+  @IsNotEmpty()
+  phoneNumber?: string;
+}
 
 // export type GetCourseResponse = Course;
 
@@ -272,7 +264,6 @@ export interface GetCourseResponse {
   officeHours: Array<{
     id: number;
     title: string;
-    room: string;
     startTime: Date;
     endTime: Date;
   }>;

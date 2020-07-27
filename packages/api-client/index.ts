@@ -12,6 +12,7 @@ import {
   TAUpdateStatusResponse,
   UpdateQuestionParams,
   UpdateQuestionResponse,
+  UpdateProfileParams,
 } from "@template/common";
 import Axios, { AxiosInstance } from "axios";
 
@@ -21,6 +22,9 @@ class APIClient {
     index: async (): Promise<GetProfileResponse> => {
       return (await this.axios.get(`/api/v1/profile`)).data;
     },
+    patch: async (body: UpdateProfileParams): Promise<GetProfileResponse> => {
+      return (await this.axios.patch(`/api/v1/profile`, body)).data;
+    },
   };
   course = {
     get: async (courseId: number): Promise<GetCourseResponse> => {
@@ -28,12 +32,7 @@ class APIClient {
       course.officeHours.forEach((officeHour: any) =>
         parseOfficeHourDates(officeHour)
       );
-      course.queues.forEach((q: QueuePartial) => {
-        if (q.time) {
-          q.time.start = new Date(q.time.start);
-          q.time.end = new Date(q.time.end);
-        }
-      });
+      // If you need to add time to queues check out this commit: 995e82991587b2077d342b1df87a2665a21c3492
       return course;
     },
   };
@@ -145,4 +144,4 @@ function parseQuestionDates(question: any): void {
   question.closedAt ? (question.closedAt = new Date(question.closedAtt)) : null;
 }
 
-export const API = new APIClient(process.env.API_URL);
+export const API = new APIClient(process.env.NEXT_PUBLIC_API_URL);

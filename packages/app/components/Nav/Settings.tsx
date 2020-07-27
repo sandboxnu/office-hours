@@ -1,29 +1,21 @@
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
-import { Avatar, Input, message, Popover, Row, Switch } from "antd";
-import { register, unregister } from "next-offline/runtime";
+import { API } from "@template/api-client";
+import { UpdateProfileParams } from "@template/common";
+import { Avatar, Form, Input, Modal, Row, Switch } from "antd";
+import { pick } from "lodash";
+import { register } from "next-offline/runtime";
 import Link from "next/link";
 import React, { useState } from "react";
 import styled from "styled-components";
+import useSWR from "swr";
 
 const AvatarButton = styled.div`
   cursor: pointer;
 `;
 
-const PopoverContainer = styled.div`
-  width: 270px;
-  height: 215px;
-`;
-
-const LableText = styled.div`
+const LabelText = styled.div`
   font-weight: normal;
-  font-size: 20px;
-  margin-top: 10px;
-  margin-left: 14px;
-`;
-
-const SwitchContainer = styled.div`
-  float: right;
-  margin-left: 30px;
+  font-size: 16px;
   margin-top: 10px;
 `;
 
@@ -61,15 +53,24 @@ const requestNotificationPermission = async () => {
 export default function Settings() {
   // first get initial data using useSWR (or from profile)
   // todo: replace these constants with hits to useSWR call to profile
+  const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
+    API.profile.index()
+  );
 
-  const [desktopNotifToggled, setDesktopNotifToggled] = useState<boolean>(true);
-  const [phoneNotifToggled, setPhoneNotifToggled] = useState<boolean>(false);
-  const [phoneNumber, setPhoneNumber] = useState<string>("+12223334444");
+  const [form] = Form.useForm();
+  const [isOpen, setIsOpen] = useState(false);
 
-  const onDesktopNotifToggle = async (toggle: boolean) => {
-    if (toggle) {
-      check();
-      // try to get notification permissions
+  const editProfile = async (updateProfile: UpdateProfileParams) => {
+    const newProfile = { ...profile, ...updateProfile };
+    mutate(newProfile, false);
+    await API.profile.patch(
+      pick(newProfile, [
+        "desktopNotifsEnabled",
+        "phoneNotifsEnabled",
+        "phoneNumber",
+      ])
+    );
+    if (updateProfile.desktopNotifsEnabled) {
       await requestNotificationPermission();
       // get rid of old service worker, and then try and re-register.
       // just kidding, this breaks Chrome for some reason (ai ya).
@@ -78,87 +79,81 @@ export default function Settings() {
       setTimeout(() => {
         register();
       }, 500);
-
-      setDesktopNotifToggled(true);
-    } else {
-      unregister();
-      setDesktopNotifToggled(false);
     }
-  };
-
-  const onPhoneNotifToggle = async (toggle: boolean) => {
-    if (toggle) {
-      if (!phoneNumber) {
-        message.warning("Must enter phone number to enable text notifications");
-        setPhoneNotifToggled(false);
-      } else {
-        try {
-          //todo: change when ligma branch is merged
-          //await API.notif.phone.register(user_id, phoneNumbers[0]);
-          setPhoneNotifToggled(true);
-        } catch (e) {
-          message.error(e.body);
-          setPhoneNotifToggled(false);
-        }
-      }
-    } else {
-      //todo: add phone unregister endpoint
-      setPhoneNotifToggled(false);
-    }
+    mutate();
   };
 
   return (
-    <Popover
-      content={
-        <PopoverContainer>
-          <Row>
-            <LableText> Web Notifications </LableText>
-            <SwitchContainer>
-              <Switch
-                checked={desktopNotifToggled}
-                onChange={onDesktopNotifToggle}
-              />
-            </SwitchContainer>
-          </Row>
-          <Row>
-            <LableText> Text Notifications </LableText>
-            <SwitchContainer>
-              <Switch
-                checked={phoneNotifToggled}
-                onChange={onPhoneNotifToggle}
-              />
-            </SwitchContainer>
-          </Row>
-          {phoneNotifToggled && (
-            <Row>
-              <LableText> Phone </LableText>
-              <InputContainer>
-                <Input
-                  value={phoneNumber}
-                  onChange={(newNum) => {
-                    setPhoneNumber(newNum.target.value);
-                  }}
-                  placeholder={"XXX-XXX-XXXX"}
-                />
-              </InputContainer>
-            </Row>
-          )}
-          <Row>
-            <Link href="/login" as="/login">
-              <CenteredIcon style={{ cursor: "pointer" }}>
-                <Avatar size={44} icon={<LogoutOutlined />} />
-              </CenteredIcon>
-            </Link>
-          </Row>
-        </PopoverContainer>
-      }
-      title="User Settings"
-      placement={"bottomRight"}
-      trigger="click"
-    >
-      <AvatarButton>
+    <>
+      <Modal
+        title="Your Settings"
+        visible={isOpen}
+        onCancel={() => setIsOpen(false)}
+        onOk={async () => {
+          const value = await form.validateFields();
+          try {
+            await editProfile(value);
+            setIsOpen(false);
+          } catch (e) {
+            if (
+              e.response?.status === 400 &&
+              e.response?.data?.message === "phone number invalid"
+            ) {
+              form.setFields([
+                { name: "phoneNumber", errors: ["Invalid phone number"] },
+              ]);
+            }
+          }
+        }}
+      >
+        {profile && (
+          <Form form={form} initialValues={profile}>
+            <Form.Item
+              label="Web Notifications"
+              name="desktopNotifsEnabled"
+              valuePropName="checked"
+            >
+              <Switch />
+            </Form.Item>
+            <Form.Item
+              label="Text Notifications"
+              name="phoneNotifsEnabled"
+              valuePropName="checked"
+            >
+              <Switch />
+            </Form.Item>
+            <Form.Item shouldUpdate noStyle>
+              {() =>
+                form?.getFieldValue("phoneNotifsEnabled") && (
+                  <Form.Item
+                    label="Phone #"
+                    name="phoneNumber"
+                    rules={[
+                      {
+                        required: true,
+                        message:
+                          "Please input your number to enable text notifications",
+                      },
+                    ]}
+                  >
+                    <Input placeholder={"XXX-XXX-XXXX"} />
+                  </Form.Item>
+                )
+              }
+            </Form.Item>
+          </Form>
+        )}
+        <Row>
+          <Link href="/login" as="/login">
+            <CenteredIcon style={{ cursor: "pointer" }}>
+              <Avatar size={44} icon={<LogoutOutlined />} />
+            </CenteredIcon>
+          </Link>
+        </Row>
+      </Modal>
+      <AvatarButton onClick={() => setIsOpen(true)}>
         <Avatar size={47} icon={<UserOutlined />} />
       </AvatarButton>
-    </Popover>
+    </>
   );
 }

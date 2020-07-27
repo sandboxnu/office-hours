@@ -7,8 +7,12 @@ import {
   StudentCourseFactory,
   TACourseFactory,
   UserFactory,
+  QuestionFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
+import { QuestionModel } from '../src/question/question.entity';
+import { OpenQuestionStatus } from '@template/common';
+import { In } from 'typeorm';
 
 describe('Course Integration', () => {
   const supertest = setupIntegrationTest(CourseModule);
@@ -29,7 +33,11 @@ describe('Course Integration', () => {
 
     it('gets office hours and queues since time is now and rooms are same', async () => {
       const now = new Date();
-      const course = await CourseFactory.create({
+      const course = await CourseFactory.create();
+
+      await QueueFactory.create({
+        room: "Matthias's Office",
+        course: course,
         officeHours: [
           await OfficeHourFactory.create({
             startTime: now,
@@ -41,11 +49,6 @@ describe('Course Integration', () => {
       });
 
       await QueueFactory.create({
-        room: "Matthias's Office",
-        course: course,
-      });
-
-      await QueueFactory.create({
         course: course,
       });
 
@@ -54,7 +57,7 @@ describe('Course Integration', () => {
         .expect(200);
 
       expect(response.body).toMatchObject({
-        queues: [{ id: 1, time: { start: now.toISOString() } }],
+        queues: [{ id: 1 }],
       });
     });
   });
@@ -133,6 +136,31 @@ describe('Course Integration', () => {
       ).toMatchObject({
         staffList: [],
       });
+    });
+
+    it('tests queue is cleaned when TA checks out', async () => {
+      const ta = await UserFactory.create();
+      const queue = await QueueFactory.create({
+        room: 'The Alamo',
+        staffList: [ta],
+      });
+      const tcf = await TACourseFactory.create({
+        course: queue.course,
+        user: ta,
+      });
+      await QuestionFactory.create({ queue: queue });
+
+      const getOpenQuestions = async () =>
+        await QuestionModel.find({
+          where: { status: In(Object.values(OpenQuestionStatus)) },
+        });
+
+      expect((await getOpenQuestions()).length).toEqual(1);
+
+      await supertest({ userId: ta.id })
+        .delete(`/courses/${tcf.courseId}/ta_location/The Alamo`)
+        .expect(200);
+      expect((await getOpenQuestions()).length).toEqual(0);
     });
 
     it('tests nothing happens if ta not in queue', async () => {

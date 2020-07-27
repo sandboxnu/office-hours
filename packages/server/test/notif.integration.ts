@@ -9,7 +9,7 @@ describe('Notif Integration', () => {
 
   describe('GET /notifications/desktop/credentials', () => {
     it('gets a public key', async () => {
-      const res = await supertest({ userId: 99 })
+      await supertest({ userId: 99 })
         .get('/notifications/desktop/credentials')
         .expect(200);
     });
@@ -54,7 +54,7 @@ describe('Notif Integration', () => {
       expect(notifModel).toEqual({
         id: 1,
         phoneNumber: '+16175551212',
-        user: undefined,
+        verified: false,
         userId: 1,
       });
     });
@@ -63,7 +63,7 @@ describe('Notif Integration', () => {
   describe('POST notifications/notify_user/:user_id', () => {
     it('tests that invalid endpoints for web push get deleted in db', async () => {
       // TODO this could be a unit test!
-      const user = await UserFactory.create();
+      const user = await UserFactory.create({ desktopNotifsEnabled: true });
       const expirDate = new Date(2020, 2, 3);
 
       await supertest({ userId: 99 })

@@ -14,6 +14,7 @@ import {
   GetQueueResponse,
   ListQuestionsResponse,
   UpdateQueueNotesParams,
+  OpenQuestionStatus,
 } from '@template/common';
 import { Connection, In, Not } from 'typeorm';
 import { JwtAuthGuard } from '../profile/jwt-auth.guard';
@@ -56,7 +57,7 @@ export class QueueController {
       where: [
         {
           queueId: queueId,
-          status: Not(In(Object.values(ClosedQuestionStatus))),
+          status: In(Object.values(OpenQuestionStatus)),
         },
       ],
       relations: ['creator', 'taHelped'],

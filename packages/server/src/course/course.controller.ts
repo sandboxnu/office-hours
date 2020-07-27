@@ -10,60 +10,38 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { GetCourseResponse, QueuePartial, Role } from '@template/common';
-import { uniq } from 'lodash';
 import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../profile/jwt-auth.guard';
 import { UserCourseModel } from '../profile/user-course.entity';
 import { User } from '../profile/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
+import { QueueService } from '../queue/queue.service';
 import { CourseModel } from './course.entity';
 
 @Controller('courses')
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class CourseController {
-  constructor(private connection: Connection) {}
+  constructor(
+    private connection: Connection,
+    private queueService: QueueService,
+  ) {}
 
   @Get(':id')
   async get(@Param('id') id: number): Promise<GetCourseResponse> {
     // TODO: for all course endpoint, check if they're a student or a TA
     const course = await CourseModel.findOne(id, {
-      relations: ['officeHours'],
+      relations: [
+        'officeHours',
+        'queues',
+        'queues.staffList',
+        'queues.officeHours',
+      ],
     });
 
-    const now = new Date();
-    const MS_IN_MINUTE = 60000;
+    course.queues = course.queues.filter((queue) => queue.isOpen());
 
-    const officeHoursHappeningNow = course.officeHours.filter(
-      (e) =>
-        e.startTime.valueOf() - 15 * MS_IN_MINUTE < now.valueOf() &&
-        e.endTime.valueOf() + 1 * MS_IN_MINUTE > now.valueOf(),
-    );
-
-    const queues = await QueueModel.find({
-      where: {
-        courseId: id,
-      },
-      relations: ['staffList', 'questions'],
-    });
-
-    const nonEmptyQueues = queues.filter((e) => e.staffList.length > 0);
-
-    const queuesHappeningNow = [];
-
-    for (const oh of officeHoursHappeningNow) {
-      const q = queues.find((q) => q.room === oh.room);
-      if (q) {
-        q.time = {
-          start: oh.startTime,
-          end: oh.endTime,
-        };
-        queuesHappeningNow.push(q);
-      }
-    }
-
-    course.queues = uniq([...nonEmptyQueues, ...queuesHappeningNow]);
     return course;
   }
 
@@ -102,6 +80,7 @@ export class CourseController {
         room,
         courseId,
         staffList: [],
+        questions: [],
       }).save();
     }
 
@@ -127,5 +106,8 @@ export class CourseController {
 
     queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
     await queue.save();
+
+    // Clean up queue if necessary
+    await this.queueService.cleanQueue(queue.id);
   }
 }
