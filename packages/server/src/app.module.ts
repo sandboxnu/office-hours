@@ -11,6 +11,7 @@ import { AdminModule } from './admin/admin.module';
 import { CommandModule } from 'nestjs-command';
 import * as typeormConfig from '../ormconfig';
 import { AdminCommand } from 'admin/admin.command';
+import { PROD_URL } from '@template/common';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { AdminCommand } from 'admin/admin.command';
     QueueModule,
     NotificationModule,
     QuestionModule,
-    SeedModule, // Include this condidtionally, based on if the env is set
+    process.env.DOMAIN !== PROD_URL ? SeedModule : null, // Include this condidtionally, based on if the env is set
     ConfigModule.forRoot({
       envFilePath: [
         '.env',
