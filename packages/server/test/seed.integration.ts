@@ -1,17 +1,10 @@
-import { CourseModule } from '../src/course/course.module';
-import { QueueModel } from '../src/queue/queue.entity';
 import {
   OfficeHourFactory,
   QueueFactory,
-  StudentCourseFactory,
-  TACourseFactory,
-  UserFactory,
-  QuestionFactory,
   CourseFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
 import { SeedModule } from '../../server/src/seed/seed.module';
-import { CourseModel } from '../../server/src/course/course.entity';
 import { QuestionModel } from '../../server/src/question/question.entity';
 
 describe('Seed Integration', () => {
