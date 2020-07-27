@@ -84,9 +84,13 @@ export default function Login() {
             Login as <b> TA</b>
           </Button>
         </Link>
-          </LoginContainer>
-          <SeedingContainer>
-
+        <Link href="/api/v1/profile/entry?userId=5">
+          <Button type="default" htmlType="submit">
+            Login as <b> TA 2</b>
+          </Button>
+        </Link>
+      </LoginContainer>
+      <SeedingContainer>
         <Divider plain>
           <h3>Seed</h3>
         </Divider>
@@ -104,7 +108,7 @@ export default function Login() {
             >
             Seed Data
           </Button>
-        </SeedingContainer>
+      </SeedingContainer>
     </Container>
   );
 }
