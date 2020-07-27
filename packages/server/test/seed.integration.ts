@@ -2,6 +2,7 @@ import {
   OfficeHourFactory,
   QueueFactory,
   CourseFactory,
+  QuestionFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
 import { SeedModule } from '../../server/src/seed/seed.module';
@@ -12,41 +13,35 @@ describe('Seed Integration', () => {
   it('GET /seeds/delete', async () => {
     const now = new Date();
     const course = await CourseFactory.create({
-        officeHours: [await OfficeHourFactory.create()],
-      });
+      officeHours: [await OfficeHourFactory.create()],
+    });
 
     const queue = await QueueFactory.create({
-        room: "WHV 101",
-        course: course,
-        officeHours: [
-          await OfficeHourFactory.create({
-            startTime: now,
-            endTime: new Date(now.valueOf() + 4500000),
-          }),
-        ],
-      });
-    
+      room: 'WHV 101',
+      course: course,
+      officeHours: [
+        await OfficeHourFactory.create({
+          startTime: now,
+          endTime: new Date(now.valueOf() + 4500000),
+        }),
+      ],
+    });
+
     await QuestionFactory.create({ queue: queue });
     await QuestionFactory.create({ queue: queue });
     await QuestionFactory.create({ queue: queue });
 
-    const response = await supertest()
-        .get('/seeds/delete')
-        .expect(200);
+    const response = await supertest().get('/seeds/delete').expect(200);
 
     expect(response.text).toBe('Data successfully reset');
   });
 
   it('GET /seeds/create', async () => {
-    const response = await supertest()
-    .get('/seeds/create')
-    .expect(200);
+    const response = await supertest().get('/seeds/create').expect(200);
 
     expect(response.text).toBe('Data successfully seeded');
 
     const numQuestions = await QuestionModel.count();
     expect(numQuestions).toBe(3);
-
-});
-
+  });
 });
