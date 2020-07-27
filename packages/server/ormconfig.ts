@@ -13,7 +13,6 @@ const typeorm = {
   type: 'postgres',
   url: process.env.DB_URL || 'postgres://postgres@localhost:5432/dev',
   synchronize: process.env.NODE_ENV !== 'production',
-  logging: process.env.NODE_ENV !== 'production',
   entities: [
     CourseModel,
     OfficeHourModel,

@@ -7,7 +7,9 @@ import { ProfileModule } from './profile/profile.module';
 import { QuestionModule } from './question/question.module';
 import { QueueModule } from './queue/queue.module';
 import { AdminModule } from './admin/admin.module';
+import { CommandModule } from 'nestjs-command';
 import * as typeormConfig from '../ormconfig';
+import { AdminCommand } from 'admin/admin.command';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import * as typeormConfig from '../ormconfig';
       isGlobal: true,
     }),
     AdminModule,
+    CommandModule,
   ],
+  providers: [AdminCommand],
 })
 export class AppModule {}

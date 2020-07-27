@@ -1,5 +1,5 @@
 import { AdminUserModel } from './admin-user.entity';
-import bcrypt from 'bcrypt';
+import {compare} from 'bcrypt';
 
 export const adminCredentialValidator = {
   inject: [],
@@ -10,7 +10,7 @@ export const adminCredentialValidator = {
     ): Promise<AdminUserModel> {
       const user = await AdminUserModel.findOne({ username });
       if (user) {
-        if (await bcrypt.compare(password, user.passwordHash)) {
+        if (await compare(password, user.passwordHash)) {
           return user;
         }
       }
