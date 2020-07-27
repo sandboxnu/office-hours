@@ -18,7 +18,8 @@
     "test:integration": "jest --config ./test/jest-integration.json -i",
     "dev:db:seed": "yarn fixtures -c ./ormconfig.ts fixtures/ --sync --require=ts-node/register",
     "dev:db:reset": "echo 'DROP DATABASE dev;' | psql -U postgres -h localhost && echo 'CREATE DATABASE dev;' | psql -U postgres -h localhost",
-    "typeorm": "ts-node node_modules/.bin/typeorm"
+    "typeorm": "ts-node node_modules/.bin/typeorm",
+    "cli": "nestjs-command"
   },
   "dependencies": {
     "@nestjs/common": "^7.0.0",
