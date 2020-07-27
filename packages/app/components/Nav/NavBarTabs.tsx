@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { Menu } from "antd";
-import { MenuProps, MenuItemProps } from "antd/lib/menu";
+import { MenuProps } from "antd/lib/menu";
 import Link from "next/link";
 
 const HorizontalMenu = styled(Menu)<MenuProps>`
