@@ -30,8 +30,7 @@ const LogoContainer = styled.div`
   align-items: center;
 `;
 
-const Logo = styled.a`
-  display: inline-block;
+const Logo = styled.div`
   font-size: 20px;
   font-weight: 500;
   color: #262626;
@@ -160,16 +159,28 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
   return (
     <Nav>
       <LogoContainer>
-        <SimpleDropdown overlay={courseSelector}>
-          {course && (
-            <Logo>
-              <span>{course?.name}</span>
-              <DownOutlined
-                style={{ fontSize: "16px", verticalAlign: "-0.125em", marginLeft: "5px"}}
-              />
-            </Logo>
-          )}
-        </SimpleDropdown>
+        {profile?.courses.length > 1 ? (
+          <SimpleDropdown overlay={courseSelector}>
+            {course && (
+              <a>
+                <Logo>
+                  <span>{course?.name}</span>
+                  <DownOutlined
+                    style={{
+                      fontSize: "16px",
+                      verticalAlign: "-0.125em",
+                      marginLeft: "5px",
+                    }}
+                  />
+                </Logo>
+              </a>
+            )}
+          </SimpleDropdown>
+        ) : (
+          <Logo>
+            <span>{course?.name}</span>
+          </Logo>
+        )}
       </LogoContainer>
       <MenuCon>
         <LeftMenu>
