@@ -54,6 +54,6 @@ export const QuestionFactory = new Factory(QuestionModel)
   .sequence('text', (i) => `question ${i}`)
   .attr('status', 'Queued')
   .attr('questionType', QuestionType.Other)
-  .attr('createdAt', new Date('2020-03-01T05:00:00.000Z'))
+  .attr('createdAt', new Date())
   .assocOne('queue', QueueFactory)
   .assocOne('creator', UserFactory);
