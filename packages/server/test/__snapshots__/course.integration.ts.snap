@@ -8,7 +8,6 @@ Object {
     Object {
       "endTime": "2020-05-20T15:30:00.000Z",
       "id": 1,
-      "room": "WVH 101",
       "startTime": "2020-05-20T14:00:00.000Z",
       "title": "Alex & Stanley",
     },

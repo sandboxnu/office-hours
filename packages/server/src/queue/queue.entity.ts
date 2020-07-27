@@ -14,6 +14,7 @@ import {
 import { CourseModel } from '../course/course.entity';
 import { UserModel } from '../profile/user.entity';
 import { QuestionModel } from '../question/question.entity';
+import { OfficeHourModel } from '../course/office-hour.entity';
 
 @Entity('queue_model')
 export class QueueModel extends BaseEntity {
@@ -42,10 +43,29 @@ export class QueueModel extends BaseEntity {
   @JoinTable()
   staffList: UserModel[];
 
+  // TODO: Remove the the time attribute from the queue
   time?: {
     start: Date;
     end: Date;
   };
+
+  @Exclude()
+  @OneToMany((type) => OfficeHourModel, (oh) => oh.queue)
+  @JoinTable()
+  officeHours: OfficeHourModel[];
+
+  isOpen(): boolean {
+    if (this.staffList.length > 0) {
+      return true;
+    }
+    const now = new Date();
+    const MS_IN_MINUTE = 60000;
+    return !!this.officeHours.find(
+      (e) =>
+        e.startTime.valueOf() - 10 * MS_IN_MINUTE < now.valueOf() &&
+        e.endTime.valueOf() + 1 * MS_IN_MINUTE > now.valueOf(),
+    );
+  }
 
   @Expose()
   get queueSize(): number {
