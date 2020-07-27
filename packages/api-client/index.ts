@@ -123,6 +123,10 @@ class APIClient {
       },
     },
   };
+  seeds = {
+    delete: async () => this.axios.get(`/api/v1/seeds/delete`),
+    create: async () => this.axios.get(`/api/v1/seeds/create`),
+  };
   constructor(baseURL = "") {
     this.axios = Axios.create({ baseURL: baseURL });
   }

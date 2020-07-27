@@ -51,9 +51,17 @@ describe('Queue Integration', () => {
       const course = await CourseFactory.create();
       const queue = await QueueFactory.create({
         course: course,
-        questions: [await QuestionFactory.create({ text: 'in queue' })],
+        questions: [
+          await QuestionFactory.create({
+            text: 'in queue',
+            createdAt: new Date('2020-03-01T05:00:00.000Z'),
+          }),
+        ],
       });
-      await QuestionFactory.create({ text: 'not in queue' });
+      await QuestionFactory.create({
+        text: 'not in queue',
+        createdAt: new Date('2020-03-01T05:00:00.000Z'),
+      });
       const userCourse = await UserCourseFactory.create({
         user: await UserFactory.create(),
         course: queue.course,

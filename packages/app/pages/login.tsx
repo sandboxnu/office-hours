@@ -1,7 +1,8 @@
-import { Button, Divider } from "antd";
-import Link from "next/link";
 import React, { useState } from "react";
+import { API } from "@template/api-client";
+import Link from "next/link";
 import styled from "styled-components";
+import { Button, Divider } from "antd";
 
 const Container = styled.div`
   width: auto;
@@ -16,7 +17,15 @@ const LoginContainer = styled.div`
   margin-right: auto;
   text-align: center;
 
-  padding-top: 300px;
+  padding-top: 100px;
+`;
+
+const SeedingContainer = styled.div`
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+
+  padding-top: 20px;
 `;
 
 const InputBoxContainer = styled.div`
@@ -27,9 +36,13 @@ const InputBoxContainer = styled.div`
   top: 261px;
 `;
 
-interface LoginProps {}
+const PageHeader = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+`;
 
-export default function Login({}: LoginProps) {
+export default function Login() {
   const [username, setUsername] = useState<string | undefined>(undefined);
   const [password, setPassword] = useState<string | undefined>(undefined);
 
@@ -41,22 +54,22 @@ export default function Login({}: LoginProps) {
     setPassword(e.target.value);
   };
 
-  const onSubmit = () => {};
-
   return (
     <Container>
+      <h1>
+        <PageHeader>[ For Development Use Only ]</PageHeader>
+      </h1>
       <LoginContainer>
         <Divider plain>
-          <h3>For Development Use Only hey guys</h3>
+          <h3>Login</h3>
         </Divider>
         <Link href="/api/v1/profile/entry?userId=1">
           <Button
             style={{ marginRight: "15px" }}
             type="default"
             htmlType="submit"
-            onClick={onSubmit}
           >
-            Login as <b>Student 1</b>
+            Login as <b> Student 1</b>
           </Button>
         </Link>
         <Link href="/api/v1/profile/entry?userId=3">
@@ -64,17 +77,40 @@ export default function Login({}: LoginProps) {
             style={{ marginRight: "15px" }}
             type="default"
             htmlType="submit"
-            onClick={onSubmit}
           >
-            Login as <b>Student 2</b>
+            Login as <b> Student 2</b>
           </Button>
         </Link>
         <Link href="/api/v1/profile/entry?userId=2">
-          <Button type="default" htmlType="submit" onClick={onSubmit}>
-            Login as <b>TA</b>
+          <Button type="default" htmlType="submit">
+            Login as <b> TA</b>
+          </Button>
+        </Link>
+        <Link href="/api/v1/profile/entry?userId=5">
+          <Button type="default" htmlType="submit">
+            Login as <b> TA 2</b>
           </Button>
         </Link>
       </LoginContainer>
+      <SeedingContainer>
+        <Divider plain>
+          <h3>Seed</h3>
+        </Divider>
+        <Button
+          style={{ marginRight: "15px" }}
+          type="default"
+          onClick={() => API.seeds.delete()}
+        >
+          Delete Data
+        </Button>
+        <Button
+          style={{ marginRight: "15px" }}
+          type="default"
+          onClick={() => API.seeds.create()}
+        >
+          Seed Data
+        </Button>
+      </SeedingContainer>
     </Container>
   );
 }
