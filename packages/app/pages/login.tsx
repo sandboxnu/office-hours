@@ -85,7 +85,7 @@ export default function Login() {
           </Button>
         </Link>
         <Link href="/api/v1/profile/entry?userId=5">
-          <Button type="default" htmlType="submit" onClick={onSubmit}>
+          <Button type="default" htmlType="submit">
             Login as <b> TA 2</b>
           </Button>
         </Link>
