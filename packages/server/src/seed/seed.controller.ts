@@ -40,8 +40,10 @@ export class SeedController {
       endTime: new Date(now.valueOf() + 4500000),
     });
     const course = await CourseModel.findOne({ relations: ['officeHours'] });
-    course.officeHours = [officeHours];
-    course.save();
+    if (course) {
+      course.officeHours = [officeHours];
+      course.save();
+    }
 
     const queue = await QueueFactory.create({
       room: 'WHV 101',

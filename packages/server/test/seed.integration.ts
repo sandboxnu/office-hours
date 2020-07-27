@@ -37,6 +37,7 @@ describe('Seed Integration', () => {
   });
 
   it('GET /seeds/create', async () => {
+    await CourseFactory.create();
     const response = await supertest().get('/seeds/create').expect(200);
 
     expect(response.text).toBe('Data successfully seeded');
