@@ -10,15 +10,8 @@ export class AdminUserModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  static createFromPassword({
-    username,
-    password,
-  }: {
-    username: string;
-    password: string;
-  }): AdminUserModel {
-    const passwordHash = hashSync(password, 5);
-    return AdminUserModel.create({ username, passwordHash });
+  setPassword(password: string): void {
+    this.passwordHash = hashSync(password, 5);
   }
 
   @Column({ length: 128, unique: true, nullable: false })

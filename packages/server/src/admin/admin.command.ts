@@ -1,11 +1,10 @@
 import { Command, Positional } from 'nestjs-command';
 import { Injectable } from '@nestjs/common';
 import { AdminUserModel } from './admin-user.entity';
-import {createInterface} from 'readline';
+import { question, keyInYN } from 'readline-sync';
 
 @Injectable()
 export class AdminCommand {
-  // autoExit defaults to `true`, but you can use `autoExit: false` if you need more control
   @Command({
     command: 'create:admin <username>',
     describe: 'create an admin user',
@@ -19,17 +18,22 @@ export class AdminCommand {
     })
     username: string,
   ): Promise<void> {
-    console.log('Password: ');
-    const rl = createInterface({
-      input: process.stdin,
-      output: process.stdout,
+    let user = await AdminUserModel.findOne({ username });
+    if (user) {
+      const changePassword = keyInYN(
+        `User ${username} already exists. Do you want to change their password?`,
+      );
+      if (!changePassword) {
+        return;
+      }
+    } else {
+      user = AdminUserModel.create({ username });
+    }
+    const password: string = question('Password: ', {
+      hideEchoBack: true,
     });
-    const it = rl[Symbol.asyncIterator]();
-    const password = await it.next();
-    const user = await AdminUserModel.createFromPassword({
-      username,
-      password: password.value,
-    }).save();
-    console.log(`created user ${user.username}`);
+    user.setPassword(password);
+    await user.save();
+    console.log(`Created user: ${user.username}`);
   }
 }
