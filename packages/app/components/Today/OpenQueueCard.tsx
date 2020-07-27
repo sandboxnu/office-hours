@@ -104,21 +104,6 @@ const OpenQueueCard = ({
         staffList.map((staffMember) => staffMember.name).join(", ") ||
         "No Staff Checked In!"
       }
-      extra={
-        <Tooltip title="Note, all times are in local time">
-          <ExtraText>
-            {queue.time
-              ? `${queue.time?.start.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })} - ${queue.time?.end.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}`
-              : `TODO: custom queue text here Stanley`}
-          </ExtraText>
-        </Tooltip>
-      }
     >
       <Row justify="space-between">
         <HeaderDiv>{queue.room}</HeaderDiv>

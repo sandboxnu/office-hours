@@ -11,6 +11,7 @@ import styled from "styled-components";
 import useSWR, { mutate } from "swr";
 import { useProfile } from "../../hooks/useProfile";
 import GroupQuestions from "./GroupQuestions";
+import QueueListHeader from "./QueueListSharedComponents";
 import StudentInfoCard from "./StudentInfoCard";
 import StudentPopupCard from "./StudentPopupCard";
 import TAHelpingCard from "./TAHelpingCard";
@@ -199,35 +200,43 @@ export default function TAQueueList({
 
   const isStaffCheckedIn = queue?.staffList.some((e) => e.id === user.id);
 
+  const helpNext = async () => {};
+
   /**
    * Renders the card headers for a TA who is not yet helping someone.
    */
   const renderTAHeader = () => {
     return (
       <TAHeaderCard bordered={false}>
-        <CenterRow justify="space-between">
-          <Col xs={2} lg={1}>
-            <HeaderText>#</HeaderText>
-          </Col>
-          <Col xs={14} sm={11} lg={5}>
-            <HeaderText>name</HeaderText>
-          </Col>
-          <Col xs={0} lg={2}>
-            <HeaderText>type</HeaderText>
-          </Col>
-          <Col xs={0} lg={7}>
-            <HeaderText>question</HeaderText>
-          </Col>
-          <Col xs={0} lg={2}>
-            <HeaderText>wait</HeaderText>
-          </Col>
-          <Col span={2}>
-            <StatusText>status</StatusText>
-          </Col>
-          <Col>
-            <Placeholder />
-          </Col>
-        </CenterRow>
+        {questions.length === 0 ? (
+          <h1 style={{ marginTop: "50px" }}>
+            There currently aren&apos;t any questions in the queue
+          </h1>
+        ) : (
+          <CenterRow justify="space-between">
+            <Col xs={2} lg={1}>
+              <HeaderText>#</HeaderText>
+            </Col>
+            <Col xs={14} sm={11} lg={5}>
+              <HeaderText>name</HeaderText>
+            </Col>
+            <Col xs={0} lg={2}>
+              <HeaderText>type</HeaderText>
+            </Col>
+            <Col xs={0} lg={7}>
+              <HeaderText>question</HeaderText>
+            </Col>
+            <Col xs={0} lg={2}>
+              <HeaderText>wait</HeaderText>
+            </Col>
+            <Col span={2}>
+              <StatusText>status</StatusText>
+            </Col>
+            <Col>
+              <Placeholder />
+            </Col>
+          </CenterRow>
+        )}
       </TAHeaderCard>
     );
   };
@@ -306,9 +315,10 @@ export default function TAQueueList({
     <div>
       <Row gutter={[64, 64]}>
         <Col flex="auto" order={screens.lg === false ? 2 : 1}>
-          <Row justify="space-between" align="middle">
-            <QueueTitle>{queue?.room}</QueueTitle>
-            <Row>
+          <Row>
+            <QueueListHeader queue={queue} />
+            <Col span={8}></Col>
+            <Col span={4}>
               <Tooltip
                 title={
                   !isStaffCheckedIn && "You must check in to help students!"
@@ -340,7 +350,15 @@ export default function TAQueueList({
                   Check In
                 </CheckInButton>
               )}
-            </Row>
+            </Col>
+          </Row>
+          <Row>
+            {queue?.notes && (
+              <div>
+                <HeaderText>staff notes</HeaderText>
+                {queue.notes}
+              </div>
+            )}
           </Row>
           {!helping && renderTAHeader()}
           {helping && renderHelpingHeader()}
