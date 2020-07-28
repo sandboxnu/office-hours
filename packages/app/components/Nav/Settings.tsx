@@ -41,12 +41,13 @@ export default function Settings(): ReactElement {
             </Menu.Item>
             <Menu.Item>
               <Link href="/login" as="/login">
-                Logout
+                <a>Logout</a>
               </Link>
             </Menu.Item>
           </Menu>
         }
         placement="bottomRight"
+        trigger="click"
         visible={isPopoverOpen}
         onVisibleChange={setIsPopoverOpen}
       >
