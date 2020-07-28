@@ -1,11 +1,12 @@
 import { UserOutlined } from "@ant-design/icons";
+import { API } from "@template/api-client";
 import {
   ClosedQuestionStatus,
   Question,
   QuestionStatus,
 } from "@template/common";
 import { Avatar, Button, Card, Col, Popconfirm, Row } from "antd";
-import React from "react";
+import React, { ReactElement } from "react";
 import styled from "styled-components";
 
 const HelpCard = styled(Card)`
@@ -73,15 +74,14 @@ const FinishButton = styled(Button)`
 
 interface StudentInfoCardProps {
   updateQuestion: (question: Question, status: QuestionStatus) => void;
-  alertStudent: (question: Question) => void;
   question: Question;
 }
 
 const StudentInfoCard = ({
   updateQuestion,
-  alertStudent,
   question,
-}: StudentInfoCardProps) => {
+}: StudentInfoCardProps): ReactElement => {
+  const alertStudent = async () => await API.questions.notify(question.id);
   return (
     <HelpCard
       headStyle={{ padding: "0 16px", borderStyle: "none" }}
@@ -108,7 +108,7 @@ const StudentInfoCard = ({
       </Row>
 
       <Row justify="space-between">
-        <AlertButton onClick={() => alertStudent(question)}>Alert</AlertButton>
+        <AlertButton onClick={() => alertStudent()}>Alert</AlertButton>
         <Popconfirm
           title={`Are you sure you want to mark this question as "Can't find"? This will remove the student from the queue`}
           okText="Yes"

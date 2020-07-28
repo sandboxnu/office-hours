@@ -3,14 +3,17 @@ import {
   ClosedQuestionStatus,
   OpenQuestionStatus,
   Question,
+  QuestionStatusKeys,
   QuestionType,
 } from "@template/common";
 import { Alert, Button, Card, Col, Grid, Row } from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
-import useSWR, { mutate } from "swr";
+import { mutate } from "swr";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useProfile } from "../../hooks/useProfile";
+import { useQuestions } from "../../hooks/useQuestions";
+import { useQueue } from "../../hooks/useQueue";
 import EditableQuestion from "./EditableQuestion";
 import QuestionForm from "./QuestionForm";
 import QueueListHeader from "./QueueListSharedComponents";
@@ -69,19 +72,8 @@ export default function StudentQueueList({
   qid,
 }: StudentQueueListProps): ReactElement {
   const profile = useProfile();
-
-  const { data: queue, error: queuesError } = useSWR(
-    qid && `/api/v1/queues/${qid}`,
-    async () => API.queues.get(Number(qid))
-  );
-
-  const {
-    data: questions,
-    error: questionsError,
-    mutate: mutateQuestions,
-  } = useSWR(qid && `/api/v1/queues/${qid}/questions`, async () =>
-    API.questions.index(Number(qid))
-  );
+  const { queue, queuesError, mutateQueue } = useQueue(qid);
+  const { questions, questionsError, mutateQuestions } = useQuestions(qid);
 
   const studentQuestion =
     profile && questions && questions.find((q) => q.creator.id === profile.id);
@@ -119,9 +111,8 @@ export default function StudentQueueList({
   );
 
   /**
-   * Updates a given question to the draft question
+   * Updates the question in the database to match the question in local storage
    * @param question the question being modified
-   * @param status the updated status
    */
   const updateQuestionDraft = async (question: Question) => {
     await API.questions.update(question?.id, {
@@ -131,10 +122,10 @@ export default function StudentQueueList({
     });
 
     const newQuestions = questions.map((q) =>
-      q.id === question.id ? { ...q, status } : q
+      q.id === question.id ? { ...q, status: QuestionStatusKeys.Drafting } : q
     );
 
-    mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
+    mutateQuestions(newQuestions);
   };
 
   const screens = useBreakpoint();
