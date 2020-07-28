@@ -16,6 +16,7 @@ describe('Queue Integration', () => {
       expect(res.body).toMatchSnapshot();
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     it('returns 401 when not logged in', () => {});
   });
 

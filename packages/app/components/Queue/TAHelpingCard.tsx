@@ -9,6 +9,7 @@ import {
   Rank,
   StatusTag,
   Text,
+  questionStatusToColor,
 } from "./QueueCardSharedComponents";
 
 interface TAHelpingQueueCardProps {
@@ -39,7 +40,9 @@ export default function TAHelpingCard({
           <Text>30</Text>
         </Col>
         <Col span={2}>
-          <StatusTag color="purple">{question.status}</StatusTag>
+          <StatusTag color={questionStatusToColor(question.status)}>
+            {question.status}
+          </StatusTag>
         </Col>
         <Col>
           <RightOutlined />
