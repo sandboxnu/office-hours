@@ -30,6 +30,7 @@ sudo apt-get install -y nodejs
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
 sudo apt update && sudo apt install yarn
+echo 'export PATH="$(yarn global bin):$PATH"' >> ~/.bashrc
 ```
 
 ### Install Postgres 11.5
@@ -53,6 +54,12 @@ sudo -u postgres psql -c "CREATE USER server WITH PASSWORD '<PASSWORD>'"
 sudo -u postgres psql -c "CREATE DATABASE prod"
 ```
 
+Add postgres to startup
+
+```
+sudo update-rc.d postgresql enable
+```
+
 ### Setup NGINX
 
 1. Setup NGINX: `sudo apt install nginx`
@@ -67,13 +74,14 @@ sudo -u postgres psql -c "CREATE DATABASE prod"
 ### Setup PM2 Deployment
 
 1. Setup directory on VM: `sudo chown ubuntu /var/www`
+2. Run `yarn global add pm2` on VM
+3. Run `pm2 startup` and copy paste + run the command it gives you
 
 From your local machine:
 
-2. Install pm2 locally `yarn global add pm2`
-3. Edit the pm2 file from your local machine to have the IP + Environment (prod or staging). Commit and push.
-4. Setup: `pm2 deploy infrastructure/prod/ecosystem.config.js <ENVIRONMENT> setup`
-5. Deploy: `pm2 deploy infrastructure/prod/ecosystem.config.js <ENVIRONMENT>`
+1. Edit the pm2 file from your local machine to have the IP + Environment (prod or staging). Commit and push.
+2. Setup: `yarn deploy <ENVIRONMENT> setup`
+3. Deploy: `yarn deploy <ENVIRONMENT>`
 
 ### Add SSH Key for Continuous Deployment
 
@@ -81,7 +89,6 @@ Create or get existing ssh key for the CD environment (GH Actions)
 Add the public key to `~/.ssh/authorized_keys` or use `ssh-copy-id` utility from your local machine.
 
 https://www.ssh.com/ssh/copy-id
-
 
 ### Add Certbot for HTTPS
 
