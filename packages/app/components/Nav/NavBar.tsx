@@ -202,6 +202,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
         bodyStyle={{ padding: "12px" }}
       >
         <NavBarTabs currentHref={pathname} tabs={tabs} />
+        <Settings />
       </Drawer>
     </Nav>
   );
