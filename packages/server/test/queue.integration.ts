@@ -16,15 +16,16 @@ describe('Queue Integration', () => {
       expect(res.body).toMatchSnapshot();
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     it('returns 401 when not logged in', () => {});
   });
 
   describe('GET /queues/:id/questions', () => {
     it('returns questions in the queue', async () => {
       const queue = await QueueFactory.create({
-        questions: [await QuestionFactory.create({ text: 'in queue' })],
+        questions: [await QuestionFactory.create({ text: 'in queue', createdAt: new Date("2020-03-01T05:00:00.000Z") })],
       });
-      await QuestionFactory.create({ text: 'not in queue' });
+      await QuestionFactory.create({ text: 'not in queue', createdAt: new Date("2020-03-01T05:00:00.000Z") });
 
       const res = await supertest({ userId: 99 })
         .get(`/queues/${queue.id}/questions`)
