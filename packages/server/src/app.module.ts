@@ -11,7 +11,8 @@ import { AdminModule } from './admin/admin.module';
 import { CommandModule } from 'nestjs-command';
 import * as typeormConfig from '../ormconfig';
 import { AdminCommand } from 'admin/admin.command';
-import { PROD_URL } from '@template/common';
+import { NonProductionGuard } from './non-production.guard';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { PROD_URL } from '@template/common';
     QueueModule,
     NotificationModule,
     QuestionModule,
-    process.env.DOMAIN !== PROD_URL ? SeedModule : null, // Include this condidtionally, based on if the env is set
+    SeedModule.register(), // Include this condidtionally, based on if the env is set
     ConfigModule.forRoot({
       envFilePath: [
         '.env',
@@ -32,6 +33,12 @@ import { PROD_URL } from '@template/common';
     AdminModule,
     CommandModule,
   ],
-  providers: [AdminCommand],
+  providers: [
+    AdminCommand,
+    {
+      provide: APP_GUARD,
+      useClass: NonProductionGuard,
+    },
+  ],
 })
 export class AppModule {}

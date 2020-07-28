@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { SeedService } from './seed.service';
 import { QuestionModel } from '../question/question.entity';
@@ -10,8 +10,10 @@ import {
   OfficeHourFactory,
   QuestionFactory,
 } from '../../test/util/factories';
+import { NonProductionGuard } from '../non-production.guard';
 
 @Controller('seeds')
+@UseGuards(NonProductionGuard)
 export class SeedController {
   constructor(
     private connection: Connection,
