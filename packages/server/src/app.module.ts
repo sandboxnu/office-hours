@@ -11,6 +11,7 @@ import { AdminModule } from './admin/admin.module';
 import { CommandModule } from 'nestjs-command';
 import * as typeormConfig from '../ormconfig';
 import { AdminCommand } from 'admin/admin.command';
+import { ICalCommand } from 'course/ical.command';
 
 @Module({
   imports: [
@@ -31,6 +32,5 @@ import { AdminCommand } from 'admin/admin.command';
     AdminModule,
     CommandModule,
   ],
-  providers: [AdminCommand],
 })
 export class AppModule {}
