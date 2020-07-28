@@ -22,7 +22,7 @@ import { APP_GUARD } from '@nestjs/core';
     QueueModule,
     NotificationModule,
     QuestionModule,
-    SeedModule.register(), // Include this condidtionally, based on if the env is set
+    SeedModule,
     ConfigModule.forRoot({
       envFilePath: [
         '.env',
