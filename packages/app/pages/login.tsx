@@ -56,7 +56,9 @@ export default function Login() {
 
   return (
     <Container>
-    <h1><PageHeader>[ For Development Use Only ]</PageHeader></h1>
+      <h1>
+        <PageHeader>[ For Development Use Only ]</PageHeader>
+      </h1>
       <LoginContainer>
         <Divider plain>
           <h3>Login</h3>
@@ -94,20 +96,20 @@ export default function Login() {
         <Divider plain>
           <h3>Seed</h3>
         </Divider>
-          <Button
-            style={{ marginRight: "15px" }}
-            type="default"
-            onClick={() => API.seeds.delete()}
-            >
-            Delete Data
-          </Button>
-          <Button
-            style={{ marginRight: "15px" }}
-            type="default"
-            onClick={() => API.seeds.create()}
-            >
-            Seed Data
-          </Button>
+        <Button
+          style={{ marginRight: "15px" }}
+          type="default"
+          onClick={() => API.seeds.delete()}
+        >
+          Delete Data
+        </Button>
+        <Button
+          style={{ marginRight: "15px" }}
+          type="default"
+          onClick={() => API.seeds.create()}
+        >
+          Seed Data
+        </Button>
       </SeedingContainer>
     </Container>
   );

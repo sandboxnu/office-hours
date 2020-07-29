@@ -1,5 +1,9 @@
 import { Module } from '@nestjs/common';
-import { AdminCoreModuleFactory, AdminAuthModuleFactory, DefaultAdminSite } from 'nestjs-admin';
+import {
+  AdminCoreModuleFactory,
+  AdminAuthModuleFactory,
+  DefaultAdminSite,
+} from 'nestjs-admin';
 import { adminCredentialValidator } from './credentialValidator';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminUserModel } from './admin-user.entity';
@@ -20,7 +24,6 @@ const AuthModule = AdminAuthModuleFactory.createAdminAuthModule({
   exports: [CoreModule, AuthModule],
 })
 export class AdminModule {
-
   constructor(private readonly adminSite: DefaultAdminSite) {
     adminSite.register('Course', CourseAdmin);
     adminSite.register('User', UserAdmin);

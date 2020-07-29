@@ -110,7 +110,7 @@ const StudentInfoCard = ({
       <Row justify="space-between">
         <AlertButton onClick={() => alertStudent()}>Alert</AlertButton>
         <Popconfirm
-          title={`Are you sure you want to mark this question as "Can't find"? This will remove the student from the queue`}
+          title={`Are you sure you want to mark this question as "Can't find"?`}
           okText="Yes"
           cancelText="No"
           onConfirm={() => {
