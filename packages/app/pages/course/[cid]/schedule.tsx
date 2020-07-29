@@ -1,4 +1,9 @@
-import { Calendar, momentLocalizer, CalendarProps, Event } from "react-big-calendar";
+import {
+  Calendar,
+  momentLocalizer,
+  CalendarProps,
+  Event,
+} from "react-big-calendar";
 import moment from "moment";
 import useSWR from "swr";
 import { API } from "@template/api-client";
@@ -7,6 +12,7 @@ import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useRouter } from "next/router";
 import NavBar from "../../../components/Nav/NavBar";
+import { ReactElement } from "react";
 
 const Container = styled.div`
   margin: 32px 64px;
