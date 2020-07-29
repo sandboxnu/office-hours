@@ -120,7 +120,7 @@ export class QuestionController {
     // TODO: Use user type to dertermine wether or not we should include the text in the response
     let question = await QuestionModel.findOne({
       where: { id: questionId },
-      relations: ['creator', 'queue'],
+      relations: ['creator', 'queue', 'taHelped'],
     });
     if (question === undefined) {
       throw new NotFoundException();
@@ -161,6 +161,7 @@ export class QuestionController {
           'TA/Professors can only edit question status',
         );
       }
+
       // If the taHelped is already set, make sure the same ta updates the status
       if (question.taHelped?.id !== userId) {
         if (question.status === OpenQuestionStatus.Helping) {

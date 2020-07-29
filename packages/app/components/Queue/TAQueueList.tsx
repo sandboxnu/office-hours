@@ -4,12 +4,14 @@ import {
   OpenQuestionStatus,
   Question,
   QuestionStatus,
+  QuestionStatusKeys,
 } from "@template/common";
 import { Button, Card, Col, Grid, Row, Tooltip } from "antd";
 import { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
-import useSWR, { mutate } from "swr";
 import { useProfile } from "../../hooks/useProfile";
+import { useQuestions } from "../../hooks/useQuestions";
+import { useQueue } from "../../hooks/useQueue";
 import GroupQuestions from "./GroupQuestions";
 import QueueListHeader from "./QueueListSharedComponents";
 import StudentInfoCard from "./StudentInfoCard";
@@ -123,22 +125,14 @@ export default function TAQueueList({
   const screens = useBreakpoint();
   const user = useProfile();
 
-  const { data: queue, error: queuesError, mutate: mutateQueue } = useSWR(
-    qid && `/api/v1/queues/${qid}`,
-    async () => API.queues.get(Number(qid))
-  );
+  const { queue, queuesError, mutateQueue } = useQueue(qid);
 
-  const { data: questions, error: questionsError } = useSWR(
-    qid && `/api/v1/queues/${qid}/questions`,
-    async () => API.questions.index(Number(qid))
-  );
-
-  const alertStudent = async (question: Question) => {
-    await API.questions.notify(question.id);
-  };
+  const { questions, questionsError, mutateQuestions } = useQuestions(qid);
 
   const helpingQuestions: Question[] = questions?.filter(
-    (question) => question.status === OpenQuestionStatus.Helping
+    (question) =>
+      question.status === OpenQuestionStatus.Helping &&
+      question.taHelped?.id === user.id
   );
   const groupQuestions: Question[] = questions?.filter(
     (question) => question.status !== OpenQuestionStatus.Helping
@@ -168,7 +162,7 @@ export default function TAQueueList({
     const newQuestions = questions?.map((q) =>
       q.id === question.id ? { ...q, status } : q
     );
-    mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
+    mutateQuestions(newQuestions);
     setOpenPopup(false);
   };
 
@@ -200,7 +194,13 @@ export default function TAQueueList({
 
   const isStaffCheckedIn = queue?.staffList.some((e) => e.id === user.id);
 
-  const helpNext = async () => {};
+  const helpNext = async () => {
+    const nextQuestion = questions.find(
+      (question) => question.status === QuestionStatusKeys.Queued
+    );
+
+    updateQuestionTA(nextQuestion, OpenQuestionStatus.Helping);
+  };
 
   /**
    * Renders the card headers for a TA who is not yet helping someone.
@@ -297,7 +297,6 @@ export default function TAQueueList({
             <StudentInfoCard
               key={question.id}
               updateQuestion={updateQuestionTA}
-              alertStudent={alertStudent}
               question={question}
             />
           ))}
@@ -326,7 +325,11 @@ export default function TAQueueList({
                     !isStaffCheckedIn && "You must check in to help students!"
                   }
                 >
-                  <HelpNextButton disabled={!isStaffCheckedIn} size="large">
+                  <HelpNextButton
+                    onClick={helpNext}
+                    disabled={!isStaffCheckedIn}
+                    size="large"
+                  >
                     Help Next
                   </HelpNextButton>
                 </Tooltip>

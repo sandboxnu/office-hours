@@ -10,6 +10,8 @@ const proxy = createProxyMiddleware({
   target: "http://localhost:3001",
   router: {
     "/api": "http://localhost:3002",
+    "/admin-static": "http://localhost:3002",
+    "/admin": "http://localhost:3002/api/v1",
     "/socket.io": "http://localhost:3002",
   },
   ws: true,
