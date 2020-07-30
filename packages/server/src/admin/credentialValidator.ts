@@ -1,5 +1,5 @@
 import { AdminUserModel } from './admin-user.entity';
-import {compare} from 'bcrypt';
+import { compare } from 'bcrypt';
 
 export const adminCredentialValidator = {
   inject: [],

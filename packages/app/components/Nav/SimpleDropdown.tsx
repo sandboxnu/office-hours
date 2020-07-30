@@ -20,7 +20,10 @@ interface SimpleDropdownProps {
   overlay: ReactElement;
 }
 
-export default function SimpleDropdown({ children, overlay }: SimpleDropdownProps): ReactElement {
+export default function SimpleDropdown({
+  children,
+  overlay,
+}: SimpleDropdownProps): ReactElement {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef();
   useOnClickOutside(ref, () => setIsOpen(false));

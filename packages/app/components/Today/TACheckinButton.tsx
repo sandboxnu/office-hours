@@ -61,7 +61,7 @@ export default function TACheckinButton({
         Check In
       </CheckinButton>
       <Modal
-        title="Time to Check In! :D 🐱o(=•ェ•=)m"
+        title="Check in to your office hours"
         visible={viewCheckinModal}
         onOk={checkInTA}
         onCancel={() => setViewCheckinModal(false)}

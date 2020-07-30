@@ -19,7 +19,7 @@ import * as typeormConfig from '../ormconfig';
     QueueModule,
     NotificationModule,
     QuestionModule,
-    SeedModule, // Include this condidtionally, based on if the env is set
+    SeedModule,
     ConfigModule.forRoot({
       envFilePath: [
         '.env',
