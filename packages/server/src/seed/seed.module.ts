@@ -3,7 +3,7 @@ import { SeedController } from './seed.controller';
 import { SeedService } from './seed.service';
 
 @Module({
-    controllers: [SeedController],
-    providers: [SeedService],
-  })
+  controllers: [SeedController],
+  providers: [SeedService],
+})
 export class SeedModule {}
