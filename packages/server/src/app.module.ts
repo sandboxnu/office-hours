@@ -10,9 +10,6 @@ import { SeedModule } from './seed/seed.module';
 import { AdminModule } from './admin/admin.module';
 import { CommandModule } from 'nestjs-command';
 import * as typeormConfig from '../ormconfig';
-import { AdminCommand } from 'admin/admin.command';
-import { NonProductionGuard } from './non-production.guard';
-import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -32,13 +29,6 @@ import { APP_GUARD } from '@nestjs/core';
     }),
     AdminModule,
     CommandModule,
-  ],
-  providers: [
-    AdminCommand,
-    {
-      provide: APP_GUARD,
-      useClass: NonProductionGuard,
-    },
   ],
 })
 export class AppModule {}

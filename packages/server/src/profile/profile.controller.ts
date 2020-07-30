@@ -32,7 +32,7 @@ export class ProfileController {
   async get(
     @User(['courses', 'courses.course', 'phoneNotif']) user: UserModel,
   ): Promise<GetProfileResponse> {
-    const courses = user.courses.map(userCourse => {
+    const courses = user.courses.map((userCourse) => {
       return {
         course: {
           id: userCourse.courseId,
@@ -69,7 +69,7 @@ export class ProfileController {
     }
     await user.save();
 
-    const courses = user.courses.map(userCourse => {
+    const courses = user.courses.map((userCourse) => {
       return {
         course: {
           id: userCourse.courseId,

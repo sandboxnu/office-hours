@@ -8,8 +8,7 @@ import { adminCredentialValidator } from './credentialValidator';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminUserModel } from './admin-user.entity';
 import { CourseAdmin, QueueAdmin, UserAdmin } from './admin-entities';
-import { UserModel } from 'profile/user.entity';
-import { QueueModel } from 'queue/queue.entity';
+import { AdminCommand } from './admin.command';
 
 const CoreModule = AdminCoreModuleFactory.createAdminCoreModule({});
 const AuthModule = AdminAuthModuleFactory.createAdminAuthModule({
@@ -22,6 +21,7 @@ const AuthModule = AdminAuthModuleFactory.createAdminAuthModule({
 @Module({
   imports: [CoreModule, AuthModule],
   exports: [CoreModule, AuthModule],
+  providers: [AdminCommand],
 })
 export class AdminModule {
   constructor(private readonly adminSite: DefaultAdminSite) {

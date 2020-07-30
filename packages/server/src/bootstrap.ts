@@ -15,9 +15,13 @@ export async function bootstrap(hot: any): Promise<void> {
   app.setGlobalPrefix('api/v1');
   app.useGlobalInterceptors(new LoggingInterceptor());
 
-  if(process.env.DOMAIN !== PROD_URL){
-    console.log(`Running non-production at ${process.env.DOMAIN}. THIS MSG SHOULD NOT APPEAR ON PROD VM`);
-    app.enableCors({origin: [/\.sandboxneu\.vercel\.app/, /\.sandboxneu\.now\.sh/]});
+  if (process.env.DOMAIN !== PROD_URL) {
+    console.log(
+      `Running non-production at ${process.env.DOMAIN}. THIS MSG SHOULD NOT APPEAR ON PROD VM`,
+    );
+    app.enableCors({
+      origin: [/\.sandboxneu\.vercel\.app/, /\.sandboxneu\.now\.sh/],
+    });
   } else {
     console.log(`Running production at ${process.env.DOMAIN}.`);
   }
