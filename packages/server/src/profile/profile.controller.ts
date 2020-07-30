@@ -16,6 +16,7 @@ import { GetProfileResponse, UpdateProfileParams } from '@template/common';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { User } from './user.decorator';
 import { NotificationService } from '../notification/notification.service';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('profile')
 export class ProfileController {
@@ -23,6 +24,7 @@ export class ProfileController {
     private connection: Connection,
     private jwtService: JwtService,
     private notifService: NotificationService,
+    private configService: ConfigService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -30,7 +32,7 @@ export class ProfileController {
   async get(
     @User(['courses', 'courses.course', 'phoneNotif']) user: UserModel,
   ): Promise<GetProfileResponse> {
-    const courses = user.courses.map((userCourse) => {
+    const courses = user.courses.map(userCourse => {
       return {
         course: {
           id: userCourse.courseId,
@@ -67,7 +69,7 @@ export class ProfileController {
     }
     await user.save();
 
-    const courses = user.courses.map((userCourse) => {
+    const courses = user.courses.map(userCourse => {
       return {
         course: {
           id: userCourse.courseId,
@@ -96,6 +98,9 @@ export class ProfileController {
   @Get('/entry')
   enterFromKhoury(@Res() res: Response, @Query('userId') userId: number): void {
     const token = this.jwtService.sign({ userId });
-    res.cookie('auth_token', token).redirect(302, '/');
+    const isSecure = this.configService.get('NODE_ENV') === 'production';
+    res
+      .cookie('auth_token', token, { httpOnly: true, secure: isSecure })
+      .redirect(302, '/');
   }
 }
