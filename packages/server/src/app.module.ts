@@ -10,7 +10,6 @@ import { SeedModule } from './seed/seed.module';
 import { AdminModule } from './admin/admin.module';
 import { CommandModule } from 'nestjs-command';
 import * as typeormConfig from '../ormconfig';
-import { AdminCommand } from 'admin/admin.command';
 
 @Module({
   imports: [
@@ -20,7 +19,7 @@ import { AdminCommand } from 'admin/admin.command';
     QueueModule,
     NotificationModule,
     QuestionModule,
-    SeedModule, // Include this condidtionally, based on if the env is set
+    SeedModule,
     ConfigModule.forRoot({
       envFilePath: [
         '.env',
@@ -31,6 +30,5 @@ import { AdminCommand } from 'admin/admin.command';
     AdminModule,
     CommandModule,
   ],
-  providers: [AdminCommand],
 })
 export class AppModule {}
