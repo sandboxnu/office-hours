@@ -8,6 +8,8 @@ import { QueueModel } from './src/queue/queue.entity';
 import { DesktopNotifModel } from './src/notification/desktop-notif.entity';
 import { PhoneNotifModel } from './src/notification/phone-notif.entity';
 import { AdminUserModel } from './src/admin/admin-user.entity';
+import { config } from 'dotenv';
+config();
 
 const typeorm = {
   type: 'postgres',
