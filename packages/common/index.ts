@@ -238,6 +238,26 @@ export type PhoneNotifBody = {
 // Office Hours Response Types
 export type GetProfileResponse = User;
 
+// TODO: Add class validator on types
+export interface AdminDataParams {
+  username: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  photo_url: string;
+  courses: KouryAdminCourse[];
+  ta_courses: KouryAdminCourse[];
+}
+
+interface KouryAdminCourse {
+  course_name: string;
+  semester: number;
+}
+
+export interface KhouryRedirectResponse {
+  redirect: string;
+}
+
 export class UpdateProfileParams {
   @IsBoolean()
   @IsOptional()
