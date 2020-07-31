@@ -2,22 +2,8 @@ import { Form, Input, Modal, Row, Switch } from "antd";
 import useSWR from "swr";
 import { API } from "@template/api-client";
 import { UpdateProfileParams } from "@template/common";
-import styled from "styled-components";
 import { pick } from "lodash";
-import { register } from "next-offline/runtime";
 import { ReactElement } from "react";
-
-const LabelText = styled.div`
-  font-weight: normal;
-  font-size: 16px;
-  margin-top: 10px;
-`;
-
-const InputContainer = styled.div`
-  width: 150px;
-  margin-left: 30px;
-  margin-top: 10px;
-`;
 
 const check = () => {
   if (!("serviceWorker" in navigator)) {
@@ -64,14 +50,8 @@ export function NotificationSettingsModal({
       ])
     );
     if (updateProfile.desktopNotifsEnabled) {
+      check();
       await requestNotificationPermission();
-      // get rid of old service worker, and then try and re-register.
-      // just kidding, this breaks Chrome for some reason (ai ya).
-      // unregister();
-      // have to use setTimeout because unregister does async things, but is sync
-      setTimeout(() => {
-        register();
-      }, 500);
     }
     mutate();
   };
@@ -106,7 +86,13 @@ export function NotificationSettingsModal({
             name="desktopNotifsEnabled"
             valuePropName="checked"
           >
-            <Switch />
+            <Switch
+              onChange={(checked) => {
+                if (checked) {
+                  requestNotificationPermission();
+                }
+              }}
+            />
           </Form.Item>
           <Form.Item
             label="Enable SMS notifications"

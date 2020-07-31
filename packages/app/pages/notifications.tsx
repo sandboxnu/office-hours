@@ -1,7 +1,6 @@
 import { API } from "@template/api-client";
 import { User } from "@template/common";
 import { Button, Input } from "antd";
-import { register } from "next-offline/runtime";
 import { useProfile } from "../hooks/useProfile";
 
 export default function Notifications() {
@@ -32,14 +31,7 @@ export default function Notifications() {
     check();
     // try to get notification permissions
     await requestNotificationPermission();
-    // get rid of old service worker, and then try and re-register.
-    // unregister();
-    // have to use setTimeout because unregister does async things, but is sync
-    setTimeout(() => {
-      register();
-    }, 500);
   };
-  // end web push code
 
   return (
     <div>
