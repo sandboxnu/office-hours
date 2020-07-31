@@ -25,7 +25,7 @@ import {
 } from '@template/common';
 import { Connection, In } from 'typeorm';
 import { NotificationService } from '../notification/notification.service';
-import { JwtAuthGuard } from '../profile/jwt-auth.guard';
+import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { UserCourseModel } from '../profile/user-course.entity';
 import { User, UserId } from '../profile/user.decorator';
 import { UserModel } from '../profile/user.entity';
