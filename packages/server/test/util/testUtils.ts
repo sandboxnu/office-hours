@@ -4,7 +4,7 @@ import { INestApplication, Type } from '@nestjs/common';
 import { Test, TestingModuleBuilder } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as supertest from 'supertest';
-import { ProfileModule } from '../../src/profile/profile.module';
+import { LoginModule } from '../../src/login/login.module';
 import { JwtService } from '@nestjs/jwt';
 import { addGlobalsToApp } from '../../src/bootstrap';
 import { TwilioService } from '../../src/notification/twilio/twilio.service';
@@ -41,7 +41,7 @@ export function setupIntegrationTest(
     let testModuleBuilder = Test.createTestingModule({
       imports: [
         module,
-        ProfileModule,
+        LoginModule,
         TestTypeOrmModule,
         ConfigModule.forRoot({
           envFilePath: ['.env', '.env.development'],
