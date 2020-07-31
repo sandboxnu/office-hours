@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsString,
   ValidateIf,
+  IsDefined,
 } from "class-validator";
 import "reflect-metadata";
 
@@ -238,20 +239,41 @@ export type PhoneNotifBody = {
 // Office Hours Response Types
 export type GetProfileResponse = User;
 
-// TODO: Add class validator on types
-export interface AdminDataParams {
-  username: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  photo_url: string;
-  courses: KouryAdminCourse[];
-  ta_courses: KouryAdminCourse[];
+export class KhouryDataParams {
+  @IsString()
+  username!: string;
+  
+  @IsString()
+  email!: string;
+  
+  @IsString()
+  first_name!: string;
+  
+  @IsString()
+  last_name!: string;
+  
+  @IsOptional()
+  @IsString()
+  photo_url!: string;
+  
+  @IsOptional()
+  @IsDefined()  // TODO: use ValidateNested instead, for some reason it's crunked
+  courses!: KouryAdminCourse[];
+  
+  @IsOptional()
+  @IsDefined()  // TODO: use ValidateNested instead, for some reason it's crunked
+  ta_courses!: KouryAdminCourse[];
 }
 
-interface KouryAdminCourse {
-  course_name: string;
-  semester: number;
+class KouryAdminCourse {
+  @IsString()
+  course_name!: string;
+
+  @IsString()
+  semester!: number;
+
+  @IsBoolean()
+  withdraw!: boolean;
 }
 
 export interface KhouryRedirectResponse {
