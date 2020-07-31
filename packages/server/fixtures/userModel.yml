@@ -1,25 +1,25 @@
 entity: UserModel
 items:
   user0:
-    username: 'test_user'
-    email: 'test_user@husky.neu.edu'
-    name: 'Test User'
-    photoURL: 'www.photoURL.com'
+    username: 'stanleyliu'
+    email: 'liu.sta@northeastern.edu'
+    name: 'Stanley Liu'
+    photoURL: 'https://ca.slack-edge.com/TE565NU79-UR20CG36E-cf0f375252bd-512'
   user1:
     username: 'xXmyHomiESt3nz69Xx'
     email: 'stenzel.w@northeastern.edu'
     name: 'Will Stenzel'
-    photoURL: 'https://i.imgur.com/UrYRn0c.jpg'
+    photoURL: 'https://ca.slack-edge.com/TE565NU79-URF256KRT-d10098e879da-512'
   user2:
     username: 'SrsProgrammerFreshmanLiuS'
     email: 'liu.sta@husky.neu.edu'
-    name: 'Stanley Liu'
-    photoURL: 'https://i.imgur.com/iyQyUiN.jpeg'
+    name: 'Test User'
+    photoURL: 'https://ca.slack-edge.com/TE565NU79-UR20CG36E-cf0f375252bd-512'
   user3:
     username: 'online_user'
     email: 'chu.daj@northeastern.edu'
-    name: 'NU Flex'
-    photoURL: 'https://i.imgur.com/iyQyUiN.jpeg'
+    name: 'Da-Jin Chu'
+    photoURL: 'https://ca.slack-edge.com/TE565NU79-UE56Y5UT1-85db59a474f4-512'
   user4:
     username: 'ta_2_so_good'
     email: 'li.edwa@northeastern.edu'
