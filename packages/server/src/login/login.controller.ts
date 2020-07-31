@@ -128,7 +128,7 @@ export class LoginController {
   }
 
   // This is for login on development only
-  @Get('/login/entry_dev')
+  @Get('/login/dev')
   @UseGuards(NonProductionGuard)
   async enterFromDev(
     @Res() res: Response,
