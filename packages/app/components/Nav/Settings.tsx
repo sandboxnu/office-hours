@@ -152,7 +152,9 @@ export default function Settings() {
         </Row>
       </Modal>
       <AvatarButton onClick={() => setIsOpen(true)}>
-        <Avatar size={47} icon={<UserOutlined />} />
+        {profile && (
+          <Avatar size={40} icon={<UserOutlined />} src={profile.photoURL} />
+        )}
       </AvatarButton>
     </>
   );

@@ -58,7 +58,7 @@ const LeftMenu = styled.div`
 `;
 
 const RightMenu = styled.div`
-  margin-right: 15px;
+  margin-right: 64px;
   @media (max-width: 767px) {
     display: none;
   }
