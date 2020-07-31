@@ -25,7 +25,7 @@ export class ProfileController {
   async get(
     @User(['courses', 'courses.course', 'phoneNotif']) user: UserModel,
   ): Promise<GetProfileResponse> {
-    const courses = user.courses.map((userCourse) => {
+    const courses = user.courses.filter(userCourse => userCourse.course.enabled).map((userCourse) => {
       return {
         course: {
           id: userCourse.courseId,

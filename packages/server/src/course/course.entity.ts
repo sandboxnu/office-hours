@@ -41,7 +41,7 @@ export class CourseModel extends BaseEntity {
   @Column('text')
   name: string;
 
-  @Column('text')
+  @Column('text', { nullable: true })
   @Exclude()
   icalURL: string;
 
@@ -58,4 +58,7 @@ export class CourseModel extends BaseEntity {
   @Exclude()
   // TODO: can we make these not nullable and work with TypeORM
   semesterId: number;
+
+  @Column('boolean', { nullable: true })
+  enabled: boolean;
 }
