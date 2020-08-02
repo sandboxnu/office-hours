@@ -1,7 +1,7 @@
 import { AdminEntity } from 'nestjs-admin';
-import { CourseModel } from 'course/course.entity';
-import { QueueModel } from 'queue/queue.entity';
-import { UserModel } from 'profile/user.entity';
+import { CourseModel } from '../course/course.entity';
+import { QueueModel } from '../queue/queue.entity';
+import { UserModel } from '../profile/user.entity';
 
 export class CourseAdmin extends AdminEntity {
   entity = CourseModel;
