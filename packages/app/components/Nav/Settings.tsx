@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { NotificationSettingsModal } from "./NotificationSettingsModal";
 import { useState, ReactElement } from "react";
 import Link from "next/link";
+import { useProfile } from "../../hooks/useProfile";
 
 const StyleablePopover = ({ className, ...props }: { className: string }) => (
   <Popover {...props} overlayClassName={className} />
@@ -19,6 +20,7 @@ const AvatarButton = styled.div`
 `;
 
 export default function Settings(): ReactElement {
+  const profile = useProfile();
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
@@ -52,7 +54,9 @@ export default function Settings(): ReactElement {
         onVisibleChange={setIsPopoverOpen}
       >
         <AvatarButton>
-          <Avatar size={47} icon={<UserOutlined />} />
+          {profile && (
+            <Avatar size={40} icon={<UserOutlined />} src={profile.photoURL} />
+          )}
         </AvatarButton>
       </NoPaddingPopover>
     </>

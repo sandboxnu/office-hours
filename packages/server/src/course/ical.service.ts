@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import ical, { CalendarComponent, CalendarResponse, VEvent } from 'node-ical';
+import {
+  fromURL,
+  CalendarComponent,
+  CalendarResponse,
+  VEvent,
+} from 'node-ical';
 import { DeepPartial, Connection } from 'typeorm';
 import { OfficeHourModel } from './office-hour.entity';
 import { CourseModel } from './course.entity';
@@ -36,7 +41,7 @@ export class IcalService {
    */
   public async updateCalendarForCourse(course: CourseModel): Promise<void> {
     const officeHours = this.parseIcal(
-      await ical.fromURL(course.icalURL),
+      await fromURL(course.icalURL),
       course.id,
     );
     await OfficeHourModel.delete({ courseId: course.id });

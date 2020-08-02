@@ -9,10 +9,7 @@ import {
 } from "class-validator";
 import "reflect-metadata";
 
-export enum WSMessageType {
-  Count = "count",
-  Refresh = "ref",
-}
+export const PROD_URL = "https://khouryofficehours.com";
 
 /////////////////////////
 // API Base Data Types //

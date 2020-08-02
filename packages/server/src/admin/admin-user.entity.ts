@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, BaseEntity, Column } from 'typeorm';
-import {hashSync} from 'bcrypt';
+import { hashSync } from 'bcrypt';
 
 /**
  * Admin users are totally separate from regular users and can only be created from command line.

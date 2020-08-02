@@ -15,4 +15,4 @@ items:
     questionType: 'Concept'
     status: 'Queued'
     creatorId: '@user3'
-    online: true
+    isOnline: true
