@@ -37,8 +37,6 @@ export function NotificationSettingsModal({
       const canNotify = await requestNotificationPermission();
       if (canNotify) {
         await registerNotificationSubscription();
-      } else {
-        form.setFieldsValue({ desktopNotifsEnabled: false });
       }
     }
     mutate();
@@ -75,9 +73,18 @@ export function NotificationSettingsModal({
             valuePropName="checked"
           >
             <Switch
-              onChange={(checked) => {
+              onChange={async (checked) => {
                 if (checked) {
-                  requestNotificationPermission();
+                  const canNotify = await requestNotificationPermission();
+                  if (!canNotify) {
+                    form.setFieldsValue({ desktopNotifsEnabled: false });
+                    form.setFields([
+                      {
+                        name: "desktopNotifsEnabled",
+                        errors: ["Please allow notifications in this browser"],
+                      },
+                    ]);
+                  }
                 }
               }}
             />

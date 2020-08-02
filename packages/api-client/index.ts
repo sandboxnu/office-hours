@@ -96,7 +96,9 @@ class APIClient {
   notif = {
     desktop: {
       credentials: async (): Promise<string> => {
-        return this.axios.get("/api/v1/notifications/desktop/credentials");
+        return (
+          await this.axios.get("/api/v1/notifications/desktop/credentials")
+        ).data;
       },
       register: async (payload: DesktopNotifBody): Promise<string> => {
         return this.axios.post(
