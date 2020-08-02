@@ -213,8 +213,8 @@ export class QuestionController {
     }
 
     this.notifService.notifyUser(
-      question.creatorId, // TODO: Stanley think of a better message
-      "Heyo TA is comin fo yo' ass",
+      question.creatorId,
+      'Get ready! A TA is coming to help you.',
     );
   }
 }
