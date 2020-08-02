@@ -28,7 +28,7 @@ export class QueueController {
   constructor(private connection: Connection) {}
 
   @Get(':queueId')
-  async getQueue(@Param('queueId') queueId: string): Promise<GetQueueResponse> {
+  async getQueue(@Param('queueId') queueId: number): Promise<GetQueueResponse> {
     const queue = await QueueModel.findOne(queueId, {
       relations: ['staffList'],
     });
@@ -41,7 +41,7 @@ export class QueueController {
 
   @Get(':queueId/questions')
   async getQuestions(
-    @Param('queueId') queueId: string,
+    @Param('queueId') queueId: number,
   ): Promise<ListQuestionsResponse> {
     // todo: need a way to return different data, if TA vs. student hits endpoint.
     // for now, just return the student response
@@ -52,19 +52,10 @@ export class QueueController {
     if (queueSize === 0) {
       throw new NotFoundException();
     }
-
-    return await QuestionModel.find({
-      where: [
-        {
-          queueId: queueId,
-          status: In(Object.values(OpenQuestionStatus)),
-        },
-      ],
-      relations: ['creator', 'taHelped'],
-      order: {
-        createdAt: 'ASC',
-      },
-    });
+    return QuestionModel.openInQueue(queueId)
+      .leftJoinAndSelect('question.creator', 'creator')
+      .leftJoinAndSelect('question.taHelped', 'taHelped')
+      .getMany();
   }
 
   @Patch(':queueId')
