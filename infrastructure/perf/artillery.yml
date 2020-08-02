@@ -1,0 +1,14 @@
+config:
+  # target: 'http://localhost:3000'
+  target: "https://staging.khouryofficehours.com"
+  phases:
+    - duration: 60
+      arrivalRate: 30
+scenarios:
+  - flow:
+      - get:
+          url: "/api/v1/profile/entry?userId=1"
+      - get:
+          url: "/course/1/today"
+      - get:
+          url: "/api/v1/courses/1"
