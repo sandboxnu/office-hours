@@ -45,4 +45,34 @@ describe('Seed Integration', () => {
     const numQuestions = await QuestionModel.count();
     expect(numQuestions).toBe(3);
   });
+
+  it('GET /seeds/createTA', async () => {
+    const res = await supertest().post('/seeds/createTA');
+    expect(res.body).toMatchSnapshot();
+  });
+
+  it('GET /seeds/createQueue', async () => {
+    await CourseFactory.create({ name: 'CS 1800' });
+    const res = await supertest()
+      .post('/seeds/createQueue')
+      .send({ courseId: 1 });
+    expect(res.body).toMatchSnapshot();
+  });
+
+  it('GET /seeds/createQuestion', async () => {
+    const res = await supertest().post('/seeds/createQuestion');
+    expect(res.body).toMatchObject({
+        "closedAt": null,
+        "creatorId": 1,
+        "helpedAt": null,
+        "id": 1,
+        "isOnline": null,
+        "location": null,
+        "questionType": "Other",
+        "queueId": 1,
+        "status": "Queued",
+        "taHelpedId": null,
+        "text": "question 7",
+      });
+  });
 });

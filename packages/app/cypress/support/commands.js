@@ -55,8 +55,23 @@ Cypress.Commands.add("login", (userType) => {
     return;
   }
   if (userType === "student") {
-    cy.request("/api/v1/profile/entry?userId=1");
+    cy.visit("/api/v1/profile/entry?userId=1");
   } else if (userType == "ta") {
-    cy.request("/api/v1/profile/entry?userId=2");
+    cy.visit("/api/v1/profile/entry?userId=2");
   }
 });
+
+
+// Seeding Related Commands
+
+Cypress.Commands.add("createTA", (options) => 
+   cy.request('POST', '/api/v1/seeds/createTA', { ...options }).then(res => res.body)
+);
+
+Cypress.Commands.add("createQueue", (options) => 
+   cy.request('POST', '/api/v1/seeds/createQueue', { ...options }).then(res => res.body)
+);
+
+Cypress.Commands.add("createQuestion", (options) => 
+   cy.request('POST', '/api/v1/seeds/createQuestion', { ...options }).then(res => res.body)
+);

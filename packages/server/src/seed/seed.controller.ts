@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, Body, Post } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { SeedService } from './seed.service';
 import { QuestionModel } from '../question/question.entity';
@@ -9,8 +9,11 @@ import {
   QueueFactory,
   OfficeHourFactory,
   QuestionFactory,
+  UserCourseFactory,
 } from '../../test/util/factories';
 import { NonProductionGuard } from '../non-production.guard';
+import { Role } from '@template/common';
+import { UserCourseModel } from 'profile/user-course.entity';
 
 @Controller('seeds')
 @UseGuards(NonProductionGuard)
@@ -58,5 +61,41 @@ export class SeedController {
     await QuestionFactory.create({ queue: queue });
 
     return 'Data successfully seeded';
+  }
+
+  @Post('createTA')
+  async createTA(@Body() body: { courseId: number }): Promise<UserCourseModel> {
+    let ta: UserCourseModel;
+    if (body.courseId) {
+      const course = await CourseModel.findOneOrFail(body.courseId);
+      ta = await UserCourseFactory.create({ role: Role.TA, course: course });
+    } else {
+      ta = await UserCourseFactory.create({ role: Role.TA });
+    }
+    return ta;
+  }
+
+  @Post('createQueue')
+  async createQueue(@Body() body: { courseId: number }): Promise<QueueModel> {
+    let queue: QueueModel;
+    if (body.courseId) {
+      const course = await CourseModel.findOneOrFail(body.courseId);
+      queue = await QueueFactory.create({ course: course });
+    } else {
+      queue = await QueueFactory.create();
+    }
+    return queue;
+  }
+
+  @Post('createQuestion')
+  async createQuestion(@Body() body: { queueId: number }): Promise<QuestionModel> {
+    let question: QuestionModel;
+    if (body.queueId) {
+      const queue = await QueueModel.findOneOrFail(body.queueId);
+      question = await QuestionFactory.create({ queue: queue });
+    } else {
+      question = await QuestionFactory.create();
+    }
+    return question;
   }
 }
