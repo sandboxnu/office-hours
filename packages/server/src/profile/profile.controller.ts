@@ -98,7 +98,9 @@ export class ProfileController {
   @Get('/entry')
   enterFromKhoury(@Res() res: Response, @Query('userId') userId: number): void {
     const token = this.jwtService.sign({ userId });
-    const isSecure = this.configService.get('NODE_ENV') === 'production';
+    const isSecure = this.configService
+      .get<string>('DOMAIN')
+      .startsWith('https://');
     res
       .cookie('auth_token', token, { httpOnly: true, secure: isSecure })
       .redirect(302, '/');
