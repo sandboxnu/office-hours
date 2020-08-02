@@ -165,7 +165,7 @@ export default function StudentQueueList({
           bodyStyle={{ paddingLeft: 0 }}
           style={{
             paddingLeft: 0,
-            marginTop: screens.lg === false ? 0 : "46px",
+            marginTop: screens.lg === false ? 0 : "36px",
           }}
           bordered={false}
         >

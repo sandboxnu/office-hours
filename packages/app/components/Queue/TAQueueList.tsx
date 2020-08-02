@@ -300,12 +300,12 @@ export default function TAQueueList({
               question={question}
             />
           ))}
-        {groupQuestions && groupQuestions.length !== 0 && (
+        {/* {groupQuestions && groupQuestions.length !== 0 && (
           <GroupQuestions
             questions={groupQuestions}
             addQuestions={addQuestionsToHelp}
           />
-        )}
+        )} */}
       </Col>
     );
   };
