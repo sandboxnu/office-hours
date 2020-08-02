@@ -52,6 +52,7 @@ export class LoginController {
     });
     await user.save();
 
+    // TODO: Check performanace on this, right now there are mad db queries in here
     async function courseNameToUserCourse(
       name: string,
       role: Role,
