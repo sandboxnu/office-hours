@@ -13,7 +13,7 @@ self.addEventListener("push", async function (event) {
     try {
       await showLocalNotification(
         // todo: change mssg
-        "alex is brain dead",
+        "Khoury Office Hours",
         event.data.text(),
         self.registration
       );
