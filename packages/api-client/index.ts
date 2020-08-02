@@ -94,39 +94,27 @@ class APIClient {
     },
   };
   notif = {
-    notify_user: async (userId: number): Promise<void> => {
-      await this.axios.post(`/api/v1/notifications/notify_user/${userId}`);
-    },
     desktop: {
       credentials: async (): Promise<string> => {
         return this.axios.get("/api/v1/notifications/desktop/credentials");
       },
-      register: async (
-        userId: number,
-        payload: DesktopNotifBody
-      ): Promise<string> => {
+      register: async (payload: DesktopNotifBody): Promise<string> => {
         return this.axios.post(
-          `/api/v1/notifications/desktop/register/${userId}`,
+          `/api/v1/notifications/desktop/register`,
           payload
         );
       },
     },
     phone: {
-      register: async (
-        userId: number,
-        payload: PhoneNotifBody
-      ): Promise<string> => {
-        return this.axios.post(
-          `/api/v1/notifications/phone/register/${userId}`,
-          payload
-        );
+      register: async (payload: PhoneNotifBody): Promise<string> => {
+        return this.axios.post(`/api/v1/notifications/phone/register`, payload);
       },
     },
   };
   seeds = {
-      delete: async () => (this.axios.get(`/api/v1/seeds/delete`)),
-      create: async () => (this.axios.get(`/api/v1/seeds/create`)),
-  }
+    delete: async () => this.axios.get(`/api/v1/seeds/delete`),
+    create: async () => this.axios.get(`/api/v1/seeds/create`),
+  };
   constructor(baseURL = "") {
     this.axios = Axios.create({ baseURL: baseURL });
   }

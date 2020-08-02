@@ -4,26 +4,10 @@ import { API } from "@template/api-client";
 import { UpdateProfileParams } from "@template/common";
 import { pick } from "lodash";
 import { ReactElement } from "react";
-
-const check = () => {
-  if (!("serviceWorker" in navigator)) {
-    throw new Error("No Service Worker support!");
-  }
-  if (!("PushManager" in window)) {
-    throw new Error("No Push API Support!");
-  }
-};
-
-const requestNotificationPermission = async () => {
-  if (Notification.permission === "granted") {
-    console.log(`permission previously granted`);
-  } else if (Notification.permission === "denied") {
-    console.log("permission previously denied");
-  } else if (Notification.permission === "default") {
-    console.log("permission not set > requesting");
-    await window.Notification.requestPermission();
-  }
-};
+import {
+  requestNotificationPermission,
+  registerNotificationSubscription,
+} from "../../utils/notification";
 
 interface NotificationSettingsModalProps {
   visible: boolean;
@@ -50,8 +34,12 @@ export function NotificationSettingsModal({
       ])
     );
     if (updateProfile.desktopNotifsEnabled) {
-      check();
-      await requestNotificationPermission();
+      const canNotify = await requestNotificationPermission();
+      if (canNotify) {
+        await registerNotificationSubscription();
+      } else {
+        form.setFieldsValue({ desktopNotifsEnabled: false });
+      }
     }
     mutate();
   };
