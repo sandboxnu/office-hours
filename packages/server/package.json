@@ -35,6 +35,7 @@
     "bcrypt": "^5.0.0",
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
+    "elastic-apm-node": "^3.6.1",
     "lodash": "^4.17.19",
     "nestjs-admin": "^0.4.0",
     "nestjs-command": "^1.5.0",
