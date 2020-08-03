@@ -51,4 +51,11 @@ describe("TA interacts with student question", () => {
     // Click yes on the modal
 
   });
+
+  it("clicks the Help Next button to help the next student", () => {  
+    // Click on the Help Next button
+    
+    // See that the students question is shown as helping
+
+  });
 });
