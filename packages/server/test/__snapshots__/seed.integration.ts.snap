@@ -15,7 +15,7 @@ Object {
 }
 `;
 
-exports[`Seed Integration GET /seeds/createTA 1`] = `
+exports[`Seed Integration GET /seeds/createUser 1`] = `
 Object {
   "course": Object {
     "icalURL": "hi.com",

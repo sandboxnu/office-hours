@@ -7,6 +7,7 @@ import {
 import { setupIntegrationTest } from './util/testUtils';
 import { SeedModule } from '../../server/src/seed/seed.module';
 import { QuestionModel } from '../../server/src/question/question.entity';
+import { Role } from '@template/common';
 
 describe('Seed Integration', () => {
   const supertest = setupIntegrationTest(SeedModule);
@@ -46,8 +47,8 @@ describe('Seed Integration', () => {
     expect(numQuestions).toBe(3);
   });
 
-  it('GET /seeds/createTA', async () => {
-    const res = await supertest().post('/seeds/createTA');
+  it('GET /seeds/createUser', async () => {
+    const res = await supertest().post('/seeds/createUser').send({ role: Role.TA });
     expect(res.body).toMatchSnapshot();
   });
 

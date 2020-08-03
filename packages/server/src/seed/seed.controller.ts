@@ -63,14 +63,14 @@ export class SeedController {
     return 'Data successfully seeded';
   }
 
-  @Post('createTA')
-  async createTA(@Body() body: { courseId: number }): Promise<UserCourseModel> {
+  @Post('createUser')
+  async createUser(@Body() body: { role: Role, courseId: number }): Promise<UserCourseModel> {
     let ta: UserCourseModel;
     if (body.courseId) {
       const course = await CourseModel.findOneOrFail(body.courseId);
-      ta = await UserCourseFactory.create({ role: Role.TA, course: course });
+      ta = await UserCourseFactory.create({ role: body.role, course: course });
     } else {
-      ta = await UserCourseFactory.create({ role: Role.TA });
+      ta = await UserCourseFactory.create({ role: body.role });
     }
     return ta;
   }
