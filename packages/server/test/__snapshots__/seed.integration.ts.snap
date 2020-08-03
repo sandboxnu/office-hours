@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Seed Integration GET /seeds/createQueue 1`] = `
+Object {
+  "course": Object {
+    "icalURL": "hi.com",
+    "id": 1,
+    "name": "CS 1800",
+    "semesterId": 1,
+  },
+  "courseId": 1,
+  "id": 1,
+  "notes": null,
+  "room": "WVH 101",
+}
+`;
+
+exports[`Seed Integration GET /seeds/createUser 1`] = `
+Object {
+  "course": Object {
+    "icalURL": "hi.com",
+    "id": 1,
+    "name": "CS 2500",
+    "officeHours": Array [
+      Object {
+        "courseId": null,
+        "endTime": "2020-05-20T15:30:00.000Z",
+        "id": 1,
+        "queueId": null,
+        "startTime": "2020-05-20T14:00:00.000Z",
+        "title": "Alex & Stanley",
+      },
+    ],
+    "semester": Object {
+      "id": 1,
+      "season": "Fall",
+      "year": 2020,
+    },
+    "semesterId": 1,
+  },
+  "courseId": 1,
+  "id": 1,
+  "role": "ta",
+  "user": Object {
+    "desktopNotifsEnabled": false,
+    "email": "user7@neu.edu",
+    "id": 1,
+    "name": "John Doe the 7th",
+    "phoneNotifsEnabled": false,
+    "photoURL": "https://pics/7",
+    "username": "user7",
+  },
+  "userId": 1,
+}
+`;
