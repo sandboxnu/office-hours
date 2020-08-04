@@ -60,5 +60,5 @@ export class CourseModel extends BaseEntity {
   semesterId: number;
 
   @Column('boolean', { nullable: true })
-  enabled: boolean;
+  enabled: boolean;  // Set to true if the given the course is using our app
 }
