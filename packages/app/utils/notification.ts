@@ -51,7 +51,6 @@ async function ensureSubscription(): Promise<PushSubscription> {
     const applicationServerKey = urlB64ToUint8Array(PUBLICKEY);
     const options = { applicationServerKey, userVisibleOnly: true };
     subscription = await pushManager.subscribe(options);
-    console.log(subscription);
   }
   return subscription;
 }

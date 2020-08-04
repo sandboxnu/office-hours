@@ -228,7 +228,13 @@ export default function StudentQueueList({
         });
       }
     },
-    [removeValue, finishQuestion, closeEditModal]
+    [
+      removeValue,
+      finishQuestion,
+      closeEditModal,
+      isFirstQuestion,
+      setIsFirstQuestion,
+    ]
   );
 
   const deleteDraft = () => {
