@@ -4,3 +4,4 @@ items:
     name: 'CS 2500'
     icalURL: 'https://calendar.google.com/calendar/ical/5t8dq96sndpeu54813468o805g@group.calendar.google.com/public/basic.ics'
     semesterId: '@semester0'
+    enabled: true
