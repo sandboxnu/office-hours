@@ -118,6 +118,13 @@ export default function Login() {
         >
           Seed Data
         </Button>
+        <Button
+          style={{ marginRight: "15px" }}
+          type="default"
+          onClick={() => API.seeds.fillQueue()}
+        >
+          Add Questions to Queue
+        </Button>
       </SeedingContainer>
     </Container>
   );
