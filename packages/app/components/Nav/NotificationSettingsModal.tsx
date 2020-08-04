@@ -7,6 +7,7 @@ import { ReactElement } from "react";
 import {
   requestNotificationPermission,
   registerNotificationSubscription,
+  NotificationStates,
 } from "../../utils/notification";
 
 interface NotificationSettingsModalProps {
@@ -35,7 +36,7 @@ export function NotificationSettingsModal({
     );
     if (updateProfile.desktopNotifsEnabled) {
       const canNotify = await requestNotificationPermission();
-      if (canNotify) {
+      if (canNotify === NotificationStates.granted) {
         await registerNotificationSubscription();
       }
     }
@@ -76,12 +77,16 @@ export function NotificationSettingsModal({
               onChange={async (checked) => {
                 if (checked) {
                   const canNotify = await requestNotificationPermission();
-                  if (!canNotify) {
+                  if (canNotify !== NotificationStates.granted) {
                     form.setFieldsValue({ desktopNotifsEnabled: false });
                     form.setFields([
                       {
                         name: "desktopNotifsEnabled",
-                        errors: ["Please allow notifications in this browser"],
+                        errors: [
+                          canNotify === NotificationStates.notAllowed
+                            ? "Please allow notifications in this browser"
+                            : "Browser does not support notifications. Please use Chrome or Firefox.",
+                        ],
                       },
                     ]);
                   }

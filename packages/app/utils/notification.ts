@@ -2,22 +2,28 @@ import { API } from "@template/api-client";
 import { DesktopNotifBody } from "@template/common";
 import { urlB64ToUint8Array } from "./urlB64ToUint8Array";
 
-const checkSupport = () => {
-  if (!("serviceWorker" in navigator)) {
-    throw new Error("No Service Worker support!");
-  }
-  if (!("PushManager" in window)) {
-    throw new Error("No Push API Support!");
-  }
-};
+const doesBrowserSupportNotifications =
+  "serviceWorker" in navigator && "PushManager" in window;
+
+export enum NotificationStates {
+  granted,
+  notAllowed,
+  browserUnsupported,
+}
 
 // Tries to get notification permission and returns whether granted
-export async function requestNotificationPermission(): Promise<boolean> {
-  checkSupport();
+export async function requestNotificationPermission(): Promise<
+  NotificationStates
+> {
+  if (!doesBrowserSupportNotifications) {
+    return NotificationStates.browserUnsupported;
+  }
   if (Notification.permission === "granted") {
-    return true;
+    return NotificationStates.granted;
   } else {
-    return (await window.Notification.requestPermission()) === "granted";
+    return (await window.Notification.requestPermission()) === "granted"
+      ? NotificationStates.granted
+      : NotificationStates.notAllowed;
   }
 }
 
@@ -26,11 +32,11 @@ const getRegistration = async (): Promise<ServiceWorkerRegistration> =>
 
 // 1. subscribe to pushmanager
 // 2. send subscription info to our backend
-export const registerNotificationSubscription = async () => {
-  checkSupport();
-  const subscription = await ensureSubscription();
-  await API.notif.desktop.register(subscription.toJSON() as DesktopNotifBody);
-  console.log("registered");
+export const registerNotificationSubscription = async (): Promise<void> => {
+  if (doesBrowserSupportNotifications) {
+    const subscription = await ensureSubscription();
+    await API.notif.desktop.register(subscription.toJSON() as DesktopNotifBody);
+  }
 };
 
 /**
