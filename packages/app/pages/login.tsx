@@ -61,34 +61,42 @@ export default function Login() {
       </h1>
       <LoginContainer>
         <Divider plain>
-          <h3>Login</h3>
+          <h3>Login as</h3>
         </Divider>
-        <Link href="/api/v1/profile/entry?userId=1">
+        <Link href="/api/v1/login/dev?userId=1">
           <Button
             style={{ marginRight: "15px" }}
             type="default"
             htmlType="submit"
           >
-            Login as <b> Student 1</b>
+            <b>Student 1</b>
           </Button>
         </Link>
-        <Link href="/api/v1/profile/entry?userId=3">
+        <Link href="/api/v1/login/dev?userId=3">
           <Button
             style={{ marginRight: "15px" }}
             type="default"
             htmlType="submit"
           >
-            Login as <b> Student 2</b>
+            <b>Student 2</b>
           </Button>
         </Link>
-        <Link href="/api/v1/profile/entry?userId=2">
-          <Button type="default" htmlType="submit">
-            Login as <b> TA</b>
+        <Link href="/api/v1/login/dev?userId=2">
+          <Button
+            style={{ marginRight: "15px" }}
+            type="default"
+            htmlType="submit"
+          >
+            <b>TA 1</b>
           </Button>
         </Link>
-        <Link href="/api/v1/profile/entry?userId=5">
-          <Button type="default" htmlType="submit">
-            Login as <b> TA 2</b>
+        <Link href="/api/v1/login/dev?userId=5">
+          <Button
+            style={{ marginRight: "15px" }}
+            type="default"
+            htmlType="submit"
+          >
+            <b>TA 2</b>
           </Button>
         </Link>
       </LoginContainer>
