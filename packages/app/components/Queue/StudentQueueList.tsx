@@ -6,7 +6,7 @@ import {
   QuestionStatusKeys,
   QuestionType,
 } from "@template/common";
-import { Alert, Button, Card, Col, Grid, Row } from "antd";
+import { Alert, Button, Card, Col, Grid, Row, notification } from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { mutate } from "swr";
@@ -18,6 +18,7 @@ import EditableQuestion from "./EditableQuestion";
 import QuestionForm from "./QuestionForm";
 import QueueListHeader from "./QueueListSharedComponents";
 import StudentQueueCard from "./StudentQueueCard";
+import { NotificationSettingsModal } from "../Nav/NotificationSettingsModal";
 const { useBreakpoint } = Grid;
 
 const StatusText = styled.div`
@@ -74,6 +75,11 @@ export default function StudentQueueList({
   const profile = useProfile();
   const { queue, queuesError, mutateQueue } = useQueue(qid);
   const { questions, questionsError, mutateQuestions } = useQuestions(qid);
+  const [isFirstQuestion, setIsFirstQuestion] = useLocalStorage(
+    "isFirstQuestion",
+    true
+  );
+  const [notifModalOpen, setNotifModalOpen] = useState(false);
 
   const studentQuestion =
     profile && questions && questions.find((q) => q.creator.id === profile.id);
@@ -137,15 +143,10 @@ export default function StudentQueueList({
       studentQuestion?.status !== OpenQuestionStatus.Queued
   );
 
-  const [storedQuestion, setStoredQuestion, removeValue] = useLocalStorage(
-    "draftQuestion",
-    null
-  );
+  const [draftQuestion, , removeValue] = useLocalStorage("draftQuestion", null);
 
   const [hasDraftInProgress, setHasDraftInProgress] = useState(
-    !!(
-      storedQuestion || studentQuestion?.status === OpenQuestionStatus.Drafting
-    )
+    !!(draftQuestion || studentQuestion?.status === OpenQuestionStatus.Drafting)
   );
 
   const openEditModal = useCallback(async () => {
@@ -212,6 +213,20 @@ export default function StudentQueueList({
       setHasDraftInProgress(false);
       finishQuestion(text, qt, isOnline, location);
       closeEditModal();
+      if (isFirstQuestion) {
+        notification.warn({
+          message: "Enable Notifications",
+          description:
+            "Turn on notifications for when it's almost your turn to get help.",
+          placement: "bottomRight",
+          duration: 0,
+          onClick: () => {
+            notification.destroy();
+            setNotifModalOpen(true);
+            setIsFirstQuestion(false);
+          },
+        });
+      }
     },
     [removeValue, finishQuestion, closeEditModal]
   );
@@ -222,7 +237,7 @@ export default function StudentQueueList({
   };
 
   const continueDraft = () => {
-    updateQuestionDraft(storedQuestion);
+    updateQuestionDraft(draftQuestion);
     setPopupEditQuestion(true);
   };
 
@@ -331,6 +346,10 @@ export default function StudentQueueList({
             cancel={closeEditModal}
           />
         </Row>
+        <NotificationSettingsModal
+          visible={notifModalOpen}
+          onClose={() => setNotifModalOpen(false)}
+        />
       </div>
     );
   } else {

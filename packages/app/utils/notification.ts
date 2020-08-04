@@ -2,8 +2,8 @@ import { API } from "@template/api-client";
 import { DesktopNotifBody } from "@template/common";
 import { urlB64ToUint8Array } from "./urlB64ToUint8Array";
 
-const doesBrowserSupportNotifications =
-  "serviceWorker" in navigator && "PushManager" in window;
+const doesBrowserSupportNotifications = () =>
+  "serviceWorker" in window.navigator && "PushManager" in window;
 
 export enum NotificationStates {
   granted,
@@ -15,7 +15,7 @@ export enum NotificationStates {
 export async function requestNotificationPermission(): Promise<
   NotificationStates
 > {
-  if (!doesBrowserSupportNotifications) {
+  if (!doesBrowserSupportNotifications()) {
     return NotificationStates.browserUnsupported;
   }
   if (Notification.permission === "granted") {
@@ -33,7 +33,7 @@ const getRegistration = async (): Promise<ServiceWorkerRegistration> =>
 // 1. subscribe to pushmanager
 // 2. send subscription info to our backend
 export const registerNotificationSubscription = async (): Promise<void> => {
-  if (doesBrowserSupportNotifications) {
+  if (doesBrowserSupportNotifications()) {
     const subscription = await ensureSubscription();
     await API.notif.desktop.register(subscription.toJSON() as DesktopNotifBody);
   }
