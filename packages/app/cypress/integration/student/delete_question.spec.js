@@ -33,10 +33,8 @@ describe("Student can delete their question", () => {
       cy.visit(`/course/${queue.courseId}/queue/${queue.id}`)
     );
 
-    cy.get('body').should('contain', 'Leave Queue');
-
     // Click the Leave Queue button
-    cy.get('button').contains('Leave Queue').click();
+    cy.get('[data-cy="leave-queue"]').should('be.visible').click();
 
     // Click Yes on the Pop confirm
     cy.get('span').contains('Yes').click();
