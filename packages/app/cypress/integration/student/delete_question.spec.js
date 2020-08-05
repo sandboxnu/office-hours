@@ -6,7 +6,7 @@ describe("Student can delete their question", () => {
       .as("student");
     cy.get("@student").then((student) => {
         // Login the student
-        cy.visit(`/api/v1/profile/entry?userId=${student.user.id}`);
+        cy.request(`/api/v1/profile/entry?userId=${student.user.id}`);
 
         // Create a queue
         cy.request("POST", "/api/v1/seeds/createQueue", { courseId: student.course.id }).then((res) => res.body).as("queue");
@@ -32,10 +32,14 @@ describe("Student can delete their question", () => {
     cy.get("@queue").then((queue) =>
       cy.visit(`/course/${queue.courseId}/queue/${queue.id}`)
     );
-    
+
     // Click the Leave Queue button
+    cy.get('[data-cy="leave-queue"]').should('be.visible').click();
+
+    // Click Yes on the Pop confirm
+    cy.get('span').contains('Yes').click();
 
     // Check that the question is no longer on the page
-
+    cy.get('body').should('contain', 'There currently aren\'t any questions in the queue');
   });
 });

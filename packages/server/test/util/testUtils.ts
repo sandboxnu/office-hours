@@ -1,10 +1,10 @@
 import { Connection } from 'typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { INestApplication, Type } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
+import { Test, TestingModuleBuilder } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as supertest from 'supertest';
-import { ProfileModule } from '../../src/profile/profile.module';
+import { LoginModule } from '../../src/login/login.module';
 import { JwtService } from '@nestjs/jwt';
 import { addGlobalsToApp } from '../../src/bootstrap';
 import { TwilioService } from '../../src/notification/twilio/twilio.service';
@@ -31,26 +31,31 @@ const mockTwilio = {
 
 export function setupIntegrationTest(
   module: Type<any>,
+  modifyModule?: ( t: TestingModuleBuilder ) => TestingModuleBuilder,
 ): (u?: SupertestOptions) => supertest.SuperTest<supertest.Test> {
   let app: INestApplication;
   let jwtService: JwtService;
   let conn: Connection;
 
   beforeAll(async () => {
-    const testModule = await Test.createTestingModule({
+    let testModuleBuilder = Test.createTestingModule({
       imports: [
         module,
-        ProfileModule,
+        LoginModule,
         TestTypeOrmModule,
         ConfigModule.forRoot({
           envFilePath: ['.env', '.env.development'],
           isGlobal: true,
         }),
       ],
-    })
-      .overrideProvider(TwilioService)
-      .useValue(mockTwilio)
-      .compile();
+    }).overrideProvider(TwilioService)
+    .useValue(mockTwilio)
+
+    if (modifyModule) {
+      testModuleBuilder = modifyModule(testModuleBuilder)
+    }
+    const testModule = await testModuleBuilder.compile();
+
     app = testModule.createNestApplication();
     addGlobalsToApp(app);
     jwtService = testModule.get<JwtService>(JwtService);
