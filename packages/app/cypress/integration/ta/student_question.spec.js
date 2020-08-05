@@ -56,7 +56,7 @@ describe("TA interacts with student question", () => {
     cy.contains("button", "Can't Find").click();
   });
 
-  it("clicks help button then mark question as can't find", () => {
+  it("clicks a students question and then removes it from the queue", () => {
     // Click on the student's question
     cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
     // Click Remove from Queue
