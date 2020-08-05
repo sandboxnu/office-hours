@@ -52,7 +52,7 @@ describe("TA interacts with student question", () => {
     // Click help
     cy.get("[data-cy='help-student']").click();
 
-    // Click Finish Helping
+    // Click Can't Find
     cy.contains("button", "Can't Find").click();
   });
 
