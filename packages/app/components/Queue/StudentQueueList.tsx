@@ -215,6 +215,7 @@ export default function StudentQueueList({
       closeEditModal();
       if (isFirstQuestion) {
         notification.warn({
+          style: { cursor: "pointer" },
           message: "Enable Notifications",
           description:
             "Turn on notifications for when it's almost your turn to get help.",

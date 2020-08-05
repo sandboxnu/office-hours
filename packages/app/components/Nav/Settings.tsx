@@ -32,21 +32,23 @@ export default function Settings(): ReactElement {
       />
       <NoPaddingPopover
         content={
-          <Menu mode="inline">
-            <Menu.Item
-              onClick={() => {
-                setIsPopoverOpen(false);
-                setIsNotifOpen(true);
-              }}
-            >
-              Notification Settings
-            </Menu.Item>
-            <Menu.Item>
-              <Link href="/login" as="/login">
-                <a>Logout</a>
-              </Link>
-            </Menu.Item>
-          </Menu>
+          isPopoverOpen && (
+            <Menu mode="inline">
+              <Menu.Item
+                onClick={() => {
+                  setIsPopoverOpen(false);
+                  setIsNotifOpen(true);
+                }}
+              >
+                Notification Settings
+              </Menu.Item>
+              <Menu.Item>
+                <Link href="/login" as="/login">
+                  <a>Logout</a>
+                </Link>
+              </Menu.Item>
+            </Menu>
+          )
         }
         placement="bottomRight"
         trigger="click"
