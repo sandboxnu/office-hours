@@ -12,7 +12,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { DesktopNotifBody, TwilioBody } from '@template/common';
 import * as twilio from 'twilio';
-import { JwtAuthGuard } from '../profile/jwt-auth.guard';
+import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { NotificationService } from './notification.service';
 import { UserId } from 'profile/user.decorator';
 

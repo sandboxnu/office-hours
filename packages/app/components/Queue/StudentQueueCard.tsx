@@ -30,7 +30,6 @@ const bodyStyle = {
 
 interface StudentQueueCardProps {
   question: Question;
-  waitTime: number;
   rank: number;
   highlighted: boolean;
 }
@@ -40,10 +39,11 @@ interface StudentQueueCardProps {
  */
 export default function StudentQueueCard({
   question,
-  waitTime,
   rank,
   highlighted,
 }: StudentQueueCardProps): ReactElement {
+  const now = new Date();
+  const waitTime = now.getMinutes() - question.createdAt.getMinutes();
   return (
     <HorizontalStudentCard
       style={highlighted ? bodyStyle : {}}
@@ -68,7 +68,7 @@ export default function StudentQueueCard({
           </Text>
         </Col>
         <Col span={2}>
-          <Text>{waitTime}</Text>
+          <Text data-cy="waitTime">{waitTime}</Text>
         </Col>
         <Col xs={0} lg={2}>
           <StatusTag color={questionStatusToColor(question.status)}>

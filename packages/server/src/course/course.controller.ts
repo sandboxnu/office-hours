@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { GetCourseResponse, QueuePartial, Role } from '@template/common';
 import { Connection } from 'typeorm';
-import { JwtAuthGuard } from '../profile/jwt-auth.guard';
+import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { UserCourseModel } from '../profile/user-course.entity';
 import { User } from '../profile/user.decorator';
 import { UserModel } from '../profile/user.entity';
