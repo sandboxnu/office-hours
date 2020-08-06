@@ -40,18 +40,61 @@ describe("Student can edit their question", () => {
       });
     });
   });
-  it("from the queue page", () => {
+  it("edit their question in person", () => {
     // Visit the queue page
     cy.get("@queue").then((queue) =>
       cy.visit(`/course/${queue.courseId}/queue/${queue.id}`)
     );
 
     // Click the Edit Question button
+    cy.get('[data-cy="edit-question"]').should("be.visible").click();
+
+    // Edit the question in the modal
+    cy.get('[data-cy="questionText"]')
+      .should("be.visible")
+      .clear()
+      .type("I want to type things");
+
+    cy.get('[data-cy="locationText"]')
+      .should("be.visible")
+      .clear()
+      .type("In ohio");
+    cy.get("label").contains("Clarification").click({ force: true });
+    cy.get("body").should("contain", "Clarification");
+
+    // Click Submit
+    cy.get("button").contains("Save Changes").click();
+
+    // See that the question is updated on the page
+    cy.get("body").contains("I want to type things");
+    cy.get("body").contains("In ohio");
+  });
+
+  it("edit their question to online", () => {
+    // Visit the queue page
+    cy.get("@queue").then((queue) =>
+      cy.visit(`/course/${queue.courseId}/queue/${queue.id}`)
+    );
+
+    // Click the Edit Question button
+    cy.get('[data-cy="edit-question"]').should("be.visible").click();
 
     // Edit the question in the modal
 
+    cy.get('[data-cy="questionText"]')
+      .should("be.visible")
+      .clear()
+      .type("I want to type things");
+
+    cy.get("label").contains("Clarification").click({ force: true });
+    cy.get("body").should("contain", "Clarification");
+    cy.get("label").contains("Online").click();
+
     // Click Submit
+    cy.get("button").contains("Save Changes").click();
 
     // See that the question is updated on the page
+    cy.get("body").contains("I want to type things");
+    cy.get("body").contains("Online");
   });
 });
