@@ -23,6 +23,7 @@ export default function TAQueueCard({
   question,
   onOpen,
 }: TAQueueCardProps): ReactElement {
+  const waitTime = now.getMinutes() - question.createdAt.getMinutes();
   return (
     <HorizontalTACard onClick={() => onOpen(question)} data-cy="ta-queue-card">
       <CenterRow justify="space-between">
@@ -45,11 +46,7 @@ export default function TAQueueCard({
           <Text>{question.text}</Text>
         </Col>
         <Col xs={0} lg={2}>
-          <Text>
-            {
-              30 //figure out later
-            }
-          </Text>
+          <Text>{waitTime}</Text>
         </Col>
         <Col span={2}>
           <StatusTag color={questionStatusToColor(question.status)}>

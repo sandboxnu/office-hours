@@ -1,8 +1,8 @@
-import React, { useState } from "react";
 import { API } from "@template/api-client";
-import Link from "next/link";
-import styled from "styled-components";
 import { Button, Divider } from "antd";
+import Link from "next/link";
+import React, { useState } from "react";
+import styled from "styled-components";
 
 const Container = styled.div`
   width: auto;
@@ -16,7 +16,6 @@ const LoginContainer = styled.div`
   margin-left: auto;
   margin-right: auto;
   text-align: center;
-
   padding-top: 100px;
 `;
 
@@ -24,7 +23,6 @@ const SeedingContainer = styled.div`
   margin-left: auto;
   margin-right: auto;
   text-align: center;
-
   padding-top: 20px;
 `;
 
