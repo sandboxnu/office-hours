@@ -141,6 +141,7 @@ const StudentPopupCard = ({
                 }
               }}
               disabled={!isStaffCheckedIn}
+              data-cy="help-student"
             >
               Help
             </Button>

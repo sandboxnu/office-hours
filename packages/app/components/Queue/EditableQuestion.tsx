@@ -103,7 +103,9 @@ export default function EditableQuestion({
         onConfirm={leaveQueue}
       >
         <Row>
-          <BottomButton danger>Leave Queue</BottomButton>
+          <BottomButton danger data-cy="leave-queue">
+            Leave Queue
+          </BottomButton>
         </Row>
       </Popconfirm>
     </EditableQuestionCard>

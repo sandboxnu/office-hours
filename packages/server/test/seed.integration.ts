@@ -7,6 +7,7 @@ import {
 import { setupIntegrationTest } from './util/testUtils';
 import { SeedModule } from '../../server/src/seed/seed.module';
 import { QuestionModel } from '../../server/src/question/question.entity';
+import { Role } from '@template/common';
 
 describe('Seed Integration', () => {
   const supertest = setupIntegrationTest(SeedModule);
@@ -44,5 +45,37 @@ describe('Seed Integration', () => {
 
     const numQuestions = await QuestionModel.count();
     expect(numQuestions).toBe(3);
+  });
+
+  it('GET /seeds/createUser', async () => {
+    const res = await supertest()
+      .post('/seeds/createUser')
+      .send({ role: Role.TA });
+    expect(res.body).toMatchSnapshot();
+  });
+
+  it('GET /seeds/createQueue', async () => {
+    await CourseFactory.create({ name: 'CS 1800' });
+    const res = await supertest()
+      .post('/seeds/createQueue')
+      .send({ courseId: 1 });
+    expect(res.body).toMatchSnapshot();
+  });
+
+  it('GET /seeds/createQuestion', async () => {
+    const res = await supertest().post('/seeds/createQuestion');
+    expect(res.body).toMatchObject({
+      closedAt: null,
+      creatorId: 1,
+      helpedAt: null,
+      id: 1,
+      isOnline: null,
+      location: null,
+      questionType: 'Other',
+      queueId: 1,
+      status: 'Queued',
+      taHelpedId: null,
+      text: 'question 7',
+    });
   });
 });

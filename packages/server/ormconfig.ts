@@ -28,5 +28,6 @@ const typeorm = {
     AdminUserModel,
   ],
   keepConnectionAlive: true,
+  logging: !!process.env.TYPEORM_LOGGING,
 };
 module.exports = typeorm;

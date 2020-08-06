@@ -329,6 +329,7 @@ export default function TAQueueList({
                     onClick={helpNext}
                     disabled={!isStaffCheckedIn}
                     size="large"
+                    data-cy="help-next"
                   >
                     Help Next
                   </HelpNextButton>

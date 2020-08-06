@@ -126,6 +126,7 @@ class APIClient {
   seeds = {
     delete: async () => this.axios.get(`/api/v1/seeds/delete`),
     create: async () => this.axios.get(`/api/v1/seeds/create`),
+    fillQueue: async () => this.axios.get(`/api/v1/seeds/fillQueue`),
   };
   constructor(baseURL = "") {
     this.axios = Axios.create({ baseURL: baseURL });

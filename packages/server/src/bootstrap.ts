@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, INestApplication } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
+import * as morgan from 'morgan';
 import { AppModule } from './app.module';
-import { LoggingInterceptor } from './logging.interceptor';
 import { StripUndefinedPipe } from './stripUndefined.pipe';
 import { PROD_URL } from '@template/common';
 import { ApmInterceptor } from './apm.interceptor';
@@ -14,7 +14,6 @@ export async function bootstrap(hot: any): Promise<void> {
   });
   addGlobalsToApp(app);
   app.setGlobalPrefix('api/v1');
-  app.useGlobalInterceptors(new LoggingInterceptor());
   app.useGlobalInterceptors(new ApmInterceptor());
 
   if (process.env.DOMAIN !== PROD_URL) {
@@ -27,6 +26,7 @@ export async function bootstrap(hot: any): Promise<void> {
   } else {
     console.log(`Running production at ${process.env.DOMAIN}.`);
   }
+  app.use(morgan('dev'));
   await app.listen(3002);
 
   if (hot) {
