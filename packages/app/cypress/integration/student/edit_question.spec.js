@@ -15,13 +15,6 @@ describe("Student can edit their question", () => {
       // Login the student
       cy.visit(`/api/v1/login/dev?userId=${student.user.id}`);
 
-      // Create a queue
-      // cy.request('POST', '/api/v1/seeds/createQueue', {
-      //   courseId: student.course.id,
-      // })
-      //   .then((res) => res.body)
-      //   .as('queue');
-
       // Create a question for the student   // TODO: This could be done through the /seeds/createQuestion endpoint with a little modification
       cy.get("@queue").then((queue) => {
         cy.request("POST", "/api/v1/questions", {
