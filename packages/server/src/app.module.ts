@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CourseModule } from './course/course.module';
 import { NotificationModule } from './notification/notification.module';
+import { LoginModule } from './login/login.module';
 import { ProfileModule } from './profile/profile.module';
 import { QuestionModule } from './question/question.module';
 import { QueueModule } from './queue/queue.module';
@@ -14,6 +15,7 @@ import * as typeormConfig from '../ormconfig';
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeormConfig),
+    LoginModule,
     ProfileModule,
     CourseModule,
     QueueModule,
