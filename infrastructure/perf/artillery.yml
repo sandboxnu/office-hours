@@ -11,4 +11,4 @@ scenarios:
       - get:
           url: "/course/1/today"
       - get:
-          url: "/api/v1/courses/1"
+          url: "/api/v1/queues/10"
