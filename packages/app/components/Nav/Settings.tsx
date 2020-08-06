@@ -1,11 +1,12 @@
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import { API } from "@template/api-client";
 import { UpdateProfileParams } from "@template/common";
+import { PROD_URL } from "@template/common";
 import { Avatar, Form, Input, Modal, Row, Switch } from "antd";
 import { pick } from "lodash";
 import { register } from "next-offline/runtime";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, ReactElement } from "react";
 import styled from "styled-components";
 import useSWR from "swr";
 
@@ -50,15 +51,16 @@ const requestNotificationPermission = async () => {
   }
 };
 
-export default function Settings() {
+export default function Settings(): ReactElement {
   // first get initial data using useSWR (or from profile)
   // todo: replace these constants with hits to useSWR call to profile
   const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
     API.profile.index()
   );
-
   const [form] = Form.useForm();
   const [isOpen, setIsOpen] = useState(false);
+
+  const loginPath = (PROD_URL === process.env.DOMAIN) ? '/login' : '/dev'
 
   const editProfile = async (updateProfile: UpdateProfileParams) => {
     const newProfile = { ...profile, ...updateProfile };
@@ -144,7 +146,7 @@ export default function Settings() {
           </Form>
         )}
         <Row>
-          <Link href="/login" as="/login">
+          <Link href={loginPath} as={loginPath}>
             <CenteredIcon style={{ cursor: "pointer" }}>
               <Avatar size={44} icon={<LogoutOutlined />} />
             </CenteredIcon>
