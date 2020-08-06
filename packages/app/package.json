@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.2.1",
+    "@elastic/apm-rum": "^5.4.0",
     "@template/api-client": "0.1.0",
     "@template/common": "0.1.0",
     "antd": "^4.2.4",
