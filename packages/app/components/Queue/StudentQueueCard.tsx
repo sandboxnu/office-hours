@@ -43,7 +43,7 @@ export default function StudentQueueCard({
   highlighted,
 }: StudentQueueCardProps): ReactElement {
   const now = new Date();
-  const waitTime = now.getMinutes() - question.createdAt.getMinutes();
+  const waitTime = now.getMinutes() + question.createdAt.getMinutes() - 3; // the minutes are off by three... is this a unix bug?
   return (
     <HorizontalStudentCard
       style={highlighted ? bodyStyle : {}}
