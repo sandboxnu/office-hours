@@ -86,7 +86,10 @@ export default function DevPanel({ hidePage }: DevPanelProps): ReactElement {
           </Button>
         </Link>
         <Link href="/api/v1/profile/entry?userId=2">
-          <Button type="default" htmlType="submit">
+          <Button 
+            style={{ marginRight: "15px" }}
+            type="default"
+            htmlType="submit">
             Login as <b> TA</b>
           </Button>
         </Link>
@@ -113,6 +116,13 @@ export default function DevPanel({ hidePage }: DevPanelProps): ReactElement {
           onClick={() => API.seeds.create()}
         >
           Seed Data
+        </Button>
+        <Button
+          style={{ marginRight: "15px" }}
+          type="default"
+          onClick={() => API.seeds.fillQueue()}
+        >
+          Add Questions to Queue
         </Button>
       </SeedingContainer>
     </Container>

@@ -9,6 +9,7 @@ import {
   QueueFactory,
   OfficeHourFactory,
   QuestionFactory,
+  UserFactory,
   UserCourseFactory,
 } from '../../test/util/factories';
 import { NonProductionGuard } from '../non-production.guard';
@@ -63,6 +64,18 @@ export class SeedController {
     return 'Data successfully seeded';
   }
 
+  @Get('fillQueue')
+  async fillQueue(): Promise<string> {
+    // Then add the new seed data
+    const queue = await QueueModel.findOne();
+
+    await QuestionFactory.create({ queue: queue });
+    await QuestionFactory.create({ queue: queue });
+    await QuestionFactory.create({ queue: queue });
+
+    return 'Data successfully seeded';
+  }
+  
   @Post('createUser')
   async createUser(@Body() body: { role: Role, courseId: number }): Promise<UserCourseModel> {
     let ta: UserCourseModel;

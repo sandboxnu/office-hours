@@ -307,7 +307,6 @@ export default function StudentQueueList({
                 <StudentQueueCard
                   key={question.id}
                   rank={index + 1}
-                  waitTime={30} //TODO: figure out later
                   question={question}
                   highlighted={studentQuestion === question}
                 />
