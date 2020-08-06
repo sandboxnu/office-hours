@@ -14,7 +14,7 @@ describe("Can successfuly check in and out of a queue", () => {
         .as("queue");
 
       // Login the ta
-      cy.visit(`/api/v1/profile/entry?userId=${ta.user.id}`);
+      cy.visit(`/api/v1/login/dev?userId=${ta.user.id}`);
     });
   });
 
