@@ -7,7 +7,10 @@ import { init as initApm } from "@elastic/apm-rum";
 function MyApp({ Component, pageProps }: AppProps) {
   if (process.env.NODE_ENV === "production") {
     initApm({
-      serviceName: `${new URL(process.env.DOMAIN).hostname.replace(/./g, "-")}-frontend`,
+      serviceName: `${new URL(process.env.DOMAIN).hostname.replace(
+        /\./g,
+        "-"
+      )}-frontend`,
       serverUrl: process.env.NEXT_PUBLIC_APM_SERVER,
     });
   }
