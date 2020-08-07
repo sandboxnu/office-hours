@@ -14,7 +14,7 @@ import { DesktopNotifBody, TwilioBody } from '@template/common';
 import * as twilio from 'twilio';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { NotificationService } from './notification.service';
-import { UserId } from 'profile/user.decorator';
+import { UserId } from '../profile/user.decorator';
 
 @Controller('notifications')
 export class NotificationController {

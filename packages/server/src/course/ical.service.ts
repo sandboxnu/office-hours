@@ -50,7 +50,7 @@ export class IcalService {
         courseId: course.id,
         staffList: [],
         questions: [],
-      });
+      }).save();
     }
 
     const officeHours = this.parseIcal(

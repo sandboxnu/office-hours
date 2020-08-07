@@ -3,6 +3,9 @@ import { IcalService } from './ical.service';
 import * as iCal from 'node-ical';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TestTypeOrmModule } from '../../test/util/testUtils';
+import { CourseFactory } from '../../test/util/factories';
+import { QueueModel } from '../queue/queue.entity';
+import { CalendarResponse } from 'node-ical';
 
 // oopsah
 const parsedICS = iCal.parseICS(`BEGIN:VCALENDAR
@@ -107,6 +110,42 @@ describe('IcalService', () => {
           endTime: new Date(1589482800000),
         },
       ]);
+    });
+
+    describe('updateCalendarForCourse', () => {
+      it('creates officehours', async () => {
+        const course = await CourseFactory.create({ id: 123 });
+
+        const endData = service.parseIcal(parsedICS, course.id);
+        const parseIcalMock = jest.spyOn(service, 'parseIcal');
+        parseIcalMock.mockImplementation(
+          (icalData: CalendarResponse, courseId: number) => endData,
+        );
+
+        await service.updateCalendarForCourse(course);
+        const queue = await QueueModel.findOne({
+          courseId: course.id,
+          room: 'Online',
+        });
+        expect(course.officeHours).toMatchObject([
+          {
+            title: 'OH- Ameya, Julia',
+            courseId: 123,
+            room: '308b WVH',
+            startTime: new Date(1589317200000),
+            endTime: new Date(1589324400000),
+            queueId: queue.id,
+          },
+          {
+            title: 'OH-Elaina',
+            courseId: 123,
+            room: '',
+            startTime: new Date(1589475600000),
+            endTime: new Date(1589482800000),
+            queueId: queue.id,
+          },
+        ]); //toMatchObject
+      });
     });
   });
 });
