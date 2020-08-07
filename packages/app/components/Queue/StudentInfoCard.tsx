@@ -95,7 +95,11 @@ const StudentInfoCard = ({
     >
       <Row>
         <Col span={6}>
-          <Avatar size={64} icon={<UserOutlined />} />
+          <Avatar
+            size={64}
+            icon={<UserOutlined />}
+            src={question.creator.photoURL}
+          />
         </Col>
         <Col span={18}>
           <HeadingText>question</HeadingText>

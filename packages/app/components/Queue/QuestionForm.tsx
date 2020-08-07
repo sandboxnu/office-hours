@@ -183,6 +183,7 @@ export default function QuestionForm({
 
         <QuestionText>What do you need help with?</QuestionText>
         <Input.TextArea
+          data-cy="questionText"
           value={questionText}
           placeholder="I’m having trouble understanding list abstractions, particularly in Assignment 5."
           autoSize={{ minRows: 3, maxRows: 6 }}
@@ -211,6 +212,7 @@ export default function QuestionForm({
           <div>
             <QuestionText>Where in the room are you located?</QuestionText>
             <Input
+              data-cy="locationText"
               value={location}
               placeholder="Outside room, by the couches"
               onChange={(e) => {

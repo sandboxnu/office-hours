@@ -165,7 +165,7 @@ export default function StudentQueueList({
           bodyStyle={{ paddingLeft: 0 }}
           style={{
             paddingLeft: 0,
-            marginTop: screens.lg === false ? 0 : "46px",
+            marginTop: screens.lg === false ? 0 : "36px",
           }}
           bordered={false}
         >
@@ -307,7 +307,6 @@ export default function StudentQueueList({
                 <StudentQueueCard
                   key={question.id}
                   rank={index + 1}
-                  waitTime={30} //TODO: figure out later
                   question={question}
                   highlighted={studentQuestion === question}
                 />
