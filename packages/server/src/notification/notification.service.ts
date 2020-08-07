@@ -29,7 +29,7 @@ export class NotificationService {
   constructor(
     private connection: Connection,
     private configService: ConfigService,
-    private twilioService: TwilioService
+    private twilioService: TwilioService,
   ) {
     webPush.setVapidDetails(
       this.configService.get('EMAIL'),
@@ -39,12 +39,15 @@ export class NotificationService {
     this.desktopPublicKey = this.configService.get('PUBLICKEY');
   }
 
-  async registerDesktop(info: DeepPartial<DesktopNotifModel>) {
-    await DesktopNotifModel.create(info).save();
+  async registerDesktop(info: DeepPartial<DesktopNotifModel>): Promise<void> {
+    // create if not exist
+    if ((await DesktopNotifModel.count(info)) === 0) {
+      await DesktopNotifModel.create(info).save();
+    }
   }
 
   async registerPhone(phoneNumber: string, userId: number): Promise<void> {
-    if(!this.twilioService.isPhoneNumberReal) {
+    if (!this.twilioService.isPhoneNumberReal) {
       throw new BadRequestException('phone number invalid');
     }
 
