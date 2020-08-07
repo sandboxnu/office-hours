@@ -36,13 +36,14 @@ export class QueueController {
 
     const questions = await QuestionModel.find({ where: { queueId } });
     const time = new Date();
+
     const lowerBound = new Date(time);
-    lowerBound.setHours(time.getHours() - 24);
-    lowerBound.setHours(0, 0, 0, 0);
+    lowerBound.setUTCHours(time.getUTCHours() - 24);
+    lowerBound.setUTCHours(0, 0, 0, 0);
 
     const upperBound = new Date(time);
-    upperBound.setHours(time.getHours() + 24);
-    upperBound.setHours(0, 0, 0, 0);
+    upperBound.setUTCHours(time.getUTCHours() + 24);
+    upperBound.setUTCHours(0, 0, 0, 0);
 
     const times = await OfficeHourModel.find({
       where: [
@@ -52,9 +53,10 @@ export class QueueController {
           endTime: LessThanOrEqual(upperBound),
         },
       ],
+      order: {
+        startTime: 'ASC',
+      },
     });
-
-    console.log(times);
 
     queue.questions = questions;
     return queue;
