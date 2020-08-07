@@ -35,6 +35,7 @@ describe("Can successfuly check in and out of a queue", () => {
 
     // Click "Check out"
     cy.get("button").contains("Check Out").click();
+    cy.get("button").should("contain", "Check In");
   });
 
   it("from the today page by specifing a new room", () => {
