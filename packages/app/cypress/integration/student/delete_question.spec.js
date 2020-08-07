@@ -6,7 +6,7 @@ describe("Student can delete their question", () => {
       .as("student");
     cy.get("@student").then((student) => {
         // Login the student
-        cy.request(`/api/v1/profile/entry?userId=${student.user.id}`);
+        cy.request(`/api/v1/login/dev?userId=${student.user.id}`);
 
         // Create a queue
         cy.request("POST", "/api/v1/seeds/createQueue", { courseId: student.course.id }).then((res) => res.body).as("queue");
