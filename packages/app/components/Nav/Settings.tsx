@@ -60,7 +60,7 @@ export default function Settings(): ReactElement {
   const [form] = Form.useForm();
   const [isOpen, setIsOpen] = useState(false);
 
-  const loginPath = (PROD_URL === process.env.DOMAIN) ? '/login' : '/dev'
+  const loginPath = PROD_URL === process.env.DOMAIN ? "/login" : "/dev";
 
   const editProfile = async (updateProfile: UpdateProfileParams) => {
     const newProfile = { ...profile, ...updateProfile };

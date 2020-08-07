@@ -75,9 +75,11 @@ export class SeedController {
 
     return 'Data successfully seeded';
   }
-  
+
   @Post('createUser')
-  async createUser(@Body() body: { role: Role, courseId: number }): Promise<UserCourseModel> {
+  async createUser(
+    @Body() body: { role: Role; courseId: number },
+  ): Promise<UserCourseModel> {
     let ta: UserCourseModel;
     if (body.courseId) {
       const course = await CourseModel.findOneOrFail(body.courseId);
@@ -101,7 +103,9 @@ export class SeedController {
   }
 
   @Post('createQuestion')
-  async createQuestion(@Body() body: { queueId: number }): Promise<QuestionModel> {
+  async createQuestion(
+    @Body() body: { queueId: number },
+  ): Promise<QuestionModel> {
     let question: QuestionModel;
     if (body.queueId) {
       const queue = await QueueModel.findOneOrFail(body.queueId);

@@ -29,7 +29,7 @@ export class NotificationService {
   constructor(
     private connection: Connection,
     private configService: ConfigService,
-    private twilioService: TwilioService
+    private twilioService: TwilioService,
   ) {
     webPush.setVapidDetails(
       this.configService.get('EMAIL'),
@@ -44,7 +44,7 @@ export class NotificationService {
   }
 
   async registerPhone(phoneNumber: string, userId: number): Promise<void> {
-    if(!this.twilioService.isPhoneNumberReal) {
+    if (!this.twilioService.isPhoneNumberReal) {
       throw new BadRequestException('phone number invalid');
     }
 
