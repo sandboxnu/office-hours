@@ -377,7 +377,6 @@ export default function TAQueueList({
         {currentQuestion && (
           <StudentPopupCard
             onClose={onCloseClick}
-            wait={20} //figure out later
             question={currentQuestion}
             visible={openPopup}
             updateQuestion={updateQuestionTA}

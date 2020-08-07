@@ -17,6 +17,7 @@ import {
 } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
+import { getWaitTime } from "../../utils/TimeUtil";
 
 const FullWidth = styled.div`
   margin-top: 32px;
@@ -86,7 +87,6 @@ const BodyText = styled.div`
 interface StudentPopupCardProps {
   updateQuestion: (question: Question, status: QuestionStatus) => void;
   onClose: () => void;
-  wait: number;
   visible: boolean;
   question: Question;
   isStaffCheckedIn: boolean;
@@ -95,7 +95,6 @@ interface StudentPopupCardProps {
 const StudentPopupCard = ({
   updateQuestion,
   onClose,
-  wait,
   question,
   visible,
   isStaffCheckedIn,
@@ -162,7 +161,7 @@ const StudentPopupCard = ({
         <StyledRow gutter={[8, 0]}>
           <Col span={12}>
             <HeadingText>wait</HeadingText>
-            <BodyText>{wait}</BodyText>
+            <BodyText>{getWaitTime(question)}</BodyText>
           </Col>
           <Col span={12}>
             <HeadingText>type</HeadingText>
