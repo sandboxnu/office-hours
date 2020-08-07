@@ -12,7 +12,7 @@ describe("Student can create a question", () => {
         .as("queue");
 
       // Login the student
-      cy.visit(`/api/v1/profile/entry?userId=${student.user.id}`);
+      cy.visit(`/api/v1/login/dev?userId=${student.user.id}`);
     });
   });
   it("Create online question", () => {
