@@ -58,7 +58,7 @@ export class SeedController {
 
     await QuestionFactory.create({
       queue: queue,
-      createdAt: new Date(Date.now() - 1500000),
+      createdAt: new Date(Date.now() - 3500000),
     });
     await QuestionFactory.create({
       queue: queue,
@@ -66,7 +66,7 @@ export class SeedController {
     });
     await QuestionFactory.create({
       queue: queue,
-      createdAt: new Date(Date.now() - 3500000),
+      createdAt: new Date(Date.now() - 1500000),
     });
 
     return 'Data successfully seeded';
@@ -125,7 +125,10 @@ export class SeedController {
     let question: QuestionModel;
     if (body.queueId) {
       const queue = await QueueModel.findOneOrFail(body.queueId);
-      question = await QuestionFactory.create({ queue: queue });
+      question = await QuestionFactory.create({
+        queue: queue,
+        createdAt: new Date(),
+      });
     } else {
       question = await QuestionFactory.create();
     }
