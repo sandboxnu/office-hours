@@ -1,9 +1,15 @@
 describe("Can successfuly check in and out of a queue", () => {
   beforeEach(() => {
     // Set the state
-    cy.request('POST', '/api/v1/seeds/createUser', { role: 'ta' }).then(res => res.body).as("ta");
+    cy.request("POST", "/api/v1/seeds/createUser", { role: "ta" })
+      .then((res) => res.body)
+      .as("ta");
     cy.get("@ta").then((ta) => {
-        cy.request('POST', '/api/v1/seeds/createQueue', { courseId: ta.course.id }).then(res => res.body).as("queue");
+      cy.request("POST", "/api/v1/seeds/createQueue", {
+        courseId: ta.course.id,
+      })
+        .then((res) => res.body)
+        .as("queue");
 
       // Login the ta
       cy.visit(`/api/v1/profile/entry?userId=${ta.user.id}`);
@@ -17,7 +23,6 @@ describe("Can successfuly check in and out of a queue", () => {
     // Click "Check in"
 
     // Click "Check out"
-
   });
 
   it("from the today page", () => {
@@ -29,7 +34,6 @@ describe("Can successfuly check in and out of a queue", () => {
     // Select the button for the room to check in
 
     // Click "Check out"
-    
   });
 
   it("from the today page by specifing a new room", () => {
@@ -41,6 +45,5 @@ describe("Can successfuly check in and out of a queue", () => {
     // Add a new room into the input
 
     // Click "Check out"
-
   });
 });
