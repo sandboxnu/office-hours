@@ -251,6 +251,12 @@ export class KhouryDataParams {
   
   @IsString()
   last_name!: string;
+
+  @IsInt()
+  campus!: string;
+
+  @IsInt()
+  nuid!: number;
   
   @IsOptional()
   @IsString()
