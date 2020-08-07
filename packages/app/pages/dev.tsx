@@ -46,7 +46,7 @@ const PageHeader = styled.div`
 `;
 
 export const getStaticProps: GetStaticProps = async () => {
-  const hidePage = (PROD_URL === process.env.DOMAIN);
+  const hidePage = PROD_URL === process.env.DOMAIN;
   return { props: { hidePage } };
 };
 
@@ -57,7 +57,7 @@ interface DevPanelProps {
 export default function DevPanel({ hidePage }: DevPanelProps): ReactElement {
   if (hidePage) {
     return <DefaultErrorPage statusCode={404} />;
-}
+  }
   return (
     <Container>
       <h1>
@@ -67,7 +67,7 @@ export default function DevPanel({ hidePage }: DevPanelProps): ReactElement {
         <Divider plain>
           <h3>Login</h3>
         </Divider>
-        <Link href="/api/v1/profile/entry?userId=1">
+        <a href="/api/v1/login/dev?userId=1">
           <Button
             style={{ marginRight: "15px" }}
             type="default"
@@ -75,8 +75,8 @@ export default function DevPanel({ hidePage }: DevPanelProps): ReactElement {
           >
             Login as <b> Student 1</b>
           </Button>
-        </Link>
-        <Link href="/api/v1/profile/entry?userId=3">
+        </a>
+        <a href="/api/v1/login/dev?userId=3">
           <Button
             style={{ marginRight: "15px" }}
             type="default"
@@ -84,20 +84,21 @@ export default function DevPanel({ hidePage }: DevPanelProps): ReactElement {
           >
             Login as <b> Student 2</b>
           </Button>
-        </Link>
-        <Link href="/api/v1/profile/entry?userId=2">
-          <Button 
+        </a>
+        <a href="/api/v1/login/dev?userId=2">
+          <Button
             style={{ marginRight: "15px" }}
             type="default"
-            htmlType="submit">
+            htmlType="submit"
+          >
             Login as <b> TA</b>
           </Button>
-        </Link>
-        <Link href="/api/v1/profile/entry?userId=5">
+        </a>
+        <a href="/api/v1/login/dev?userId=5">
           <Button type="default" htmlType="submit">
             Login as <b> TA 2</b>
           </Button>
-        </Link>
+        </a>
       </LoginContainer>
       <SeedingContainer>
         <Divider plain>
