@@ -16,10 +16,11 @@ import {
   UpdateQueueNotesParams,
   OpenQuestionStatus,
 } from '@template/common';
-import { Connection, In, Not } from 'typeorm';
+import { Connection, In, Not, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from './queue.entity';
+import { OfficeHourModel } from 'course/office-hour.entity';
 
 @Controller('queues')
 @UseGuards(JwtAuthGuard)
@@ -34,6 +35,26 @@ export class QueueController {
     });
 
     const questions = await QuestionModel.find({ where: { queueId } });
+    const time = new Date();
+    const lowerBound = new Date(time);
+    lowerBound.setHours(time.getHours() - 24);
+    lowerBound.setHours(0, 0, 0, 0);
+
+    const upperBound = new Date(time);
+    upperBound.setHours(time.getHours() + 24);
+    upperBound.setHours(0, 0, 0, 0);
+
+    const times = await OfficeHourModel.find({
+      where: [
+        {
+          queueId: queueId,
+          startTime: MoreThanOrEqual(lowerBound),
+          endTime: LessThanOrEqual(upperBound),
+        },
+      ],
+    });
+
+    console.log(times);
 
     queue.questions = questions;
     return queue;
