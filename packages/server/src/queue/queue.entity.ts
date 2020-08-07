@@ -76,5 +76,9 @@ export class QueueModel extends BaseEntity {
     }
     return this.questions?.filter((q) => q.status in OpenQuestionStatus).length;
   }
+
+  startTime: Date;
+  endTime: Date;
+
   // TODO: eventually figure out how staff get sent to FE as well
 }

@@ -21,7 +21,7 @@ import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from './queue.entity';
 import { OfficeHourModel } from 'course/office-hour.entity';
-import { max } from 'lodash';
+import { max, now } from 'lodash';
 
 @Controller('queues')
 @UseGuards(JwtAuthGuard)
@@ -74,9 +74,13 @@ export class QueueController {
         time.endTime > prevGroup.endTime ? time.endTime : prevGroup.endTime;
     });
 
-    console.log(groups);
+    const currGroup = groups.find(
+      (group) => group.startTime <= time && group.endTime >= time,
+    );
 
     queue.questions = questions;
+    queue.startTime = currGroup.startTime;
+    queue.endTime = currGroup.endTime;
     return queue;
   }
 
