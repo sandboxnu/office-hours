@@ -129,7 +129,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
       {profile?.courses.map((c) => (
         <Menu.Item key={c.course.id}>
           <Link href="/course/[cid]/today" as={`/course/${c.course.id}/today`}>
-            {c.course.name}
+            <a>{c.course.name}</a>
           </Link>
         </Menu.Item>
       ))}
@@ -202,6 +202,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
         bodyStyle={{ padding: "12px" }}
       >
         <NavBarTabs currentHref={pathname} tabs={tabs} />
+        <Settings />
       </Drawer>
     </Nav>
   );
