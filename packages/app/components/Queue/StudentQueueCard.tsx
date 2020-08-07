@@ -9,6 +9,7 @@ import {
   StatusTag,
   Text,
 } from "./QueueCardSharedComponents";
+import { getWaitTime } from "../../utils/TimeUtil";
 
 const HorizontalStudentCard = styled(Card)`
   margin-bottom: 8px;
@@ -42,8 +43,8 @@ export default function StudentQueueCard({
   rank,
   highlighted,
 }: StudentQueueCardProps): ReactElement {
-  const now = new Date();
-  const waitTime = now.getMinutes() + question.createdAt.getMinutes() - 3; // the minutes are off by three... is this a unix bug?
+  const waitTime = getWaitTime(question);
+
   return (
     <HorizontalStudentCard
       style={highlighted ? bodyStyle : {}}

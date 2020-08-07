@@ -11,6 +11,8 @@ import {
   StatusTag,
   Text,
 } from "./QueueCardSharedComponents";
+import { getWaitTime } from "../../utils/TimeUtil";
+
 interface TAQueueCardProps {
   rank: number;
 
@@ -23,8 +25,7 @@ export default function TAQueueCard({
   question,
   onOpen,
 }: TAQueueCardProps): ReactElement {
-  const now = new Date();
-  const waitTime = now.getMinutes() + question.createdAt.getMinutes() - 3; // the minutes are off by three... is this a unix bug?
+  const waitTime = getWaitTime(question);
 
   return (
     <HorizontalTACard onClick={() => onOpen(question)} data-cy="ta-queue-card">
