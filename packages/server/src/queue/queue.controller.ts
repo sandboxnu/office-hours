@@ -21,6 +21,7 @@ import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from './queue.entity';
 import { OfficeHourModel } from 'course/office-hour.entity';
+import { max } from 'lodash';
 
 @Controller('queues')
 @UseGuards(JwtAuthGuard)
@@ -57,6 +58,23 @@ export class QueueController {
         startTime: 'ASC',
       },
     });
+
+    const groups = [];
+    times.forEach((time) => {
+      if (
+        groups.length == 0 ||
+        time.startTime > groups[groups.length - 1].endTime
+      ) {
+        groups.push({ startTime: time.startTime, endTime: time.endTime });
+        return;
+      }
+
+      const prevGroup = groups[groups.length - 1];
+      groups[groups.length - 1].endTime =
+        time.endTime > prevGroup.endTime ? time.endTime : prevGroup.endTime;
+    });
+
+    console.log(groups);
 
     queue.questions = questions;
     return queue;
