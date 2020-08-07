@@ -9,6 +9,7 @@ import {
 import { DeepPartial, Connection } from 'typeorm';
 import { OfficeHourModel } from './office-hour.entity';
 import { CourseModel } from './course.entity';
+import { QueueModel } from '../queue/queue.entity';
 
 type CreateOfficeHour = DeepPartial<OfficeHourModel>[];
 
@@ -40,13 +41,28 @@ export class IcalService {
    * @param course to parse
    */
   public async updateCalendarForCourse(course: CourseModel): Promise<void> {
+    let queue = await QueueModel.findOne({
+      where: { courseId: course.id, room: 'Online' },
+    });
+    if (!queue) {
+      queue = await QueueModel.create({
+        room: 'Online',
+        courseId: course.id,
+        staffList: [],
+        questions: [],
+      });
+    }
+
     const officeHours = this.parseIcal(
       await fromURL(course.icalURL),
       course.id,
     );
     await OfficeHourModel.delete({ courseId: course.id });
     await OfficeHourModel.save(
-      officeHours.map((e) => OfficeHourModel.create(e)),
+      officeHours.map((e) => {
+        e.queueId = queue.id;
+        return OfficeHourModel.create(e);
+      }),
     );
   }
 
