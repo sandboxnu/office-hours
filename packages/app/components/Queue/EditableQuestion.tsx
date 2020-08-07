@@ -94,7 +94,9 @@ export default function EditableQuestion({
         </Col>
       </Row>
       <Row style={{ marginBottom: 8 }}>
-        <TopButton onClick={openEdit}>Edit Question</TopButton>
+        <TopButton onClick={openEdit} data-cy="edit-question">
+          Edit Question
+        </TopButton>
       </Row>
       <Popconfirm
         title={`Are you sure you want to leave the queue?`}
@@ -103,7 +105,9 @@ export default function EditableQuestion({
         onConfirm={leaveQueue}
       >
         <Row>
-          <BottomButton danger data-cy="leave-queue">Leave Queue</BottomButton>
+          <BottomButton danger data-cy="leave-queue">
+            Leave Queue
+          </BottomButton>
         </Row>
       </Popconfirm>
     </EditableQuestionCard>
