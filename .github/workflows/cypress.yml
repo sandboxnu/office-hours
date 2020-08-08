@@ -15,7 +15,7 @@ jobs:
           record: true
           start: yarn dev
           wait-on: 'http://localhost:3000'
-          env:
-            CYPRESS_USE_LIVE_API: true
-            CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          CYPRESS_USE_LIVE_API: true
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
