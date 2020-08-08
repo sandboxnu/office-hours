@@ -10,6 +10,7 @@ describe("Notification settings", () => {
       cy.visit(`/api/v1/login/dev?userId=${student.user.id}`);
     });
   });
+
   it("can sucsessfully enable web notifications", () => {
     cy.wait(10000);
     // Click the profile icon

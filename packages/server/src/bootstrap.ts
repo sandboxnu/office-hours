@@ -5,6 +5,7 @@ import * as morgan from 'morgan';
 import { AppModule } from './app.module';
 import { StripUndefinedPipe } from './stripUndefined.pipe';
 import { PROD_URL } from '@template/common';
+import { ApmInterceptor } from './apm.interceptor';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export async function bootstrap(hot: any): Promise<void> {
@@ -13,6 +14,7 @@ export async function bootstrap(hot: any): Promise<void> {
   });
   addGlobalsToApp(app);
   app.setGlobalPrefix('api/v1');
+  app.useGlobalInterceptors(new ApmInterceptor());
 
   if (process.env.DOMAIN !== PROD_URL) {
     console.log(
