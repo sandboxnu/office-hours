@@ -1,0 +1,21 @@
+name: Cypress
+
+on: pull_request
+
+jobs:
+  cypress-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        with:
+          record: true
+          start: yarn dev
+          wait-on: 'http://localhost:3000'
+          env:
+            CYPRESS_USE_LIVE_API: true
+            CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
