@@ -3,9 +3,7 @@ import { ProfileController } from './profile.controller';
 import { NotificationModule } from '../notification/notification.module';
 
 @Module({
-  imports: [
-    NotificationModule,
-  ],
+  imports: [NotificationModule],
   controllers: [ProfileController],
 })
 export class ProfileModule {}
