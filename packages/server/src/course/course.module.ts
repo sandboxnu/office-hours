@@ -7,6 +7,6 @@ import { IcalService } from './ical.service';
 @Module({
   controllers: [CourseController],
   imports: [QueueModule],
-  providers: [ICalCommand, IcalService]
+  providers: [ICalCommand, IcalService],
 })
 export class CourseModule {}
