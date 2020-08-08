@@ -62,7 +62,8 @@
       "@testing-library/jest-dom/extend-expect"
     ],
     "modulePathIgnorePatterns": [
-      ".next"
+      ".next",
+      "<rootDir>/cypress/*"
     ]
   }
 }
