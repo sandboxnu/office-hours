@@ -6,8 +6,8 @@ import { UserModel } from '../src/profile/user.entity';
 
 const mockJWT = {
   signAsync: async (payload, options?) => JSON.stringify(payload),
-  verifyAsync: async payload => JSON.parse(payload).token !== 'INVALID_TOKEN',
-  decode: async payload => JSON.parse(payload),
+  verifyAsync: async (payload) => JSON.parse(payload).token !== 'INVALID_TOKEN',
+  decode: async (payload) => JSON.parse(payload),
 };
 
 describe('Login Integration', () => {

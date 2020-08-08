@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  UseGuards,
-  Patch,
-  Body,
-} from '@nestjs/common';
+import { Controller, Get, UseGuards, Patch, Body } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { UserModel } from './user.entity';
 import { pick } from 'lodash';
@@ -25,15 +19,17 @@ export class ProfileController {
   async get(
     @User(['courses', 'courses.course', 'phoneNotif']) user: UserModel,
   ): Promise<GetProfileResponse> {
-    const courses = user.courses.filter(userCourse => userCourse.course.enabled).map((userCourse) => {
-      return {
-        course: {
-          id: userCourse.courseId,
-          name: userCourse.course.name,
-        },
-        role: userCourse.role,
-      };
-    });
+    const courses = user.courses
+      .filter((userCourse) => userCourse.course.enabled)
+      .map((userCourse) => {
+        return {
+          course: {
+            id: userCourse.courseId,
+            name: userCourse.course.name,
+          },
+          role: userCourse.role,
+        };
+      });
 
     const userResponse = pick(user, [
       'id',

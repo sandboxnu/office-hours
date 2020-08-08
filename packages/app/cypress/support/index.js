@@ -20,6 +20,6 @@ import "./commands";
 // require('./commands')
 
 beforeEach(() => {
-  cy.request('/api/v1/seeds/delete');
+  cy.request("/api/v1/seeds/delete");
   cy.server();
 });
