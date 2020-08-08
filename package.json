@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "postinstall": "rimraf node_modules/@types/react-native",
-    "cypress:run": "yarn workspace @template/app cypress:run",
-    "cypress:open": "yarn workspace @template/app cypress:open",
+    "cypress:run": "npx cypress run",
+    "cypress:open": "npx cypress open",
     "cli": "yarn workspace @template/server cli",
     "dev": "concurrently -n \"server,app,proxy\" \"yarn workspace @template/server dev\" \"yarn workspace @template/app dev\" \"yarn dev:proxy\"",
     "dev:proxy": "node infrastructure/dev/devProxy.js",
