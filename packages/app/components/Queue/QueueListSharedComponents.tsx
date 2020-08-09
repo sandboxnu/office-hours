@@ -3,6 +3,7 @@ import { Avatar, Tooltip } from "antd";
 import { ClockCircleFilled } from "@ant-design/icons";
 import { ReactElement } from "react";
 import styled from "styled-components";
+import { formatQueueTime } from "../../utils/TimeUtil";
 
 const Container = styled.div`
   display: flex;
@@ -42,10 +43,8 @@ export default function QueueListHeader({
     <Container>
       <QueueTitle>{queue?.room}</QueueTitle>
       <Container style={{ marginLeft: "64px" }}>
-        {/* If you need times, check out https://github.com/sandboxnu/office-hours/commit/24b4f2e0c9b80b8288f96ea85a8d48222dcff032
-            TODO: This is hardcoded for now to not look weird in demo, but I think we need times. */}
         <ClockCircleFilled />
-        <TimeText>2:00 PM - 4:00 PM</TimeText>
+        <TimeText>{formatQueueTime(queue)}</TimeText>
       </Container>
       <Container style={{ marginLeft: "64px" }}>
         {queue?.staffList.length > 0 && (
