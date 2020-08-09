@@ -44,6 +44,22 @@ describe('Queue Integration', () => {
         .expect(401);
       expect(res.body).toMatchSnapshot();
     });
+
+    it('returns 401 when user is not in course', async () => {
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({
+        courseId: course.id,
+        course: course,
+        questions: [await QuestionFactory.create()],
+      });
+      const userCourse = await UserCourseFactory.create({
+        user: await UserFactory.create(),
+      });
+
+      await supertest({ userId: userCourse.user.id })
+        .get(`/queues/${queue.id}`)
+        .expect(401);
+    });
   });
 
   describe('GET /queues/:id/questions', () => {
@@ -72,6 +88,30 @@ describe('Queue Integration', () => {
         .get(`/queues/${queue.id}/questions`)
         .expect(200);
       expect(res.body).toMatchSnapshot();
+    });
+
+    it('returns 401 when a user is not a member of the course', async () => {
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({
+        course: course,
+        questions: [
+          await QuestionFactory.create({
+            text: 'in queue',
+            createdAt: new Date('2020-03-01T05:00:00.000Z'),
+          }),
+        ],
+      });
+      await QuestionFactory.create({
+        text: 'not in queue',
+        createdAt: new Date('2020-03-01T05:00:00.000Z'),
+      });
+      const userCourse = await UserCourseFactory.create({
+        user: await UserFactory.create(),
+      });
+
+      await supertest({ userId: userCourse.user.id })
+        .get(`/queues/${queue.id}/questions`)
+        .expect(401);
     });
   });
 });
