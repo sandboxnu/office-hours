@@ -99,7 +99,10 @@ export class SeedController {
     });
     if (body.courseId) {
       const course = await CourseModel.findOneOrFail(body.courseId);
-      queue = await QueueFactory.create({ course: course, officeHours: [officeHours] });
+      queue = await QueueFactory.create({
+        course: course,
+        officeHours: [officeHours],
+      });
     } else {
       queue = await QueueFactory.create({ officeHours: [officeHours] });
     }
