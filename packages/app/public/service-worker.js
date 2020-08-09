@@ -12,7 +12,6 @@ self.addEventListener("push", async function (event) {
   if (event.data) {
     try {
       await showLocalNotification(
-        // todo: change mssg
         "Khoury Office Hours",
         event.data.text(),
         self.registration

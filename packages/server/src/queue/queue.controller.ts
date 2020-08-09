@@ -17,7 +17,7 @@ import {
   OpenQuestionStatus,
 } from '@template/common';
 import { Connection, In, Not } from 'typeorm';
-import { JwtAuthGuard } from '../profile/jwt-auth.guard';
+import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from './queue.entity';
 

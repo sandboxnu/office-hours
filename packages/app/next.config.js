@@ -4,6 +4,6 @@ const withOffline = require("next-offline");
 
 const plugins = [withTM, withOffline];
 
-const config = { generateInDevMode: true };
+const config = { devSwSrc: "public/service-worker.js" };
 
 module.exports = withPlugins(plugins, config);

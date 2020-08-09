@@ -21,11 +21,34 @@ describe('Profile Integration', () => {
       expect(res.body).toMatchSnapshot();
     });
 
+    it('returns only userCourses where course is enabled', async () => {
+      const user = await UserFactory.create();
+      const fundies = await CourseFactory.create({ name: 'CS 2500' });
+      const nonEnabledCourse = await CourseFactory.create({
+        name: 'CS 4900',
+        enabled: false,
+      });
+      await StudentCourseFactory.create({ course: fundies, user });
+      await StudentCourseFactory.create({ course: nonEnabledCourse, user });
+
+      const res = await supertest({ userId: user.id })
+        .get('/profile')
+        .expect(200);
+
+      expect(res.body.courses).toEqual([
+        {
+          course: {
+            id: 1,
+            name: 'CS 2500',
+          },
+          role: 'student',
+        },
+      ]);
+    });
+
     it('returns 401 when not logged in', async () => {
       await UserFactory.create();
-      await supertest()
-        .get('/profile')
-        .expect(401);
+      await supertest().get('/profile').expect(401);
     });
   });
 
@@ -35,7 +58,7 @@ describe('Profile Integration', () => {
         desktopNotifsEnabled: false,
         phoneNotifsEnabled: false,
       });
-      const res = await supertest({userId: user.id})
+      const res = await supertest({ userId: user.id })
         .patch('/profile')
         .send({ desktopNotifsEnabled: true })
         .expect(200);
@@ -49,7 +72,7 @@ describe('Profile Integration', () => {
         desktopNotifsEnabled: false,
         phoneNotifsEnabled: false,
       });
-      const res = await supertest({userId: user.id})
+      const res = await supertest({ userId: user.id })
         .patch('/profile')
         .send({ phoneNotifsEnabled: true, phoneNumber: '911' })
         .expect(200);
@@ -63,9 +86,9 @@ describe('Profile Integration', () => {
         desktopNotifsEnabled: false,
         phoneNotifsEnabled: false,
       });
-      await supertest({userId: user.id})
+      await supertest({ userId: user.id })
         .patch('/profile')
-        .send({ phoneNotifsEnabled: true})
+        .send({ phoneNotifsEnabled: true })
         .expect(400);
     });
   });
