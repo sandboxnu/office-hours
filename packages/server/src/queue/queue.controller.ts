@@ -8,24 +8,26 @@ import {
   Patch,
   UseGuards,
   UseInterceptors,
+  Res,
 } from '@nestjs/common';
 import {
-  ClosedQuestionStatus,
   GetQueueResponse,
   ListQuestionsResponse,
   UpdateQueueNotesParams,
   OpenQuestionStatus,
 } from '@template/common';
-import { Connection, In, Not } from 'typeorm';
+import { Connection, In } from 'typeorm';
+import { Response } from 'express';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from './queue.entity';
+import { SSEService } from 'sse/sse.service';
 
 @Controller('queues')
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class QueueController {
-  constructor(private connection: Connection) {}
+  constructor(private connection: Connection, private sseService: SSEService) {}
 
   @Get(':queueId')
   async getQueue(@Param('queueId') queueId: string): Promise<GetQueueResponse> {
@@ -83,5 +85,15 @@ export class QueueController {
     queue.notes = body.notes;
     await queue.save();
     return queue;
+  }
+
+  // Endpoint for frontend to receive server-sent events about this queue
+  @Get(':queueId/sse')
+  sendEvent(@Param('queueId') queueId: string, @Res() res: Response): void {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.flushHeaders();
+
+    this.sseService.subscribeClient(`q-${queueId}`, res);
   }
 }
