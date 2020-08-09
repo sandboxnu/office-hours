@@ -70,6 +70,21 @@ describe('Question Integration', () => {
       });
       expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(1);
     });
+    it('ta cannot post  a new question', async () => {
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ courseId: course.id });
+      const user = await UserFactory.create();
+      await TACourseFactory.create({ user, courseId: queue.courseId });
+      expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(0);
+      await supertest({ userId: user.id })
+        .post('/questions')
+        .send({
+          text: "Don't know recursion",
+          questionType: QuestionType.Concept,
+          queueId: queue.id,
+        })
+        .expect(401);
+    });
     it('post question fails with non-existent queue', async () => {
       await supertest({ userId: 99 })
         .post('/questions')
@@ -123,7 +138,7 @@ describe('Question Integration', () => {
   });
 
   describe('PATCH /questions/:id', () => {
-    it('as student crator, edit a question', async () => {
+    it('as student creator, edit a question', async () => {
       const course = await CourseFactory.create();
       const queue = await QueueFactory.create({ courseId: course.id });
       const user = await UserFactory.create();
@@ -279,6 +294,25 @@ describe('Question Integration', () => {
         .patch(`/questions/${q.id}`)
         .send({
           text: 'bonjour',
+        })
+        .expect(401);
+    });
+    it('nonuser cannot patch a question', async () => {
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ courseId: course.id });
+      const user = await UserFactory.create();
+      const q = await QuestionFactory.create({
+        text: 'Help pls',
+        queueId: queue.id,
+        queue: queue,
+        creator: user,
+        creatorId: user.id,
+      });
+
+      await supertest({ userId: q.creatorId })
+        .patch(`/questions/${q.id}`)
+        .send({
+          text: 'NEW TEXT',
         })
         .expect(401);
     });
