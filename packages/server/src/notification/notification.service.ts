@@ -39,8 +39,11 @@ export class NotificationService {
     this.desktopPublicKey = this.configService.get('PUBLICKEY');
   }
 
-  async registerDesktop(info: DeepPartial<DesktopNotifModel>) {
-    await DesktopNotifModel.create(info).save();
+  async registerDesktop(info: DeepPartial<DesktopNotifModel>): Promise<void> {
+    // create if not exist
+    if ((await DesktopNotifModel.count(info)) === 0) {
+      await DesktopNotifModel.create(info).save();
+    }
   }
 
   async registerPhone(phoneNumber: string, userId: number): Promise<void> {

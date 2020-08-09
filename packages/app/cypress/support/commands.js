@@ -55,8 +55,8 @@ Cypress.Commands.add("login", (userType) => {
     return;
   }
   if (userType === "student") {
-    cy.request("/api/v1/profile/entry?userId=1");
+    cy.visit("/api/v1/login/dev?userId=1");
   } else if (userType == "ta") {
-    cy.request("/api/v1/profile/entry?userId=2");
+    cy.visit("/api/v1/login/dev?userId=2");
   }
 });

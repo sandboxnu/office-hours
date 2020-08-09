@@ -141,6 +141,7 @@ const StudentPopupCard = ({
                 }
               }}
               disabled={!isStaffCheckedIn}
+              data-cy="help-student"
             >
               Help
             </Button>
@@ -149,7 +150,7 @@ const StudentPopupCard = ({
       }
     >
       <Container>
-        <Avatar size={104} icon={<UserOutlined />} />
+        <Avatar size={104} src={question.creator.photoURL} />
 
         <InfoTextDiv>
           <Title>{question.creator.name}</Title>

@@ -15,6 +15,6 @@
 This should rarely be needed, but stuff like manually trigger cron jobs or creating admin users is a good reason for a CLI script.
 
 1. Create a new command `.command.ts` file in an appropriate module. Look at `src/admin/admin.command.ts` for reference.
-2. Add it as a provider to `app.module.ts`
+2. Add it as a provider to its module.
 
 More info: https://www.npmjs.com/package/nestjs-command

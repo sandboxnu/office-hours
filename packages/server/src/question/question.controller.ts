@@ -25,7 +25,7 @@ import {
 } from '@template/common';
 import { Connection, In } from 'typeorm';
 import { NotificationService } from '../notification/notification.service';
-import { JwtAuthGuard } from '../profile/jwt-auth.guard';
+import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { UserCourseModel } from '../profile/user-course.entity';
 import { User, UserId } from '../profile/user.decorator';
 import { UserModel } from '../profile/user.entity';
@@ -186,8 +186,8 @@ export class QuestionController {
     // TODO: somehow store and check that the notifying TA is the one helping? new UnauthorizedException('Only TA can send alerts');
 
     this.notifService.notifyUser(
-      question.creatorId, // TODO: Stanley think of a better message
-      "Heyo TA is comin fo yo' ass",
+      question.creatorId,
+      'Get ready! A TA is coming to help you.',
     );
   }
 }

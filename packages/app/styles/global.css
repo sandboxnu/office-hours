@@ -25,3 +25,8 @@ body {
 .ant-radio-button:hover {
   color: #3684c6;
 }
+
+.ant-btn-primary {
+  border-color: #3684c6;
+  background-color: #3684c6;
+}

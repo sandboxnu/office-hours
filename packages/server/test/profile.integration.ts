@@ -21,6 +21,31 @@ describe('Profile Integration', () => {
       expect(res.body).toMatchSnapshot();
     });
 
+    it('returns only userCourses where course is enabled', async () => {
+      const user = await UserFactory.create();
+      const fundies = await CourseFactory.create({ name: 'CS 2500' });
+      const nonEnabledCourse = await CourseFactory.create({
+        name: 'CS 4900',
+        enabled: false,
+      });
+      await StudentCourseFactory.create({ course: fundies, user });
+      await StudentCourseFactory.create({ course: nonEnabledCourse, user });
+
+      const res = await supertest({ userId: user.id })
+        .get('/profile')
+        .expect(200);
+
+      expect(res.body.courses).toEqual([
+        {
+          course: {
+            id: 1,
+            name: 'CS 2500',
+          },
+          role: 'student',
+        },
+      ]);
+    });
+
     it('returns 401 when not logged in', async () => {
       await UserFactory.create();
       await supertest().get('/profile').expect(401);

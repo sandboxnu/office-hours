@@ -3,18 +3,22 @@ import {
   ClosedQuestionStatus,
   OpenQuestionStatus,
   Question,
+  QuestionStatusKeys,
   QuestionType,
 } from "@template/common";
-import { Alert, Button, Card, Col, Grid, Row } from "antd";
+import { Alert, Button, Card, Col, Grid, Row, notification } from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
-import useSWR, { mutate } from "swr";
+import { mutate } from "swr";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useProfile } from "../../hooks/useProfile";
+import { useQuestions } from "../../hooks/useQuestions";
+import { useQueue } from "../../hooks/useQueue";
 import EditableQuestion from "./EditableQuestion";
 import QuestionForm from "./QuestionForm";
 import QueueListHeader from "./QueueListSharedComponents";
 import StudentQueueCard from "./StudentQueueCard";
+import { NotificationSettingsModal } from "../Nav/NotificationSettingsModal";
 const { useBreakpoint } = Grid;
 
 const StatusText = styled.div`
@@ -69,19 +73,13 @@ export default function StudentQueueList({
   qid,
 }: StudentQueueListProps): ReactElement {
   const profile = useProfile();
-
-  const { data: queue, error: queuesError } = useSWR(
-    qid && `/api/v1/queues/${qid}`,
-    async () => API.queues.get(Number(qid))
+  const { queue, queuesError, mutateQueue } = useQueue(qid);
+  const { questions, questionsError, mutateQuestions } = useQuestions(qid);
+  const [isFirstQuestion, setIsFirstQuestion] = useLocalStorage(
+    "isFirstQuestion",
+    true
   );
-
-  const {
-    data: questions,
-    error: questionsError,
-    mutate: mutateQuestions,
-  } = useSWR(qid && `/api/v1/queues/${qid}/questions`, async () =>
-    API.questions.index(Number(qid))
-  );
+  const [notifModalOpen, setNotifModalOpen] = useState(false);
 
   const studentQuestion =
     profile && questions && questions.find((q) => q.creator.id === profile.id);
@@ -119,9 +117,8 @@ export default function StudentQueueList({
   );
 
   /**
-   * Updates a given question to the draft question
+   * Updates the question in the database to match the question in local storage
    * @param question the question being modified
-   * @param status the updated status
    */
   const updateQuestionDraft = async (question: Question) => {
     await API.questions.update(question?.id, {
@@ -131,10 +128,10 @@ export default function StudentQueueList({
     });
 
     const newQuestions = questions.map((q) =>
-      q.id === question.id ? { ...q, status } : q
+      q.id === question.id ? { ...q, status: QuestionStatusKeys.Drafting } : q
     );
 
-    mutate(`/api/v1/queues/${qid}/questions`, newQuestions);
+    mutateQuestions(newQuestions);
   };
 
   const screens = useBreakpoint();
@@ -146,15 +143,10 @@ export default function StudentQueueList({
       studentQuestion?.status !== OpenQuestionStatus.Queued
   );
 
-  const [storedQuestion, setStoredQuestion, removeValue] = useLocalStorage(
-    "draftQuestion",
-    null
-  );
+  const [draftQuestion, , removeValue] = useLocalStorage("draftQuestion", null);
 
   const [hasDraftInProgress, setHasDraftInProgress] = useState(
-    !!(
-      storedQuestion || studentQuestion?.status === OpenQuestionStatus.Drafting
-    )
+    !!(draftQuestion || studentQuestion?.status === OpenQuestionStatus.Drafting)
   );
 
   const openEditModal = useCallback(async () => {
@@ -174,7 +166,7 @@ export default function StudentQueueList({
           bodyStyle={{ paddingLeft: 0 }}
           style={{
             paddingLeft: 0,
-            marginTop: screens.lg === false ? 0 : "46px",
+            marginTop: screens.lg === false ? 0 : "36px",
           }}
           bordered={false}
         >
@@ -221,8 +213,29 @@ export default function StudentQueueList({
       setHasDraftInProgress(false);
       finishQuestion(text, qt, isOnline, location);
       closeEditModal();
+      if (isFirstQuestion) {
+        notification.warn({
+          style: { cursor: "pointer" },
+          message: "Enable Notifications",
+          description:
+            "Turn on notifications for when it's almost your turn to get help.",
+          placement: "bottomRight",
+          duration: 0,
+          onClick: () => {
+            notification.destroy();
+            setNotifModalOpen(true);
+            setIsFirstQuestion(false);
+          },
+        });
+      }
     },
-    [removeValue, finishQuestion, closeEditModal]
+    [
+      removeValue,
+      finishQuestion,
+      closeEditModal,
+      isFirstQuestion,
+      setIsFirstQuestion,
+    ]
   );
 
   const deleteDraft = () => {
@@ -231,121 +244,121 @@ export default function StudentQueueList({
   };
 
   const continueDraft = () => {
-    updateQuestionDraft(storedQuestion);
+    updateQuestionDraft(draftQuestion);
     setPopupEditQuestion(true);
   };
 
-  return (
-    <div>
-      <Row gutter={[64, 64]}>
-        <Col flex="auto" order={screens.lg === false ? 2 : 1}>
-          <Row>
-            {isJoining && hasDraftInProgress && (
-              // studentQuestion.status === QuestionStatusKeys.Drafting &&
-              <Alert
-                message="Incomplete Question"
-                description={
-                  <Row>
-                    <Col span={14}>
-                      Your spot in queue has been temporarily reserved. Please
-                      finish describing your question to receive help and finish
-                      joining the queue.
-                    </Col>
-                    <Col span={2}></Col>
-                    <Col span={4}>
-                      <FullWidthButton type="primary" onClick={continueDraft}>
-                        Continue Drafting
-                      </FullWidthButton>
-                    </Col>
-                    <Col span={4}>
-                      <FullWidthButton type="primary" onClick={deleteDraft}>
-                        Delete Draft
-                      </FullWidthButton>
-                    </Col>
-                  </Row>
-                }
-                type="warning"
-                showIcon
-              />
-            )}
-          </Row>
-          <Row>
-            <QueueListHeader queue={queue} />
-            <Col span={10}></Col>
-            <Col span={2}>
-              {!studentQuestion && (
-                <JoinButton
-                  type="primary"
-                  size="large"
-                  onClick={joinQueueOpenModal}
-                >
-                  Join Queue
-                </JoinButton>
+  if (queue && questions) {
+    return (
+      <div>
+        <Row gutter={[64, 64]}>
+          <Col flex="auto" order={screens.lg === false ? 2 : 1}>
+            <Row>
+              {isJoining && hasDraftInProgress && (
+                // studentQuestion.status === QuestionStatusKeys.Drafting &&
+                <Alert
+                  message="Incomplete Question"
+                  description={
+                    <Row>
+                      <Col span={14}>
+                        Your spot in queue has been temporarily reserved. Please
+                        finish describing your question to receive help and
+                        finish joining the queue.
+                      </Col>
+                      <Col span={2}></Col>
+                      <Col span={4}>
+                        <FullWidthButton type="primary" onClick={continueDraft}>
+                          Continue Drafting
+                        </FullWidthButton>
+                      </Col>
+                      <Col span={4}>
+                        <FullWidthButton type="primary" onClick={deleteDraft}>
+                          Delete Draft
+                        </FullWidthButton>
+                      </Col>
+                    </Row>
+                  }
+                  type="warning"
+                  showIcon
+                />
               )}
-            </Col>
-          </Row>
-          <Row>
-            {queue?.notes && (
-              <div>
-                <HeaderText>staff notes</HeaderText>
-                {queue.notes}
-              </div>
+            </Row>
+            <Row justify="space-between">
+              <Col>
+                <QueueListHeader queue={queue} />
+              </Col>
+              <Col>
+                {!studentQuestion && (
+                  <JoinButton
+                    type="primary"
+                    size="large"
+                    onClick={joinQueueOpenModal}
+                  >
+                    Join Queue
+                  </JoinButton>
+                )}
+              </Col>
+            </Row>
+            {questions?.length === 0 ? (
+              <h1 style={{ marginTop: "50px" }}>
+                There currently aren&apos;t any questions in the queue
+              </h1>
+            ) : (
+              <StudentHeaderCard bordered={false}>
+                <CenterRow justify="space-between">
+                  <Col span={1}>
+                    <HeaderText>#</HeaderText>
+                  </Col>
+                  <Col xs={16} sm={11} lg={6}>
+                    <HeaderText>name</HeaderText>
+                  </Col>
+                  <Col xs={0} lg={2}>
+                    <HeaderText>type</HeaderText>
+                  </Col>
+                  <Col span={2}>
+                    <HeaderText>wait</HeaderText>
+                  </Col>
+                  <Col xs={0} lg={2}>
+                    <StatusText>status</StatusText>
+                  </Col>
+                </CenterRow>
+              </StudentHeaderCard>
             )}
-          </Row>
-          {questions?.length === 0 ? (
-            <h1 style={{ marginTop: "50px" }}>
-              There currently aren&apos;t any questions in the queue
-            </h1>
-          ) : (
-            <StudentHeaderCard bordered={false}>
-              <CenterRow justify="space-between">
-                <Col span={1}>
-                  <HeaderText>#</HeaderText>
-                </Col>
-                <Col xs={16} sm={11} lg={6}>
-                  <HeaderText>name</HeaderText>
-                </Col>
-                <Col xs={0} lg={2}>
-                  <HeaderText>type</HeaderText>
-                </Col>
-                <Col span={2}>
-                  <HeaderText>wait</HeaderText>
-                </Col>
-                <Col xs={0} lg={2}>
-                  <StatusText>status</StatusText>
-                </Col>
-              </CenterRow>
-            </StudentHeaderCard>
-          )}
-          {questions?.map((question: Question, index: number) => {
-            return (
-              <StudentQueueCard
-                key={question.id}
-                rank={index + 1}
-                waitTime={30} //TODO: figure out later
-                question={question}
-                highlighted={studentQuestion === question}
-              />
-            );
-          })}
-        </Col>
-        {studentQuestion && renderEditableQuestion()}
-        <QuestionForm
-          visible={
-            (questions &&
-              !studentQuestion &&
-              isJoining &&
-              !hasDraftInProgress) ||
-            // && studentQuestion.status !== QuestionStatusKeys.Drafting)
-            popupEditQuestion
-          }
-          question={studentQuestion}
-          leaveQueue={leaveQueueAndClose}
-          finishQuestion={finishQuestionAndClose}
-          position={questions?.indexOf(studentQuestion) + 1}
-          cancel={closeEditModal}
+            {questions?.map((question: Question, index: number) => {
+              return (
+                <StudentQueueCard
+                  key={question.id}
+                  rank={index + 1}
+                  question={question}
+                  highlighted={studentQuestion === question}
+                />
+              );
+            })}
+          </Col>
+          {studentQuestion && renderEditableQuestion()}
+          <QuestionForm
+            visible={
+              (questions &&
+                !studentQuestion &&
+                isJoining &&
+                !hasDraftInProgress) ||
+              // && studentQuestion.status !== QuestionStatusKeys.Drafting)
+              popupEditQuestion
+            }
+            question={studentQuestion}
+            leaveQueue={leaveQueueAndClose}
+            finishQuestion={finishQuestionAndClose}
+            position={questions?.indexOf(studentQuestion) + 1}
+            cancel={closeEditModal}
+          />
+        </Row>
+        <NotificationSettingsModal
+          visible={notifModalOpen}
+          onClose={() => setNotifModalOpen(false)}
         />
-      </Row>
-    </div>
-  );
+      </div>
+    );
+  } else {
+    return <div />;
+  }
 }

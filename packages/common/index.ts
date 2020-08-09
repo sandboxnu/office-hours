@@ -6,13 +6,11 @@ import {
   IsOptional,
   IsString,
   ValidateIf,
+  IsDefined,
 } from "class-validator";
 import "reflect-metadata";
 
-export enum WSMessageType {
-  Count = "count",
-  Refresh = "ref",
-}
+export const PROD_URL = "https://khouryofficehours.com";
 
 /////////////////////////
 // API Base Data Types //
@@ -223,7 +221,7 @@ export type Season = "Fall" | "Spring" | "Summer 1" | "Summer 2";
 
 export type DesktopNotifBody = {
   endpoint: string;
-  expirationTime?: Date;
+  expirationTime?: number;
   keys: {
     p256dh: string;
     auth: string;
@@ -240,6 +238,53 @@ export type PhoneNotifBody = {
 
 // Office Hours Response Types
 export type GetProfileResponse = User;
+
+export class KhouryDataParams {
+  @IsString()
+  username!: string;
+
+  @IsString()
+  email!: string;
+
+  @IsString()
+  first_name!: string;
+
+  @IsString()
+  last_name!: string;
+
+  @IsInt()
+  campus!: string;
+
+  @IsInt()
+  nuid!: number;
+
+  @IsOptional()
+  @IsString()
+  photo_url!: string;
+
+  @IsOptional()
+  @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
+  courses!: KouryAdminCourse[];
+
+  @IsOptional()
+  @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
+  ta_courses!: KouryAdminCourse[];
+}
+
+class KouryAdminCourse {
+  @IsString()
+  course_name!: string;
+
+  @IsString()
+  semester!: number;
+
+  @IsBoolean()
+  withdraw!: boolean;
+}
+
+export interface KhouryRedirectResponse {
+  redirect: string;
+}
 
 export class UpdateProfileParams {
   @IsBoolean()

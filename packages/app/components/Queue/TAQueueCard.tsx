@@ -24,7 +24,7 @@ export default function TAQueueCard({
   onOpen,
 }: TAQueueCardProps): ReactElement {
   return (
-    <HorizontalTACard onClick={() => onOpen(question)}>
+    <HorizontalTACard onClick={() => onOpen(question)} data-cy="ta-queue-card">
       <CenterRow justify="space-between">
         <Col xs={2} lg={1}>
           <Rank>{rank}</Rank>

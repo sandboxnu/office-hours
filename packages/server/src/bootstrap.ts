@@ -1,9 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, INestApplication } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
+import * as morgan from 'morgan';
 import { AppModule } from './app.module';
-import { LoggingInterceptor } from './logging.interceptor';
 import { StripUndefinedPipe } from './stripUndefined.pipe';
+import { PROD_URL } from '@template/common';
+import { ApmInterceptor } from './apm.interceptor';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export async function bootstrap(hot: any): Promise<void> {
@@ -12,12 +14,19 @@ export async function bootstrap(hot: any): Promise<void> {
   });
   addGlobalsToApp(app);
   app.setGlobalPrefix('api/v1');
-  app.useGlobalInterceptors(new LoggingInterceptor());
-  if (process.env.NODE_ENV === 'production') {
+  app.useGlobalInterceptors(new ApmInterceptor());
+
+  if (process.env.DOMAIN !== PROD_URL) {
+    console.log(
+      `Running non-production at ${process.env.DOMAIN}. THIS MSG SHOULD NOT APPEAR ON PROD VM`,
+    );
     app.enableCors({
       origin: [/\.sandboxneu\.vercel\.app/, /\.sandboxneu\.now\.sh/],
     });
+  } else {
+    console.log(`Running production at ${process.env.DOMAIN}.`);
   }
+  app.use(morgan('dev'));
   await app.listen(3002);
 
   if (hot) {

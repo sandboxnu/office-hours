@@ -94,7 +94,7 @@ describe('Question Integration', () => {
         })
         .expect(400);
     });
-    it.only("can't create more than one open question at a time", async () => {
+    it("can't create more than one open question at a time", async () => {
       const user = await UserFactory.create();
       const queue = await QueueFactory.create();
       await StudentCourseFactory.create({
