@@ -4,7 +4,10 @@ import {
   Connection,
   UpdateEvent,
 } from 'typeorm';
-import { NotificationService } from '../notification/notification.service';
+import {
+  NotificationService,
+  NotifMsgs,
+} from '../notification/notification.service';
 import { QuestionModel } from './question.entity';
 import { ClosedQuestionStatus } from '@template/common';
 
@@ -33,12 +36,10 @@ export class QuestionSubscriber
         .setQueryRunner(event.queryRunner) // Run in same transaction as the update
         .limit(3)
         .getMany();
-      console.log('after update top3:', top3);
-      const { creatorId } = top3[top3.length - 1];
-      this.notifService.notifyUser(
-        creatorId,
-        `You're #${top3.length} in the queue. Be ready for a TA to call you soon!`,
-      );
+      if (top3.length === 3) {
+        const { creatorId } = top3[2];
+        this.notifService.notifyUser(creatorId, NotifMsgs.queue.THIRD_PLACE);
+      }
     }
   }
 }
