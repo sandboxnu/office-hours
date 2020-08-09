@@ -21,13 +21,16 @@ import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from './queue.entity';
 import { OfficeHourModel } from 'course/office-hour.entity';
-import { max, now } from 'lodash';
+import { QueueService } from './queue.service';
 
 @Controller('queues')
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class QueueController {
-  constructor(private connection: Connection) {}
+  constructor(
+    private connection: Connection,
+    private queueService: QueueService,
+  ) {}
 
   @Get(':queueId')
   async getQueue(@Param('queueId') queueId: string): Promise<GetQueueResponse> {
@@ -35,52 +38,11 @@ export class QueueController {
       relations: ['staffList'],
     });
 
+    await this.queueService.addQueueTimes(queue);
+
     const questions = await QuestionModel.find({ where: { queueId } });
-    const time = new Date();
-
-    const lowerBound = new Date(time);
-    lowerBound.setUTCHours(time.getUTCHours() - 24);
-    lowerBound.setUTCHours(0, 0, 0, 0);
-
-    const upperBound = new Date(time);
-    upperBound.setUTCHours(time.getUTCHours() + 24);
-    upperBound.setUTCHours(0, 0, 0, 0);
-
-    const times = await OfficeHourModel.find({
-      where: [
-        {
-          queueId: queueId,
-          startTime: MoreThanOrEqual(lowerBound),
-          endTime: LessThanOrEqual(upperBound),
-        },
-      ],
-      order: {
-        startTime: 'ASC',
-      },
-    });
-
-    const groups = [];
-    times.forEach((time) => {
-      if (
-        groups.length == 0 ||
-        time.startTime > groups[groups.length - 1].endTime
-      ) {
-        groups.push({ startTime: time.startTime, endTime: time.endTime });
-        return;
-      }
-
-      const prevGroup = groups[groups.length - 1];
-      groups[groups.length - 1].endTime =
-        time.endTime > prevGroup.endTime ? time.endTime : prevGroup.endTime;
-    });
-
-    const currGroup = groups.find(
-      (group) => group.startTime <= time && group.endTime >= time,
-    );
-
     queue.questions = questions;
-    queue.startTime = currGroup.startTime;
-    queue.endTime = currGroup.endTime;
+
     return queue;
   }
 
