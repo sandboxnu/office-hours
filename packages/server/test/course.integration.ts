@@ -71,6 +71,26 @@ describe('Course Integration', () => {
         queues: [{ id: 1 }],
       });
     });
+
+    it('cant get office hours if not a member of the course', async () => {
+      const now = new Date();
+      const course = await CourseFactory.create();
+
+      await QueueFactory.create({
+        room: "Matthias's Office",
+        course: course,
+        officeHours: [
+          await OfficeHourFactory.create({
+            startTime: now,
+            endTime: new Date(now.valueOf() + 4500000),
+            room: "Matthias's Office",
+          }),
+          await OfficeHourFactory.create(), // aren't loaded cause time off
+        ],
+      });
+
+      await supertest({ userId: 1 }).get(`/courses/${course.id}`).expect(401);
+    });
   });
 
   //TODO: make a DSL for testing auth points using Hack your own Language
@@ -147,6 +167,21 @@ describe('Course Integration', () => {
       ).toMatchObject({
         staffList: [],
       });
+    });
+
+    it('tests student cant deleted from queue if exists', async () => {
+      const student = await UserFactory.create();
+      const queue = await QueueFactory.create({
+        room: 'The Alamo',
+      });
+      const scf = await StudentCourseFactory.create({
+        course: queue.course,
+        user: student,
+      });
+
+      await supertest({ userId: student.id })
+        .delete(`/courses/${scf.courseId}/ta_location/The Alamo`)
+        .expect(401);
     });
 
     it('tests queue is cleaned when TA checks out', async () => {
