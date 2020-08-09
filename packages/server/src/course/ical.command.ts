@@ -22,11 +22,13 @@ export class ICalCommand {
   ): Promise<void> {
     const c = await CourseModel.findOne(courseId);
     if (c) {
-      console.log(`scraping ical for course "${c.name}" at url: ${c.icalURL}...`)
-      console.time('scrape')
+      console.log(
+        `scraping ical for course "${c.name}" at url: ${c.icalURL}...`,
+      );
+      console.time('scrape');
       await this.icalService.updateCalendarForCourse(c);
-      console.timeEnd('scrape')
-      console.log('done scraping!')
+      console.timeEnd('scrape');
+      console.log('done scraping!');
     } else {
       console.log(`course id ${courseId} does not exist`);
     }

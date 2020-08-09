@@ -8,19 +8,12 @@ const HorizontalMenu = styled(Menu)<MenuProps>`
   ${(props) => (props.mode === "horizontal" ? "border-bottom: none" : "")}
 `;
 
-const MenuItem = styled(Menu.Item)<{ horizontal: boolean }>`
-  ${(props) =>
-    props.mode === "horizontal"
-      ? `
-  padding: 10px 50px;
-  font-size: 16px;
-  color: #262626;
-
-  @media (max-width: 767px) {
-    padding: 1px 20px;
+const MenuItem = styled(Menu.Item)`
+  @media (min-width: 767px) {
+    padding: 10px 50px;
+    font-size: 16px;
+    color: #262626;
   }
-  `
-      : ""}
 `;
 
 export interface NavBarTabsItem {
@@ -46,7 +39,7 @@ export default function NavBarTabs({
       mode={horizontal ? "horizontal" : "vertical"}
     >
       {tabs.map((tab) => (
-        <MenuItem horizontal={horizontal} key={tab.href}>
+        <MenuItem key={tab.href}>
           <Link href={tab.href} as={tab.as}>
             <a>{tab.text}</a>
           </Link>

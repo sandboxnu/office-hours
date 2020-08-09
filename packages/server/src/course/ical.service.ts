@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { fromURL, CalendarComponent, CalendarResponse, VEvent } from 'node-ical';
+import {
+  fromURL,
+  CalendarComponent,
+  CalendarResponse,
+  VEvent,
+} from 'node-ical';
 import { DeepPartial, Connection } from 'typeorm';
 import { OfficeHourModel } from './office-hour.entity';
 import { CourseModel } from './course.entity';

@@ -221,7 +221,7 @@ export type Season = "Fall" | "Spring" | "Summer 1" | "Summer 2";
 
 export type DesktopNotifBody = {
   endpoint: string;
-  expirationTime?: Date;
+  expirationTime?: number;
   keys: {
     p256dh: string;
     auth: string;
@@ -251,6 +251,12 @@ export class KhouryDataParams {
 
   @IsString()
   last_name!: string;
+
+  @IsInt()
+  campus!: string;
+
+  @IsInt()
+  nuid!: number;
 
   @IsOptional()
   @IsString()
