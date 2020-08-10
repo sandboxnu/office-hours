@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { Response } from 'express';
+import { serialize } from 'class-transformer';
 
+/**
+ * Low level abstraction for sending SSE to "rooms" of clients.
+ * Probably don't use this directly, and wrap it in a service specific to that event source
+ */
 @Injectable()
 export class SSEService {
   private clients: Record<any, Response[]> = {};
@@ -26,8 +31,9 @@ export class SSEService {
   /** Send some data to everyone in a room */
   sendEvent(room: string, data: unknown): void {
     if (room in this.clients) {
+      const payload = `data: ${serialize(data)}\n\n`;
       for (const res of this.clients[room]) {
-        res.write(`data: ${JSON.stringify(data)}\n\n`);
+        res.write(payload);
       }
     }
   }

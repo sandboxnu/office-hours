@@ -25,7 +25,7 @@ import { CourseModel } from './course.entity';
 export class CourseController {
   constructor(
     private connection: Connection,
-    private queueService: QueueCleanService,
+    private queueCleanService: QueueCleanService,
   ) {}
 
   @Get(':id')
@@ -108,6 +108,6 @@ export class CourseController {
     await queue.save();
 
     // Clean up queue if necessary
-    await this.queueService.cleanQueue(queue.id);
+    await this.queueCleanService.cleanQueue(queue.id);
   }
 }

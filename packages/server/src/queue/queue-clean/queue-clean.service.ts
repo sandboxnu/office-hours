@@ -5,6 +5,9 @@ import { QueueModel } from '../queue.entity';
 import { OpenQuestionStatus, ClosedQuestionStatus } from '@template/common';
 import { QuestionModel } from '../../question/question.entity';
 
+/**
+ * Clean the queue and mark stale
+ */
 @Injectable()
 export class QueueCleanService {
   constructor(private connection: Connection) {}
