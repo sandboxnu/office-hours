@@ -1,6 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Connection } from 'typeorm';
-import { QueueModel } from './queue.entity';
+import { Injectable } from '@nestjs/common';
 import { SSEService } from 'sse/sse.service';
 import { QueueService } from './queue.service';
 import { Response } from 'express';
@@ -21,16 +19,17 @@ export class QueueSSEService {
     this.sseService.subscribeClient(idToRoom(queueId), res);
   }
 
-  private async unthrottledUpdateQuestions(queueId: number) {
-    this.sseService.sendEvent(
-      idToRoom(queueId),
-      await this.queueService.getQuestions(queueId),
-    );
-  }
-
   // Send event with new questions, but no more than once a second
-  updateQuestions = throttle(this.unthrottledUpdateQuestions, 1000, {
-    leading: false,
-    trailing: true,
-  });
+  updateQuestions = throttle(
+    async (queueId: number) =>
+      this.sseService.sendEvent(
+        idToRoom(queueId),
+        await this.queueService.getQuestions(queueId),
+      ),
+    1000,
+    {
+      leading: false,
+      trailing: true,
+    },
+  );
 }
