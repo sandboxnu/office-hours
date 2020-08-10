@@ -1,19 +1,19 @@
-import { Controller, Get, UseGuards, Body, Post } from '@nestjs/common';
-import { Connection } from 'typeorm';
-import { SeedService } from './seed.service';
-import { QuestionModel } from '../question/question.entity';
-import { OfficeHourModel } from '../course/office-hour.entity';
-import { QueueModel } from '../queue/queue.entity';
-import { CourseModel } from '../course/course.entity';
-import {
-  QueueFactory,
-  OfficeHourFactory,
-  QuestionFactory,
-  UserCourseFactory,
-} from '../../test/util/factories';
-import { NonProductionGuard } from '../non-production.guard';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { Role } from '@template/common';
 import { UserCourseModel } from 'profile/user-course.entity';
+import { Connection } from 'typeorm';
+import {
+  OfficeHourFactory,
+  QuestionFactory,
+  QueueFactory,
+  UserCourseFactory,
+} from '../../test/util/factories';
+import { CourseModel } from '../course/course.entity';
+import { OfficeHourModel } from '../course/office-hour.entity';
+import { NonProductionGuard } from '../non-production.guard';
+import { QuestionModel } from '../question/question.entity';
+import { QueueModel } from '../queue/queue.entity';
+import { SeedService } from './seed.service';
 
 @Controller('seeds')
 @UseGuards(NonProductionGuard)
@@ -56,21 +56,38 @@ export class SeedController {
       officeHours: [officeHours],
     });
 
-    await QuestionFactory.create({ queue: queue });
-    await QuestionFactory.create({ queue: queue });
-    await QuestionFactory.create({ queue: queue });
+    await QuestionFactory.create({
+      queue: queue,
+      createdAt: new Date(Date.now() - 3500000),
+    });
+    await QuestionFactory.create({
+      queue: queue,
+      createdAt: new Date(Date.now() - 2500000),
+    });
+    await QuestionFactory.create({
+      queue: queue,
+      createdAt: new Date(Date.now() - 1500000),
+    });
 
     return 'Data successfully seeded';
   }
 
   @Get('fillQueue')
   async fillQueue(): Promise<string> {
-    // Then add the new seed data
     const queue = await QueueModel.findOne();
 
-    await QuestionFactory.create({ queue: queue });
-    await QuestionFactory.create({ queue: queue });
-    await QuestionFactory.create({ queue: queue });
+    await QuestionFactory.create({
+      queue: queue,
+      createdAt: new Date(Date.now() - 1500000),
+    });
+    await QuestionFactory.create({
+      queue: queue,
+      createdAt: new Date(Date.now() - 1500000),
+    });
+    await QuestionFactory.create({
+      queue: queue,
+      createdAt: new Date(Date.now() - 1500000),
+    });
 
     return 'Data successfully seeded';
   }
@@ -99,7 +116,10 @@ export class SeedController {
     });
     if (body.courseId) {
       const course = await CourseModel.findOneOrFail(body.courseId);
-      queue = await QueueFactory.create({ course: course, officeHours: [officeHours] });
+      queue = await QueueFactory.create({
+        course: course,
+        officeHours: [officeHours],
+      });
     } else {
       queue = await QueueFactory.create({ officeHours: [officeHours] });
     }
@@ -113,7 +133,10 @@ export class SeedController {
     let question: QuestionModel;
     if (body.queueId) {
       const queue = await QueueModel.findOneOrFail(body.queueId);
-      question = await QuestionFactory.create({ queue: queue });
+      question = await QuestionFactory.create({
+        queue: queue,
+        createdAt: new Date(),
+      });
     } else {
       question = await QuestionFactory.create();
     }

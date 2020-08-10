@@ -105,6 +105,7 @@ export class QuestionController {
       text,
       questionType,
       status: QuestionStatusKeys.Drafting,
+      createdAt: new Date(),
     }).save();
 
     return question;
