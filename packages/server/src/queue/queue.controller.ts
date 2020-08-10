@@ -14,15 +14,13 @@ import {
   GetQueueResponse,
   ListQuestionsResponse,
   UpdateQueueNotesParams,
-  OpenQuestionStatus,
 } from '@template/common';
-import { Connection, In } from 'typeorm';
+import { Connection } from 'typeorm';
 import { Response } from 'express';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
-import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from './queue.entity';
-import { SSEService } from 'sse/sse.service';
 import { QueueService } from './queue.service';
+import { QueueSSEService } from './queue-sse.service';
 
 @Controller('queues')
 @UseGuards(JwtAuthGuard)
@@ -30,7 +28,7 @@ import { QueueService } from './queue.service';
 export class QueueController {
   constructor(
     private connection: Connection,
-    private sseService: SSEService,
+    private queueSSEService: QueueSSEService,
     private queueService: QueueService,
   ) {}
 
@@ -73,6 +71,6 @@ export class QueueController {
       Connection: 'keep-alive',
     });
 
-    this.sseService.subscribeClient(`q-${queueId}`, res);
+    this.queueSSEService.subscribeClient(queueId, res);
   }
 }
