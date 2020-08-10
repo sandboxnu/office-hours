@@ -222,7 +222,7 @@ export class QuestionController {
       throw new UnauthorizedException('Only TA can send alerts');
     }
 
-    this.notifService.notifyUser(
+    await this.notifService.notifyUser(
       question.creatorId,
       NotifMsgs.queue.ALERT_BUTTON,
     );
