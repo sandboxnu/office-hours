@@ -1,7 +1,7 @@
 import { API, parseQuestionDates } from "@template/api-client";
 import { ListQuestionsResponse } from "@template/common";
 import useSWR, { responseInterface } from "swr";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useEventSource } from "./useEventSource";
 
 const TEN_SECONDS_IN_MS = 100000;
@@ -24,10 +24,16 @@ export function useQuestions(qid: number): UseQuestionReturn {
     API.questions.index(Number(qid))
   );
 
-  useEventSource(qid && `/api/v1/queues/${qid}/sse`, (data) => {
-    data.forEach(parseQuestionDates);
-    mutateQuestions(data, false);
-  });
+  useEventSource(
+    qid && `/api/v1/queues/${qid}/sse`,
+    useCallback(
+      (data) => {
+        data.forEach(parseQuestionDates);
+        mutateQuestions(data, false);
+      },
+      [mutateQuestions]
+    )
+  );
 
   return { questions, questionsError, mutateQuestions };
 }
