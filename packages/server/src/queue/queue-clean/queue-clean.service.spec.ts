@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestTypeOrmModule } from '../../test/util/testUtils';
+import { TestTypeOrmModule } from '../../../test/util/testUtils';
 import { QueueCleanService } from './queue-clean.service';
 import {
   QueueFactory,
   UserFactory,
   QuestionFactory,
-} from '../../test/util/factories';
+} from '../../../test/util/factories';
 import { OpenQuestionStatus } from '@template/common';
-import { QuestionModel } from '../question/question.entity';
+import { QuestionModel } from '../../question/question.entity';
 
 describe('QueueService', () => {
   let service: QueueCleanService;
