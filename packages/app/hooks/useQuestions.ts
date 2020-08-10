@@ -1,11 +1,8 @@
 import { API, parseQuestionDates } from "@template/api-client";
 import { ListQuestionsResponse } from "@template/common";
 import useSWR, { responseInterface } from "swr";
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import { useEventSource } from "./useEventSource";
-
-const TEN_SECONDS_IN_MS = 100000;
-const FIFTEEN_SECOND_IN_MS = 150000;
 
 type questionsResponse = responseInterface<ListQuestionsResponse, any>;
 
