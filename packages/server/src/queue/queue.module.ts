@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { QueueController } from './queue.controller';
-import { QueueService } from './queue.service';
+import { QueueCleanService } from './queue-clean/queue-clean.service';
 import { SSEModule } from 'sse/sse.module';
 
 @Module({
   controllers: [QueueController],
-  providers: [QueueService],
-  exports: [QueueService],
+  providers: [QueueCleanService],
+  exports: [QueueCleanService],
   imports: [SSEModule],
 })
 export class QueueModule {}

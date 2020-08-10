@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Connection } from 'typeorm';
-import { QueueModel } from './queue.entity';
+import { QueueModel } from '../queue.entity';
 import { OpenQuestionStatus, ClosedQuestionStatus } from '@template/common';
-import { QuestionModel } from '../question/question.entity';
+import { QuestionModel } from '../../question/question.entity';
 
 @Injectable()
-export class QueueService {
+export class QueueCleanService {
   constructor(private connection: Connection) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
