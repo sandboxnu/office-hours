@@ -81,9 +81,11 @@ export class QueueController {
   // Endpoint for frontend to receive server-sent events about this queue
   @Get(':queueId/sse')
   sendEvent(@Param('queueId') queueId: string, @Res() res: Response): void {
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.flushHeaders();
+    res.set({
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+    });
 
     this.sseService.subscribeClient(`q-${queueId}`, res);
   }

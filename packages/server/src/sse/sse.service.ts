@@ -4,7 +4,7 @@ import { Response } from 'express';
 
 @Injectable()
 export class SSEService {
-  private clients: Record<any, Response[]>;
+  private clients: Record<any, Response[]> = {};
 
   constructor(private connection: Connection) {}
 
@@ -27,7 +27,7 @@ export class SSEService {
   sendEvent(room: string, data: unknown): void {
     if (room in this.clients) {
       for (const res of this.clients[room]) {
-        res.write(JSON.stringify(data));
+        res.write(`data: ${JSON.stringify(data)}\n\n`);
       }
     }
   }

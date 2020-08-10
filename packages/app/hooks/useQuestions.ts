@@ -1,6 +1,8 @@
 import { API } from "@template/api-client";
 import { ListQuestionsResponse } from "@template/common";
 import useSWR, { responseInterface } from "swr";
+import { useState } from "react";
+import { useEventSource } from "./useEventSource";
 
 const TEN_SECONDS_IN_MS = 100000;
 const FIFTEEN_SECOND_IN_MS = 150000;
@@ -18,16 +20,11 @@ export function useQuestions(qid: number): UseQuestionReturn {
     data: questions,
     error: questionsError,
     mutate: mutateQuestions,
-  } = useSWR(
-    qid && `/api/v1/queues/${qid}/questions`,
-    async () => API.questions.index(Number(qid)),
-    {
-      refreshInterval: Math.floor(
-        Math.random() * (FIFTEEN_SECOND_IN_MS - TEN_SECONDS_IN_MS + 1) +
-          TEN_SECONDS_IN_MS
-      ),
-    }
+  } = useSWR(qid && `/api/v1/queues/${qid}/questions`, async () =>
+    API.questions.index(Number(qid))
   );
+
+  useEventSource(qid && `/api/v1/queues/${qid}/sse`, () => mutateQuestions());
 
   return { questions, questionsError, mutateQuestions };
 }

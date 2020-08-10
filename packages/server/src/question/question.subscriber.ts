@@ -10,13 +10,20 @@ import {
 } from '../notification/notification.service';
 import { QuestionModel } from './question.entity';
 import { ClosedQuestionStatus } from '@template/common';
+import { SSEService } from 'sse/sse.service';
 
 @EventSubscriber()
 export class QuestionSubscriber
   implements EntitySubscriberInterface<QuestionModel> {
-  notifService: NotificationService;
-  constructor(connection: Connection, notifService: NotificationService) {
+  private notifService: NotificationService;
+  private sseService: SSEService;
+  constructor(
+    connection: Connection,
+    notifService: NotificationService,
+    sseService: SSEService,
+  ) {
     this.notifService = notifService;
+    this.sseService = sseService;
     connection.subscribers.push(this);
   }
 
@@ -24,8 +31,11 @@ export class QuestionSubscriber
     return QuestionModel;
   }
 
-  // Notify students when they get near the top of the queue
   async afterUpdate(event: UpdateEvent<QuestionModel>) {
+    // Send all listening clients an update
+    this.sseService.sendEvent(`q-${event.entity.queueId}`, { msg: 'update' });
+
+    // Send push notification to students when they are hit 3rd in line
     // if status updated to closed
     if (
       event.updatedColumns.find((c) => c.propertyName === 'status') &&
