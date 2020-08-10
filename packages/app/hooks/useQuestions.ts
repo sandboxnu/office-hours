@@ -1,4 +1,4 @@
-import { API } from "@template/api-client";
+import { API, parseQuestionDates } from "@template/api-client";
 import { ListQuestionsResponse } from "@template/common";
 import useSWR, { responseInterface } from "swr";
 import { useState } from "react";
@@ -24,7 +24,10 @@ export function useQuestions(qid: number): UseQuestionReturn {
     API.questions.index(Number(qid))
   );
 
-  useEventSource(qid && `/api/v1/queues/${qid}/sse`, () => mutateQuestions());
+  useEventSource(qid && `/api/v1/queues/${qid}/sse`, (data) => {
+    data.forEach(parseQuestionDates);
+    mutateQuestions(data, false);
+  });
 
   return { questions, questionsError, mutateQuestions };
 }

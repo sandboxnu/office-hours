@@ -123,6 +123,7 @@ class APIClient {
   }
 }
 
+// TODO: Use class-transformer instead
 function parseOfficeHourDates(officeHour: any): void {
   officeHour.startTime = new Date(officeHour.startTime);
   officeHour.endTime = new Date(officeHour.endTime);
@@ -133,7 +134,7 @@ function parseQueueDates(queue: any): void {
   queue.closedAt = new Date(queue.closedAt);
 }
 
-function parseQuestionDates(question: any): void {
+export function parseQuestionDates(question: any): void {
   question.createdAt = new Date(question.createdAt);
   question.helpedAt ? (question.helpedAt = new Date(question.helpedAt)) : null;
   question.closedAt ? (question.closedAt = new Date(question.closedAtt)) : null;

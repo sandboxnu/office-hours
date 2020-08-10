@@ -22,42 +22,28 @@ import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from './queue.entity';
 import { SSEService } from 'sse/sse.service';
+import { QueueService } from './queue.service';
 
 @Controller('queues')
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class QueueController {
-  constructor(private connection: Connection, private sseService: SSEService) {}
+  constructor(
+    private connection: Connection,
+    private sseService: SSEService,
+    private queueService: QueueService,
+  ) {}
 
   @Get(':queueId')
   async getQueue(@Param('queueId') queueId: number): Promise<GetQueueResponse> {
-    const queue = await QueueModel.findOne(queueId, {
-      relations: ['staffList'],
-    });
-
-    const questions = await QuestionModel.find({ where: { queueId } });
-
-    queue.questions = questions;
-    return queue;
+    return this.queueService.getQueue(queueId);
   }
 
   @Get(':queueId/questions')
   async getQuestions(
     @Param('queueId') queueId: number,
   ): Promise<ListQuestionsResponse> {
-    // todo: need a way to return different data, if TA vs. student hits endpoint.
-    // for now, just return the student response
-    const queueSize = await QueueModel.count({
-      where: { id: queueId },
-    });
-    // Check that the queue exists
-    if (queueSize === 0) {
-      throw new NotFoundException();
-    }
-    return QuestionModel.openInQueue(queueId)
-      .leftJoinAndSelect('question.creator', 'creator')
-      .leftJoinAndSelect('question.taHelped', 'taHelped')
-      .getMany();
+    return this.queueService.getQuestions(queueId);
   }
 
   @Patch(':queueId')
@@ -78,7 +64,7 @@ export class QueueController {
     return queue;
   }
 
-  // Endpoint for frontend to receive server-sent events about this queue
+  // Endpoint to send frontend receive server-sent events when queue changes
   @Get(':queueId/sse')
   sendEvent(@Param('queueId') queueId: string, @Res() res: Response): void {
     res.set({
