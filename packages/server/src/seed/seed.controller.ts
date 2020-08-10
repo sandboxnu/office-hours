@@ -109,11 +109,19 @@ export class SeedController {
   @Post('createQueue')
   async createQueue(@Body() body: { courseId: number }): Promise<QueueModel> {
     let queue: QueueModel;
+    const now = new Date();
+    const officeHours = await OfficeHourFactory.create({
+      startTime: now,
+      endTime: new Date(now.valueOf() + 4500000),
+    });
     if (body.courseId) {
       const course = await CourseModel.findOneOrFail(body.courseId);
-      queue = await QueueFactory.create({ course: course });
+      queue = await QueueFactory.create({
+        course: course,
+        officeHours: [officeHours],
+      });
     } else {
-      queue = await QueueFactory.create();
+      queue = await QueueFactory.create({ officeHours: [officeHours] });
     }
     return queue;
   }

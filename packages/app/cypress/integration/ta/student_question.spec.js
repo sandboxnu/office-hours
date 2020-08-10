@@ -15,7 +15,7 @@ describe("TA interacts with student question", () => {
 
     cy.get("@ta").then((ta) => {
       // Login the ta
-      cy.request("GET", `/api/v1/profile/entry?userId=${ta.user.id}`);
+      cy.request("GET", `/api/v1/login/dev?userId=${ta.user.id}`);
     });
 
     cy.get("@queue").then((queue) => {

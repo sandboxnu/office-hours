@@ -78,19 +78,26 @@ export class LoginController {
       }
       return userCourse;
     }
-    
+
     const userCourses = [];
     await Promise.all(
-      body.courses.filter(c => !c.withdraw).map(async c => {
-        const userCourse = await courseNameToUserCourse(c.course_name, Role.STUDENT);
-        userCourses.push(userCourse);
-      }),
+      body.courses
+        .filter((c) => !c.withdraw)
+        .map(async (c) => {
+          const userCourse = await courseNameToUserCourse(
+            c.course_name,
+            Role.STUDENT,
+          );
+          userCourses.push(userCourse);
+        }),
     );
     await Promise.all(
-      body.ta_courses.filter(c => !c.withdraw).map(async c => {
-        const taCourse = await courseNameToUserCourse(c.course_name, Role.TA);
-        userCourses.push(taCourse);
-      }),
+      body.ta_courses
+        .filter((c) => !c.withdraw)
+        .map(async (c) => {
+          const taCourse = await courseNameToUserCourse(c.course_name, Role.TA);
+          userCourses.push(taCourse);
+        }),
     );
     user.courses = userCourses;
     await user.save();
@@ -115,7 +122,7 @@ export class LoginController {
     @Query('token') token: string,
   ): Promise<void> {
     const isVerified = await this.jwtService.verifyAsync(token);
-    
+
     if (!isVerified) {
       throw new UnauthorizedException();
     }

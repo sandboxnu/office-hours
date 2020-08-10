@@ -31,7 +31,7 @@ const mockTwilio = {
 
 export function setupIntegrationTest(
   module: Type<any>,
-  modifyModule?: ( t: TestingModuleBuilder ) => TestingModuleBuilder,
+  modifyModule?: (t: TestingModuleBuilder) => TestingModuleBuilder,
 ): (u?: SupertestOptions) => supertest.SuperTest<supertest.Test> {
   let app: INestApplication;
   let jwtService: JwtService;
@@ -48,11 +48,12 @@ export function setupIntegrationTest(
           isGlobal: true,
         }),
       ],
-    }).overrideProvider(TwilioService)
-    .useValue(mockTwilio)
+    })
+      .overrideProvider(TwilioService)
+      .useValue(mockTwilio);
 
     if (modifyModule) {
-      testModuleBuilder = modifyModule(testModuleBuilder)
+      testModuleBuilder = modifyModule(testModuleBuilder);
     }
     const testModule = await testModuleBuilder.compile();
 
