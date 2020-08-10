@@ -48,7 +48,9 @@ describe('Seed Integration', () => {
   });
 
   it('GET /seeds/createUser', async () => {
-    const res = await supertest().post('/seeds/createUser').send({ role: Role.TA });
+    const res = await supertest()
+      .post('/seeds/createUser')
+      .send({ role: Role.TA });
     expect(res.body).toMatchSnapshot();
   });
 
@@ -63,17 +65,17 @@ describe('Seed Integration', () => {
   it('GET /seeds/createQuestion', async () => {
     const res = await supertest().post('/seeds/createQuestion');
     expect(res.body).toMatchObject({
-        "closedAt": null,
-        "creatorId": 1,
-        "helpedAt": null,
-        "id": 1,
-        "isOnline": null,
-        "location": null,
-        "questionType": "Other",
-        "queueId": 1,
-        "status": "Queued",
-        "taHelpedId": null,
-        "text": "question 7",
-      });
+      closedAt: null,
+      creatorId: 1,
+      helpedAt: null,
+      id: 1,
+      isOnline: null,
+      location: null,
+      questionType: 'Other',
+      queueId: 1,
+      status: 'Queued',
+      taHelpedId: null,
+      text: 'question 7',
+    });
   });
 });

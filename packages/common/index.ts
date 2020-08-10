@@ -242,26 +242,32 @@ export type GetProfileResponse = User;
 export class KhouryDataParams {
   @IsString()
   username!: string;
-  
+
   @IsString()
   email!: string;
-  
+
   @IsString()
   first_name!: string;
-  
+
   @IsString()
   last_name!: string;
-  
+
+  @IsInt()
+  campus!: string;
+
+  @IsInt()
+  nuid!: number;
+
   @IsOptional()
   @IsString()
   photo_url!: string;
-  
+
   @IsOptional()
-  @IsDefined()  // TODO: use ValidateNested instead, for some reason it's crunked
+  @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
   courses!: KouryAdminCourse[];
-  
+
   @IsOptional()
-  @IsDefined()  // TODO: use ValidateNested instead, for some reason it's crunked
+  @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
   ta_courses!: KouryAdminCourse[];
 }
 
