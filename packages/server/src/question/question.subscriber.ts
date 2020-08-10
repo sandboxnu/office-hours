@@ -27,11 +27,12 @@ export class QuestionSubscriber
     connection.subscribers.push(this);
   }
 
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   listenTo() {
     return QuestionModel;
   }
 
-  async afterUpdate(event: UpdateEvent<QuestionModel>) {
+  async afterUpdate(event: UpdateEvent<QuestionModel>): Promise<void> {
     // Send all listening clients an update
     await this.queueSSEService.updateQuestions(event.entity.queueId);
 

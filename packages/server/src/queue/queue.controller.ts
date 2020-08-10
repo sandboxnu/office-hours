@@ -64,7 +64,7 @@ export class QueueController {
 
   // Endpoint to send frontend receive server-sent events when queue changes
   @Get(':queueId/sse')
-  sendEvent(@Param('queueId') queueId: string, @Res() res: Response): void {
+  sendEvent(@Param('queueId') queueId: number, @Res() res: Response): void {
     res.set({
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
