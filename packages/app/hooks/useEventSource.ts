@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export const useEventSource = (
   url: string,
   onmessage: (d: any) => void
 ): any => {
-  const [data, updateData] = useState(null);
-
   useEffect(() => {
     if (url) {
       const source = new EventSource(url);
@@ -13,8 +11,7 @@ export const useEventSource = (
       source.onmessage = function logEvents(event) {
         onmessage(JSON.parse(event.data));
       };
+      return () => source.close();
     }
-  }, [url]);
-
-  return data;
+  }, [url, onmessage]);
 };
