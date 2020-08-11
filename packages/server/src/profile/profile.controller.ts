@@ -1,11 +1,12 @@
-import { Controller, Get, UseGuards, Patch, Body } from '@nestjs/common';
-import { Connection } from 'typeorm';
-import { UserModel } from './user.entity';
-import { pick } from 'lodash';
+import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
 import { GetProfileResponse, UpdateProfileParams } from '@template/common';
+import { pick } from 'lodash';
+import { PhoneNotifModel } from 'notification/phone-notif.entity';
+import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
-import { User } from './user.decorator';
 import { NotificationService } from '../notification/notification.service';
+import { User } from './user.decorator';
+import { UserModel } from './user.entity';
 
 @Controller('profile')
 @UseGuards(JwtAuthGuard)
@@ -17,7 +18,7 @@ export class ProfileController {
 
   @Get()
   async get(
-    @User(['courses', 'courses.course', 'phoneNotif']) user: UserModel,
+    @User(['courses', 'courses.course']) user: UserModel,
   ): Promise<GetProfileResponse> {
     const courses = user.courses
       .filter((userCourse) => userCourse.course.enabled)
@@ -31,6 +32,12 @@ export class ProfileController {
         };
       });
 
+    const phoneNotifModel = await PhoneNotifModel.findOne({
+      where: {
+        userId: user.id,
+      },
+    });
+
     const userResponse = pick(user, [
       'id',
       'email',
@@ -42,14 +49,14 @@ export class ProfileController {
     return {
       ...userResponse,
       courses,
-      phoneNumber: user.phoneNotif?.phoneNumber,
+      phoneNumber: phoneNotifModel?.phoneNumber,
     };
   }
 
   @Patch()
   async patch(
     @Body() userPatch: UpdateProfileParams,
-    @User(['courses', 'courses.course', 'phoneNotif']) user: UserModel,
+    @User(['courses', 'courses.course']) user: UserModel,
   ): Promise<GetProfileResponse> {
     user = Object.assign(user, userPatch);
     if (user.phoneNotifsEnabled && userPatch.phoneNumber) {
@@ -67,6 +74,12 @@ export class ProfileController {
       };
     });
 
+    const phoneNotifModel = await PhoneNotifModel.findOne({
+      where: {
+        userId: user.id,
+      },
+    });
+
     const userResponse = pick(user, [
       'id',
       'email',
@@ -78,7 +91,7 @@ export class ProfileController {
     return {
       ...userResponse,
       courses,
-      phoneNumber: user.phoneNotif?.phoneNumber,
+      phoneNumber: phoneNotifModel.phoneNumber,
     };
   }
 }

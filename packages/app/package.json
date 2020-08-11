@@ -26,6 +26,7 @@
     "react": "16.13.1",
     "react-big-calendar": "^0.24.6",
     "react-dom": "16.13.1",
+    "react-phone-input-2": "^2.13.7",
     "socket.io-client": "^2.3.0",
     "styled-components": "^5.1.0",
     "swr": "^0.2.2",

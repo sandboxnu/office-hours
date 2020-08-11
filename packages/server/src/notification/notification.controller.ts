@@ -4,17 +4,16 @@ import {
   Get,
   Header,
   Headers,
-  Param,
   Post,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DesktopNotifBody, TwilioBody } from '@template/common';
+import { UserId } from 'profile/user.decorator';
 import * as twilio from 'twilio';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { NotificationService } from './notification.service';
-import { UserId } from 'profile/user.decorator';
 
 @Controller('notifications')
 export class NotificationController {
@@ -69,7 +68,7 @@ export class NotificationController {
     const isValidated = twilio.validateRequest(
       twilioAuthToken,
       twilioSignature.trim(),
-      'https://28a88b3af262.ngrok.io/api/v1/notifications/phone/verify',
+      'https://2a7bc6fb19af.ngrok.io/api/v1/notifications/phone/verify',
       body,
     );
 

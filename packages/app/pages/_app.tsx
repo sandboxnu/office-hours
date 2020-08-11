@@ -1,8 +1,9 @@
+import { init as initApm } from "@elastic/apm-rum";
 import "antd/dist/antd.css";
 import { AppProps } from "next/app";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import "react-phone-input-2/lib/style.css";
 import "../styles/global.css";
-import { init as initApm } from "@elastic/apm-rum";
 
 if (process.env.NODE_ENV === "production" && typeof window !== "undefined") {
   initApm({

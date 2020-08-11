@@ -1,13 +1,14 @@
-import { Form, Input, Modal, Row, Switch } from "antd";
-import useSWR from "swr";
 import { API } from "@template/api-client";
 import { UpdateProfileParams } from "@template/common";
+import { Form, Modal, Switch } from "antd";
 import { pick } from "lodash";
 import { ReactElement } from "react";
+import PhoneInput from "react-phone-input-2";
+import useSWR from "swr";
 import {
-  requestNotificationPermission,
-  registerNotificationSubscription,
   NotificationStates,
+  registerNotificationSubscription,
+  requestNotificationPermission,
 } from "../../utils/notification";
 
 interface NotificationSettingsModalProps {
@@ -25,7 +26,11 @@ export function NotificationSettingsModal({
 
   const [form] = Form.useForm();
   const editProfile = async (updateProfile: UpdateProfileParams) => {
-    const newProfile = { ...profile, ...updateProfile };
+    const newProfile = {
+      ...profile,
+      ...updateProfile,
+      phoneNumber: "+" + updateProfile.phoneNumber,
+    };
     mutate(newProfile, false);
     await API.profile.patch(
       pick(newProfile, [
@@ -115,7 +120,7 @@ export function NotificationSettingsModal({
                     },
                   ]}
                 >
-                  <Input placeholder={"XXX-XXX-XXXX"} />
+                  <PhoneInput country={"us"} />
                 </Form.Item>
               )
             }

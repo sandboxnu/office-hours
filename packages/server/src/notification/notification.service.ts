@@ -6,7 +6,6 @@ import { UserModel } from '../profile/user.entity';
 import { DesktopNotifModel } from './desktop-notif.entity';
 import { PhoneNotifModel } from './phone-notif.entity';
 import { TwilioService } from './twilio/twilio.service';
-import twilio from 'twilio';
 
 const phoneResponses = {
   WRONG_MESSAGE:
@@ -87,7 +86,7 @@ export class NotificationService {
       where: {
         id: userId,
       },
-      relations: ['desktopNotifs', 'phoneNotif'],
+      relations: ['desktopNotifs'],
     });
 
     // run the promises concurrently
@@ -98,8 +97,12 @@ export class NotificationService {
         ),
       );
     }
-    if (notifModelsOfUser.phoneNotif && notifModelsOfUser.phoneNotifsEnabled) {
-      this.notifyPhone(notifModelsOfUser.phoneNotif, message, false);
+
+    if (notifModelsOfUser.phoneNotifsEnabled) {
+      const phoneNotifModel = await PhoneNotifModel.findOne({
+        where: { userId },
+      });
+      this.notifyPhone(phoneNotifModel, message, false);
     }
   }
 
@@ -127,6 +130,7 @@ export class NotificationService {
     message: string,
     force: boolean,
   ): Promise<void> {
+    console.log('peepee', pn);
     if (force || pn.verified) {
       try {
         await this.twilioService.sendSMS(pn.phoneNumber, message);

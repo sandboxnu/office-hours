@@ -8,11 +8,10 @@ import {
   GetQueueResponse,
   ListQuestionsResponse,
   PhoneNotifBody,
-  QueuePartial,
   TAUpdateStatusResponse,
+  UpdateProfileParams,
   UpdateQuestionParams,
   UpdateQuestionResponse,
-  UpdateProfileParams,
 } from "@template/common";
 import Axios, { AxiosInstance } from "axios";
 

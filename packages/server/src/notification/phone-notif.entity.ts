@@ -3,8 +3,8 @@ import {
   Column,
   Entity,
   JoinColumn,
-  PrimaryGeneratedColumn,
   OneToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserModel } from '../profile/user.entity';
 
@@ -16,7 +16,7 @@ export class PhoneNotifModel extends BaseEntity {
   @Column('text')
   phoneNumber: string;
 
-  @OneToOne((type) => UserModel, (user) => user.phoneNotif)
+  @OneToOne((type) => UserModel)
   @JoinColumn({ name: 'userId' })
   user: UserModel;
 
