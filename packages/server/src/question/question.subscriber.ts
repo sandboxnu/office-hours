@@ -1,7 +1,8 @@
+import { ClosedQuestionStatus } from '@template/common';
 import {
-  EventSubscriber,
-  EntitySubscriberInterface,
   Connection,
+  EntitySubscriberInterface,
+  EventSubscriber,
   UpdateEvent,
 } from 'typeorm';
 import {
@@ -9,7 +10,6 @@ import {
   NotifMsgs,
 } from '../notification/notification.service';
 import { QuestionModel } from './question.entity';
-import { ClosedQuestionStatus } from '@template/common';
 
 @EventSubscriber()
 export class QuestionSubscriber
@@ -41,7 +41,7 @@ export class QuestionSubscriber
         .setQueryRunner(event.queryRunner) // Run in same transaction as the update
         .offset(2)
         .getOne();
-      if (previousThird.id !== third.id) {
+      if (previousThird && third && previousThird?.id !== third?.id) {
         const { creatorId } = third;
         this.notifService.notifyUser(creatorId, NotifMsgs.queue.THIRD_PLACE);
       }

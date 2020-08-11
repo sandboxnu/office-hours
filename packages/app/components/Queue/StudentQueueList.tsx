@@ -6,7 +6,16 @@ import {
   QuestionStatusKeys,
   QuestionType,
 } from "@template/common";
-import { Alert, Button, Card, Col, Grid, Row, notification } from "antd";
+import {
+  Alert,
+  Button,
+  Card,
+  Col,
+  Grid,
+  notification,
+  Popconfirm,
+  Row,
+} from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { mutate } from "swr";
@@ -14,11 +23,11 @@ import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useProfile } from "../../hooks/useProfile";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
+import { NotificationSettingsModal } from "../Nav/NotificationSettingsModal";
 import EditableQuestion from "./EditableQuestion";
 import QuestionForm from "./QuestionForm";
 import QueueListHeader from "./QueueListSharedComponents";
 import StudentQueueCard from "./StudentQueueCard";
-import { NotificationSettingsModal } from "../Nav/NotificationSettingsModal";
 const { useBreakpoint } = Grid;
 
 const StatusText = styled.div`
@@ -80,6 +89,7 @@ export default function StudentQueueList({
     true
   );
   const [notifModalOpen, setNotifModalOpen] = useState(false);
+  const [fromAnotherQueue, setFromAnotherQueue] = useState(false);
 
   const studentQuestion =
     profile && questions && questions.find((q) => q.creator.id === profile.id);
@@ -195,17 +205,25 @@ export default function StudentQueueList({
     closeEditModal();
   }, [removeValue, leaveQueue, closeEditModal]);
 
-  const joinQueueOpenModal = useCallback(async () => {
-    const createdQuestion = await API.questions.create({
-      queueId: Number(qid),
-      text: "",
-      questionType: QuestionType.Bug, // TODO: endpoint needs to be changed to allow empty questionType for drafts
-      // for the moment I am defaulting this data so that there is no error
-    });
-    const newQuestions = [...questions, createdQuestion];
-    await mutateQuestions(newQuestions);
-    setPopupEditQuestion(true);
-  }, [mutateQuestions, qid, questions]);
+  const joinQueueOpenModal = useCallback(
+    async (force: boolean) => {
+      try {
+        const createdQuestion = await API.questions.create({
+          queueId: Number(qid),
+          text: "",
+          force: force,
+          questionType: QuestionType.Bug, // TODO: endpoint needs to be changed to allow empty questionType for drafts
+          // for the moment I am defaulting this data so that there is no error
+        });
+        const newQuestions = [...questions, createdQuestion];
+        await mutateQuestions(newQuestions);
+        setPopupEditQuestion(true);
+      } catch (e) {
+        setFromAnotherQueue(true);
+      }
+    },
+    [mutateQuestions, qid, questions]
+  );
 
   const finishQuestionAndClose = useCallback(
     (text: string, qt: QuestionType, isOnline: boolean, location: string) => {
@@ -289,13 +307,20 @@ export default function StudentQueueList({
               </Col>
               <Col>
                 {!studentQuestion && (
-                  <JoinButton
-                    type="primary"
-                    size="large"
-                    onClick={joinQueueOpenModal}
+                  <Popconfirm
+                    title="In order to join this queue, you must delete your previous question. Do you want to continue?"
+                    onConfirm={() => joinQueueOpenModal(true)}
+                    okText="Yes"
+                    cancelText="No"
                   >
-                    Join Queue
-                  </JoinButton>
+                    <JoinButton
+                      type="primary"
+                      size="large"
+                      onClick={() => joinQueueOpenModal(false)}
+                    >
+                      Join Queue
+                    </JoinButton>
+                  </Popconfirm>
                 )}
               </Col>
             </Row>

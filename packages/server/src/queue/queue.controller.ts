@@ -10,13 +10,11 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import {
-  ClosedQuestionStatus,
   GetQueueResponse,
   ListQuestionsResponse,
   UpdateQueueNotesParams,
-  OpenQuestionStatus,
 } from '@template/common';
-import { Connection, In, Not } from 'typeorm';
+import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from './queue.entity';
