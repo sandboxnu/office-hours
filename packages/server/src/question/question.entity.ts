@@ -51,7 +51,7 @@ export class QuestionModel extends BaseEntity {
   @Exclude()
   taHelpedId: number;
 
-  @CreateDateColumn()
+  @Column()
   createdAt: Date;
 
   @Column({ nullable: true })
