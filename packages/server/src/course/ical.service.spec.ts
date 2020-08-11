@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { IcalService } from './ical.service';
 import * as iCal from 'node-ical';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { TestTypeOrmModule } from '../../test/util/testUtils';
 import { CourseFactory } from '../../test/util/factories';
 import { QueueModel } from '../queue/queue.entity';
 import { CalendarResponse } from 'node-ical';
+import { Connection } from 'typeorm';
 
 // oopsah
 const parsedICS = iCal.parseICS(`BEGIN:VCALENDAR
@@ -82,15 +82,26 @@ END:VCALENDAR`);
 
 describe('IcalService', () => {
   let service: IcalService;
+  let conn: Connection;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestTypeOrmModule],
       providers: [IcalService],
     }).compile();
 
     service = module.get<IcalService>(IcalService);
+    conn = module.get<Connection>(Connection);
   });
+
+  afterAll(async () => {
+    await conn.close();
+  });
+
+  beforeEach(async () => {
+    await conn.synchronize(true);
+  });
+
   describe('parseIcal', () => {
     it('handles a pre-generated subset of CS 2510 classes', () => {
       const endData = service.parseIcal(parsedICS, 123);
