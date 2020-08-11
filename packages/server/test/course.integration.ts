@@ -169,7 +169,7 @@ describe('Course Integration', () => {
       });
     });
 
-    it('tests student cant deleted from queue if exists', async () => {
+    it('tests student cant checkout from queue', async () => {
       const student = await UserFactory.create();
       const queue = await QueueFactory.create({
         room: 'The Alamo',
