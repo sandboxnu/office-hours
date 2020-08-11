@@ -14,17 +14,22 @@ import {
   CourseFactory,
   UserCourseFactory,
 } from './util/factories';
-import { setupIntegrationTest } from './util/testUtils';
 import { QueueModel } from '../src/queue/queue.entity';
+import {
+  setupIntegrationTest,
+  modifyMockNotifs,
+  expectUserNotified,
+} from './util/testUtils';
 
 describe('Question Integration', () => {
-  const supertest = setupIntegrationTest(QuestionModule);
+  const supertest = setupIntegrationTest(QuestionModule, modifyMockNotifs);
 
   describe('GET /questions/:id', () => {
     it('gets a question with the given id', async () => {
       const course = await CourseFactory.create();
       const q = await QuestionFactory.create({
         text: 'Help pls',
+        createdAt: new Date('2020-03-01T05:00:00.000Z'),
         queue: await QueueModel.create({
           course: course,
           courseId: course.id,
@@ -245,7 +250,9 @@ describe('Question Integration', () => {
         .expect(200);
       expect(res.body).toMatchObject({
         status: QuestionStatusKeys.Helping,
+        taHelped: { id: ta.id, name: ta.name, photoURL: ta.photoURL },
       });
+      expectUserNotified(q.creatorId);
     });
     it('PATCH status to Resolved as TA works', async () => {
       const course = await CourseFactory.create();
@@ -267,7 +274,6 @@ describe('Question Integration', () => {
         .expect(200);
       expect(res.body).toMatchObject({
         status: QuestionStatusKeys.Resolved,
-        taHelped: { id: ta.id, name: ta.name, photoURL: ta.photoURL },
       });
     });
     it('PATCH anything other than status as TA not allowed', async () => {
