@@ -180,6 +180,7 @@ export class QuestionController {
       // Set TA as taHelped when the TA starts helping the student
       if (body.status === OpenQuestionStatus.Helping) {
         question.taHelped = await UserModel.findOne(userId);
+        question.helpedAt = new Date();
       }
       await question.save();
       return question;
