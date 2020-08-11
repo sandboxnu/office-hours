@@ -42,13 +42,18 @@ export class QuestionSubscriber
       event.updatedColumns.find((c) => c.propertyName === 'status') &&
       event.entity.status in ClosedQuestionStatus
     ) {
-      // get top 3 in queue
-      const top3 = await QuestionModel.openInQueue(event.entity.queueId)
+      // get 3rd in queue before and after this update
+      const previousThird = await QuestionModel.openInQueue(
+        event.entity.queueId,
+      )
+        .offset(2)
+        .getOne();
+      const third = await QuestionModel.openInQueue(event.entity.queueId)
         .setQueryRunner(event.queryRunner) // Run in same transaction as the update
-        .limit(3)
-        .getMany();
-      if (top3.length === 3) {
-        const { creatorId } = top3[2];
+        .offset(2)
+        .getOne();
+      if (previousThird.id !== third.id) {
+        const { creatorId } = third;
         this.notifService.notifyUser(creatorId, NotifMsgs.queue.THIRD_PLACE);
       }
     }

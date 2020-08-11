@@ -13,7 +13,7 @@ jobs:
         with:
           node-version: 12
       - run: yarn install
-      - run: yarn pretty-quick --branch --check
+      - run: yarn pretty-quick --branch master --check
   lint:
     name: lint
     runs-on: ubuntu-latest

@@ -9,6 +9,7 @@ import {
   StatusTag,
   Text,
 } from "./QueueCardSharedComponents";
+import { getWaitTime } from "../../utils/TimeUtil";
 
 const HorizontalStudentCard = styled(Card)`
   margin-bottom: 8px;
@@ -42,8 +43,6 @@ export default function StudentQueueCard({
   rank,
   highlighted,
 }: StudentQueueCardProps): ReactElement {
-  const now = new Date();
-  const waitTime = now.getMinutes() - question.createdAt.getMinutes();
   return (
     <HorizontalStudentCard
       style={highlighted ? bodyStyle : {}}
@@ -68,7 +67,7 @@ export default function StudentQueueCard({
           </Text>
         </Col>
         <Col span={2}>
-          <Text data-cy="waitTime">{waitTime}</Text>
+          <Text data-cy="waitTime">{getWaitTime(question)}</Text>
         </Col>
         <Col xs={0} lg={2}>
           <StatusTag color={questionStatusToColor(question.status)}>
