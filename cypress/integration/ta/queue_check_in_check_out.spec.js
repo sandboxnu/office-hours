@@ -7,18 +7,21 @@ describe("Can successfuly check in and out of a queue", () => {
       .then((res) => res.body)
       .as("ta");
     cy.get("@ta").then((ta) => {
-      cy.request("POST", "/api/v1/seeds/createQueue", {
-        courseId: ta.course.id,
-      })
-        .then((res) => res.body)
-        .as("queue");
-
       // Login the ta
       cy.visit(`/api/v1/login/dev?userId=${ta.user.id}`);
     });
   });
 
   it("from the queue page", () => {
+    // Create a queue
+    cy.get("@ta").then((ta) => {
+      cy.request("POST", "/api/v1/seeds/createQueue", {
+        courseId: ta.course.id,
+      })
+        .then((res) => res.body)
+        .as("queue");
+    });
+
     // Visit the queue page
     cy.get("@queue").then((queue) =>
       cy.visit(`/course/${queue.courseId}/queue/${queue.id}`)
@@ -67,6 +70,15 @@ describe("Can successfuly check in and out of a queue", () => {
   });
 
   it("from the today page with a room already existing", () => {
+    // Create a queue
+    cy.get("@ta").then((ta) => {
+      cy.request("POST", "/api/v1/seeds/createQueue", {
+        courseId: ta.course.id,
+      })
+        .then((res) => res.body)
+        .as("queue");
+    });
+    
     cy.get("@ta").then((ta) => {
       cy.mock("GET", `/api/v1/courses/${ta.course.id}`, {
         id: 1,
