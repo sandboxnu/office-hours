@@ -1,4 +1,8 @@
-import { QuestionStatus, QuestionType } from '@template/common';
+import {
+  QuestionStatus,
+  QuestionType,
+  OpenQuestionStatus,
+} from '@template/common';
 import { Exclude } from 'class-transformer';
 import {
   BaseEntity,
@@ -8,6 +12,8 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  In,
+  SelectQueryBuilder,
 } from 'typeorm';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
@@ -65,4 +71,16 @@ export class QuestionModel extends BaseEntity {
 
   @Column({ nullable: true })
   isOnline: boolean;
+
+  /**
+   * Scopes
+   */
+  static openInQueue(queueId: number): SelectQueryBuilder<QuestionModel> {
+    return this.createQueryBuilder('question')
+      .where('question.queueId = :queueId', { queueId })
+      .andWhere('question.status IN (:...statuses)', {
+        statuses: Object.values(OpenQuestionStatus),
+      })
+      .orderBy('question.createdAt', 'ASC');
+  }
 }

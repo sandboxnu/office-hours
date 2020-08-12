@@ -24,7 +24,10 @@ import {
   UpdateQuestionResponse,
 } from '@template/common';
 import { Connection, In } from 'typeorm';
-import { NotificationService } from '../notification/notification.service';
+import {
+  NotificationService,
+  NotifMsgs,
+} from '../notification/notification.service';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { UserCourseModel } from '../profile/user-course.entity';
 import { User, UserId } from '../profile/user.decorator';
@@ -176,12 +179,19 @@ export class QuestionController {
           );
         }
       }
-      question = Object.assign(question, body);
       // Set TA as taHelped when the TA starts helping the student
-      if (body.status === OpenQuestionStatus.Helping) {
+      if (
+        question.status !== OpenQuestionStatus.Helping &&
+        body.status === OpenQuestionStatus.Helping
+      ) {
         question.taHelped = await UserModel.findOne(userId);
         question.helpedAt = new Date();
+        await this.notifService.notifyUser(
+          question.creator.id,
+          NotifMsgs.queue.TA_HIT_HELPED(question.taHelped.name),
+        );
       }
+      question = Object.assign(question, body);
       await question.save();
       return question;
     } else {
@@ -214,9 +224,9 @@ export class QuestionController {
       throw new UnauthorizedException('Only TA can send alerts');
     }
 
-    this.notifService.notifyUser(
+    await this.notifService.notifyUser(
       question.creatorId,
-      'Get ready! A TA is coming to help you.',
+      NotifMsgs.queue.ALERT_BUTTON,
     );
   }
 }
