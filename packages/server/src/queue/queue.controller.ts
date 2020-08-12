@@ -15,8 +15,8 @@ import {
   ListQuestionsResponse,
   UpdateQueueNotesParams,
 } from '@template/common';
-import { Connection } from 'typeorm';
 import { Response } from 'express';
+import { Connection, In } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { QueueModel } from './queue.entity';
 import { QueueService } from './queue.service';

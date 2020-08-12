@@ -10,7 +10,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { GetCourseResponse, QueuePartial, Role } from '@template/common';
-import { Connection } from 'typeorm';
+import { Connection, getRepository } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { UserCourseModel } from '../profile/user-course.entity';
 import { User } from '../profile/user.decorator';
@@ -18,6 +18,7 @@ import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { QueueCleanService } from '../queue/queue-clean/queue-clean.service';
 import { CourseModel } from './course.entity';
+import { OfficeHourModel } from './office-hour.entity';
 
 @Controller('courses')
 @UseGuards(JwtAuthGuard)
@@ -32,15 +33,21 @@ export class CourseController {
   async get(@Param('id') id: number): Promise<GetCourseResponse> {
     // TODO: for all course endpoint, check if they're a student or a TA
     const course = await CourseModel.findOne(id, {
-      relations: [
-        'officeHours',
-        'queues',
-        'queues.staffList',
-        'queues.officeHours',
-      ],
+      relations: ['queues', 'queues.staffList', 'queues.officeHours'],
     });
 
+    // Use raw query for performance (avoid entity instantiation and serialization)
+    course.officeHours = await getRepository(OfficeHourModel)
+      .createQueryBuilder('oh')
+      .select(['id', 'title', `"startTime"`, `"endTime"`])
+      .where('oh.courseId = :courseId', { courseId: course.id })
+      .getRawMany();
+
     course.queues = course.queues.filter((queue) => queue.isOpen());
+
+    for (const queue of course.queues) {
+      await queue.addQueueTimes();
+    }
 
     return course;
   }

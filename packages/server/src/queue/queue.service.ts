@@ -17,9 +17,10 @@ export class QueueService {
       relations: ['staffList'],
     });
 
+    await queue.addQueueTimes();
     const questions = await QuestionModel.find({ where: { queueId } });
-
     queue.questions = questions;
+
     return queue;
   }
 
