@@ -3,6 +3,7 @@ import {
   EntitySubscriberInterface,
   Connection,
   UpdateEvent,
+  InsertEvent,
 } from 'typeorm';
 import {
   NotificationService,
@@ -57,5 +58,10 @@ export class QuestionSubscriber
         this.notifService.notifyUser(creatorId, NotifMsgs.queue.THIRD_PLACE);
       }
     }
+  }
+
+  async afterInsert(event: InsertEvent<QuestionModel>): Promise<void> {
+    // Send all listening clients an update
+    await this.queueSSEService.updateQuestions(event.entity.queueId);
   }
 }
