@@ -11,6 +11,8 @@ import {
   StatusTag,
   Text,
 } from "./QueueCardSharedComponents";
+import { getWaitTime } from "../../utils/TimeUtil";
+
 interface TAQueueCardProps {
   rank: number;
 
@@ -45,11 +47,7 @@ export default function TAQueueCard({
           <Text>{question.text}</Text>
         </Col>
         <Col xs={0} lg={2}>
-          <Text>
-            {
-              30 //figure out later
-            }
-          </Text>
+          <Text>{getWaitTime(question)}</Text>
         </Col>
         <Col span={2}>
           <StatusTag color={questionStatusToColor(question.status)}>

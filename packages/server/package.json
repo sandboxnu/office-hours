@@ -35,6 +35,7 @@
     "bcrypt": "^5.0.0",
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
+    "elastic-apm-node": "^3.6.1",
     "lodash": "^4.17.19",
     "morgan": "^1.10.0",
     "nestjs-admin": "^0.4.0",
@@ -94,6 +95,10 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleDirectories": [
+      "node_modules",
+      "src"
+    ]
   }
 }

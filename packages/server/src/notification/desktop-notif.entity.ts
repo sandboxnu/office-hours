@@ -33,8 +33,4 @@ export class DesktopNotifModel extends BaseEntity {
 
   @Column({ nullable: true })
   userId: number;
-
-  // TODO: add functionality to notify user once they hit top of queue (probably have to make a
-  // afterload listener on Queue,a nd then try to find the notifmodel of the user there, and then
-  // just do something like await notifyUser(queue.user.notifs, "joe mama"))
 }

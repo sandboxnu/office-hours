@@ -120,6 +120,8 @@ interface OfficeHourBlock {
  * @param room - The full name of the building + room # that the current office hours queue is in.
  * @param staffList - The list of TA user's that are currently helping at office hours.
  * @param questions - The list of the students questions assocaited with the queue.
+ * @param startTime - The scheduled start time of this queue based on the parsed ical.
+ * @param endTime - The scheduled end time of this queue.
  */
 export interface Queue {
   id: number;
@@ -127,6 +129,8 @@ export interface Queue {
   room: string;
   staffList: UserPartial[];
   questions: Question[];
+  startTime?: Date;
+  endTime?: Date;
 }
 
 /**
@@ -134,6 +138,8 @@ export interface Queue {
  * @param id - The unique id number for a Queue.
  * @param room - The full name of the building + room # that the current office hours queue is in.
  * @param staffList - The list of TA user's that are currently helping at office hours.
+ * @param startTime - The scheduled start time of this queue based on the parsed ical.
+ * @param endTime - The scheduled end time of this queue.
  */
 export interface QueuePartial {
   id: number;
@@ -141,7 +147,8 @@ export interface QueuePartial {
   staffList: UserPartial[];
   queueSize: number;
   notes?: string;
-  // TODO: Add wait time?
+  startTime?: Date;
+  endTime?: Date;
 }
 
 /**
@@ -242,26 +249,32 @@ export type GetProfileResponse = User;
 export class KhouryDataParams {
   @IsString()
   username!: string;
-  
+
   @IsString()
   email!: string;
-  
+
   @IsString()
   first_name!: string;
-  
+
   @IsString()
   last_name!: string;
-  
+
+  @IsInt()
+  campus!: string;
+
+  @IsInt()
+  nuid!: number;
+
   @IsOptional()
   @IsString()
   photo_url!: string;
-  
+
   @IsOptional()
-  @IsDefined()  // TODO: use ValidateNested instead, for some reason it's crunked
+  @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
   courses!: KouryAdminCourse[];
-  
+
   @IsOptional()
-  @IsDefined()  // TODO: use ValidateNested instead, for some reason it's crunked
+  @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
   ta_courses!: KouryAdminCourse[];
 }
 

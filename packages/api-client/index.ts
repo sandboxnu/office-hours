@@ -32,7 +32,7 @@ class APIClient {
       course.officeHours.forEach((officeHour: any) =>
         parseOfficeHourDates(officeHour)
       );
-      // If you need to add time to queues check out this commit: 995e82991587b2077d342b1df87a2665a21c3492
+      course.queues.forEach((queue: any) => parseQueueDates(queue));
       return course;
     },
   };
@@ -87,7 +87,9 @@ class APIClient {
   };
   queues = {
     get: async (queueId: number): Promise<GetQueueResponse> => {
-      return (await this.axios.get(`/api/v1/queues/${queueId}`)).data;
+      const queue = (await this.axios.get(`/api/v1/queues/${queueId}`)).data;
+      parseQueueDates(queue);
+      return queue;
     },
     updateNotes: async (queueId: number, notes: string) => {
       await this.axios.patch(`/api/v1/queues/${queueId}`, { notes });
@@ -129,8 +131,10 @@ function parseOfficeHourDates(officeHour: any): void {
 }
 
 function parseQueueDates(queue: any): void {
-  queue.createdAt = new Date(queue.createdAt);
-  queue.closedAt = new Date(queue.closedAt);
+  if (queue.startTime && queue.endTime) {
+    queue.startTime = new Date(queue.startTime);
+    queue.endTime = new Date(queue.endTime);
+  }
 }
 
 function parseQuestionDates(question: any): void {
