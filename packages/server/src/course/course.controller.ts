@@ -9,16 +9,16 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { GetCourseResponse, QueuePartial, Role } from '@template/common';
-import { Connection } from 'typeorm';
+import { Connection, getRepository } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
-import { UserCourseModel } from '../profile/user-course.entity';
 import { User } from '../profile/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
-import { QueueService } from '../queue/queue.service';
+import { QueueCleanService } from '../queue/queue-clean/queue-clean.service';
 import { CourseModel } from './course.entity';
 import { Roles } from '../profile/roles.decorator';
 import { CourseRolesGuard } from './course-roles.guard';
+import { OfficeHourModel } from './office-hour.entity';
 
 @Controller('courses')
 @UseGuards(JwtAuthGuard, CourseRolesGuard)
@@ -26,7 +26,7 @@ import { CourseRolesGuard } from './course-roles.guard';
 export class CourseController {
   constructor(
     private connection: Connection,
-    private queueService: QueueService,
+    private queueCleanService: QueueCleanService,
   ) {}
 
   @Get(':id')
@@ -34,15 +34,21 @@ export class CourseController {
   async get(@Param('id') id: number): Promise<GetCourseResponse> {
     // TODO: for all course endpoint, check if they're a student or a TA
     const course = await CourseModel.findOne(id, {
-      relations: [
-        'officeHours',
-        'queues',
-        'queues.staffList',
-        'queues.officeHours',
-      ],
+      relations: ['queues', 'queues.staffList', 'queues.officeHours'],
     });
 
+    // Use raw query for performance (avoid entity instantiation and serialization)
+    course.officeHours = await getRepository(OfficeHourModel)
+      .createQueryBuilder('oh')
+      .select(['id', 'title', `"startTime"`, `"endTime"`])
+      .where('oh.courseId = :courseId', { courseId: course.id })
+      .getRawMany();
+
     course.queues = course.queues.filter((queue) => queue.isOpen());
+
+    for (const queue of course.queues) {
+      await queue.addQueueTimes();
+    }
 
     return course;
   }
@@ -96,6 +102,6 @@ export class CourseController {
     await queue.save();
 
     // Clean up queue if necessary
-    await this.queueService.cleanQueue(queue.id);
+    await this.queueCleanService.cleanQueue(queue.id);
   }
 }

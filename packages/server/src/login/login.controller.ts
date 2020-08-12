@@ -132,7 +132,12 @@ export class LoginController {
       userId: payload.userId,
     });
 
-    res.cookie('auth_token', authToken).redirect(302, '/');
+    const isSecure = this.configService
+      .get<string>('DOMAIN')
+      .startsWith('https://');
+    res
+      .cookie('auth_token', authToken, { httpOnly: true, secure: isSecure })
+      .redirect(302, '/');
   }
 
   // This is for login on development only
@@ -143,6 +148,11 @@ export class LoginController {
     @Query('userId') userId: number,
   ): Promise<void> {
     const token = await this.jwtService.signAsync({ userId });
-    res.cookie('auth_token', token).redirect(302, '/');
+    const isSecure = this.configService
+      .get<string>('DOMAIN')
+      .startsWith('https://');
+    res
+      .cookie('auth_token', token, { httpOnly: true, secure: isSecure })
+      .redirect(302, '/');
   }
 }
