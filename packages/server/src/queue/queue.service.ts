@@ -29,7 +29,7 @@ export class QueueService {
       relations: ['staffList', 'questions', 'officeHours'],
     });
 
-    if (!queue.isOpen()) {
+    if (!(await queue.isOpen())) {
       await this.unsafeClean(queue);
     }
   }
