@@ -11,7 +11,7 @@ describe("Login", () => {
     cy.getCookie("auth_token").should("exist");
     cy.location("pathname").should("contain", "/today");
   });
-
+  
   it("can sucsessfully login from dev as a ta", () => {
     cy.visit("/dev");
     cy.getCookie("auth_token").should("not.exist");

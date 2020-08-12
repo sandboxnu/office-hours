@@ -1,6 +1,7 @@
 {
   "projectId": "8crkwu",
   "baseUrl": "http://localhost:3000",
+  "defaultCommandTimeout": 10000,
   "env": {
     "USE_LIVE_API": false,
     "UPDATE_FIXTURES": false
