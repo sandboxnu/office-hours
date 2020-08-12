@@ -8,10 +8,13 @@ import { LoginModule } from '../../src/login/login.module';
 import { JwtService } from '@nestjs/jwt';
 import { addGlobalsToApp } from '../../src/bootstrap';
 import { TwilioService } from '../../src/notification/twilio/twilio.service';
+import { mocked } from 'ts-jest/utils';
+import { NotificationService } from 'notification/notification.service';
 
 export interface SupertestOptions {
   userId?: number;
 }
+export type ModuleModifier = (t: TestingModuleBuilder) => TestingModuleBuilder;
 export const TestTypeOrmModule = TypeOrmModule.forRoot({
   type: 'postgres',
   host: 'localhost',
@@ -31,7 +34,7 @@ const mockTwilio = {
 
 export function setupIntegrationTest(
   module: Type<any>,
-  modifyModule?: (t: TestingModuleBuilder) => TestingModuleBuilder,
+  modifyModule?: ModuleModifier,
 ): (u?: SupertestOptions) => supertest.SuperTest<supertest.Test> {
   let app: INestApplication;
   let jwtService: JwtService;
@@ -82,3 +85,15 @@ export function setupIntegrationTest(
     return agent;
   };
 }
+
+const notifMock = mocked({ notifyUser: jest.fn() }, true);
+/**
+ * Module Modifier tests can pass to setupIntegrationTest to mock the notifService and to expect things
+ * ex:
+ * const supertest = setupIntegrationTest(QuestionModule, modifyMockNotifs);
+ */
+
+export const modifyMockNotifs: ModuleModifier = (t) =>
+  t.overrideProvider(NotificationService).useValue(notifMock);
+export const expectUserNotified = (userId: number): void =>
+  expect(notifMock.notifyUser).toHaveBeenCalledWith(userId, expect.any(String));
