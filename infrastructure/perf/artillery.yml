@@ -7,7 +7,7 @@ config:
 scenarios:
   - flow:
       - get:
-          url: "/api/v1/profile/entry?userId=1"
+          url: "/api/v1/login/dev?userId=1"
       - get:
           url: "/course/1/today"
       - get:
