@@ -25,23 +25,20 @@ describe("Can successfuly check in and out of a queue", () => {
       cy.visit(`/course/${queue.courseId}/queue/${queue.id}`)
     );
     // Click "Check in"
-    cy.get(".ant-row > :nth-child(1) > :nth-child(1) > :nth-child(3)")
-      .children()
-      .should("have.length", 0);
     cy.get("h1").should("contain", "There currently aren't");
-    cy.get("button").contains("Check In").click();
-    cy.get(".ant-row > :nth-child(1) > :nth-child(1) > :nth-child(3)")
-      .children()
-      .should("have.length", 2);
+    cy.get("[data-cy='check-in-button']").click();
 
     // Click "Check out"
-    cy.get("button").contains("Check Out").click();
+    cy.get("[data-cy='check-out-button']").click();
     cy.get("button").should("contain", "Check In");
   });
 
   it("from the today page by specifing a new room", () => {
+    // Wait for page to load
+    cy.contains("No Staff Checked In");
+
     // Click "Check in"
-    cy.get(".ant-row > .ant-btn").click();
+    cy.get("[data-cy='check-in-button']").click();
     cy.get(".ant-modal-header").should("be.visible");
 
     // Add a new room into the input
@@ -53,7 +50,7 @@ describe("Can successfuly check in and out of a queue", () => {
     cy.get("h1").should("contain", "There currently aren't");
 
     // Click "Check out"
-    cy.get("button").contains("Check Out").click();
+    cy.get("[data-cy='check-out-button']").click();
     cy.get("button").should("contain", "Check In");
   });
 
@@ -84,10 +81,10 @@ describe("Can successfuly check in and out of a queue", () => {
     });
 
     // Wait for the page to laod
-    // cy.contains('No Staff Checked In')
+    cy.contains('No Staff Checked In')
 
     // Click "Check in"
-    cy.get(".ant-col-xs-24 > :nth-child(1) > .ant-btn > span").click();
+    cy.get("[data-cy='check-in-button']").click();
     cy.get(".ant-modal-header").should("be.visible");
 
     // Select the button for the room to check in
@@ -98,7 +95,7 @@ describe("Can successfuly check in and out of a queue", () => {
     cy.get("h1").should("contain", "There currently aren't any questions in the queue");
 
     // Click "Check out"
-    cy.get("button").contains("Check Out").click();
+    cy.get("[data-cy='check-out-button']").click();
     cy.get("button").should("contain", "Check In");
   });
 });

@@ -338,6 +338,7 @@ export default function TAQueueList({
                   <CheckOutButton
                     danger
                     size="large"
+                    data-cy="check-out-button"
                     onClick={async () => {
                       await API.taStatus.checkOut(courseId, queue?.room);
                       mutateQueue();
@@ -352,6 +353,7 @@ export default function TAQueueList({
                       mutateQueue();
                     }}
                     size="large"
+                    data-cy="check-in-button"
                   >
                     Check In
                   </CheckInButton>
