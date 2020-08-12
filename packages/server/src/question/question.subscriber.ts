@@ -53,7 +53,7 @@ export class QuestionSubscriber
         .setQueryRunner(event.queryRunner) // Run in same transaction as the update
         .offset(2)
         .getOne();
-      if (previousThird.id !== third.id) {
+      if (previousThird?.id !== third?.id) {
         const { creatorId } = third;
         this.notifService.notifyUser(creatorId, NotifMsgs.queue.THIRD_PLACE);
       }
