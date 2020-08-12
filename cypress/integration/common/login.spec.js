@@ -9,7 +9,6 @@ describe("Login", () => {
     cy.getCookie("auth_token").should("not.exist");
     cy.get("button").contains("Login as Student").click();
     cy.getCookie("auth_token").should("exist");
-    cy.location("pathname").should("contain", "/today");
   });
   
   it("can sucsessfully login from dev as a ta", () => {
@@ -17,6 +16,5 @@ describe("Login", () => {
     cy.getCookie("auth_token").should("not.exist");
     cy.get("button").contains("Login as TA").click();
     cy.getCookie("auth_token").should("exist");
-    cy.location("pathname").should("contain", "/today");
   });
 });
