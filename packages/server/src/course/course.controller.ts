@@ -16,7 +16,7 @@ import { UserCourseModel } from '../profile/user-course.entity';
 import { User } from '../profile/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
-import { QueueService } from '../queue/queue.service';
+import { QueueCleanService } from '../queue/queue-clean/queue-clean.service';
 import { CourseModel } from './course.entity';
 import { OfficeHourModel } from './office-hour.entity';
 
@@ -26,7 +26,7 @@ import { OfficeHourModel } from './office-hour.entity';
 export class CourseController {
   constructor(
     private connection: Connection,
-    private queueService: QueueService,
+    private queueCleanService: QueueCleanService,
   ) {}
 
   @Get(':id')
@@ -115,6 +115,6 @@ export class CourseController {
     await queue.save();
 
     // Clean up queue if necessary
-    await this.queueService.cleanQueue(queue.id);
+    await this.queueCleanService.cleanQueue(queue.id);
   }
 }
