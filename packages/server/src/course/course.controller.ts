@@ -43,7 +43,7 @@ export class CourseController {
     course.queues = course.queues.filter((queue) => queue.isOpen());
 
     for (let queue of course.queues) {
-      await this.queueService.addQueueTimes(queue);
+      await queue.addQueueTimes();
     }
 
     return course;

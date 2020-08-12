@@ -10,27 +10,21 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import {
-  ClosedQuestionStatus,
   GetQueueResponse,
   ListQuestionsResponse,
   UpdateQueueNotesParams,
   OpenQuestionStatus,
 } from '@template/common';
-import { Connection, In, Not, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
+import { Connection, In } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from './queue.entity';
-import { OfficeHourModel } from 'course/office-hour.entity';
-import { QueueService } from './queue.service';
 
 @Controller('queues')
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class QueueController {
-  constructor(
-    private connection: Connection,
-    private queueService: QueueService,
-  ) {}
+  constructor(private connection: Connection) {}
 
   @Get(':queueId')
   async getQueue(@Param('queueId') queueId: string): Promise<GetQueueResponse> {
@@ -38,8 +32,7 @@ export class QueueController {
       relations: ['staffList'],
     });
 
-    await this.queueService.addQueueTimes(queue);
-
+    await queue.addQueueTimes();
     const questions = await QuestionModel.find({ where: { queueId } });
     queue.questions = questions;
 
