@@ -8,54 +8,40 @@ import {
   Patch,
   UseGuards,
   UseInterceptors,
+  Res,
 } from '@nestjs/common';
 import {
   GetQueueResponse,
   ListQuestionsResponse,
   UpdateQueueNotesParams,
-  OpenQuestionStatus,
 } from '@template/common';
+import { Response } from 'express';
 import { Connection, In } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
-import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from './queue.entity';
+import { QueueService } from './queue.service';
+import { QueueSSEService } from './queue-sse.service';
 
 @Controller('queues')
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class QueueController {
-  constructor(private connection: Connection) {}
+  constructor(
+    private connection: Connection,
+    private queueSSEService: QueueSSEService,
+    private queueService: QueueService,
+  ) {}
 
   @Get(':queueId')
   async getQueue(@Param('queueId') queueId: number): Promise<GetQueueResponse> {
-    const queue = await QueueModel.findOne(queueId, {
-      relations: ['staffList'],
-    });
-
-    await queue.addQueueTimes();
-    const questions = await QuestionModel.find({ where: { queueId } });
-    queue.questions = questions;
-
-    return queue;
+    return this.queueService.getQueue(queueId);
   }
 
   @Get(':queueId/questions')
   async getQuestions(
     @Param('queueId') queueId: number,
   ): Promise<ListQuestionsResponse> {
-    // todo: need a way to return different data, if TA vs. student hits endpoint.
-    // for now, just return the student response
-    const queueSize = await QueueModel.count({
-      where: { id: queueId },
-    });
-    // Check that the queue exists
-    if (queueSize === 0) {
-      throw new NotFoundException();
-    }
-    return QuestionModel.openInQueue(queueId)
-      .leftJoinAndSelect('question.creator', 'creator')
-      .leftJoinAndSelect('question.taHelped', 'taHelped')
-      .getMany();
+    return this.queueService.getQuestions(queueId);
   }
 
   @Patch(':queueId')
@@ -74,5 +60,17 @@ export class QueueController {
     queue.notes = body.notes;
     await queue.save();
     return queue;
+  }
+
+  // Endpoint to send frontend receive server-sent events when queue changes
+  @Get(':queueId/sse')
+  sendEvent(@Param('queueId') queueId: number, @Res() res: Response): void {
+    res.set({
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+    });
+
+    this.queueSSEService.subscribeClient(queueId, res);
   }
 }
