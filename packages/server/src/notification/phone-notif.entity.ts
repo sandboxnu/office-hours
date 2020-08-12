@@ -16,7 +16,7 @@ export class PhoneNotifModel extends BaseEntity {
   @Column('text')
   phoneNumber: string;
 
-  @OneToOne((type) => UserModel)
+  @OneToOne((type) => UserModel, (user) => user.phoneNotif)
   @JoinColumn({ name: 'userId' })
   user: UserModel;
 

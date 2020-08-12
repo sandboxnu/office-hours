@@ -18,7 +18,7 @@ export class ProfileController {
 
   @Get()
   async get(
-    @User(['courses', 'courses.course']) user: UserModel,
+    @User(['courses', 'courses.course', 'phoneNotif']) user: UserModel,
   ): Promise<GetProfileResponse> {
     const courses = user.courses
       .filter((userCourse) => userCourse.course.enabled)
@@ -32,12 +32,6 @@ export class ProfileController {
         };
       });
 
-    const phoneNotifModel = await PhoneNotifModel.findOne({
-      where: {
-        userId: user.id,
-      },
-    });
-
     const userResponse = pick(user, [
       'id',
       'email',
@@ -49,20 +43,23 @@ export class ProfileController {
     return {
       ...userResponse,
       courses,
-      phoneNumber: phoneNotifModel?.phoneNumber,
+      phoneNumber: user.phoneNotif?.phoneNumber,
     };
   }
 
   @Patch()
   async patch(
     @Body() userPatch: UpdateProfileParams,
-    @User(['courses', 'courses.course']) user: UserModel,
+    @User(['courses', 'courses.course', 'phoneNotif']) user: UserModel,
   ): Promise<GetProfileResponse> {
     user = Object.assign(user, userPatch);
-    if (user.phoneNotifsEnabled && userPatch.phoneNumber) {
-      await this.notifService.registerPhone(userPatch.phoneNumber, user.id);
-    }
     await user.save();
+    if (user.phoneNotifsEnabled && userPatch.phoneNumber) {
+      user.phoneNotif = await this.notifService.registerPhone(
+        userPatch.phoneNumber,
+        user.id,
+      );
+    }
 
     const courses = user.courses.map((userCourse) => {
       return {
@@ -74,12 +71,6 @@ export class ProfileController {
       };
     });
 
-    const phoneNotifModel = await PhoneNotifModel.findOne({
-      where: {
-        userId: user.id,
-      },
-    });
-
     const userResponse = pick(user, [
       'id',
       'email',
@@ -91,7 +82,7 @@ export class ProfileController {
     return {
       ...userResponse,
       courses,
-      phoneNumber: phoneNotifModel.phoneNumber,
+      phoneNumber: user.phoneNotif?.phoneNumber,
     };
   }
 }

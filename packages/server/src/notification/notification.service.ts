@@ -53,7 +53,10 @@ export class NotificationService {
     }
   }
 
-  async registerPhone(phoneNumber: string, userId: number): Promise<void> {
+  async registerPhone(
+    phoneNumber: string,
+    userId: number,
+  ): Promise<PhoneNotifModel> {
     if (!this.twilioService.isPhoneNumberReal) {
       throw new BadRequestException('phone number invalid');
     }
@@ -86,6 +89,8 @@ export class NotificationService {
       "You've signed up for phone notifications for Khoury Office Hours. To verify your number, please respond to this message with YES. To unsubscribe, respond to this message with NO or STOP",
       true,
     );
+
+    return phoneNotifModel;
   }
 
   // Notify user on all platforms
@@ -138,7 +143,6 @@ export class NotificationService {
     message: string,
     force: boolean,
   ): Promise<void> {
-    console.log('peepee', pn);
     if (force || pn.verified) {
       try {
         await this.twilioService.sendSMS(pn.phoneNumber, message);

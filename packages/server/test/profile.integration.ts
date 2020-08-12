@@ -5,6 +5,8 @@ import {
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
 import { ProfileModule } from '../src/profile/profile.module';
+import { PhoneNotifModel } from 'notification/phone-notif.entity';
+import { DesktopNotifModel } from 'notification/desktop-notif.entity';
 
 describe('Profile Integration', () => {
   const supertest = setupIntegrationTest(ProfileModule);
@@ -79,7 +81,13 @@ describe('Profile Integration', () => {
       expect(res.body).toMatchObject({
         desktopNotifsEnabled: false,
         phoneNotifsEnabled: true,
+        phoneNumber: '911',
       });
+      expect(
+        await PhoneNotifModel.findOne({
+          where: { userId: user.id, phoneNumber: '911' },
+        }),
+      ).toBeDefined();
     });
     it('does not let student enable without phone number', async () => {
       const user = await UserFactory.create({
