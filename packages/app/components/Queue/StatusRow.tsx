@@ -1,9 +1,12 @@
 import { ReactElement } from "react";
-import { Card, Avatar, Row, Col } from "antd";
+import { Avatar, Row, Col, Badge } from "antd";
 import { Question, UserPartial } from "@template/common";
-import Meta from "antd/lib/card/Meta";
 import { RenderEvery } from "../RenderEvery";
 import styled from "styled-components";
+
+const Container = styled.div`
+  margin-top: 32px;
+`;
 
 interface StatusRowProps {
   questions: Question[];
@@ -21,23 +24,39 @@ export function StatusRow({ questions, taList }: StatusRowProps): ReactElement {
     }
   }
   return (
-    <Row gutter={24}>
-      {taList.map((ta) => (
-        <Col key={ta.id}>
-          <StatusCard
-            taName={ta.name}
-            taPhotoURL={ta.photoURL}
-            studentName={taToQuestion[ta.id]?.creator?.name}
-            helpedAt={taToQuestion[ta.id]?.helpedAt}
-          />
-        </Col>
-      ))}
-    </Row>
+    <Container>
+      <Row gutter={24}>
+        {taList.map((ta) => (
+          <Col key={ta.id}>
+            <StatusCard
+              taName={ta.name}
+              taPhotoURL={ta.photoURL}
+              studentName={taToQuestion[ta.id]?.creator?.name}
+              helpedAt={taToQuestion[ta.id]?.helpedAt}
+            />
+          </Col>
+        ))}
+      </Row>
+    </Container>
   );
 }
 
-export const HorizontalTACard = styled(Card)`
+const StyledCard = styled.div`
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+`;
+const CardContent = styled.div`
+  margin-left: 16px;
+`;
+const TAName = styled.div`
+  font-weight: bold;
+  color: #212934;
+`;
+const HelpingInfo = styled.div`
+  margin-top: 5px;
+  font-style: italic;
 `;
 
 interface StatusCardProps {
@@ -55,23 +74,33 @@ function StatusCard({
   studentName,
   helpedAt,
 }: StatusCardProps): ReactElement {
+  const isBusy = !!studentName;
   return (
-    <Card>
-      <Meta
-        avatar={<Avatar src={taPhotoURL} />}
-        title={taName}
-        description={
-          studentName ? (
+    <StyledCard>
+      <Avatar size={48} src={taPhotoURL} />
+      <CardContent>
+        <Row justify="space-between">
+          <TAName>{taName}</TAName>
+          <span>
+            <Badge status={isBusy ? "processing" : "success"} />
+            {isBusy ? "Busy" : "Available"}
+          </span>
+        </Row>
+        <HelpingInfo>
+          {isBusy ? (
             <HelpingFor studentName={studentName} helpedAt={helpedAt} />
           ) : (
-            <span>Looking for my next student...</span>
-          )
-        }
-      />
-    </Card>
+            "Looking for my next student..."
+          )}
+        </HelpingInfo>
+      </CardContent>
+    </StyledCard>
   );
 }
 
+const BlueSpan = styled.span`
+  color: #66a3d6;
+`;
 interface HelpingForProps {
   studentName: string;
   helpedAt: Date;
@@ -81,8 +110,10 @@ function HelpingFor({ studentName, helpedAt }: HelpingForProps): ReactElement {
     <RenderEvery
       render={() => (
         <span>
-          Helping {studentName} for{" "}
-          {Math.round((Date.now() - helpedAt.getTime()) / 60000)}m
+          Helping <BlueSpan>{studentName}</BlueSpan> for{" "}
+          <BlueSpan>
+            {Math.round((Date.now() - helpedAt.getTime()) / 60000) + " min"}
+          </BlueSpan>
         </span>
       )}
       interval={60 * 1000}
