@@ -129,8 +129,8 @@ export interface Queue {
   room: string;
   staffList: UserPartial[];
   questions: Question[];
-  startTime: Date;
-  endTime: Date;
+  startTime?: Date;
+  endTime?: Date;
 }
 
 /**
@@ -147,9 +147,8 @@ export interface QueuePartial {
   staffList: UserPartial[];
   queueSize: number;
   notes?: string;
-  startTime: Date;
-  endTime: Date;
-  // TODO: Add wait time?
+  startTime?: Date;
+  endTime?: Date;
 }
 
 /**

@@ -33,7 +33,6 @@ class APIClient {
         parseOfficeHourDates(officeHour)
       );
       course.queues.forEach((queue: any) => parseQueueDates(queue));
-      // If you need to add time to queues check out this commit: 995e82991587b2077d342b1df87a2665a21c3492
       return course;
     },
   };
@@ -142,8 +141,10 @@ function parseOfficeHourDates(officeHour: any): void {
 }
 
 function parseQueueDates(queue: any): void {
-  queue.startTime = new Date(queue.startTime);
-  queue.endTime = new Date(queue.endTime);
+  if (queue.startTime && queue.endTime) {
+    queue.startTime = new Date(queue.startTime);
+    queue.endTime = new Date(queue.endTime);
+  }
 }
 
 function parseQuestionDates(question: any): void {

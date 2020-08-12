@@ -57,6 +57,9 @@ export class QueueModel extends BaseEntity {
   @JoinTable()
   officeHours: OfficeHourModel[];
 
+  startTime: Date;
+  endTime: Date;
+
   isOpen(): boolean {
     if (this.staffList.length > 0) {
       return true;
@@ -82,20 +85,22 @@ export class QueueModel extends BaseEntity {
     return this.questions?.filter((q) => q.status in OpenQuestionStatus).length;
   }
 
-  startTime: Date;
-  endTime: Date;
-
   public async addQueueTimes() {
     const now = new Date();
 
     const officeHours = await this.getOfficeHours(this.id);
     const timeIntervals = await this.generateMergedTimeIntervals(officeHours);
-    const currTime = timeIntervals.find(
-      (group) => group.startTime <= now && group.endTime >= now,
-    );
+    const currTime = timeIntervals.find((group) => {
+      // Find a time interval within 15 minutes of bounds to account for TA edge cases
+      const lowerBound = group.startTime.getTime() - 15 * 60 * 1000;
+      const upperBound = group.endTime.getTime() + 15 * 60 * 1000;
+      return lowerBound <= now.getTime() && upperBound >= now.getTime();
+    });
 
-    this.startTime = currTime.startTime;
-    this.endTime = currTime.endTime;
+    if (currTime) {
+      this.startTime = currTime.startTime;
+      this.endTime = currTime.endTime;
+    }
   }
 
   private async getOfficeHours(queueId: number): Promise<OfficeHourModel[]> {
@@ -140,7 +145,7 @@ export class QueueModel extends BaseEntity {
       }
 
       const prevGroup = timeIntervals[timeIntervals.length - 1];
-      timeIntervals[timeIntervals.length - 1].endTime =
+      prevGroup.endTime =
         officeHour.endTime > prevGroup.endTime
           ? officeHour.endTime
           : prevGroup.endTime;

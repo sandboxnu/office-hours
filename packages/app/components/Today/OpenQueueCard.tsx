@@ -105,7 +105,7 @@ const OpenQueueCard = ({
         staffList.map((staffMember) => staffMember.name).join(", ") ||
         "No Staff Checked In!"
       }
-      extra={formatQueueTime(queue)}
+      extra={queue.startTime && queue.endTime && formatQueueTime(queue)}
     >
       <Row justify="space-between">
         <HeaderDiv>{queue.room}</HeaderDiv>

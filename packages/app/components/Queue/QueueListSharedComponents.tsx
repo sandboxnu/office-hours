@@ -42,10 +42,12 @@ export default function QueueListHeader({
   return (
     <Container>
       <QueueTitle>{queue?.room}</QueueTitle>
-      <Container style={{ marginLeft: "64px" }}>
-        <ClockCircleFilled />
-        <TimeText>{formatQueueTime(queue)}</TimeText>
-      </Container>
+      {queue.startTime && queue.endTime && (
+        <Container style={{ marginLeft: "64px" }}>
+          <ClockCircleFilled />
+          <TimeText>{formatQueueTime(queue)}</TimeText>
+        </Container>
+      )}
       <Container style={{ marginLeft: "64px" }}>
         {queue?.staffList.length > 0 && (
           <>
