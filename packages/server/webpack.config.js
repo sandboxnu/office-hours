@@ -26,7 +26,7 @@ module.exports = function (options) {
         },
       ],
     },
-    devtool: 'source-map',
+    devtool: 'inline-source-map',
     plugins: [
       new webpack.BannerPlugin({
         banner: 'require("source-map-support").install();',

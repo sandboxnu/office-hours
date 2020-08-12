@@ -6,19 +6,26 @@ import { UserModel } from '../profile/user.entity';
 import { DesktopNotifModel } from './desktop-notif.entity';
 import { PhoneNotifModel } from './phone-notif.entity';
 import { TwilioService } from './twilio/twilio.service';
-import twilio from 'twilio';
 
-const phoneResponses = {
-  WRONG_MESSAGE:
-    'Please respond with either YES or NO. Text STOP at any time to stop receiving text messages',
-  COULD_NOT_FIND_NUMBER:
-    'Could not find an Office Hours account with your phone number.',
-  UNREGISTER:
-    "You've unregistered from text notifications for Khoury Office Hours. Feel free to re-register any time through the website",
-  DUPLICATE:
-    "You've already been verified to receive text notifications from Khoury Office Hours!",
-  OK:
-    'Thank you for verifying your number with Khoury Office Hours! You are now signed up for text notifications!',
+export const NotifMsgs = {
+  phone: {
+    WRONG_MESSAGE:
+      'Please respond with either YES or NO. Text STOP at any time to stop receiving text messages',
+    COULD_NOT_FIND_NUMBER:
+      'Could not find an Office Hours account with your phone number.',
+    UNREGISTER:
+      "You've unregistered from text notifications for Khoury Office Hours. Feel free to re-register any time through the website",
+    DUPLICATE:
+      "You've already been verified to receive text notifications from Khoury Office Hours!",
+    OK:
+      'Thank you for verifying your number with Khoury Office Hours! You are now signed up for text notifications!',
+  },
+  queue: {
+    ALERT_BUTTON: 'Get ready! A TA is coming to help you.',
+    THIRD_PLACE: `You're 3rd in the queue. Be ready for a TA to call you soon!`,
+    TA_HIT_HELPED: (taName: string): string =>
+      `${taName} is coming to help you!`,
+  },
 };
 
 //TODO test this service omg
@@ -29,7 +36,7 @@ export class NotificationService {
   constructor(
     private connection: Connection,
     private configService: ConfigService,
-    private twilioService: TwilioService
+    private twilioService: TwilioService,
   ) {
     webPush.setVapidDetails(
       this.configService.get('EMAIL'),
@@ -39,12 +46,15 @@ export class NotificationService {
     this.desktopPublicKey = this.configService.get('PUBLICKEY');
   }
 
-  async registerDesktop(info: DeepPartial<DesktopNotifModel>) {
-    await DesktopNotifModel.create(info).save();
+  async registerDesktop(info: DeepPartial<DesktopNotifModel>): Promise<void> {
+    // create if not exist
+    if ((await DesktopNotifModel.count(info)) === 0) {
+      await DesktopNotifModel.create(info).save();
+    }
   }
 
   async registerPhone(phoneNumber: string, userId: number): Promise<void> {
-    if(!this.twilioService.isPhoneNumberReal) {
+    if (!this.twilioService.isPhoneNumberReal) {
       throw new BadRequestException('phone number invalid');
     }
 
@@ -139,20 +149,20 @@ export class NotificationService {
     });
 
     if (!phoneNotif) {
-      return phoneResponses.COULD_NOT_FIND_NUMBER;
+      return NotifMsgs.phone.COULD_NOT_FIND_NUMBER;
     } else if (message !== 'YES' && message !== 'NO' && message !== 'STOP') {
-      return phoneResponses.WRONG_MESSAGE;
+      return NotifMsgs.phone.WRONG_MESSAGE;
     } else if (message === 'NO' || message === 'STOP') {
       // did some more digging, STOP just stops messages completely, we'll never receive it
       // so uh... there's probably a way to do that
       await PhoneNotifModel.delete(phoneNotif);
-      return phoneResponses.UNREGISTER;
+      return NotifMsgs.phone.UNREGISTER;
     } else if (phoneNotif.verified) {
-      return phoneResponses.DUPLICATE;
+      return NotifMsgs.phone.DUPLICATE;
     } else {
       phoneNotif.verified = true;
       await phoneNotif.save();
-      return phoneResponses.OK;
+      return NotifMsgs.phone.OK;
     }
   }
 }
