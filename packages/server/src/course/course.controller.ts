@@ -19,6 +19,7 @@ import { CourseModel } from './course.entity';
 import { Roles } from '../profile/roles.decorator';
 import { CourseRolesGuard } from './course-roles.guard';
 import { OfficeHourModel } from './office-hour.entity';
+import async from 'async';
 
 @Controller('courses')
 @UseGuards(JwtAuthGuard, CourseRolesGuard)
@@ -34,7 +35,7 @@ export class CourseController {
   async get(@Param('id') id: number): Promise<GetCourseResponse> {
     // TODO: for all course endpoint, check if they're a student or a TA
     const course = await CourseModel.findOne(id, {
-      relations: ['queues', 'queues.staffList', 'queues.officeHours'],
+      relations: ['queues', 'queues.staffList'],
     });
 
     // Use raw query for performance (avoid entity instantiation and serialization)
@@ -44,11 +45,11 @@ export class CourseController {
       .where('oh.courseId = :courseId', { courseId: course.id })
       .getRawMany();
 
-    course.queues = course.queues.filter((queue) => queue.isOpen());
-
-    for (const queue of course.queues) {
-      await queue.addQueueTimes();
-    }
+    course.queues = await async.filter(
+      course.queues,
+      async (q) => await q.isOpen(),
+    );
+    await async.each(course.queues, async (q) => await q.addQueueTimes());
 
     return course;
   }

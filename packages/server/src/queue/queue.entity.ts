@@ -60,13 +60,14 @@ export class QueueModel extends BaseEntity {
   startTime: Date;
   endTime: Date;
 
-  isOpen(): boolean {
+  async isOpen(): Promise<boolean> {
     if (this.staffList.length > 0) {
       return true;
     }
     const now = new Date();
     const MS_IN_MINUTE = 60000;
-    return !!this.officeHours.find(
+    const ohs = await this.getOfficeHours();
+    return !!ohs.find(
       (e) =>
         e.startTime.valueOf() - 10 * MS_IN_MINUTE < now.valueOf() &&
         e.endTime.valueOf() + 1 * MS_IN_MINUTE > now.valueOf(),
@@ -85,11 +86,11 @@ export class QueueModel extends BaseEntity {
     return this.questions?.filter((q) => q.status in OpenQuestionStatus).length;
   }
 
-  public async addQueueTimes() {
+  public async addQueueTimes(): Promise<void> {
     const now = new Date();
 
-    const officeHours = await this.getOfficeHours(this.id);
-    const timeIntervals = await this.generateMergedTimeIntervals(officeHours);
+    const officeHours = await this.getOfficeHours();
+    const timeIntervals = this.generateMergedTimeIntervals(officeHours);
     const currTime = timeIntervals.find((group) => {
       // Find a time interval within 15 minutes of bounds to account for TA edge cases
       const lowerBound = group.startTime.getTime() - 15 * 60 * 1000;
@@ -103,7 +104,8 @@ export class QueueModel extends BaseEntity {
     }
   }
 
-  private async getOfficeHours(queueId: number): Promise<OfficeHourModel[]> {
+  // Get Office hours in a 72hr window around now, snapped to midnight
+  private async getOfficeHours(): Promise<OfficeHourModel[]> {
     const now = new Date();
 
     const lowerBound = new Date(now);
@@ -117,7 +119,7 @@ export class QueueModel extends BaseEntity {
     return await OfficeHourModel.find({
       where: [
         {
-          queueId: queueId,
+          queueId: this.id,
           startTime: MoreThanOrEqual(lowerBound),
           endTime: LessThanOrEqual(upperBound),
         },
