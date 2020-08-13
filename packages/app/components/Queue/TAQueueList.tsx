@@ -179,6 +179,7 @@ export default function TAQueueList({
     const newQuestions = questions?.map((q) =>
       q.id === question.id ? { ...q, status } : q
     );
+    console.log(newQuestions);
     mutateQuestions(newQuestions);
     setOpenPopup(false);
   };

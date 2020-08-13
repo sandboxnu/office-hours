@@ -2,6 +2,7 @@ import { UserOutlined } from "@ant-design/icons";
 import { API } from "@template/api-client";
 import {
   ClosedQuestionStatus,
+  OpenQuestionStatus,
   Question,
   QuestionStatus,
 } from "@template/common";
@@ -112,13 +113,13 @@ const StudentInfoCard = ({
       </Row>
 
       <Row justify="space-between">
-        <AlertButton onClick={() => alertStudent()}>Alert</AlertButton>
         <Popconfirm
           title={`Are you sure you want to mark this question as "Can't find"?`}
           okText="Yes"
           cancelText="No"
           onConfirm={() => {
-            updateQuestion(question, ClosedQuestionStatus.NoShow);
+            updateQuestion(question, OpenQuestionStatus.CantFind);
+            alertStudent();
           }}
         >
           <CantFindButton danger>Can&apos;t Find</CantFindButton>
