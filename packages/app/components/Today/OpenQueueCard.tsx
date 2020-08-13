@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { QueuePartial } from "../../../common/index";
+import { formatQueueTime } from "../../utils/TimeUtil";
 
 type OpenQueueCard = {
   queue: QueuePartial;
@@ -104,6 +105,7 @@ const OpenQueueCard = ({
         staffList.map((staffMember) => staffMember.name).join(", ") ||
         "No Staff Checked In!"
       }
+      extra={queue.startTime && queue.endTime && formatQueueTime(queue)}
     >
       <Row justify="space-between">
         <HeaderDiv>{queue.room}</HeaderDiv>
