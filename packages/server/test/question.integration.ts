@@ -14,6 +14,7 @@ import {
   CourseFactory,
   UserCourseFactory,
   OfficeHourFactory,
+  ClosedOfficeHourFactory,
 } from './util/factories';
 import { QueueModel } from '../src/queue/queue.entity';
 import {
@@ -54,8 +55,12 @@ describe('Question Integration', () => {
 
   describe('POST /questions', () => {
     it('posts a new question', async () => {
-      const course = await CourseFactory.create();
-      const queue = await QueueFactory.create({ courseId: course.id });
+      const ofs = await OfficeHourFactory.create();
+      const course = await CourseFactory.create({ officeHours: [ofs] });
+      const queue = await QueueFactory.create({
+        courseId: course.id,
+        officeHours: [ofs],
+      });
       const user = await UserFactory.create();
       await StudentCourseFactory.create({ user, courseId: queue.courseId });
       expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(0);
@@ -103,7 +108,7 @@ describe('Question Integration', () => {
     });
 
     it('post question fails on closed queue', async () => {
-      const officeHours = await OfficeHourFactory.create();
+      const officeHours = await ClosedOfficeHourFactory.create();
       const course = await CourseFactory.create({
         officeHours: [officeHours],
       });
@@ -111,6 +116,7 @@ describe('Question Integration', () => {
       const queue = await QueueFactory.create({
         courseId: course.id,
         course: course,
+        officeHours: [officeHours],
       });
       const user = await UserFactory.create();
       await StudentCourseFactory.create({ user, courseId: queue.courseId });

@@ -72,8 +72,8 @@ export class QueueModel extends BaseEntity {
     const ohs = await this.getOfficeHours();
     const open = !!ohs.find(
       (e) =>
-        e.startTime.valueOf() - 10 * MS_IN_MINUTE < now.valueOf() &&
-        e.endTime.valueOf() + 1 * MS_IN_MINUTE > now.valueOf(),
+        e.startTime.getTime() - 10 * MS_IN_MINUTE < now.getTime() &&
+        e.endTime.getTime() + 1 * MS_IN_MINUTE > now.getTime(),
     );
     this.isOpen = open;
     return open;
