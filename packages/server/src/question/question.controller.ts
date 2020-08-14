@@ -76,6 +76,12 @@ export class QuestionController {
       throw new NotFoundException();
     }
 
+    if (!queue.isOpen) {
+      throw new BadRequestException(
+        "You can't post a question to a closed queue",
+      );
+    }
+
     const userAlreadyHasOpenQuestion =
       (await QuestionModel.count({
         where: {
