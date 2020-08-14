@@ -13,6 +13,7 @@ import {
   UserFactory,
   CourseFactory,
   UserCourseFactory,
+  OfficeHourFactory,
 } from './util/factories';
 import { QueueModel } from '../src/queue/queue.entity';
 import {
@@ -99,6 +100,28 @@ describe('Question Integration', () => {
           queueId: 999,
         })
         .expect(404);
+    });
+
+    it('post question fails on closed queue', async () => {
+      const officeHours = await OfficeHourFactory.create();
+      const course = await CourseFactory.create({
+        officeHours: [officeHours],
+      });
+
+      const queue = await QueueFactory.create({
+        courseId: course.id,
+        course: course,
+      });
+      const user = await UserFactory.create();
+      await StudentCourseFactory.create({ user, courseId: queue.courseId });
+      await supertest({ userId: user.id })
+        .post('/questions')
+        .send({
+          text: 'I need help',
+          questionType: QuestionType.Concept,
+          queueId: 1,
+        })
+        .expect(400);
     });
     it('post question fails with bad params', async () => {
       const course = await CourseFactory.create();

@@ -32,7 +32,7 @@ export class QueueCleanService {
       relations: ['staffList', 'questions', 'officeHours'],
     });
 
-    if (!queue.isOpen()) {
+    if (!queue.checkIsOpen()) {
       await this.unsafeClean(queue);
     }
   }

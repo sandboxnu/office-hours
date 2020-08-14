@@ -47,7 +47,7 @@ export class CourseController {
 
     course.queues = await async.filter(
       course.queues,
-      async (q) => await q.isOpen(),
+      async (q) => await q.checkIsOpen(),
     );
     await async.each(course.queues, async (q) => await q.addQueueTimes());
 
