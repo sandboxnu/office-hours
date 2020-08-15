@@ -33,10 +33,6 @@ export class QuestionRolesGuard extends RolesGuard {
       relations: ['courses'],
     });
 
-    if (!user || !courseId) {
-      throw new UnauthorizedException('Must be logged into a course');
-    }
-
     return { courseId, user };
   }
 }
