@@ -1,31 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Seed Integration GET /seeds/createQueue 1`] = `
-Object {
-  "course": Object {
-    "enabled": true,
-    "icalURL": "http://hi.com",
-    "id": 1,
-    "name": "CS 1800",
-    "semesterId": 1,
-  },
-  "courseId": 1,
-  "id": 1,
-  "notes": null,
-  "officeHours": Array [
-    Object {
-      "courseId": null,
-      "endTime": "2020-08-15T18:56:30.015Z",
-      "id": 2,
-      "queueId": null,
-      "startTime": "2020-08-15T17:41:30.015Z",
-      "title": "Alex & Stanley",
-    },
-  ],
-  "room": "WVH 101",
-}
-`;
-
 exports[`Seed Integration GET /seeds/createUser 1`] = `
 Object {
   "course": Object {
