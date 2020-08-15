@@ -22,12 +22,12 @@ export class QueueSSEService {
   // Send event with new questions, but no more than once a second
   updateQuestions = throttle(
     async (queueId: number) => {
-      try {
-        this.sseService.sendEvent(
-          idToRoom(queueId),
-          await this.queueService.getQuestions(queueId),
-        );
-      } catch (e) {}
+      const questions = await this.queueService
+        .getQuestions(queueId)
+        .catch((e) => null);
+      if (questions) {
+        this.sseService.sendEvent(idToRoom(queueId), questions);
+      }
     },
     1000,
     {
