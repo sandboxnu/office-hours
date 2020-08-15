@@ -5,23 +5,24 @@ import {
   Get,
   Param,
   Post,
-  UnauthorizedException,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { GetCourseResponse, QueuePartial, Role } from '@template/common';
 import { Connection, getRepository } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
-import { UserCourseModel } from '../profile/user-course.entity';
 import { User } from '../profile/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { QueueCleanService } from '../queue/queue-clean/queue-clean.service';
 import { CourseModel } from './course.entity';
+import { Roles } from '../profile/roles.decorator';
+import { CourseRolesGuard } from './course-roles.guard';
 import { OfficeHourModel } from './office-hour.entity';
+import async from 'async';
 
 @Controller('courses')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, CourseRolesGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class CourseController {
   constructor(
@@ -30,10 +31,11 @@ export class CourseController {
   ) {}
 
   @Get(':id')
+  @Roles(Role.PROFESSOR, Role.STUDENT, Role.TA)
   async get(@Param('id') id: number): Promise<GetCourseResponse> {
     // TODO: for all course endpoint, check if they're a student or a TA
     const course = await CourseModel.findOne(id, {
-      relations: ['queues', 'queues.staffList', 'queues.officeHours'],
+      relations: ['queues', 'queues.staffList'],
     });
 
     // Use raw query for performance (avoid entity instantiation and serialization)
@@ -43,37 +45,22 @@ export class CourseController {
       .where('oh.courseId = :courseId', { courseId: course.id })
       .getRawMany();
 
-    course.queues = course.queues.filter((queue) => queue.isOpen());
-
-    for (const queue of course.queues) {
-      await queue.addQueueTimes();
-    }
+    course.queues = await async.filter(
+      course.queues,
+      async (q) => await q.isOpen(),
+    );
+    await async.each(course.queues, async (q) => await q.addQueueTimes());
 
     return course;
   }
 
   @Post(':id/ta_location/:room')
+  @Roles(Role.PROFESSOR, Role.TA)
   async checkIn(
     @Param('id') courseId: number,
     @Param('room') room: string,
     @User() user: UserModel,
   ): Promise<QueuePartial> {
-    // TODO: think of a neat way to make this abstracted
-    const isTAInCourse =
-      (await UserCourseModel.count({
-        where: {
-          role: Role.TA,
-          courseId: courseId,
-          userId: user.id,
-        },
-      })) === 1;
-
-    if (!isTAInCourse) {
-      throw new UnauthorizedException(
-        "Can't check in to office hours for a course you're not a TA of!",
-      );
-    }
-
     let queue = await QueueModel.findOne(
       {
         room,
@@ -98,6 +85,7 @@ export class CourseController {
   }
 
   @Delete(':id/ta_location/:room')
+  @Roles(Role.PROFESSOR, Role.TA)
   async checkOut(
     @Param('id') courseId: number,
     @Param('room') room: string,
