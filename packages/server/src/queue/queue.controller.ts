@@ -8,70 +8,52 @@ import {
   Patch,
   UseGuards,
   UseInterceptors,
+  Res,
 } from '@nestjs/common';
 import {
-  ClosedQuestionStatus,
   GetQueueResponse,
   ListQuestionsResponse,
   UpdateQueueNotesParams,
-  OpenQuestionStatus,
+  Role,
 } from '@template/common';
-import { Connection, In, Not } from 'typeorm';
+import { Response } from 'express';
+import { Connection, In } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
-import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from './queue.entity';
+import { QueueRolesGuard } from './queue-role.guard';
+import { Roles } from '../profile/roles.decorator';
+import { QueueService } from './queue.service';
+import { QueueSSEService } from './queue-sse.service';
 
 @Controller('queues')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, QueueRolesGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class QueueController {
-  constructor(private connection: Connection) {}
+  constructor(
+    private connection: Connection,
+    private queueSSEService: QueueSSEService,
+    private queueService: QueueService,
+  ) {}
 
   @Get(':queueId')
-  async getQueue(@Param('queueId') queueId: string): Promise<GetQueueResponse> {
-    const queue = await QueueModel.findOne(queueId, {
-      relations: ['staffList'],
-    });
-
-    const questions = await QuestionModel.find({ where: { queueId } });
-
-    queue.questions = questions;
-    return queue;
+  @Roles(Role.TA, Role.PROFESSOR, Role.STUDENT)
+  async getQueue(@Param('queueId') queueId: number): Promise<GetQueueResponse> {
+    return this.queueService.getQueue(queueId);
   }
 
   @Get(':queueId/questions')
+  @Roles(Role.TA, Role.PROFESSOR, Role.STUDENT)
   async getQuestions(
-    @Param('queueId') queueId: string,
+    @Param('queueId') queueId: number,
   ): Promise<ListQuestionsResponse> {
-    // todo: need a way to return different data, if TA vs. student hits endpoint.
-    // for now, just return the student response
-    const queueSize = await QueueModel.count({
-      where: { id: queueId },
-    });
-    // Check that the queue exists
-    if (queueSize === 0) {
-      throw new NotFoundException();
-    }
-
-    return await QuestionModel.find({
-      where: [
-        {
-          queueId: queueId,
-          status: In(Object.values(OpenQuestionStatus)),
-        },
-      ],
-      relations: ['creator', 'taHelped'],
-      order: {
-        createdAt: 'ASC',
-      },
-    });
+    return this.queueService.getQuestions(queueId);
   }
 
   @Patch(':queueId')
+  @Roles(Role.TA, Role.PROFESSOR)
   async updateQueue(
     @Param('queueId') queueId: number,
     @Body() body: UpdateQueueNotesParams,
-    // TODO: Add TA/Prof protection on endpoint
   ): Promise<QueueModel> {
     const queue = await QueueModel.findOne({
       where: { id: queueId },
@@ -83,5 +65,17 @@ export class QueueController {
     queue.notes = body.notes;
     await queue.save();
     return queue;
+  }
+
+  // Endpoint to send frontend receive server-sent events when queue changes
+  @Get(':queueId/sse')
+  sendEvent(@Param('queueId') queueId: number, @Res() res: Response): void {
+    res.set({
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+    });
+
+    this.queueSSEService.subscribeClient(queueId, res);
   }
 }

@@ -6,13 +6,12 @@ import {
   QuestionStatus,
   QuestionStatusKeys,
 } from "@template/common";
-import { Button, Card, Col, Grid, Row, Tooltip } from "antd";
+import { Button, Card, Col, Grid, Input, Row, Tooltip } from "antd";
 import { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../hooks/useProfile";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
-import GroupQuestions from "./GroupQuestions";
 import QueueListHeader from "./QueueListSharedComponents";
 import StudentInfoCard from "./StudentInfoCard";
 import StudentPopupCard from "./StudentPopupCard";
@@ -113,6 +112,21 @@ const HeaderRow = styled(Row)`
   margin-bottom: 64px;
 `;
 
+const EditNotesButton = styled(Button)`
+  font-weight: 500;
+  font-size: 14px;
+  background: #317393;
+  color: white;
+  border: 1px solid #cfd6de;
+  border-radius: 6px;
+  margin-right: 16px;
+`;
+
+const NotesInput = styled(Input)`
+  border-radius: 6px;
+  border: 1px solid #b8c4ce;
+`;
+
 interface TAQueueListProps {
   qid: number;
   courseId: number;
@@ -141,6 +155,9 @@ export default function TAQueueList({
 
   const [openPopup, setOpenPopup] = useState<boolean>(false);
   const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
+  const [editingNotes, setEditingNotes] = useState(false);
+  const [updatedNotes, setUpdatedNotes] = useState(queue?.notes);
+  const [oldNotes, setOldNotes] = useState(queue?.notes);
 
   const onOpenClick = useCallback((question: Question): void => {
     setCurrentQuestion(question);
@@ -167,22 +184,6 @@ export default function TAQueueList({
   };
 
   /**
-   * Sends a push notification alert to every question currently being helped.
-   */
-  const alertHelpingAll = () => {
-    // for each question currently being helped, call alertStudent()
-  };
-
-  /**
-   * Marks every question currently being helped by this TA as finished.
-   */
-  const finishHelpingAll = () => {
-    for (const question of helpingQuestions) {
-      updateQuestionTA(question, ClosedQuestionStatus.Resolved);
-    }
-  };
-
-  /**
    * Adds every given question to the group that is currently being helped.
    * @param selected the given list of questions to help
    */
@@ -200,6 +201,13 @@ export default function TAQueueList({
     );
 
     updateQuestionTA(nextQuestion, OpenQuestionStatus.Helping);
+  };
+
+  const updateQueueNotes = async () => {
+    setEditingNotes(false);
+    await API.queues.updateNotes(qid, updatedNotes);
+    setOldNotes(updatedNotes);
+    mutateQueue();
   };
 
   /**
@@ -279,18 +287,6 @@ export default function TAQueueList({
       <Col xs={24} lg={10} xxl={6} order={screens.lg === false ? 1 : 2}>
         <HeaderRow justify="space-between">
           <QueueTitle>Helping</QueueTitle>
-          <div>
-            <AlertButton danger size="large" onClick={alertHelpingAll}>
-              Alert All
-            </AlertButton>
-            <FinishButton
-              type="primary"
-              size="large"
-              onClick={finishHelpingAll}
-            >
-              Finish All
-            </FinishButton>
-          </div>
         </HeaderRow>
         {helpingQuestions &&
           helpingQuestions.map((question) => (
@@ -320,6 +316,28 @@ export default function TAQueueList({
                 <QueueListHeader queue={queue} />
               </Col>
               <Col>
+                {editingNotes ? (
+                  <NotesInput
+                    defaultValue={oldNotes}
+                    onPressEnter={updateQueueNotes}
+                    value={updatedNotes}
+                    onChange={(e) => setUpdatedNotes(e.target.value as string)}
+                    allowClear={true}
+                    onKeyDown={(key) => {
+                      if (key.key === "Escape") {
+                        setEditingNotes(false);
+                        setUpdatedNotes(oldNotes);
+                      }
+                    }}
+                  />
+                ) : (
+                  <EditNotesButton
+                    onClick={() => setEditingNotes(true)}
+                    size="large"
+                  >
+                    Edit Queue Notes
+                  </EditNotesButton>
+                )}
                 <Tooltip
                   title={
                     !isStaffCheckedIn && "You must check in to help students!"
@@ -379,7 +397,6 @@ export default function TAQueueList({
         {currentQuestion && (
           <StudentPopupCard
             onClose={onCloseClick}
-            wait={20} //figure out later
             question={currentQuestion}
             visible={openPopup}
             updateQuestion={updateQuestionTA}

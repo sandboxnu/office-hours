@@ -24,16 +24,21 @@ import {
   UpdateQuestionResponse,
 } from '@template/common';
 import { Connection, In } from 'typeorm';
-import { NotificationService } from '../notification/notification.service';
+import {
+  NotificationService,
+  NotifMsgs,
+} from '../notification/notification.service';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { UserCourseModel } from '../profile/user-course.entity';
 import { User, UserId } from '../profile/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { QuestionModel } from './question.entity';
+import { Roles } from '../profile/roles.decorator';
+import { QuestionRolesGuard } from './question-role.guard';
 
 @Controller('questions')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, QuestionRolesGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class QuestionController {
   constructor(
@@ -56,6 +61,7 @@ export class QuestionController {
   }
 
   @Post()
+  @Roles(Role.STUDENT)
   async createQuestion(
     @Body() body: CreateQuestionParams,
     @User() user: UserModel,
@@ -68,22 +74,6 @@ export class QuestionController {
 
     if (!queue) {
       throw new NotFoundException();
-    }
-
-    // TODO: think of a neat way to make this abstracted
-    const isUserInCourse =
-      (await UserCourseModel.count({
-        where: {
-          role: Role.STUDENT,
-          courseId: queue.courseId,
-          userId: user.id,
-        },
-      })) === 1;
-
-    if (!isUserInCourse) {
-      throw new UnauthorizedException(
-        "Can't post question to course you're not in!",
-      );
     }
 
     const userAlreadyHasOpenQuestion =
@@ -105,12 +95,14 @@ export class QuestionController {
       text,
       questionType,
       status: QuestionStatusKeys.Drafting,
+      createdAt: new Date(),
     }).save();
 
     return question;
   }
 
   @Patch(':questionId')
+  @Roles(Role.STUDENT, Role.TA, Role.PROFESSOR)
   async updateQuestion(
     @Param('questionId') questionId: number,
     @Body() body: UpdateQuestionParams,
@@ -161,7 +153,6 @@ export class QuestionController {
           'TA/Professors can only edit question status',
         );
       }
-
       // If the taHelped is already set, make sure the same ta updates the status
       if (question.taHelped?.id !== userId) {
         if (question.status === OpenQuestionStatus.Helping) {
@@ -175,11 +166,18 @@ export class QuestionController {
           );
         }
       }
-      question = Object.assign(question, body);
       // Set TA as taHelped when the TA starts helping the student
-      if (body.status === OpenQuestionStatus.Helping) {
+      if (
+        question.status !== OpenQuestionStatus.Helping &&
+        body.status === OpenQuestionStatus.Helping
+      ) {
         question.taHelped = await UserModel.findOne(userId);
+        await this.notifService.notifyUser(
+          question.creator.id,
+          NotifMsgs.queue.TA_HIT_HELPED(question.taHelped.name),
+        );
       }
+      question = Object.assign(question, body);
       await question.save();
       return question;
     } else {
@@ -190,31 +188,17 @@ export class QuestionController {
   }
 
   @Post(':questionId/notify')
-  async notify(
-    @Param('questionId') questionId: number,
-    @UserId() userId: number,
-  ): Promise<void> {
+  @Roles(Role.TA, Role.PROFESSOR)
+  async notify(@Param('questionId') questionId: number): Promise<void> {
     const question = await QuestionModel.findOne(questionId, {
       relations: ['queue'],
     });
 
-    const isUserTAOfCourse =
-      (await UserCourseModel.count({
-        where: {
-          // TODO: somehow store and check that the notifying TA is the one helping?
-          role: Role.TA,
-          courseId: question.queue.courseId,
-          userId: userId,
-        },
-      })) === 1;
+    // TODO: somehow store and check that the notifying TA is the one helping? new UnauthorizedException('Only TA can send alerts');
 
-    if (!isUserTAOfCourse) {
-      throw new UnauthorizedException('Only TA can send alerts');
-    }
-
-    this.notifService.notifyUser(
+    await this.notifService.notifyUser(
       question.creatorId,
-      'Get ready! A TA is coming to help you.',
+      NotifMsgs.queue.ALERT_BUTTON,
     );
   }
 }

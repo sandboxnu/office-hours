@@ -24,10 +24,10 @@ Object {
   "room": "WVH 101",
   "staffList": Array [
     Object {
-      "email": "user1@neu.edu",
+      "email": "user3@neu.edu",
       "id": 1,
-      "name": "John Doe the 1th",
-      "photoURL": "https://pics/1",
+      "name": "John Doe the 3th",
+      "photoURL": "https://pics/3",
     },
   ],
 }
