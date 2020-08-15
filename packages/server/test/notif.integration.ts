@@ -52,14 +52,16 @@ describe('Notif Integration', () => {
         .expect(201);
 
       const notifModels = await DesktopNotifModel.find();
-      expect(notifModels).toEqual({
-        auth: 'some_key_as_well',
-        endpoint: 'biggoogle.com',
-        expirationTime: expirDate,
-        id: 1,
-        p256dh: 'some_key',
-        userId: 1,
-      });
+      expect(notifModels).toEqual([
+        {
+          auth: 'some_key_as_well',
+          endpoint: 'biggoogle.com',
+          expirationTime: expirDate,
+          id: 1,
+          p256dh: 'some_key',
+          userId: 1,
+        },
+      ]);
     });
   });
 });
