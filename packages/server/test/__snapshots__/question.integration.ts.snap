@@ -6,7 +6,7 @@ Object {
   "createdAt": "2020-03-01T05:00:00.000Z",
   "creator": Object {
     "email": "user@neu.edu",
-    "id": 1,
+    "id": 2,
     "name": "User",
     "photoURL": "https://pics/user",
   },
