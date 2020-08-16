@@ -24,9 +24,7 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           record: true
-          start: |
-            yarn build && \
-            yarn concurrently "yarn dev:proxy" "yarn workspace @template/server prod:start" "yarn workspace @template/app prod:start"
+          start: yarn build && yarn concurrently "yarn dev:proxy" "yarn workspace @template/server prod:start" "yarn workspace @template/app prod:start"
           wait-on: "http://localhost:3000"
         env:
           CYPRESS_USE_LIVE_API: true
