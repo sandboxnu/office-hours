@@ -32,15 +32,14 @@ describe('Question Integration', () => {
       const q = await QuestionFactory.create({
         text: 'Help pls',
         createdAt: new Date('2020-03-01T05:00:00.000Z'),
-        queue: await QueueModel.create({
+        queue: await QueueFactory.create({
           course: course,
-          courseId: course.id,
         }),
       });
 
       await UserCourseFactory.create({
         user: await UserFactory.create(),
-        course: q.queue.course,
+        course: course,
       });
 
       const response = await supertest({ userId: 99 })

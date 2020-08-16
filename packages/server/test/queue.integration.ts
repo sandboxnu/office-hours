@@ -22,7 +22,6 @@ describe('Queue Integration', () => {
       const userCourse = await UserCourseFactory.create({
         user: await UserFactory.create(),
         course: queue.course,
-        courseId: queue.course.id,
       });
 
       const res = await supertest({ userId: userCourse.user.id })
@@ -31,10 +30,18 @@ describe('Queue Integration', () => {
       expect(res.body).toMatchSnapshot();
     });
 
+    it('returns 404 on non-existent course', async () => {
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ course });
+
+      await supertest({ userId: 99 })
+        .get(`/queues/${queue.id + 1}`)
+        .expect(404);
+    });
+
     it('returns 401 when not logged in', async () => {
       const course = await CourseFactory.create();
       const queue = await QueueFactory.create({
-        courseId: course.id,
         course: course,
         questions: [await QuestionFactory.create()],
       });

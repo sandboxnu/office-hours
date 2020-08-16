@@ -26,6 +26,11 @@ export abstract class RolesGuard implements CanActivate {
     }
     const request = context.switchToHttp().getRequest();
     const { courseId, user } = await this.setupData(request);
+
+    if (!user || !courseId) {
+      throw new UnauthorizedException('Must be logged into a course');
+    }
+
     return this.matchRoles(roles, user, courseId);
   }
 
