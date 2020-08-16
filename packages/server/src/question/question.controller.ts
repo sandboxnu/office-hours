@@ -70,6 +70,7 @@ export class QuestionController {
 
     const queue = await QueueModel.findOne({
       where: { id: queueId },
+      relations: ['staffList'],
     });
 
     if (!queue) {

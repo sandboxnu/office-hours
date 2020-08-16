@@ -61,6 +61,7 @@ export class CourseController {
     @Param('room') room: string,
     @User() user: UserModel,
   ): Promise<QueuePartial> {
+    console.log('start of function');
     let queue = await QueueModel.findOne(
       {
         room,
@@ -70,6 +71,7 @@ export class CourseController {
     );
 
     if (!queue) {
+      console.log('!queue');
       queue = await QueueModel.create({
         room,
         courseId,
@@ -80,7 +82,6 @@ export class CourseController {
 
     queue.staffList.push(user);
     await queue.save();
-
     return queue;
   }
 
