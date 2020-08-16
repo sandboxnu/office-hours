@@ -42,9 +42,10 @@ export function StatusRow({ questions, taList }: StatusRowProps): ReactElement {
 }
 
 const StyledCard = styled.div`
+  background: #ffffff;
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
-  border-radius: 8px;
-  padding: 12px 16px;
+  border-radius: 6px;
+  padding: 16px;
   display: flex;
 `;
 const CardContent = styled.div`
