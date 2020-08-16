@@ -53,7 +53,6 @@ export const UserCourseFactory = new Factory(UserCourseModel)
 export const QueueFactory = new Factory(QueueModel)
   .attr('room', `WVH 101`)
   .assocOne('course', CourseFactory)
-  .assocMany('staffList', UserFactory)
   .assocMany('officeHours', OfficeHourFactory);
 
 // WARNING: DO NOT USE CREATORID. AS YOU SEE HERE, WE ONLY ACCEPT CREATOR

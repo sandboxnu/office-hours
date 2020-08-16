@@ -90,8 +90,7 @@ export class QuestionController {
       );
     }
 
-    const checkIsOpen = await queue.checkIsOpen();
-    if (!checkIsOpen) {
+    if (!(await queue.checkIsOpen())) {
       throw new BadRequestException(
         "You can't post a question to a closed queue",
       );

@@ -117,6 +117,8 @@ describe('Question Integration', () => {
         course: course,
         officeHours: [officeHours],
       });
+      expect(await queue.checkIsOpen()).toBe(false);
+
       const user = await UserFactory.create();
       await StudentCourseFactory.create({ user, courseId: queue.courseId });
       await supertest({ userId: user.id })
@@ -124,7 +126,7 @@ describe('Question Integration', () => {
         .send({
           text: 'I need help',
           questionType: QuestionType.Concept,
-          queueId: 1,
+          queueId: queue.id,
         })
         .expect(400);
     });
