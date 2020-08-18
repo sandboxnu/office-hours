@@ -16,7 +16,7 @@ export function Footer(): ReactElement {
   return (
     <FullWidth>
       <div>
-        Made by students in <a href="https://sandboxnu.com">Sandbox</a>. Source
+        Made by students @ <a href="https://sandboxnu.com">Sandbox</a>. Source
         on <a href="https://github.com/sandboxnu/office-hours">GitHub.</a>
       </div>
       <div>
