@@ -1,5 +1,4 @@
 import { QueuePartial } from "@template/common";
-import { Avatar, Tooltip } from "antd";
 import { ClockCircleFilled } from "@ant-design/icons";
 import { ReactElement } from "react";
 import styled from "styled-components";
@@ -28,10 +27,6 @@ const NotesText = styled.div`
   color: #5f6b79;
 `;
 
-const AvatarWithMargin = styled(Avatar)`
-  margin-right: 10px;
-`;
-
 interface QueueListHeaderProps {
   queue: QueuePartial;
 }
@@ -48,22 +43,6 @@ export default function QueueListHeader({
           <TimeText>{formatQueueTime(queue)}</TimeText>
         </Container>
       )}
-      <Container style={{ marginLeft: "64px" }}>
-        {queue?.staffList.length > 0 && (
-          <>
-            <b style={{ marginRight: "10px" }}>Staff:</b>
-            {queue.staffList.map((staffMember) => (
-              <Tooltip key={staffMember.id} title={staffMember.name}>
-                <AvatarWithMargin
-                  size={36}
-                  src={staffMember.photoURL}
-                  shape="circle"
-                />
-              </Tooltip>
-            ))}
-          </>
-        )}
-      </Container>
       {queue?.notes && (
         <Container style={{ marginLeft: "64px" }}>
           <NotesText>
