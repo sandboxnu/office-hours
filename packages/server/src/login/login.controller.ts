@@ -147,9 +147,10 @@ export class LoginController {
     const userCourse = await UserCourseModel.findOne({
       where: { userId },
     });
+    console.log(userCourse);
     const redirectTo = userCourse
-      ? '/nocourses'
-      : `/course/${userCourse.courseId}/today`;
+      ? `/course/${userCourse.courseId}/today`
+      : '/nocourses';
     const authToken = await this.jwtService.signAsync({ userId });
     const isSecure = this.configService
       .get<string>('DOMAIN')

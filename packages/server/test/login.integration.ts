@@ -3,11 +3,12 @@ import { LoginModule } from '../src/login/login.module';
 import { TestingModuleBuilder } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { UserModel } from '../src/profile/user.entity';
+import { UserFactory, UserCourseFactory } from './util/factories';
 
 const mockJWT = {
   signAsync: async (payload, options?) => JSON.stringify(payload),
   verifyAsync: async (payload) => JSON.parse(payload).token !== 'INVALID_TOKEN',
-  decode: async (payload) => JSON.parse(payload),
+  decode: (payload) => JSON.parse(payload),
 };
 
 describe('Login Integration', () => {
@@ -25,7 +26,22 @@ describe('Login Integration', () => {
         .get(`/login/entry?token=${token}`)
         .expect(302);
 
-      expect(res.header['location']).toBe('/');
+      expect(res.header['location']).toBe('/nocourses');
+      expect(res.get('Set-Cookie')[0]).toContain('userId');
+    });
+
+    it('entry as user with courses goes to today page', async () => {
+      const user = await UserFactory.create();
+      const usercourse = await UserCourseFactory.create({ user: user });
+      const token = await mockJWT.signAsync({ userId: user.id });
+
+      const res = await supertest()
+        .get(`/login/entry?token=${token}`)
+        .expect(302);
+
+      expect(res.header['location']).toBe(
+        `/course/${usercourse.courseId}/today`,
+      );
       expect(res.get('Set-Cookie')[0]).toContain('userId');
     });
 
