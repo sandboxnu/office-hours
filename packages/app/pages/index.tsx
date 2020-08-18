@@ -1,4 +1,4 @@
-import { User, UserCourse } from "@template/common";
+import { User } from "@template/common";
 import Router from "next/router";
 import { useProfile } from "../hooks/useProfile";
 
