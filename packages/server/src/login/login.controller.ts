@@ -147,7 +147,6 @@ export class LoginController {
     const userCourse = await UserCourseModel.findOne({
       where: { userId },
     });
-    console.log(userCourse);
     const redirectTo = userCourse
       ? `/course/${userCourse.courseId}/today`
       : '/nocourses';
