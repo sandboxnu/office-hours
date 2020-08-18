@@ -5,6 +5,7 @@ import "../styles/global.css";
 import { init as initApm } from "@elastic/apm-rum";
 import { Footer } from "../components/common/Footer";
 import styled from "styled-components";
+import { ReactElement } from "react";
 
 if (process.env.NODE_ENV === "production" && typeof window !== "undefined") {
   initApm({
@@ -23,7 +24,7 @@ const Content = styled.div`
   flex: 1 0 auto;
 `;
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps }: AppProps): ReactElement {
   return (
     <Layout>
       <Content>
