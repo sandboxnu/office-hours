@@ -10,14 +10,11 @@ export class QueueRolesGuard extends RolesGuard {
     request: any,
   ): Promise<{ courseId: number; user: UserModel }> {
     const queue = await QueueModel.findOne(request.params.queueId);
-    const courseId = queue.courseId;
+    const courseId = queue?.courseId;
     const user = await UserModel.findOne(request.user.userId, {
       relations: ['courses'],
     });
 
-    if (!user || !courseId) {
-      throw new UnauthorizedException('Must be logged into a course');
-    }
     return { courseId, user };
   }
 }

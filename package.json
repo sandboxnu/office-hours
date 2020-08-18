@@ -9,7 +9,7 @@
     "cli": "yarn workspace @template/server cli",
     "tsc": "yarn workspaces run tsc",
     "lint": "eslint packages/ --ext .ts,.tsx --ignore-path .gitignore",
-    "test": "yarn workspace @template/app test; yarn workspace @template/server test",
+    "test": "yarn workspace @template/server test",
     "dev": "concurrently -n \"server,app,proxy\" \"yarn workspace @template/server dev\" \"yarn workspace @template/app dev\" \"yarn dev:proxy\"",
     "dev:proxy": "node infrastructure/dev/devProxy.js",
     "dev:db:up": "docker-compose -f infrastructure/dev/docker-compose.yml up -d && yarn dev:db:seed",
