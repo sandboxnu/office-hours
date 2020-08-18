@@ -1,12 +1,12 @@
 import {
   IsBoolean,
+  IsDefined,
   IsEnum,
   IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
   ValidateIf,
-  IsDefined,
 } from "class-validator";
 import "reflect-metadata";
 
@@ -131,6 +131,7 @@ export interface Queue {
   questions: Question[];
   startTime?: Date;
   endTime?: Date;
+  allowQuestions: boolean;
 }
 
 /**
@@ -149,6 +150,7 @@ export interface QueuePartial {
   notes?: string;
   startTime?: Date;
   endTime?: Date;
+  allowQuestions: boolean;
 }
 
 /**

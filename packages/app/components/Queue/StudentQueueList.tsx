@@ -286,8 +286,9 @@ export default function StudentQueueList({
             </Row>
             <Row justify="space-between">
               <Col>
-                <QueueListHeader queue={queue} />
+                <QueueListHeader queueId={qid} isTA={false} />
               </Col>
+
               <Col>
                 {!studentQuestion && (
                   <JoinButton

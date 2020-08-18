@@ -6,17 +6,17 @@ import {
   Entity,
   JoinColumn,
   JoinTable,
+  LessThanOrEqual,
   ManyToMany,
   ManyToOne,
+  MoreThanOrEqual,
   OneToMany,
   PrimaryGeneratedColumn,
-  MoreThanOrEqual,
-  LessThanOrEqual,
 } from 'typeorm';
 import { CourseModel } from '../course/course.entity';
+import { OfficeHourModel } from '../course/office-hour.entity';
 import { UserModel } from '../profile/user.entity';
 import { QuestionModel } from '../question/question.entity';
-import { OfficeHourModel } from '../course/office-hour.entity';
 
 interface TimeInterval {
   startTime: Date;
@@ -51,6 +51,9 @@ export class QueueModel extends BaseEntity {
   @ManyToMany((type) => UserModel, (user) => user.queues)
   @JoinTable()
   staffList: UserModel[];
+
+  @Column()
+  allowQuestions: boolean;
 
   @Exclude()
   @OneToMany((type) => OfficeHourModel, (oh) => oh.queue)
