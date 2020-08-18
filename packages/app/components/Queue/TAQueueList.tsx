@@ -1,12 +1,11 @@
 import { API } from "@template/api-client";
 import {
-  ClosedQuestionStatus,
   OpenQuestionStatus,
   Question,
   QuestionStatus,
   QuestionStatusKeys,
 } from "@template/common";
-import { Button, Card, Col, Grid, Input, Row, Tooltip } from "antd";
+import { Button, Card, Col, Grid, Row, Tooltip } from "antd";
 import { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { StatusRow } from "./StatusRow";
@@ -113,21 +112,6 @@ const HeaderRow = styled(Row)`
   margin-bottom: 64px;
 `;
 
-const EditNotesButton = styled(Button)`
-  font-weight: 500;
-  font-size: 14px;
-  background: #317393;
-  color: white;
-  border: 1px solid #cfd6de;
-  border-radius: 6px;
-  margin-right: 16px;
-`;
-
-const NotesInput = styled(Input)`
-  border-radius: 6px;
-  border: 1px solid #b8c4ce;
-`;
-
 interface TAQueueListProps {
   qid: number;
   courseId: number;
@@ -157,8 +141,6 @@ export default function TAQueueList({
   const [openPopup, setOpenPopup] = useState<boolean>(false);
   const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
   const [editingNotes, setEditingNotes] = useState(false);
-  const [updatedNotes, setUpdatedNotes] = useState(queue?.notes);
-  const [oldNotes, setOldNotes] = useState(queue?.notes);
 
   const onOpenClick = useCallback((question: Question): void => {
     setCurrentQuestion(question);
@@ -202,13 +184,6 @@ export default function TAQueueList({
     );
 
     updateQuestionTA(nextQuestion, OpenQuestionStatus.Helping);
-  };
-
-  const updateQueueNotes = async () => {
-    setEditingNotes(false);
-    await API.queues.updateNotes(qid, updatedNotes);
-    setOldNotes(updatedNotes);
-    mutateQueue();
   };
 
   /**
@@ -314,31 +289,10 @@ export default function TAQueueList({
           <Col flex="auto" order={screens.lg === false ? 2 : 1}>
             <Row justify="space-between">
               <Col>
-                <QueueListHeader queue={queue} />
+                <QueueListHeader queueId={qid} isTA={true} />
               </Col>
+
               <Col>
-                {editingNotes ? (
-                  <NotesInput
-                    defaultValue={oldNotes}
-                    onPressEnter={updateQueueNotes}
-                    value={updatedNotes}
-                    onChange={(e) => setUpdatedNotes(e.target.value as string)}
-                    allowClear={true}
-                    onKeyDown={(key) => {
-                      if (key.key === "Escape") {
-                        setEditingNotes(false);
-                        setUpdatedNotes(oldNotes);
-                      }
-                    }}
-                  />
-                ) : (
-                  <EditNotesButton
-                    onClick={() => setEditingNotes(true)}
-                    size="large"
-                  >
-                    Edit Queue Notes
-                  </EditNotesButton>
-                )}
                 <Tooltip
                   title={
                     !isStaffCheckedIn && "You must check in to help students!"

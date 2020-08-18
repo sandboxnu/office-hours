@@ -6,7 +6,7 @@ import {
   QuestionStatusKeys,
   QuestionType,
 } from "@template/common";
-import { Alert, Button, Card, Col, Grid, Row, notification } from "antd";
+import { Alert, Button, Card, Col, Grid, notification, Row } from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { mutate } from "swr";
@@ -14,12 +14,12 @@ import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useProfile } from "../../hooks/useProfile";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
+import { NotificationSettingsModal } from "../Nav/NotificationSettingsModal";
 import EditableQuestion from "./EditableQuestion";
 import QuestionForm from "./QuestionForm";
 import QueueListHeader from "./QueueListSharedComponents";
-import StudentQueueCard from "./StudentQueueCard";
-import { NotificationSettingsModal } from "../Nav/NotificationSettingsModal";
 import { StatusRow } from "./StatusRow";
+import StudentQueueCard from "./StudentQueueCard";
 const { useBreakpoint } = Grid;
 
 const StatusText = styled.div`
@@ -286,8 +286,9 @@ export default function StudentQueueList({
             </Row>
             <Row justify="space-between">
               <Col>
-                <QueueListHeader queue={queue} />
+                <QueueListHeader queueId={qid} isTA={false} />
               </Col>
+
               <Col>
                 {!studentQuestion && (
                   <JoinButton
