@@ -45,6 +45,8 @@ describe('Login Integration', () => {
         .send({
           username: 'mr_stenzel',
           email: 'stenzel.w@northeastern.edu',
+          campus: 1,
+          nuid: 2,
           first_name: 'Will',
           last_name: 'Stenzel',
           photo_url: 'sdf',
@@ -80,6 +82,8 @@ describe('Login Integration', () => {
         .send({
           username: 'mr_stenzel',
           email: 'stenzel.w@northeastern.edu',
+          campus: 1,
+          nuid: 2,
           first_name: 'Will',
           last_name: 'Stenzel',
           photo_url: 'sdf',
