@@ -8,16 +8,27 @@ import {
 } from '../../../test/util/factories';
 import { OpenQuestionStatus } from '@template/common';
 import { QuestionModel } from '../../question/question.entity';
+import { Connection } from 'typeorm';
 
 describe('QueueService', () => {
   let service: QueueCleanService;
+  let conn: Connection;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestTypeOrmModule],
       providers: [QueueCleanService],
     }).compile();
     service = module.get<QueueCleanService>(QueueCleanService);
+    conn = module.get<Connection>(Connection);
+  });
+
+  afterAll(async () => {
+    await conn.close();
+  });
+
+  beforeEach(async () => {
+    await conn.synchronize(true);
   });
 
   describe('cleanQueue', () => {

@@ -180,6 +180,7 @@ export class QuestionController {
         body.status === OpenQuestionStatus.Helping
       ) {
         question.taHelped = await UserModel.findOne(userId);
+        question.helpedAt = new Date();
         await this.notifService.notifyUser(
           question.creator.id,
           NotifMsgs.queue.TA_HIT_HELPED(question.taHelped.name),

@@ -6,6 +6,7 @@ import { CourseFactory } from '../../test/util/factories';
 import { QueueModel } from '../queue/queue.entity';
 import { CalendarResponse } from 'node-ical';
 import { Connection } from 'typeorm';
+import { CourseModel } from './course.entity';
 
 // oopsah
 const parsedICS = iCal.parseICS(`BEGIN:VCALENDAR
@@ -138,24 +139,25 @@ describe('IcalService', () => {
           courseId: course.id,
           room: 'Online',
         });
-        expect(course.officeHours).toMatchObject([
+        expect(
+          (await CourseModel.findOne(course.id, { relations: ['officeHours'] }))
+            .officeHours,
+        ).toMatchObject([
           {
             title: 'OH- Ameya, Julia',
-            courseId: 123,
-            room: '308b WVH',
+            courseId: course.id,
             startTime: new Date(1589317200000),
             endTime: new Date(1589324400000),
             queueId: queue.id,
           },
           {
             title: 'OH-Elaina',
-            courseId: 123,
-            room: '',
+            courseId: course.id,
             startTime: new Date(1589475600000),
             endTime: new Date(1589482800000),
             queueId: queue.id,
           },
-        ]); //toMatchObject
+        ]);
       });
     });
   });

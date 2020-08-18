@@ -57,6 +57,7 @@ export default function TACheckinButton({
         size="large"
         onClick={() => setViewCheckinModal(true)}
         disabled={!data}
+        data-cy="check-in-button"
       >
         Check In
       </CheckinButton>
