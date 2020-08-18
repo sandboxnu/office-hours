@@ -13,7 +13,7 @@ Object {
 exports[`Queue Integration GET /queues/:id returns 401 when not logged in 1`] = `
 Object {
   "error": "Unauthorized",
-  "message": "Must be logged into a course",
+  "message": "Must be logged in",
   "statusCode": 401,
 }
 `;
