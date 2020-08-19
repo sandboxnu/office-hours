@@ -295,6 +295,7 @@ export default function StudentQueueList({
                     type="primary"
                     size="large"
                     onClick={joinQueueOpenModal}
+                    disabled={!queue?.allowQuestions}
                   >
                     Join Queue
                   </JoinButton>

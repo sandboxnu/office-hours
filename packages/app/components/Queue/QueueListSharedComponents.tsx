@@ -1,6 +1,6 @@
 import { ClockCircleFilled, SettingOutlined } from "@ant-design/icons";
 import { API } from "@template/api-client";
-import { Avatar, Input, Tooltip } from "antd";
+import { Avatar, Input, Switch, Tooltip } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import { ReactElement, useState } from "react";
 import styled from "styled-components";
@@ -52,11 +52,15 @@ export default function QueueListHeader({
   const [queueSettingsModal, setQueueSettingsModal] = useState(false);
   const [oldNotes, setOldNotes] = useState(queue?.notes);
   const [updatedNotes, setUpdatedNotes] = useState(queue?.notes);
-  const [allowQuestions, setAllowQuestions] = useState(queue?.allowQuestions);
 
   const updateQueueNotes = async () => {
     await API.queues.updateNotes(queueId, updatedNotes);
     setOldNotes(updatedNotes);
+    mutateQueue();
+  };
+
+  const toggleAllowQuestions = async () => {
+    await API.queues.toggleQueue(queueId);
     mutateQueue();
   };
 
@@ -83,6 +87,7 @@ export default function QueueListHeader({
           setQueueSettingsModal(false);
         }}
       >
+        <h2>Edit Queue Notes:</h2>
         <NotesInput
           defaultValue={oldNotes}
           onPressEnter={updateQueueNotes}
@@ -94,6 +99,12 @@ export default function QueueListHeader({
               setUpdatedNotes(oldNotes);
             }
           }}
+        />
+
+        <h2 style={{ paddingTop: "40px" }}>Allow Questions</h2>
+        <Switch
+          checked={queue.allowQuestions}
+          onChange={toggleAllowQuestions}
         />
       </Modal>
       {queue.startTime && queue.endTime && (
@@ -110,6 +121,17 @@ export default function QueueListHeader({
           </NotesText>
         </Container>
       )}
+      <div style={{ paddingLeft: "64px" }}>
+        {queue?.allowQuestions ? (
+          <NotesText style={{ color: "green" }}>
+            This queue is allowing new questions
+          </NotesText>
+        ) : (
+          <NotesText style={{ color: "red" }}>
+            This queue is <b>not</b> allowing new questions
+          </NotesText>
+        )}
+      </div>
     </Container>
   );
 }

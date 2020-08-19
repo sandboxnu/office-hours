@@ -83,6 +83,7 @@ export class QueueController {
   async toggleQueue(@Param('queueId') qid: number): Promise<boolean> {
     const queue = await QueueModel.findOne(qid);
     queue.allowQuestions = !queue.allowQuestions;
+    await queue.save();
     return queue.allowQuestions;
   }
 }
