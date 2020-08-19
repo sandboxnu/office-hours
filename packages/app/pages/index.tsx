@@ -6,10 +6,14 @@ export default function Home() {
   const profile: User = useProfile();
 
   if (profile) {
-    Router.push(
-      "/course/[cid]/today",
-      "/course/" + profile.courses[0].course.id + "/today"
-    );
+    if (profile.courses.length > 0) {
+      Router.push(
+        "/course/[cid]/today",
+        "/course/" + profile.courses[0].course.id + "/today"
+      );
+    } else {
+      Router.push("/nocourses");
+    }
   }
 
   return "";

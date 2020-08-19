@@ -15,38 +15,11 @@ describe('Notif Integration', () => {
     });
   });
 
-  describe('POST /notifications/desktop/register/:user_id', () => {
-    it("registers a user + webpush endpoint, tests it's in the db", async () => {
-      const user = await UserFactory.create();
-      const expirDate = new Date(2020, 1, 2);
-      await supertest({ userId: 99 })
-        .post(`/notifications/desktop/register/${user.id}`)
-        .send({
-          endpoint: 'biggoogle.com',
-          expirationTime: expirDate,
-          keys: {
-            p256dh: 'some_key',
-            auth: 'some_key_as_well',
-          },
-        })
-        .expect(201);
-      expect(await DesktopNotifModel.findOne()).toEqual({
-        auth: 'some_key_as_well',
-        endpoint: 'biggoogle.com',
-        expirationTime: expirDate,
-        id: 1,
-        p256dh: 'some_key',
-        user: undefined,
-        userId: user.id,
-      });
-    });
-  });
-
-  describe('POST /notifications/phone/register/:user_id', () => {
+  describe('POST /notifications/phone/register', () => {
     it("registers a user & phone number, tests it's in the db", async () => {
       const user = await UserFactory.create();
-      await supertest({ userId: 99 })
-        .post(`/notifications/phone/register/${user.id}`)
+      await supertest({ userId: user.id })
+        .post(`/notifications/phone/register`)
         .send({ phoneNumber: '+16175551212' })
         .expect(201);
 
@@ -55,19 +28,19 @@ describe('Notif Integration', () => {
         id: 1,
         phoneNumber: '+16175551212',
         verified: false,
-        userId: 1,
+        userId: user.id,
       });
     });
   });
 
-  describe('POST notifications/notify_user/:user_id', () => {
-    it('tests that invalid endpoints for web push get deleted in db', async () => {
+  describe('POST notifications/desktop/register', () => {
+    it('registers desktop notif', async () => {
       // TODO this could be a unit test!
       const user = await UserFactory.create({ desktopNotifsEnabled: true });
       const expirDate = new Date(2020, 2, 3);
 
-      await supertest({ userId: 99 })
-        .post(`/notifications/desktop/register/${user.id}`)
+      await supertest({ userId: user.id })
+        .post(`/notifications/desktop/register`)
         .send({
           endpoint: 'biggoogle.com',
           expirationTime: expirDate,
@@ -78,12 +51,17 @@ describe('Notif Integration', () => {
         })
         .expect(201);
 
-      await supertest({ userId: 99 }).post(
-        `/notifications/notify_user/${user.id}`,
-      );
-
       const notifModels = await DesktopNotifModel.find();
-      expect(notifModels).toEqual([]);
+      expect(notifModels).toEqual([
+        {
+          auth: 'some_key_as_well',
+          endpoint: 'biggoogle.com',
+          expirationTime: expirDate,
+          id: 1,
+          p256dh: 'some_key',
+          userId: 1,
+        },
+      ]);
     });
   });
 });
