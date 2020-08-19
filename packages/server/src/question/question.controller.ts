@@ -4,6 +4,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  MethodNotAllowedException,
   NotFoundException,
   Param,
   Patch,
@@ -24,18 +25,18 @@ import {
   UpdateQuestionResponse,
 } from '@template/common';
 import { Connection, In } from 'typeorm';
+import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import {
   NotificationService,
   NotifMsgs,
 } from '../notification/notification.service';
-import { JwtAuthGuard } from '../login/jwt-auth.guard';
+import { Roles } from '../profile/roles.decorator';
 import { UserCourseModel } from '../profile/user-course.entity';
 import { User, UserId } from '../profile/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
-import { QuestionModel } from './question.entity';
-import { Roles } from '../profile/roles.decorator';
 import { QuestionRolesGuard } from './question-role.guard';
+import { QuestionModel } from './question.entity';
 
 @Controller('questions')
 @UseGuards(JwtAuthGuard, QuestionRolesGuard)
@@ -74,6 +75,10 @@ export class QuestionController {
 
     if (!queue) {
       throw new NotFoundException();
+    }
+
+    if (!queue.allowQuestions) {
+      throw new MethodNotAllowedException();
     }
 
     const userAlreadyHasOpenQuestion =
