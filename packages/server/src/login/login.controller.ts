@@ -127,17 +127,9 @@ export class LoginController {
       throw new UnauthorizedException();
     }
 
-    const payload = (await this.jwtService.decode(token)) as { userId: number };
-    const authToken = await this.jwtService.signAsync({
-      userId: payload.userId,
-    });
+    const payload = this.jwtService.decode(token) as { userId: number };
 
-    const isSecure = this.configService
-      .get<string>('DOMAIN')
-      .startsWith('https://');
-    res
-      .cookie('auth_token', authToken, { httpOnly: true, secure: isSecure })
-      .redirect(302, '/');
+    this.enter(res, payload.userId);
   }
 
   // This is for login on development only
@@ -147,12 +139,23 @@ export class LoginController {
     @Res() res: Response,
     @Query('userId') userId: number,
   ): Promise<void> {
-    const token = await this.jwtService.signAsync({ userId });
+    this.enter(res, userId);
+  }
+
+  // Set cookie and redirect to proper page
+  private async enter(res: Response, userId: number) {
+    const userCourse = await UserCourseModel.findOne({
+      where: { userId },
+    });
+    const redirectTo = userCourse
+      ? `/course/${userCourse.courseId}/today`
+      : '/nocourses';
+    const authToken = await this.jwtService.signAsync({ userId });
     const isSecure = this.configService
       .get<string>('DOMAIN')
       .startsWith('https://');
     res
-      .cookie('auth_token', token, { httpOnly: true, secure: isSecure })
-      .redirect(302, '/');
+      .cookie('auth_token', authToken, { httpOnly: true, secure: isSecure })
+      .redirect(302, redirectTo);
   }
 }

@@ -28,7 +28,7 @@
 // or could it be added to a before each in a the support file so it runs before each test
 Cypress.Commands.add("mock", (method, url, fixture) => {
   // if the live api is not being used, return the mock fixture  data
-  if (!Cypress.env("LIVE_API")) {
+  if (!Cypress.env("USE_LIVE_API")) {
     cy.route(method, url, fixture);
     return;
   } else if (Cypress.env("UPDATE_FIXTURES")) {
@@ -51,7 +51,7 @@ Cypress.Commands.add("mock", (method, url, fixture) => {
 });
 
 Cypress.Commands.add("login", (userType) => {
-  if (!Cypress.env("LIVE_API")) {
+  if (!Cypress.env("USE_LIVE_API")) {
     return;
   }
   if (userType === "student") {

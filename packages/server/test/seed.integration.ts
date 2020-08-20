@@ -59,7 +59,19 @@ describe('Seed Integration', () => {
     const res = await supertest()
       .post('/seeds/createQueue')
       .send({ courseId: 1 });
-    expect(res.body).toMatchSnapshot();
+    expect(res.body).toMatchObject({
+      courseId: 1,
+      id: 1,
+      notes: null,
+      officeHours: [
+        {
+          endTime: expect.any(String),
+          startTime: expect.any(String),
+          title: 'Alex & Stanley',
+        },
+      ],
+      room: 'WVH 101',
+    });
   });
 
   it('GET /seeds/createQuestion', async () => {

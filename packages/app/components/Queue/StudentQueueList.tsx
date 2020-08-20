@@ -18,6 +18,7 @@ import { NotificationSettingsModal } from "../Nav/NotificationSettingsModal";
 import EditableQuestion from "./EditableQuestion";
 import QuestionForm from "./QuestionForm";
 import QueueListHeader from "./QueueListSharedComponents";
+import { StatusRow } from "./StatusRow";
 import StudentQueueCard from "./StudentQueueCard";
 const { useBreakpoint } = Grid;
 
@@ -299,6 +300,7 @@ export default function StudentQueueList({
                 )}
               </Col>
             </Row>
+            <StatusRow questions={questions} taList={queue.staffList} />
             {questions?.length === 0 ? (
               <h1 style={{ marginTop: "50px" }}>
                 There currently aren&apos;t any questions in the queue

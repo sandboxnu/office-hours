@@ -9,6 +9,7 @@ import {
 import { Button, Card, Col, Grid, Input, Row, Tooltip } from "antd";
 import { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
+import { StatusRow } from "./StatusRow";
 import { useProfile } from "../../hooks/useProfile";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
@@ -356,6 +357,7 @@ export default function TAQueueList({
                   <CheckOutButton
                     danger
                     size="large"
+                    data-cy="check-out-button"
                     onClick={async () => {
                       await API.taStatus.checkOut(courseId, queue?.room);
                       mutateQueue();
@@ -370,12 +372,14 @@ export default function TAQueueList({
                       mutateQueue();
                     }}
                     size="large"
+                    data-cy="check-in-button"
                   >
                     Check In
                   </CheckInButton>
                 )}
               </Col>
             </Row>
+            <StatusRow questions={questions} taList={queue.staffList} />
             {!helping && renderTAHeader()}
             {helping && renderHelpingHeader()}
             {questions?.map((question: Question, index: number) => {
