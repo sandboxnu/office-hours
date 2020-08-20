@@ -1,9 +1,8 @@
-import { API } from "@template/api-client";
+import { API, parseQuestionDates } from "@template/api-client";
 import { ListQuestionsResponse } from "@template/common";
 import useSWR, { responseInterface } from "swr";
-
-const TEN_SECONDS_IN_MS = 100000;
-const FIFTEEN_SECOND_IN_MS = 150000;
+import { useCallback } from "react";
+import { useEventSource } from "./useEventSource";
 
 type questionsResponse = responseInterface<ListQuestionsResponse, any>;
 
@@ -18,15 +17,19 @@ export function useQuestions(qid: number): UseQuestionReturn {
     data: questions,
     error: questionsError,
     mutate: mutateQuestions,
-  } = useSWR(
-    qid && `/api/v1/queues/${qid}/questions`,
-    async () => API.questions.index(Number(qid)),
-    {
-      refreshInterval: Math.floor(
-        Math.random() * (FIFTEEN_SECOND_IN_MS - TEN_SECONDS_IN_MS + 1) +
-          TEN_SECONDS_IN_MS
-      ),
-    }
+  } = useSWR(qid && `/api/v1/queues/${qid}/questions`, async () =>
+    API.questions.index(Number(qid))
+  );
+
+  useEventSource(
+    qid && `/api/v1/queues/${qid}/sse`,
+    useCallback(
+      (data) => {
+        data.forEach(parseQuestionDates);
+        mutateQuestions(data, false);
+      },
+      [mutateQuestions]
+    )
   );
 
   return { questions, questionsError, mutateQuestions };

@@ -40,20 +40,49 @@ export class SeedController {
     // Then add the new seed data
     const now = new Date();
 
-    const officeHours = await OfficeHourFactory.create({
+    const yesterday = new Date();
+    yesterday.setUTCHours(now.getUTCHours() - 24);
+
+    const tomorrow = new Date();
+    tomorrow.setUTCHours(now.getUTCHours() + 19);
+
+    const officeHoursToday = await OfficeHourFactory.create({
       startTime: now,
       endTime: new Date(now.valueOf() + 4500000),
     });
+    const officeHoursTodayOverlap = await OfficeHourFactory.create({
+      startTime: new Date(now.valueOf() - 4500000),
+      endTime: new Date(now.valueOf() + 1000000),
+    });
+    const officeHoursYesterday = await OfficeHourFactory.create({
+      startTime: yesterday,
+      endTime: new Date(yesterday.valueOf() + 4500000),
+    });
+    const officeHoursTomorrow = await OfficeHourFactory.create({
+      startTime: tomorrow,
+      endTime: new Date(tomorrow.valueOf() + 4500000),
+    });
+
     const course = await CourseModel.findOne({ relations: ['officeHours'] });
     if (course) {
-      course.officeHours = [officeHours];
+      course.officeHours = [
+        officeHoursToday,
+        officeHoursYesterday,
+        officeHoursTomorrow,
+        officeHoursTodayOverlap,
+      ];
       course.save();
     }
 
     const queue = await QueueFactory.create({
       room: 'WHV 101',
       course: course,
-      officeHours: [officeHours],
+      officeHours: [
+        officeHoursToday,
+        officeHoursYesterday,
+        officeHoursTomorrow,
+        officeHoursTodayOverlap,
+      ],
     });
 
     await QuestionFactory.create({

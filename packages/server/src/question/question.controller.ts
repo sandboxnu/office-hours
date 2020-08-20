@@ -29,14 +29,16 @@ import {
   NotificationService,
   NotifMsgs,
 } from '../notification/notification.service';
+import { Roles } from '../profile/roles.decorator';
 import { UserCourseModel } from '../profile/user-course.entity';
 import { User, UserId } from '../profile/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
+import { QuestionRolesGuard } from './question-role.guard';
 import { QuestionModel } from './question.entity';
 
 @Controller('questions')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, QuestionRolesGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class QuestionController {
   constructor(
@@ -59,6 +61,7 @@ export class QuestionController {
   }
 
   @Post()
+  @Roles(Role.STUDENT)
   async createQuestion(
     @Body() body: CreateQuestionParams,
     @User() user: UserModel,
@@ -120,6 +123,7 @@ export class QuestionController {
   }
 
   @Patch(':questionId')
+  @Roles(Role.STUDENT, Role.TA, Role.PROFESSOR)
   async updateQuestion(
     @Param('questionId') questionId: number,
     @Body() body: UpdateQuestionParams,
@@ -170,7 +174,6 @@ export class QuestionController {
           'TA/Professors can only edit question status',
         );
       }
-
       // If the taHelped is already set, make sure the same ta updates the status
       if (question.taHelped?.id !== userId) {
         if (question.status === OpenQuestionStatus.Helping) {
@@ -190,6 +193,7 @@ export class QuestionController {
         body.status === OpenQuestionStatus.Helping
       ) {
         question.taHelped = await UserModel.findOne(userId);
+        question.helpedAt = new Date();
         await this.notifService.notifyUser(
           question.creator.id,
           NotifMsgs.queue.TA_HIT_HELPED(question.taHelped.name),
@@ -206,27 +210,13 @@ export class QuestionController {
   }
 
   @Post(':questionId/notify')
-  async notify(
-    @Param('questionId') questionId: number,
-    @UserId() userId: number,
-  ): Promise<void> {
+  @Roles(Role.TA, Role.PROFESSOR)
+  async notify(@Param('questionId') questionId: number): Promise<void> {
     const question = await QuestionModel.findOne(questionId, {
       relations: ['queue'],
     });
 
-    const isUserTAOfCourse =
-      (await UserCourseModel.count({
-        where: {
-          // TODO: somehow store and check that the notifying TA is the one helping?
-          role: Role.TA,
-          courseId: question.queue.courseId,
-          userId: userId,
-        },
-      })) === 1;
-
-    if (!isUserTAOfCourse) {
-      throw new UnauthorizedException('Only TA can send alerts');
-    }
+    // TODO: somehow store and check that the notifying TA is the one helping? new UnauthorizedException('Only TA can send alerts');
 
     await this.notifService.notifyUser(
       question.creatorId,

@@ -9,10 +9,10 @@ import { QuestionModel } from '../../src/question/question.entity';
 import { QueueModel } from '../../src/queue/queue.entity';
 
 export const UserFactory = new Factory(UserModel)
-  .sequence('username', (i) => `user${i}`)
-  .sequence('email', (i) => `user${i}@neu.edu`)
-  .sequence('name', (i) => `John Doe the ${i}th`)
-  .sequence('photoURL', (i) => `https://pics/${i}`);
+  .attr('username', `user`)
+  .attr('email', `user@neu.edu`)
+  .attr('name', `User`)
+  .attr('photoURL', `https://pics/user`);
 
 export const StudentCourseFactory = new Factory(UserCourseModel).attr(
   'role',
@@ -35,7 +35,7 @@ export const OfficeHourFactory = new Factory(OfficeHourModel)
 
 export const CourseFactory = new Factory(CourseModel)
   .attr('name', 'CS 2500')
-  .attr('icalURL', 'hi.com')
+  .attr('icalURL', 'http://hi.com')
   .attr('enabled', true)
   .assocOne('semester', SemesterFactory)
   .assocMany('officeHours', OfficeHourFactory);

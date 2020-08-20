@@ -1,24 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Seed Integration GET /seeds/createQueue 1`] = `
-Object {
-  "course": Object {
-    "icalURL": "hi.com",
-    "id": 1,
-    "name": "CS 1800",
-    "semesterId": 1,
-  },
-  "courseId": 1,
-  "id": 1,
-  "notes": null,
-  "room": "WVH 101",
-}
-`;
-
 exports[`Seed Integration GET /seeds/createUser 1`] = `
 Object {
   "course": Object {
-    "icalURL": "hi.com",
+    "enabled": true,
+    "icalURL": "http://hi.com",
     "id": 1,
     "name": "CS 2500",
     "officeHours": Array [
@@ -43,12 +29,12 @@ Object {
   "role": "ta",
   "user": Object {
     "desktopNotifsEnabled": false,
-    "email": "user7@neu.edu",
+    "email": "user@neu.edu",
     "id": 1,
-    "name": "John Doe the 7th",
+    "name": "User",
     "phoneNotifsEnabled": false,
-    "photoURL": "https://pics/7",
-    "username": "user7",
+    "photoURL": "https://pics/user",
+    "username": "user",
   },
   "userId": 1,
 }

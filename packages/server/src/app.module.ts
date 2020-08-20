@@ -10,6 +10,7 @@ import { QueueModule } from './queue/queue.module';
 import { SeedModule } from './seed/seed.module';
 import { AdminModule } from './admin/admin.module';
 import { CommandModule } from 'nestjs-command';
+import { SSEModule } from './sse/sse.module';
 import * as typeormConfig from '../ormconfig';
 
 @Module({
@@ -31,6 +32,7 @@ import * as typeormConfig from '../ormconfig';
     }),
     AdminModule,
     CommandModule,
+    SSEModule,
   ],
 })
 export class AppModule {}

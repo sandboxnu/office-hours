@@ -11,7 +11,10 @@ import {
   StudentCourseFactory,
   TACourseFactory,
   UserFactory,
+  CourseFactory,
+  UserCourseFactory,
 } from './util/factories';
+import { QueueModel } from '../src/queue/queue.entity';
 import {
   setupIntegrationTest,
   modifyMockNotifs,
@@ -23,10 +26,20 @@ describe('Question Integration', () => {
 
   describe('GET /questions/:id', () => {
     it('gets a question with the given id', async () => {
+      const course = await CourseFactory.create();
       const q = await QuestionFactory.create({
         text: 'Help pls',
         createdAt: new Date('2020-03-01T05:00:00.000Z'),
+        queue: await QueueFactory.create({
+          course: course,
+        }),
       });
+
+      await UserCourseFactory.create({
+        user: await UserFactory.create(),
+        course: course,
+      });
+
       const response = await supertest({ userId: 99 })
         .get(`/questions/${q.id}`)
         .expect(200);
@@ -39,7 +52,8 @@ describe('Question Integration', () => {
 
   describe('POST /questions', () => {
     it('posts a new question', async () => {
-      const queue = await QueueFactory.create();
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ courseId: course.id });
       const user = await UserFactory.create();
       await StudentCourseFactory.create({ user, courseId: queue.courseId });
       expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(0);
@@ -60,6 +74,21 @@ describe('Question Integration', () => {
       });
       expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(1);
     });
+    it('ta cannot post  a new question', async () => {
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ courseId: course.id });
+      const user = await UserFactory.create();
+      await TACourseFactory.create({ user, courseId: queue.courseId });
+      expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(0);
+      await supertest({ userId: user.id })
+        .post('/questions')
+        .send({
+          text: "Don't know recursion",
+          questionType: QuestionType.Concept,
+          queueId: queue.id,
+        })
+        .expect(401);
+    });
     it('post question fails with non-existent queue', async () => {
       await supertest({ userId: 99 })
         .post('/questions')
@@ -71,11 +100,16 @@ describe('Question Integration', () => {
         .expect(404);
     });
     it('post question fails with bad params', async () => {
-      await supertest({ userId: 99 })
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ courseId: course.id });
+      const user = await UserFactory.create();
+      await StudentCourseFactory.create({ user, courseId: queue.courseId });
+      await supertest({ userId: user.id })
         .post('/questions')
         .send({
           text: 'I need help',
           questionType: 'bad param!',
+          queueId: 1, // even with bad params we still need a queue
         })
         .expect(400);
     });
@@ -108,8 +142,18 @@ describe('Question Integration', () => {
   });
 
   describe('PATCH /questions/:id', () => {
-    it('as student crator, edit a question', async () => {
-      const q = await QuestionFactory.create({ text: 'Help pls' });
+    it('as student creator, edit a question', async () => {
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ courseId: course.id });
+      const user = await UserFactory.create();
+      await StudentCourseFactory.create({ user, courseId: queue.courseId });
+      const q = await QuestionFactory.create({
+        text: 'Help pls',
+        queueId: queue.id,
+        queue: queue,
+        creator: user,
+        creatorId: user.id,
+      });
 
       const response = await supertest({ userId: q.creatorId })
         .patch(`/questions/${q.id}`)
@@ -134,7 +178,22 @@ describe('Question Integration', () => {
         .expect(404);
     });
     it('PATCH taHelped as student is not allowed', async () => {
-      const q = await QuestionFactory.create({ text: 'Help pls' });
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ courseId: course.id });
+      const student = await UserFactory.create();
+      await StudentCourseFactory.create({
+        user: student,
+        courseId: queue.courseId,
+      });
+
+      const q = await QuestionFactory.create({
+        text: 'Help pls',
+        queueId: queue.id,
+        creatorId: student.id,
+        creator: student,
+        queue: queue,
+      });
+
       const ta = await UserFactory.create();
       await TACourseFactory.create({ course: q.queue.course, user: ta });
 
@@ -149,7 +208,20 @@ describe('Question Integration', () => {
         .expect(400);
     });
     it('PATCH status to helping as student not allowed', async () => {
-      const q = await QuestionFactory.create({ text: 'Help pls' });
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ courseId: course.id });
+      const student = await UserFactory.create();
+      await StudentCourseFactory.create({
+        user: student,
+        courseId: queue.courseId,
+      });
+      const q = await QuestionFactory.create({
+        text: 'Help pls',
+        queueId: queue.id,
+        creatorId: student.id,
+        creator: student,
+        queue: queue,
+      });
 
       await supertest({ userId: q.creatorId })
         .patch(`/questions/${q.id}`)
@@ -159,9 +231,15 @@ describe('Question Integration', () => {
         .expect(401);
     });
     it('PATCH status to helping as TA works', async () => {
-      const q = await QuestionFactory.create({ text: 'Help pls' });
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ courseId: course.id });
+      const q = await QuestionFactory.create({
+        text: 'Help pls',
+        queueId: queue.id,
+        queue: queue,
+      });
       const ta = await UserFactory.create();
-      await TACourseFactory.create({ course: q.queue.course, user: ta });
+      await TACourseFactory.create({ courseId: queue.courseId, user: ta });
 
       const res = await supertest({ userId: ta.id })
         .patch(`/questions/${q.id}`)
@@ -176,12 +254,16 @@ describe('Question Integration', () => {
       expectUserNotified(q.creatorId);
     });
     it('PATCH status to Resolved as TA works', async () => {
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ courseId: course.id });
       const q = await QuestionFactory.create({
         text: 'Help pls',
-        status: 'Queued',
+        status: QuestionStatusKeys.Queued,
+        queueId: queue.id,
+        queue: queue,
       });
       const ta = await UserFactory.create();
-      await TACourseFactory.create({ course: q.queue.course, user: ta });
+      await TACourseFactory.create({ courseId: queue.courseId, user: ta });
 
       const res = await supertest({ userId: ta.id })
         .patch(`/questions/${q.id}`)
@@ -219,6 +301,25 @@ describe('Question Integration', () => {
           text: 'bonjour',
         })
         .expect(401);
+    });
+    it('User not in course cannot patch a question', async () => {
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ courseId: course.id });
+      const user = await UserFactory.create();
+      const q = await QuestionFactory.create({
+        text: 'Help pls',
+        queueId: queue.id,
+        queue: queue,
+        creator: user,
+        creatorId: user.id,
+      });
+
+      await supertest({ userId: q.creatorId })
+        .patch(`/questions/${q.id}`)
+        .send({
+          text: 'NEW TEXT',
+        })
+        .expect(404); // Don't leak that course exists
     });
   });
 });
