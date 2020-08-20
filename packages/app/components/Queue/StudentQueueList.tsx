@@ -16,7 +16,7 @@ import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
 import EditableQuestion from "./EditableQuestion";
 import QuestionForm from "./QuestionForm";
-import QueueListHeader from "./QueueListSharedComponents";
+import QueueListHeader, { QueueInfoColumn } from "./QueueListSharedComponents";
 import StudentQueueCard from "./StudentQueueCard";
 import { NotificationSettingsModal } from "../Nav/NotificationSettingsModal";
 import { StatusRow } from "./StatusRow";
@@ -253,6 +253,8 @@ export default function StudentQueueList({
     if (!queue.isOpen) {
       return <h1 style={{ marginTop: "50px" }}>The Queue is Closed!</h1>;
     }
+
+    return <QueueInfoColumn queue={queue}></QueueInfoColumn>;
 
     return (
       <div>
