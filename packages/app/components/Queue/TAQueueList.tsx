@@ -8,11 +8,11 @@ import {
 import { Button, Card, Col, Grid, Row, Tooltip } from "antd";
 import { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
-import { StatusRow } from "./StatusRow";
 import { useProfile } from "../../hooks/useProfile";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
 import QueueListHeader from "./QueueListSharedComponents";
+import { StatusRow } from "./StatusRow";
 import StudentInfoCard from "./StudentInfoCard";
 import StudentPopupCard from "./StudentPopupCard";
 import TAHelpingCard from "./TAHelpingCard";
@@ -62,23 +62,6 @@ const CenterRow = styled(Row)`
 
 const Placeholder = styled.div`
   width: 14px;
-`;
-
-const AlertButton = styled(Button)`
-  margin-right: 12px;
-  font-weight: 500;
-  font-size: 14px;
-  color: #da3236;
-  background: #f8f9fa;
-  border: 1px solid #cfd6de;
-  border-radius: 6px;
-`;
-
-const FinishButton = styled(Button)`
-  font-weight: 500;
-  font-size: 14px;
-  background: #3684c6;
-  border-radius: 6px;
 `;
 
 const CheckOutButton = styled(Button)`
@@ -140,7 +123,6 @@ export default function TAQueueList({
 
   const [openPopup, setOpenPopup] = useState<boolean>(false);
   const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
-  const [editingNotes, setEditingNotes] = useState(false);
 
   const onOpenClick = useCallback((question: Question): void => {
     setCurrentQuestion(question);

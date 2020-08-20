@@ -9,17 +9,17 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { GetCourseResponse, QueuePartial, Role } from '@template/common';
+import async from 'async';
 import { Connection, getRepository } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
+import { Roles } from '../profile/roles.decorator';
 import { User } from '../profile/user.decorator';
 import { UserModel } from '../profile/user.entity';
-import { QueueModel } from '../queue/queue.entity';
 import { QueueCleanService } from '../queue/queue-clean/queue-clean.service';
-import { CourseModel } from './course.entity';
-import { Roles } from '../profile/roles.decorator';
+import { QueueModel } from '../queue/queue.entity';
 import { CourseRolesGuard } from './course-roles.guard';
+import { CourseModel } from './course.entity';
 import { OfficeHourModel } from './office-hour.entity';
-import async from 'async';
 
 @Controller('courses')
 @UseGuards(JwtAuthGuard, CourseRolesGuard)
@@ -75,7 +75,12 @@ export class CourseController {
         courseId,
         staffList: [],
         questions: [],
+        allowQuestions: true,
       }).save();
+    }
+
+    if (queue.staffList.length === 0) {
+      queue.allowQuestions = true;
     }
 
     queue.staffList.push(user);
