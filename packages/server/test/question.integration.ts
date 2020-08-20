@@ -333,7 +333,7 @@ describe('Question Integration', () => {
         })
         .expect(401);
     });
-    it('nonuser cannot patch a question', async () => {
+    it('User not in course cannot patch a question', async () => {
       const course = await CourseFactory.create();
       const queue = await QueueFactory.create({ courseId: course.id });
       const user = await UserFactory.create();
@@ -350,7 +350,7 @@ describe('Question Integration', () => {
         .send({
           text: 'NEW TEXT',
         })
-        .expect(401);
+        .expect(404); // Don't leak that course exists
     });
   });
 });

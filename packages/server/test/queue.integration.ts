@@ -33,9 +33,10 @@ describe('Queue Integration', () => {
     it('returns 404 on non-existent course', async () => {
       const course = await CourseFactory.create();
       const queue = await QueueFactory.create({ course });
+      const user = await UserFactory.create();
 
-      await supertest({ userId: 99 })
-        .get(`/queues/${queue.id + 1}`)
+      await supertest({ userId: user.id })
+        .get(`/queues/${queue.id + 999}`)
         .expect(404);
     });
 
@@ -52,7 +53,7 @@ describe('Queue Integration', () => {
       expect(res.body).toMatchSnapshot();
     });
 
-    it('returns 401 when user is not in course', async () => {
+    it('returns 404 when user is not in course', async () => {
       const course = await CourseFactory.create();
       const queue = await QueueFactory.create({
         courseId: course.id,
@@ -65,7 +66,7 @@ describe('Queue Integration', () => {
 
       await supertest({ userId: userCourse.user.id })
         .get(`/queues/${queue.id}`)
-        .expect(401);
+        .expect(404);
     });
   });
 
@@ -97,7 +98,7 @@ describe('Queue Integration', () => {
       expect(res.body).toMatchSnapshot();
     });
 
-    it('returns 401 when a user is not a member of the course', async () => {
+    it('returns 404 when a user is not a member of the course', async () => {
       const course = await CourseFactory.create();
       const queue = await QueueFactory.create({
         course: course,
@@ -118,7 +119,7 @@ describe('Queue Integration', () => {
 
       await supertest({ userId: userCourse.user.id })
         .get(`/queues/${queue.id}/questions`)
-        .expect(401);
+        .expect(404);
     });
   });
 });
