@@ -220,6 +220,7 @@ export default function StudentQueueList({
         await mutateQuestions(newQuestions);
         setPopupEditQuestion(true);
       } catch (e) {
+        console.log(e);
         setFromAnotherQueue(true);
       }
     },
@@ -307,7 +308,7 @@ export default function StudentQueueList({
                 <QueueListHeader queue={queue} />
               </Col>
               <Col>
-                {!studentQuestion && (
+                {!studentQuestion && fromAnotherQueue ? (
                   <Popconfirm
                     title="In order to join this queue, you must delete your previous question. Do you want to continue?"
                     onConfirm={() => joinQueueOpenModal(true)}
@@ -322,6 +323,14 @@ export default function StudentQueueList({
                       Join Queue
                     </JoinButton>
                   </Popconfirm>
+                ) : (
+                  <JoinButton
+                    type="primary"
+                    size="large"
+                    onClick={() => joinQueueOpenModal(false)}
+                  >
+                    Join Queue
+                  </JoinButton>
                 )}
               </Col>
             </Row>
