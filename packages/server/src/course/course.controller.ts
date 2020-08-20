@@ -105,6 +105,9 @@ export class CourseController {
     );
 
     queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
+    if (queue.staffList.length === 0) {
+      queue.allowQuestions = false;
+    }
     await queue.save();
 
     // Clean up queue if necessary
