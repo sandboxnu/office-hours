@@ -11,8 +11,8 @@ describe("Can successfuly check in and out of a queue", () => {
       cy.request("POST", "/api/v1/seeds/createQueue", {
         courseId: ta.course.id,
       })
-     .then((res) => res.body)
-     .as("queue");
+        .then((res) => res.body)
+        .as("queue");
       // Login the ta
       cy.visit(`/api/v1/login/dev?userId=${ta.user.id}`);
       cy.visit(`/course/${ta.courseId}/today`);
@@ -42,7 +42,7 @@ describe("Can successfuly check in and out of a queue", () => {
     cy.get(".ant-modal-header").should("be.visible");
 
     // Add a new room into the input
-    cy.get(".ant-radio").eq(1).click()
+    cy.get(".ant-radio").eq(1).click();
     cy.get(".ant-input").click().type("WVH 102");
     cy.get(".ant-modal-footer > .ant-btn-primary > span").click();
 
@@ -54,7 +54,7 @@ describe("Can successfuly check in and out of a queue", () => {
     cy.get("button").should("contain", "Check In");
   });
 
-  it("from the today page with a room already existing", () => {    
+  it("from the today page with a room already existing", () => {
     cy.get("@ta").then((ta) => {
       cy.mock("GET", `/api/v1/courses/${ta.course.id}`, {
         id: 1,
@@ -81,7 +81,7 @@ describe("Can successfuly check in and out of a queue", () => {
     });
 
     // Wait for the page to laod
-    cy.contains('No Staff Checked In')
+    cy.contains("No Staff Checked In");
 
     // Click "Check in"
     cy.get("[data-cy='check-in-button']").click();
@@ -92,7 +92,10 @@ describe("Can successfuly check in and out of a queue", () => {
     cy.get(".ant-modal-footer > .ant-btn-primary > span").click();
 
     cy.location("pathname").should("contain", "/queue");
-    cy.get("h1").should("contain", "There currently aren't any questions in the queue");
+    cy.get("h1").should(
+      "contain",
+      "There currently aren't any questions in the queue"
+    );
 
     // Click "Check out"
     cy.get("[data-cy='check-out-button']").click();
