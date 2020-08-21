@@ -220,8 +220,10 @@ export default function StudentQueueList({
         await mutateQuestions(newQuestions);
         setPopupEditQuestion(true);
       } catch (e) {
-        console.log(e);
-        setFromAnotherQueue(true);
+        if (e.response?.data?.message?.includes("You can't create more than one question at a time")) {
+          setFromAnotherQueue(true);
+        }
+        // TODO: how should we handle error that happens for another reason?
       }
     },
     [mutateQuestions, qid, questions]
