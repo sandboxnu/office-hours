@@ -9,7 +9,7 @@ import {
 import { Button, Card, Col, Grid, Input, Row, Tooltip } from "antd";
 import { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
-import { StatusRow } from "./StatusRow";
+import { TAStatuses } from "./TAStatuses";
 import { useProfile } from "../../hooks/useProfile";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
@@ -379,7 +379,7 @@ export default function TAQueueList({
                 )}
               </Col>
             </Row>
-            <StatusRow questions={questions} taList={queue.staffList} />
+            <TAStatuses queueId={qid} />
             {!helping && renderTAHeader()}
             {helping && renderHelpingHeader()}
             {questions?.map((question: Question, index: number) => {

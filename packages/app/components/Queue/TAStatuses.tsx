@@ -1,43 +1,42 @@
 import { ReactElement } from "react";
 import { Avatar, Row, Col, Badge } from "antd";
-import { Question, UserPartial } from "@template/common";
+import { Question } from "@template/common";
 import { RenderEvery } from "../RenderEvery";
 import styled from "styled-components";
-
-const Container = styled.div`
-  margin-top: 32px;
-`;
+import { useQuestions } from "../../hooks/useQuestions";
+import { useQueue } from "../../hooks/useQueue";
 
 interface StatusRowProps {
-  questions: Question[];
-  taList: UserPartial[];
+  queueId: number;
 }
 /**
  * Row of ta statuses
  */
-export function StatusRow({ questions, taList }: StatusRowProps): ReactElement {
+export function TAStatuses({ queueId }: StatusRowProps): ReactElement {
+  const { questions } = useQuestions(queueId);
+  const {
+    queue: { staffList },
+  } = useQueue(queueId);
   const taToQuestion: Record<number, Question> = {};
-  const taIds = taList.map((t) => t.id);
+  const taIds = staffList.map((t) => t.id);
   for (const question of questions) {
     if (taIds.includes(question.taHelped?.id)) {
       taToQuestion[question.taHelped.id] = question;
     }
   }
   return (
-    <Container>
-      <Row gutter={24}>
-        {taList.map((ta) => (
-          <Col key={ta.id}>
-            <StatusCard
-              taName={ta.name}
-              taPhotoURL={ta.photoURL}
-              studentName={taToQuestion[ta.id]?.creator?.name}
-              helpedAt={taToQuestion[ta.id]?.helpedAt}
-            />
-          </Col>
-        ))}
-      </Row>
-    </Container>
+    <Col>
+      {staffList.map((ta) => (
+        <Col key={ta.id}>
+          <StatusCard
+            taName={ta.name}
+            taPhotoURL={ta.photoURL}
+            studentName={taToQuestion[ta.id]?.creator?.name}
+            helpedAt={taToQuestion[ta.id]?.helpedAt}
+          />
+        </Col>
+      ))}
+    </Col>
   );
 }
 
@@ -47,6 +46,9 @@ const StyledCard = styled.div`
   border-radius: 6px;
   padding: 16px;
   display: flex;
+`;
+const AvatarNoShrink = styled(Avatar)`
+  flex-shrink: 0;
 `;
 const CardContent = styled.div`
   margin-left: 16px;
@@ -78,7 +80,7 @@ function StatusCard({
   const isBusy = !!studentName;
   return (
     <StyledCard>
-      <Avatar size={48} src={taPhotoURL} />
+      <AvatarNoShrink size={48} src={taPhotoURL} />
       <CardContent>
         <Row justify="space-between">
           <TAName>{taName}</TAName>

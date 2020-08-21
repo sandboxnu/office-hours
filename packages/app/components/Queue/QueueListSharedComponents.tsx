@@ -1,4 +1,4 @@
-import { QueuePartial } from "@template/common";
+import { QueuePartial, Question } from "@template/common";
 import {
   ClockCircleFilled,
   ClockCircleOutlined,
@@ -7,6 +7,10 @@ import {
 import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { formatQueueTime } from "../../utils/TimeUtil";
+import { TAStatuses } from "./TAStatuses";
+import { Button } from "antd";
+import { useQueue } from "../../hooks/useQueue";
+import { useStudentQuestion } from "../../hooks/useStudentQuestion";
 
 const Container = styled.div`
   display: flex;
@@ -14,7 +18,7 @@ const Container = styled.div`
   align-items: center;
 `;
 
-const QueueTitle = styled.div`
+const QueueTitle = styled.h2`
   font-weight: 500;
   font-size: 24px;
   color: #212934;
@@ -35,9 +39,9 @@ const NotesText = styled.div`
 // New queue styled components start here
 
 const InfoColumnContainer = styled.div`
-  padding-right: 48px;
-  border-right: 1px solid #cfd6de;
-  width: 292px;
+  @media (min-width: 767px) {
+    width: 320px;
+  }
 `;
 
 const QueuePropertyRow = styled.div`
@@ -54,24 +58,51 @@ const QueuePropertyText = styled.div`
   font-size: 16px;
 `;
 
+const JoinButton = styled(Button)`
+  background-color: #3684c6;
+  border-radius: 6px;
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+`;
+
+const StaffH2 = styled.h2`
+  margin-top: 32px;
+`;
+
 interface QueueInfoColumnProps {
-  queue: QueuePartial;
+  queueId: number;
+  onJoinQueue: () => void;
 }
 
-export function QueueInfoColumn({ queue }: QueueInfoColumnProps): ReactElement {
+export function QueueInfoColumn({
+  queueId,
+  onJoinQueue,
+}: QueueInfoColumnProps): ReactElement {
+  const { queue } = useQueue(queueId);
+  const { studentQuestion } = useStudentQuestion(queueId);
   return (
     <InfoColumnContainer>
       <QueueTitle>{queue?.room}</QueueTitle>
-      <QueuePropertyRow>
-        <ClockCircleOutlined />
-        <QueuePropertyText>{formatQueueTime(queue)}</QueuePropertyText>
-      </QueuePropertyRow>
+      {queue.startTime && queue.endTime && (
+        <QueuePropertyRow>
+          <ClockCircleOutlined />
+          <QueuePropertyText>{formatQueueTime(queue)}</QueuePropertyText>
+        </QueuePropertyRow>
+      )}
       {queue?.notes && (
         <QueuePropertyRow>
           <NotificationOutlined />
           <QueuePropertyText>{queue.notes}</QueuePropertyText>
         </QueuePropertyRow>
       )}
+      {!studentQuestion && (
+        <JoinButton type="primary" size="large" block onClick={onJoinQueue}>
+          Join Queue
+        </JoinButton>
+      )}
+      <StaffH2>Staff</StaffH2>
+      <TAStatuses queueId={queueId} />
     </InfoColumnContainer>
   );
 }
