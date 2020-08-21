@@ -186,7 +186,7 @@ const OpenQueueCard = ({
               href="/course/[cid]/queue/[qid]"
               as={`/course/${cid}/queue/${queue.id}`}
             >
-              <OpenQueueButton type="primary" size="large">
+              <OpenQueueButton type="primary" size="large" data-cy="open-queue-button">
                 Open Queue
               </OpenQueueButton>
             </Link>

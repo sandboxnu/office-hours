@@ -296,6 +296,7 @@ export default function StudentQueueList({
                     size="large"
                     onClick={joinQueueOpenModal}
                     disabled={!queue?.allowQuestions}
+                    data-cy="join-queue-button"
                   >
                     Join Queue
                   </JoinButton>

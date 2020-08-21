@@ -105,6 +105,7 @@ export default function QueueListHeader({
         <Switch
           checked={queue.allowQuestions}
           onChange={toggleAllowQuestions}
+          data-cy="allow-questions-toggle"
         />
       </Modal>
       {queue.startTime && queue.endTime && (
