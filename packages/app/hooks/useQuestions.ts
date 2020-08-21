@@ -1,7 +1,7 @@
 import { API, parseQuestionDates } from "@template/api-client";
 import { ListQuestionsResponse, Question } from "@template/common";
 import useSWR, { responseInterface } from "swr";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useEventSource } from "./useEventSource";
 
 type questionsResponse = responseInterface<ListQuestionsResponse, any>;
@@ -36,9 +36,9 @@ export function useQuestions(qid: number): UseQuestionReturn {
   );
 
   const mutateQuestion = useCallback(
-    (newQuesiton) => {
+    (newQuestion) => {
       const newQuestions = questions?.map((q) =>
-        q.id === newQuesiton.id ? newQuesiton : q
+        q.id === newQuestion.id ? newQuestion : q
       );
       mutateQuestions(newQuestions);
     },
