@@ -8,6 +8,7 @@ describe("Student can edit their question", () => {
     cy.get("@student").then((student) => {
       cy.request("POST", "/api/v1/seeds/createQueue", {
         courseId: student.course.id,
+        allowQuestions: true,
       })
         .then((res) => res.body)
         .as("queue");
