@@ -6,19 +6,18 @@ import {
 import { QuestionModel } from '../src/question/question.entity';
 import { QuestionModule } from '../src/question/question.module';
 import {
+  CourseFactory,
   QuestionFactory,
   QueueFactory,
   StudentCourseFactory,
   TACourseFactory,
-  UserFactory,
-  CourseFactory,
   UserCourseFactory,
+  UserFactory,
 } from './util/factories';
-import { QueueModel } from '../src/queue/queue.entity';
 import {
-  setupIntegrationTest,
-  modifyMockNotifs,
   expectUserNotified,
+  modifyMockNotifs,
+  setupIntegrationTest,
 } from './util/testUtils';
 
 describe('Question Integration', () => {
@@ -53,7 +52,10 @@ describe('Question Integration', () => {
   describe('POST /questions', () => {
     it('posts a new question', async () => {
       const course = await CourseFactory.create();
-      const queue = await QueueFactory.create({ courseId: course.id });
+      const queue = await QueueFactory.create({
+        courseId: course.id,
+        allowQuestions: true,
+      });
       const user = await UserFactory.create();
       await StudentCourseFactory.create({ user, courseId: queue.courseId });
       expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(0);
@@ -115,7 +117,9 @@ describe('Question Integration', () => {
     });
     it("can't create more than one open question at a time", async () => {
       const user = await UserFactory.create();
-      const queue = await QueueFactory.create();
+      const queue = await QueueFactory.create({
+        allowQuestions: true,
+      });
       await StudentCourseFactory.create({
         userId: user.id,
         courseId: queue.courseId,

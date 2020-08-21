@@ -2,6 +2,7 @@
 
 exports[`Queue Integration GET /queues/:id get a queue 1`] = `
 Object {
+  "allowQuestions": false,
   "id": 2,
   "notes": null,
   "queueSize": 1,

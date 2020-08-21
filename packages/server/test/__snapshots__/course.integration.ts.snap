@@ -19,6 +19,7 @@ Object {
 
 exports[`Course Integration POST /courses/:id/ta_location/:room checks a TA into an existing queue 1`] = `
 Object {
+  "allowQuestions": true,
   "id": 1,
   "notes": null,
   "queueSize": 0,
