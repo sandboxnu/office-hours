@@ -125,7 +125,10 @@ export default function QuestionForm({
     <Modal
       visible={visible}
       closable={true}
-      onCancel={cancel}
+      onCancel={() => {
+        setStoredQuestion(question);
+        cancel();
+      }}
       title={drafting ? "Describe your question" : "Edit your question"}
       footer={
         <div>

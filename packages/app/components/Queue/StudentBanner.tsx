@@ -9,6 +9,11 @@ import {
   DeleteRowOutlined,
   EditOutlined,
 } from "@ant-design/icons";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { useState, ReactElement } from "react";
+import { OpenQuestionStatus, Question } from "@template/common";
+import { API } from "@template/api-client";
+import { useDraftQuestion } from "../../hooks/useDraftQuestion";
 
 const BoldNumber = styled.span`
   font-weight: bold;
@@ -54,9 +59,48 @@ export default function StudentBanner({
   queueId,
   editQuestion,
   leaveQueue,
-}: StudentBannerProps) {
-  const { studentQuestion, studentQuestionIndex } = useStudentQuestion(queueId);
+}: StudentBannerProps): ReactElement {
+  const {
+    studentQuestion,
+    studentQuestionIndex,
+    mutateStudentQuestion,
+  } = useStudentQuestion(queueId);
+
+  const { draftQuestion } = useDraftQuestion();
+
   switch (studentQuestion?.status) {
+    case "Drafting":
+      return (
+        <Banner
+          titleColor="#faad14"
+          contentColor="#ffd666"
+          title="Please finish writing your question"
+          content="Your spot in queue has been temporarily reserved. Please finish describing your question to receive help and finish joining the queue."
+          buttons={
+            <>
+              <WhiteButton icon={<DeleteRowOutlined />} onClick={leaveQueue}>
+                Delete Draft
+              </WhiteButton>
+              <WhiteButton
+                icon={<EditOutlined />}
+                onClick={async () => {
+                  mutateStudentQuestion(
+                    await API.questions.update(draftQuestion?.id, {
+                      questionType: draftQuestion.questionType,
+                      text: draftQuestion.text,
+                      queueId: Number(queueId),
+                    })
+                  );
+
+                  editQuestion();
+                }}
+              >
+                Finish Draft
+              </WhiteButton>
+            </>
+          }
+        />
+      );
     case "Queued":
       return (
         <Banner
