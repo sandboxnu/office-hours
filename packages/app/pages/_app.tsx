@@ -4,7 +4,6 @@ import { AppProps } from "next/app";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-phone-input-2/lib/style.css";
 import "../styles/global.css";
-import { init as initApm } from "@elastic/apm-rum";
 import { Footer } from "../components/common/Footer";
 import styled from "styled-components";
 import { ReactElement } from "react";
