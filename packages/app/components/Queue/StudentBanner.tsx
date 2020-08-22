@@ -4,11 +4,16 @@ import { Button, Row, Col } from "antd";
 import { toOrdinal } from "../../utils/ordinal";
 import { useStudentQuestion } from "../../hooks/useStudentQuestion";
 import { Text } from "./QueueCardSharedComponents";
+import {
+  TeamOutlined,
+  DeleteRowOutlined,
+  EditOutlined,
+} from "@ant-design/icons";
 
 const BoldNumber = styled.span`
   font-weight: bold;
 `;
-const LeaveQueueButton = styled(Button)`
+const DangerButton = styled(Button)`
   margin-right: 16px;
   border-radius: 6px;
   border: 0;
@@ -20,7 +25,7 @@ const LeaveQueueButton = styled(Button)`
     color: #fff;
   }
 `;
-const EditQuestionButton = styled(Button)`
+const WhiteButton = styled(Button)`
   margin-right: 16px;
   border-radius: 6px;
   border: 0;
@@ -36,47 +41,82 @@ const InfoHeader = styled.div`
   font-size: 14px;
 `;
 
+const Bullets = styled.ul`
+  color: #000;
+`;
+
 interface StudentBannerProps {
   queueId: number;
 }
 export default function StudentBanner({ queueId }: StudentBannerProps) {
   const { studentQuestion, studentQuestionIndex } = useStudentQuestion(queueId);
-  if (studentQuestion) {
-    return (
-      <Banner
-        titleColor="#3684C6"
-        contentColor="#ABD4F3"
-        title={
-          <span>
-            You are{" "}
-            <BoldNumber>{toOrdinal(studentQuestionIndex + 1)}</BoldNumber> in
-            queue
-          </span>
-        }
-        buttons={
-          <>
-            <LeaveQueueButton>Leave Queue</LeaveQueueButton>
-            <EditQuestionButton>Edit Question</EditQuestionButton>
-          </>
-        }
-        content={
-          <QuestionDetails>
-            <Col flex="1 1">
-              <InfoHeader>Question</InfoHeader>
-              <Text>{studentQuestion.text}</Text>
-            </Col>
-            <Col flex="0 0 60px">
-              <InfoHeader>Type</InfoHeader>
-              <Text>
-                {studentQuestion.questionType.charAt(0).toUpperCase() +
-                  studentQuestion.questionType.substr(1).toLowerCase()}
-              </Text>
-            </Col>
-          </QuestionDetails>
-        }
-      />
-    );
-  } else {
-    return <div />;
+  switch (studentQuestion?.status) {
+    case "Queued":
+      return (
+        <Banner
+          titleColor="#3684C6"
+          contentColor="#ABD4F3"
+          title={
+            <span>
+              You are{" "}
+              <BoldNumber>{toOrdinal(studentQuestionIndex + 1)}</BoldNumber> in
+              queue
+            </span>
+          }
+          buttons={
+            <>
+              <DangerButton icon={<DeleteRowOutlined />}>
+                Leave Queue
+              </DangerButton>
+              <WhiteButton icon={<EditOutlined />}>Edit Question</WhiteButton>
+            </>
+          }
+          content={
+            <QuestionDetails>
+              <Col flex="1 1">
+                <InfoHeader>Question</InfoHeader>
+                <div>{studentQuestion.text}</div>
+              </Col>
+              <Col flex="0 0 60px">
+                <InfoHeader>Type</InfoHeader>
+                <div>
+                  {studentQuestion.questionType.charAt(0).toUpperCase() +
+                    studentQuestion.questionType.substr(1).toLowerCase()}
+                </div>
+              </Col>
+            </QuestionDetails>
+          }
+        />
+      );
+    case "Helping":
+      return (
+        <Banner
+          titleColor="#66BB6A"
+          contentColor="#82C985"
+          title={
+            <span>
+              <BoldNumber>{studentQuestion.taHelped.name}</BoldNumber> is coming
+              to help you
+            </span>
+          }
+          buttons={
+            <>
+              <DangerButton icon={<DeleteRowOutlined />}>
+                Leave Queue
+              </DangerButton>
+              <WhiteButton icon={<TeamOutlined />}>Open Teams DM</WhiteButton>
+            </>
+          }
+          content={
+            <Bullets>
+              <li>Please be dressed appropriately</li>
+              <li>Be respectful of the TA’s time</li>
+              <li>Come prepared with your question!</li>
+            </Bullets>
+          }
+        />
+      );
+    default:
+      return <div />;
   }
 }
