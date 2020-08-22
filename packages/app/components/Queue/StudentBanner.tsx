@@ -1,6 +1,6 @@
 import Banner from "./Banner";
 import styled from "styled-components";
-import { Button, Row, Col } from "antd";
+import { Button, Row, Col, Popconfirm } from "antd";
 import { toOrdinal } from "../../utils/ordinal";
 import { useStudentQuestion } from "../../hooks/useStudentQuestion";
 import { Text } from "./QueueCardSharedComponents";
@@ -47,8 +47,14 @@ const Bullets = styled.ul`
 
 interface StudentBannerProps {
   queueId: number;
+  editQuestion: () => void;
+  leaveQueue: () => void;
 }
-export default function StudentBanner({ queueId }: StudentBannerProps) {
+export default function StudentBanner({
+  queueId,
+  editQuestion,
+  leaveQueue,
+}: StudentBannerProps) {
   const { studentQuestion, studentQuestionIndex } = useStudentQuestion(queueId);
   switch (studentQuestion?.status) {
     case "Queued":
@@ -65,10 +71,10 @@ export default function StudentBanner({ queueId }: StudentBannerProps) {
           }
           buttons={
             <>
-              <DangerButton icon={<DeleteRowOutlined />}>
-                Leave Queue
-              </DangerButton>
-              <WhiteButton icon={<EditOutlined />}>Edit Question</WhiteButton>
+              <LeaveQueueButton leaveQueue={leaveQueue} />
+              <WhiteButton icon={<EditOutlined />} onClick={editQuestion}>
+                Edit Question
+              </WhiteButton>
             </>
           }
           content={
@@ -101,9 +107,7 @@ export default function StudentBanner({ queueId }: StudentBannerProps) {
           }
           buttons={
             <>
-              <DangerButton icon={<DeleteRowOutlined />}>
-                Leave Queue
-              </DangerButton>
+              <LeaveQueueButton leaveQueue={leaveQueue} />
               <WhiteButton icon={<TeamOutlined />}>Open Teams DM</WhiteButton>
             </>
           }
@@ -119,4 +123,17 @@ export default function StudentBanner({ queueId }: StudentBannerProps) {
     default:
       return <div />;
   }
+}
+
+function LeaveQueueButton({ leaveQueue }: { leaveQueue: () => void }) {
+  return (
+    <Popconfirm
+      title={`Are you sure you want to leave the queue?`}
+      okText="Yes"
+      cancelText="No"
+      onConfirm={leaveQueue}
+    >
+      <DangerButton icon={<DeleteRowOutlined />}>Leave Queue</DangerButton>
+    </Popconfirm>
+  );
 }
