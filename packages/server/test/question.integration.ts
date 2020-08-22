@@ -51,9 +51,11 @@ describe('Question Integration', () => {
 
   describe('POST /questions', () => {
     it('posts a new question', async () => {
-      const course = await CourseFactory.create();
+      const ofs = await OfficeHourFactory.create();
+      const course = await CourseFactory.create({ officeHours: [ofs] });
       const queue = await QueueFactory.create({
         courseId: course.id,
+        officeHours: [ofs],
         allowQuestions: true,
       });
       const user = await UserFactory.create();
@@ -65,6 +67,7 @@ describe('Question Integration', () => {
           text: "Don't know recursion",
           questionType: QuestionType.Concept,
           queueId: queue.id,
+          force: false,
         })
         .expect(201);
       expect(response.body).toMatchObject({
@@ -101,6 +104,31 @@ describe('Question Integration', () => {
         })
         .expect(404);
     });
+
+    it('post question fails on closed queue', async () => {
+      const officeHours = await ClosedOfficeHourFactory.create();
+      const course = await CourseFactory.create({
+        officeHours: [officeHours],
+      });
+
+      const queue = await QueueFactory.create({
+        courseId: course.id,
+        course: course,
+        officeHours: [officeHours],
+      });
+      expect(await queue.checkIsOpen()).toBe(false);
+
+      const user = await UserFactory.create();
+      await StudentCourseFactory.create({ user, courseId: queue.courseId });
+      await supertest({ userId: user.id })
+        .post('/questions')
+        .send({
+          text: 'I need help',
+          questionType: QuestionType.Concept,
+          queueId: queue.id,
+        })
+        .expect(400);
+    });
     it('post question fails with bad params', async () => {
       const course = await CourseFactory.create();
       const queue = await QueueFactory.create({ courseId: course.id });
@@ -136,11 +164,12 @@ describe('Question Integration', () => {
           text: 'i need to know where the alamo is',
           queueId: queue.id,
           questionType: QuestionType.Bug,
+          force: false,
         });
 
       expect(response.status).toBe(400);
       expect(response.body.message).toBe(
-        "You can't create more than one question fuck ligma stanley",
+        "You can't create more than one question at a time.",
       );
     });
   });

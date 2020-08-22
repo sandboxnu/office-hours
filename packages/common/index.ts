@@ -148,6 +148,7 @@ export interface QueuePartial {
   staffList: UserPartial[];
   queueSize: number;
   notes?: string;
+  isOpen: boolean;
   startTime?: Date;
   endTime?: Date;
   allowQuestions: boolean;
@@ -349,6 +350,9 @@ export class CreateQuestionParams {
   @IsString()
   @IsOptional()
   location?: string;
+
+  @IsBoolean()
+  force!: boolean;
 }
 export type CreateQuestionResponse = Question;
 

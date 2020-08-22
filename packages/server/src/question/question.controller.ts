@@ -67,33 +67,61 @@ export class QuestionController {
     @Body() body: CreateQuestionParams,
     @User() user: UserModel,
   ): Promise<CreateQuestionResponse> {
-    const { text, questionType, queueId } = body;
+    const { text, questionType, queueId, force } = body;
 
     const queue = await QueueModel.findOne({
       where: { id: queueId },
+      relations: ['staffList'],
     });
 
     if (!queue) {
-      throw new NotFoundException();
+      throw new NotFoundException('Posted to an invalid queue');
     }
 
     if (!queue.allowQuestions) {
       throw new MethodNotAllowedException();
     }
 
-    const userAlreadyHasOpenQuestion =
-      (await QuestionModel.count({
+    // TODO: think of a neat way to make this abstracted
+    const isUserInCourse =
+      (await UserCourseModel.count({
         where: {
-          creatorId: user.id,
-          status: In(Object.values(OpenQuestionStatus)),
+          role: Role.STUDENT,
+          courseId: queue.courseId,
+          userId: user.id,
         },
-      })) > 0;
+      })) === 1;
 
-    if (userAlreadyHasOpenQuestion) {
-      throw new BadRequestException(
-        "You can't create more than one question fuck ligma stanley",
+    if (!isUserInCourse) {
+      throw new UnauthorizedException(
+        "Can't post question to course you're not in!",
       );
     }
+
+    if (!(await queue.checkIsOpen())) {
+      throw new BadRequestException(
+        "You can't post a question to a closed queue",
+      );
+    }
+
+    const previousUserQuestion = await QuestionModel.findOne({
+      where: {
+        creatorId: user.id,
+        status: In(Object.values(OpenQuestionStatus)),
+      },
+    });
+
+    if (!!previousUserQuestion) {
+      if (force) {
+        previousUserQuestion.status = ClosedQuestionStatus.Resolved;
+        await previousUserQuestion.save();
+      } else {
+        throw new BadRequestException(
+          "You can't create more than one question at a time.",
+        );
+      }
+    }
+
     const question = await QuestionModel.create({
       queueId: queueId,
       creator: user,

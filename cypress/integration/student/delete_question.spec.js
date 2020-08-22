@@ -24,6 +24,7 @@ describe("Student can delete their question", () => {
           questionType: "Bug",
           isOnline: false,
           location: "Outside room, by the couches",
+          force: false,
         })
           .then((res) => res.body)
           .then((question) => {
