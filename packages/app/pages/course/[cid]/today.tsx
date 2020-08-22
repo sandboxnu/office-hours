@@ -1,5 +1,5 @@
 import { API } from "@template/api-client";
-import { Role } from "@template/common";
+import { Role, QueuePartial } from "@template/common";
 import { Col, Result, Row } from "antd";
 import { useRouter } from "next/router";
 import { ReactElement } from "react";
@@ -36,18 +36,14 @@ export default function Today(): ReactElement {
   );
 
   const updateQueueNotes = async (
-    queueId: number,
+    queue: QueuePartial,
     notes: string
   ): Promise<void> => {
     const newQueues =
-      data && data.queues.map((q) => (q.id === queueId ? { ...q, notes } : q));
+      data && data.queues.map((q) => (q.id === queue.id ? { ...q, notes } : q));
 
     mutate(`api/v1/courses/${cid}`, { ...data, queues: newQueues }, false);
-
-    const allowQuestions = newQueues.find((e) => e.id === queueId)
-      .allowQuestions;
-
-    await API.queues.updateQueue(queueId, notes, allowQuestions);
+    await API.queues.updateQueue(queue.id, notes, queue.allowQuestions);
     mutate(`api/v1/courses/${cid}`);
   };
 
