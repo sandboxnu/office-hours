@@ -54,8 +54,7 @@ export default function QueueListHeader({
   const [allowQuestions, setAllowQuestions] = useState(queue?.allowQuestions);
 
   const updateQueueSettings = async () => {
-    console.log(allowQuestions);
-    await API.queues.updateQueue(queueId, notes, allowQuestions);
+    await API.queues.updateQueue(queueId, notes || "", allowQuestions);
     mutateQueue();
   };
 
@@ -107,7 +106,7 @@ export default function QueueListHeader({
         <Container style={{ marginLeft: "64px" }}>
           <NotesText>
             <b>Notes: </b>
-            {queue.notes}
+            {queue?.notes}
           </NotesText>
         </Container>
       )}
