@@ -1,17 +1,17 @@
+import { ClosedQuestionStatus } from '@template/common';
+import { QueueSSEService } from 'queue/queue-sse.service';
 import {
-  EventSubscriber,
-  EntitySubscriberInterface,
   Connection,
-  UpdateEvent,
+  EntitySubscriberInterface,
+  EventSubscriber,
   InsertEvent,
+  UpdateEvent,
 } from 'typeorm';
 import {
   NotificationService,
   NotifMsgs,
 } from '../notification/notification.service';
 import { QuestionModel } from './question.entity';
-import { ClosedQuestionStatus } from '@template/common';
-import { QueueSSEService } from 'queue/queue-sse.service';
 
 @EventSubscriber()
 export class QuestionSubscriber

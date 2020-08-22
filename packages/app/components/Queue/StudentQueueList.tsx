@@ -6,7 +6,16 @@ import {
   QuestionStatusKeys,
   QuestionType,
 } from "@template/common";
-import { Alert, Button, Card, Col, Grid, notification, Row } from "antd";
+import {
+  Alert,
+  Button,
+  Card,
+  Col,
+  Grid,
+  notification,
+  Popconfirm,
+  Row,
+} from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { mutate } from "swr";
@@ -81,6 +90,7 @@ export default function StudentQueueList({
     true
   );
   const [notifModalOpen, setNotifModalOpen] = useState(false);
+  const [fromAnotherQueue, setFromAnotherQueue] = useState(false);
 
   const studentQuestion =
     profile && questions && questions.find((q) => q.creator.id === profile.id);
@@ -196,17 +206,28 @@ export default function StudentQueueList({
     closeEditModal();
   }, [removeValue, leaveQueue, closeEditModal]);
 
-  const joinQueueOpenModal = useCallback(async () => {
-    const createdQuestion = await API.questions.create({
-      queueId: Number(qid),
-      text: "",
-      questionType: QuestionType.Bug, // TODO: endpoint needs to be changed to allow empty questionType for drafts
-      // for the moment I am defaulting this data so that there is no error
-    });
-    const newQuestions = [...questions, createdQuestion];
-    await mutateQuestions(newQuestions);
-    setPopupEditQuestion(true);
-  }, [mutateQuestions, qid, questions]);
+  const joinQueueOpenModal = useCallback(
+    async (force: boolean) => {
+      try {
+        const createdQuestion = await API.questions.create({
+          queueId: Number(qid),
+          text: "",
+          force: force,
+          questionType: QuestionType.Bug, // TODO: endpoint needs to be changed to allow empty questionType for drafts
+          // for the moment I am defaulting this data so that there is no error
+        });
+        const newQuestions = [...questions, createdQuestion];
+        await mutateQuestions(newQuestions);
+        setPopupEditQuestion(true);
+      } catch (e) {
+        if (e.response?.data?.message?.includes("You can't create more than one question at a time")) {
+          setFromAnotherQueue(true);
+        }
+        // TODO: how should we handle error that happens for another reason?
+      }
+    },
+    [mutateQuestions, qid, questions]
+  );
 
   const finishQuestionAndClose = useCallback(
     (text: string, qt: QuestionType, isOnline: boolean, location: string) => {
@@ -293,11 +314,26 @@ export default function StudentQueueList({
                 <QueueListHeader queue={queue} />
               </Col>
               <Col>
-                {!studentQuestion && (
+                {!studentQuestion && fromAnotherQueue ? (
+                  <Popconfirm
+                    title="In order to join this queue, you must delete your previous question. Do you want to continue?"
+                    onConfirm={() => joinQueueOpenModal(true)}
+                    okText="Yes"
+                    cancelText="No"
+                  >
+                    <JoinButton
+                      type="primary"
+                      size="large"
+                      onClick={() => joinQueueOpenModal(false)}
+                    >
+                      Join Queue
+                    </JoinButton>
+                  </Popconfirm>
+                ) : (
                   <JoinButton
                     type="primary"
                     size="large"
-                    onClick={joinQueueOpenModal}
+                    onClick={() => joinQueueOpenModal(false)}
                   >
                     Join Queue
                   </JoinButton>
