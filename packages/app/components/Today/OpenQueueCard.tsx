@@ -10,7 +10,7 @@ import { formatQueueTime } from "../../utils/TimeUtil";
 type OpenQueueCard = {
   queue: QueuePartial;
   isTA: boolean;
-  updateQueueNotes: (queueID: number, queueNotes: string) => Promise<void>;
+  updateQueueNotes: (queue: QueuePartial, queueNotes: string) => Promise<void>;
 };
 
 const PaddedCard = styled(Card)`
@@ -96,7 +96,7 @@ const OpenQueueCard = ({
 
   const handleUpdate = () => {
     setEditingNotes(false);
-    updateQueueNotes(queue.id, updatedNotes);
+    updateQueueNotes(queue, updatedNotes);
   };
 
   return (
@@ -186,7 +186,11 @@ const OpenQueueCard = ({
               href="/course/[cid]/queue/[qid]"
               as={`/course/${cid}/queue/${queue.id}`}
             >
-              <OpenQueueButton type="primary" size="large" data-cy="open-queue-button">
+              <OpenQueueButton
+                type="primary"
+                size="large"
+                data-cy="open-queue-button"
+              >
                 Open Queue
               </OpenQueueButton>
             </Link>
