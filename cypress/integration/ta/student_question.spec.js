@@ -9,9 +9,13 @@ describe("TA interacts with student question", () => {
       cy.request("POST", "/api/v1/seeds/createQueue", {
         courseId: ta.course.id,
       })
-        .then((res) => res.body).as('queue').then((queue) => cy.request("POST", "/api/v1/seeds/createQuestion", {
-          queueId: queue.id,
-        }));
+        .then((res) => res.body)
+        .as("queue")
+        .then((queue) =>
+          cy.request("POST", "/api/v1/seeds/createQuestion", {
+            queueId: queue.id,
+          })
+        );
     });
 
     cy.get("@ta").then((ta) => {
@@ -24,9 +28,9 @@ describe("TA interacts with student question", () => {
       cy.request(
         "POST",
         `/api/v1/courses/${queue.course.id}/ta_location/${queue.room}`
-        );
-        // Visit the queue page
-        cy.visit(`/course/${queue.courseId}/queue/${queue.id}`)
+      );
+      // Visit the queue page
+      cy.visit(`/course/${queue.courseId}/queue/${queue.id}`);
     });
   });
 

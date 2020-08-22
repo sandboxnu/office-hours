@@ -36,7 +36,6 @@ describe("Student can create a question", () => {
 
         // See that the question shows in the queue list
         cy.get("body").should("contain", "Queued");
-        cy.get("body").contains("User");
         cy.get("body").contains("Concept");
         cy.get("body").contains("How do I use the design recipe?");
         cy.get("body").contains("Online");
@@ -67,7 +66,6 @@ describe("Student can create a question", () => {
 
         // See that the question shows in the queue list
         cy.get("body").should("contain", "Queued");
-        cy.get("body").contains("User");
         cy.get("body").contains("Concept");
         cy.get("body").contains("How do I use the design recipe?");
         cy.get("body").contains("Outside room, behind the couches");

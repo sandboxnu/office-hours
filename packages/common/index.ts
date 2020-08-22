@@ -1,12 +1,12 @@
 import {
   IsBoolean,
+  IsDefined,
   IsEnum,
   IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
   ValidateIf,
-  IsDefined,
 } from "class-validator";
 import "reflect-metadata";
 
@@ -348,6 +348,9 @@ export class CreateQuestionParams {
   @IsString()
   @IsOptional()
   location?: string;
+
+  @IsBoolean()
+  force!: boolean;
 }
 export type CreateQuestionResponse = Question;
 
