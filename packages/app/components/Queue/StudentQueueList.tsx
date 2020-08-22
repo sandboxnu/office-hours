@@ -250,6 +250,10 @@ export default function StudentQueueList({
   };
 
   if (queue && questions) {
+    if (!queue.isOpen) {
+      return <h1 style={{ marginTop: "50px" }}>The Queue is Closed!</h1>;
+    }
+
     return (
       <div>
         <Row gutter={[64, 64]}>

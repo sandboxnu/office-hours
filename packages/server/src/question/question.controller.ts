@@ -70,6 +70,7 @@ export class QuestionController {
 
     const queue = await QueueModel.findOne({
       where: { id: queueId },
+      relations: ['staffList'],
     });
 
     if (!queue) {
@@ -89,6 +90,13 @@ export class QuestionController {
         "You can't create more than one question fuck ligma stanley",
       );
     }
+
+    if (!(await queue.checkIsOpen())) {
+      throw new BadRequestException(
+        "You can't post a question to a closed queue",
+      );
+    }
+
     const question = await QuestionModel.create({
       queueId: queueId,
       creator: user,
