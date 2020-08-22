@@ -69,7 +69,6 @@ const HeaderText = styled.div`
 
 const CenterRow = styled(Row)`
   align-items: center;
-  justify-content: space-between;
 `;
 
 const FullWidthButton = styled(Button)`
@@ -358,14 +357,14 @@ function Queue({ questions, studentQuestion }: QueueProps) {
         </h1>
       ) : (
         <StudentHeaderCard bordered={false}>
-          <CenterRow justify="space-between">
-            <Col span={1}>
+          <CenterRow>
+            <Col flex="0 0 40px">
               <HeaderText>#</HeaderText>
             </Col>
-            <Col xs={16} sm={11} lg={6}>
+            <Col flex="1 1">
               <HeaderText>question</HeaderText>
             </Col>
-            <Col span={2}>
+            <Col flex="0 0 60px">
               <HeaderText>wait</HeaderText>
             </Col>
           </CenterRow>
