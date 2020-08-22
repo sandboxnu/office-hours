@@ -296,10 +296,7 @@ export default function StudentQueueList({
           <QueueInfoColumn queueId={qid} onJoinQueue={joinQueueOpenModal} />
           <VerticalDivider />
           <QueueContainer>
-            <StudentBanner
-              studentQuestion={studentQuestion}
-              position={studentQuestionIndex + 1}
-            />
+            <StudentBanner queueId={qid} />
             <Queue questions={questions} studentQuestion={studentQuestion} />
           </QueueContainer>
         </Container>

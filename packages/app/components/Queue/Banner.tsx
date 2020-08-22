@@ -1,4 +1,3 @@
-import { ButtonProps } from "antd/lib/button";
 import { ReactNode, ReactElement } from "react";
 import styled from "styled-components";
 
@@ -7,25 +6,52 @@ const BannerContainer = styled.div`
 `;
 
 const TitleContainer = styled.div`
-  color: ${({ color }) => color || "#8895A6"};
+  background: ${({ color }) => color || "#8895A6"};
+  padding-left: 24px;
+  min-height: 60px;
+  border-radius: 6px 6px 0 0;
+  position: relative;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+const Title = styled.div`
+  font-weight: 300;
+  font-size: 24px;
+  color: white;
+`;
+const ButtonContainer = styled.div`
+  display: flex;
+`;
+
+const ContentContainer = styled.div`
+  background: ${({ color }) => color || "#CFD6DE"};
+  padding-left: 24px;
+  border-radius: 0 0 6px 6px;
 `;
 
 interface BannerProps {
-  title?: string;
+  title?: string | ReactNode;
   content?: string | ReactNode;
   titleColor?: string;
   contentColor?: string;
-  primaryButtonText?: string;
-  secondaryButtonText?: string;
-  primaryButtonProps?: ButtonProps;
-  secondaryButtonProps?: ButtonProps;
-  onPrimary?: () => void;
-  onSecondary?: () => void;
+  buttons?: ReactNode;
 }
+/**
+ * Presentation-only component
+ */
 export default function Banner(props: BannerProps): ReactElement {
   return (
     <BannerContainer>
-      <TitleContainer color={props.titleColor}>{props.title}</TitleContainer>
+      <TitleContainer color={props.titleColor}>
+        <Title>{props.title}</Title>
+        <ButtonContainer>{props.buttons}</ButtonContainer>
+      </TitleContainer>
+      <ContentContainer color={props.contentColor}>
+        {props.content}
+      </ContentContainer>
     </BannerContainer>
   );
 }
