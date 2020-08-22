@@ -105,6 +105,7 @@ export function QueueInfoColumn({
           onConfirm={() => onJoinQueue(true)}
           okText="Yes"
           cancelText="No"
+          disabled
           visible={showJoinPopconfirm}
           onVisibleChange={setShowJoinPopconfirm}
         >
