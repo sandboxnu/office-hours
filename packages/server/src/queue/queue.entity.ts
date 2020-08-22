@@ -52,7 +52,7 @@ export class QueueModel extends BaseEntity {
   @JoinTable()
   staffList: UserModel[];
 
-  @Column()
+  @Column({ default: false })
   allowQuestions: boolean;
 
   @Exclude()

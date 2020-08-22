@@ -50,17 +50,12 @@ export default function QueueListHeader({
 }: QueueListHeaderProps): ReactElement {
   const { queue, queuesError, mutateQueue } = useQueue(queueId);
   const [queueSettingsModal, setQueueSettingsModal] = useState(false);
-  const [oldNotes, setOldNotes] = useState(queue?.notes);
-  const [updatedNotes, setUpdatedNotes] = useState(queue?.notes);
+  const [notes, setNotes] = useState(queue?.notes);
+  const [allowQuestions, setAllowQuestions] = useState(queue?.allowQuestions);
 
-  const updateQueueNotes = async () => {
-    await API.queues.updateNotes(queueId, updatedNotes);
-    setOldNotes(updatedNotes);
-    mutateQueue();
-  };
-
-  const toggleAllowQuestions = async () => {
-    await API.queues.toggleQueue(queueId);
+  const updateQueueSettings = async () => {
+    console.log(allowQuestions);
+    await API.queues.updateQueue(queueId, notes, allowQuestions);
     mutateQueue();
   };
 
@@ -79,32 +74,26 @@ export default function QueueListHeader({
         title="LOL Stanley you're gonna have to figure this one out"
         visible={queueSettingsModal}
         onCancel={() => {
-          setUpdatedNotes(oldNotes);
           setQueueSettingsModal(false);
+          setAllowQuestions(queue?.allowQuestions);
+          setNotes(queue?.notes);
         }}
         onOk={() => {
-          setOldNotes(updatedNotes);
+          updateQueueSettings();
           setQueueSettingsModal(false);
         }}
       >
         <h2>Edit Queue Notes:</h2>
         <NotesInput
-          defaultValue={oldNotes}
-          onPressEnter={updateQueueNotes}
-          value={updatedNotes}
-          onChange={(e) => setUpdatedNotes(e.target.value as string)}
+          defaultValue={notes}
+          value={notes}
+          onChange={(e) => setNotes(e.target.value as string)}
           allowClear={true}
-          onKeyDown={(key) => {
-            if (key.key === "Escape") {
-              setUpdatedNotes(oldNotes);
-            }
-          }}
         />
-
         <h2 style={{ paddingTop: "40px" }}>Allow Questions</h2>
         <Switch
-          checked={queue.allowQuestions}
-          onChange={toggleAllowQuestions}
+          checked={allowQuestions}
+          onChange={setAllowQuestions}
           data-cy="allow-questions-toggle"
         />
       </Modal>

@@ -90,11 +90,15 @@ class APIClient {
       parseQueueDates(queue);
       return queue;
     },
-    updateNotes: async (queueId: number, notes: string) => {
-      await this.axios.patch(`/api/v1/queues/${queueId}`, { notes });
-    },
-    toggleQueue: async (queueId: number): Promise<boolean> => {
-      return await this.axios.patch(`/api/v1/queues/${queueId}/toggleQueue`);
+    updateQueue: async (
+      queueId: number,
+      notes: string,
+      allowQuestions: boolean
+    ) => {
+      await this.axios.patch(`/api/v1/queues/${queueId}`, {
+        notes,
+        allowQuestions,
+      });
     },
   };
   notif = {

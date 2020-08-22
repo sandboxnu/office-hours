@@ -63,6 +63,7 @@ export class QueueController {
     }
 
     queue.notes = body.notes;
+    queue.allowQuestions = body.allowQuestions;
     await queue.save();
     return queue;
   }
@@ -77,13 +78,5 @@ export class QueueController {
     });
 
     this.queueSSEService.subscribeClient(queueId, res);
-  }
-
-  @Patch(':queueId/toggleQueue')
-  async toggleQueue(@Param('queueId') qid: number): Promise<boolean> {
-    const queue = await QueueModel.findOne(qid);
-    queue.allowQuestions = !queue.allowQuestions;
-    await queue.save();
-    return queue.allowQuestions;
   }
 }
