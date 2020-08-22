@@ -265,25 +265,27 @@ interface QueueProps {
 function Queue({ questions, studentQuestion }: QueueProps) {
   return (
     <div>
-      <QueueHeader>Queue</QueueHeader>
       {questions?.length === 0 ? (
         <h1 style={{ marginTop: "50px" }}>
           There currently aren&apos;t any questions in the queue
         </h1>
       ) : (
-        <StudentHeaderCard bordered={false}>
-          <CenterRow>
-            <Col flex="0 0 40px">
-              <HeaderText>#</HeaderText>
-            </Col>
-            <Col flex="1 1">
-              <HeaderText>question</HeaderText>
-            </Col>
-            <Col flex="0 0 60px">
-              <HeaderText>wait</HeaderText>
-            </Col>
-          </CenterRow>
-        </StudentHeaderCard>
+        <>
+          <QueueHeader>Queue</QueueHeader>
+          <StudentHeaderCard bordered={false}>
+            <CenterRow>
+              <Col flex="0 0 40px">
+                <HeaderText>#</HeaderText>
+              </Col>
+              <Col flex="1 1">
+                <HeaderText>question</HeaderText>
+              </Col>
+              <Col flex="0 0 60px">
+                <HeaderText>wait</HeaderText>
+              </Col>
+            </CenterRow>
+          </StudentHeaderCard>
+        </>
       )}
       {questions?.map((question: Question, index: number) => {
         return (
