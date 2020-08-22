@@ -14,6 +14,11 @@ const LeaveQueueButton = styled(Button)`
   border: 0;
   background: #e26567;
   color: #fff;
+  &:hover,
+  &:focus {
+    background: #fc7f81;
+    color: #fff;
+  }
 `;
 const EditQuestionButton = styled(Button)`
   margin-right: 16px;
