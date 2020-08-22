@@ -92,7 +92,7 @@ export class QuestionController {
         "Can't post question to course you're not in!",
       );
     }
-      
+
     if (!(await queue.checkIsOpen())) {
       throw new BadRequestException(
         "You can't post a question to a closed queue",
@@ -111,9 +111,9 @@ export class QuestionController {
         previousUserQuestion.status = ClosedQuestionStatus.Resolved;
         await previousUserQuestion.save();
       } else {
-        throw new BadRequestException({
-          description: "You can't create more than one question at a time.",
-        });
+        throw new BadRequestException(
+          "You can't create more than one question at a time.",
+        );
       }
     }
 

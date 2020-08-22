@@ -69,6 +69,7 @@ describe('Question Integration', () => {
           text: "Don't know recursion",
           questionType: QuestionType.Concept,
           queueId: queue.id,
+          force: false,
         })
         .expect(201);
       expect(response.body).toMatchObject({
@@ -163,11 +164,12 @@ describe('Question Integration', () => {
           text: 'i need to know where the alamo is',
           queueId: queue.id,
           questionType: QuestionType.Bug,
+          force: false,
         });
 
       expect(response.status).toBe(400);
       expect(response.body.message).toBe(
-        "You can't create more than one question fuck ligma stanley",
+        "You can't create more than one question at a time.",
       );
     });
   });
