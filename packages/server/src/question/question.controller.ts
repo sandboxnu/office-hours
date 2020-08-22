@@ -70,6 +70,7 @@ export class QuestionController {
 
     const queue = await QueueModel.findOne({
       where: { id: queueId },
+      relations: ['staffList'],
     });
 
     if (!queue) {
@@ -89,6 +90,12 @@ export class QuestionController {
     if (!isUserInCourse) {
       throw new UnauthorizedException(
         "Can't post question to course you're not in!",
+      );
+    }
+      
+    if (!(await queue.checkIsOpen())) {
+      throw new BadRequestException(
+        "You can't post a question to a closed queue",
       );
     }
 

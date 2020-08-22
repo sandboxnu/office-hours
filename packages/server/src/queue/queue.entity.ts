@@ -60,18 +60,23 @@ export class QueueModel extends BaseEntity {
   startTime: Date;
   endTime: Date;
 
-  async isOpen(): Promise<boolean> {
-    if (this.staffList.length > 0) {
+  isOpen: boolean;
+
+  async checkIsOpen(): Promise<boolean> {
+    if (this.staffList && this.staffList.length > 0) {
+      this.isOpen = true;
       return true;
     }
     const now = new Date();
     const MS_IN_MINUTE = 60000;
     const ohs = await this.getOfficeHours();
-    return !!ohs.find(
+    const open = !!ohs.find(
       (e) =>
-        e.startTime.valueOf() - 10 * MS_IN_MINUTE < now.valueOf() &&
-        e.endTime.valueOf() + 1 * MS_IN_MINUTE > now.valueOf(),
+        e.startTime.getTime() - 10 * MS_IN_MINUTE < now.getTime() &&
+        e.endTime.getTime() + 1 * MS_IN_MINUTE > now.getTime(),
     );
+    this.isOpen = open;
+    return open;
   }
 
   @Expose()

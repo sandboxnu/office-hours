@@ -271,6 +271,10 @@ export default function StudentQueueList({
   };
 
   if (queue && questions) {
+    if (!queue.isOpen) {
+      return <h1 style={{ marginTop: "50px" }}>The Queue is Closed!</h1>;
+    }
+
     return (
       <div>
         <Row gutter={[64, 64]}>
@@ -348,7 +352,7 @@ export default function StudentQueueList({
                     <HeaderText>#</HeaderText>
                   </Col>
                   <Col xs={16} sm={11} lg={6}>
-                    <HeaderText>name</HeaderText>
+                    <HeaderText>question</HeaderText>
                   </Col>
                   <Col xs={0} lg={2}>
                     <HeaderText>type</HeaderText>

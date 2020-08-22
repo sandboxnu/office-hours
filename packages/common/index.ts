@@ -147,6 +147,7 @@ export interface QueuePartial {
   staffList: UserPartial[];
   queueSize: number;
   notes?: string;
+  isOpen: boolean;
   startTime?: Date;
   endTime?: Date;
 }

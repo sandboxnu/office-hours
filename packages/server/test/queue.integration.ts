@@ -27,7 +27,16 @@ describe('Queue Integration', () => {
       const res = await supertest({ userId: userCourse.user.id })
         .get(`/queues/${queue.id}`)
         .expect(200);
-      expect(res.body).toMatchSnapshot();
+      expect(res.body).toMatchObject({
+        id: 2,
+        notes: null,
+        queueSize: 1,
+        room: 'WVH 101',
+        staffList: expect.any(Array),
+        isOpen: true,
+        startTime: expect.any(String),
+        endTime: expect.any(String),
+      });
     });
 
     it('returns 404 on non-existent course', async () => {

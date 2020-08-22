@@ -28,10 +28,15 @@ export const SemesterFactory = new Factory(SemesterModel)
   .attr('season', 'Fall')
   .attr('year', 2020);
 
-export const OfficeHourFactory = new Factory(OfficeHourModel)
+export const ClosedOfficeHourFactory = new Factory(OfficeHourModel)
   .attr('title', 'Alex & Stanley')
   .attr('startTime', new Date('2020-05-20T14:00:00.000Z'))
   .attr('endTime', new Date('2020-05-20T15:30:00.000Z'));
+
+export const OfficeHourFactory = new Factory(OfficeHourModel)
+  .attr('title', 'Alex & Stanley')
+  .attr('startTime', new Date(new Date().getTime() - 3600000))
+  .attr('endTime', new Date(new Date().getTime() + 3600000));
 
 export const CourseFactory = new Factory(CourseModel)
   .attr('name', 'CS 2500')
@@ -47,7 +52,8 @@ export const UserCourseFactory = new Factory(UserCourseModel)
 
 export const QueueFactory = new Factory(QueueModel)
   .attr('room', `WVH 101`)
-  .assocOne('course', CourseFactory);
+  .assocOne('course', CourseFactory)
+  .assocMany('officeHours', OfficeHourFactory);
 
 // WARNING: DO NOT USE CREATORID. AS YOU SEE HERE, WE ONLY ACCEPT CREATOR
 //TODO: make it accept creatorId as well
