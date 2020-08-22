@@ -1,12 +1,15 @@
 describe("Student can create a question", () => {
   beforeEach(() => {
     // Set the state
-    cy.request("POST", "/api/v1/seeds/createUser", { role: "student" })
+    cy.request("POST", "/api/v1/seeds/createUser", {
+      role: "student",
+    })
       .then((res) => res.body)
       .as("student");
     cy.get("@student").then((student) => {
       cy.request("POST", "/api/v1/seeds/createQueue", {
         courseId: student.course.id,
+        allowQuestions: true,
       })
         .then((res) => res.body)
         .as("queue");
@@ -25,7 +28,9 @@ describe("Student can create a question", () => {
 
         // Fill out the question form
         cy.get("body").should("contain", "Concept");
-        cy.get("label").contains("Concept").click({ force: true });
+        cy.get("label").contains("Concept").click({
+          force: true,
+        });
         cy.get("[data-cy='questionText']").type(
           "How do I use the design recipe?"
         );
@@ -53,7 +58,9 @@ describe("Student can create a question", () => {
 
         // Fill out the question form
         cy.get("body").should("contain", "Concept");
-        cy.get("label").contains("Concept").click({ force: true });
+        cy.get("label").contains("Concept").click({
+          force: true,
+        });
         cy.get("[data-cy='questionText']").type(
           "How do I use the design recipe?"
         );

@@ -220,7 +220,11 @@ export default function StudentQueueList({
         await mutateQuestions(newQuestions);
         setPopupEditQuestion(true);
       } catch (e) {
-        if (e.response?.data?.message?.includes("You can't create more than one question at a time")) {
+        if (
+          e.response?.data?.message?.includes(
+            "You can't create more than one question at a time"
+          )
+        ) {
           setFromAnotherQueue(true);
         }
         // TODO: how should we handle error that happens for another reason?
@@ -311,8 +315,9 @@ export default function StudentQueueList({
             </Row>
             <Row justify="space-between">
               <Col>
-                <QueueListHeader queue={queue} />
+                <QueueListHeader queueId={qid} isTA={false} />
               </Col>
+
               <Col>
                 {!studentQuestion && fromAnotherQueue ? (
                   <Popconfirm
@@ -334,6 +339,8 @@ export default function StudentQueueList({
                     type="primary"
                     size="large"
                     onClick={() => joinQueueOpenModal(false)}
+                    disabled={!queue?.allowQuestions}
+                    data-cy="join-queue-button"
                   >
                     Join Queue
                   </JoinButton>

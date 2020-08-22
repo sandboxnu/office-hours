@@ -63,6 +63,7 @@ export class QueueController {
     }
 
     queue.notes = body.notes;
+    queue.allowQuestions = body.allowQuestions;
     await queue.save();
     return queue;
   }

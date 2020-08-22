@@ -131,6 +131,7 @@ export interface Queue {
   questions: Question[];
   startTime?: Date;
   endTime?: Date;
+  allowQuestions: boolean;
 }
 
 /**
@@ -150,6 +151,7 @@ export interface QueuePartial {
   isOpen: boolean;
   startTime?: Date;
   endTime?: Date;
+  allowQuestions: boolean;
 }
 
 /**
@@ -389,6 +391,9 @@ export type QueueNotePayloadType = {
 export class UpdateQueueNotesParams {
   @IsString()
   notes!: string;
+
+  @IsBoolean()
+  allowQuestions!: boolean;
 }
 
 export interface TwilioBody {
