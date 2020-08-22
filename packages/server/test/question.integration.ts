@@ -13,6 +13,8 @@ import {
   TACourseFactory,
   UserCourseFactory,
   UserFactory,
+  OfficeHourFactory,
+  ClosedOfficeHourFactory,
 } from './util/factories';
 import {
   expectUserNotified,
