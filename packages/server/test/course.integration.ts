@@ -3,10 +3,12 @@ import { QueueModel } from '../src/queue/queue.entity';
 import {
   CourseFactory,
   OfficeHourFactory,
+  ClosedOfficeHourFactory,
   QueueFactory,
   StudentCourseFactory,
   TACourseFactory,
   UserFactory,
+  UserCourseFactory,
   QuestionFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
@@ -19,9 +21,14 @@ describe('Course Integration', () => {
   describe('GET /courses/:id', () => {
     it('gets office hours no queues, since no queue is happening right now', async () => {
       const course = await CourseFactory.create({
-        officeHours: [await OfficeHourFactory.create()],
+        officeHours: [await ClosedOfficeHourFactory.create()],
       });
       await QueueFactory.create();
+
+      await UserCourseFactory.create({
+        user: await UserFactory.create(),
+        course: course,
+      });
       // will not load b/c office hours aren't happening right now
       // (unless you go back in time and run these tests )
       const response = await supertest({ userId: 1 })
@@ -52,13 +59,38 @@ describe('Course Integration', () => {
         course: course,
       });
 
+      await UserCourseFactory.create({
+        user: await UserFactory.create(),
+        course: course,
+      });
+
       const response = await supertest({ userId: 1 })
         .get(`/courses/${course.id}`)
         .expect(200);
 
       expect(response.body).toMatchObject({
-        queues: [{ id: 1 }],
+        queues: [{ id: 2 }, { id: 1 }],
       });
+    });
+
+    it('cant get office hours if not a member of the course', async () => {
+      const now = new Date();
+      const course = await CourseFactory.create();
+
+      await QueueFactory.create({
+        room: "Matthias's Office",
+        course: course,
+        officeHours: [
+          await OfficeHourFactory.create({
+            startTime: now,
+            endTime: new Date(now.valueOf() + 4500000),
+            room: "Matthias's Office",
+          }),
+          await OfficeHourFactory.create(), // aren't loaded cause time off
+        ],
+      });
+
+      await supertest({ userId: 1 }).get(`/courses/${course.id}`).expect(401);
     });
   });
 
@@ -138,11 +170,28 @@ describe('Course Integration', () => {
       });
     });
 
+    it('tests student cant checkout from queue', async () => {
+      const student = await UserFactory.create();
+      const queue = await QueueFactory.create({
+        room: 'The Alamo',
+      });
+      const scf = await StudentCourseFactory.create({
+        course: queue.course,
+        user: student,
+      });
+
+      await supertest({ userId: student.id })
+        .delete(`/courses/${scf.courseId}/ta_location/The Alamo`)
+        .expect(401);
+    });
+
     it('tests queue is cleaned when TA checks out', async () => {
+      const ofs = await ClosedOfficeHourFactory.create();
       const ta = await UserFactory.create();
       const queue = await QueueFactory.create({
         room: 'The Alamo',
         staffList: [ta],
+        officeHours: [ofs],
       });
       const tcf = await TACourseFactory.create({
         course: queue.course,

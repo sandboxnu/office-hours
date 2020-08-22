@@ -7,8 +7,6 @@
     "build": "next build",
     "prod:start": "next start -p 3001",
     "test": "jest",
-    "cypress:run": "npx cypress run",
-    "cypress:open": "npx cypress open",
     "tsc": "tsc"
   },
   "dependencies": {
@@ -63,7 +61,8 @@
       "@testing-library/jest-dom/extend-expect"
     ],
     "modulePathIgnorePatterns": [
-      ".next"
+      ".next",
+      "<rootDir>/cypress/*"
     ]
   }
 }

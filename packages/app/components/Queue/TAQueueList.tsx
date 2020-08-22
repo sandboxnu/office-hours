@@ -9,6 +9,7 @@ import {
 import { Button, Card, Col, Grid, Input, Row, Tooltip } from "antd";
 import { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
+import { StatusRow } from "./StatusRow";
 import { useProfile } from "../../hooks/useProfile";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
@@ -184,22 +185,6 @@ export default function TAQueueList({
   };
 
   /**
-   * Sends a push notification alert to every question currently being helped.
-   */
-  const alertHelpingAll = () => {
-    // for each question currently being helped, call alertStudent()
-  };
-
-  /**
-   * Marks every question currently being helped by this TA as finished.
-   */
-  const finishHelpingAll = () => {
-    for (const question of helpingQuestions) {
-      updateQuestionTA(question, ClosedQuestionStatus.Resolved);
-    }
-  };
-
-  /**
    * Adds every given question to the group that is currently being helped.
    * @param selected the given list of questions to help
    */
@@ -303,18 +288,6 @@ export default function TAQueueList({
       <Col xs={24} lg={10} xxl={6} order={screens.lg === false ? 1 : 2}>
         <HeaderRow justify="space-between">
           <QueueTitle>Helping</QueueTitle>
-          <div>
-            <AlertButton danger size="large" onClick={alertHelpingAll}>
-              Alert All
-            </AlertButton>
-            <FinishButton
-              type="primary"
-              size="large"
-              onClick={finishHelpingAll}
-            >
-              Finish All
-            </FinishButton>
-          </div>
         </HeaderRow>
         {helpingQuestions &&
           helpingQuestions.map((question) => (
@@ -384,6 +357,7 @@ export default function TAQueueList({
                   <CheckOutButton
                     danger
                     size="large"
+                    data-cy="check-out-button"
                     onClick={async () => {
                       await API.taStatus.checkOut(courseId, queue?.room);
                       mutateQueue();
@@ -398,12 +372,14 @@ export default function TAQueueList({
                       mutateQueue();
                     }}
                     size="large"
+                    data-cy="check-in-button"
                   >
                     Check In
                   </CheckInButton>
                 )}
               </Col>
             </Row>
+            <StatusRow questions={questions} taList={queue.staffList} />
             {!helping && renderTAHeader()}
             {helping && renderHelpingHeader()}
             {questions?.map((question: Question, index: number) => {

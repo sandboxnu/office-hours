@@ -1,23 +1,35 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestTypeOrmModule } from '../../test/util/testUtils';
-import { QueueService } from './queue.service';
+import { TestTypeOrmModule } from '../../../test/util/testUtils';
+import { QueueCleanService } from './queue-clean.service';
 import {
   QueueFactory,
   UserFactory,
   QuestionFactory,
-} from '../../test/util/factories';
+  ClosedOfficeHourFactory,
+} from '../../../test/util/factories';
 import { OpenQuestionStatus } from '@template/common';
-import { QuestionModel } from '../question/question.entity';
+import { QuestionModel } from '../../question/question.entity';
+import { Connection } from 'typeorm';
 
 describe('QueueService', () => {
-  let service: QueueService;
+  let service: QueueCleanService;
+  let conn: Connection;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestTypeOrmModule],
-      providers: [QueueService],
+      providers: [QueueCleanService],
     }).compile();
-    service = module.get<QueueService>(QueueService);
+    service = module.get<QueueCleanService>(QueueCleanService);
+    conn = module.get<Connection>(Connection);
+  });
+
+  afterAll(async () => {
+    await conn.close();
+  });
+
+  beforeEach(async () => {
+    await conn.synchronize(true);
   });
 
   describe('cleanQueue', () => {
@@ -35,7 +47,8 @@ describe('QueueService', () => {
     });
 
     it('if no staff are present all questions with open status are marked as stale', async () => {
-      const queue = await QueueFactory.create();
+      const ofs = await ClosedOfficeHourFactory.create();
+      const queue = await QueueFactory.create({ officeHours: [ofs] });
       const question = await QuestionFactory.create({
         status: OpenQuestionStatus.Queued,
         queue: queue,

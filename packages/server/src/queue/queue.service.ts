@@ -1,48 +1,43 @@
-import { Injectable } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { QueueModel } from './queue.entity';
-import { OpenQuestionStatus, ClosedQuestionStatus } from '@template/common';
-import { QuestionModel } from '../question/question.entity';
+import { GetQueueResponse, ListQuestionsResponse } from '@template/common';
+import { QuestionModel } from 'question/question.entity';
 
+/**
+ * Get data in service of the queue controller and SSE
+ * WHY? To ensure data returned by endpoints is *exactly* equal to data sent by SSE
+ */
 @Injectable()
 export class QueueService {
   constructor(private connection: Connection) {}
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  private async cleanAllQueues(): Promise<void> {
-    const queuesWithOpenQuestions: QueueModel[] = await QueueModel.getRepository()
-      .createQueryBuilder('queue')
-      .leftJoinAndSelect('queue_model.questions', 'question')
-      .where('question.status IN (:...status)', {
-        status: Object.values(OpenQuestionStatus),
-      })
-      .getMany();
-
-    queuesWithOpenQuestions.forEach((queue) => {
-      this.cleanQueue(queue.id);
-    });
-  }
-
-  public async cleanQueue(queueId: number): Promise<void> {
+  async getQueue(queueId: number): Promise<GetQueueResponse> {
     const queue = await QueueModel.findOne(queueId, {
-      relations: ['staffList', 'questions', 'officeHours'],
+      relations: ['staffList'],
     });
 
-    if (!queue.isOpen()) {
-      await this.unsafeClean(queue);
-    }
+    await queue.addQueueTimes();
+    await queue.checkIsOpen();
+    const questions = await QuestionModel.find({ where: { queueId } });
+    queue.questions = questions;
+
+    return queue;
   }
 
-  private async unsafeClean(queue: QueueModel): Promise<void> {
-    const openQuestions = queue.questions.filter(
-      (q) => q.status in OpenQuestionStatus,
-    );
-
-    openQuestions.forEach((q: QuestionModel) => {
-      q.status = ClosedQuestionStatus.Stale;
+  async getQuestions(queueId: number): Promise<ListQuestionsResponse> {
+    // todo: Make a student and a TA version of this function, and switch which one to use in the controller
+    // for now, just return the student response
+    const queueSize = await QueueModel.count({
+      where: { id: queueId },
     });
-
-    await QuestionModel.save(openQuestions);
+    // Check that the queue exists
+    if (queueSize === 0) {
+      throw new NotFoundException();
+    }
+    return QuestionModel.openInQueue(queueId)
+      .leftJoinAndSelect('question.creator', 'creator')
+      .leftJoinAndSelect('question.taHelped', 'taHelped')
+      .getMany();
   }
 }

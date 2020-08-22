@@ -10,7 +10,12 @@ describe("TA interacts with student question", () => {
         courseId: ta.course.id,
       })
         .then((res) => res.body)
-        .as("queue");
+        .as("queue")
+        .then((queue) =>
+          cy.request("POST", "/api/v1/seeds/createQuestion", {
+            queueId: queue.id,
+          })
+        );
     });
 
     cy.get("@ta").then((ta) => {
@@ -19,21 +24,14 @@ describe("TA interacts with student question", () => {
     });
 
     cy.get("@queue").then((queue) => {
-      // Create a question for the TA to help
-      cy.request("POST", "/api/v1/seeds/createQuestion", {
-        queueId: queue.id,
-      }).then((res) => res.body);
       // Check the TA into the queue
       cy.request(
         "POST",
         `/api/v1/courses/${queue.course.id}/ta_location/${queue.room}`
       );
+      // Visit the queue page
+      cy.visit(`/course/${queue.courseId}/queue/${queue.id}`);
     });
-
-    // Visit the queue page
-    cy.get("@queue").then((queue) =>
-      cy.visit(`/course/${queue.courseId}/queue/${queue.id}`)
-    );
   });
 
   it("clicks the help button then finish helping", () => {
@@ -56,19 +54,21 @@ describe("TA interacts with student question", () => {
     cy.contains("button", "Can't Find").click();
   });
 
+  it("clicks the Help Next button to help the next student", () => {
+    // Click on the Help Next button
+    cy.get("[data-cy='help-next']").click();
+    // See that the students question is shown as helping
+    cy.contains("Helping");
+  });
+
   it("clicks a students question and then removes it from the queue", () => {
     // Click on the student's question
     cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
     // Click Remove from Queue
     cy.contains("button", "Remove from Queue").click();
     // Click yes on the modal
-    cy.contains(".ant-popover-buttons", "Yes").click();
-  });
+    cy.get("span").contains("Yes").click();
 
-  it("clicks the Help Next button to help the next student", () => {
-    // Click on the Help Next button
-    cy.get("[data-cy='help-next']").click();
-    // See that the students question is shown as helping
-    cy.contains("Helping");
+    cy.contains("There currently aren't any questions in the queue");
   });
 });

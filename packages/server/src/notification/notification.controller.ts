@@ -54,6 +54,7 @@ export class NotificationController {
     return `registration success for ${body.phoneNumber}`;
   }
 
+  // Webhook from twilio
   @Post('/phone/verify')
   @Header('Content-Type', 'text/xml')
   async verifyPhoneUser(
