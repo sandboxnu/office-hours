@@ -39,6 +39,7 @@ const NotesText = styled.div`
 // New queue styled components start here
 
 const InfoColumnContainer = styled.div`
+  flex-shrink: 0;
   @media (min-width: 767px) {
     width: 320px;
   }

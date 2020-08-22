@@ -194,7 +194,7 @@ export default function TAQueueList({
     }
   };
 
-  const isStaffCheckedIn = queue?.staffList.some((e) => e.id === user.id);
+  const isStaffCheckedIn = queue?.staffList.some((e) => e.id === user?.id);
 
   const helpNext = async () => {
     const nextQuestion = questions.find(

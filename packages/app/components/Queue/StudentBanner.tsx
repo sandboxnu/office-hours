@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Button, Row, Col } from "antd";
 import { toOrdinal } from "../../utils/ordinal";
 import { useStudentQuestion } from "../../hooks/useStudentQuestion";
+import { Text } from "./QueueCardSharedComponents";
 
 const BoldNumber = styled.span`
   font-weight: bold;
@@ -22,9 +23,13 @@ const EditQuestionButton = styled(Button)`
 `;
 
 const QuestionDetails = styled.div`
-  display: grid;
+  display: flex;
 `;
-const InfoColumn = styled.div``;
+const InfoHeader = styled.div`
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 14px;
+`;
 
 interface StudentBannerProps {
   queueId: number;
@@ -50,10 +55,19 @@ export default function StudentBanner({ queueId }: StudentBannerProps) {
           </>
         }
         content={
-          <Row>
-            <Col>Question</Col>
-            <Col>Type</Col>
-          </Row>
+          <QuestionDetails>
+            <Col flex="1 1">
+              <InfoHeader>Question</InfoHeader>
+              <Text>{studentQuestion.text}</Text>
+            </Col>
+            <Col flex="0 0 60px">
+              <InfoHeader>Type</InfoHeader>
+              <Text>
+                {studentQuestion.questionType.charAt(0).toUpperCase() +
+                  studentQuestion.questionType.substr(1).toLowerCase()}
+              </Text>
+            </Col>
+          </QuestionDetails>
         }
       />
     );

@@ -28,7 +28,7 @@ const ButtonContainer = styled.div`
 
 const ContentContainer = styled.div`
   background: ${({ color }) => color || "#CFD6DE"};
-  padding-left: 24px;
+  padding: 12px 24px;
   border-radius: 0 0 6px 6px;
 `;
 
