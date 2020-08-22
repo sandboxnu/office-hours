@@ -1,15 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Queue Integration GET /queues/:id get a queue 1`] = `
-Object {
-  "id": 2,
-  "notes": null,
-  "queueSize": 1,
-  "room": "WVH 101",
-  "staffList": Array [],
-}
-`;
-
 exports[`Queue Integration GET /queues/:id returns 401 when not logged in 1`] = `
 Object {
   "error": "Unauthorized",

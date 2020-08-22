@@ -3,6 +3,7 @@ import { QueueModel } from '../src/queue/queue.entity';
 import {
   CourseFactory,
   OfficeHourFactory,
+  ClosedOfficeHourFactory,
   QueueFactory,
   StudentCourseFactory,
   TACourseFactory,
@@ -20,7 +21,7 @@ describe('Course Integration', () => {
   describe('GET /courses/:id', () => {
     it('gets office hours no queues, since no queue is happening right now', async () => {
       const course = await CourseFactory.create({
-        officeHours: [await OfficeHourFactory.create()],
+        officeHours: [await ClosedOfficeHourFactory.create()],
       });
       await QueueFactory.create();
 
@@ -68,7 +69,7 @@ describe('Course Integration', () => {
         .expect(200);
 
       expect(response.body).toMatchObject({
-        queues: [{ id: 1 }],
+        queues: [{ id: 2 }, { id: 1 }],
       });
     });
 
@@ -185,10 +186,12 @@ describe('Course Integration', () => {
     });
 
     it('tests queue is cleaned when TA checks out', async () => {
+      const ofs = await ClosedOfficeHourFactory.create();
       const ta = await UserFactory.create();
       const queue = await QueueFactory.create({
         room: 'The Alamo',
         staffList: [ta],
+        officeHours: [ofs],
       });
       const tcf = await TACourseFactory.create({
         course: queue.course,

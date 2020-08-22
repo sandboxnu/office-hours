@@ -6,24 +6,24 @@ import {
   NotFoundException,
   Param,
   Patch,
+  Res,
   UseGuards,
   UseInterceptors,
-  Res,
 } from '@nestjs/common';
 import {
   GetQueueResponse,
   ListQuestionsResponse,
-  UpdateQueueNotesParams,
   Role,
+  UpdateQueueNotesParams,
 } from '@template/common';
 import { Response } from 'express';
-import { Connection, In } from 'typeorm';
+import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
-import { QueueModel } from './queue.entity';
-import { QueueRolesGuard } from './queue-role.guard';
 import { Roles } from '../profile/roles.decorator';
-import { QueueService } from './queue.service';
+import { QueueRolesGuard } from './queue-role.guard';
 import { QueueSSEService } from './queue-sse.service';
+import { QueueModel } from './queue.entity';
+import { QueueService } from './queue.service';
 
 @Controller('queues')
 @UseGuards(JwtAuthGuard, QueueRolesGuard)
