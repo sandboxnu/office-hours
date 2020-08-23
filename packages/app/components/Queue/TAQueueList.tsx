@@ -335,6 +335,7 @@ export default function TAQueueList({
                   <EditNotesButton
                     onClick={() => setEditingNotes(true)}
                     size="large"
+                    data-cy="edit-queue-notes"
                   >
                     Edit Queue Notes
                   </EditNotesButton>
