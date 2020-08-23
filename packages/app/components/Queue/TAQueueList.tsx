@@ -12,11 +12,17 @@ import { TAStatuses } from "./TAStatuses";
 import { useProfile } from "../../hooks/useProfile";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
-import QueueListHeader from "./QueueListSharedComponents";
+import QueueListHeader, {
+  QueuePageContainer,
+  QueueInfoColumn,
+  VerticalDivider,
+  QueueContainer,
+} from "./QueueListSharedComponents";
 import StudentInfoCard from "./StudentInfoCard";
 import StudentPopupCard from "./StudentPopupCard";
 import TAHelpingCard from "./TAHelpingCard";
 import TAQueueCard from "./TAQueueCard";
+import StudentBanner from "./StudentBanner";
 
 const { useBreakpoint } = Grid;
 
@@ -119,12 +125,12 @@ export default function TAQueueList({
   const groupQuestions: Question[] = questions?.filter(
     (question) => question.status !== OpenQuestionStatus.Helping
   );
-  const helping = helpingQuestions?.length !== 0;
+  const isHelping = helpingQuestions?.length !== 0;
 
   const [openPopup, setOpenPopup] = useState<boolean>(false);
   const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
 
-  const onOpenClick = useCallback((question: Question): void => {
+  const onOpenCard = useCallback((question: Question): void => {
     setCurrentQuestion(question);
     setOpenPopup(true);
   }, []);
@@ -169,75 +175,6 @@ export default function TAQueueList({
   };
 
   /**
-   * Renders the card headers for a TA who is not yet helping someone.
-   */
-  const renderTAHeader = () => {
-    return (
-      <TAHeaderCard bordered={false}>
-        {questions.length === 0 ? (
-          <h1 style={{ marginTop: "50px" }}>
-            There currently aren&apos;t any questions in the queue
-          </h1>
-        ) : (
-          <CenterRow justify="space-between">
-            <Col xs={2} lg={1}>
-              <HeaderText>#</HeaderText>
-            </Col>
-            <Col xs={14} sm={11} lg={5}>
-              <HeaderText>name</HeaderText>
-            </Col>
-            <Col xs={0} lg={2}>
-              <HeaderText>type</HeaderText>
-            </Col>
-            <Col xs={0} lg={7}>
-              <HeaderText>question</HeaderText>
-            </Col>
-            <Col xs={0} lg={2}>
-              <HeaderText>wait</HeaderText>
-            </Col>
-            <Col span={2}>
-              <StatusText>status</StatusText>
-            </Col>
-            <Col>
-              <Placeholder />
-            </Col>
-          </CenterRow>
-        )}
-      </TAHeaderCard>
-    );
-  };
-
-  /**
-   * Renders the card headers for a TA who is currently helping someone.
-   */
-  const renderHelpingHeader = () => {
-    return (
-      <TAHeaderCard bordered={false}>
-        <CenterRow justify="space-between">
-          <Col xs={2} lg={1}>
-            <HeaderText>#</HeaderText>
-          </Col>
-          <Col xs={14} sm={9} lg={11} xl={9} xxl={4}>
-            <HeaderText>name</HeaderText>
-          </Col>
-          <Col xs={0} xxl={7}>
-            <HeaderText>question</HeaderText>
-          </Col>
-          <Col xs={0} xl={3}>
-            <HeaderText>wait</HeaderText>
-          </Col>
-          <Col span={2}>
-            <StatusText>status</StatusText>
-          </Col>
-          <Col>
-            <Placeholder />
-          </Col>
-        </CenterRow>
-      </TAHeaderCard>
-    );
-  };
-
-  /**
    * Renders the title and aggregate buttons for the helping column.
    */
   const renderHelpingTitle = () => {
@@ -266,15 +203,12 @@ export default function TAQueueList({
 
   if (queue && questions) {
     return (
-      <div>
-        <Row gutter={[64, 64]}>
-          <Col flex="auto" order={screens.lg === false ? 2 : 1}>
-            <Row justify="space-between">
-              <Col>
-                <QueueListHeader queueId={qid} isTA={true} />
-              </Col>
-
-              <Col>
+      <>
+        <QueuePageContainer>
+          <QueueInfoColumn
+            queueId={qid}
+            buttons={
+              <>
                 <Tooltip
                   title={
                     !isStaffCheckedIn && "You must check in to help students!"
@@ -313,25 +247,18 @@ export default function TAQueueList({
                     Check In
                   </CheckInButton>
                 )}
-              </Col>
-            </Row>
-            <TAStatuses queueId={qid} />
-            {!helping && renderTAHeader()}
-            {helping && renderHelpingHeader()}
-            {questions?.map((question: Question, index: number) => {
-              return helping ? (
-                <TAHelpingCard rank={index + 1} question={question} />
-              ) : (
-                <TAQueueCard
-                  rank={index + 1}
-                  question={question}
-                  onOpen={onOpenClick}
-                />
-              );
-            })}
-          </Col>
-          {helping && renderHelpingTitle()}
-        </Row>
+              </>
+            }
+          />
+          <VerticalDivider />
+          <QueueContainer>
+            <QueueQuestions
+              questions={questions}
+              isHelping={isHelping}
+              onOpenCard={onOpenCard}
+            />
+          </QueueContainer>
+        </QueuePageContainer>
         {currentQuestion && (
           <StudentPopupCard
             onClose={onCloseClick}
@@ -341,9 +268,71 @@ export default function TAQueueList({
             isStaffCheckedIn={isStaffCheckedIn}
           />
         )}
-      </div>
+      </>
     );
   } else {
     return <div />;
   }
+}
+
+const QueueHeader = styled.h2`
+  margin-top: 24px;
+  margin-bottom: 0;
+`;
+interface QueueProps {
+  questions: Question[];
+  isHelping: boolean;
+  onOpenCard: (q: Question) => void;
+}
+function QueueQuestions({ questions, isHelping, onOpenCard }: QueueProps) {
+  return (
+    <div>
+      {questions.length === 0 ? (
+        <h1 style={{ marginTop: "50px" }}>
+          There currently aren&apos;t any questions in the queue
+        </h1>
+      ) : (
+        <>
+          <QueueHeader>Queue</QueueHeader>
+          <TAHeaderCard bordered={false}>
+            <CenterRow justify="space-between">
+              <Col xs={2} lg={1}>
+                <HeaderText>#</HeaderText>
+              </Col>
+              <Col xs={14} sm={11} lg={5}>
+                <HeaderText>name</HeaderText>
+              </Col>
+              <Col xs={0} lg={2}>
+                <HeaderText>type</HeaderText>
+              </Col>
+              <Col xs={0} lg={7}>
+                <HeaderText>question</HeaderText>
+              </Col>
+              <Col xs={0} lg={2}>
+                <HeaderText>wait</HeaderText>
+              </Col>
+              <Col span={2}>
+                <StatusText>status</StatusText>
+              </Col>
+              <Col>
+                <Placeholder />
+              </Col>
+            </CenterRow>
+          </TAHeaderCard>
+        </>
+      )}
+
+      {questions?.map((question: Question, index: number) => {
+        return isHelping ? (
+          <TAHelpingCard rank={index + 1} question={question} />
+        ) : (
+          <TAQueueCard
+            rank={index + 1}
+            question={question}
+            onOpen={onOpenCard}
+          />
+        );
+      })}
+    </div>
+  );
 }

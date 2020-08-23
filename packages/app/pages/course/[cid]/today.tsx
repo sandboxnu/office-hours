@@ -43,7 +43,7 @@ export default function Today(): ReactElement {
       data && data.queues.map((q) => (q.id === queue.id ? { ...q, notes } : q));
 
     mutate(`api/v1/courses/${cid}`, { ...data, queues: newQueues }, false);
-    await API.queues.updateQueue(queue.id, notes, queue.allowQuestions);
+    await API.queues.update(queue.id, notes, queue.allowQuestions);
     mutate(`api/v1/courses/${cid}`);
   };
 

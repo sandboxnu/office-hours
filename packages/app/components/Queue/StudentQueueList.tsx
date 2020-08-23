@@ -6,7 +6,16 @@ import {
   QuestionStatusKeys,
   QuestionType,
 } from "@template/common";
-import { Alert, Button, Card, Col, Grid, notification, Row } from "antd";
+import {
+  Alert,
+  Button,
+  Card,
+  Col,
+  Grid,
+  notification,
+  Row,
+  Popconfirm,
+} from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { mutate } from "swr";
@@ -14,31 +23,17 @@ import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
 import QuestionForm from "./QuestionForm";
-import { QueueInfoColumn } from "./QueueListSharedComponents";
+import {
+  QueueInfoColumn,
+  QueuePageContainer,
+  VerticalDivider,
+  QueueContainer,
+} from "./QueueListSharedComponents";
 import StudentQueueCard from "./StudentQueueCard";
 import { NotificationSettingsModal } from "../Nav/NotificationSettingsModal";
 import StudentBanner from "./StudentBanner";
 import { useStudentQuestion } from "../../hooks/useStudentQuestion";
 import { useDraftQuestion } from "../../hooks/useDraftQuestion";
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  @media (min-width: 767px) {
-    flex-direction: row;
-  }
-`;
-
-const VerticalDivider = styled.div`
-  @media (min-width: 767px) {
-    border-right: 1px solid #cfd6de;
-    margin: 0 32px;
-  }
-`;
-
-const QueueContainer = styled.div`
-  flex-grow: 1;
-`;
 
 const StatusText = styled.div`
   font-size: 14px;
@@ -49,6 +44,14 @@ const StatusText = styled.div`
   width: 96px;
   float: right;
   margin-right: 0;
+`;
+
+const JoinButton = styled(Button)`
+  background-color: #3684c6;
+  border-radius: 6px;
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
 `;
 
 const StudentHeaderCard = styled(Card)`
@@ -93,6 +96,7 @@ export default function StudentQueueList({
     true
   );
   const [notifModalOpen, setNotifModalOpen] = useState(false);
+  const [showJoinPopconfirm, setShowJoinPopconfirm] = useState(false);
   const { deleteDraftQuestion } = useDraftQuestion();
 
   const leaveQueue = useCallback(async () => {
@@ -216,8 +220,36 @@ export default function StudentQueueList({
 
     return (
       <>
-        <Container>
-          <QueueInfoColumn queueId={qid} onJoinQueue={joinQueueOpenModal} />
+        <QueuePageContainer>
+          <QueueInfoColumn
+            queueId={qid}
+            buttons={
+              !studentQuestion && (
+                <Popconfirm
+                  title="In order to join this queue, you must delete your previous question. Do you want to continue?"
+                  onConfirm={() => joinQueueOpenModal(true)}
+                  okText="Yes"
+                  cancelText="No"
+                  disabled
+                  visible={showJoinPopconfirm}
+                  onVisibleChange={setShowJoinPopconfirm}
+                >
+                  <JoinButton
+                    type="primary"
+                    size="large"
+                    block
+                    disabled={!queue?.allowQuestions}
+                    data-cy="join-queue-button"
+                    onClick={async () =>
+                      setShowJoinPopconfirm(!(await joinQueueOpenModal(false)))
+                    }
+                  >
+                    Join Queue
+                  </JoinButton>
+                </Popconfirm>
+              )
+            }
+          />
           <VerticalDivider />
           <QueueContainer>
             <StudentBanner
@@ -225,9 +257,12 @@ export default function StudentQueueList({
               editQuestion={openEditModal}
               leaveQueue={leaveQueue}
             />
-            <Queue questions={questions} studentQuestion={studentQuestion} />
+            <QueueQuestions
+              questions={questions}
+              studentQuestion={studentQuestion}
+            />
           </QueueContainer>
-        </Container>
+        </QueuePageContainer>
 
         <QuestionForm
           visible={
@@ -262,7 +297,7 @@ interface QueueProps {
   questions: Question[];
   studentQuestion: Question;
 }
-function Queue({ questions, studentQuestion }: QueueProps) {
+function QueueQuestions({ questions, studentQuestion }: QueueProps) {
   return (
     <div>
       {questions?.length === 0 ? (
