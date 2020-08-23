@@ -4,6 +4,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  MethodNotAllowedException,
   NotFoundException,
   Param,
   Patch,
@@ -75,6 +76,10 @@ export class QuestionController {
 
     if (!queue) {
       throw new NotFoundException('Posted to an invalid queue');
+    }
+
+    if (!queue.allowQuestions) {
+      throw new MethodNotAllowedException();
     }
 
     // TODO: think of a neat way to make this abstracted

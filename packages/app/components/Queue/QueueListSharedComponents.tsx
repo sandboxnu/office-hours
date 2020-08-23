@@ -3,16 +3,20 @@ import {
   ClockCircleFilled,
   ClockCircleOutlined,
   NotificationOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 import React, { ReactElement, useState } from "react";
+import { API } from "@template/api-client";
+import { Avatar, Input, Switch, Tooltip } from "antd";
+import Modal from "antd/lib/modal/Modal";
 import styled from "styled-components";
+import { useQueue } from "../../hooks/useQueue";
 import { formatQueueTime } from "../../utils/TimeUtil";
 import { TAStatuses } from "./TAStatuses";
 import { Button, Popconfirm } from "antd";
-import { useQueue } from "../../hooks/useQueue";
 import { useStudentQuestion } from "../../hooks/useStudentQuestion";
 
-const Container = styled.div`
+export const Container = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -31,7 +35,7 @@ const TimeText = styled.div`
   margin-left: 12px;
 `;
 
-const NotesText = styled.div`
+export const NotesText = styled.div`
   font-size: 16px;
   color: #5f6b79;
 `;
@@ -98,7 +102,6 @@ export function QueueInfoColumn({
           <QueuePropertyText>{queue.notes}</QueuePropertyText>
         </QueuePropertyRow>
       )}
-
       {!studentQuestion && (
         <Popconfirm
           title="In order to join this queue, you must delete your previous question. Do you want to continue?"
@@ -113,6 +116,8 @@ export function QueueInfoColumn({
             type="primary"
             size="large"
             block
+            disabled={!queue?.allowQuestions}
+            data-cy="join-queue-button"
             onClick={async () =>
               setShowJoinPopconfirm(!(await onJoinQueue(false)))
             }
@@ -127,16 +132,68 @@ export function QueueInfoColumn({
   );
 }
 
+const NotesInput = styled(Input)`
+  border-radius: 6px;
+  border: 1px solid #b8c4ce;
+`;
+
 interface QueueListHeaderProps {
-  queue: QueuePartial;
+  queueId: number;
+  isTA: boolean;
 }
 
 export default function QueueListHeader({
-  queue,
+  queueId,
+  isTA,
 }: QueueListHeaderProps): ReactElement {
+  const { queue, queuesError, mutateQueue } = useQueue(queueId);
+  const [queueSettingsModal, setQueueSettingsModal] = useState(false);
+  const [notes, setNotes] = useState(queue?.notes);
+  const [allowQuestions, setAllowQuestions] = useState(queue?.allowQuestions);
+
+  const updateQueueSettings = async () => {
+    await API.queues.updateQueue(queueId, notes || "", allowQuestions);
+    mutateQueue();
+  };
+
   return (
     <Container>
       <QueueTitle>{queue?.room}</QueueTitle>
+      {isTA && (
+        <Tooltip title="Cool admin things that TAs like you can do yeah">
+          <SettingOutlined
+            style={{ fontSize: 20, paddingLeft: 24 }}
+            onClick={() => setQueueSettingsModal(true)}
+          />
+        </Tooltip>
+      )}
+      <Modal
+        title="LOL Stanley you're gonna have to figure this one out"
+        visible={queueSettingsModal}
+        onCancel={() => {
+          setQueueSettingsModal(false);
+          setAllowQuestions(queue?.allowQuestions);
+          setNotes(queue?.notes);
+        }}
+        onOk={() => {
+          updateQueueSettings();
+          setQueueSettingsModal(false);
+        }}
+      >
+        <h2>Edit Queue Notes:</h2>
+        <NotesInput
+          defaultValue={notes}
+          value={notes}
+          onChange={(e) => setNotes(e.target.value as string)}
+          allowClear={true}
+        />
+        <h2 style={{ paddingTop: "40px" }}>Allow Questions</h2>
+        <Switch
+          checked={allowQuestions}
+          onChange={setAllowQuestions}
+          data-cy="allow-questions-toggle"
+        />
+      </Modal>
       {queue.startTime && queue.endTime && (
         <Container style={{ marginLeft: "64px" }}>
           <ClockCircleFilled />
@@ -147,10 +204,21 @@ export default function QueueListHeader({
         <Container style={{ marginLeft: "64px" }}>
           <NotesText>
             <b>Notes: </b>
-            {queue.notes}
+            {queue?.notes}
           </NotesText>
         </Container>
       )}
+      <div style={{ paddingLeft: "64px" }}>
+        {queue?.allowQuestions ? (
+          <NotesText style={{ color: "green" }}>
+            This queue is allowing new questions
+          </NotesText>
+        ) : (
+          <NotesText style={{ color: "red" }}>
+            This queue is <b>not</b> allowing new questions
+          </NotesText>
+        )}
+      </div>
     </Container>
   );
 }
