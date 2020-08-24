@@ -1,10 +1,11 @@
 import { API } from "@template/api-client";
-import { Role, QueuePartial } from "@template/common";
+import { QueuePartial, Role } from "@template/common";
 import { Col, Result, Row } from "antd";
 import { useRouter } from "next/router";
 import { ReactElement } from "react";
 import styled from "styled-components";
 import useSWR, { mutate } from "swr";
+import WelcomeStudents from "../../../components/common/WelcomeStudents";
 import NavBar from "../../../components/Nav/NavBar";
 import OpenQueueCard, {
   OpenQueueCardSkeleton,
@@ -57,6 +58,7 @@ export default function Today(): ReactElement {
   }
   return (
     <div>
+      <WelcomeStudents />
       <NavBar courseId={Number(cid)} />
       <Container>
         <Row gutter={64}>
