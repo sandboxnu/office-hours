@@ -1,5 +1,6 @@
 import { ReactNode, ReactElement } from "react";
 import styled from "styled-components";
+import { Button } from "antd";
 
 const BannerContainer = styled.div`
   width: 100%;
@@ -55,3 +56,23 @@ export default function Banner(props: BannerProps): ReactElement {
     </BannerContainer>
   );
 }
+
+/**
+ * Buttons to be used in the banner
+ */
+export const BannerButton = styled(Button)`
+  margin-right: 16px;
+  border-radius: 6px;
+  border: 0;
+  background: #fff;
+`;
+
+export const BannerDangerButton = styled(BannerButton)`
+  background: #e26567;
+  color: #fff;
+  &:hover,
+  &:focus {
+    background: #fc7f81;
+    color: #fff;
+  }
+`;

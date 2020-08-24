@@ -5,26 +5,23 @@ import {
   QuestionStatus,
   QuestionStatusKeys,
 } from "@template/common";
-import { Button, Card, Col, Grid, Row, Tooltip } from "antd";
+import { Card, Col, Row, Tooltip } from "antd";
 import { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
-import { TAStatuses } from "./TAStatuses";
 import { useProfile } from "../../hooks/useProfile";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
-import QueueListHeader, {
+import {
   QueuePageContainer,
   QueueInfoColumn,
   VerticalDivider,
   QueueContainer,
+  QueueInfoColumnButton,
 } from "./QueueListSharedComponents";
-import StudentInfoCard from "./StudentInfoCard";
 import StudentPopupCard from "./StudentPopupCard";
-import TAHelpingCard from "./TAHelpingCard";
 import TAQueueCard from "./TAQueueCard";
-import StudentBanner from "./StudentBanner";
-
-const { useBreakpoint } = Grid;
+import TABanner from "./TABanner";
+import { EditQueueModal } from "./EditQueueModal";
 
 const StatusText = styled.div`
   font-size: 14px;
@@ -50,17 +47,6 @@ const HeaderText = styled.div`
   font-variant: small-caps;
 `;
 
-const QueueTitle = styled.div`
-  font-weight: 500;
-  font-size: 24px;
-  color: #212934;
-
-  // unicode zero width space character to prevent layout shifting during loading
-  &:before {
-    content: "\\200b";
-  }
-`;
-
 const CenterRow = styled(Row)`
   align-items: center;
   justify-content: space-between;
@@ -70,35 +56,27 @@ const Placeholder = styled.div`
   width: 14px;
 `;
 
-const CheckOutButton = styled(Button)`
-  font-weight: 500;
-  font-size: 14px;
+const CheckOutButton = styled(QueueInfoColumnButton)`
   color: #da3236;
-  background: #f8f9fa;
-  border: 1px solid #cfd6de;
-  border-radius: 6px;
 `;
 
-const CheckInButton = styled(Button)`
-  font-weight: 500;
-  font-size: 14px;
+const CheckInButton = styled(QueueInfoColumnButton)`
   color: white;
   background: #2a9187;
-  border: 1px solid #cfd6de;
-  border-radius: 6px;
 `;
 
-const HelpNextButton = styled(Button)`
-  font-weight: 500;
-  font-size: 14px;
+const HelpNextButton = styled(QueueInfoColumnButton)`
+  color: white;
+  background: #2a9187;
+  &:hover,
+  &:focus {
+    color: white;
+    background: #39aca1;
+  }
+`;
+
+const EditQueueButton = styled(QueueInfoColumnButton)`
   color: #212934;
-  border: 1px solid #cfd6de;
-  border-radius: 6px;
-  margin-right: 16px;
-`;
-
-const HeaderRow = styled(Row)`
-  margin-bottom: 64px;
 `;
 
 interface TAQueueListProps {
@@ -110,24 +88,21 @@ export default function TAQueueList({
   qid,
   courseId,
 }: TAQueueListProps): ReactElement {
-  const screens = useBreakpoint();
   const user = useProfile();
 
   const { queue, queuesError, mutateQueue } = useQueue(qid);
 
   const { questions, questionsError, mutateQuestions } = useQuestions(qid);
 
-  const helpingQuestions: Question[] = questions?.filter(
+  const helpingQuestion: Question = questions?.find(
     (question) =>
       question.status === OpenQuestionStatus.Helping &&
       question.taHelped?.id === user.id
   );
-  const groupQuestions: Question[] = questions?.filter(
-    (question) => question.status !== OpenQuestionStatus.Helping
-  );
-  const isHelping = helpingQuestions?.length !== 0;
+  const isHelping = !!helpingQuestion;
 
   const [openPopup, setOpenPopup] = useState<boolean>(false);
+  const [queueSettingsModal, setQueueSettingsModal] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
 
   const onOpenCard = useCallback((question: Question): void => {
@@ -154,16 +129,6 @@ export default function TAQueueList({
     setOpenPopup(false);
   };
 
-  /**
-   * Adds every given question to the group that is currently being helped.
-   * @param selected the given list of questions to help
-   */
-  const addQuestionsToHelp = (selected: Question[]) => {
-    for (const question of selected) {
-      updateQuestionTA(question, OpenQuestionStatus.Helping);
-    }
-  };
-
   const isStaffCheckedIn = queue?.staffList.some((e) => e.id === user?.id);
 
   const helpNext = async () => {
@@ -174,33 +139,6 @@ export default function TAQueueList({
     updateQuestionTA(nextQuestion, OpenQuestionStatus.Helping);
   };
 
-  /**
-   * Renders the title and aggregate buttons for the helping column.
-   */
-  const renderHelpingTitle = () => {
-    return (
-      <Col xs={24} lg={10} xxl={6} order={screens.lg === false ? 1 : 2}>
-        <HeaderRow justify="space-between">
-          <QueueTitle>Helping</QueueTitle>
-        </HeaderRow>
-        {helpingQuestions &&
-          helpingQuestions.map((question) => (
-            <StudentInfoCard
-              key={question.id}
-              updateQuestion={updateQuestionTA}
-              question={question}
-            />
-          ))}
-        {/* {groupQuestions && groupQuestions.length !== 0 && (
-          <GroupQuestions
-            questions={groupQuestions}
-            addQuestions={addQuestionsToHelp}
-          />
-        )} */}
-      </Col>
-    );
-  };
-
   if (queue && questions) {
     return (
       <>
@@ -209,6 +147,9 @@ export default function TAQueueList({
             queueId={qid}
             buttons={
               <>
+                <EditQueueButton onClick={() => setQueueSettingsModal(true)}>
+                  Edit Queue Details
+                </EditQueueButton>
                 <Tooltip
                   title={
                     !isStaffCheckedIn && "You must check in to help students!"
@@ -217,7 +158,6 @@ export default function TAQueueList({
                   <HelpNextButton
                     onClick={helpNext}
                     disabled={!isStaffCheckedIn}
-                    size="large"
                     data-cy="help-next"
                   >
                     Help Next
@@ -226,7 +166,6 @@ export default function TAQueueList({
                 {isStaffCheckedIn ? (
                   <CheckOutButton
                     danger
-                    size="large"
                     data-cy="check-out-button"
                     onClick={async () => {
                       await API.taStatus.checkOut(courseId, queue?.room);
@@ -241,7 +180,6 @@ export default function TAQueueList({
                       await API.taStatus.checkIn(courseId, queue?.room);
                       mutateQueue();
                     }}
-                    size="large"
                     data-cy="check-in-button"
                   >
                     Check In
@@ -252,6 +190,12 @@ export default function TAQueueList({
           />
           <VerticalDivider />
           <QueueContainer>
+            {isHelping && (
+              <TABanner
+                helpingQuestion={helpingQuestion}
+                updateQuestion={updateQuestionTA}
+              />
+            )}
             <QueueQuestions
               questions={questions}
               isHelping={isHelping}
@@ -268,6 +212,11 @@ export default function TAQueueList({
             isStaffCheckedIn={isStaffCheckedIn}
           />
         )}
+        <EditQueueModal
+          queueId={qid}
+          visible={queueSettingsModal}
+          onClose={() => setQueueSettingsModal(false)}
+        />
       </>
     );
   } else {
@@ -322,17 +271,14 @@ function QueueQuestions({ questions, isHelping, onOpenCard }: QueueProps) {
         </>
       )}
 
-      {questions?.map((question: Question, index: number) => {
-        return isHelping ? (
-          <TAHelpingCard rank={index + 1} question={question} />
-        ) : (
-          <TAQueueCard
-            rank={index + 1}
-            question={question}
-            onOpen={onOpenCard}
-          />
-        );
-      })}
+      {questions?.map((question: Question, index: number) => (
+        <TAQueueCard
+          key={question.id}
+          rank={index + 1}
+          question={question}
+          onOpen={(q) => !isHelping && onOpenCard(q)}
+        />
+      ))}
     </div>
   );
 }

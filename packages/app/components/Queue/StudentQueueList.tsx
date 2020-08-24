@@ -3,19 +3,9 @@ import {
   ClosedQuestionStatus,
   OpenQuestionStatus,
   Question,
-  QuestionStatusKeys,
   QuestionType,
 } from "@template/common";
-import {
-  Alert,
-  Button,
-  Card,
-  Col,
-  Grid,
-  notification,
-  Row,
-  Popconfirm,
-} from "antd";
+import { Card, Col, notification, Row, Popconfirm } from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { mutate } from "swr";
@@ -28,6 +18,7 @@ import {
   QueuePageContainer,
   VerticalDivider,
   QueueContainer,
+  QueueInfoColumnButton,
 } from "./QueueListSharedComponents";
 import StudentQueueCard from "./StudentQueueCard";
 import { NotificationSettingsModal } from "../Nav/NotificationSettingsModal";
@@ -35,23 +26,9 @@ import StudentBanner from "./StudentBanner";
 import { useStudentQuestion } from "../../hooks/useStudentQuestion";
 import { useDraftQuestion } from "../../hooks/useDraftQuestion";
 
-const StatusText = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 22px;
-  color: #8895a6;
-  font-variant: small-caps;
-  width: 96px;
-  float: right;
-  margin-right: 0;
-`;
-
-const JoinButton = styled(Button)`
+const JoinButton = styled(QueueInfoColumnButton)`
   background-color: #3684c6;
-  border-radius: 6px;
   color: white;
-  font-weight: 500;
-  font-size: 14px;
 `;
 
 const StudentHeaderCard = styled(Card)`
@@ -73,10 +50,6 @@ const CenterRow = styled(Row)`
   align-items: center;
 `;
 
-const FullWidthButton = styled(Button)`
-  width: 95%;
-`;
-
 interface StudentQueueListProps {
   qid: number;
 }
@@ -86,11 +59,7 @@ export default function StudentQueueList({
 }: StudentQueueListProps): ReactElement {
   const { queue, queuesError, mutateQueue } = useQueue(qid);
   const { questions, questionsError, mutateQuestions } = useQuestions(qid);
-  const {
-    studentQuestion,
-    studentQuestionIndex,
-    mutateStudentQuestion,
-  } = useStudentQuestion(qid);
+  const { studentQuestion, studentQuestionIndex } = useStudentQuestion(qid);
   const [isFirstQuestion, setIsFirstQuestion] = useLocalStorage(
     "isFirstQuestion",
     true
@@ -236,8 +205,6 @@ export default function StudentQueueList({
                 >
                   <JoinButton
                     type="primary"
-                    size="large"
-                    block
                     disabled={!queue?.allowQuestions}
                     data-cy="join-queue-button"
                     onClick={async () =>

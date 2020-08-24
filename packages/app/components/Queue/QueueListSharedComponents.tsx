@@ -1,18 +1,11 @@
-import {
-  ClockCircleFilled,
-  ClockCircleOutlined,
-  NotificationOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
-import React, { ReactElement, useState, ReactNode } from "react";
-import { Tooltip } from "antd";
+import { ClockCircleOutlined, NotificationOutlined } from "@ant-design/icons";
+import React, { ReactElement, ReactNode } from "react";
 import styled from "styled-components";
 import { useQueue } from "../../hooks/useQueue";
 import { formatQueueTime } from "../../utils/TimeUtil";
 import { TAStatuses } from "./TAStatuses";
-import { Button, Popconfirm } from "antd";
-import { useStudentQuestion } from "../../hooks/useStudentQuestion";
-import { EditQueueModal } from "./EditQueueModal";
+import { Button } from "antd";
+import { ButtonProps } from "antd/lib/button";
 
 export const QueuePageContainer = styled.div`
   display: flex;
@@ -66,6 +59,18 @@ const InfoColumnContainer = styled.div`
   }
 `;
 
+const QueueInfoColumnButtonStyle = styled(Button)`
+  font-weight: 500;
+  font-size: 14px;
+  border: 1px solid #cfd6de;
+  border-radius: 6px;
+  margin-bottom: 16px;
+`;
+
+export const QueueInfoColumnButton = (props: ButtonProps): ReactElement => (
+  <QueueInfoColumnButtonStyle size="large" block {...props} />
+);
+
 const QueuePropertyRow = styled.div`
   display: flex;
   flex-direction: row;
@@ -113,64 +118,5 @@ export function QueueInfoColumn({
       <StaffH2>Staff</StaffH2>
       <TAStatuses queueId={queueId} />
     </InfoColumnContainer>
-  );
-}
-
-interface QueueListHeaderProps {
-  queueId: number;
-  isTA: boolean;
-}
-
-export default function QueueListHeader({
-  queueId,
-  isTA,
-}: QueueListHeaderProps): ReactElement {
-  const { queue } = useQueue(queueId);
-  const [queueSettingsModal, setQueueSettingsModal] = useState(false);
-
-  return (
-    <>
-      <Container>
-        <QueueTitle>{queue?.room}</QueueTitle>
-        {isTA && (
-          <Tooltip title="Cool admin things that TAs like you can do yeah">
-            <SettingOutlined
-              style={{ fontSize: 20, paddingLeft: 24 }}
-              onClick={() => setQueueSettingsModal(true)}
-            />
-          </Tooltip>
-        )}
-        {queue.startTime && queue.endTime && (
-          <Container style={{ marginLeft: "64px" }}>
-            <ClockCircleFilled />
-            <TimeText>{formatQueueTime(queue)}</TimeText>
-          </Container>
-        )}
-        {queue?.notes && (
-          <Container style={{ marginLeft: "64px" }}>
-            <NotesText>
-              <b>Notes: </b>
-              {queue?.notes}
-            </NotesText>
-          </Container>
-        )}
-        <div style={{ paddingLeft: "64px" }}>
-          {queue?.allowQuestions ? (
-            <NotesText style={{ color: "green" }}>
-              This queue is allowing new questions
-            </NotesText>
-          ) : (
-            <NotesText style={{ color: "red" }}>
-              This queue is <b>not</b> allowing new questions
-            </NotesText>
-          )}
-        </div>
-      </Container>
-      <EditQueueModal
-        queueId={queueId}
-        visible={queueSettingsModal}
-        onClose={() => setQueueSettingsModal(false)}
-      />
-    </>
   );
 }

@@ -1,49 +1,28 @@
-import Banner from "./Banner";
+import Banner, { BannerButton, BannerDangerButton } from "./Banner";
 import styled from "styled-components";
-import { Button, Row, Col, Popconfirm } from "antd";
+import { Col, Popconfirm } from "antd";
 import { toOrdinal } from "../../utils/ordinal";
 import { useStudentQuestion } from "../../hooks/useStudentQuestion";
-import { Text } from "./QueueCardSharedComponents";
 import {
   TeamOutlined,
   DeleteRowOutlined,
   EditOutlined,
 } from "@ant-design/icons";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { useState, ReactElement } from "react";
-import { OpenQuestionStatus, Question } from "@template/common";
+import { ReactElement } from "react";
 import { API } from "@template/api-client";
 import { useDraftQuestion } from "../../hooks/useDraftQuestion";
 
 const BoldNumber = styled.span`
   font-weight: bold;
 `;
-const DangerButton = styled(Button)`
-  margin-right: 16px;
-  border-radius: 6px;
-  border: 0;
-  background: #e26567;
-  color: #fff;
-  &:hover,
-  &:focus {
-    background: #fc7f81;
-    color: #fff;
-  }
-`;
-const WhiteButton = styled(Button)`
-  margin-right: 16px;
-  border-radius: 6px;
-  border: 0;
-  background: #fff;
-`;
 
 const QuestionDetails = styled.div`
   display: flex;
 `;
 const InfoHeader = styled.div`
-  text-transform: uppercase;
   font-weight: bold;
   font-size: 14px;
+  font-variant: small-caps;
 `;
 
 const Bullets = styled.ul`
@@ -78,10 +57,10 @@ export default function StudentBanner({
           content="Your spot in queue has been temporarily reserved. Please finish describing your question to receive help and finish joining the queue."
           buttons={
             <>
-              <WhiteButton icon={<DeleteRowOutlined />} onClick={leaveQueue}>
+              <BannerButton icon={<DeleteRowOutlined />} onClick={leaveQueue}>
                 Delete Draft
-              </WhiteButton>
-              <WhiteButton
+              </BannerButton>
+              <BannerButton
                 icon={<EditOutlined />}
                 onClick={async () => {
                   mutateStudentQuestion(
@@ -96,7 +75,7 @@ export default function StudentBanner({
                 }}
               >
                 Finish Draft
-              </WhiteButton>
+              </BannerButton>
             </>
           }
         />
@@ -116,19 +95,19 @@ export default function StudentBanner({
           buttons={
             <>
               <LeaveQueueButton leaveQueue={leaveQueue} />
-              <WhiteButton icon={<EditOutlined />} onClick={editQuestion}>
+              <BannerButton icon={<EditOutlined />} onClick={editQuestion}>
                 Edit Question
-              </WhiteButton>
+              </BannerButton>
             </>
           }
           content={
             <QuestionDetails>
               <Col flex="1 1">
-                <InfoHeader>Question</InfoHeader>
+                <InfoHeader>question</InfoHeader>
                 <div>{studentQuestion.text}</div>
               </Col>
               <Col flex="0 0 60px">
-                <InfoHeader>Type</InfoHeader>
+                <InfoHeader>type</InfoHeader>
                 <div>
                   {studentQuestion.questionType.charAt(0).toUpperCase() +
                     studentQuestion.questionType.substr(1).toLowerCase()}
@@ -152,7 +131,7 @@ export default function StudentBanner({
           buttons={
             <>
               <LeaveQueueButton leaveQueue={leaveQueue} />
-              <WhiteButton icon={<TeamOutlined />}>Open Teams DM</WhiteButton>
+              <BannerButton icon={<TeamOutlined />}>Open Teams DM</BannerButton>
             </>
           }
           content={
@@ -177,7 +156,9 @@ function LeaveQueueButton({ leaveQueue }: { leaveQueue: () => void }) {
       cancelText="No"
       onConfirm={leaveQueue}
     >
-      <DangerButton icon={<DeleteRowOutlined />}>Leave Queue</DangerButton>
+      <BannerDangerButton icon={<DeleteRowOutlined />}>
+        Leave Queue
+      </BannerDangerButton>
     </Popconfirm>
   );
 }
