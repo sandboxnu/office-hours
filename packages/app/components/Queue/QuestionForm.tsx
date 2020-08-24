@@ -140,6 +140,7 @@ export default function QuestionForm({
             <FormButton onClick={cancel}>Cancel</FormButton>
           )}
           <SaveChangesButton
+            data-cy="finishQuestion"
             type="primary"
             disabled={
               !questionTypeInput ||

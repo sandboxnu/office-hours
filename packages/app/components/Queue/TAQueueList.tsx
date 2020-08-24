@@ -238,7 +238,7 @@ interface QueueProps {
 }
 function QueueQuestions({ questions, isHelping, onOpenCard }: QueueProps) {
   return (
-    <div>
+    <div data-cy="queueQuestions">
       {questions.length === 0 ? (
         <h1 style={{ marginTop: "50px" }}>
           There currently aren&apos;t any questions in the queue

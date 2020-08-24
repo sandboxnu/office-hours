@@ -61,6 +61,7 @@ export default function StudentBanner({
                 Delete Draft
               </BannerButton>
               <BannerButton
+                data-cy="edit-question"
                 icon={<EditOutlined />}
                 onClick={async () => {
                   mutateStudentQuestion(
@@ -95,7 +96,11 @@ export default function StudentBanner({
           buttons={
             <>
               <LeaveQueueButton leaveQueue={leaveQueue} />
-              <BannerButton icon={<EditOutlined />} onClick={editQuestion}>
+              <BannerButton
+                data-cy="edit-question"
+                icon={<EditOutlined />}
+                onClick={editQuestion}
+              >
                 Edit Question
               </BannerButton>
             </>
@@ -156,7 +161,7 @@ function LeaveQueueButton({ leaveQueue }: { leaveQueue: () => void }) {
       cancelText="No"
       onConfirm={leaveQueue}
     >
-      <BannerDangerButton icon={<DeleteRowOutlined />}>
+      <BannerDangerButton data-cy="leave-queue" icon={<DeleteRowOutlined />}>
         Leave Queue
       </BannerDangerButton>
     </Popconfirm>

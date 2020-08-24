@@ -46,7 +46,7 @@ export default function StudentQueueCard({
           <Text>{question.text}</Text>
         </Col>
         <Col flex="0 0 60px">
-          <Text data-cy="waitTime">{getWaitTime(question)}</Text>
+          <Text>{getWaitTime(question)}</Text>
         </Col>
       </CenterRow>
     </HorizontalStudentCard>

@@ -62,6 +62,7 @@ describe("Student can edit their question", () => {
 
     // See that the question is updated on the page
     cy.get("body").contains("I want to type things");
-    cy.get("body").contains("In ohio");
+    // TODO: Bring this back if we do in person stuff
+    // cy.get("body").contains("In ohio");
   });
 });
