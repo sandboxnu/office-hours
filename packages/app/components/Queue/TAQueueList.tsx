@@ -156,7 +156,12 @@ export default function TAQueueList({
                 >
                   <HelpNextButton
                     onClick={helpNext}
-                    disabled={!isStaffCheckedIn}
+                    disabled={
+                      !isStaffCheckedIn ||
+                      !questions.find(
+                        (q) => q.status === QuestionStatusKeys.Queued
+                      )
+                    }
                     data-cy="help-next"
                   >
                     Help Next
