@@ -5,7 +5,7 @@ import {
   QuestionStatus,
   QuestionStatusKeys,
 } from "@template/common";
-import { Card, Col, Row, Tooltip } from "antd";
+import { Card, Col, Row, Tooltip, Space } from "antd";
 import { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../hooks/useProfile";
@@ -15,7 +15,6 @@ import {
   QueuePageContainer,
   QueueInfoColumn,
   VerticalDivider,
-  QueueContainer,
   QueueInfoColumnButton,
 } from "./QueueListSharedComponents";
 import StudentPopupCard from "./StudentPopupCard";
@@ -189,7 +188,7 @@ export default function TAQueueList({
             }
           />
           <VerticalDivider />
-          <QueueContainer>
+          <Space direction="vertical" size={40} style={{ flexGrow: 1 }}>
             {isHelping && (
               <TABanner
                 helpingQuestion={helpingQuestion}
@@ -201,7 +200,7 @@ export default function TAQueueList({
               isHelping={isHelping}
               onOpenCard={onOpenCard}
             />
-          </QueueContainer>
+          </Space>
         </QueuePageContainer>
         {currentQuestion && (
           <StudentPopupCard
@@ -225,7 +224,6 @@ export default function TAQueueList({
 }
 
 const QueueHeader = styled.h2`
-  margin-top: 24px;
   margin-bottom: 0;
 `;
 interface QueueProps {

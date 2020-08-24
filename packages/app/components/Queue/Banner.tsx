@@ -1,6 +1,6 @@
 import { ReactNode, ReactElement } from "react";
 import styled from "styled-components";
-import { Button } from "antd";
+import { Button, Space } from "antd";
 
 const BannerContainer = styled.div`
   width: 100%;
@@ -9,6 +9,7 @@ const BannerContainer = styled.div`
 const TitleContainer = styled.div`
   background: ${({ color }) => color || "#8895A6"};
   padding-left: 24px;
+  padding-right: 16px;
   min-height: 60px;
   border-radius: 6px 6px 0 0;
   position: relative;
@@ -48,7 +49,7 @@ export default function Banner(props: BannerProps): ReactElement {
     <BannerContainer>
       <TitleContainer color={props.titleColor}>
         <Title>{props.title}</Title>
-        <ButtonContainer>{props.buttons}</ButtonContainer>
+        <Space size={16}>{props.buttons}</Space>
       </TitleContainer>
       <ContentContainer color={props.contentColor}>
         {props.content}
@@ -61,7 +62,6 @@ export default function Banner(props: BannerProps): ReactElement {
  * Buttons to be used in the banner
  */
 export const BannerButton = styled(Button)`
-  margin-right: 16px;
   border-radius: 6px;
   border: 0;
   background: #fff;

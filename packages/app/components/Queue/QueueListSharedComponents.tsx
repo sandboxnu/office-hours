@@ -22,10 +22,6 @@ export const VerticalDivider = styled.div`
   }
 `;
 
-export const QueueContainer = styled.div`
-  flex-grow: 1;
-`;
-
 export const Container = styled.div`
   display: flex;
   flex-direction: row;
@@ -64,7 +60,7 @@ const QueueInfoColumnButtonStyle = styled(Button)`
   font-size: 14px;
   border: 1px solid #cfd6de;
   border-radius: 6px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 `;
 
 export const QueueInfoColumnButton = (props: ButtonProps): ReactElement => (

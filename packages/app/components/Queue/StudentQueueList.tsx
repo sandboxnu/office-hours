@@ -5,7 +5,7 @@ import {
   Question,
   QuestionType,
 } from "@template/common";
-import { Card, Col, notification, Row, Popconfirm } from "antd";
+import { Card, Col, notification, Row, Popconfirm, Space } from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { mutate } from "swr";
@@ -17,7 +17,6 @@ import {
   QueueInfoColumn,
   QueuePageContainer,
   VerticalDivider,
-  QueueContainer,
   QueueInfoColumnButton,
 } from "./QueueListSharedComponents";
 import StudentQueueCard from "./StudentQueueCard";
@@ -218,7 +217,7 @@ export default function StudentQueueList({
             }
           />
           <VerticalDivider />
-          <QueueContainer>
+          <Space direction="vertical" size={40} style={{ flexGrow: 1 }}>
             <StudentBanner
               queueId={qid}
               editQuestion={openEditModal}
@@ -228,7 +227,7 @@ export default function StudentQueueList({
               questions={questions}
               studentQuestion={studentQuestion}
             />
-          </QueueContainer>
+          </Space>
         </QueuePageContainer>
 
         <QuestionForm
@@ -255,7 +254,6 @@ export default function StudentQueueList({
 }
 
 const QueueHeader = styled.h2`
-  margin-top: 24px;
   margin-bottom: 0;
 `;
 
