@@ -5,12 +5,12 @@ import { useRouter } from "next/router";
 import { ReactElement } from "react";
 import styled from "styled-components";
 import useSWR, { mutate } from "swr";
-import WelcomeStudents from "../../../components/common/WelcomeStudents";
 import NavBar from "../../../components/Nav/NavBar";
 import OpenQueueCard, {
   OpenQueueCardSkeleton,
 } from "../../../components/Today/OpenQueueCard";
 import TACheckinButton from "../../../components/Today/TACheckinButton";
+import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import Schedule from "./schedule";
 
