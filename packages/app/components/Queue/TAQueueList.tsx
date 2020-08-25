@@ -146,7 +146,10 @@ export default function TAQueueList({
             queueId={qid}
             buttons={
               <>
-                <EditQueueButton onClick={() => setQueueSettingsModal(true)}>
+                <EditQueueButton
+                  data-cy="editQueue"
+                  onClick={() => setQueueSettingsModal(true)}
+                >
                   Edit Queue Details
                 </EditQueueButton>
                 <Tooltip

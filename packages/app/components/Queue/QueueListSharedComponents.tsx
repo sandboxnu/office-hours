@@ -111,6 +111,15 @@ export function QueueInfoColumn({
         </QueuePropertyRow>
       )}
       {buttons}
+      {queue?.allowQuestions ? (
+        <NotesText style={{ color: "green" }}>
+          This queue is allowing new questions
+        </NotesText>
+      ) : (
+        <NotesText style={{ color: "red" }}>
+          This queue is <b>not</b> allowing new questions
+        </NotesText>
+      )}
       <StaffH2>Staff</StaffH2>
       <TAStatuses queueId={queueId} />
     </InfoColumnContainer>

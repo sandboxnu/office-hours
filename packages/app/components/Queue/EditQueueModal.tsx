@@ -47,14 +47,16 @@ export function EditQueueModal({
         onClose();
       }}
     >
-      <Form form={form} initialValues={queue}>
-        <Form.Item label="Queue Notes" name="notes">
-          <NotesInput allowClear={true} placeholder={""} />
-        </Form.Item>
-        <Form.Item label="Allow New Questions" name="allowQuestions">
-          <Switch data-cy="allow-questions-toggle" />
-        </Form.Item>
-      </Form>
+      {queue && (
+        <Form form={form} initialValues={queue}>
+          <Form.Item label="Queue Notes" name="notes">
+            <NotesInput allowClear={true} placeholder={""} />
+          </Form.Item>
+          <Form.Item label="Allow New Questions" name="allowQuestions">
+            <Switch data-cy="allow-questions-toggle" />
+          </Form.Item>
+        </Form>
+      )}
     </Modal>
   );
 }
