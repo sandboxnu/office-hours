@@ -26,6 +26,8 @@ import { QueueModel } from './queue.entity';
 import { QueueService } from './queue.service';
 import { QueueRole } from './queue-role.decorator';
 import { pick } from 'lodash';
+import { User } from 'profile/user.decorator';
+import { UserModel } from 'profile/user.entity';
 
 @Controller('queues')
 @UseGuards(JwtAuthGuard, QueueRolesGuard)
@@ -48,11 +50,14 @@ export class QueueController {
   async getQuestions(
     @Param('queueId') queueId: number,
     @QueueRole() role: string,
+    @User() user: UserModel,
   ): Promise<ListQuestionsResponse> {
     const questions = await this.queueService.getQuestions(queueId);
     if (role === Role.STUDENT) {
       return questions.map((question) => {
-        question.creator = pick(question.creator, ['id']);
+        if (question.creator.id !== user.id) {
+          question.creator = pick(question.creator, ['id']);
+        }
         return question;
       });
     }
