@@ -28,7 +28,7 @@ describe("Allow or disable new questions for a queue", () => {
     });
 
     // Chnage the toggle to not allow new quetsions
-    cy.get("[data-icon='setting']").click();
+    cy.get("[data-cy='editQueue']").click();
     cy.get("[data-cy='allow-questions-toggle']").click();
     cy.get("span").contains("OK").click();
 
@@ -36,7 +36,7 @@ describe("Allow or disable new questions for a queue", () => {
     cy.contains("This queue is not allowing new questions");
 
     // Change the toggle back to allow new questions
-    cy.get("[data-icon='setting']").click();
+    cy.get("[data-cy='editQueue']").click();
     cy.get("[data-cy='allow-questions-toggle']").click();
     cy.get("span").contains("OK").click();
 
