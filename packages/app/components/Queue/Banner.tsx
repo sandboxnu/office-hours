@@ -26,6 +26,7 @@ const Title = styled.div`
 `;
 const ButtonContainer = styled.div`
   display: flex;
+  flex-flow: row wrap;
 `;
 
 const ContentContainer = styled.div`
@@ -49,7 +50,7 @@ export default function Banner(props: BannerProps): ReactElement {
     <BannerContainer data-cy="banner">
       <TitleContainer color={props.titleColor}>
         <Title>{props.title}</Title>
-        <Space size={16}>{props.buttons}</Space>
+        <ButtonContainer>{props.buttons}</ButtonContainer>
       </TitleContainer>
       <ContentContainer color={props.contentColor}>
         {props.content}
@@ -62,6 +63,7 @@ export default function Banner(props: BannerProps): ReactElement {
  * Buttons to be used in the banner
  */
 export const BannerButton = styled(Button)`
+  margin-left: 16px;
   border-radius: 6px;
   border: 0;
   background: #fff;

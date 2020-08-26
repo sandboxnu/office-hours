@@ -113,10 +113,7 @@ export default function StudentBanner({
               </Col>
               <Col flex="0 0 60px">
                 <InfoHeader>type</InfoHeader>
-                <div>
-                  {studentQuestion.questionType.charAt(0).toUpperCase() +
-                    studentQuestion.questionType.substr(1).toLowerCase()}
-                </div>
+                <div>{studentQuestion.questionType}</div>
               </Col>
             </QuestionDetails>
           }

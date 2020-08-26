@@ -54,6 +54,8 @@ export default function TABanner({
           <Col>
             <InfoHeader>question</InfoHeader>
             <Info>{helpingQuestion.text ?? ""}</Info>
+            <InfoHeader>question type</InfoHeader>
+            <Info>{helpingQuestion.questionType ?? ""}</Info>
             <InfoHeader>location</InfoHeader>
             <Info>
               {helpingQuestion.isOnline ? "online" : helpingQuestion.location}

@@ -38,10 +38,7 @@ export default function TAQueueCard({
           </CenterRow>
         </Col>
         <Col xs={0} lg={2}>
-          <Text>
-            {question.questionType.charAt(0).toUpperCase() +
-              question.questionType.substr(1).toLowerCase()}
-          </Text>
+          <Text>{question.questionType}</Text>
         </Col>
         <Col xs={0} lg={7}>
           <Text>{question.text}</Text>
