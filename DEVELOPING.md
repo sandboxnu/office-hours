@@ -43,6 +43,10 @@ Run `yarn dev` at root level to get everything running and hot-reloading. `yarn 
 
 Your IDE should do type-checking for you. You can run type-checks manually with `yarn tsc`.
 
+## Migrations
+
+If you change an entity, you MUST run `yarn typeorm migration:create`, to make the migration file, then `yarn typeorm migration:run`. Commit the migration file to Git!
+
 ### Adding an API Route
 
 1. Add its request body and response types in `common`
