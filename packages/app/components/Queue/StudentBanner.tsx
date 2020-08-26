@@ -136,7 +136,18 @@ export default function StudentBanner({
           buttons={
             <>
               <LeaveQueueButton leaveQueue={leaveQueue} />
-              <BannerButton icon={<TeamOutlined />}>Open Teams DM</BannerButton>
+              {studentQuestion.isOnline && (
+                <BannerButton
+                  icon={<TeamOutlined />}
+                  onClick={() => {
+                    window.open(
+                      `https://teams.microsoft.com/l/chat/0/0?users=${studentQuestion.taHelped.email}`
+                    );
+                  }}
+                >
+                  Open Teams DM
+                </BannerButton>
+              )}
             </>
           }
           content={
