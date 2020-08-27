@@ -1,0 +1,15 @@
+name: Enforce Migrations
+
+on:
+  pull_request:
+    paths:
+      - "packages/server/**/*.entity.ts"
+    paths-ignore:
+      - "packages/server/migration"
+
+jobs:
+  fail:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'You changed database models and need to run `yarn typeorm migration:create -n MIGRATION_NAME`'
+      - run: exit 1
