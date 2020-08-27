@@ -14,7 +14,7 @@ import {
   GetQueueResponse,
   ListQuestionsResponse,
   Role,
-  UpdateQueueNotesParams,
+  UpdateQueueParams,
 } from '@template/common';
 import { Response } from 'express';
 import { Connection } from 'typeorm';
@@ -68,7 +68,7 @@ export class QueueController {
   @Roles(Role.TA, Role.PROFESSOR)
   async updateQueue(
     @Param('queueId') queueId: number,
-    @Body() body: UpdateQueueNotesParams,
+    @Body() body: UpdateQueueParams,
   ): Promise<QueueModel> {
     const queue = await QueueModel.findOne({
       where: { id: queueId },

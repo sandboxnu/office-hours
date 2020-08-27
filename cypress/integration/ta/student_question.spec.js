@@ -65,7 +65,7 @@ describe("TA interacts with student question", () => {
     // Click on the student's question
     cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
     // Click Remove from Queue
-    cy.contains("button", "Remove from Queue").click();
+    cy.get("[data-cy='remove-from-queue']").should("be.visible").click();
     // Click yes on the modal
     cy.get("span").contains("Yes").click();
 

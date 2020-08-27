@@ -28,7 +28,7 @@ describe("Allow or disable new questions for a queue", () => {
     });
 
     // Chnage the toggle to not allow new quetsions
-    cy.get("[data-icon='setting']").click();
+    cy.get("[data-cy='editQueue']").click();
     cy.get("[data-cy='allow-questions-toggle']").click();
     cy.get("span").contains("OK").click();
 
@@ -36,7 +36,7 @@ describe("Allow or disable new questions for a queue", () => {
     cy.contains("This queue is not allowing new questions");
 
     // Change the toggle back to allow new questions
-    cy.get("[data-icon='setting']").click();
+    cy.get("[data-cy='editQueue']").click();
     cy.get("[data-cy='allow-questions-toggle']").click();
     cy.get("span").contains("OK").click();
 
@@ -63,7 +63,7 @@ describe("Allow or disable new questions for a queue", () => {
       // Login the student
       cy.visit(`/api/v1/login/dev?userId=${student.user.id}`);
     });
-    
+
     // Check that the queue is not acccpeting new questions on the today page
     cy.get('[data-icon="stop"]').should("exist");
 
@@ -74,6 +74,6 @@ describe("Allow or disable new questions for a queue", () => {
     cy.contains("This queue is not allowing new questions");
 
     // And that the join queue button is disabled
-    cy.get('[data-cy="join-queue-button"]').should('be.disabled');
+    cy.get('[data-cy="join-queue-button"]').should("be.disabled");
   });
 });
