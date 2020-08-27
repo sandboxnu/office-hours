@@ -23,7 +23,7 @@ module.exports = {
     staging: {
       user: "ubuntu",
       host: "128.31.24.252",
-      ref: "origin/master",
+      ref: "origin/dc-migrations",
       repo: "https://github.com/sandboxnu/office-hours.git",
       path: "/var/www",
       "pre-deploy-local": "",
