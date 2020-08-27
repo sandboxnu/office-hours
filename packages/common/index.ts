@@ -251,9 +251,6 @@ export type GetProfileResponse = User;
 
 export class KhouryDataParams {
   @IsString()
-  username!: string;
-
-  @IsString()
   email!: string;
 
   @IsString()
@@ -265,31 +262,45 @@ export class KhouryDataParams {
   @IsInt()
   campus!: string;
 
-  @IsInt()
-  nuid!: number;
-
   @IsOptional()
   @IsString()
   photo_url!: string;
 
   @IsOptional()
   @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
-  courses!: KouryAdminCourse[];
+  courses!: KouryStudentCourse[];
 
   @IsOptional()
   @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
-  ta_courses!: KouryAdminCourse[];
+  ta_courses!: KouryTACourse[];
 }
 
-class KouryAdminCourse {
-  @IsString()
-  course_name!: string;
+class KouryStudentCourse {
+  @IsInt()
+  crn!: number;
 
   @IsString()
-  semester!: number;
+  course!: string;
 
   @IsBoolean()
-  withdraw!: boolean;
+  acclerated!: boolean;
+
+  @IsInt()
+  section!: number;
+
+  @IsString()
+  semester!: string;
+
+  @IsString()
+  title!: string;
+}
+
+class KouryTACourse {
+  @IsString()
+  course!: string;
+
+  @IsString()
+  semester!: string;
 }
 
 export interface KhouryRedirectResponse {
