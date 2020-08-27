@@ -39,13 +39,13 @@ export default function StudentQueueCard({
       bordered={!highlighted}
     >
       <CenterRow>
-        <Col flex="0 0 40px">
+        <Col flex="0 0 64px">
           <Text>{rank}</Text>
         </Col>
         <Col flex="1 1">
           <Text>{question.text}</Text>
         </Col>
-        <Col flex="0 0 60px">
+        <Col flex="0 0 80px">
           <Text>{getWaitTime(question)}</Text>
         </Col>
       </CenterRow>

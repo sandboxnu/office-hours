@@ -37,6 +37,8 @@ export default function TABanner({
 }: TABannerProps): ReactElement {
   return (
     <Banner
+      titleColor="#3684C6"
+      contentColor="#ABD4F3"
       title={
         <span>
           You are helping <Bold>{helpingQuestion.creator.name}</Bold>
@@ -54,10 +56,8 @@ export default function TABanner({
           <Col>
             <InfoHeader>question</InfoHeader>
             <Info>{helpingQuestion.text ?? ""}</Info>
-            <InfoHeader>location</InfoHeader>
-            <Info>
-              {helpingQuestion.isOnline ? "online" : helpingQuestion.location}
-            </Info>
+            <InfoHeader>type</InfoHeader>
+            <Info>{helpingQuestion.questionType ?? ""}</Info>
           </Col>
         </Row>
       }

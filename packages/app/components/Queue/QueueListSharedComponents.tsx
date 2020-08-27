@@ -35,12 +35,6 @@ const QueueTitle = styled.h2`
   margin-bottom: 24px;
 `;
 
-const TimeText = styled.div`
-  font-size: 16px;
-  color: #5f6b79;
-  margin-left: 12px;
-`;
-
 export const NotesText = styled.div`
   font-size: 16px;
   color: #5f6b79;
@@ -50,8 +44,9 @@ export const NotesText = styled.div`
 
 const InfoColumnContainer = styled.div`
   flex-shrink: 0;
+  padding-bottom: 30px;
   @media (min-width: 767px) {
-    width: 320px;
+    width: 300px;
   }
 `;
 

@@ -46,6 +46,7 @@ const StyledCard = styled.div`
   border-radius: 6px;
   padding: 16px;
   display: flex;
+  margin-bottom: 16px;
 `;
 const AvatarNoShrink = styled(Avatar)`
   flex-shrink: 0;

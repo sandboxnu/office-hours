@@ -111,12 +111,9 @@ export default function StudentBanner({
                 <InfoHeader>question</InfoHeader>
                 <div>{studentQuestion.text}</div>
               </Col>
-              <Col flex="0 0 60px">
+              <Col flex="0 0 89px">
                 <InfoHeader>type</InfoHeader>
-                <div>
-                  {studentQuestion.questionType.charAt(0).toUpperCase() +
-                    studentQuestion.questionType.substr(1).toLowerCase()}
-                </div>
+                <div>{studentQuestion.questionType}</div>
               </Col>
             </QuestionDetails>
           }
@@ -136,7 +133,18 @@ export default function StudentBanner({
           buttons={
             <>
               <LeaveQueueButton leaveQueue={leaveQueue} />
-              <BannerButton icon={<TeamOutlined />}>Open Teams DM</BannerButton>
+              {studentQuestion.isOnline && (
+                <BannerButton
+                  icon={<TeamOutlined />}
+                  onClick={() => {
+                    window.open(
+                      `https://teams.microsoft.com/l/chat/0/0?users=${studentQuestion.taHelped.email}`
+                    );
+                  }}
+                >
+                  Open Teams DM
+                </BannerButton>
+              )}
             </>
           }
           content={
