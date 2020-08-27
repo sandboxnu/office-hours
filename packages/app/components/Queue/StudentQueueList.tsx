@@ -218,16 +218,13 @@ export default function StudentQueueList({
           />
           <VerticalDivider />
           <Space direction="vertical" size={40} style={{ flexGrow: 1 }}>
-            {studentQuestion &&
-              (studentQuestion.status === "Drafting" ||
-                studentQuestion.status === "Helping" ||
-                studentQuestion.status === "Queued") && (
-                <StudentBanner
-                  queueId={qid}
-                  editQuestion={openEditModal}
-                  leaveQueue={leaveQueue}
-                />
-              )}
+            {studentQuestion && (
+              <StudentBanner
+                queueId={qid}
+                editQuestion={openEditModal}
+                leaveQueue={leaveQueue}
+              />
+            )}
             <QueueQuestions
               questions={questions}
               studentQuestion={studentQuestion}
