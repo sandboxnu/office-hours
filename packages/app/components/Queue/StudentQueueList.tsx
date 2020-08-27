@@ -77,17 +77,10 @@ export default function StudentQueueList({
   }, [studentQuestion?.id, mutateQuestions]);
 
   const finishQuestion = useCallback(
-    async (
-      text: string,
-      questionType: QuestionType,
-      isOnline: boolean,
-      location: string
-    ) => {
+    async (text: string, questionType: QuestionType) => {
       const updateStudent = {
         text,
         questionType,
-        isOnline,
-        location: isOnline ? "" : location,
         status: OpenQuestionStatus.Queued,
       };
       await API.questions.update(studentQuestion?.id, updateStudent);
@@ -152,9 +145,9 @@ export default function StudentQueueList({
   );
 
   const finishQuestionAndClose = useCallback(
-    (text: string, qt: QuestionType, isOnline: boolean, location: string) => {
+    (text: string, qt: QuestionType) => {
       deleteDraftQuestion();
-      finishQuestion(text, qt, isOnline, location);
+      finishQuestion(text, qt);
       closeEditModal();
       if (isFirstQuestion) {
         notification.warn({
