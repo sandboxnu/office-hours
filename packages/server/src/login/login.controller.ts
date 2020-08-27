@@ -36,7 +36,7 @@ export class LoginController {
   ): Promise<KhouryRedirectResponse> {
     let user: UserModel;
     user = await UserModel.findOne({
-      where: { username: body.username },
+      where: { email: body.email },
       relations: ['courses'],
     });
 
@@ -45,7 +45,6 @@ export class LoginController {
     }
 
     user = Object.assign(user, {
-      username: body.username,
       email: body.email,
       name: body.first_name + body.last_name,
       photoURL: body.photo_url, // We'll have to find away around this becuase the photo urls expire
@@ -82,10 +81,9 @@ export class LoginController {
     const userCourses = [];
     await Promise.all(
       body.courses
-        .filter((c) => !c.withdraw)
         .map(async (c) => {
           const userCourse = await courseNameToUserCourse(
-            c.course_name,
+            c.course,
             Role.STUDENT,
           );
           userCourses.push(userCourse);
@@ -93,9 +91,8 @@ export class LoginController {
     );
     await Promise.all(
       body.ta_courses
-        .filter((c) => !c.withdraw)
         .map(async (c) => {
-          const taCourse = await courseNameToUserCourse(c.course_name, Role.TA);
+          const taCourse = await courseNameToUserCourse(c.course, Role.TA);
           userCourses.push(taCourse);
         }),
     );
