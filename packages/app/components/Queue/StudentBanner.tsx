@@ -111,7 +111,7 @@ export default function StudentBanner({
                 <InfoHeader>question</InfoHeader>
                 <div>{studentQuestion.text}</div>
               </Col>
-              <Col flex="0 0 60px">
+              <Col flex="0 0 89px">
                 <InfoHeader>type</InfoHeader>
                 <div>{studentQuestion.questionType}</div>
               </Col>

@@ -218,11 +218,16 @@ export default function StudentQueueList({
           />
           <VerticalDivider />
           <Space direction="vertical" size={40} style={{ flexGrow: 1 }}>
-            <StudentBanner
-              queueId={qid}
-              editQuestion={openEditModal}
-              leaveQueue={leaveQueue}
-            />
+            {studentQuestion &&
+              (studentQuestion.status === "Drafting" ||
+                studentQuestion.status === "Helping" ||
+                studentQuestion.status === "Queued") && (
+                <StudentBanner
+                  queueId={qid}
+                  editQuestion={openEditModal}
+                  leaveQueue={leaveQueue}
+                />
+              )}
             <QueueQuestions
               questions={questions}
               studentQuestion={studentQuestion}
@@ -254,6 +259,9 @@ export default function StudentQueueList({
 }
 
 const QueueHeader = styled.h2`
+  font-weight: 500;
+  font-size: 24px;
+  color: #212934;
   margin-bottom: 0;
 `;
 
@@ -274,13 +282,13 @@ function QueueQuestions({ questions, studentQuestion }: QueueProps) {
           <QueueHeader>Queue</QueueHeader>
           <StudentHeaderCard bordered={false}>
             <CenterRow>
-              <Col flex="0 0 40px">
+              <Col flex="0 0 64px">
                 <HeaderText>#</HeaderText>
               </Col>
               <Col flex="1 1">
                 <HeaderText>question</HeaderText>
               </Col>
-              <Col flex="0 0 60px">
+              <Col flex="0 0 80px">
                 <HeaderText>wait</HeaderText>
               </Col>
             </CenterRow>
