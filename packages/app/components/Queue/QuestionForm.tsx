@@ -175,8 +175,8 @@ export default function QuestionForm({
           onChange={onQuestionTextChange}
         />
         <QuestionCaption>
-          Be as descriptive and specific as possible in your answer. If your
-          question matches another student’s, your wait time may be reduced.
+          Be as descriptive and specific as possible in your answer. Your name
+          will be hidden to other students.
         </QuestionCaption>
       </Container>
     </Modal>
