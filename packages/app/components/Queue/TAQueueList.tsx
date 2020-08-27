@@ -232,6 +232,9 @@ export default function TAQueueList({
 }
 
 const QueueHeader = styled.h2`
+  font-weight: 500;
+  font-size: 24px;
+  color: #212934;
   margin-bottom: 0;
 `;
 interface QueueProps {
