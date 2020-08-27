@@ -16,7 +16,6 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:integration": "jest --config ./test/jest-integration.json -i",
-    "dev:db:seed": "yarn fixtures -c ./ormconfig.ts fixtures/ --sync --require=ts-node/register",
     "dev:db:reset": "echo 'DROP DATABASE dev;' | psql -U postgres -h localhost && echo 'CREATE DATABASE dev;' | psql -U postgres -h localhost",
     "typeorm": "ts-node node_modules/.bin/typeorm",
     "cli": "nestjs-command"
@@ -82,7 +81,6 @@
     "ts-node": "^8.6.2",
     "tsconfig-paths": "^3.9.0",
     "typeorm-factory": "^0.0.14",
-    "typeorm-fixtures-cli": "^1.7.0",
     "typescript": "^3.8.3",
     "webpack-node-externals": "^2.5.0"
   },
