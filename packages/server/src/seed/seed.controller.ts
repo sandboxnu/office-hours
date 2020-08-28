@@ -136,7 +136,9 @@ export class SeedController {
   }
 
   @Post('createQueue')
-  async createQueue(@Body() body: { courseId: number, allowQuestions: boolean  }): Promise<QueueModel> {
+  async createQueue(
+    @Body() body: { courseId: number; allowQuestions: boolean },
+  ): Promise<QueueModel> {
     let queue: QueueModel;
     const now = new Date();
     const officeHours = await OfficeHourFactory.create({
@@ -148,10 +150,13 @@ export class SeedController {
       queue = await QueueFactory.create({
         course: course,
         officeHours: [officeHours],
-        allowQuestions: body.allowQuestions ?? false
+        allowQuestions: body.allowQuestions ?? false,
       });
     } else {
-      queue = await QueueFactory.create({ officeHours: [officeHours], allowQuestions: body.allowQuestions ?? false });
+      queue = await QueueFactory.create({
+        officeHours: [officeHours],
+        allowQuestions: body.allowQuestions ?? false,
+      });
     }
     return queue;
   }

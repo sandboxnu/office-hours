@@ -125,7 +125,10 @@ export default function QuestionForm({
     <Modal
       visible={visible}
       closable={true}
-      onCancel={cancel}
+      onCancel={() => {
+        setStoredQuestion(question);
+        cancel();
+      }}
       title={drafting ? "Describe your question" : "Edit your question"}
       footer={
         <div>
@@ -137,6 +140,7 @@ export default function QuestionForm({
             <FormButton onClick={cancel}>Cancel</FormButton>
           )}
           <SaveChangesButton
+            data-cy="finishQuestion"
             type="primary"
             disabled={
               !questionTypeInput ||

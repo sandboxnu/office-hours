@@ -388,12 +388,13 @@ export type QueueNotePayloadType = {
   notes: string;
 };
 
-export class UpdateQueueNotesParams {
+export class UpdateQueueParams {
   @IsString()
-  notes!: string;
+  @IsOptional()
+  notes?: string;
 
   @IsBoolean()
-  allowQuestions!: boolean;
+  allowQuestions?: boolean;
 }
 
 export interface TwilioBody {

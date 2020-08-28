@@ -8,7 +8,7 @@ const FIFTEEN_SECOND_IN_MS = 150000;
 type queueResponse = responseInterface<QueuePartial, any>;
 
 interface UseQueueReturn {
-  queue: queueResponse["data"];
+  queue?: queueResponse["data"];
   queuesError: queueResponse["error"];
   mutateQueue: queueResponse["mutate"];
 }
