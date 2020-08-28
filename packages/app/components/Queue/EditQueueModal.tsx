@@ -52,7 +52,11 @@ export function EditQueueModal({
           <Form.Item label="Queue Notes" name="notes">
             <NotesInput allowClear={true} placeholder={""} />
           </Form.Item>
-          <Form.Item label="Allow New Questions" name="allowQuestions" valuePropName="checked">
+          <Form.Item
+            label="Allow New Questions"
+            name="allowQuestions"
+            valuePropName="checked"
+          >
             <Switch data-cy="allow-questions-toggle" />
           </Form.Item>
         </Form>

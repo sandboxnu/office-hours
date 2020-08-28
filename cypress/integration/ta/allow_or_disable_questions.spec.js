@@ -1,6 +1,8 @@
 describe("Allow or disable new questions for a queue", () => {
   beforeEach(() => {
-    cy.request("POST", "/api/v1/seeds/createUser", { role: "ta" })
+    cy.request("POST", "/api/v1/seeds/createUser", {
+      role: "ta",
+    })
       .then((res) => res.body)
       .as("ta");
     cy.get("@ta").then((ta) => {
@@ -48,7 +50,9 @@ describe("Allow or disable new questions for a queue", () => {
   });
 
   it("student cannot add new questions when new questions are disabled", () => {
-    cy.request("POST", "/api/v1/seeds/createUser", { role: "student" })
+    cy.request("POST", "/api/v1/seeds/createUser", {
+      role: "student",
+    })
       .then((res) => res.body)
       .as("student");
 
@@ -63,6 +67,8 @@ describe("Allow or disable new questions for a queue", () => {
       // Login the student
       cy.visit(`/api/v1/login/dev?userId=${student.user.id}`);
     });
+
+    cy.get(".ant-modal-close-x").click();
 
     // Check that the queue is not acccpeting new questions on the today page
     cy.get('[data-icon="stop"]').should("exist");
