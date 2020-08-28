@@ -129,6 +129,7 @@ export class QuestionController {
       questionType,
       status: QuestionStatusKeys.Drafting,
       createdAt: new Date(),
+      isOnline: true,
     }).save();
 
     return question;

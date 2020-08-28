@@ -119,6 +119,7 @@ const StudentPopupCard = ({
                 onClose();
                 updateQuestion(question, ClosedQuestionStatus.Deleted);
               }}
+              disabled={!isStaffCheckedIn}
             >
               <RemoveButton
                 danger
@@ -144,7 +145,7 @@ const StudentPopupCard = ({
                   );
                 }
               }}
-              disabled={!isStaffCheckedIn}
+              disabled={!isStaffCheckedIn || question.status === "Drafting"}
               data-cy="help-student"
             >
               Help
