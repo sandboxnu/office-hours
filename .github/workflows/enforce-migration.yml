@@ -4,8 +4,6 @@ on:
   pull_request:
     paths:
       - "packages/server/**/*.entity.ts"
-    paths-ignore:
-      - "packages/server/migration"
 
 jobs:
   fail:
