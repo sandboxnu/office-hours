@@ -120,7 +120,12 @@ const StudentPopupCard = ({
                 updateQuestion(question, ClosedQuestionStatus.Deleted);
               }}
             >
-              <RemoveButton danger block disabled={!isStaffCheckedIn} data-cy="remove-from-queue">
+              <RemoveButton
+                danger
+                block
+                disabled={!isStaffCheckedIn}
+                data-cy="remove-from-queue"
+              >
                 Remove from Queue
               </RemoveButton>
             </Popconfirm>
