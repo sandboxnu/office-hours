@@ -1,0 +1,14 @@
+{
+  "problemMatcher": [
+    {
+      "owner": "migration-problem-matcher",
+      "pattern": [
+        {
+          "regexp": "File ([^\\s]+): (.+)",
+          "file": 1,
+          "message": 2
+        }
+      ]
+    }
+  ]
+}

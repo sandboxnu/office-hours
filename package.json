@@ -17,6 +17,7 @@
     "dev:db:down": "docker-compose -f infrastructure/dev/docker-compose.yml down",
     "dev:db:seed": "yarn workspace @template/server dev:db:seed",
     "dev:db:reset": "yarn workspace @template/server run dev:db:reset",
+    "migration:generate": "yarn workspace @template/server run migration:generate",
     "build": "yarn workspace @template/server run build && yarn workspace @template/app run build",
     "prod:start": "pm2 startOrRestart ./infrastructure/prod/ecosystem.config.js",
     "prod:stop": "pm2 del ./infrastructure/prod/ecosystem.config.js",
