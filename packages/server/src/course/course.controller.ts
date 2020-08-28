@@ -7,6 +7,7 @@ import {
   Post,
   UseGuards,
   UseInterceptors,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { GetCourseResponse, QueuePartial, Role } from '@template/common';
 import async from 'async';
@@ -33,6 +34,7 @@ export class CourseController {
   @Get(':id')
   @Roles(Role.PROFESSOR, Role.STUDENT, Role.TA)
   async get(@Param('id') id: number): Promise<GetCourseResponse> {
+    throw new InternalServerErrorException();
     // TODO: for all course endpoint, check if they're a student or a TA
     const course = await CourseModel.findOne(id, {
       relations: ['queues', 'queues.staffList'],

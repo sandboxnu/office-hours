@@ -1,3 +1,5 @@
+import * as Sentry from '@sentry/node';
+import * as Tracing from '@sentry/tracing';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, INestApplication } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
@@ -5,13 +7,14 @@ import * as morgan from 'morgan';
 import { AppModule } from './app.module';
 import { StripUndefinedPipe } from './stripUndefined.pipe';
 import { PROD_URL } from '@template/common';
-import { ApmInterceptor } from './apm.interceptor';
+import { ApmInterceptor } from 'apm.interceptor';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export async function bootstrap(hot: any): Promise<void> {
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
+  setupAPM(app);
   addGlobalsToApp(app);
   app.setGlobalPrefix('api/v1');
   app.useGlobalInterceptors(new ApmInterceptor());
@@ -30,6 +33,21 @@ export async function bootstrap(hot: any): Promise<void> {
     hot.accept();
     hot.dispose(() => app.close());
   }
+}
+
+function setupAPM(app: INestApplication): void {
+  Sentry.init({
+    dsn:
+      'https://7300ca8a1f1a4902b0a6f9a889525180@o440615.ingest.sentry.io/5410042',
+    tracesSampleRate: 1,
+    integrations: [
+      // enable HTTP calls tracing
+      new Sentry.Integrations.Http({ tracing: true }),
+      new Tracing.Integrations.Express({ app }),
+    ],
+  });
+  app.use(Sentry.Handlers.requestHandler());
+  app.use(Sentry.Handlers.tracingHandler());
 }
 
 // Global settings that should be true in prod and in integration tests
