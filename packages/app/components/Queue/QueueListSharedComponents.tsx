@@ -1,10 +1,14 @@
-import { ClockCircleOutlined, NotificationOutlined } from "@ant-design/icons";
+import {
+  ClockCircleOutlined,
+  NotificationOutlined,
+  StopOutlined,
+} from "@ant-design/icons";
 import React, { ReactElement, ReactNode } from "react";
 import styled from "styled-components";
 import { useQueue } from "../../hooks/useQueue";
 import { formatQueueTime } from "../../utils/TimeUtil";
 import { TAStatuses } from "./TAStatuses";
-import { Button } from "antd";
+import { Button, Tooltip } from "antd";
 import { ButtonProps } from "antd/lib/button";
 
 export const QueuePageContainer = styled.div`
@@ -28,11 +32,10 @@ export const Container = styled.div`
   align-items: center;
 `;
 
-const QueueTitle = styled.h2`
+const QueueTitle = styled.div`
   font-weight: 500;
   font-size: 24px;
   color: #212934;
-  margin-bottom: 24px;
 `;
 
 export const NotesText = styled.div`
@@ -79,6 +82,13 @@ const QueuePropertyText = styled.div`
 const StaffH2 = styled.h2`
   margin-top: 32px;
 `;
+
+const QueueRoomGroup = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 24px;
+`;
 //TODO: Make QuestionForm self contained so we can trigger it directly in this component and not pass down so many props
 interface QueueInfoColumnProps {
   queueId: number;
@@ -92,7 +102,17 @@ export function QueueInfoColumn({
   const { queue } = useQueue(queueId);
   return (
     <InfoColumnContainer>
-      <QueueTitle>{queue?.room}</QueueTitle>
+      <QueueRoomGroup>
+        <QueueTitle>{queue?.room}</QueueTitle>
+        {!queue.allowQuestions && (
+          <Tooltip title="This queue is no longer accepting questions">
+            <StopOutlined
+              style={{ color: "red", fontSize: "24px", marginLeft: "8px" }}
+            />
+          </Tooltip>
+        )}
+      </QueueRoomGroup>
+
       {queue.startTime && queue.endTime && (
         <QueuePropertyRow>
           <ClockCircleOutlined />
@@ -106,15 +126,6 @@ export function QueueInfoColumn({
         </QueuePropertyRow>
       )}
       {buttons}
-      {queue?.allowQuestions ? (
-        <NotesText style={{ color: "green" }}>
-          This queue is allowing new questions
-        </NotesText>
-      ) : (
-        <NotesText style={{ color: "red" }}>
-          This queue is <b>not</b> allowing new questions
-        </NotesText>
-      )}
       <StaffH2>Staff</StaffH2>
       <TAStatuses queueId={queueId} />
     </InfoColumnContainer>
