@@ -7,6 +7,9 @@ import {
   QuestionFactory,
   QueueFactory,
   UserCourseFactory,
+  SemesterFactory,
+  CourseFactory,
+  UserFactory,
 } from '../../test/util/factories';
 import { CourseModel } from '../course/course.entity';
 import { OfficeHourModel } from '../course/office-hour.entity';
@@ -14,6 +17,7 @@ import { NonProductionGuard } from '../non-production.guard';
 import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { SeedService } from './seed.service';
+import { UserModel } from 'profile/user.entity';
 
 @Controller('seeds')
 @UseGuards(NonProductionGuard)
@@ -63,15 +67,76 @@ export class SeedController {
       endTime: new Date(tomorrow.valueOf() + 4500000),
     });
 
-    const course = await CourseModel.findOne({ relations: ['officeHours'] });
-    if (course) {
-      course.officeHours = [
-        officeHoursToday,
-        officeHoursYesterday,
-        officeHoursTomorrow,
-        officeHoursTodayOverlap,
-      ];
-      course.save();
+    const courseExists = await CourseModel.findOne({
+      where: { name: 'CS 2500' },
+    });
+    if (!courseExists) {
+      await SemesterFactory.create({ season: 'Fall', year: 2020 });
+      await CourseFactory.create();
+    }
+
+    const course = await CourseModel.findOne({
+      where: { name: 'CS 2500' },
+      relations: ['officeHours'],
+    });
+
+    course.officeHours = [
+      officeHoursToday,
+      officeHoursYesterday,
+      officeHoursTomorrow,
+      officeHoursTodayOverlap,
+    ];
+    course.save();
+
+    const userExsists = await UserModel.findOne();
+    if (!userExsists) {
+      // Student 1
+      const user1 = await UserFactory.create({
+        email: 'liu.sta@northeastern.edu',
+        name: 'Stanley Liu',
+        photoURL:
+          'https://ca.slack-edge.com/TE565NU79-UR20CG36E-cf0f375252bd-512',
+      });
+      await UserCourseFactory.create({
+        user: user1,
+        role: Role.STUDENT,
+        course: course,
+      });
+      // Stundent 2
+      const user2 = await UserFactory.create({
+        email: 'takayama.a@northeastern.edu',
+        name: 'Alex Takayama',
+        photoURL:
+          'https://ca.slack-edge.com/TE565NU79-UJL97443D-50121339686b-512',
+      });
+      await UserCourseFactory.create({
+        user: user2,
+        role: Role.STUDENT,
+        course: course,
+      });
+      // TA 1
+      const user3 = await UserFactory.create({
+        email: 'stenzel.w@northeastern.edu',
+        name: 'Will Stenzel',
+        photoURL:
+          'https://ca.slack-edge.com/TE565NU79-URF256KRT-d10098e879da-512',
+      });
+      await UserCourseFactory.create({
+        user: user3,
+        role: Role.TA,
+        course: course,
+      });
+      // TA 2
+      const user4 = await UserFactory.create({
+        email: 'chu.daj@northeastern.edu',
+        name: 'Da-Jin Chu',
+        photoURL: 'https://ca.slack-edge.com/TE565NU79-UE56Y5UT1-85db59a474f4-512'
+      });
+      await UserCourseFactory.create({
+        user: user4,
+        role: Role.TA,
+        course: course,
+      });
     }
 
     const queue = await QueueFactory.create({
@@ -136,7 +201,9 @@ export class SeedController {
   }
 
   @Post('createQueue')
-  async createQueue(@Body() body: { courseId: number, allowQuestions: boolean  }): Promise<QueueModel> {
+  async createQueue(
+    @Body() body: { courseId: number; allowQuestions: boolean },
+  ): Promise<QueueModel> {
     let queue: QueueModel;
     const now = new Date();
     const officeHours = await OfficeHourFactory.create({
@@ -148,10 +215,13 @@ export class SeedController {
       queue = await QueueFactory.create({
         course: course,
         officeHours: [officeHours],
-        allowQuestions: body.allowQuestions ?? false
+        allowQuestions: body.allowQuestions ?? false,
       });
     } else {
-      queue = await QueueFactory.create({ officeHours: [officeHours], allowQuestions: body.allowQuestions ?? false });
+      queue = await QueueFactory.create({
+        officeHours: [officeHours],
+        allowQuestions: body.allowQuestions ?? false,
+      });
     }
     return queue;
   }
