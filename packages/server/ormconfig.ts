@@ -9,7 +9,7 @@ import { DesktopNotifModel } from './src/notification/desktop-notif.entity';
 import { PhoneNotifModel } from './src/notification/phone-notif.entity';
 import { AdminUserModel } from './src/admin/admin-user.entity';
 import { config } from 'dotenv';
-import { CourseSectionMappingModel } from 'course/course-section-mapping.entity';
+import { CourseSectionMappingModel } from './src/login/course-section-mapping.entity';
 config();
 
 // Options only used whe run via CLI

@@ -6,7 +6,7 @@ import {
     ManyToOne,
     JoinColumn,
   } from 'typeorm';
-import { CourseModel } from './course.entity';
+import { CourseModel } from '../course/course.entity';
   
   @Entity('course_section_mapping_model')
   export class CourseSectionMappingModel extends BaseEntity {

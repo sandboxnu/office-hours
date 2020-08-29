@@ -7,7 +7,7 @@ import { UserCourseModel } from '../../src/profile/user-course.entity';
 import { UserModel } from '../../src/profile/user.entity';
 import { QuestionModel } from '../../src/question/question.entity';
 import { QueueModel } from '../../src/queue/queue.entity';
-import { CourseSectionMappingModel } from 'course/course-section-mapping.entity';
+import { CourseSectionMappingModel } from '../../src/login/course-section-mapping.entity';
 
 export const UserFactory = new Factory(UserModel)
   .attr('email', `user@neu.edu`)
