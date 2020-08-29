@@ -76,7 +76,7 @@ export default function DevPanel({ hidePage }: DevPanelProps): ReactElement {
             Login as <b> Student 1</b>
           </Button>
         </a>
-        <a href="/api/v1/login/dev?userId=3">
+        <a href="/api/v1/login/dev?userId=2">
           <Button
             style={{ marginRight: "15px" }}
             type="default"
@@ -85,7 +85,7 @@ export default function DevPanel({ hidePage }: DevPanelProps): ReactElement {
             Login as <b> Student 2</b>
           </Button>
         </a>
-        <a href="/api/v1/login/dev?userId=2">
+        <a href="/api/v1/login/dev?userId=3">
           <Button
             style={{ marginRight: "15px" }}
             type="default"
@@ -94,7 +94,7 @@ export default function DevPanel({ hidePage }: DevPanelProps): ReactElement {
             Login as <b> TA</b>
           </Button>
         </a>
-        <a href="/api/v1/login/dev?userId=5">
+        <a href="/api/v1/login/dev?userId=4">
           <Button type="default" htmlType="submit">
             Login as <b> TA 2</b>
           </Button>
