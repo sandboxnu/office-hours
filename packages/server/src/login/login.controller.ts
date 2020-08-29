@@ -59,7 +59,6 @@ export class LoginController {
     const userCourses = [];
     await Promise.all(
       body.courses.map(async (c: KhouryStudentCourse) => { 
-        // TODO
         const course: CourseModel = await this.loginCourseService.courseSectionToCourse(c.course, c.section);
 
         if (course) {

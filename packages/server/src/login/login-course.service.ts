@@ -3,7 +3,7 @@ import { Connection } from 'typeorm';
 import { Role } from '@template/common';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { CourseModel } from 'course/course.entity';
-import { CourseSectionMappingModel } from 'course/course-section-mapping.entity';
+import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 
 @Injectable()
 export class LoginCourseService {
