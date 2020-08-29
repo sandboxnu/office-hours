@@ -9,7 +9,6 @@ import { QuestionModel } from '../../src/question/question.entity';
 import { QueueModel } from '../../src/queue/queue.entity';
 
 export const UserFactory = new Factory(UserModel)
-  .attr('username', `user`)
   .attr('email', `user@neu.edu`)
   .attr('name', `User`)
   .attr('photoURL', `https://pics/user`);
