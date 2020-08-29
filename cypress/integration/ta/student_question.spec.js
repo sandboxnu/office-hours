@@ -1,7 +1,9 @@
 describe("TA interacts with student question", () => {
   beforeEach(() => {
     // Setting up the state
-    cy.request("POST", "/api/v1/seeds/createUser", { role: "ta" })
+    cy.request("POST", "/api/v1/seeds/createUser", {
+      role: "ta",
+    })
       .then((res) => res.body)
       .as("ta");
 
@@ -34,6 +36,16 @@ describe("TA interacts with student question", () => {
     });
   });
 
+  it("clicks the help button then can't find", () => {
+    // Click on the student's question
+    cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
+    // Click help
+    cy.get("[data-cy='help-student']").click();
+
+    // Click Can't Find
+    cy.contains("button", "Can't Find").click();
+  });
+
   it("clicks the help button then finish helping", () => {
     // Click on the student's question
     cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
@@ -42,6 +54,7 @@ describe("TA interacts with student question", () => {
 
     // Click Finish Helping
     cy.contains("button", "Finish Helping").click();
+    cy.get(".ant-popover-buttons > .ant-btn-primary > span").click();
   });
 
   it("clicks help button then mark question as can't find", () => {
