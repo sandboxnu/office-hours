@@ -3,12 +3,17 @@ import { LoginModule } from '../src/login/login.module';
 import { TestingModuleBuilder } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { UserModel } from '../src/profile/user.entity';
-import { UserFactory, UserCourseFactory } from './util/factories';
+import {
+  UserFactory,
+  UserCourseFactory,
+  CourseFactory,
+  CourseSectionFactory,
+} from './util/factories';
 
 const mockJWT = {
   signAsync: async (payload, options?) => JSON.stringify(payload),
-  verifyAsync: async (payload) => JSON.parse(payload).token !== 'INVALID_TOKEN',
-  decode: (payload) => JSON.parse(payload),
+  verifyAsync: async payload => JSON.parse(payload).token !== 'INVALID_TOKEN',
+  decode: payload => JSON.parse(payload),
 };
 
 describe('Login Integration', () => {
@@ -55,78 +60,128 @@ describe('Login Integration', () => {
   });
 
   describe('POST /khoury_login', () => {
-    it('Posting to khoury login sends back the correct redirect', async () => {
-      const res = await supertest()
-        .post('/khoury_login')
-        .send({
-          username: 'mr_stenzel',
-          email: 'stenzel.w@northeastern.edu',
-          campus: 1,
-          nuid: 2,
-          first_name: 'Will',
-          last_name: 'Stenzel',
-          photo_url: 'sdf',
-          courses: [
-            {
-              course_name: 'Object Oriented Design',
-              withdraw: false,
-              semester: 657,
-            },
-          ],
-          ta_courses: [
-            {
-              course_name: 'Fundies 1',
-              withdraw: false,
-              semester: 657,
-            },
-          ],
-        });
-
-      expect(res.body).toEqual({
-        redirect: 'http://localhost:3000/api/v1/login/entry?token={"userId":1}',
-      });
-    });
-
-    it('Making request creates a new user', async () => {
+    // TODO: Create test to say that he khoury login sends back teh correct redirect
+    it('creates user and sends back correct redirect', async () => {
       const user = await UserModel.findOne({
-        where: { username: 'mr_stenzel' },
+        where: { email: 'stenzel.w@northeastern.edu' },
       });
       expect(user).toBeUndefined();
 
       const res = await supertest()
         .post('/khoury_login')
         .send({
-          username: 'mr_stenzel',
           email: 'stenzel.w@northeastern.edu',
           campus: 1,
-          nuid: 2,
+          first_name: 'Will',
+          last_name: 'Stenzel',
+          photo_url: 'sdf',
+          courses: [],
+          ta_courses: [],
+        });
+
+      // Expect that the new user has been created
+      const newUser = await UserModel.findOne({
+        where: { email: 'stenzel.w@northeastern.edu' },
+      });
+      expect(newUser).toBeDefined();
+
+      // And that the redirect is correct
+      expect(res.body).toEqual({
+        redirect: 'http://localhost:3000/api/v1/login/entry?token={"userId":1}',
+      });
+    });
+
+    it('handles student courses and sections correctly', async () => {
+      // This is needed since only courses already in the db will be added as UserCourses
+      const course = await CourseFactory.create({
+        name: 'CS 2510 Accelerated',
+      });
+      await CourseSectionFactory.create({
+        genericCourseName: 'CS 2510',
+        section: 1,
+        course: course,
+      });
+
+      const res = await supertest()
+        .post('/khoury_login')
+        .send({
+          email: 'stenzel.w@northeastern.edu',
+          campus: 1,
           first_name: 'Will',
           last_name: 'Stenzel',
           photo_url: 'sdf',
           courses: [
             {
-              course_name: 'Object Oriented Design',
-              withdraw: false,
-              semester: 657,
-            },
-            {
-              course_name: 'Systems',
-              withdraw: true,
-              semester: 657,
+              course: 'CS 2510',
+              crn: 12345,
+              acclerated: false,
+              section: 1,
+              semester: '000',
+              title: 'Fundamentals of Computer Science II',
             },
           ],
           ta_courses: [],
+        });
+
+        const student = await UserModel.findOne({
+          where: { email: 'stenzel.w@northeastern.edu' }, relations: ['courses']
+        });
+
+      expect(student.courses).toHaveLength(1);
+      expect(student.courses[0].id).toBe(course.id);
+    });
+
+    it('handles TA courses correctly', async () => {
+      const regularFundies = await CourseFactory.create({
+        name: 'CS 2500 Regular',
+      });
+      const acceleratedFundies = await CourseFactory.create({
+        name: 'CS 2500 Accelerated',
+      });
+      const onlineFundies = await CourseFactory.create({
+        name: 'CS 2500 Online',
+      });
+      await CourseSectionFactory.create({
+        genericCourseName: 'CS 2500',
+        section: 1,
+        course: regularFundies,
+      });
+      await CourseSectionFactory.create({
+        genericCourseName: 'CS 2500',
+        section: 3,
+        course: acceleratedFundies,
+      });
+      await CourseSectionFactory.create({
+        genericCourseName: 'CS 2500',
+        section: 2,
+        course: onlineFundies,
+      });
+
+      const res = await supertest()
+        .post('/khoury_login')
+        .send({
+          email: 'stenzel.w@northeastern.edu',
+          campus: 1,
+          first_name: 'Will',
+          last_name: 'Stenzel',
+          photo_url: 'sdf',
+          courses: [],
+          ta_courses: [
+            {
+              course: 'CS 2500',
+              semester: '000',
+            },
+          ],
         })
         .expect(201);
 
-      const newUser = await UserModel.findOne({
-        where: { username: 'mr_stenzel' },
+      const ta = await UserModel.findOne({
+        where: { email: 'stenzel.w@northeastern.edu' },
         relations: ['courses'],
       });
-      expect(newUser).toBeDefined();
 
-      // Expect that only the courses that have not been withdrawn are saved to the user
-      expect(newUser.courses).toHaveLength(1);
+      // Expect the ta to have been all three courses accosiated with the given generic courses (CS 2500)
+      expect(ta.courses).toHaveLength(3);
     });
   });
 });
