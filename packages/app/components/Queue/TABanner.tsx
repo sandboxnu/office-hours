@@ -1,17 +1,19 @@
-import Banner, { BannerDangerButton, BannerButton } from "./Banner";
 import {
+  CheckOutlined,
+  QuestionOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import { API } from "@template/api-client";
+import {
+  ClosedQuestionStatus,
+  OpenQuestionStatus,
   Question,
   QuestionStatus,
-  ClosedQuestionStatus,
 } from "@template/common";
+import { Avatar, Col, Popconfirm, Row } from "antd";
 import { ReactElement } from "react";
-import { Row, Col, Avatar, Popconfirm } from "antd";
-import {
-  UserOutlined,
-  QuestionOutlined,
-  CheckOutlined,
-} from "@ant-design/icons";
 import styled from "styled-components";
+import Banner, { BannerButton, BannerDangerButton } from "./Banner";
 
 const Bold = styled.span`
   font-weight: bold;
@@ -35,6 +37,9 @@ export default function TABanner({
   helpingQuestion,
   updateQuestion,
 }: TABannerProps): ReactElement {
+  const alertStudent = async () =>
+    await API.questions.notify(helpingQuestion.id);
+
   return (
     <Banner
       titleColor="#3684C6"
@@ -68,7 +73,8 @@ export default function TABanner({
             okText="Yes"
             cancelText="No"
             onConfirm={() => {
-              updateQuestion(helpingQuestion, ClosedQuestionStatus.NoShow);
+              updateQuestion(helpingQuestion, OpenQuestionStatus.CantFind);
+              alertStudent();
             }}
           >
             <BannerDangerButton icon={<QuestionOutlined />}>

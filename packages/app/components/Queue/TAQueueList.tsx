@@ -163,7 +163,8 @@ export default function TAQueueList({
                       !isStaffCheckedIn ||
                       !questions.find(
                         (q) => q.status === QuestionStatusKeys.Queued
-                      )
+                      ) ||
+                      isHelping
                     }
                     data-cy="help-next"
                   >

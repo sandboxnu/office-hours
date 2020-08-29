@@ -5,25 +5,34 @@ import {
   Question,
   QuestionType,
 } from "@template/common";
-import { Card, Col, notification, Row, Popconfirm, Space } from "antd";
+import {
+  Button,
+  Card,
+  Col,
+  Modal,
+  notification,
+  Popconfirm,
+  Row,
+  Space,
+} from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { mutate } from "swr";
+import { useDraftQuestion } from "../../hooks/useDraftQuestion";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
+import { useStudentQuestion } from "../../hooks/useStudentQuestion";
+import { NotificationSettingsModal } from "../Nav/NotificationSettingsModal";
 import QuestionForm from "./QuestionForm";
 import {
   QueueInfoColumn,
+  QueueInfoColumnButton,
   QueuePageContainer,
   VerticalDivider,
-  QueueInfoColumnButton,
 } from "./QueueListSharedComponents";
-import StudentQueueCard from "./StudentQueueCard";
-import { NotificationSettingsModal } from "../Nav/NotificationSettingsModal";
 import StudentBanner from "./StudentBanner";
-import { useStudentQuestion } from "../../hooks/useStudentQuestion";
-import { useDraftQuestion } from "../../hooks/useDraftQuestion";
+import StudentQueueCard from "./StudentQueueCard";
 
 const JoinButton = styled(QueueInfoColumnButton)`
   background-color: #3684c6;
@@ -73,6 +82,13 @@ export default function StudentQueueList({
     });
 
     setIsJoining(false);
+    await mutateQuestions();
+  }, [studentQuestion?.id, mutateQuestions]);
+
+  const rejoinQueue = useCallback(async () => {
+    await API.questions.update(studentQuestion?.id, {
+      status: OpenQuestionStatus.Queued,
+    });
     await mutateQuestions();
   }, [studentQuestion?.id, mutateQuestions]);
 
@@ -182,6 +198,11 @@ export default function StudentQueueList({
     return (
       <>
         <QueuePageContainer>
+          <CantFindModal
+            visible={studentQuestion?.status === OpenQuestionStatus.CantFind}
+            leaveQueue={leaveQueue}
+            rejoinQueue={rejoinQueue}
+          />
           <QueueInfoColumn
             queueId={qid}
             buttons={
@@ -296,5 +317,32 @@ function QueueQuestions({ questions, studentQuestion }: QueueProps) {
         );
       })}
     </div>
+  );
+}
+
+type CantFindModalProps = {
+  visible: boolean;
+  leaveQueue: () => void;
+  rejoinQueue: () => void;
+};
+
+function CantFindModal(props: CantFindModalProps): ReactElement {
+  return (
+    <Modal
+      visible={props.visible}
+      footer={[
+        <Button key="leave" danger onClick={props.leaveQueue}>
+          Leave Queue
+        </Button>,
+        <Button type="primary" key="rejoin" onClick={props.rejoinQueue}>
+          Rejoin Queue
+        </Button>,
+      ]}
+      closable={false}
+      title="哎呀！！"
+    >
+      A TA tried to help you, but couldn&apos;t reach you. Are you still in the
+      queue? If you are, make sure you have Teams open, and rejoin the queue.
+    </Modal>
   );
 }

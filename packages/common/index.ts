@@ -196,7 +196,7 @@ export enum OpenQuestionStatus {
   Drafting = "Drafting",
   Queued = "Queued",
   Helping = "Helping",
-  CantFind = "Can't Find",
+  CantFind = "CantFind",
 }
 
 export enum ClosedQuestionStatus {
