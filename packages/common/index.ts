@@ -1,12 +1,12 @@
 import {
   IsBoolean,
+  IsDefined,
   IsEnum,
   IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
   ValidateIf,
-  IsDefined,
 } from "class-validator";
 import "reflect-metadata";
 
@@ -45,8 +45,8 @@ export type User = {
  */
 export type UserPartial = {
   id: number;
-  email: string;
-  name: string;
+  email?: string;
+  name?: string;
   photoURL?: string;
 };
 
@@ -131,6 +131,7 @@ export interface Queue {
   questions: Question[];
   startTime?: Date;
   endTime?: Date;
+  allowQuestions: boolean;
 }
 
 /**
@@ -147,8 +148,10 @@ export interface QueuePartial {
   staffList: UserPartial[];
   queueSize: number;
   notes?: string;
+  isOpen: boolean;
   startTime?: Date;
   endTime?: Date;
+  allowQuestions: boolean;
 }
 
 /**
@@ -347,6 +350,9 @@ export class CreateQuestionParams {
   @IsString()
   @IsOptional()
   location?: string;
+
+  @IsBoolean()
+  force!: boolean;
 }
 export type CreateQuestionResponse = Question;
 
@@ -382,9 +388,13 @@ export type QueueNotePayloadType = {
   notes: string;
 };
 
-export class UpdateQueueNotesParams {
+export class UpdateQueueParams {
   @IsString()
-  notes!: string;
+  @IsOptional()
+  notes?: string;
+
+  @IsBoolean()
+  allowQuestions?: boolean;
 }
 
 export interface TwilioBody {

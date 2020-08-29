@@ -4,6 +4,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  MethodNotAllowedException,
   NotFoundException,
   Param,
   Patch,
@@ -24,18 +25,18 @@ import {
   UpdateQuestionResponse,
 } from '@template/common';
 import { Connection, In } from 'typeorm';
+import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import {
   NotificationService,
   NotifMsgs,
 } from '../notification/notification.service';
-import { JwtAuthGuard } from '../login/jwt-auth.guard';
+import { Roles } from '../profile/roles.decorator';
 import { UserCourseModel } from '../profile/user-course.entity';
 import { User, UserId } from '../profile/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
-import { QuestionModel } from './question.entity';
-import { Roles } from '../profile/roles.decorator';
 import { QuestionRolesGuard } from './question-role.guard';
+import { QuestionModel } from './question.entity';
 
 @Controller('questions')
 @UseGuards(JwtAuthGuard, QuestionRolesGuard)
@@ -66,29 +67,61 @@ export class QuestionController {
     @Body() body: CreateQuestionParams,
     @User() user: UserModel,
   ): Promise<CreateQuestionResponse> {
-    const { text, questionType, queueId } = body;
+    const { text, questionType, queueId, force } = body;
 
     const queue = await QueueModel.findOne({
       where: { id: queueId },
+      relations: ['staffList'],
     });
 
     if (!queue) {
-      throw new NotFoundException();
+      throw new NotFoundException('Posted to an invalid queue');
     }
 
-    const userAlreadyHasOpenQuestion =
-      (await QuestionModel.count({
-        where: {
-          creatorId: user.id,
-          status: In(Object.values(OpenQuestionStatus)),
-        },
-      })) > 0;
+    if (!queue.allowQuestions) {
+      throw new MethodNotAllowedException();
+    }
 
-    if (userAlreadyHasOpenQuestion) {
-      throw new BadRequestException(
-        "You can't create more than one question fuck ligma stanley",
+    // TODO: think of a neat way to make this abstracted
+    const isUserInCourse =
+      (await UserCourseModel.count({
+        where: {
+          role: Role.STUDENT,
+          courseId: queue.courseId,
+          userId: user.id,
+        },
+      })) === 1;
+
+    if (!isUserInCourse) {
+      throw new UnauthorizedException(
+        "Can't post question to course you're not in!",
       );
     }
+
+    if (!(await queue.checkIsOpen())) {
+      throw new BadRequestException(
+        "You can't post a question to a closed queue",
+      );
+    }
+
+    const previousUserQuestion = await QuestionModel.findOne({
+      where: {
+        creatorId: user.id,
+        status: In(Object.values(OpenQuestionStatus)),
+      },
+    });
+
+    if (!!previousUserQuestion) {
+      if (force) {
+        previousUserQuestion.status = ClosedQuestionStatus.Resolved;
+        await previousUserQuestion.save();
+      } else {
+        throw new BadRequestException(
+          "You can't create more than one question at a time.",
+        );
+      }
+    }
+
     const question = await QuestionModel.create({
       queueId: queueId,
       creator: user,
@@ -96,6 +129,7 @@ export class QuestionController {
       questionType,
       status: QuestionStatusKeys.Drafting,
       createdAt: new Date(),
+      isOnline: true,
     }).save();
 
     return question;
@@ -172,6 +206,7 @@ export class QuestionController {
         body.status === OpenQuestionStatus.Helping
       ) {
         question.taHelped = await UserModel.findOne(userId);
+        question.helpedAt = new Date();
         await this.notifService.notifyUser(
           question.creator.id,
           NotifMsgs.queue.TA_HIT_HELPED(question.taHelped.name),

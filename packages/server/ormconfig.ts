@@ -11,6 +11,14 @@ import { AdminUserModel } from './src/admin/admin-user.entity';
 import { config } from 'dotenv';
 config();
 
+// Options only used whe run via CLI
+const inCLI = {
+  migrations: ['migration/*.ts'],
+  cli: {
+    migrationsDir: 'migration',
+  },
+};
+
 const typeorm = {
   type: 'postgres',
   url: process.env.DB_URL || 'postgres://postgres@localhost:5432/dev',
@@ -29,5 +37,6 @@ const typeorm = {
   ],
   keepConnectionAlive: true,
   logging: !!process.env.TYPEORM_LOGGING,
+  ...(!!process.env.TYPEORM_CLI ? inCLI : {}),
 };
 module.exports = typeorm;

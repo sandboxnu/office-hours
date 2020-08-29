@@ -3,6 +3,7 @@ import {
   CanActivate,
   ExecutionContext,
   UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { UserModel } from '../profile/user.entity';
@@ -26,6 +27,15 @@ export abstract class RolesGuard implements CanActivate {
     }
     const request = context.switchToHttp().getRequest();
     const { courseId, user } = await this.setupData(request);
+
+    if (!user) {
+      throw new UnauthorizedException('Must be logged in');
+    }
+
+    if (!courseId) {
+      throw new NotFoundException();
+    }
+
     return this.matchRoles(roles, user, courseId);
   }
 
@@ -35,9 +45,8 @@ export abstract class RolesGuard implements CanActivate {
     });
 
     if (!userCourse) {
-      throw new UnauthorizedException(
-        'You cannot access a course you are not in',
-      );
+      // If the user isn't in this course, we shouldn't leak that the course event exists
+      throw new NotFoundException();
     }
 
     const remaining = roles.filter((role) => {

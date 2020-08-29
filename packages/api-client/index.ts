@@ -8,11 +8,11 @@ import {
   GetQueueResponse,
   ListQuestionsResponse,
   PhoneNotifBody,
-  QueuePartial,
   TAUpdateStatusResponse,
+  UpdateProfileParams,
   UpdateQuestionParams,
   UpdateQuestionResponse,
-  UpdateProfileParams,
+  UpdateQueueParams,
 } from "@template/common";
 import Axios, { AxiosInstance } from "axios";
 
@@ -91,8 +91,8 @@ class APIClient {
       parseQueueDates(queue);
       return queue;
     },
-    updateNotes: async (queueId: number, notes: string) => {
-      await this.axios.patch(`/api/v1/queues/${queueId}`, { notes });
+    update: async (queueId: number, params: UpdateQueueParams) => {
+      await (await this.axios.patch(`/api/v1/queues/${queueId}`, params)).data;
     },
   };
   notif = {

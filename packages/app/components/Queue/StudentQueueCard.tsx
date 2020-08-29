@@ -1,15 +1,9 @@
-import { UserOutlined } from "@ant-design/icons";
 import { Question } from "@template/common";
-import { Avatar, Card, Col } from "antd";
+import { Card, Col } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
-import {
-  CenterRow,
-  questionStatusToColor,
-  StatusTag,
-  Text,
-} from "./QueueCardSharedComponents";
 import { getWaitTime } from "../../utils/TimeUtil";
+import { CenterRow, Text } from "./QueueCardSharedComponents";
 
 const HorizontalStudentCard = styled(Card)`
   margin-bottom: 8px;
@@ -19,10 +13,6 @@ const HorizontalStudentCard = styled(Card)`
   padding-left: 8px;
   padding-right: 8px;
   color: #595959;
-`;
-
-const NameContainer = styled.div`
-  margin-left: 16px;
 `;
 
 const bodyStyle = {
@@ -48,31 +38,15 @@ export default function StudentQueueCard({
       style={highlighted ? bodyStyle : {}}
       bordered={!highlighted}
     >
-      <CenterRow justify="space-between">
-        <Col span={1}>
+      <CenterRow>
+        <Col flex="0 0 64px">
           <Text>{rank}</Text>
         </Col>
-        <Col xs={16} sm={11} lg={6}>
-          <CenterRow>
-            <Avatar icon={<UserOutlined />} src={question.creator.photoURL} />
-            <NameContainer>
-              <Text>{question.creator.name}</Text>
-            </NameContainer>
-          </CenterRow>
+        <Col flex="1 1">
+          <Text>{question.text}</Text>
         </Col>
-        <Col xs={0} lg={2}>
-          <Text>
-            {question.questionType.charAt(0).toUpperCase() +
-              question.questionType.substr(1).toLowerCase()}
-          </Text>
-        </Col>
-        <Col span={2}>
-          <Text data-cy="waitTime">{getWaitTime(question)}</Text>
-        </Col>
-        <Col xs={0} lg={2}>
-          <StatusTag color={questionStatusToColor(question.status)}>
-            {question.status}
-          </StatusTag>
+        <Col flex="0 0 80px">
+          <Text>{getWaitTime(question)}</Text>
         </Col>
       </CenterRow>
     </HorizontalStudentCard>

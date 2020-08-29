@@ -51,7 +51,21 @@ describe('Seed Integration', () => {
     const res = await supertest()
       .post('/seeds/createUser')
       .send({ role: Role.TA });
-    expect(res.body).toMatchSnapshot();
+    expect(res.body).toMatchObject({
+      courseId: 1,
+      id: 1,
+      role: 'ta',
+      user: {
+        desktopNotifsEnabled: false,
+        email: 'user@neu.edu',
+        id: 1,
+        name: 'User',
+        phoneNotifsEnabled: false,
+        photoURL: 'https://pics/user',
+        username: 'user',
+      },
+      userId: 1,
+    });
   });
 
   it('GET /seeds/createQueue', async () => {
@@ -59,7 +73,19 @@ describe('Seed Integration', () => {
     const res = await supertest()
       .post('/seeds/createQueue')
       .send({ courseId: 1 });
-    expect(res.body).toMatchSnapshot();
+    expect(res.body).toMatchObject({
+      courseId: 1,
+      id: 1,
+      notes: null,
+      officeHours: [
+        {
+          endTime: expect.any(String),
+          startTime: expect.any(String),
+          title: 'Alex & Stanley',
+        },
+      ],
+      room: 'WVH 101',
+    });
   });
 
   it('GET /seeds/createQuestion', async () => {

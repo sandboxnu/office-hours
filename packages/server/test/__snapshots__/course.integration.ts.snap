@@ -2,6 +2,7 @@
 
 exports[`Course Integration GET /courses/:id gets office hours no queues, since no queue is happening right now 1`] = `
 Object {
+  "enabled": true,
   "id": 1,
   "name": "CS 2500",
   "officeHours": Array [
@@ -18,16 +19,17 @@ Object {
 
 exports[`Course Integration POST /courses/:id/ta_location/:room checks a TA into an existing queue 1`] = `
 Object {
+  "allowQuestions": true,
   "id": 1,
   "notes": null,
   "queueSize": 0,
   "room": "WVH 101",
   "staffList": Array [
     Object {
-      "email": "user3@neu.edu",
+      "email": "user@neu.edu",
       "id": 1,
-      "name": "John Doe the 3th",
-      "photoURL": "https://pics/3",
+      "name": "User",
+      "photoURL": "https://pics/user",
     },
   ],
 }

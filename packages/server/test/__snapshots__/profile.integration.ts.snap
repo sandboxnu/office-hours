@@ -12,10 +12,10 @@ Object {
     },
   ],
   "desktopNotifsEnabled": false,
-  "email": "user1@neu.edu",
+  "email": "user@neu.edu",
   "id": 1,
-  "name": "John Doe the 1th",
+  "name": "User",
   "phoneNotifsEnabled": false,
-  "photoURL": "https://pics/1",
+  "photoURL": "https://pics/user",
 }
 `;

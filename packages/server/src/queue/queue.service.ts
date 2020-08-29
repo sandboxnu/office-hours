@@ -18,6 +18,7 @@ export class QueueService {
     });
 
     await queue.addQueueTimes();
+    await queue.checkIsOpen();
     const questions = await QuestionModel.find({ where: { queueId } });
     queue.questions = questions;
 

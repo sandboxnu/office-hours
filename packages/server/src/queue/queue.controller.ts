@@ -6,24 +6,28 @@ import {
   NotFoundException,
   Param,
   Patch,
+  Res,
   UseGuards,
   UseInterceptors,
-  Res,
 } from '@nestjs/common';
 import {
   GetQueueResponse,
   ListQuestionsResponse,
-  UpdateQueueNotesParams,
   Role,
+  UpdateQueueParams,
 } from '@template/common';
 import { Response } from 'express';
-import { Connection, In } from 'typeorm';
+import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
-import { QueueModel } from './queue.entity';
-import { QueueRolesGuard } from './queue-role.guard';
 import { Roles } from '../profile/roles.decorator';
-import { QueueService } from './queue.service';
+import { QueueRolesGuard } from './queue-role.guard';
 import { QueueSSEService } from './queue-sse.service';
+import { QueueModel } from './queue.entity';
+import { QueueService } from './queue.service';
+import { QueueRole } from './queue-role.decorator';
+import { pick } from 'lodash';
+import { User } from 'profile/user.decorator';
+import { UserModel } from 'profile/user.entity';
 
 @Controller('queues')
 @UseGuards(JwtAuthGuard, QueueRolesGuard)
@@ -45,15 +49,26 @@ export class QueueController {
   @Roles(Role.TA, Role.PROFESSOR, Role.STUDENT)
   async getQuestions(
     @Param('queueId') queueId: number,
+    @QueueRole() role: string,
+    @User() user: UserModel,
   ): Promise<ListQuestionsResponse> {
-    return this.queueService.getQuestions(queueId);
+    const questions = await this.queueService.getQuestions(queueId);
+    if (role === Role.STUDENT) {
+      return questions.map((question) => {
+        if (question.creator.id !== user.id) {
+          question.creator = pick(question.creator, ['id']);
+        }
+        return question;
+      });
+    }
+    return questions;
   }
 
   @Patch(':queueId')
   @Roles(Role.TA, Role.PROFESSOR)
   async updateQueue(
     @Param('queueId') queueId: number,
-    @Body() body: UpdateQueueNotesParams,
+    @Body() body: UpdateQueueParams,
   ): Promise<QueueModel> {
     const queue = await QueueModel.findOne({
       where: { id: queueId },
@@ -63,6 +78,7 @@ export class QueueController {
     }
 
     queue.notes = body.notes;
+    queue.allowQuestions = body.allowQuestions;
     await queue.save();
     return queue;
   }

@@ -6,17 +6,17 @@ import {
   Entity,
   JoinColumn,
   JoinTable,
+  LessThanOrEqual,
   ManyToMany,
   ManyToOne,
+  MoreThanOrEqual,
   OneToMany,
   PrimaryGeneratedColumn,
-  MoreThanOrEqual,
-  LessThanOrEqual,
 } from 'typeorm';
 import { CourseModel } from '../course/course.entity';
+import { OfficeHourModel } from '../course/office-hour.entity';
 import { UserModel } from '../profile/user.entity';
 import { QuestionModel } from '../question/question.entity';
-import { OfficeHourModel } from '../course/office-hour.entity';
 
 interface TimeInterval {
   startTime: Date;
@@ -52,6 +52,9 @@ export class QueueModel extends BaseEntity {
   @JoinTable()
   staffList: UserModel[];
 
+  @Column({ default: false })
+  allowQuestions: boolean;
+
   @Exclude()
   @OneToMany((type) => OfficeHourModel, (oh) => oh.queue)
   @JoinTable()
@@ -60,18 +63,23 @@ export class QueueModel extends BaseEntity {
   startTime: Date;
   endTime: Date;
 
-  async isOpen(): Promise<boolean> {
-    if (this.staffList.length > 0) {
+  isOpen: boolean;
+
+  async checkIsOpen(): Promise<boolean> {
+    if (this.staffList && this.staffList.length > 0) {
+      this.isOpen = true;
       return true;
     }
     const now = new Date();
     const MS_IN_MINUTE = 60000;
     const ohs = await this.getOfficeHours();
-    return !!ohs.find(
+    const open = !!ohs.find(
       (e) =>
-        e.startTime.valueOf() - 10 * MS_IN_MINUTE < now.valueOf() &&
-        e.endTime.valueOf() + 1 * MS_IN_MINUTE > now.valueOf(),
+        e.startTime.getTime() - 10 * MS_IN_MINUTE < now.getTime() &&
+        e.endTime.getTime() + 1 * MS_IN_MINUTE > now.getTime(),
     );
+    this.isOpen = open;
+    return open;
   }
 
   @Expose()
