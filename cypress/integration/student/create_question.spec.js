@@ -34,17 +34,21 @@ describe("Student can create a question", () => {
         cy.get("[data-cy='questionText']").type(
           "How do I use the design recipe?"
         );
-        cy.get("label").contains("Online").click();
 
         // Click Submit
-        cy.get("button").contains("Finish").click();
+        cy.get("[data-cy='finishQuestion']").click();
 
         // See that the question shows in the queue list
-        cy.get("body").should("contain", "Queued");
-        cy.get("body").contains("Concept");
-        cy.get("body").contains("How do I use the design recipe?");
-        cy.get("body").contains("Online");
-        cy.get("[data-cy='waitTime']").contains("0");
+        cy.get("[data-cy='queueQuestions']").contains(
+          "How do I use the design recipe?"
+        );
+        cy.get("[data-cy='queueQuestions']").contains("0 min");
+
+        // See that the question shows in the banner
+        cy.get("[data-cy='banner']").contains("Concept");
+        cy.get("[data-cy='banner']").contains(
+          "How do I use the design recipe?"
+        );
       })
     );
   });
@@ -64,19 +68,21 @@ describe("Student can create a question", () => {
         cy.get("[data-cy='questionText']").type(
           "How do I use the design recipe?"
         );
-        cy.get("[data-cy='locationText']").type(
-          "Outside room, behind the couches"
-        );
 
         // Click Submit
-        cy.get("button").contains("Finish").click();
+        cy.get("[data-cy='finishQuestion']").click();
 
         // See that the question shows in the queue list
-        cy.get("body").should("contain", "Queued");
-        cy.get("body").contains("Concept");
-        cy.get("body").contains("How do I use the design recipe?");
-        cy.get("body").contains("Outside room, behind the couches");
-        cy.get("[data-cy='waitTime']").contains("0");
+        cy.get("[data-cy='queueQuestions']").contains(
+          "How do I use the design recipe?"
+        );
+        cy.get("[data-cy='queueQuestions']").contains("0 min");
+
+        // See that the question shows in the banner
+        cy.get("[data-cy='banner']").contains("Concept");
+        cy.get("[data-cy='banner']").contains(
+          "How do I use the design recipe?"
+        );
       })
     );
   });

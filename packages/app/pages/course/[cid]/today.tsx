@@ -1,5 +1,5 @@
 import { API } from "@template/api-client";
-import { Role, QueuePartial } from "@template/common";
+import { QueuePartial, Role } from "@template/common";
 import { Col, Result, Row } from "antd";
 import { useRouter } from "next/router";
 import { ReactElement } from "react";
@@ -10,6 +10,7 @@ import OpenQueueCard, {
   OpenQueueCardSkeleton,
 } from "../../../components/Today/OpenQueueCard";
 import TACheckinButton from "../../../components/Today/TACheckinButton";
+import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import Schedule from "./schedule";
 
@@ -43,7 +44,10 @@ export default function Today(): ReactElement {
       data && data.queues.map((q) => (q.id === queue.id ? { ...q, notes } : q));
 
     mutate(`api/v1/courses/${cid}`, { ...data, queues: newQueues }, false);
-    await API.queues.updateQueue(queue.id, notes, queue.allowQuestions);
+    await API.queues.update(queue.id, {
+      notes,
+      allowQuestions: queue.allowQuestions,
+    });
     mutate(`api/v1/courses/${cid}`);
   };
 
@@ -57,6 +61,7 @@ export default function Today(): ReactElement {
   }
   return (
     <div>
+      <WelcomeStudents />
       <NavBar courseId={Number(cid)} />
       <Container>
         <Row gutter={64}>

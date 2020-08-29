@@ -12,6 +12,7 @@ import {
   UpdateProfileParams,
   UpdateQuestionParams,
   UpdateQuestionResponse,
+  UpdateQueueParams,
 } from "@template/common";
 import Axios, { AxiosInstance } from "axios";
 
@@ -90,15 +91,8 @@ class APIClient {
       parseQueueDates(queue);
       return queue;
     },
-    updateQueue: async (
-      queueId: number,
-      notes: string,
-      allowQuestions: boolean
-    ) => {
-      await this.axios.patch(`/api/v1/queues/${queueId}`, {
-        notes,
-        allowQuestions,
-      });
+    update: async (queueId: number, params: UpdateQueueParams) => {
+      await (await this.axios.patch(`/api/v1/queues/${queueId}`, params)).data;
     },
   };
   notif = {

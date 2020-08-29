@@ -57,6 +57,7 @@ describe('Question Integration', () => {
       const course = await CourseFactory.create({ officeHours: [ofs] });
       const queue = await QueueFactory.create({
         courseId: course.id,
+        course: course,
         officeHours: [ofs],
         allowQuestions: true,
       });
@@ -146,9 +147,14 @@ describe('Question Integration', () => {
         .expect(400);
     });
     it("can't create more than one open question at a time", async () => {
+      const ofs = await OfficeHourFactory.create();
+      const course = await CourseFactory.create({ officeHours: [ofs] });
       const user = await UserFactory.create();
       const queue = await QueueFactory.create({
         allowQuestions: true,
+        officeHours: [ofs],
+        courseId: course.id,
+        course: course,
       });
       await StudentCourseFactory.create({
         userId: user.id,

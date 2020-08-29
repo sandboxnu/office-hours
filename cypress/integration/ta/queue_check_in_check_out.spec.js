@@ -34,6 +34,7 @@ describe("Can successfuly check in and out of a queue", () => {
   });
 
   it("from the today page by specifing a new room", () => {
+    cy.get(".ant-modal-close-x").click();
     // Wait for page to load
     cy.contains("No Staff Checked In");
 
@@ -80,6 +81,7 @@ describe("Can successfuly check in and out of a queue", () => {
       });
     });
 
+    cy.get(".ant-modal-close-x").click();
     // Wait for the page to laod
     cy.contains("No Staff Checked In");
 

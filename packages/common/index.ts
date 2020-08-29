@@ -45,8 +45,8 @@ export type User = {
  */
 export type UserPartial = {
   id: number;
-  email: string;
-  name: string;
+  email?: string;
+  name?: string;
   photoURL?: string;
 };
 
@@ -388,12 +388,13 @@ export type QueueNotePayloadType = {
   notes: string;
 };
 
-export class UpdateQueueNotesParams {
+export class UpdateQueueParams {
   @IsString()
-  notes!: string;
+  @IsOptional()
+  notes?: string;
 
   @IsBoolean()
-  allowQuestions!: boolean;
+  allowQuestions?: boolean;
 }
 
 export interface TwilioBody {

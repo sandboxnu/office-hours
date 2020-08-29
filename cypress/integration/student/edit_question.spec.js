@@ -35,7 +35,7 @@ describe("Student can edit their question", () => {
       });
     });
   });
-  it("by changing the questions text, type, and location", () => {
+  it("by changing the questions text and type", () => {
     // Visit the queue page
     cy.get("@queue").then((queue) =>
       cy.visit(`/course/${queue.courseId}/queue/${queue.id}`)
@@ -50,10 +50,6 @@ describe("Student can edit their question", () => {
       .clear()
       .type("I want to type things");
 
-    cy.get('[data-cy="locationText"]')
-      .should("be.visible")
-      .clear()
-      .type("In ohio");
     cy.get("label").contains("Clarification").click({ force: true });
     cy.get("body").should("contain", "Clarification");
 
@@ -62,6 +58,7 @@ describe("Student can edit their question", () => {
 
     // See that the question is updated on the page
     cy.get("body").contains("I want to type things");
-    cy.get("body").contains("In ohio");
+    // TODO: Bring this back if we do in person stuff
+    // cy.get("body").contains("In ohio");
   });
 });

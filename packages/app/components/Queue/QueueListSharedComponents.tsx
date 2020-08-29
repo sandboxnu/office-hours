@@ -1,11 +1,26 @@
-import { ClockCircleFilled, SettingOutlined } from "@ant-design/icons";
-import { API } from "@template/api-client";
-import { Avatar, Input, Switch, Tooltip } from "antd";
-import Modal from "antd/lib/modal/Modal";
-import { ReactElement, useState } from "react";
+import { ClockCircleOutlined, NotificationOutlined } from "@ant-design/icons";
+import React, { ReactElement, ReactNode } from "react";
 import styled from "styled-components";
 import { useQueue } from "../../hooks/useQueue";
 import { formatQueueTime } from "../../utils/TimeUtil";
+import { TAStatuses } from "./TAStatuses";
+import { Button } from "antd";
+import { ButtonProps } from "antd/lib/button";
+
+export const QueuePageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  @media (min-width: 767px) {
+    flex-direction: row;
+  }
+`;
+
+export const VerticalDivider = styled.div`
+  @media (min-width: 767px) {
+    border-right: 1px solid #cfd6de;
+    margin: 0 32px;
+  }
+`;
 
 export const Container = styled.div`
   display: flex;
@@ -13,16 +28,11 @@ export const Container = styled.div`
   align-items: center;
 `;
 
-const QueueTitle = styled.div`
+const QueueTitle = styled.h2`
   font-weight: 500;
   font-size: 24px;
   color: #212934;
-`;
-
-const TimeText = styled.div`
-  font-size: 16px;
-  color: #5f6b79;
-  margin-left: 12px;
+  margin-bottom: 24px;
 `;
 
 export const NotesText = styled.div`
@@ -30,97 +40,83 @@ export const NotesText = styled.div`
   color: #5f6b79;
 `;
 
-const AvatarWithMargin = styled(Avatar)`
-  margin-right: 10px;
+// New queue styled components start here
+
+const InfoColumnContainer = styled.div`
+  flex-shrink: 0;
+  padding-bottom: 30px;
+  @media (min-width: 767px) {
+    width: 300px;
+  }
 `;
 
-const NotesInput = styled(Input)`
+const QueueInfoColumnButtonStyle = styled(Button)`
+  font-weight: 500;
+  font-size: 14px;
+  border: 1px solid #cfd6de;
   border-radius: 6px;
-  border: 1px solid #b8c4ce;
+  margin-bottom: 12px;
 `;
 
-interface QueueListHeaderProps {
+export const QueueInfoColumnButton = (props: ButtonProps): ReactElement => (
+  <QueueInfoColumnButtonStyle size="large" block {...props} />
+);
+
+const QueuePropertyRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center; // This kinda funky, not sure how to align the tops of the row
+  margin-bottom: 20px;
+  color: #5f6b79;
+  font-size: 20px;
+`;
+
+const QueuePropertyText = styled.div`
+  margin-left: 12px;
+  font-size: 16px;
+`;
+
+const StaffH2 = styled.h2`
+  margin-top: 32px;
+`;
+//TODO: Make QuestionForm self contained so we can trigger it directly in this component and not pass down so many props
+interface QueueInfoColumnProps {
   queueId: number;
-  isTA: boolean;
+  buttons: ReactNode;
 }
 
-export default function QueueListHeader({
+export function QueueInfoColumn({
   queueId,
-  isTA,
-}: QueueListHeaderProps): ReactElement {
-  const { queue, queuesError, mutateQueue } = useQueue(queueId);
-  const [queueSettingsModal, setQueueSettingsModal] = useState(false);
-  const [notes, setNotes] = useState(queue?.notes);
-  const [allowQuestions, setAllowQuestions] = useState(queue?.allowQuestions);
-
-  const updateQueueSettings = async () => {
-    await API.queues.updateQueue(queueId, notes || "", allowQuestions);
-    mutateQueue();
-  };
-
+  buttons,
+}: QueueInfoColumnProps): ReactElement {
+  const { queue } = useQueue(queueId);
   return (
-    <Container>
+    <InfoColumnContainer>
       <QueueTitle>{queue?.room}</QueueTitle>
-      {isTA && (
-        <Tooltip title="Cool admin things that TAs like you can do yeah">
-          <SettingOutlined
-            style={{ fontSize: 20, paddingLeft: 24 }}
-            onClick={() => setQueueSettingsModal(true)}
-          />
-        </Tooltip>
-      )}
-      <Modal
-        title="LOL Stanley you're gonna have to figure this one out"
-        visible={queueSettingsModal}
-        onCancel={() => {
-          setQueueSettingsModal(false);
-          setAllowQuestions(queue?.allowQuestions);
-          setNotes(queue?.notes);
-        }}
-        onOk={() => {
-          updateQueueSettings();
-          setQueueSettingsModal(false);
-        }}
-      >
-        <h2>Edit Queue Notes:</h2>
-        <NotesInput
-          defaultValue={notes}
-          value={notes}
-          onChange={(e) => setNotes(e.target.value as string)}
-          allowClear={true}
-        />
-        <h2 style={{ paddingTop: "40px" }}>Allow Questions</h2>
-        <Switch
-          checked={allowQuestions}
-          onChange={setAllowQuestions}
-          data-cy="allow-questions-toggle"
-        />
-      </Modal>
       {queue.startTime && queue.endTime && (
-        <Container style={{ marginLeft: "64px" }}>
-          <ClockCircleFilled />
-          <TimeText>{formatQueueTime(queue)}</TimeText>
-        </Container>
+        <QueuePropertyRow>
+          <ClockCircleOutlined />
+          <QueuePropertyText>{formatQueueTime(queue)}</QueuePropertyText>
+        </QueuePropertyRow>
       )}
       {queue?.notes && (
-        <Container style={{ marginLeft: "64px" }}>
-          <NotesText>
-            <b>Notes: </b>
-            {queue?.notes}
-          </NotesText>
-        </Container>
+        <QueuePropertyRow>
+          <NotificationOutlined />
+          <QueuePropertyText>{queue.notes}</QueuePropertyText>
+        </QueuePropertyRow>
       )}
-      <div style={{ paddingLeft: "64px" }}>
-        {queue?.allowQuestions ? (
-          <NotesText style={{ color: "green" }}>
-            This queue is allowing new questions
-          </NotesText>
-        ) : (
-          <NotesText style={{ color: "red" }}>
-            This queue is <b>not</b> allowing new questions
-          </NotesText>
-        )}
-      </div>
-    </Container>
+      {buttons}
+      {queue?.allowQuestions ? (
+        <NotesText style={{ color: "green" }}>
+          This queue is allowing new questions
+        </NotesText>
+      ) : (
+        <NotesText style={{ color: "red" }}>
+          This queue is <b>not</b> allowing new questions
+        </NotesText>
+      )}
+      <StaffH2>Staff</StaffH2>
+      <TAStatuses queueId={queueId} />
+    </InfoColumnContainer>
   );
 }

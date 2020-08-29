@@ -16,8 +16,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:integration": "jest --config ./test/jest-integration.json -i",
-    "dev:db:reset": "echo 'DROP DATABASE dev;' | psql -U postgres -h localhost && echo 'CREATE DATABASE dev;' | psql -U postgres -h localhost",
-    "typeorm": "ts-node node_modules/.bin/typeorm",
+    "dev:db:reset": "yarn typeorm schema:drop",
+    "migration:generate": "yarn typeorm schema:drop && yarn typeorm migration:run && yarn typeorm migration:generate",
+    "typeorm": "TYPEORM_CLI=true ts-node node_modules/.bin/typeorm",
     "cli": "nestjs-command"
   },
   "dependencies": {
