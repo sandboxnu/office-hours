@@ -18,7 +18,6 @@ module.exports = function (options) {
         additionalModuleDirs: [path.resolve(__dirname, '../../node_modules')], // handle yarn workspaces https://github.com/liady/webpack-node-externals/issues/39
       }),
     ],
-    devtool: 'source-map',
     module: {
       rules: [
         {
