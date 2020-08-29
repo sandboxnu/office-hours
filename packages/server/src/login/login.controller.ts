@@ -8,7 +8,7 @@ import {
   UseGuards,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Connection } from 'typeorm';
+import { Connection, getRepository } from 'typeorm';
 import { Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { UserModel } from '../../src/profile/user.entity';
@@ -18,14 +18,18 @@ import {
   Role,
   KhouryRedirectResponse,
   KhouryDataParams,
+  KhouryStudentCourse,
+  KhouryTACourse
 } from '@template/common';
 import { NonProductionGuard } from '../../src/non-production.guard';
 import { ConfigService } from '@nestjs/config';
+import { LoginCourseService } from './login-course.service';
 
 @Controller()
 export class LoginController {
   constructor(
     private connection: Connection,
+    private loginCourseService: LoginCourseService,
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
@@ -44,6 +48,7 @@ export class LoginController {
       user = await UserModel.create({ courses: [] });
     }
 
+    // Q: Do we need this if it's not going to change?
     user = Object.assign(user, {
       email: body.email,
       name: body.first_name + body.last_name,
@@ -51,50 +56,40 @@ export class LoginController {
     });
     await user.save();
 
-    // TODO: Check performanace on this, right now there are mad db queries in here
-    async function courseNameToUserCourse(
-      name: string,
-      role: Role,
-    ): Promise<UserCourseModel> {
-      let course;
-      course = await CourseModel.findOne({
-        where: { name: name },
-      });
-      if (!course) {
-        course = CourseModel.create({ name: name }); // TODO: Figure out how we want to specify the semester and add that
-        await course.save();
-      }
-      let userCourse: UserCourseModel;
-      userCourse = await UserCourseModel.findOne({
-        where: { userId: user.id, courseId: course.id, role: role },
-      });
-      if (!userCourse) {
-        userCourse = await UserCourseModel.create({
-          userId: user.id,
-          course: course,
-          role: role,
-        }).save();
-      }
-      return userCourse;
-    }
-
     const userCourses = [];
     await Promise.all(
-      body.courses
-        .map(async (c) => {
-          const userCourse = await courseNameToUserCourse(
-            c.course,
+      body.courses.map(async (c: KhouryStudentCourse) => { 
+        // TODO
+        const course: CourseModel = await this.loginCourseService.courseSectionToCourse(c.course, c.section);
+
+        if (course) {
+          const userCourse = await this.loginCourseService.courseToUserCourse(
+            user.id,
+            course.id,
             Role.STUDENT,
           );
           userCourses.push(userCourse);
-        }),
+        }
+      }),
     );
+    
     await Promise.all(
-      body.ta_courses
-        .map(async (c) => {
-          const taCourse = await courseNameToUserCourse(c.course, Role.TA);
+      body.ta_courses.map(async (c: KhouryTACourse) => { 
+        // Query for all the courses which match the name of the generic course from Khoury
+        const courses = await getRepository(CourseModel)
+          .createQueryBuilder('course')
+          .where('course.name like :name', { name: '%' + c.course + '%' }) // TODO: Add semester support
+          .getMany();
+
+        for (const course of courses) {
+          const taCourse = await this.loginCourseService.courseToUserCourse(
+            user.id,
+            course.id,
+            Role.TA,
+          );
           userCourses.push(taCourse);
-        }),
+        }
+      }),
     );
     user.courses = userCourses;
     await user.save();
