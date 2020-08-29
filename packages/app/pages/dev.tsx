@@ -55,9 +55,9 @@ interface DevPanelProps {
 }
 
 export default function DevPanel({ hidePage }: DevPanelProps): ReactElement {
-  //if (hidePage) {
-  //return <DefaultErrorPage statusCode={404} />;
-  // }
+  if (hidePage) {
+    return <DefaultErrorPage statusCode={404} />;
+  }
   return (
     <Container>
       <h1>
