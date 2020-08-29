@@ -268,14 +268,14 @@ export class KhouryDataParams {
 
   @IsOptional()
   @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
-  courses!: KouryStudentCourse[];
+  courses!: KhouryStudentCourse[];
 
   @IsOptional()
   @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
-  ta_courses!: KouryTACourse[];
+  ta_courses!: KhouryTACourse[];
 }
 
-class KouryStudentCourse {
+export class KhouryStudentCourse {
   @IsInt()
   crn!: number;
 
@@ -295,7 +295,7 @@ class KouryStudentCourse {
   title!: string;
 }
 
-class KouryTACourse {
+export class KhouryTACourse {
   @IsString()
   course!: string;
 
