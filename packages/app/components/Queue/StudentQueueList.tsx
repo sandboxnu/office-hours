@@ -5,25 +5,25 @@ import {
   Question,
   QuestionType,
 } from "@template/common";
-import { Card, Col, notification, Row, Popconfirm, Space } from "antd";
+import { Card, Col, notification, Popconfirm, Row, Space } from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { mutate } from "swr";
+import { useDraftQuestion } from "../../hooks/useDraftQuestion";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
+import { useStudentQuestion } from "../../hooks/useStudentQuestion";
+import { NotificationSettingsModal } from "../Nav/NotificationSettingsModal";
 import QuestionForm from "./QuestionForm";
 import {
   QueueInfoColumn,
+  QueueInfoColumnButton,
   QueuePageContainer,
   VerticalDivider,
-  QueueInfoColumnButton,
 } from "./QueueListSharedComponents";
-import StudentQueueCard from "./StudentQueueCard";
-import { NotificationSettingsModal } from "../Nav/NotificationSettingsModal";
 import StudentBanner from "./StudentBanner";
-import { useStudentQuestion } from "../../hooks/useStudentQuestion";
-import { useDraftQuestion } from "../../hooks/useDraftQuestion";
+import StudentQueueCard from "./StudentQueueCard";
 
 const JoinButton = styled(QueueInfoColumnButton)`
   background-color: #3684c6;
@@ -130,6 +130,7 @@ export default function StudentQueueList({
         const newQuestions = [...questions, createdQuestion];
         await mutateQuestions(newQuestions);
         setPopupEditQuestion(true);
+        return true;
       } catch (e) {
         if (
           e.response?.data?.message?.includes(
