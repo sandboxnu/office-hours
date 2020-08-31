@@ -24,6 +24,7 @@ import {
 import { NonProductionGuard } from '../../src/non-production.guard';
 import { ConfigService } from '@nestjs/config';
 import { LoginCourseService } from './login-course.service';
+import { CourseSectionMappingModel } from './course-section-mapping.entity';
 
 @Controller()
 export class LoginController {
@@ -75,10 +76,9 @@ export class LoginController {
     await Promise.all(
       body.ta_courses.map(async (c: KhouryTACourse) => { 
         // Query for all the courses which match the name of the generic course from Khoury
-        const courses = await getRepository(CourseModel)
-          .createQueryBuilder('course')
-          .where('course.name like :name', { name: '%' + c.course + '%' }) // TODO: Add semester support
-          .getMany();
+        const courses = await CourseSectionMappingModel.find({
+          where: { genericCourseName: c.course },  // TODO: Add semester support
+        });
 
         for (const course of courses) {
           const taCourse = await this.loginCourseService.courseToUserCourse(
