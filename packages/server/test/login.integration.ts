@@ -114,7 +114,7 @@ describe('Login Integration', () => {
             {
               course: 'CS 2510',
               crn: 12345,
-              acclerated: false,
+              accelerated: false,
               section: 1,
               semester: '000',
               title: 'Fundamentals of Computer Science II',

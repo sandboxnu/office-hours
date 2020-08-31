@@ -283,7 +283,7 @@ export class KhouryStudentCourse {
   course!: string;
 
   @IsBoolean()
-  acclerated!: boolean;
+  accelerated!: boolean;
 
   @IsInt()
   section!: number;
