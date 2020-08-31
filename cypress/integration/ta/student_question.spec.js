@@ -54,7 +54,6 @@ describe("TA interacts with student question", () => {
 
     // Click Finish Helping
     cy.contains("button", "Finish Helping").click();
-    cy.get(".ant-popover-buttons > .ant-btn-primary > span").click();
   });
 
   it("clicks help button then mark question as can't find", () => {
