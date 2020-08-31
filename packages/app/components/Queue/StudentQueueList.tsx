@@ -146,6 +146,7 @@ export default function StudentQueueList({
         const newQuestions = [...questions, createdQuestion];
         await mutateQuestions(newQuestions);
         setPopupEditQuestion(true);
+        return true;
       } catch (e) {
         if (
           e.response?.data?.message?.includes(
