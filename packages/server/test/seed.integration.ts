@@ -62,7 +62,6 @@ describe('Seed Integration', () => {
         name: 'User',
         phoneNotifsEnabled: false,
         photoURL: 'https://pics/user',
-        username: 'user',
       },
       userId: 1,
     });
