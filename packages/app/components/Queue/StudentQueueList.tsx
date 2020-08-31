@@ -146,6 +146,7 @@ export default function StudentQueueList({
         const newQuestions = [...questions, createdQuestion];
         await mutateQuestions(newQuestions);
         setPopupEditQuestion(true);
+        return true;
       } catch (e) {
         if (
           e.response?.data?.message?.includes(
@@ -339,7 +340,7 @@ function CantFindModal(props: CantFindModalProps): ReactElement {
         </Button>,
       ]}
       closable={false}
-      title="哎呀！！"
+      title="You couldn't be found!"
     >
       A TA tried to help you, but couldn&apos;t reach you. Are you still in the
       queue? If you are, make sure you have Teams open, and rejoin the queue.
