@@ -1,9 +1,6 @@
 name: Enforce Migrations
 
-on:
-  pull_request:
-    paths:
-      - "packages/server/**/*.entity.ts"
+on: pull_request
 
 jobs:
   is-migration-needed:
