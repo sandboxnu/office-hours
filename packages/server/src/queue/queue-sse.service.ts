@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { SSEService } from 'sse/sse.service';
 import { QueueService } from './queue.service';
 import { Response } from 'express';
-import { throttle } from 'lodash';
+import { throttle, update } from 'lodash';
 import { Role } from '@template/common';
+import { updateFunctionDeclaration } from 'typescript';
 
 type QueueClientMetadata = { userId: number; role: Role };
 
@@ -27,47 +28,42 @@ export class QueueSSEService {
   }
 
   // Send event with new questions, but no more than once a second
-  updateQuestions = throttle(
-    async (queueId: number) => {
-      try {
-        if (queueId) {
-          const questions = await this.queueService.getQuestions(queueId);
-          if (questions) {
-            this.sseService.sendEvent(idToRoom(queueId), ({ role, userId }) => {
-              return {
-                questions: this.queueService.anonymizeQuestions(
-                  questions,
-                  userId,
-                  role,
-                ),
-              };
-            });
-          }
-        }
-      } catch (e) {}
-    },
-    1000,
-    {
-      leading: false,
-      trailing: true,
-    },
-  );
+  updateQuestions = this.throttleUpdate(async (queueId) => {
+    const questions = await this.queueService.getQuestions(queueId);
+    if (questions) {
+      this.sseService.sendEvent(idToRoom(queueId), ({ role, userId }) => {
+        return {
+          questions: this.queueService.anonymizeQuestions(
+            questions,
+            userId,
+            role,
+          ),
+        };
+      });
+    }
+  });
 
-  updateQueue = throttle(
-    async (queueId: number) => {
-      try {
-        const queue = await this.queueService.getQueue(queueId);
-        if (queue) {
-          this.sseService.sendEvent(idToRoom(queueId), () => {
-            return { queue: queue };
-          });
-        }
-      } catch (e) {}
-    },
-    1000,
-    {
-      leading: false,
-      trailing: true,
-    },
-  );
+  updateQueue = this.throttleUpdate(async (queueId) => {
+    const queue = await this.queueService.getQueue(queueId);
+    if (queue) {
+      this.sseService.sendEvent(idToRoom(queueId), () => {
+        return { queue: queue };
+      });
+    }
+  });
+
+  private throttleUpdate(updateFunction: (queueId: number) => Promise<void>) {
+    return throttle(
+      async (queueId: number) => {
+        try {
+          await updateFunction(queueId);
+        } catch (e) {}
+      },
+      1000,
+      {
+        leading: false,
+        trailing: true,
+      },
+    );
+  }
 }
