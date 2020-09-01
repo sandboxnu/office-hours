@@ -16,6 +16,7 @@
     "@template/common": "0.1.0",
     "antd": "^4.2.4",
     "axios": "^0.19.2",
+    "class-transformer": "^0.3.1",
     "eslint-plugin-cypress": "^2.11.1",
     "next": "^9.4.0",
     "next-compose-plugins": "^2.2.0",
@@ -45,7 +46,7 @@
     "eslint-plugin-react": "^7.20.3",
     "eslint-plugin-react-hooks": "^4.0.5",
     "jest": "^26.0.1",
-    "typescript": "^3.8.3"
+    "typescript": "^4.0.0"
   },
   "jest": {
     "transform": {

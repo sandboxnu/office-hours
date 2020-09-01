@@ -1,7 +1,8 @@
-import { API, parseQuestionDates } from "@template/api-client";
+import { API } from "@template/api-client";
 import { ListQuestionsResponse, Question } from "@template/common";
 import useSWR, { responseInterface } from "swr";
-import { useCallback, useEffect } from "react";
+import {plainToClass} from "class-transformer";
+import { useCallback, } from "react";
 import { useEventSource } from "./useEventSource";
 
 type questionsResponse = responseInterface<ListQuestionsResponse, any>;
@@ -28,8 +29,7 @@ export function useQuestions(qid: number): UseQuestionReturn {
     qid && `/api/v1/queues/${qid}/sse`,
     useCallback(
       (data) => {
-        data.forEach(parseQuestionDates);
-        mutateQuestions(data, false);
+        mutateQuestions(plainToClass(ListQuestionsResponse, data), false);
       },
       [mutateQuestions]
     )
