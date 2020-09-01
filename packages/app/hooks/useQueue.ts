@@ -1,6 +1,8 @@
-import { API } from "@template/api-client";
+import { API, parseQueueDates } from "@template/api-client";
 import { QueuePartial } from "@template/common";
 import useSWR, { responseInterface } from "swr";
+import { useCallback } from "react";
+import { useEventSource } from "./useEventSource";
 
 const TEN_SECONDS_IN_MS = 100000;
 const FIFTEEN_SECOND_IN_MS = 150000;
@@ -16,14 +18,22 @@ interface UseQueueReturn {
 export function useQueue(qid: number): UseQueueReturn {
   const { data: queue, error: queuesError, mutate: mutateQueue } = useSWR(
     qid && `/api/v1/queues/${qid}`,
-    async () => API.queues.get(Number(qid)),
-    {
-      refreshInterval: Math.floor(
-        Math.random() * (FIFTEEN_SECOND_IN_MS - TEN_SECONDS_IN_MS + 1) +
-          TEN_SECONDS_IN_MS
-      ),
-    }
+    async () => API.queues.get(Number(qid))
   );
+
+  useEventSource(
+    qid && `/api/v1/queues/${qid}/sse`,
+    useCallback(
+      (data) => {
+        if (data.queue) {
+          parseQueueDates(data.queue);
+          mutateQueue(data.queue, false);
+        }
+      },
+      [mutateQueue]
+    )
+  );
+
   return {
     queue,
     queuesError,

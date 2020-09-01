@@ -30,11 +30,37 @@ export class QueueSSEService {
   updateQuestions = throttle(
     async (queueId: number) => {
       try {
-        const questions = await this.queueService.getQuestions(queueId);
-        if (questions) {
-          this.sseService.sendEvent(idToRoom(queueId), ({ role, userId }) =>
-            this.queueService.anonymizeQuestions(questions, userId, role),
-          );
+        if (queueId) {
+          const questions = await this.queueService.getQuestions(queueId);
+          if (questions) {
+            this.sseService.sendEvent(idToRoom(queueId), ({ role, userId }) => {
+              return {
+                questions: this.queueService.anonymizeQuestions(
+                  questions,
+                  userId,
+                  role,
+                ),
+              };
+            });
+          }
+        }
+      } catch (e) {}
+    },
+    1000,
+    {
+      leading: false,
+      trailing: true,
+    },
+  );
+
+  updateQueue = throttle(
+    async (queueId: number) => {
+      try {
+        const queue = await this.queueService.getQueue(queueId);
+        if (queue) {
+          this.sseService.sendEvent(idToRoom(queueId), () => {
+            return { queue: queue };
+          });
         }
       } catch (e) {}
     },

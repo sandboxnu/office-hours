@@ -28,8 +28,10 @@ export function useQuestions(qid: number): UseQuestionReturn {
     qid && `/api/v1/queues/${qid}/sse`,
     useCallback(
       (data) => {
-        data.forEach(parseQuestionDates);
-        mutateQuestions(data, false);
+        if (data.questions) {
+          data.questions.forEach(parseQuestionDates);
+          mutateQuestions(data.questions, false);
+        }
       },
       [mutateQuestions]
     )
