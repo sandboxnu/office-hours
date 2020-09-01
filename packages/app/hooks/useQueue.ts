@@ -23,8 +23,10 @@ export function useQueue(qid: number): UseQueueReturn {
 
   useEventSource(
     qid && `/api/v1/queues/${qid}/sse`,
+    "queue",
     useCallback(
       (data) => {
+        console.log(data);
         if (data.queue) {
           parseQueueDates(data.queue);
           mutateQueue(data.queue, false);

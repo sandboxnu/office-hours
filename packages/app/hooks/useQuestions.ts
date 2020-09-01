@@ -26,6 +26,7 @@ export function useQuestions(qid: number): UseQuestionReturn {
   // Subscribe to sse
   useEventSource(
     qid && `/api/v1/queues/${qid}/sse`,
+    "question",
     useCallback(
       (data) => {
         if (data.questions) {
