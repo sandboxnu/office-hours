@@ -5,22 +5,22 @@ import {
   QuestionStatus,
   QuestionStatusKeys,
 } from "@template/common";
-import { Card, Col, Row, Tooltip, Space } from "antd";
+import { Card, Col, Row, Space, Tooltip } from "antd";
 import { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../hooks/useProfile";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
+import { EditQueueModal } from "./EditQueueModal";
 import {
-  QueuePageContainer,
   QueueInfoColumn,
-  VerticalDivider,
   QueueInfoColumnButton,
+  QueuePageContainer,
+  VerticalDivider,
 } from "./QueueListSharedComponents";
 import StudentPopupCard from "./StudentPopupCard";
-import TAQueueCard from "./TAQueueCard";
 import TABanner from "./TABanner";
-import { EditQueueModal } from "./EditQueueModal";
+import TAQueueCard from "./TAQueueCard";
 
 const StatusText = styled.div`
   font-size: 14px;
@@ -163,7 +163,8 @@ export default function TAQueueList({
                       !isStaffCheckedIn ||
                       !questions.find(
                         (q) => q.status === QuestionStatusKeys.Queued
-                      )
+                      ) ||
+                      isHelping
                     }
                     data-cy="help-next"
                   >
