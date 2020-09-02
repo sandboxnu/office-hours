@@ -1,4 +1,4 @@
-import { UserOutlined } from "@ant-design/icons";
+import { API } from "@template/api-client";
 import {
   ClosedQuestionStatus,
   OpenQuestionStatus,
@@ -118,6 +118,7 @@ const StudentPopupCard = ({
               onConfirm={() => {
                 onClose();
                 updateQuestion(question, ClosedQuestionStatus.Deleted);
+                API.questions.notify(question.id);
               }}
               disabled={!isStaffCheckedIn}
             >
