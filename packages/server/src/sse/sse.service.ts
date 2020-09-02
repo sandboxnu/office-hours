@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Response } from 'express';
 import { serialize } from 'class-transformer';
+import * as apm from 'elastic-apm-node';
 
 export interface Client<T> {
   metadata: T;
@@ -38,10 +39,12 @@ export class SSEService<T> {
         `sending sse to ${this.clients[room].length} clients in ${room}`,
       );
       console.time(`sending sse time: `);
+      apm.startTransaction('sse');
       for (const { res, metadata } of this.clients[room]) {
         const toSend = `data: ${serialize(payload(metadata))}\n\n`;
         res.write(toSend);
       }
+      apm.endTransaction();
       console.timeEnd(`sending sse time: `);
     }
   }
