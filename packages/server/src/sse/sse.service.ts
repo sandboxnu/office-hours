@@ -34,10 +34,15 @@ export class SSEService<T> {
   /** Send some data to everyone in a room */
   sendEvent<D>(room: string, payload: (metadata: T) => D): void {
     if (room in this.clients) {
+      console.log(
+        `sending sse to ${this.clients[room].length} clients in ${room}`,
+      );
+      console.time(`sending sse time: `);
       for (const { res, metadata } of this.clients[room]) {
         const toSend = `data: ${serialize(payload(metadata))}\n\n`;
         res.write(toSend);
       }
+      console.timeEnd(`sending sse time: `);
     }
   }
 }
