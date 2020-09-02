@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface ListenerAndCount {
   listener: (d: any) => void;
@@ -15,7 +15,8 @@ export const useEventSource = (
   url: string,
   listenerKey: string,
   onmessage: (d: any) => void
-): any => {
+): boolean => {
+  const [isLive, setIsLive] = useState<boolean>(true);
   useEffect(() => {
     if (url) {
       let source: SourceAndCount;
@@ -29,6 +30,8 @@ export const useEventSource = (
           const eventData = JSON.parse(event.data);
           values.forEach((lac) => lac.listener(eventData));
         };
+        source.eventSource.onopen = () => setIsLive(true);
+        source.eventSource.onerror = () => setIsLive(false);
       }
 
       let listener = source.listeners[listenerKey];
@@ -53,4 +56,6 @@ export const useEventSource = (
       };
     }
   }, [url, onmessage, listenerKey]);
+
+  return isLive;
 };

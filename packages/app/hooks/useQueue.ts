@@ -4,15 +4,13 @@ import useSWR, { responseInterface } from "swr";
 import { useCallback } from "react";
 import { useEventSource } from "./useEventSource";
 
-const TEN_SECONDS_IN_MS = 100000;
-const FIFTEEN_SECOND_IN_MS = 150000;
-
 type queueResponse = responseInterface<QueuePartial, any>;
 
 interface UseQueueReturn {
   queue?: queueResponse["data"];
   queuesError: queueResponse["error"];
   mutateQueue: queueResponse["mutate"];
+  isQueueLive: boolean;
 }
 
 export function useQueue(qid: number): UseQueueReturn {
@@ -21,7 +19,7 @@ export function useQueue(qid: number): UseQueueReturn {
     async () => API.queues.get(Number(qid))
   );
 
-  useEventSource(
+  const isQueueLive = useEventSource(
     qid && `/api/v1/queues/${qid}/sse`,
     "queue",
     useCallback(
@@ -40,5 +38,6 @@ export function useQueue(qid: number): UseQueueReturn {
     queue,
     queuesError,
     mutateQueue,
+    isQueueLive,
   };
 }
