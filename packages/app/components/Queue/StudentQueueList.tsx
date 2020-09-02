@@ -5,7 +5,16 @@ import {
   Question,
   QuestionType,
 } from "@template/common";
-import { Card, Col, notification, Popconfirm, Row, Space } from "antd";
+import {
+  Button,
+  Card,
+  Col,
+  Modal,
+  notification,
+  Popconfirm,
+  Row,
+  Space,
+} from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { mutate } from "swr";
@@ -23,9 +32,7 @@ import {
   VerticalDivider,
 } from "./QueueListSharedComponents";
 import StudentBanner from "./StudentBanner";
-import CantFindModal from "./StudentCantFindModal";
 import StudentQueueCard from "./StudentQueueCard";
-import StudentRemovedFromQueueModal from "./StudentRemovedFromQueueModal";
 
 const JoinButton = styled(QueueInfoColumnButton)`
   background-color: #3684c6;
@@ -84,25 +91,6 @@ export default function StudentQueueList({
     });
     await mutateQuestions();
   }, [studentQuestion?.id, mutateQuestions]);
-
-  const joinQueueAfterDeletion = useCallback(async () => {
-    await API.questions.create({
-      text: studentQuestion.text,
-      questionType: studentQuestion.questionType,
-      queueId: qid,
-      isOnline: studentQuestion.isOnline,
-      location: studentQuestion.location,
-      force: true,
-    });
-    await mutateQuestions();
-  }, [
-    mutateQuestions,
-    qid,
-    studentQuestion.isOnline,
-    studentQuestion.location,
-    studentQuestion.questionType,
-    studentQuestion.text,
-  ]);
 
   const finishQuestion = useCallback(
     async (text: string, questionType: QuestionType) => {
@@ -207,6 +195,7 @@ export default function StudentQueueList({
     if (!queue.isOpen) {
       return <h1 style={{ marginTop: "50px" }}>The Queue is Closed!</h1>;
     }
+
     return (
       <>
         <QueuePageContainer>
@@ -214,11 +203,6 @@ export default function StudentQueueList({
             visible={studentQuestion?.status === OpenQuestionStatus.CantFind}
             leaveQueue={leaveQueue}
             rejoinQueue={rejoinQueue}
-          />
-          <StudentRemovedFromQueueModal
-            visible={studentQuestion?.status === ClosedQuestionStatus.Deleted}
-            leaveQueue={leaveQueue}
-            rejoinQueue={joinQueueAfterDeletion}
           />
           <QueueInfoColumn
             queueId={qid}
@@ -334,5 +318,32 @@ function QueueQuestions({ questions, studentQuestion }: QueueProps) {
         );
       })}
     </div>
+  );
+}
+
+type CantFindModalProps = {
+  visible: boolean;
+  leaveQueue: () => void;
+  rejoinQueue: () => void;
+};
+
+function CantFindModal(props: CantFindModalProps): ReactElement {
+  return (
+    <Modal
+      visible={props.visible}
+      footer={[
+        <Button key="leave" danger onClick={props.leaveQueue}>
+          Leave Queue
+        </Button>,
+        <Button type="primary" key="rejoin" onClick={props.rejoinQueue}>
+          Rejoin Queue
+        </Button>,
+      ]}
+      closable={false}
+      title="You couldn't be found!"
+    >
+      A TA tried to help you, but couldn&apos;t reach you. Are you still in the
+      queue? If you are, make sure you have Teams open, and rejoin the queue.
+    </Modal>
   );
 }

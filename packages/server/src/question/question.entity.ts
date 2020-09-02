@@ -1,16 +1,18 @@
 import {
-  OpenQuestionStatus,
   QuestionStatus,
   QuestionType,
+  OpenQuestionStatus,
 } from '@template/common';
 import { Exclude } from 'class-transformer';
 import {
   BaseEntity,
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  In,
   SelectQueryBuilder,
 } from 'typeorm';
 import { UserModel } from '../profile/user.entity';
