@@ -24,7 +24,6 @@ export function useQueue(qid: number): UseQueueReturn {
     "queue",
     useCallback(
       (data) => {
-        console.log(data);
         if (data.queue) {
           parseQueueDates(data.queue);
           mutateQueue(data.queue, false);
