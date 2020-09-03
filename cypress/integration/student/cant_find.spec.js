@@ -24,8 +24,22 @@ describe("can't find process", () => {
         .as("ta");
     });
 
+    cy.get("@queue").then((queue) => {
+      cy.get("@ta").then((ta) => {
+        cy.visit(`/api/v1/login/dev?userId=${ta.user.id}`);
+
+        // Check the TA into the queue
+        cy.request(
+          "POST",
+          `/api/v1/courses/${queue.course.id}/ta_location/${queue.room}`
+        );
+      });
+    });
+
     // Login the student
-    cy.visit(`/api/v1/login/dev?userId=${student.user.id}`);
+    cy.get("@student").then((student) => {
+      cy.visit(`/api/v1/login/dev?userId=${student.user.id}`);
+    });
 
     // Visit the queue page and create a question
     cy.get("@queue").then((queue) =>
@@ -52,13 +66,17 @@ describe("can't find process", () => {
       cy.get("@ta").then((ta) => {
         cy.visit(`/api/v1/login/dev?userId=${ta.user.id}`);
 
-        // Click on the student's question
+        cy.get(".ant-modal-close-x").click();
+        // Visit the queue page
+        cy.visit(`/course/${queue.courseId}/queue/${queue.id}`);
+
+        // Click on the 's question
         cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
         // Click help
         cy.get("[data-cy='help-student']").click();
 
         // Click Can't Find
-        cy.contains("button", "Can't Find").click();
+        cy.get("[data-cy='divest']").click();
 
         cy.request(
           "DELETE",
@@ -68,10 +86,11 @@ describe("can't find process", () => {
     });
   });
 
-  it("Process when a TA can't find a student", () => {
+  it.only("Process when a TA can't find a student", () => {
     // Login the student
-    cy.visit(`/api/v1/login/dev?userId=${student.user.id}`);
-
+    cy.get("@student").then((student) => {
+      cy.visit(`/api/v1/login/dev?userId=${student.user.id}`);
+    });
     cy.get("@queue").then((queue) =>
       cy.visit(`course/${queue.courseId}/queue/${queue.id}`).then(() => {
         cy.get("body").should(
