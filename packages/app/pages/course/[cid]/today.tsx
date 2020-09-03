@@ -53,7 +53,7 @@ export default function Today(): ReactElement {
   };
 
   if (error) {
-    return <FatalError/>
+    return <FatalError error={error}/>
   }
   return (
     <div>

@@ -39,7 +39,7 @@ export default function Schedule({ today }: ScheduleProps): ReactElement {
   );
 
   if (error) {
-    return <FatalError />;
+    return <FatalError error={error}/>
   }
 
   const myEvents: Event[] =
