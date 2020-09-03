@@ -2,11 +2,11 @@ import { Button } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import { ReactElement } from "react";
 
-export interface CantFindModalProps {
+type CantFindModalProps = {
   visible: boolean;
   leaveQueue: () => void;
   rejoinQueue: () => void;
-}
+};
 
 export default function CantFindModal(props: CantFindModalProps): ReactElement {
   return (
