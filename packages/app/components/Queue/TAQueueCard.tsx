@@ -1,7 +1,8 @@
 import { RightOutlined, UserOutlined } from "@ant-design/icons";
-import { Question } from "@template/common";
+import { OpenQuestionStatus, Question } from "@template/common";
 import { Col } from "antd";
 import { ReactElement } from "react";
+import { getWaitTime } from "../../utils/TimeUtil";
 import {
   CenterRow,
   HorizontalTACard,
@@ -11,7 +12,6 @@ import {
   StatusTag,
   Text,
 } from "./QueueCardSharedComponents";
-import { getWaitTime } from "../../utils/TimeUtil";
 
 interface TAQueueCardProps {
   rank: number;
@@ -48,7 +48,9 @@ export default function TAQueueCard({
         </Col>
         <Col span={2}>
           <StatusTag color={questionStatusToColor(question.status)}>
-            {question.status}
+            {question.status === OpenQuestionStatus.CantFind
+              ? "Can't Find"
+              : question.status}
           </StatusTag>
         </Col>
         <Col>

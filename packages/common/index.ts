@@ -192,12 +192,12 @@ export enum OpenQuestionStatus {
   Drafting = "Drafting",
   Queued = "Queued",
   Helping = "Helping",
+  CantFind = "CantFind",
 }
 
 export enum ClosedQuestionStatus {
   Resolved = "Resolved",
   Deferred = "Deferred",
-  NoShow = "NoShow",
   Deleted = "Deleted",
   Stale = "Stale",
 }
