@@ -1,4 +1,4 @@
-import { ClosedQuestionStatus, Question } from "@template/common";
+import { OpenQuestionStatus, Question } from "@template/common";
 import { Button } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import { ReactElement } from "react";
@@ -14,7 +14,7 @@ export default function StudentRemovedFromQueueModal(
 ): ReactElement {
   return (
     <Modal
-      visible={props.question.status === ClosedQuestionStatus.Deleted}
+      visible={props.question?.status === OpenQuestionStatus.TADeleted}
       footer={[
         <Button key="leave" danger onClick={props.leaveQueue}>
           Leave Queue
@@ -25,7 +25,7 @@ export default function StudentRemovedFromQueueModal(
       ]}
     >
       You&quot;ve been removed from the queue by the following TA:{" "}
-      {props.question.taHelped.name}. If you have any questions, please reach
+      {props.question?.taHelped?.name}. If you have any questions, please reach
       out to the TA. If you&quot;d like to join back into the queue with your
       previous question, click Join, otherwise click Cancel.
     </Modal>

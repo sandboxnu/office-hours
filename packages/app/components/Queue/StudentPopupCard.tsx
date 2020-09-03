@@ -1,10 +1,5 @@
 import { API } from "@template/api-client";
-import {
-  ClosedQuestionStatus,
-  OpenQuestionStatus,
-  Question,
-  QuestionStatus,
-} from "@template/common";
+import { OpenQuestionStatus, Question, QuestionStatus } from "@template/common";
 import {
   Avatar,
   Button,
@@ -117,7 +112,7 @@ const StudentPopupCard = ({
               cancelText="No"
               onConfirm={() => {
                 onClose();
-                updateQuestion(question, ClosedQuestionStatus.Deleted);
+                updateQuestion(question, OpenQuestionStatus.TADeleted);
                 API.questions.notify(question.id);
               }}
               disabled={!isStaffCheckedIn}

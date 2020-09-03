@@ -281,14 +281,19 @@ function QueueQuestions({ questions, isHelping, onOpenCard }: QueueProps) {
         </>
       )}
 
-      {questions?.map((question: Question, index: number) => (
-        <TAQueueCard
-          key={question.id}
-          rank={index + 1}
-          question={question}
-          onOpen={(q) => !isHelping && onOpenCard(q)}
-        />
-      ))}
+      {questions
+        ?.filter(
+          (question: Question) =>
+            question.status !== OpenQuestionStatus.TADeleted
+        )
+        .map((question: Question, index: number) => (
+          <TAQueueCard
+            key={question.id}
+            rank={index + 1}
+            question={question}
+            onOpen={(q) => !isHelping && onOpenCard(q)}
+          />
+        ))}
     </div>
   );
 }

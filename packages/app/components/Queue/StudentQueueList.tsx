@@ -71,7 +71,7 @@ export default function StudentQueueList({
 
   const leaveQueue = useCallback(async () => {
     await API.questions.update(studentQuestion?.id, {
-      status: ClosedQuestionStatus.Deleted,
+      status: ClosedQuestionStatus.ConfirmedDeleted,
     });
 
     setIsJoining(false);
@@ -84,25 +84,6 @@ export default function StudentQueueList({
     });
     await mutateQuestions();
   }, [studentQuestion?.id, mutateQuestions]);
-
-  const joinQueueAfterDeletion = useCallback(async () => {
-    await API.questions.create({
-      text: studentQuestion.text,
-      questionType: studentQuestion.questionType,
-      queueId: qid,
-      isOnline: studentQuestion.isOnline,
-      location: studentQuestion.location,
-      force: true,
-    });
-    await mutateQuestions();
-  }, [
-    mutateQuestions,
-    qid,
-    studentQuestion.isOnline,
-    studentQuestion.location,
-    studentQuestion.questionType,
-    studentQuestion.text,
-  ]);
 
   const finishQuestion = useCallback(
     async (text: string, questionType: QuestionType) => {
@@ -119,6 +100,25 @@ export default function StudentQueueList({
     },
     [questions, studentQuestion?.id, mutateQuestions]
   );
+
+  const joinQueueAfterDeletion = useCallback(async () => {
+    await API.questions.update(studentQuestion?.id, {
+      status: ClosedQuestionStatus.ConfirmedDeleted,
+    });
+    await mutateQuestions();
+    const newQuestion = await API.questions.create({
+      text: studentQuestion.text,
+      questionType: studentQuestion?.questionType,
+      queueId: qid,
+      isOnline: studentQuestion?.isOnline,
+      location: studentQuestion?.location,
+      force: true,
+    });
+    await API.questions.update(newQuestion.id, {
+      status: OpenQuestionStatus.Queued,
+    });
+    await mutateQuestions();
+  }, [mutateQuestions, qid, studentQuestion]);
 
   const [popupEditQuestion, setPopupEditQuestion] = useState(false);
 
@@ -216,9 +216,9 @@ export default function StudentQueueList({
             rejoinQueue={rejoinQueue}
           />
           <StudentRemovedFromQueueModal
-            visible={studentQuestion?.status === ClosedQuestionStatus.Deleted}
+            question={studentQuestion}
             leaveQueue={leaveQueue}
-            rejoinQueue={joinQueueAfterDeletion}
+            joinQueue={joinQueueAfterDeletion}
           />
           <QueueInfoColumn
             queueId={qid}
@@ -323,16 +323,21 @@ function QueueQuestions({ questions, studentQuestion }: QueueProps) {
           </StudentHeaderCard>
         </>
       )}
-      {questions?.map((question: Question, index: number) => {
-        return (
-          <StudentQueueCard
-            key={question.id}
-            rank={index + 1}
-            question={question}
-            highlighted={studentQuestion === question}
-          />
-        );
-      })}
+      {questions
+        ?.filter(
+          (question: Question) =>
+            question.status !== OpenQuestionStatus.TADeleted
+        )
+        .map((question: Question, index: number) => {
+          return (
+            <StudentQueueCard
+              key={question.id}
+              rank={index + 1}
+              question={question}
+              highlighted={studentQuestion === question}
+            />
+          );
+        })}
     </div>
   );
 }
