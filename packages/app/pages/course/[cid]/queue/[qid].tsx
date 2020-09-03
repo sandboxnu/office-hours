@@ -25,7 +25,7 @@ export default function Queue(): ReactElement {
   return (
     <div>
       <Head>
-        <title>{queue.room} Queue | Khoury Office Hours</title>
+        <title>{queue?.room} Queue | Khoury Office Hours</title>
       </Head>
       <NavBar courseId={Number(cid)} />
       <Container>

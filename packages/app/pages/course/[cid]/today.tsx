@@ -63,7 +63,7 @@ export default function Today(): ReactElement {
   return (
     <div>
       <Head>
-        <title>{data.name} | Khoury Office Hours</title>
+        <title>{course?.name} | Khoury Office Hours</title>
       </Head>
       <WelcomeStudents />
       <NavBar courseId={Number(cid)} />

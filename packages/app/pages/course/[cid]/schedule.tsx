@@ -56,7 +56,7 @@ export default function Schedule({ today }: ScheduleProps): ReactElement {
   return (
     <div>
       <Head>
-        <title>{data.name} Schedule | Khoury Office Hours</title>
+        <title>{data?.name} Schedule | Khoury Office Hours</title>
       </Head>
       {!today && <NavBar courseId={Number(cid)} />}
       {!today && (
