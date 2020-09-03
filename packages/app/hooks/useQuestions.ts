@@ -28,8 +28,8 @@ export function useQuestions(qid: number): UseQuestionReturn {
   useEventSource(
     qid && `/api/v1/queues/${qid}/sse`,
     useCallback(
-      (data) => {
-        mutateQuestions(plainToClass(ListQuestionsResponse, data), false);
+      (data: ListQuestionsResponse) => {
+        mutateQuestions(plainToClass(Question, data), false);
       },
       [mutateQuestions]
     )
