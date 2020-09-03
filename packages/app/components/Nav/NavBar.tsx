@@ -1,15 +1,14 @@
 import styled from "styled-components";
 import React, { useState, ReactElement } from "react";
 import NavBarTabs, { NavBarTabsItem } from "./NavBarTabs";
-import { Drawer, Button, Menu, Dropdown } from "antd";
+import { Drawer, Button, Menu } from "antd";
 import Link from "next/link";
-import { API } from "@template/api-client";
-import useSWR from "swr";
 import Settings from ".//Settings";
 import { useRouter } from "next/router";
 import { useProfile } from "../../hooks/useProfile";
 import { DownOutlined } from "@ant-design/icons";
 import SimpleDropdown from "./SimpleDropdown";
+import { useCourse } from "../../hooks/useCourse";
 
 const Nav = styled.nav`
   padding: 0px 0px;
@@ -109,10 +108,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
   const profile = useProfile();
   const { pathname } = useRouter();
 
-  const { data: course, error } = useSWR(
-    courseId && `api/v1/courses/${courseId}`,
-    async () => API.course.get(courseId)
-  );
+  const { course } = useCourse(courseId);
 
   const queueId =
     course?.queues && course.queues.length > 0 && course.queues[0].id;

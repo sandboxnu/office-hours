@@ -1,19 +1,11 @@
-import {
-  Calendar,
-  momentLocalizer,
-  CalendarProps,
-  Event,
-} from "react-big-calendar";
-import moment from "moment";
-import useSWR from "swr";
 import Head from "next/head";
-import { API } from "@template/api-client";
 import { Result } from "antd";
 import styled from "styled-components";
-import { useProfile } from "../../../hooks/useProfile";
 import { useRouter } from "next/router";
 import NavBar from "../../../components/Nav/NavBar";
 import { ReactElement } from "react";
+import SchedulePanel from "../../../components/Schedule/SchedulePanel";
+import { useCourse } from "../../../hooks/useCourse";
 
 const Container = styled.div`
   margin: 32px 64px;
@@ -22,23 +14,13 @@ const Container = styled.div`
   }
 `;
 
-const ScheduleCalendar = styled(Calendar)<CalendarProps>`
-  height: 70vh;
-`;
-
-type ScheduleProps = {
-  today?: boolean;
-};
-
-export default function Schedule({ today }: ScheduleProps): ReactElement {
+export default function Schedule(): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
 
-  const { data, error } = useSWR(cid && `api/v1/courses/${cid}`, async () =>
-    API.course.get(Number(cid))
-  );
+  const {course, courseError} = useCourse(Number(cid));
 
-  if (error)
+  if (courseError)
     return (
       <Result
         status="500"
@@ -46,35 +28,15 @@ export default function Schedule({ today }: ScheduleProps): ReactElement {
       />
     );
 
-  const myEvents: Event[] =
-    data?.officeHours.map((e) => ({
-      start: e.startTime,
-      end: e.endTime,
-      title: e.title,
-    })) ?? [];
-
   return (
     <div>
       <Head>
-        <title>{data?.name} Schedule | Khoury Office Hours</title>
+        <title>{course?.name} Schedule | Khoury Office Hours</title>
       </Head>
-      {!today && <NavBar courseId={Number(cid)} />}
-      {!today && (
-        <Container>
-          <ScheduleCalendar
-            localizer={momentLocalizer(moment)}
-            events={myEvents}
-            defaultView={"week"}
-          />
-        </Container>
-      )}
-      {today && (
-        <ScheduleCalendar
-          localizer={momentLocalizer(moment)}
-          events={myEvents}
-          defaultView={"day"}
-        />
-      )}
+      <NavBar courseId={Number(cid)} />
+      <Container>
+        <SchedulePanel courseId={Number(cid)} />
+      </Container>
     </div>
   );
 }
