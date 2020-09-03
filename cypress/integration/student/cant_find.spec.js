@@ -1,4 +1,4 @@
-describe("can't find process", () => {
+describe("Can't find process", () => {
   beforeEach(() => {
     // Set the state
     cy.request("POST", "/api/v1/seeds/createUser", { role: "student" })
@@ -76,17 +76,16 @@ describe("can't find process", () => {
         cy.get("[data-cy='help-student']").click();
 
         // Click Can't Find
-        cy.get("[data-cy='divest']").click();
+        cy.get("body").should("contain", "Can't Find");
+        cy.get("button").contains("Can't Find").click();
 
-        cy.request(
-          "DELETE",
-          `/api/v1/courses/${ta.course.id}/ta_location/${queue.room}`
-        );
+        cy.get("body").should("contain", "Yes");
+        cy.get("button").contains("Yes").click();
       });
     });
   });
 
-  it.only("Process when a TA can't find a student", () => {
+  it("Can't find student and student leaves the queue", () => {
     // Login the student
     cy.get("@student").then((student) => {
       cy.visit(`/api/v1/login/dev?userId=${student.user.id}`);
@@ -95,9 +94,29 @@ describe("can't find process", () => {
       cy.visit(`course/${queue.courseId}/queue/${queue.id}`).then(() => {
         cy.get("body").should(
           "contain",
-          "A TA tried to help you, but couldn't reach you. Are you still in the\n" +
-            "      queue? If you are, make sure you have Teams open, and rejoin the queue."
+          "A TA tried to help you, but couldn't reach you. Are you still in the queue? If you are, make sure you have Teams open, and rejoin the queue."
         );
+
+        //cy.get(".ant-modal").should("contain", "Leave Queue");
+        cy.get("button").contains("Leave Queue").click();
+      })
+    );
+  });
+
+  it("Can't find student and student rejoins the queue", () => {
+    // Login the student
+    cy.get("@student").then((student) => {
+      cy.visit(`/api/v1/login/dev?userId=${student.user.id}`);
+    });
+    cy.get("@queue").then((queue) =>
+      cy.visit(`course/${queue.courseId}/queue/${queue.id}`).then(() => {
+        cy.get("body").should(
+          "contain",
+          "A TA tried to help you, but couldn't reach you. Are you still in the queue? If you are, make sure you have Teams open, and rejoin the queue."
+        );
+
+        //cy.get("body").should("contain", "Rejoin Queue");
+        cy.get("button").contains("Rejoin Queue").click();
       })
     );
   });
