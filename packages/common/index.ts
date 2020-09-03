@@ -196,12 +196,12 @@ export enum OpenQuestionStatus {
   Drafting = "Drafting",
   Queued = "Queued",
   Helping = "Helping",
+  CantFind = "CantFind",
 }
 
 export enum ClosedQuestionStatus {
   Resolved = "Resolved",
   Deferred = "Deferred",
-  NoShow = "NoShow",
   Deleted = "Deleted",
   Stale = "Stale",
 }
@@ -251,9 +251,6 @@ export type GetProfileResponse = User;
 
 export class KhouryDataParams {
   @IsString()
-  username!: string;
-
-  @IsString()
   email!: string;
 
   @IsString()
@@ -265,31 +262,45 @@ export class KhouryDataParams {
   @IsInt()
   campus!: string;
 
-  @IsInt()
-  nuid!: number;
-
   @IsOptional()
   @IsString()
   photo_url!: string;
 
   @IsOptional()
   @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
-  courses!: KouryAdminCourse[];
+  courses!: KhouryStudentCourse[];
 
   @IsOptional()
   @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
-  ta_courses!: KouryAdminCourse[];
+  ta_courses!: KhouryTACourse[];
 }
 
-class KouryAdminCourse {
-  @IsString()
-  course_name!: string;
+export class KhouryStudentCourse {
+  @IsInt()
+  crn!: number;
 
   @IsString()
-  semester!: number;
+  course!: string;
 
   @IsBoolean()
-  withdraw!: boolean;
+  accelerated!: boolean;
+
+  @IsInt()
+  section!: number;
+
+  @IsString()
+  semester!: string;
+
+  @IsString()
+  title!: string;
+}
+
+export class KhouryTACourse {
+  @IsString()
+  course!: string;
+
+  @IsString()
+  semester!: string;
 }
 
 export interface KhouryRedirectResponse {
