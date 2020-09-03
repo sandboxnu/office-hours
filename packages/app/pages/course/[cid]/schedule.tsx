@@ -6,6 +6,7 @@ import {
 } from "react-big-calendar";
 import moment from "moment";
 import useSWR from "swr";
+import Head from "next/head";
 import { API } from "@template/api-client";
 import { Result } from "antd";
 import styled from "styled-components";
@@ -54,6 +55,9 @@ export default function Schedule({ today }: ScheduleProps): ReactElement {
 
   return (
     <div>
+      <Head>
+        <title>{data.name} Schedule | Khoury Office Hours</title>
+      </Head>
       {!today && <NavBar courseId={Number(cid)} />}
       {!today && (
         <Container>

@@ -1,4 +1,5 @@
 import { API } from "@template/api-client";
+import Head from "next/head";
 import { QueuePartial, Role } from "@template/common";
 import { Col, Result, Row } from "antd";
 import { useRouter } from "next/router";
@@ -61,6 +62,9 @@ export default function Today(): ReactElement {
   }
   return (
     <div>
+      <Head>
+        <title>{data.name} | Khoury Office Hours</title>
+      </Head>
       <WelcomeStudents />
       <NavBar courseId={Number(cid)} />
       <Container>
