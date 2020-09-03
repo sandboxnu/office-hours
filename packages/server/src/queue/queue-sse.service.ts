@@ -3,8 +3,9 @@ import { SSEService } from 'sse/sse.service';
 import { QueueService } from './queue.service';
 import { Response } from 'express';
 import { throttle, update } from 'lodash';
-import { Role } from '@template/common';
+import { Role, SSEQueueResponse } from '@template/common';
 import { updateFunctionDeclaration } from 'typescript';
+import { send } from 'process';
 
 type QueueClientMetadata = { userId: number; role: Role };
 
@@ -28,29 +29,32 @@ export class QueueSSEService {
   }
 
   // Send event with new questions, but no more than once a second
-  updateQuestions = this.throttleUpdate(async (queueId) => {
+  updateQuestions = this.throttleUpdate(async queueId => {
     const questions = await this.queueService.getQuestions(queueId);
     if (questions) {
-      this.sseService.sendEvent(idToRoom(queueId), ({ role, userId }) => {
-        return {
-          questions: this.queueService.anonymizeQuestions(
-            questions,
-            userId,
-            role,
-          ),
-        };
-      });
+      this.sendToRoom(queueId, ({ role, userId }) => ({
+        questions: this.queueService.anonymizeQuestions(
+          questions,
+          userId,
+          role,
+        ),
+      }));
     }
   });
 
-  updateQueue = this.throttleUpdate(async (queueId) => {
+  updateQueue = this.throttleUpdate(async queueId => {
     const queue = await this.queueService.getQueue(queueId);
     if (queue) {
-      this.sseService.sendEvent(idToRoom(queueId), () => {
-        return { queue: queue };
-      });
+      this.sendToRoom(queueId, () => ({ queue }));
     }
   });
+
+  private sendToRoom(
+    queueId: number,
+    data: (metadata: QueueClientMetadata) => SSEQueueResponse,
+  ) {
+    this.sseService.sendEvent(idToRoom(queueId), data);
+  }
 
   private throttleUpdate(updateFunction: (queueId: number) => Promise<void>) {
     return throttle(

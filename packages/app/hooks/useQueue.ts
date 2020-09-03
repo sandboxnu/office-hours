@@ -1,5 +1,5 @@
 import { API, parseQueueDates } from "@template/api-client";
-import { QueuePartial } from "@template/common";
+import { QueuePartial, SSEQueueResponse } from "@template/common";
 import useSWR, { responseInterface } from "swr";
 import { useCallback } from "react";
 import { useEventSource } from "./useEventSource";
@@ -23,7 +23,7 @@ export function useQueue(qid: number): UseQueueReturn {
     qid && `/api/v1/queues/${qid}/sse`,
     "queue",
     useCallback(
-      (data) => {
+      (data: SSEQueueResponse) => {
         if (data.queue) {
           parseQueueDates(data.queue);
           mutateQueue(data.queue, false);
