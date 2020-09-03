@@ -301,7 +301,9 @@ interface QueueProps {
 function QueueQuestions({ questions, studentQuestion }: QueueProps) {
   return (
     <div data-cy="queueQuestions">
-      {questions?.length === 0 ? (
+      {questions?.filter(
+        (question) => question.status !== OpenQuestionStatus.TADeleted
+      ).length === 0 ? (
         <h1 style={{ marginTop: "50px" }}>
           There currently aren&apos;t any questions in the queue
         </h1>
