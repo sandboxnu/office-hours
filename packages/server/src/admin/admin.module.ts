@@ -7,7 +7,12 @@ import {
 import { adminCredentialValidator } from './credentialValidator';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminUserModel } from './admin-user.entity';
-import { CourseAdmin, QueueAdmin, UserAdmin } from './admin-entities';
+import {
+  CourseAdmin,
+  QueueAdmin,
+  UserAdmin,
+  CourseSectionMappingAdmin,
+} from './admin-entities';
 import { AdminCommand } from './admin.command';
 
 const CoreModule = AdminCoreModuleFactory.createAdminCoreModule({});
@@ -28,5 +33,6 @@ export class AdminModule {
     adminSite.register('Course', CourseAdmin);
     adminSite.register('User', UserAdmin);
     adminSite.register('Queue', QueueAdmin);
+    adminSite.register('CourseSectionMapping', CourseSectionMappingAdmin);
   }
 }
