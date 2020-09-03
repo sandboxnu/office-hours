@@ -7,8 +7,8 @@ import {
 import moment from "moment";
 import useSWR from "swr";
 import { API } from "@template/api-client";
-import { Result } from "antd";
 import styled from "styled-components";
+import FatalError from '../../../components/common/FatalError';
 import { useProfile } from "../../../hooks/useProfile";
 import { useRouter } from "next/router";
 import NavBar from "../../../components/Nav/NavBar";
@@ -30,6 +30,7 @@ type ScheduleProps = {
 };
 
 export default function Schedule({ today }: ScheduleProps): ReactElement {
+  useProfile(); // Check logged in so we can redirect to login page
   const router = useRouter();
   const { cid } = router.query;
 
@@ -37,13 +38,9 @@ export default function Schedule({ today }: ScheduleProps): ReactElement {
     API.course.get(Number(cid))
   );
 
-  if (error)
-    return (
-      <Result
-        status="500"
-        title="Something went wrong, please ask chinese man"
-      />
-    );
+  if (error) {
+    return <FatalError />;
+  }
 
   const myEvents: Event[] =
     data?.officeHours.map((e) => ({
