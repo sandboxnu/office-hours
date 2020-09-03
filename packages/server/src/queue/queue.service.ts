@@ -1,8 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { QueueModel } from './queue.entity';
-import { GetQueueResponse, ListQuestionsResponse } from '@template/common';
+import {
+  GetQueueResponse,
+  ListQuestionsResponse,
+  Role,
+} from '@template/common';
 import { QuestionModel } from 'question/question.entity';
+import { pick } from 'lodash';
 
 /**
  * Get data in service of the queue controller and SSE
@@ -39,5 +44,22 @@ export class QueueService {
       .leftJoinAndSelect('question.creator', 'creator')
       .leftJoinAndSelect('question.taHelped', 'taHelped')
       .getMany();
+  }
+
+  /** Hide sensitive data to other students */
+  anonymizeQuestions(
+    questions: ListQuestionsResponse,
+    userId: number,
+    role: Role,
+  ): ListQuestionsResponse {
+    if (role === Role.STUDENT) {
+      return questions.map((question) => {
+        if (question.creator.id !== userId) {
+          question.creator = pick(question.creator, ['id']);
+        }
+        return question;
+      });
+    }
+    return questions;
   }
 }

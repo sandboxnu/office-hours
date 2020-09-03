@@ -408,6 +408,11 @@ export class UpdateQueueParams {
   allowQuestions?: boolean;
 }
 
+export class SSEQueueResponse {
+  queue?: GetQueueResponse;
+  questions?: ListQuestionsResponse;
+}
+
 export interface TwilioBody {
   ToCountry: string;
   ToState: string;
