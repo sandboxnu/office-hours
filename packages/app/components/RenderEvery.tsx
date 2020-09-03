@@ -8,7 +8,7 @@ export function RenderEvery({
   render,
   interval,
 }: RenderEveryProps): ReactElement {
-  const [, updateState] = useState();
+  const [, updateState] = useState({});
   const forceUpdate = useCallback(() => updateState({}), []);
 
   useEffect(() => {
