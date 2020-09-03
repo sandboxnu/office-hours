@@ -2,7 +2,7 @@ import { apm } from "@elastic/apm-rum";
 import Result from "antd/lib/result";
 import { ReactElement, useEffect } from "react";
 
-export default function FatalError({ error }: { error: Error }): ReactElement {
+export function FatalError({ error }: { error: Error }): ReactElement {
   useEffect(() => apm.captureError(error), [error]);
   return (
     <Result

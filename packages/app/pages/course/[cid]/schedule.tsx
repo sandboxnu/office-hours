@@ -2,9 +2,11 @@ import styled from "styled-components";
 import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
 import { useCourse } from "../../../hooks/useCourse";
-import { error } from "console";
 import { useProfile } from "../../../hooks/useProfile";
-import FatalError from "../../../components/common/FatalError";
+import { FatalError } from "../../../components/common/FatalError";
+import { Head } from "next/document";
+import NavBar from "../../../components/Nav/NavBar";
+import SchedulePanel from "../../../components/Schedule/SchedulePanel";
 
 const Container = styled.div`
   margin: 32px 64px;
@@ -22,7 +24,6 @@ export default function Schedule(): ReactElement {
 
   if (courseError)
     return <FatalError error={courseError}/>
-  }
 
   return (
     <div>

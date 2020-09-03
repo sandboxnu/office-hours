@@ -5,12 +5,7 @@ import { Col, Row } from "antd";
 import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
-<<<<<<< HEAD
 import { mutate } from "swr";
-=======
-import useSWR, { mutate } from "swr";
-import FatalError from "../../../components/common/FatalError";
->>>>>>> master
 import NavBar from "../../../components/Nav/NavBar";
 import OpenQueueCard, {
   OpenQueueCardSkeleton,
@@ -20,7 +15,7 @@ import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import { useCourse } from "../../../hooks/useCourse";
 import SchedulePanel from "../../../components/Schedule/SchedulePanel";
-import FatalError from "../../../components/common/FatalError";
+import { FatalError } from "../../../components/common/FatalError";
 
 const Container = styled.div`
   margin: 32px 64px;
