@@ -299,7 +299,7 @@ function QueueQuestions({ questions, isHelping, onOpenCard }: QueueProps) {
           key={question.id}
           rank={0}
           question={question}
-          onOpen={(q) => !isHelping && onOpenCard}
+          onOpen={(q) => !isHelping && onOpenCard(q)}
         />
       ))}
       {queuedQuestions.map((question: Question, index: number) => (
