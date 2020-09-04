@@ -1,10 +1,11 @@
 import { API } from "@template/api-client";
 import { QueuePartial, Role } from "@template/common";
-import { Col, Result, Row } from "antd";
+import { Col, Row } from "antd";
 import { useRouter } from "next/router";
 import { ReactElement } from "react";
 import styled from "styled-components";
 import useSWR, { mutate } from "swr";
+import FatalError from "../../../components/common/FatalError";
 import NavBar from "../../../components/Nav/NavBar";
 import OpenQueueCard, {
   OpenQueueCardSkeleton,
@@ -52,12 +53,7 @@ export default function Today(): ReactElement {
   };
 
   if (error) {
-    return (
-      <Result
-        status="500"
-        title="Something went wrong, please ask chinese man"
-      />
-    );
+    return <FatalError error={error} />;
   }
   return (
     <div>

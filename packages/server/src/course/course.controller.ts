@@ -20,6 +20,7 @@ import { QueueModel } from '../queue/queue.entity';
 import { CourseRolesGuard } from './course-roles.guard';
 import { CourseModel } from './course.entity';
 import { OfficeHourModel } from './office-hour.entity';
+import { QueueSSEService } from 'queue/queue-sse.service';
 
 @Controller('courses')
 @UseGuards(JwtAuthGuard, CourseRolesGuard)
@@ -28,6 +29,7 @@ export class CourseController {
   constructor(
     private connection: Connection,
     private queueCleanService: QueueCleanService,
+    private queueSSEService: QueueSSEService,
   ) {}
 
   @Get(':id')
@@ -85,6 +87,8 @@ export class CourseController {
 
     queue.staffList.push(user);
     await queue.save();
+
+    await this.queueSSEService.updateQueue(queue.id);
     return queue;
   }
 
@@ -108,8 +112,8 @@ export class CourseController {
       queue.allowQuestions = false;
     }
     await queue.save();
-
     // Clean up queue if necessary
     await this.queueCleanService.cleanQueue(queue.id);
+    await this.queueSSEService.updateQueue(queue.id);
   }
 }

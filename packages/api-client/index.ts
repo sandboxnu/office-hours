@@ -131,7 +131,7 @@ function parseOfficeHourDates(officeHour: any): void {
   officeHour.endTime = new Date(officeHour.endTime);
 }
 
-function parseQueueDates(queue: any): void {
+export function parseQueueDates(queue: any): void {
   if (queue.startTime && queue.endTime) {
     queue.startTime = new Date(queue.startTime);
     queue.endTime = new Date(queue.endTime);
