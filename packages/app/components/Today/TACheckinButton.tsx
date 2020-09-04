@@ -3,7 +3,7 @@ import { Button, Input, Modal, Radio } from "antd";
 import { useRouter } from "next/router";
 import { ReactElement, useState } from "react";
 import styled from "styled-components";
-import useSWR from "swr";
+import { useCourse } from "../../hooks/useCourse";
 
 const CheckinButton = styled(Button)`
   background: #2a9187;
@@ -26,9 +26,7 @@ export default function TACheckinButton({
 
   const canSubmitCustomRoom = !(value === -1 && !customRoom);
 
-  const { data } = useSWR(courseId && `api/v1/courses/${courseId}`, async () =>
-    API.course.get(Number(courseId))
-  );
+  const { course } = useCourse(courseId);
 
   const radioStyle = {
     display: "block",
@@ -40,7 +38,7 @@ export default function TACheckinButton({
     if (canSubmitCustomRoom) {
       const redirectID = await API.taStatus.checkIn(
         courseId,
-        value === -1 ? customRoom : data?.queues[value].room
+        value === -1 ? customRoom : course?.queues[value].room
       );
 
       router.push(
@@ -56,7 +54,7 @@ export default function TACheckinButton({
         type="default"
         size="large"
         onClick={() => setViewCheckinModal(true)}
-        disabled={!data}
+        disabled={!course}
         data-cy="check-in-button"
       >
         Check In
@@ -71,7 +69,7 @@ export default function TACheckinButton({
       >
         <h3>Which room are you in?</h3>
         <Radio.Group value={value} onChange={(e) => setValue(e.target.value)}>
-          {data?.queues.map((q, i) => (
+          {course?.queues.map((q, i) => (
             <Radio key={q.id} style={radioStyle} value={i}>
               {q.room}
             </Radio>
