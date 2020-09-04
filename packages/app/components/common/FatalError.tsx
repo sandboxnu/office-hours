@@ -3,7 +3,7 @@ import Result from "antd/lib/result";
 import { ReactElement, useEffect } from "react";
 
 export function FatalError({ error }: { error: Error }): ReactElement {
-  useEffect(() => apm.captureError(error), [error]);
+  useEffect(() => window && apm.captureError(error), [error]);
   return (
     <Result
       status="500"
