@@ -23,11 +23,12 @@ export default function StudentRemovedFromQueueModal(
           Rejoin Queue
         </Button>,
       ]}
+      closable={false}
     >
-      You&quot;ve been removed from the queue by the following TA:{" "}
-      {props.question?.taHelped?.name}. If you have any questions, please reach
-      out to the TA. If you&quot;d like to join back into the queue with your
-      previous question, click Join, otherwise click Cancel.
+      You&apos;ve been removed from the queue by a TA. If you have any
+      questions, please reach out to the TA. If you&apos;d like to join back
+      into the queue with your previous question, click Rejoin Queue, otherwise
+      click Leave Queue.
     </Modal>
   );
 }
