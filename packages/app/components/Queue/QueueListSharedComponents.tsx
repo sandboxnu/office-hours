@@ -1,10 +1,16 @@
-import { ClockCircleOutlined, NotificationOutlined } from "@ant-design/icons";
+import {
+  ClockCircleOutlined,
+  NotificationOutlined,
+  CloudSyncOutlined,
+  DislikeOutlined,
+  FrownOutlined,
+} from "@ant-design/icons";
 import React, { ReactElement, ReactNode } from "react";
 import styled from "styled-components";
 import { useQueue } from "../../hooks/useQueue";
 import { formatQueueTime } from "../../utils/TimeUtil";
 import { TAStatuses } from "./TAStatuses";
-import { Button } from "antd";
+import { Button, Badge } from "antd";
 import { ButtonProps } from "antd/lib/button";
 
 export const QueuePageContainer = styled.div`
@@ -89,7 +95,7 @@ export function QueueInfoColumn({
   queueId,
   buttons,
 }: QueueInfoColumnProps): ReactElement {
-  const { queue } = useQueue(queueId);
+  const { queue, isQueueLive } = useQueue(queueId);
   return (
     <InfoColumnContainer>
       <QueueTitle>{queue?.room}</QueueTitle>
@@ -105,6 +111,12 @@ export function QueueInfoColumn({
           <QueuePropertyText>{queue.notes}</QueuePropertyText>
         </QueuePropertyRow>
       )}
+      <QueuePropertyRow>
+        {isQueueLive ? <CloudSyncOutlined /> : <FrownOutlined />}
+        <QueuePropertyText>
+          {isQueueLive ? "Queue up to date" : "Queue out of date"}
+        </QueuePropertyText>
+      </QueuePropertyRow>
       {buttons}
       {queue?.allowQuestions ? (
         <NotesText style={{ color: "green" }}>
