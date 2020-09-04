@@ -35,7 +35,7 @@ export default function Today(): ReactElement {
   const { cid } = router.query;
   const role = useRoleInCourse(Number(cid));
 
-  const { course, courseError } = useCourse(Number(cid));
+  const { course, courseError, mutateCourse } = useCourse(Number(cid));
 
   const updateQueueNotes = async (
     queue: QueuePartial,
@@ -45,12 +45,12 @@ export default function Today(): ReactElement {
       course &&
       course.queues.map((q) => (q.id === queue.id ? { ...q, notes } : q));
 
-    mutate(`api/v1/courses/${cid}`, { ...course, queues: newQueues }, false);
+    mutateCourse({ ...course, queues: newQueues }, false);
     await API.queues.update(queue.id, {
       notes,
       allowQuestions: queue.allowQuestions,
     });
-    mutate(`api/v1/courses/${cid}`);
+    mutateCourse();
   };
 
   if (courseError) {
