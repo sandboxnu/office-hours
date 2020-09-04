@@ -244,6 +244,17 @@ interface QueueProps {
   onOpenCard: (q: Question) => void;
 }
 function QueueQuestions({ questions, isHelping, onOpenCard }: QueueProps) {
+  const queuedQuestions = questions?.filter(
+    (question) =>
+      question.status !== OpenQuestionStatus.TADeleted &&
+      question.status !== OpenQuestionStatus.Helping &&
+      question.status !== OpenQuestionStatus.CantFind
+  );
+  const helpedQuestions = questions?.filter(
+    (question) =>
+      question.status === OpenQuestionStatus.Helping ||
+      question.status === OpenQuestionStatus.CantFind
+  );
   return (
     <div data-cy="queueQuestions">
       {questions.filter(
@@ -283,19 +294,22 @@ function QueueQuestions({ questions, isHelping, onOpenCard }: QueueProps) {
         </>
       )}
 
-      {questions
-        ?.filter(
-          (question: Question) =>
-            question.status !== OpenQuestionStatus.TADeleted
-        )
-        .map((question: Question, index: number) => (
-          <TAQueueCard
-            key={question.id}
-            rank={index + 1}
-            question={question}
-            onOpen={(q) => !isHelping && onOpenCard(q)}
-          />
-        ))}
+      {helpedQuestions.map((question: Question) => (
+        <TAQueueCard
+          key={question.id}
+          rank={0}
+          question={question}
+          onOpen={(q) => !isHelping && onOpenCard}
+        />
+      ))}
+      {queuedQuestions.map((question: Question, index: number) => (
+        <TAQueueCard
+          key={question.id}
+          rank={index + 1}
+          question={question}
+          onOpen={(q) => !isHelping && onOpenCard(q)}
+        />
+      ))}
     </div>
   );
 }
