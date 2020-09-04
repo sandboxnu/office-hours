@@ -1,5 +1,9 @@
 import { API, parseQuestionDates } from "@template/api-client";
-import { ListQuestionsResponse, Question, SSEQueueResponse } from "@template/common";
+import {
+  ListQuestionsResponse,
+  Question,
+  SSEQueueResponse,
+} from "@template/common";
 import useSWR, { responseInterface } from "swr";
 import { useCallback, useEffect } from "react";
 import { useEventSource } from "./useEventSource";

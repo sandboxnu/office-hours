@@ -72,9 +72,12 @@ export default function TABanner({
             title={`Are you sure you want to mark this question as "Can't find"?`}
             okText="Yes"
             cancelText="No"
-            onConfirm={() => {
-              updateQuestion(helpingQuestion, OpenQuestionStatus.CantFind);
-              alertStudent();
+            onConfirm={async () => {
+              await updateQuestion(
+                helpingQuestion,
+                OpenQuestionStatus.CantFind
+              );
+              await alertStudent();
             }}
           >
             <BannerDangerButton icon={<QuestionOutlined />}>
