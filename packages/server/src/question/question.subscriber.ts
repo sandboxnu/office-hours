@@ -6,6 +6,7 @@ import {
   EventSubscriber,
   InsertEvent,
   UpdateEvent,
+  RemoveEvent,
 } from 'typeorm';
 import {
   NotificationService,
@@ -63,5 +64,13 @@ export class QuestionSubscriber
   async afterInsert(event: InsertEvent<QuestionModel>): Promise<void> {
     // Send all listening clients an update
     await this.queueSSEService.updateQuestions(event.entity.queueId);
+  }
+
+  async beforeRemove(event: RemoveEvent<QuestionModel>): Promise<void> {
+    // due to cascades entity is not guaranteed to be loaded
+    if (event.entity) {
+      // Send all listening clients an update
+      await this.queueSSEService.updateQuestions(event.entity.queueId);
+    }
   }
 }

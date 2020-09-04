@@ -1,8 +1,12 @@
 import { API } from "@template/api-client";
-import { ListQuestionsResponse, Question } from "@template/common";
+import {
+  ListQuestionsResponse,
+  Question,
+  SSEQueueResponse,
+} from "@template/common";
 import useSWR, { responseInterface } from "swr";
-import {plainToClass} from "class-transformer";
-import { useCallback, } from "react";
+import { plainToClass } from "class-transformer";
+import { useCallback } from "react";
 import { useEventSource } from "./useEventSource";
 
 type questionsResponse = responseInterface<ListQuestionsResponse, any>;
@@ -27,9 +31,12 @@ export function useQuestions(qid: number): UseQuestionReturn {
   // Subscribe to sse
   useEventSource(
     qid && `/api/v1/queues/${qid}/sse`,
+    "question",
     useCallback(
-      (data: ListQuestionsResponse) => {
-        mutateQuestions(plainToClass(Question, data), false);
+      (data: SSEQueueResponse) => {
+        if (data.questions) {
+          mutateQuestions(plainToClass(Question, data.questions), false);
+        }
       },
       [mutateQuestions]
     )
