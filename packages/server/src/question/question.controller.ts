@@ -229,11 +229,18 @@ export class QuestionController {
       relations: ['queue'],
     });
 
-    // TODO: somehow store and check that the notifying TA is the one helping? new UnauthorizedException('Only TA can send alerts');
+    console.log(question);
 
-    await this.notifService.notifyUser(
-      question.creatorId,
-      NotifMsgs.queue.ALERT_BUTTON,
-    );
+    if (question.status === OpenQuestionStatus.CantFind) {
+      await this.notifService.notifyUser(
+        question.creatorId,
+        NotifMsgs.queue.ALERT_BUTTON,
+      );
+    } else if (question.status === OpenQuestionStatus.TADeleted) {
+      await this.notifService.notifyUser(
+        question.creatorId,
+        NotifMsgs.queue.REMOVED,
+      );
+    }
   }
 }

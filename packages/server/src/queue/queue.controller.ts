@@ -17,17 +17,15 @@ import {
   UpdateQueueParams,
 } from '@template/common';
 import { Response } from 'express';
+import { UserId } from 'profile/user.decorator';
 import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { Roles } from '../profile/roles.decorator';
+import { QueueRole } from './queue-role.decorator';
 import { QueueRolesGuard } from './queue-role.guard';
 import { QueueSSEService } from './queue-sse.service';
 import { QueueModel } from './queue.entity';
 import { QueueService } from './queue.service';
-import { QueueRole } from './queue-role.decorator';
-import { pick } from 'lodash';
-import { User, UserId } from 'profile/user.decorator';
-import { UserModel } from 'profile/user.entity';
 
 @Controller('queues')
 @UseGuards(JwtAuthGuard, QueueRolesGuard)

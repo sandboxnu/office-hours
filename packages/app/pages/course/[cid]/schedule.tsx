@@ -8,7 +8,7 @@ import moment from "moment";
 import useSWR from "swr";
 import { API } from "@template/api-client";
 import styled from "styled-components";
-import FatalError from '../../../components/common/FatalError';
+import FatalError from "../../../components/common/FatalError";
 import { useProfile } from "../../../hooks/useProfile";
 import { useRouter } from "next/router";
 import NavBar from "../../../components/Nav/NavBar";
@@ -39,7 +39,7 @@ export default function Schedule({ today }: ScheduleProps): ReactElement {
   );
 
   if (error) {
-    return <FatalError error={error}/>
+    return <FatalError error={error} />;
   }
 
   const myEvents: Event[] =
