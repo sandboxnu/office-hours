@@ -4,7 +4,7 @@ import React, { ReactElement } from "react";
 import { useCourse } from "../../../hooks/useCourse";
 import { useProfile } from "../../../hooks/useProfile";
 import { FatalError } from "../../../components/common/FatalError";
-import { Head } from "next/document";
+import Head from "next/head";
 import NavBar from "../../../components/Nav/NavBar";
 import SchedulePanel from "../../../components/Schedule/SchedulePanel";
 
