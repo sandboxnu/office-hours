@@ -1,12 +1,14 @@
 import { useState, Dispatch, SetStateAction } from "react";
 
+const isWindow = typeof window !== "undefined";
+
 export function useLocalStorage<T>(
   key: string,
   initialValue: T
 ): [T, Dispatch<SetStateAction<T>>, Dispatch<SetStateAction<void>>] {
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
-      const item = window.localStorage.getItem(key);
+      const item = isWindow && window.localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
       console.error(error);
@@ -20,7 +22,7 @@ export function useLocalStorage<T>(
         value instanceof Function ? value(storedValue) : value;
       setStoredValue(valueToStore);
 
-      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+      isWindow && window.localStorage.setItem(key, JSON.stringify(valueToStore));
     } catch (error) {
       console.error(error);
     }
@@ -30,7 +32,7 @@ export function useLocalStorage<T>(
     try {
       setStoredValue(null);
 
-      window.localStorage.removeItem(key);
+      isWindow && window.localStorage.removeItem(key);
     } catch (error) {
       console.error(error);
     }
