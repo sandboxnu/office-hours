@@ -5,16 +5,7 @@ import {
   Question,
   QuestionType,
 } from "@template/common";
-import {
-  Button,
-  Card,
-  Col,
-  Modal,
-  notification,
-  Popconfirm,
-  Row,
-  Space,
-} from "antd";
+import { Card, Col, notification, Popconfirm, Row, Space } from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { mutate } from "swr";
@@ -32,7 +23,9 @@ import {
   VerticalDivider,
 } from "./QueueListSharedComponents";
 import StudentBanner from "./StudentBanner";
+import CantFindModal from "./StudentCantFindModal";
 import StudentQueueCard from "./StudentQueueCard";
+import StudentRemovedFromQueueModal from "./StudentRemovedFromQueueModal";
 
 const JoinButton = styled(QueueInfoColumnButton)`
   background-color: #3684c6;
@@ -78,7 +71,7 @@ export default function StudentQueueList({
 
   const leaveQueue = useCallback(async () => {
     await API.questions.update(studentQuestion?.id, {
-      status: ClosedQuestionStatus.Deleted,
+      status: ClosedQuestionStatus.ConfirmedDeleted,
     });
 
     setIsJoining(false);
@@ -107,6 +100,25 @@ export default function StudentQueueList({
     },
     [questions, studentQuestion?.id, mutateQuestions]
   );
+
+  const joinQueueAfterDeletion = useCallback(async () => {
+    await API.questions.update(studentQuestion?.id, {
+      status: ClosedQuestionStatus.ConfirmedDeleted,
+    });
+    await mutateQuestions();
+    const newQuestion = await API.questions.create({
+      text: studentQuestion.text,
+      questionType: studentQuestion?.questionType,
+      queueId: qid,
+      isOnline: studentQuestion?.isOnline,
+      location: studentQuestion?.location,
+      force: true,
+    });
+    await API.questions.update(newQuestion.id, {
+      status: OpenQuestionStatus.Queued,
+    });
+    await mutateQuestions();
+  }, [mutateQuestions, qid, studentQuestion]);
 
   const [popupEditQuestion, setPopupEditQuestion] = useState(false);
 
@@ -195,7 +207,6 @@ export default function StudentQueueList({
     if (!queue.isOpen) {
       return <h1 style={{ marginTop: "50px" }}>The Queue is Closed!</h1>;
     }
-
     return (
       <>
         <QueuePageContainer>
@@ -203,6 +214,11 @@ export default function StudentQueueList({
             visible={studentQuestion?.status === OpenQuestionStatus.CantFind}
             leaveQueue={leaveQueue}
             rejoinQueue={rejoinQueue}
+          />
+          <StudentRemovedFromQueueModal
+            question={studentQuestion}
+            leaveQueue={leaveQueue}
+            joinQueue={joinQueueAfterDeletion}
           />
           <QueueInfoColumn
             queueId={qid}
@@ -285,7 +301,9 @@ interface QueueProps {
 function QueueQuestions({ questions, studentQuestion }: QueueProps) {
   return (
     <div data-cy="queueQuestions">
-      {questions?.length === 0 ? (
+      {questions?.filter(
+        (question) => question.status !== OpenQuestionStatus.TADeleted
+      ).length === 0 ? (
         <h1 style={{ marginTop: "50px" }}>
           There currently aren&apos;t any questions in the queue
         </h1>
@@ -307,43 +325,21 @@ function QueueQuestions({ questions, studentQuestion }: QueueProps) {
           </StudentHeaderCard>
         </>
       )}
-      {questions?.map((question: Question, index: number) => {
-        return (
-          <StudentQueueCard
-            key={question.id}
-            rank={index + 1}
-            question={question}
-            highlighted={studentQuestion === question}
-          />
-        );
-      })}
+      {questions
+        ?.filter(
+          (question: Question) =>
+            question.status !== OpenQuestionStatus.TADeleted
+        )
+        .map((question: Question, index: number) => {
+          return (
+            <StudentQueueCard
+              key={question.id}
+              rank={index + 1}
+              question={question}
+              highlighted={studentQuestion === question}
+            />
+          );
+        })}
     </div>
-  );
-}
-
-type CantFindModalProps = {
-  visible: boolean;
-  leaveQueue: () => void;
-  rejoinQueue: () => void;
-};
-
-function CantFindModal(props: CantFindModalProps): ReactElement {
-  return (
-    <Modal
-      visible={props.visible}
-      footer={[
-        <Button key="leave" danger onClick={props.leaveQueue}>
-          Leave Queue
-        </Button>,
-        <Button type="primary" key="rejoin" onClick={props.rejoinQueue}>
-          Rejoin Queue
-        </Button>,
-      ]}
-      closable={false}
-      title="You couldn't be found!"
-    >
-      A TA tried to help you, but couldn&apos;t reach you. Are you still in the
-      queue? If you are, make sure you have Teams open, and rejoin the queue.
-    </Modal>
   );
 }

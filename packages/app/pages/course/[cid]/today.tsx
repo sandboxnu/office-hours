@@ -5,7 +5,6 @@ import { Col, Row } from "antd";
 import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
-import { mutate } from "swr";
 import NavBar from "../../../components/Nav/NavBar";
 import OpenQueueCard, {
   OpenQueueCardSkeleton,
