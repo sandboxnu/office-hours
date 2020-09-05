@@ -31,7 +31,7 @@ const Info = styled.div`
 
 interface TABannerProps {
   helpingQuestion: Question;
-  updateQuestion: (question: Question, status: QuestionStatus) => void;
+  updateQuestion: (question: Question, status: QuestionStatus) => Promise<void>;
 }
 export default function TABanner({
   helpingQuestion,
@@ -69,19 +69,19 @@ export default function TABanner({
       buttons={
         <>
           <Popconfirm
-            title={`Are you sure you want to mark this question as "Can't find"?`}
+            title="Are you sure you want to delete this question from the queue?"
             okText="Yes"
             cancelText="No"
             onConfirm={async () => {
               await updateQuestion(
                 helpingQuestion,
-                OpenQuestionStatus.CantFind
+                OpenQuestionStatus.TADeleted
               );
               await alertStudent();
             }}
           >
             <BannerDangerButton icon={<QuestionOutlined />}>
-              Can&apos;t Find
+              Remove from Queue
             </BannerDangerButton>
           </Popconfirm>
           <BannerButton
