@@ -30,7 +30,7 @@ export default function TACheckinButton({
 
   const { course, mutateCourse } = useCourse(courseId);
   const { id } = useProfile();
-  const queueCheckedIn = course.queues.find((queue) =>
+  const queueCheckedIn = course?.queues.find((queue) =>
     queue.staffList.find((staff) => staff.id === id)
   );
 
@@ -49,6 +49,7 @@ export default function TACheckinButton({
     <>
       {queueCheckedIn ? (
         <CheckOutButton
+          data-cy="check-out-button"
           onClick={async () => {
             await API.taStatus.checkOut(courseId, "Online");
             mutateCourse();
