@@ -14,6 +14,13 @@ const CheckinButton = styled(Button)`
   font-size: 14px;
 `;
 
+const CheckOutButton = styled(Button)`
+  color: #da3236;
+  font-weight: 500;
+  font-size: 14px;
+  border-radius: 6px;
+`;
+
 export default function TACheckinButton({
   courseId,
 }: {
@@ -41,14 +48,14 @@ export default function TACheckinButton({
   return (
     <>
       {queueCheckedIn ? (
-        <Button
+        <CheckOutButton
           onClick={async () => {
             await API.taStatus.checkOut(courseId, "Online");
             mutateCourse();
           }}
         >
           Check out
-        </Button>
+        </CheckOutButton>
       ) : (
         <CheckinButton
           type="default"
