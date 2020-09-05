@@ -4,11 +4,13 @@ import {
   Res,
   Query,
   Post,
+  Req,
   Body,
   UseGuards,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Connection, getRepository } from 'typeorm';
+import { Request } from 'express';
+import { Connection } from 'typeorm';
 import { Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { UserModel } from '../../src/profile/user.entity';
@@ -25,6 +27,7 @@ import { NonProductionGuard } from '../../src/non-production.guard';
 import { ConfigService } from '@nestjs/config';
 import { LoginCourseService } from './login-course.service';
 import { CourseSectionMappingModel } from './course-section-mapping.entity';
+import { HttpSignatureService } from './http-signature.service';
 
 @Controller()
 export class LoginController {
@@ -32,13 +35,20 @@ export class LoginController {
     private connection: Connection,
     private loginCourseService: LoginCourseService,
     private jwtService: JwtService,
+    private httpSignatureService: HttpSignatureService,
     private configService: ConfigService,
   ) {}
 
   @Post('/khoury_login')
   async recieveDataFromKhoury(
+    @Req() req: Request,
     @Body() body: KhouryDataParams,
   ): Promise<KhouryRedirectResponse> {
+    // Check that request has come from Khoury
+    if (!this.httpSignatureService.verifyRequest(req)) {
+      throw new UnauthorizedException('Invalid request signature');
+    }
+
     let user: UserModel;
     user = await UserModel.findOne({
       where: { email: body.email },

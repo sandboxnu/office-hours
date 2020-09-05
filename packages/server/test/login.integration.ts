@@ -9,6 +9,7 @@ import {
   CourseFactory,
   CourseSectionFactory,
 } from './util/factories';
+import { HttpSignatureService } from 'login/http-signature.service';
 
 const mockJWT = {
   signAsync: async (payload, options?) => JSON.stringify(payload),
@@ -16,11 +17,19 @@ const mockJWT = {
   decode: payload => JSON.parse(payload),
 };
 
+const mockHttpSignatureService = {
+  verifyRequest: req => {console.log("HEADERS", req.headers['authorization']); return req.headers['authorization'] !== 'INVALID_KEY'},
+};
+
 describe('Login Integration', () => {
   const supertest = setupIntegrationTest(
     LoginModule,
     (t: TestingModuleBuilder) =>
-      t.overrideProvider(JwtService).useValue(mockJWT),
+      t
+        .overrideProvider(JwtService)
+        .useValue(mockJWT)
+        .overrideProvider(HttpSignatureService)
+        .useValue(mockHttpSignatureService),
   );
 
   describe('POST /login/entry', () => {
@@ -60,7 +69,6 @@ describe('Login Integration', () => {
   });
 
   describe('POST /khoury_login', () => {
-    // TODO: Create test to say that he khoury login sends back teh correct redirect
     it('creates user and sends back correct redirect', async () => {
       const user = await UserModel.findOne({
         where: { email: 'stenzel.w@northeastern.edu' },
@@ -89,6 +97,38 @@ describe('Login Integration', () => {
       expect(res.body).toEqual({
         redirect: 'http://localhost:3000/api/v1/login/entry?token={"userId":1}',
       });
+    });
+
+    it('returns 401 status if request signature is invalid', async () => {
+      await supertest()
+        .post('/khoury_login')
+        .set('Authorization', 'INVALID_KEY')
+        .send({
+          email: 'stenzel.w@northeastern.edu',
+          campus: 1,
+          first_name: 'Will',
+          last_name: 'Stenzel',
+          photo_url: 'sdf',
+          courses: [],
+          ta_courses: [],
+        })
+        .expect(401);
+    });
+
+    it('returns 201 status if request signature is valid', async () => {
+      await supertest()
+        .post('/khoury_login')
+        .set('Authorization', 'VALID_KEY')
+        .send({
+          email: 'stenzel.w@northeastern.edu',
+          campus: 1,
+          first_name: 'Will',
+          last_name: 'Stenzel',
+          photo_url: 'sdf',
+          courses: [],
+          ta_courses: [],
+        })
+        .expect(201);
     });
 
     it('handles student courses and sections correctly', async () => {
@@ -123,9 +163,10 @@ describe('Login Integration', () => {
           ta_courses: [],
         });
 
-        const student = await UserModel.findOne({
-          where: { email: 'stenzel.w@northeastern.edu' }, relations: ['courses']
-        });
+      const student = await UserModel.findOne({
+        where: { email: 'stenzel.w@northeastern.edu' },
+        relations: ['courses'],
+      });
 
       expect(student.courses).toHaveLength(1);
       expect(student.courses[0].id).toBe(course.id);
