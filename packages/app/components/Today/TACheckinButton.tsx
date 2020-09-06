@@ -49,13 +49,15 @@ export default function TACheckinButton({
     <>
       {queueCheckedIn ? (
         <CheckOutButton
+          type="default"
+          size="large"
           data-cy="check-out-button"
           onClick={async () => {
             await API.taStatus.checkOut(courseId, "Online");
             mutateCourse();
           }}
         >
-          Check out
+          Check Out
         </CheckOutButton>
       ) : (
         <CheckinButton
