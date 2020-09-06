@@ -6,9 +6,12 @@ import { Request } from 'express';
 
 @Injectable()
 export class HttpSignatureService {
+    PUBLIC_KEY: string;
+    constructor() {
+        this.PUBLIC_KEY = fs.readFileSync(__dirname + '/khoury-public-key.pem', 'ascii');
+    }
     public verifyRequest(req: Request): boolean {
-        const PUBLIC_KEY = fs.readFileSync(__dirname + '/khoury-public-key.pem', 'ascii');
         const parsedRequest = httpSignature.parseRequest(req);
-        return httpSignature.verifySignature(parsedRequest, PUBLIC_KEY);
+        return httpSignature.verifySignature(parsedRequest, this.PUBLIC_KEY);
     }
 }
