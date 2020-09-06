@@ -9,16 +9,11 @@ import {
   CourseFactory,
   CourseSectionFactory,
 } from './util/factories';
-import { HttpSignatureService } from 'login/http-signature.service';
 
 const mockJWT = {
   signAsync: async (payload, options?) => JSON.stringify(payload),
   verifyAsync: async payload => JSON.parse(payload).token !== 'INVALID_TOKEN',
   decode: payload => JSON.parse(payload),
-};
-
-const mockHttpSignatureService = {
-  verifyRequest: req => {console.log("HEADERS", req.headers['authorization']); return req.headers['authorization'] !== 'INVALID_KEY'},
 };
 
 describe('Login Integration', () => {
@@ -28,8 +23,6 @@ describe('Login Integration', () => {
       t
         .overrideProvider(JwtService)
         .useValue(mockJWT)
-        .overrideProvider(HttpSignatureService)
-        .useValue(mockHttpSignatureService),
   );
 
   describe('POST /login/entry', () => {
@@ -97,38 +90,6 @@ describe('Login Integration', () => {
       expect(res.body).toEqual({
         redirect: 'http://localhost:3000/api/v1/login/entry?token={"userId":1}',
       });
-    });
-
-    it('returns 401 status if request signature is invalid', async () => {
-      await supertest()
-        .post('/khoury_login')
-        .set('Authorization', 'INVALID_KEY')
-        .send({
-          email: 'stenzel.w@northeastern.edu',
-          campus: 1,
-          first_name: 'Will',
-          last_name: 'Stenzel',
-          photo_url: 'sdf',
-          courses: [],
-          ta_courses: [],
-        })
-        .expect(401);
-    });
-
-    it('returns 201 status if request signature is valid', async () => {
-      await supertest()
-        .post('/khoury_login')
-        .set('Authorization', 'VALID_KEY')
-        .send({
-          email: 'stenzel.w@northeastern.edu',
-          campus: 1,
-          first_name: 'Will',
-          last_name: 'Stenzel',
-          photo_url: 'sdf',
-          courses: [],
-          ta_courses: [],
-        })
-        .expect(201);
     });
 
     it('handles student courses and sections correctly', async () => {

@@ -4,7 +4,6 @@ import { JwtStrategy } from '../login/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoginCourseService } from './login-course.service';
-import { HttpSignatureService } from './http-signature.service';
 
 @Module({
   imports: [
@@ -17,6 +16,6 @@ import { HttpSignatureService } from './http-signature.service';
     }),
   ],
   controllers: [LoginController],
-  providers: [JwtStrategy, LoginCourseService, HttpSignatureService],
+  providers: [JwtStrategy, LoginCourseService],
 })
 export class LoginModule {}

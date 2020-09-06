@@ -21,21 +21,27 @@ import {
   KhouryRedirectResponse,
   KhouryDataParams,
   KhouryStudentCourse,
-  KhouryTACourse
+  KhouryTACourse,
 } from '@template/common';
 import { NonProductionGuard } from '../../src/non-production.guard';
 import { ConfigService } from '@nestjs/config';
 import { LoginCourseService } from './login-course.service';
 import { CourseSectionMappingModel } from './course-section-mapping.entity';
-import { HttpSignatureService } from './http-signature.service';
+import * as httpSignature from 'http-signature';
+import * as path from 'path';
+import * as fs from 'fs';
 
 @Controller()
 export class LoginController {
+  PUBLIC_KEY = fs.readFileSync(
+    path.join(__dirname, '/khoury-public-key.pem'),
+    'ascii',
+  );
+
   constructor(
     private connection: Connection,
     private loginCourseService: LoginCourseService,
     private jwtService: JwtService,
-    private httpSignatureService: HttpSignatureService,
     private configService: ConfigService,
   ) {}
 
@@ -45,8 +51,11 @@ export class LoginController {
     @Body() body: KhouryDataParams,
   ): Promise<KhouryRedirectResponse> {
     // Check that request has come from Khoury
-    if (!this.httpSignatureService.verifyRequest(req)) {
-      throw new UnauthorizedException('Invalid request signature');
+    if (process.env.NODE_ENV === 'production') {
+      const parsedRequest = httpSignature.parseRequest(req);
+      if (!httpSignature.verifySignature(parsedRequest, this.PUBLIC_KEY)) {
+        throw new UnauthorizedException('Invalid request signature');
+      }
     }
 
     let user: UserModel;
@@ -69,8 +78,11 @@ export class LoginController {
 
     const userCourses = [];
     await Promise.all(
-      body.courses.map(async (c: KhouryStudentCourse) => { 
-        const course: CourseModel = await this.loginCourseService.courseSectionToCourse(c.course, c.section);
+      body.courses.map(async (c: KhouryStudentCourse) => {
+        const course: CourseModel = await this.loginCourseService.courseSectionToCourse(
+          c.course,
+          c.section,
+        );
 
         if (course) {
           const userCourse = await this.loginCourseService.courseToUserCourse(
@@ -82,12 +94,12 @@ export class LoginController {
         }
       }),
     );
-    
+
     await Promise.all(
-      body.ta_courses.map(async (c: KhouryTACourse) => { 
+      body.ta_courses.map(async (c: KhouryTACourse) => {
         // Query for all the courses which match the name of the generic course from Khoury
         const courses = await CourseSectionMappingModel.find({
-          where: { genericCourseName: c.course },  // TODO: Add semester support
+          where: { genericCourseName: c.course }, // TODO: Add semester support
         });
 
         for (const course of courses) {
