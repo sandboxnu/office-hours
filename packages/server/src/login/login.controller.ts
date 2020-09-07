@@ -28,16 +28,9 @@ import { ConfigService } from '@nestjs/config';
 import { LoginCourseService } from './login-course.service';
 import { CourseSectionMappingModel } from './course-section-mapping.entity';
 import * as httpSignature from 'http-signature';
-import * as path from 'path';
-import * as fs from 'fs';
 
 @Controller()
 export class LoginController {
-  PUBLIC_KEY = fs.readFileSync(
-    path.join(__dirname, '/khoury-public-key.pem'),
-    'ascii',
-  );
-
   constructor(
     private connection: Connection,
     private loginCourseService: LoginCourseService,
@@ -50,10 +43,10 @@ export class LoginController {
     @Req() req: Request,
     @Body() body: KhouryDataParams,
   ): Promise<KhouryRedirectResponse> {
-    // Check that request has come from Khoury
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === 'production') { 
+      // Check that request has come from Khoury
       const parsedRequest = httpSignature.parseRequest(req);
-      if (!httpSignature.verifySignature(parsedRequest, this.PUBLIC_KEY)) {
+      if (!httpSignature.verifySignature(parsedRequest, this.configService.get('KHOURY_PUBLIC_KEY'))) {
         throw new UnauthorizedException('Invalid request signature');
       }
     }
