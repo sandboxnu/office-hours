@@ -38,7 +38,9 @@ export default function CourseGroup({
       <CourseTitle>{course}</CourseTitle>
       <Radio.Group buttonStyle="outline" size="large" onChange={onChange}>
         {groups.map((group) => (
-          <Group value={group}>{group.name}</Group>
+          <Group key={group.id} value={group}>
+            {group.name}
+          </Group>
         ))}
       </Radio.Group>
     </Container>

@@ -47,6 +47,7 @@ export default function CourseGroupSelection({
       <Subtitle>Choose the section you are teaching</Subtitle>
       {Object.keys(courseToGroupsMap).map((course) => (
         <CourseGroup
+          key={course}
           course={course}
           groups={courseToGroupsMap[course]}
           onChange={(e) =>
@@ -57,7 +58,6 @@ export default function CourseGroupSelection({
       <Button
         onClick={() => {
           setPreferredCourseGroups(selectedCourseGroups);
-
           const firstCourse =
             selectedCourseGroups[Object.keys(selectedCourseGroups)[0]];
           Router.push(
