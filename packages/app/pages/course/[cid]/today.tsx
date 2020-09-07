@@ -1,10 +1,10 @@
 import { API } from "@template/api-client";
+import Head from "next/head";
 import { QueuePartial, Role } from "@template/common";
-import { Col, Result, Row } from "antd";
+import { Col, Row } from "antd";
 import { useRouter } from "next/router";
-import { ReactElement } from "react";
+import React, { ReactElement } from "react";
 import styled from "styled-components";
-import useSWR, { mutate } from "swr";
 import NavBar from "../../../components/Nav/NavBar";
 import OpenQueueCard, {
   OpenQueueCardSkeleton,
@@ -12,7 +12,9 @@ import OpenQueueCard, {
 import TACheckinButton from "../../../components/Today/TACheckinButton";
 import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
-import Schedule from "./schedule";
+import { useCourse } from "../../../hooks/useCourse";
+import SchedulePanel from "../../../components/Schedule/SchedulePanel";
+import { FatalError } from "../../../components/common/FatalError";
 
 const Container = styled.div`
   margin: 32px 64px;
@@ -32,35 +34,32 @@ export default function Today(): ReactElement {
   const { cid } = router.query;
   const role = useRoleInCourse(Number(cid));
 
-  const { data, error } = useSWR(cid && `api/v1/courses/${cid}`, async () =>
-    API.course.get(Number(cid))
-  );
+  const { course, courseError, mutateCourse } = useCourse(Number(cid));
 
   const updateQueueNotes = async (
     queue: QueuePartial,
     notes: string
   ): Promise<void> => {
     const newQueues =
-      data && data.queues.map((q) => (q.id === queue.id ? { ...q, notes } : q));
+      course &&
+      course.queues.map((q) => (q.id === queue.id ? { ...q, notes } : q));
 
-    mutate(`api/v1/courses/${cid}`, { ...data, queues: newQueues }, false);
+    mutateCourse({ ...course, queues: newQueues }, false);
     await API.queues.update(queue.id, {
       notes,
       allowQuestions: queue.allowQuestions,
     });
-    mutate(`api/v1/courses/${cid}`);
+    mutateCourse();
   };
 
-  if (error) {
-    return (
-      <Result
-        status="500"
-        title="Something went wrong, please ask chinese man"
-      />
-    );
+  if (courseError) {
+    return <FatalError error={courseError}/>
   }
   return (
     <div>
+      <Head>
+        <title>{course?.name} | Khoury Office Hours</title>
+      </Head>
       <WelcomeStudents />
       <NavBar courseId={Number(cid)} />
       <Container>
@@ -70,7 +69,7 @@ export default function Today(): ReactElement {
               <Title>Current Office Hours</Title>
               {role === Role.TA && <TACheckinButton courseId={Number(cid)} />}
             </Row>
-            {data?.queues?.map((q) => (
+            {course?.queues?.map((q) => (
               <OpenQueueCard
                 key={q.id}
                 queue={q}
@@ -78,10 +77,10 @@ export default function Today(): ReactElement {
                 updateQueueNotes={updateQueueNotes}
               />
             ))}
-            {!data && <OpenQueueCardSkeleton />}
+            {!course && <OpenQueueCardSkeleton />}
           </Col>
           <Col md={12} sm={24}>
-            <Schedule today={true} />
+            <SchedulePanel courseId={Number(cid)} defaultView="day" />
           </Col>
         </Row>
       </Container>

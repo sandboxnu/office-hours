@@ -34,7 +34,7 @@ export function NotificationSettingsModal({
         "phoneNumber",
       ])
     );
-    if (updateProfile.desktopNotifsEnabled) {
+    if (!profile.desktopNotifsEnabled && updateProfile.desktopNotifsEnabled) {
       const canNotify = await requestNotificationPermission();
       if (canNotify === NotificationStates.granted) {
         await registerNotificationSubscription();

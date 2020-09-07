@@ -20,7 +20,9 @@ describe('Login Integration', () => {
   const supertest = setupIntegrationTest(
     LoginModule,
     (t: TestingModuleBuilder) =>
-      t.overrideProvider(JwtService).useValue(mockJWT),
+      t
+        .overrideProvider(JwtService)
+        .useValue(mockJWT)
   );
 
   describe('POST /login/entry', () => {
@@ -60,7 +62,6 @@ describe('Login Integration', () => {
   });
 
   describe('POST /khoury_login', () => {
-    // TODO: Create test to say that he khoury login sends back teh correct redirect
     it('creates user and sends back correct redirect', async () => {
       const user = await UserModel.findOne({
         where: { email: 'stenzel.w@northeastern.edu' },
@@ -123,9 +124,10 @@ describe('Login Integration', () => {
           ta_courses: [],
         });
 
-        const student = await UserModel.findOne({
-          where: { email: 'stenzel.w@northeastern.edu' }, relations: ['courses']
-        });
+      const student = await UserModel.findOne({
+        where: { email: 'stenzel.w@northeastern.edu' },
+        relations: ['courses'],
+      });
 
       expect(student.courses).toHaveLength(1);
       expect(student.courses[0].id).toBe(course.id);

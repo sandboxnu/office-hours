@@ -8,6 +8,7 @@ import {
   IsString,
   ValidateIf,
 } from "class-validator";
+import { Type } from "class-transformer";
 import "reflect-metadata";
 
 export const PROD_URL = "https://khouryofficehours.com";
@@ -43,28 +44,12 @@ export type User = {
  * @param name - The full name of this user: First Last.
  * @param photoURL - The URL string of this user photo. This is pulled from the admin site
  */
-export type UserPartial = {
-  id: number;
+export class UserPartial {
+  id!: number;
   email?: string;
   name?: string;
   photoURL?: string;
-};
-
-/**
- * Represents a course in the context of office hours.
- * @param id - The id number of this Course.
- * @param name - The subject and course number of this course. Ex: "CS 2500"
- * @param semester - The semester of this course.
- * @param officeHours - The list of office hours associated with the course.
- * @param queues - The queue id associated with this office hour.
- */
-export type Course = {
-  id: number;
-  name: string;
-  semester: Semester;
-  officeHours: OfficeHourBlock[];
-  queues: Queue[];
-};
+}
 
 /**
  * Represents a partial course data needed on the front end when nested in a response.
@@ -95,22 +80,15 @@ export enum Role {
   PROFESSOR = "professor",
 }
 
-/**
- * Represents an Office Hour block as assigned on the course calendar.
- * @param id - The id number of this office hour.
- * @param title - The title of the event as it show in the google calender.
- * @param course - The course this office hour supports.
- * @param room - The room string where this office hour is taking place.
- * @param startTime - The date string for the start time of this office hour block. Ex: "2019-09-21T12:00:00-04:00"
- * @param endTime - The date string for the end time of this office hour block.
- */
-interface OfficeHourBlock {
-  id: number;
-  title: string;
-  course: CoursePartial;
-  room: string; // if not in person set to string "online"
-  startTime: string;
-  endTime: string;
+class OfficeHourPartial {
+  id!: number;
+  title!: string;
+
+  @Type(() => Date)
+  startTime!: Date;
+
+  @Type(() => Date)
+  endTime!: Date;
 }
 
 /**
@@ -142,16 +120,24 @@ export interface Queue {
  * @param startTime - The scheduled start time of this queue based on the parsed ical.
  * @param endTime - The scheduled end time of this queue.
  */
-export interface QueuePartial {
-  id: number;
-  room: string;
-  staffList: UserPartial[];
-  queueSize: number;
+export class QueuePartial {
+  id!: number;
+  room!: string;
+
+  @Type(() => UserPartial)
+  staffList!: UserPartial[];
+
+  queueSize!: number;
   notes?: string;
-  isOpen: boolean;
+  isOpen!: boolean;
+
+  @Type(() => Date)
   startTime?: Date;
+
+  @Type(() => Date)
   endTime?: Date;
-  allowQuestions: boolean;
+
+  allowQuestions!: boolean;
 }
 
 /**
@@ -168,19 +154,29 @@ export interface QueuePartial {
  * @param location - The location of the particular student, to help TA's find them
  * @param isOnline - Wether or not the question will helped online or in-person
  */
-export type Question = {
-  id: number;
-  creator: UserPartial;
+export class Question {
+  id!: number;
+
+  @Type(() => UserPartial)
+  creator!: UserPartial;
   text?: string;
+
+  @Type(() => UserPartial)
   taHelped?: UserPartial;
-  createdAt: Date; // TODO: remove this field, frontend doesn't need it
+
+  @Type(() => Date)
+  createdAt!: Date;
+
+  @Type(() => Date)
   helpedAt?: Date;
+
+  @Type(() => Date)
   closedAt?: Date;
   questionType?: QuestionType;
-  status: QuestionStatus;
+  status!: QuestionStatus;
   location?: string;
   isOnline?: boolean;
-};
+}
 
 // Question Types
 export enum QuestionType {
@@ -197,12 +193,13 @@ export enum OpenQuestionStatus {
   Queued = "Queued",
   Helping = "Helping",
   CantFind = "CantFind",
+  TADeleted = "TADeleted",
 }
 
 export enum ClosedQuestionStatus {
   Resolved = "Resolved",
   Deferred = "Deferred",
-  Deleted = "Deleted",
+  ConfirmedDeleted = "ConfirmedDeleted",
   Stale = "Stale",
 }
 
@@ -322,27 +319,24 @@ export class UpdateProfileParams {
   phoneNumber?: string;
 }
 
-// export type GetCourseResponse = Course;
+export class GetCourseResponse {
+  id!: number;
+  name!: string;
 
-export interface GetCourseResponse {
-  id: number;
-  name: string;
-  officeHours: Array<{
-    id: number;
-    title: string;
-    startTime: Date;
-    endTime: Date;
-  }>;
-  queues: QueuePartial[];
+  @Type(() => OfficeHourPartial)
+  officeHours!: Array<OfficeHourPartial>;
+
+  @Type(() => QueuePartial)
+  queues!: QueuePartial[];
 }
 
-export type GetQueueResponse = QueuePartial;
+export class GetQueueResponse extends QueuePartial {}
 
-export type GetCourseQueuesResponse = QueuePartial[];
+export class GetCourseQueuesResponse extends Array<QueuePartial> {}
 
-export type ListQuestionsResponse = Question[];
+export class ListQuestionsResponse extends Array<Question> {}
 
-export type GetQuestionResponse = Question;
+export class GetQuestionResponse extends Question {}
 
 export class CreateQuestionParams {
   @IsString()
@@ -365,7 +359,7 @@ export class CreateQuestionParams {
   @IsBoolean()
   force!: boolean;
 }
-export type CreateQuestionResponse = Question;
+export class CreateQuestionResponse extends Question {}
 
 export class UpdateQuestionParams {
   @IsString()
@@ -392,7 +386,7 @@ export class UpdateQuestionParams {
   @IsOptional()
   location?: string;
 }
-export type UpdateQuestionResponse = Question;
+export class UpdateQuestionResponse extends Question {}
 
 export type TAUpdateStatusResponse = QueuePartial;
 export type QueueNotePayloadType = {
@@ -406,6 +400,11 @@ export class UpdateQueueParams {
 
   @IsBoolean()
   allowQuestions?: boolean;
+}
+
+export class SSEQueueResponse {
+  queue?: GetQueueResponse;
+  questions?: ListQuestionsResponse;
 }
 
 export interface TwilioBody {
