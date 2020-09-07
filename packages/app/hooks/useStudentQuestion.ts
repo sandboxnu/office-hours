@@ -1,8 +1,7 @@
-import { API } from "@template/api-client";
-import { Question } from "@template/common";
+import { OpenQuestionStatus, Question } from "@template/common";
 import { responseInterface } from "swr";
-import { useQuestions } from "./useQuestions";
 import { useProfile } from "./useProfile";
+import { useQuestions } from "./useQuestions";
 
 type queueResponse = responseInterface<Question, any>;
 
@@ -23,7 +22,13 @@ export function useStudentQuestion(qid: number): UseStudentQuestionReturn {
   const studentQuestionIndex =
     profile &&
     questions &&
-    questions.findIndex((q) => q.creator.id === profile.id);
+    questions
+      .filter(
+        (question) =>
+          question.status === OpenQuestionStatus.CantFind ||
+          question.status === OpenQuestionStatus.TADeleted
+      )
+      .findIndex((q) => q.creator.id === profile.id);
   return {
     studentQuestion: questions?.[studentQuestionIndex],
     studentQuestionIndex,
