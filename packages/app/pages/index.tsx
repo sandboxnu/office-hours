@@ -1,7 +1,9 @@
 import { User, UserCourse, CoursePartial, Role } from "@template/common";
 import Router from "next/router";
 import { useProfile } from "../hooks/useProfile";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 import CourseGroupSelection from "../components/Course/CourseGroupSelection";
+import _ from "lodash";
 
 interface CourseToGroupsMap {
   [genericCourse: string]: CoursePartial[];
@@ -22,34 +24,44 @@ function parseCourseGroupMappings(profile: User): CourseToGroupsMap {
     }
   });
 
-  // for (const course in courseToGroupsMap) {
-  //   if (courseToGroupsMap[course].length < 2) {
-  //     delete courseToGroupsMap[course];
-  //   }
-  // }
+  for (const course in courseToGroupsMap) {
+    if (courseToGroupsMap[course].length < 2) {
+      delete courseToGroupsMap[course];
+    }
+  }
 
   return courseToGroupsMap;
 }
 
 export default function Home() {
   const profile: User = useProfile();
-  console.log(profile?.courses);
+  const [preferredCourseGroups, setPreferredCourseGroups] = useLocalStorage(
+    "preferredCourseGroups",
+    null
+  );
 
   const courseToGroupsMap = parseCourseGroupMappings(profile);
+  const numCoursesWithGroups = _.size(courseToGroupsMap);
 
-  if (Object.keys(courseToGroupsMap).length > 0) {
-    return <CourseGroupSelection courseToGroupsMap={courseToGroupsMap} />;
-  }
+  const preferredCoursesStored =
+    preferredCourseGroups &&
+    _.size(preferredCourseGroups) === numCoursesWithGroups;
+  const noCoursesWithGroups = numCoursesWithGroups === 0;
 
-  if (profile) {
+  if ((preferredCoursesStored || noCoursesWithGroups) && profile) {
+    const firstCourse = noCoursesWithGroups
+      ? profile.courses[0].course
+      : preferredCourseGroups[Object.keys(preferredCourseGroups)[0]];
     if (profile.courses.length > 0) {
       Router.push(
         "/course/[cid]/today",
-        "/course/" + profile.courses[0].course.id + "/today"
+        "/course/" + firstCourse.id + "/today"
       );
     } else {
       Router.push("/nocourses");
     }
+  } else if (numCoursesWithGroups > 0) {
+    return <CourseGroupSelection courseToGroupsMap={courseToGroupsMap} />;
   }
 
   return "";

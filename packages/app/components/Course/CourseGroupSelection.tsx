@@ -3,11 +3,9 @@ import styled from "styled-components";
 import { Button } from "antd";
 import { CoursePartial } from "@template/common";
 import CourseGroup from "./CourseGroup";
-
-const tempGroups = [
-  { id: 1, name: "CS 2500 Regular" },
-  { id: 2, name: "CS 2500 Accelerated" },
-];
+import { useLocalStorage } from "../../hooks/useLocalStorage";
+import _ from "lodash";
+import Router from "next/router";
 
 const Container = styled.div`
   margin: 32px 64px;
@@ -38,6 +36,10 @@ export default function CourseGroupSelection({
   courseToGroupsMap,
 }: CourseGroupSelectionProps): ReactElement {
   const [selectedCourseGroups, setSelectedCourseGroups] = useState({});
+  const [preferredCourseGroups, setPreferredCourseGroups] = useLocalStorage(
+    "preferredCourseGroups",
+    null
+  );
 
   return (
     <Container>
@@ -46,14 +48,27 @@ export default function CourseGroupSelection({
       {Object.keys(courseToGroupsMap).map((course) => (
         <CourseGroup
           course={course}
-          // groups={courseToGroupsMap[course]}
-          groups={tempGroups}
+          groups={courseToGroupsMap[course]}
           onChange={(e) =>
             setSelectedCourseGroups({ [course]: e.target.value })
           }
         />
       ))}
-      <Button style={{ marginTop: 48 }} type="primary">
+      <Button
+        onClick={() => {
+          setPreferredCourseGroups(selectedCourseGroups);
+
+          const firstCourse =
+            selectedCourseGroups[Object.keys(selectedCourseGroups)[0]];
+          Router.push(
+            "/course/[cid]/today",
+            "/course/" + firstCourse.id + "/today"
+          );
+        }}
+        disabled={_.size(selectedCourseGroups) !== _.size(courseToGroupsMap)}
+        style={{ marginTop: 48 }}
+        type="primary"
+      >
         Next
       </Button>
     </Container>

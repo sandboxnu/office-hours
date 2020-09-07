@@ -1,7 +1,5 @@
-import { User, CoursePartial } from "@template/common";
-import { useRouter } from "next/router";
-import { useProfile } from "../../hooks/useProfile";
-import { ReactElement, useState } from "react";
+import { CoursePartial } from "@template/common";
+import { ReactElement } from "react";
 import styled from "styled-components";
 import { Radio } from "antd";
 
@@ -19,12 +17,10 @@ const CourseTitle = styled.div`
 
 const Group = styled(Radio.Button)`
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  width: 200px;
+  text-align: center;
 `;
-
-interface CourseToGroupsMap {
-  [genericCourse: string]: CoursePartial[];
-}
 
 interface CourseGroupProps {
   course: string;
@@ -40,13 +36,9 @@ export default function CourseGroup({
   return (
     <Container>
       <CourseTitle>{course}</CourseTitle>
-      <Radio.Group
-        buttonStyle="outline"
-        onChange={onChange}
-        defaultValue={groups[0].name}
-      >
+      <Radio.Group buttonStyle="outline" size="large" onChange={onChange}>
         {groups.map((group) => (
-          <Group value={group.name}>{group.name}</Group>
+          <Group value={group}>{group.name}</Group>
         ))}
       </Radio.Group>
     </Container>
