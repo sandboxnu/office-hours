@@ -7,7 +7,7 @@ import { CourseToGroupsMap } from "../components/Course/CourseGroupSelection";
 import _ from "lodash";
 
 function parseCourseGroupMappings(profile: User): CourseToGroupsMap {
-  let courseToGroupsMap: CourseToGroupsMap = {};
+  const courseToGroupsMap: CourseToGroupsMap = {};
 
   profile?.courses.forEach((userCourse: UserCourse) => {
     if (userCourse.role === Role.TA) {
