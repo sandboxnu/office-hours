@@ -3,11 +3,8 @@ import Router from "next/router";
 import { useProfile } from "../hooks/useProfile";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import CourseGroupSelection from "../components/Course/CourseGroupSelection";
+import { CourseToGroupsMap } from "../components/Course/CourseGroupSelection";
 import _ from "lodash";
-
-interface CourseToGroupsMap {
-  [genericCourse: string]: CoursePartial[];
-}
 
 function parseCourseGroupMappings(profile: User): CourseToGroupsMap {
   let courseToGroupsMap: CourseToGroupsMap = {};

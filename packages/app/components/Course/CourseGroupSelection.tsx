@@ -24,7 +24,7 @@ const Subtitle = styled.div`
   margin-bottom: 32px;
 `;
 
-interface CourseToGroupsMap {
+export interface CourseToGroupsMap {
   [genericCourse: string]: CoursePartial[];
 }
 
