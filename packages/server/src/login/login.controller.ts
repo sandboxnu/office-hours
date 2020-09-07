@@ -65,7 +65,6 @@ export class LoginController {
     user = Object.assign(user, {
       email: body.email,
       name: body.first_name + body.last_name,
-      photoURL: body.photo_url, // We'll have to find away around this becuase the photo urls expire
     });
     await user.save();
 
