@@ -1,8 +1,9 @@
-import { API, parseQueueDates } from "@template/api-client";
-import { QueuePartial, SSEQueueResponse } from "@template/common";
+import { API } from "@template/api-client";
+import { GetQueueResponse, QueuePartial, SSEQueueResponse } from "@template/common";
 import useSWR, { responseInterface } from "swr";
 import { useCallback } from "react";
 import { useEventSource } from "./useEventSource";
+import { plainToClass } from "class-transformer";
 
 type queueResponse = responseInterface<QueuePartial, any>;
 
@@ -25,8 +26,7 @@ export function useQueue(qid: number): UseQueueReturn {
     useCallback(
       (data: SSEQueueResponse) => {
         if (data.queue) {
-          parseQueueDates(data.queue);
-          mutateQueue(data.queue, false);
+          mutateQueue(plainToClass(GetQueueResponse, data.queue), false);
         }
       },
       [mutateQueue]

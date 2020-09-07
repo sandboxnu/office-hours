@@ -200,6 +200,18 @@ export class QuestionController {
           );
         }
       }
+
+      const isAlreadyHelpingOne =
+        (await QuestionModel.count({
+          where: {
+            taHelpedId: userId,
+            status: OpenQuestionStatus.Helping,
+          },
+        })) === 1;
+      if (isAlreadyHelpingOne && body.status === OpenQuestionStatus.Helping) {
+        return null;
+      }
+
       // Set TA as taHelped when the TA starts helping the student
       if (
         question.status !== OpenQuestionStatus.Helping &&
