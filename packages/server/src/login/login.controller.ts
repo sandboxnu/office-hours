@@ -46,7 +46,7 @@ export class LoginController {
     if (process.env.NODE_ENV === 'production') { 
       // Check that request has come from Khoury
       const parsedRequest = httpSignature.parseRequest(req);
-      if (!httpSignature.verifySignature(parsedRequest, this.configService.get('KHOURY_PUBLIC_KEY'))) {
+      if (!httpSignature.verifyHMAC(parsedRequest, this.configService.get('KHOURY_PRIVATE_KEY'))) {
         throw new UnauthorizedException('Invalid request signature');
       }
     }
