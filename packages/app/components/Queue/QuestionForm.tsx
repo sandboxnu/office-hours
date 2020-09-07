@@ -107,6 +107,7 @@ export default function QuestionForm({
 
   return (
     <Modal
+      className="questionForm"
       visible={visible}
       closable={true}
       onCancel={() => {

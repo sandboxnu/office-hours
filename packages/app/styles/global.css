@@ -2,27 +2,27 @@ body {
   background: #f8f9fb;
 }
 
-.ant-radio-checked .ant-radio-inner {
+.questionForm .ant-radio-checked .ant-radio-inner {
   border-color: #3684c6 !important ;
 }
 
-.ant-radio-checked .ant-radio-inner:after {
+.questionForm .ant-radio-checked .ant-radio-inner:after {
   background-color: #3684c6;
 }
 
-.ant-radio:hover .ant-radio-inner {
+.questionForm .ant-radio:hover .ant-radio-inner {
   border-color: #3684c6;
 }
 
-.ant-radio-button-checked {
+.questionForm .ant-radio-button-checked {
   border-color: #3684c6 !important ;
 }
 
-.ant-radio-button-wrapper-checked {
+.questionForm .ant-radio-button-wrapper-checked {
   background-color: #3684c6 !important;
 }
 
-.ant-radio-button:hover {
+.questionForm .ant-radio-button:hover {
   color: #3684c6;
 }
 
