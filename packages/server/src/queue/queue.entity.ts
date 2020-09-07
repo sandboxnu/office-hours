@@ -91,7 +91,10 @@ export class QueueModel extends BaseEntity {
         "Questions weren't loaded when trying to grab queue size",
       );
     }
-    return this.questions?.filter((q) => q.status in OpenQuestionStatus).length;
+    return this.questions?.filter(
+      (q) =>
+        q.status in [OpenQuestionStatus.Drafting, OpenQuestionStatus.Queued],
+    ).length;
   }
 
   public async addQueueTimes(): Promise<void> {
