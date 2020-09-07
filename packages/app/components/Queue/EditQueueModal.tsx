@@ -38,7 +38,7 @@ export function EditQueueModal({
 
   return (
     <Modal
-      title="LOL Stanley you're gonna have to figure this one out"
+      title="Edit Queue Details"
       visible={visible}
       onCancel={onClose}
       onOk={async () => {
