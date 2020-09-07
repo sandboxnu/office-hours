@@ -1,10 +1,5 @@
-import { UserOutlined } from "@ant-design/icons";
-import {
-  ClosedQuestionStatus,
-  OpenQuestionStatus,
-  Question,
-  QuestionStatus,
-} from "@template/common";
+import { API } from "@template/api-client";
+import { OpenQuestionStatus, Question, QuestionStatus } from "@template/common";
 import {
   Avatar,
   Button,
@@ -115,12 +110,19 @@ const StudentPopupCard = ({
               title="Are you sure you want to delete this question from the queue?"
               okText="Yes"
               cancelText="No"
-              onConfirm={() => {
-                onClose();
-                updateQuestion(question, ClosedQuestionStatus.Deleted);
+              onConfirm={async () => {
+                await onClose();
+                await updateQuestion(question, OpenQuestionStatus.TADeleted);
+                await API.questions.notify(question.id);
               }}
+              disabled={!isStaffCheckedIn}
             >
-              <RemoveButton danger block disabled={!isStaffCheckedIn} data-cy="remove-from-queue">
+              <RemoveButton
+                danger
+                block
+                disabled={!isStaffCheckedIn}
+                data-cy="remove-from-queue"
+              >
                 Remove from Queue
               </RemoveButton>
             </Popconfirm>
@@ -139,7 +141,7 @@ const StudentPopupCard = ({
                   );
                 }
               }}
-              disabled={!isStaffCheckedIn}
+              disabled={!isStaffCheckedIn || question.status === "Drafting"}
               data-cy="help-student"
             >
               Help

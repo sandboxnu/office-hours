@@ -5,25 +5,27 @@ import {
   Question,
   QuestionType,
 } from "@template/common";
-import { Card, Col, notification, Row, Popconfirm, Space } from "antd";
+import { Card, Col, notification, Popconfirm, Row, Space } from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { mutate } from "swr";
+import { useDraftQuestion } from "../../hooks/useDraftQuestion";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
+import { useStudentQuestion } from "../../hooks/useStudentQuestion";
+import { NotificationSettingsModal } from "../Nav/NotificationSettingsModal";
 import QuestionForm from "./QuestionForm";
 import {
   QueueInfoColumn,
+  QueueInfoColumnButton,
   QueuePageContainer,
   VerticalDivider,
-  QueueInfoColumnButton,
 } from "./QueueListSharedComponents";
-import StudentQueueCard from "./StudentQueueCard";
-import { NotificationSettingsModal } from "../Nav/NotificationSettingsModal";
 import StudentBanner from "./StudentBanner";
-import { useStudentQuestion } from "../../hooks/useStudentQuestion";
-import { useDraftQuestion } from "../../hooks/useDraftQuestion";
+import CantFindModal from "./StudentCantFindModal";
+import StudentQueueCard from "./StudentQueueCard";
+import StudentRemovedFromQueueModal from "./StudentRemovedFromQueueModal";
 
 const JoinButton = styled(QueueInfoColumnButton)`
   background-color: #3684c6;
@@ -69,25 +71,25 @@ export default function StudentQueueList({
 
   const leaveQueue = useCallback(async () => {
     await API.questions.update(studentQuestion?.id, {
-      status: ClosedQuestionStatus.Deleted,
+      status: ClosedQuestionStatus.ConfirmedDeleted,
     });
 
     setIsJoining(false);
     await mutateQuestions();
   }, [studentQuestion?.id, mutateQuestions]);
 
+  const rejoinQueue = useCallback(async () => {
+    await API.questions.update(studentQuestion?.id, {
+      status: OpenQuestionStatus.Queued,
+    });
+    await mutateQuestions();
+  }, [studentQuestion?.id, mutateQuestions]);
+
   const finishQuestion = useCallback(
-    async (
-      text: string,
-      questionType: QuestionType,
-      isOnline: boolean,
-      location: string
-    ) => {
+    async (text: string, questionType: QuestionType) => {
       const updateStudent = {
         text,
         questionType,
-        isOnline,
-        location: isOnline ? "" : location,
         status: OpenQuestionStatus.Queued,
       };
       await API.questions.update(studentQuestion?.id, updateStudent);
@@ -98,6 +100,25 @@ export default function StudentQueueList({
     },
     [questions, studentQuestion?.id, mutateQuestions]
   );
+
+  const joinQueueAfterDeletion = useCallback(async () => {
+    await API.questions.update(studentQuestion?.id, {
+      status: ClosedQuestionStatus.ConfirmedDeleted,
+    });
+    await mutateQuestions();
+    const newQuestion = await API.questions.create({
+      text: studentQuestion.text,
+      questionType: studentQuestion?.questionType,
+      queueId: qid,
+      isOnline: studentQuestion?.isOnline,
+      location: studentQuestion?.location,
+      force: true,
+    });
+    await API.questions.update(newQuestion.id, {
+      status: OpenQuestionStatus.Queued,
+    });
+    await mutateQuestions();
+  }, [mutateQuestions, qid, studentQuestion]);
 
   const [popupEditQuestion, setPopupEditQuestion] = useState(false);
 
@@ -137,6 +158,7 @@ export default function StudentQueueList({
         const newQuestions = [...questions, createdQuestion];
         await mutateQuestions(newQuestions);
         setPopupEditQuestion(true);
+        return true;
       } catch (e) {
         if (
           e.response?.data?.message?.includes(
@@ -152,9 +174,9 @@ export default function StudentQueueList({
   );
 
   const finishQuestionAndClose = useCallback(
-    (text: string, qt: QuestionType, isOnline: boolean, location: string) => {
+    (text: string, qt: QuestionType) => {
       deleteDraftQuestion();
-      finishQuestion(text, qt, isOnline, location);
+      finishQuestion(text, qt);
       closeEditModal();
       if (isFirstQuestion) {
         notification.warn({
@@ -185,10 +207,19 @@ export default function StudentQueueList({
     if (!queue.isOpen) {
       return <h1 style={{ marginTop: "50px" }}>The Queue is Closed!</h1>;
     }
-
     return (
       <>
         <QueuePageContainer>
+          <CantFindModal
+            visible={studentQuestion?.status === OpenQuestionStatus.CantFind}
+            leaveQueue={leaveQueue}
+            rejoinQueue={rejoinQueue}
+          />
+          <StudentRemovedFromQueueModal
+            question={studentQuestion}
+            leaveQueue={leaveQueue}
+            joinQueue={joinQueueAfterDeletion}
+          />
           <QueueInfoColumn
             queueId={qid}
             buttons={
@@ -270,7 +301,9 @@ interface QueueProps {
 function QueueQuestions({ questions, studentQuestion }: QueueProps) {
   return (
     <div data-cy="queueQuestions">
-      {questions?.length === 0 ? (
+      {questions?.filter(
+        (question) => question.status !== OpenQuestionStatus.TADeleted
+      ).length === 0 ? (
         <h1 style={{ marginTop: "50px" }}>
           There currently aren&apos;t any questions in the queue
         </h1>
@@ -292,16 +325,21 @@ function QueueQuestions({ questions, studentQuestion }: QueueProps) {
           </StudentHeaderCard>
         </>
       )}
-      {questions?.map((question: Question, index: number) => {
-        return (
-          <StudentQueueCard
-            key={question.id}
-            rank={index + 1}
-            question={question}
-            highlighted={studentQuestion === question}
-          />
-        );
-      })}
+      {questions
+        ?.filter(
+          (question: Question) =>
+            question.status !== OpenQuestionStatus.TADeleted
+        )
+        .map((question: Question, index: number) => {
+          return (
+            <StudentQueueCard
+              key={question.id}
+              rank={index + 1}
+              question={question}
+              highlighted={studentQuestion === question}
+            />
+          );
+        })}
     </div>
   );
 }

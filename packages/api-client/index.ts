@@ -13,135 +13,122 @@ import {
   UpdateQuestionParams,
   UpdateQuestionResponse,
   UpdateQueueParams,
+  Question,
 } from "@template/common";
-import Axios, { AxiosInstance } from "axios";
+import Axios, { AxiosInstance, Method } from "axios";
+import { plainToClass } from "class-transformer";
+import { ClassType } from "class-transformer/ClassTransformer";
+
+// Return type of array item, if T is an array
+type ItemIfArray<T> = T extends (infer I)[] ? I : T;
 
 class APIClient {
   private axios: AxiosInstance;
+
+  /**
+   * Send HTTP and return data, optionally serialized with class-transformer (helpful for Date serialization)
+   * @param method HTTP method
+   * @param url URL to send req to
+   * @param responseClass Class with class-transformer decorators to serialize response to
+   * @param body body to send with req
+   */
+  private async req<T>(
+    method: Method,
+    url: string,
+    responseClass?: ClassType<ItemIfArray<T>>,
+    body?: any
+  ): Promise<T>;
+  private async req<T>(
+    method: Method,
+    url: string,
+    responseClass?: ClassType<T>,
+    body?: any
+  ): Promise<T> {
+    const res = (await this.axios.request({ method, url, data: body })).data;
+    return responseClass ? plainToClass(responseClass, res) : res;
+  }
+
   profile = {
-    index: async (): Promise<GetProfileResponse> => {
-      return (await this.axios.get(`/api/v1/profile`)).data;
-    },
-    patch: async (body: UpdateProfileParams): Promise<GetProfileResponse> => {
-      return (await this.axios.patch(`/api/v1/profile`, body)).data;
-    },
+    index: async (): Promise<GetProfileResponse> =>
+      this.req("GET", `/api/v1/profile`),
+    patch: async (body: UpdateProfileParams): Promise<GetProfileResponse> =>
+      this.req("PATCH", `/api/v1/profile`, undefined, body),
   };
   course = {
-    get: async (courseId: number): Promise<GetCourseResponse> => {
-      const course = (await this.axios.get(`/api/v1/courses/${courseId}`)).data;
-      course.officeHours.forEach((officeHour: any) =>
-        parseOfficeHourDates(officeHour)
-      );
-      course.queues.forEach((queue: any) => parseQueueDates(queue));
-      return course;
-    },
+    get: async (courseId: number) =>
+      this.req("GET", `/api/v1/courses/${courseId}`, GetCourseResponse),
   };
   taStatus = {
     checkIn: async (
       courseId: number,
       room: string
-    ): Promise<TAUpdateStatusResponse> => {
-      const queue = (
-        await this.axios.post(`/api/v1/courses/${courseId}/ta_location/${room}`)
-      ).data;
-      return queue;
-    },
-    checkOut: async (courseId: number, room: string): Promise<void> => {
-      await this.axios.delete(
-        `/api/v1/courses/${courseId}/ta_location/${room}`
-      );
-    },
+    ): Promise<TAUpdateStatusResponse> =>
+      this.req("POST", `/api/v1/courses/${courseId}/ta_location/${room}`),
+    checkOut: async (courseId: number, room: string): Promise<void> =>
+      this.req("DELETE", `/api/v1/courses/${courseId}/ta_location/${room}`),
   };
   questions = {
-    index: async (queueId: number): Promise<ListQuestionsResponse> => {
-      const questions = (
-        await this.axios.get(`/api/v1/queues/${queueId}/questions`)
-      ).data;
-      questions.forEach((question: any) => parseQuestionDates(question));
-      return questions;
-    },
-    create: async (
-      params: CreateQuestionParams
-    ): Promise<CreateQuestionResponse> => {
-      const question = (await this.axios.post(`/api/v1/questions`, params))
-        .data;
-      parseQuestionDates(question);
-      return question;
-    },
-    get: async (questionId: number): Promise<GetQuestionResponse> => {
-      return (await this.axios.get(`/api/v1/questions/${questionId}`)).data;
-    },
-    update: async (
-      questionId: number,
-      params: UpdateQuestionParams
-    ): Promise<UpdateQuestionResponse> => {
-      const question = (
-        await this.axios.patch(`/api/v1/questions/${questionId}`, params)
-      ).data;
-      parseQuestionDates(question);
-      return question;
-    },
-    notify: async (questionId: number): Promise<void> => {
-      await this.axios.post(`/api/v1/questions/${questionId}/notify`);
-    },
+    index: async (queueId: number) =>
+      this.req<ListQuestionsResponse>(
+        "GET",
+        `/api/v1/queues/${queueId}/questions`,
+        Question
+      ),
+    create: async (params: CreateQuestionParams) =>
+      this.req("POST", `/api/v1/questions`, CreateQuestionResponse, params),
+    get: async (questionId: number): Promise<GetQuestionResponse> =>
+      this.req("GET", `/api/v1/questions/${questionId}`, GetQuestionResponse),
+    update: async (questionId: number, params: UpdateQuestionParams) =>
+      this.req(
+        "PATCH",
+        `/api/v1/questions/${questionId}`,
+        UpdateQuestionResponse,
+        params
+      ),
+    notify: async (questionId: number): Promise<void> =>
+      this.req("PATCH", `/api/v1/questions/${questionId}/notify`),
   };
   queues = {
-    get: async (queueId: number): Promise<GetQueueResponse> => {
-      const queue = (await this.axios.get(`/api/v1/queues/${queueId}`)).data;
-      parseQueueDates(queue);
-      return queue;
-    },
-    update: async (queueId: number, params: UpdateQueueParams) => {
-      await (await this.axios.patch(`/api/v1/queues/${queueId}`, params)).data;
-    },
+    get: async (queueId: number): Promise<GetQueueResponse> =>
+      this.req("GET", `/api/v1/queues/${queueId}`, GetQueueResponse),
+    update: async (queueId: number, params: UpdateQueueParams) =>
+      this.req(
+        "PATCH",
+        `/api/v1/queues/${queueId}`,
+        UpdateQuestionResponse,
+        params
+      ),
   };
   notif = {
     desktop: {
-      credentials: async (): Promise<string> => {
-        return (
-          await this.axios.get("/api/v1/notifications/desktop/credentials")
-        ).data;
-      },
-      register: async (payload: DesktopNotifBody): Promise<string> => {
-        return this.axios.post(
+      credentials: async (): Promise<string> =>
+        this.req("GET", "/api/v1/notifications/desktop/credentials"),
+      register: async (payload: DesktopNotifBody): Promise<string> =>
+        this.req(
+          "POST",
           `/api/v1/notifications/desktop/register`,
+          undefined,
           payload
-        );
-      },
+        ),
     },
     phone: {
-      register: async (payload: PhoneNotifBody): Promise<string> => {
-        return this.axios.post(`/api/v1/notifications/phone/register`, payload);
-      },
+      register: async (payload: PhoneNotifBody): Promise<string> =>
+        this.req(
+          "POST",
+          `/api/v1/notifications/phone/register`,
+          undefined,
+          payload
+        ),
     },
   };
   seeds = {
-    delete: async () => this.axios.get(`/api/v1/seeds/delete`),
-    create: async () => this.axios.get(`/api/v1/seeds/create`),
-    fillQueue: async () => this.axios.get(`/api/v1/seeds/fillQueue`),
+    delete: async () => this.req("GET", `/api/v1/seeds/delete`),
+    create: async () => this.req("GET", `/api/v1/seeds/create`),
+    fillQueue: async () => this.req("GET", `/api/v1/seeds/fillQueue`),
   };
   constructor(baseURL = "") {
     this.axios = Axios.create({ baseURL: baseURL });
   }
-}
-
-// TODO: Use class-transformer instead
-function parseOfficeHourDates(officeHour: any): void {
-  officeHour.startTime = new Date(officeHour.startTime);
-  officeHour.endTime = new Date(officeHour.endTime);
-}
-
-function parseQueueDates(queue: any): void {
-  if (queue.startTime && queue.endTime) {
-    queue.startTime = new Date(queue.startTime);
-    queue.endTime = new Date(queue.endTime);
-  }
-}
-
-export function parseQuestionDates(question: any): void {
-  question.createdAt = new Date(question.createdAt);
-  question.helpedAt ? (question.helpedAt = new Date(question.helpedAt)) : null;
-  question.closedAt ? (question.closedAt = new Date(question.closedAtt)) : null;
 }
 
 export const API = new APIClient(process.env.NEXT_PUBLIC_API_URL);

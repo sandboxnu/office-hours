@@ -18,8 +18,7 @@ export default function Login() {
       <ContentContainer>
         <h1>You are currently not logged in</h1>
         <p>Click the button below to login via Khoury Admin</p>
-        {/* TODO: Update link with specific page in Khoury admin once it's created */}
-        <Button href="https://admin.khoury.northeastern.edu/">
+        <Button href="https://admin.khoury.northeastern.edu/students/officehourslogin/">
           Login with Khoury
         </Button>
       </ContentContainer>

@@ -34,7 +34,6 @@ describe("Student can create a question", () => {
         cy.get("[data-cy='questionText']").type(
           "How do I use the design recipe?"
         );
-        cy.get("label").contains("Online").click();
 
         // Click Submit
         cy.get("[data-cy='finishQuestion']").click();
@@ -68,9 +67,6 @@ describe("Student can create a question", () => {
         });
         cy.get("[data-cy='questionText']").type(
           "How do I use the design recipe?"
-        );
-        cy.get("[data-cy='locationText']").type(
-          "Outside room, behind the couches"
         );
 
         // Click Submit

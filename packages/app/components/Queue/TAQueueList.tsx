@@ -5,22 +5,22 @@ import {
   QuestionStatus,
   QuestionStatusKeys,
 } from "@template/common";
-import { Card, Col, Row, Tooltip, Space } from "antd";
+import { Card, Col, Row, Space, Tooltip } from "antd";
 import { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../hooks/useProfile";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
+import { EditQueueModal } from "./EditQueueModal";
 import {
-  QueuePageContainer,
   QueueInfoColumn,
-  VerticalDivider,
   QueueInfoColumnButton,
+  QueuePageContainer,
+  VerticalDivider,
 } from "./QueueListSharedComponents";
 import StudentPopupCard from "./StudentPopupCard";
-import TAQueueCard from "./TAQueueCard";
 import TABanner from "./TABanner";
-import { EditQueueModal } from "./EditQueueModal";
+import TAQueueCard from "./TAQueueCard";
 
 const StatusText = styled.div`
   font-size: 14px;
@@ -163,7 +163,8 @@ export default function TAQueueList({
                       !isStaffCheckedIn ||
                       !questions.find(
                         (q) => q.status === QuestionStatusKeys.Queued
-                      )
+                      ) ||
+                      isHelping
                     }
                     data-cy="help-next"
                   >
@@ -245,7 +246,9 @@ interface QueueProps {
 function QueueQuestions({ questions, isHelping, onOpenCard }: QueueProps) {
   return (
     <div data-cy="queueQuestions">
-      {questions.length === 0 ? (
+      {questions.filter(
+        (question) => question.status !== OpenQuestionStatus.TADeleted
+      ).length === 0 ? (
         <h1 style={{ marginTop: "50px" }}>
           There currently aren&apos;t any questions in the queue
         </h1>
@@ -280,14 +283,19 @@ function QueueQuestions({ questions, isHelping, onOpenCard }: QueueProps) {
         </>
       )}
 
-      {questions?.map((question: Question, index: number) => (
-        <TAQueueCard
-          key={question.id}
-          rank={index + 1}
-          question={question}
-          onOpen={(q) => !isHelping && onOpenCard(q)}
-        />
-      ))}
+      {questions
+        ?.filter(
+          (question: Question) =>
+            question.status !== OpenQuestionStatus.TADeleted
+        )
+        .map((question: Question, index: number) => (
+          <TAQueueCard
+            key={question.id}
+            rank={index + 1}
+            question={question}
+            onOpen={(q) => !isHelping && onOpenCard(q)}
+          />
+        ))}
     </div>
   );
 }

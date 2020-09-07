@@ -9,7 +9,16 @@ import { DesktopNotifModel } from './src/notification/desktop-notif.entity';
 import { PhoneNotifModel } from './src/notification/phone-notif.entity';
 import { AdminUserModel } from './src/admin/admin-user.entity';
 import { config } from 'dotenv';
+import { CourseSectionMappingModel } from './src/login/course-section-mapping.entity';
 config();
+
+// Options only used whe run via CLI
+const inCLI = {
+  migrations: ['migration/*.ts'],
+  cli: {
+    migrationsDir: 'migration',
+  },
+};
 
 const typeorm = {
   type: 'postgres',
@@ -17,6 +26,7 @@ const typeorm = {
   synchronize: process.env.NODE_ENV !== 'production',
   entities: [
     CourseModel,
+    CourseSectionMappingModel,
     OfficeHourModel,
     SemesterModel,
     UserModel,
@@ -29,5 +39,6 @@ const typeorm = {
   ],
   keepConnectionAlive: true,
   logging: !!process.env.TYPEORM_LOGGING,
+  ...(!!process.env.TYPEORM_CLI ? inCLI : {}),
 };
 module.exports = typeorm;

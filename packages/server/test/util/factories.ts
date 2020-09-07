@@ -7,9 +7,9 @@ import { UserCourseModel } from '../../src/profile/user-course.entity';
 import { UserModel } from '../../src/profile/user.entity';
 import { QuestionModel } from '../../src/question/question.entity';
 import { QueueModel } from '../../src/queue/queue.entity';
+import { CourseSectionMappingModel } from '../../src/login/course-section-mapping.entity';
 
 export const UserFactory = new Factory(UserModel)
-  .attr('username', `user`)
   .attr('email', `user@neu.edu`)
   .attr('name', `User`)
   .attr('photoURL', `https://pics/user`);
@@ -44,6 +44,11 @@ export const CourseFactory = new Factory(CourseModel)
   .attr('enabled', true)
   .assocOne('semester', SemesterFactory)
   .assocMany('officeHours', OfficeHourFactory);
+
+export const CourseSectionFactory = new Factory(CourseSectionMappingModel)
+  .attr('genericCourseName', 'CS 2500')
+  .sequence('section', (i) => i)
+  .assocOne('course', CourseFactory);
 
 export const UserCourseFactory = new Factory(UserCourseModel)
   .assocOne('user', UserFactory)

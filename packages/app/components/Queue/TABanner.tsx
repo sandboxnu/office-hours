@@ -1,17 +1,15 @@
-import Banner, { BannerDangerButton, BannerButton } from "./Banner";
+import { CheckOutlined, CloseOutlined, UserOutlined } from "@ant-design/icons";
+import { API } from "@template/api-client";
 import {
+  ClosedQuestionStatus,
+  OpenQuestionStatus,
   Question,
   QuestionStatus,
-  ClosedQuestionStatus,
 } from "@template/common";
+import { Avatar, Col, Popconfirm, Row } from "antd";
 import { ReactElement } from "react";
-import { Row, Col, Avatar, Popconfirm } from "antd";
-import {
-  UserOutlined,
-  QuestionOutlined,
-  CheckOutlined,
-} from "@ant-design/icons";
 import styled from "styled-components";
+import Banner, { BannerButton, BannerDangerButton } from "./Banner";
 
 const Bold = styled.span`
   font-weight: bold;
@@ -29,12 +27,15 @@ const Info = styled.div`
 
 interface TABannerProps {
   helpingQuestion: Question;
-  updateQuestion: (question: Question, status: QuestionStatus) => void;
+  updateQuestion: (question: Question, status: QuestionStatus) => Promise<void>;
 }
 export default function TABanner({
   helpingQuestion,
   updateQuestion,
 }: TABannerProps): ReactElement {
+  const alertStudent = async () =>
+    await API.questions.notify(helpingQuestion.id);
+
   return (
     <Banner
       titleColor="#3684C6"
@@ -64,15 +65,19 @@ export default function TABanner({
       buttons={
         <>
           <Popconfirm
-            title={`Are you sure you want to mark this question as "Can't find"?`}
+            title="Are you sure you want to delete this question from the queue?"
             okText="Yes"
             cancelText="No"
-            onConfirm={() => {
-              updateQuestion(helpingQuestion, ClosedQuestionStatus.NoShow);
+            onConfirm={async () => {
+              await updateQuestion(
+                helpingQuestion,
+                OpenQuestionStatus.TADeleted
+              );
+              await alertStudent();
             }}
           >
-            <BannerDangerButton icon={<QuestionOutlined />}>
-              Can&apos;t Find
+            <BannerDangerButton icon={<CloseOutlined />}>
+              Remove from Queue
             </BannerDangerButton>
           </Popconfirm>
           <BannerButton

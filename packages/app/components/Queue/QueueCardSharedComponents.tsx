@@ -53,7 +53,7 @@ export function questionStatusToColor(status: QuestionStatus): string {
   switch (status) {
     case QuestionStatusKeys.Helping:
       return "gold";
-    case QuestionStatusKeys.NoShow:
+    case QuestionStatusKeys.CantFind:
       return "red";
     case QuestionStatusKeys.Drafting:
       return "blue";

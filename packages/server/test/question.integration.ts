@@ -57,6 +57,7 @@ describe('Question Integration', () => {
       const course = await CourseFactory.create({ officeHours: [ofs] });
       const queue = await QueueFactory.create({
         courseId: course.id,
+        course: course,
         officeHours: [ofs],
         allowQuestions: true,
       });
@@ -146,9 +147,14 @@ describe('Question Integration', () => {
         .expect(400);
     });
     it("can't create more than one open question at a time", async () => {
+      const ofs = await OfficeHourFactory.create();
+      const course = await CourseFactory.create({ officeHours: [ofs] });
       const user = await UserFactory.create();
       const queue = await QueueFactory.create({
         allowQuestions: true,
+        officeHours: [ofs],
+        courseId: course.id,
+        course: course,
       });
       await StudentCourseFactory.create({
         userId: user.id,
@@ -355,6 +361,36 @@ describe('Question Integration', () => {
           text: 'NEW TEXT',
         })
         .expect(404); // Don't leak that course exists
+    });
+    it('Tries to help more than one student', async () => {
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ courseId: course.id });
+      const q1 = await QuestionFactory.create({
+        text: 'Help pls',
+        queueId: queue.id,
+        queue: queue,
+      });
+      const q2 = await QuestionFactory.create({
+        text: 'Help pls 2',
+        queueId: queue.id,
+        queue: queue,
+      });
+      const ta = await UserFactory.create();
+      await TACourseFactory.create({ courseId: queue.courseId, user: ta });
+
+      await supertest({ userId: ta.id })
+        .patch(`/questions/${q1.id}`)
+        .send({
+          status: QuestionStatusKeys.Helping,
+        })
+        .expect(200);
+      const res = await supertest({ userId: ta.id })
+        .patch(`/questions/${q2.id}`)
+        .send({
+          status: QuestionStatusKeys.Helping,
+        })
+        .expect(200);
+      expect(res.body).toMatchObject({});
     });
   });
 });
