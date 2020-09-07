@@ -50,7 +50,11 @@ export class NotificationService {
 
   async registerDesktop(info: DeepPartial<DesktopNotifModel>): Promise<void> {
     // create if not exist
-    if ((await DesktopNotifModel.count(info)) === 0) {
+    if (
+      (await DesktopNotifModel.count({
+        where: { userId: info.userId, endpoint: info.endpoint },
+      })) === 0
+    ) {
       await DesktopNotifModel.create(info).save();
     }
   }
