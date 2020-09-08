@@ -67,7 +67,7 @@ export class IcalService {
     );
   }
 
-  @Cron("25 0 * * *")
+  @Cron("30 0 * * *")
   public async updateAllCourses(): Promise<void> {
     const courses = await CourseModel.find();
     await Promise.all(courses.map(this.updateCalendarForCourse));
