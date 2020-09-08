@@ -99,6 +99,11 @@ const BarsButton = styled.span`
   }
 `;
 
+const CoursesMenuItem = styled(Menu.Item)`
+  z-index: 1;
+  background: #ffffff;
+`;
+
 interface NavBarProps {
   courseId: number;
 }
@@ -123,11 +128,11 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
   const courseSelector = (
     <Menu>
       {profile?.courses.map((c) => (
-        <Menu.Item key={c.course.id}>
+        <CoursesMenuItem key={c.course.id}>
           <Link href="/course/[cid]/today" as={`/course/${c.course.id}/today`}>
             <a>{c.course.name}</a>
           </Link>
-        </Menu.Item>
+        </CoursesMenuItem>
       ))}
     </Menu>
   );
