@@ -1,5 +1,10 @@
 import { Button } from "antd";
 import styled from "styled-components";
+import { ReactElement } from "react";
+import { useDefaultCourseRedirect } from "../hooks/useDefaultCourseRedirect";
+import { User } from "@template/common";
+import Router from "next/router";
+import { useProfile } from "../hooks/useProfile";
 
 const Container = styled.div`
   height: 80vh;
@@ -12,7 +17,13 @@ const ContentContainer = styled.div`
   text-align: center;
 `;
 
-export default function Login() {
+export default function Login(): ReactElement {
+  const profile: User = useProfile();
+  const didRedirect = useDefaultCourseRedirect();
+  if (profile && !didRedirect) {
+    Router.push("/nocourses");
+  } 
+
   return (
     <Container>
       <ContentContainer>

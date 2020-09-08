@@ -1,7 +1,10 @@
 import { Result } from "antd";
 import { ReactElement } from "react";
+import { useDefaultCourseRedirect } from "../hooks/useDefaultCourseRedirect";
 
 export default function NoCourses(): ReactElement {
+  useDefaultCourseRedirect();
+
   return (
     <Result
       status="info"

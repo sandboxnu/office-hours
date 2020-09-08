@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { useProfile } from "../../hooks/useProfile";
 import { DownOutlined } from "@ant-design/icons";
 import { useCourse } from "../../hooks/useCourse";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
 
 const Nav = styled.nav`
   padding: 0px 0px;
@@ -110,6 +111,10 @@ interface NavBarProps {
 }
 
 export default function NavBar({ courseId }: NavBarProps): ReactElement {
+  const [defaultCourse, setDefaultCourse] = useLocalStorage(
+    "defaultCourse",
+    null
+  );
   const [visible, setVisible] = useState<boolean>(false);
   const profile = useProfile();
   const { pathname } = useRouter();
@@ -129,7 +134,10 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
   const courseSelector = (
     <Menu>
       {profile?.courses.map((c) => (
-        <CoursesMenuItem key={c.course.id}>
+        <CoursesMenuItem
+          key={c.course.id}
+          onClick={() => setDefaultCourse(c.course)}
+        >
           <Link href="/course/[cid]/today" as={`/course/${c.course.id}/today`}>
             <a>{c.course.name}</a>
           </Link>
