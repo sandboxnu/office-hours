@@ -299,11 +299,15 @@ interface QueueProps {
   studentQuestion: Question;
 }
 function QueueQuestions({ questions, studentQuestion }: QueueProps) {
+  const renderedQuestions = questions?.filter(
+    (question) =>
+      question.status !== OpenQuestionStatus.TADeleted &&
+      question.status !== OpenQuestionStatus.Helping &&
+      question.status !== OpenQuestionStatus.CantFind
+  );
   return (
     <div data-cy="queueQuestions">
-      {questions?.filter(
-        (question) => question.status !== OpenQuestionStatus.TADeleted
-      ).length === 0 ? (
+      {renderedQuestions?.length === 0 ? (
         <h1 style={{ marginTop: "50px" }}>
           There currently aren&apos;t any questions in the queue
         </h1>
@@ -325,21 +329,16 @@ function QueueQuestions({ questions, studentQuestion }: QueueProps) {
           </StudentHeaderCard>
         </>
       )}
-      {questions
-        ?.filter(
-          (question: Question) =>
-            question.status !== OpenQuestionStatus.TADeleted
-        )
-        .map((question: Question, index: number) => {
-          return (
-            <StudentQueueCard
-              key={question.id}
-              rank={index + 1}
-              question={question}
-              highlighted={studentQuestion === question}
-            />
-          );
-        })}
+      {renderedQuestions?.map((question: Question, index: number) => {
+        return (
+          <StudentQueueCard
+            key={question.id}
+            rank={index + 1}
+            question={question}
+            highlighted={studentQuestion === question}
+          />
+        );
+      })}
     </div>
   );
 }

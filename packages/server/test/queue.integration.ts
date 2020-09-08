@@ -1,14 +1,13 @@
+import { QueueModule } from '../src/queue/queue.module';
 import {
-  QueueFactory,
-  QuestionFactory,
   CourseFactory,
-  UserFactory,
-  UserCourseFactory,
+  QuestionFactory,
+  QueueFactory,
   TACourseFactory,
+  UserCourseFactory,
+  UserFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
-import { QueueModule } from '../src/queue/queue.module';
-import { QuestionModel } from 'question/question.entity';
 
 describe('Queue Integration', () => {
   const supertest = setupIntegrationTest(QueueModule);
