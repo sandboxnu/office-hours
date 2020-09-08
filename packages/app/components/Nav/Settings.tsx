@@ -44,11 +44,13 @@ export default function Settings(): ReactElement {
               >
                 Notification Settings
               </Menu.Item>
+              {/* 
+              TODO: Add this back when we add logout endpoint
               <Menu.Item>
                 <Link href={loginPath} as={loginPath}>
                   <a>Logout</a>
                 </Link>
-              </Menu.Item>
+              </Menu.Item> */}
             </Menu>
           )
         }
