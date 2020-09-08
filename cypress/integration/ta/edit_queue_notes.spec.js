@@ -25,11 +25,7 @@ describe("Edit Queue Notes", () => {
     });
   });
 
-<<<<<<< HEAD
-  it("from the today page", () => {
-=======
   it("can successfully edit queue notes as a ta on today page", () => {
->>>>>>> master
     cy.get("@queue").then((queue) => {
       cy.visit(`/course/${queue.course.id}/today`);
     });

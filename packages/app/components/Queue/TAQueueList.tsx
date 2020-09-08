@@ -140,39 +140,6 @@ export default function TAQueueList({
 
   if (queue && questions) {
     return (
-<<<<<<< HEAD
-      <div>
-        <Row gutter={[64, 64]}>
-          <Col flex="auto" order={screens.lg === false ? 2 : 1}>
-            <Row justify="space-between">
-              <Col>
-                <QueueListHeader queue={queue} />
-              </Col>
-              <Col>
-                {editingNotes ? (
-                  <NotesInput
-                    defaultValue={oldNotes}
-                    onPressEnter={updateQueueNotes}
-                    value={updatedNotes}
-                    onChange={(e) => setUpdatedNotes(e.target.value as string)}
-                    allowClear={true}
-                    onKeyDown={(key) => {
-                      if (key.key === "Escape") {
-                        setEditingNotes(false);
-                        setUpdatedNotes(oldNotes);
-                      }
-                    }}
-                  />
-                ) : (
-                  <EditNotesButton
-                    onClick={() => setEditingNotes(true)}
-                    size="large"
-                    data-cy="edit-queue-notes"
-                  >
-                    Edit Queue Notes
-                  </EditNotesButton>
-                )}
-=======
       <>
         <QueuePageContainer>
           <QueueInfoColumn
@@ -185,7 +152,6 @@ export default function TAQueueList({
                 >
                   Edit Queue Details
                 </EditQueueButton>
->>>>>>> master
                 <Tooltip
                   title={
                     !isStaffCheckedIn && "You must check in to help students!"
