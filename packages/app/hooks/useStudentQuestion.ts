@@ -19,18 +19,18 @@ export function useStudentQuestion(qid: number): UseStudentQuestionReturn {
   const profile = useProfile();
   const { questions, questionsError, mutateQuestion } = useQuestions(qid);
 
+  const studentQuestion =
+    profile && questions && questions.find((q) => q.creator.id === profile.id);
+
   const studentQuestionIndex =
-    profile &&
-    questions &&
-    questions
-      .filter(
-        (question) =>
-          question.status !== OpenQuestionStatus.CantFind &&
-          question.status !== OpenQuestionStatus.TADeleted
-      )
-      .findIndex((q) => q.creator.id === profile.id);
+    (studentQuestion &&
+      studentQuestion.status !== OpenQuestionStatus.CantFind &&
+      studentQuestion.status !== OpenQuestionStatus.TADeleted &&
+      questions.indexOf(studentQuestion)) ||
+    -1;
+
   return {
-    studentQuestion: questions?.[studentQuestionIndex],
+    studentQuestion,
     studentQuestionIndex,
     studentQuestionError: questionsError,
     mutateStudentQuestion: mutateQuestion,
