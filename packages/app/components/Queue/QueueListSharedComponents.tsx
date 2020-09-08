@@ -110,6 +110,7 @@ export function QueueInfoColumn({
         {!queue.allowQuestions && (
           <Tooltip title="This queue is no longer accepting questions">
             <StopOutlined
+              data-cy="stopQuestions"
               style={{ color: "red", fontSize: "24px", marginLeft: "8px" }}
             />
           </Tooltip>

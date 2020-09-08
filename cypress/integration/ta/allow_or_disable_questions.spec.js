@@ -35,18 +35,15 @@ describe("Allow or disable new questions for a queue", () => {
     cy.get("span").contains("OK").click();
 
     // See that allow questions has been toggled off
-    cy.contains("This queue is not allowing new questions");
+    cy.get("[data-cy='stopQuestions']").should("exist");
 
     // Change the toggle back to allow new questions
     cy.get("[data-cy='editQueue']").click();
     cy.get("[data-cy='allow-questions-toggle']").click();
     cy.get("span").contains("OK").click();
 
-    // See that the 'not allowing new questions' text is not there any more
-    cy.get("body").should(
-      "not.contain",
-      "This queue is not allowing new questions"
-    );
+    // See that the 'not allowing new questions' icon is not there any more
+    cy.get("[data-cy='stopQuestions']").should("not.exist");
   });
 
   it("student cannot add new questions when new questions are disabled", () => {
