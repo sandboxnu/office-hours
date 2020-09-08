@@ -74,7 +74,6 @@ describe("Removed from queue", () => {
     });
   });
 
-
   it("TA removes student question from the queue and rejoins", () => {
     cy.get("@queue").then((queue) => {
       cy.get("@ta").then((ta) => {
@@ -140,11 +139,12 @@ describe("Removed from queue", () => {
         cy.get("button").contains("Leave Queue").click();
         
         // Check to see that there are no more questions in the queue
-        cy.contains("There currently aren't any questions in the queue");
+        cy.contains("There are no questions in the queue");
       })
     );
   });
-    /*
+
+  /*
   it("Can't find student and student leaves the queue", () => {
 
     cy.get("@queue").then((queue) => {
@@ -208,5 +208,4 @@ describe("Removed from queue", () => {
     );
   });
 */
-
 });
