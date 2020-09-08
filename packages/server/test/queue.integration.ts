@@ -31,7 +31,7 @@ describe('Queue Integration', () => {
       expect(res.body).toMatchObject({
         id: 2,
         notes: null,
-        queueSize: 0,
+        queueSize: 1,
         room: 'WVH 101',
         staffList: expect.any(Array),
         isOpen: true,
