@@ -19,13 +19,13 @@ describe("Can successfuly check in and out of a queue", () => {
     });
   });
 
-  it("from the queue page", () => {
+  it.only("from the queue page", () => {
     // Visit the queue page
     cy.get("@queue").then((queue) =>
       cy.visit(`/course/${queue.courseId}/queue/${queue.id}`)
     );
     // Click "Check in"
-    cy.get("h1").should("contain", "There currently aren't");
+    cy.get("body").should("contain", "There are no questions in the queue");
     cy.get("[data-cy='check-in-button']").click();
 
     // Click "Check out"
@@ -42,7 +42,7 @@ describe("Can successfuly check in and out of a queue", () => {
     cy.get("[data-cy='check-in-button']").click();
 
     cy.location("pathname").should("contain", "/queue");
-    cy.get("h1").should("contain", "There currently aren't");
+    cy.get("body").should("contain", "There are no questions in the queue");
 
     // Click "Check out"
     cy.get("[data-cy='check-out-button']").click();
@@ -59,7 +59,7 @@ describe("Can successfuly check in and out of a queue", () => {
       cy.get("[data-cy='check-in-button']").click();
 
       cy.location("pathname").should("contain", "/queue");
-      cy.get("h1").should("contain", "There currently aren't");
+      cy.get("body").should("contain", "There are no questions in the queue");
 
       cy.visit(`/course/${ta.courseId}/today`);
 

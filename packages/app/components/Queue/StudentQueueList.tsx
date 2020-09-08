@@ -293,6 +293,12 @@ const QueueHeader = styled.h2`
   margin-bottom: 0;
 `;
 
+const NoQuestionsText = styled.div`
+  font-weight: 500;
+  font-size: 24px;
+  color: #212934;
+`;
+
 // I think we could share this with the TA
 interface QueueProps {
   questions: Question[];
@@ -308,9 +314,7 @@ function QueueQuestions({ questions, studentQuestion }: QueueProps) {
   return (
     <div data-cy="queueQuestions">
       {renderedQuestions?.length === 0 ? (
-        <h1 style={{ marginTop: "50px" }}>
-          There currently aren&apos;t any questions in the queue
-        </h1>
+        <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
       ) : (
         <>
           <QueueHeader>Queue</QueueHeader>
