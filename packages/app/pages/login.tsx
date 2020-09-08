@@ -1,9 +1,10 @@
 import { Button } from "antd";
 import styled from "styled-components";
-import { useProfile } from "../hooks/useProfile";
 import { ReactElement } from "react";
+import { useDefaultCourseRedirect } from "../hooks/useDefaultCourseRedirect";
+import { User } from "@template/common";
 import Router from "next/router";
-import { useLocalStorage } from "../hooks/useLocalStorage";
+import { useProfile } from "../hooks/useProfile";
 
 const Container = styled.div`
   height: 80vh;
@@ -16,29 +17,12 @@ const ContentContainer = styled.div`
   text-align: center;
 `;
 
-export default function Login() {
-  const profile = useProfile();
-  const [defaultCourse, setDefaultCourse] = useLocalStorage(
-    "defaultCourse",
-    null
-  );
-
-  if (profile) {
-    const course = profile.courses;
-    if (course.length !== 0) {
-      Router.push(
-        "/course/[cid]/today",
-        `/course/${
-          defaultCourse !== null
-            ? defaultCourse.id
-            : profile.courses[0].course.id
-        }/today`
-      );
-      return "";
-    }
-    Router.push("nocourses");
-    return "";
-  }
+export default function Login(): ReactElement {
+  const profile: User = useProfile();
+  const didRedirect = useDefaultCourseRedirect();
+  if (profile && !didRedirect) {
+    Router.push("/nocourses");
+  } 
 
   return (
     <Container>

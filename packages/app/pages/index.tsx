@@ -1,29 +1,15 @@
 import { User } from "@template/common";
 import Router from "next/router";
+import { ReactElement } from "react";
+import { useDefaultCourseRedirect } from "../hooks/useDefaultCourseRedirect";
 import { useProfile } from "../hooks/useProfile";
-import { useLocalStorage } from "../hooks/useLocalStorage";
 
-export default function Home() {
+export default function Home(): ReactElement {
   const profile: User = useProfile();
-  const [defaultCourse, setDefaultCourse] = useLocalStorage(
-    "defaultCourse",
-    null
-  );
-
-  if (profile) {
-    if (profile.courses.length > 0) {
-      Router.push(
-        "/course/[cid]/today",
-        `/course/${
-          defaultCourse !== null
-            ? defaultCourse.id
-            : profile.courses[0].course.id
-        }/today`
-      );
-    } else {
-      Router.push("/nocourses");
-    }
+  const didRedirect = useDefaultCourseRedirect();
+  if (profile && !didRedirect) {
+    Router.push("/nocourses");
   }
 
-  return "";
+  return <div />;
 }
