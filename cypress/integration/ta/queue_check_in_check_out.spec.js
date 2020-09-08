@@ -19,7 +19,7 @@ describe("Can successfuly check in and out of a queue", () => {
     });
   });
 
-  it.only("from the queue page", () => {
+  it("from the queue page", () => {
     // Visit the queue page
     cy.get("@queue").then((queue) =>
       cy.visit(`/course/${queue.courseId}/queue/${queue.id}`)
