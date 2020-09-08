@@ -244,6 +244,13 @@ const QueueHeader = styled.h2`
   color: #212934;
   margin-bottom: 0;
 `;
+
+const NoQuestionsText = styled.div`
+  font-weight: 500;
+  font-size: 24px;
+  color: #212934;
+`;
+
 interface QueueProps {
   questions: Question[];
   isHelping: boolean;
@@ -253,9 +260,7 @@ function QueueQuestions({ questions, isHelping, onOpenCard }: QueueProps) {
   return (
     <div data-cy="queueQuestions">
       {questions.length === 0 ? (
-        <h1 style={{ marginTop: "50px" }}>
-          There currently aren&apos;t any questions in the queue
-        </h1>
+        <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
       ) : (
         <>
           <QueueHeader>Queue</QueueHeader>
