@@ -3,17 +3,15 @@ import { ReactElement } from "react";
 import { useProfile } from "../hooks/useProfile";
 import Router from "next/router";
 
-export default function NoCourses(): ReactElement {
+export default function NoCourses() {
   const profile = useProfile();
 
-  if (profile) {
-    if (profile.courses.length !== 0) {
-      Router.push(
-        "/course/[cid]/today",
-        `course/${profile.courses[0].course.id}/today`
-      );
-      return;
-    }
+  if (profile && profile.courses.length !== 0) {
+    Router.push(
+      "/course/[cid]/today",
+      `/course/${profile.courses[0].course.id}/today`
+    );
+    return "";
   }
 
   return (

@@ -15,16 +15,20 @@ const ContentContainer = styled.div`
   text-align: center;
 `;
 
-export default function Login(): ReactElement {
+export default function Login() {
   const profile = useProfile();
 
   if (profile) {
     const course = profile.courses;
     if (course.length !== 0) {
-      Router.push("/course/[cid]/today", `course/${course[0].course.id}/today`);
-      return;
+      Router.push(
+        "/course/[cid]/today",
+        `/course/${course[0].course.id}/today`
+      );
+      return "";
     }
     Router.push("nocourses");
+    return "";
   }
 
   return (
