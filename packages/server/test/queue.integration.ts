@@ -1,14 +1,13 @@
+import { QueueModule } from '../src/queue/queue.module';
 import {
-  QueueFactory,
-  QuestionFactory,
   CourseFactory,
-  UserFactory,
-  UserCourseFactory,
+  QuestionFactory,
+  QueueFactory,
   TACourseFactory,
+  UserCourseFactory,
+  UserFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
-import { QueueModule } from '../src/queue/queue.module';
-import { QuestionModel } from 'question/question.entity';
 
 describe('Queue Integration', () => {
   const supertest = setupIntegrationTest(QueueModule);
@@ -32,7 +31,7 @@ describe('Queue Integration', () => {
       expect(res.body).toMatchObject({
         id: 2,
         notes: null,
-        queueSize: 1,
+        queueSize: 0,
         room: 'WVH 101',
         staffList: expect.any(Array),
         isOpen: true,
