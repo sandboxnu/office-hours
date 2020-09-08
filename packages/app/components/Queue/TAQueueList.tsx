@@ -96,7 +96,7 @@ export default function TAQueueList({
   const renderedQuestions = questions?.filter(
     (question) =>
       question.status !== OpenQuestionStatus.TADeleted ||
-      OpenQuestionStatus.Helping
+      question.status !== OpenQuestionStatus.Helping
   );
 
   const helpingQuestion: Question = questions?.find(
