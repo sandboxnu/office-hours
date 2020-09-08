@@ -1,8 +1,4 @@
-import {
-  CheckOutlined,
-  CloseOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import { CheckOutlined, CloseOutlined, UserOutlined } from "@ant-design/icons";
 import { API } from "@template/api-client";
 import {
   ClosedQuestionStatus,
@@ -80,7 +76,7 @@ export default function TABanner({
               await alertStudent();
             }}
           >
-            <BannerDangerButton icon={< CloseOutlined/>}>
+            <BannerDangerButton icon={<CloseOutlined />}>
               Remove from Queue
             </BannerDangerButton>
           </Popconfirm>

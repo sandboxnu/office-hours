@@ -1,4 +1,3 @@
-
 import { API } from "@template/api-client";
 import { GetCourseResponse } from "@template/common";
 import useSWR, { responseInterface } from "swr";
@@ -12,10 +11,11 @@ interface UseCourseReturn {
 }
 
 export function useCourse(cid: number): UseCourseReturn {
-  const { data: course, error: courseError, mutate: mutateCourse } = useSWR(
-    cid && `/api/v1/courses/${cid}`,
-    async () => API.course.get(cid),
-  );
+  const {
+    data: course,
+    error: courseError,
+    mutate: mutateCourse,
+  } = useSWR(cid && `/api/v1/courses/${cid}`, async () => API.course.get(cid));
   return {
     course,
     courseError,

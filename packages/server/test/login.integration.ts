@@ -12,17 +12,15 @@ import {
 
 const mockJWT = {
   signAsync: async (payload, options?) => JSON.stringify(payload),
-  verifyAsync: async payload => JSON.parse(payload).token !== 'INVALID_TOKEN',
-  decode: payload => JSON.parse(payload),
+  verifyAsync: async (payload) => JSON.parse(payload).token !== 'INVALID_TOKEN',
+  decode: (payload) => JSON.parse(payload),
 };
 
 describe('Login Integration', () => {
   const supertest = setupIntegrationTest(
     LoginModule,
     (t: TestingModuleBuilder) =>
-      t
-        .overrideProvider(JwtService)
-        .useValue(mockJWT)
+      t.overrideProvider(JwtService).useValue(mockJWT),
   );
 
   describe('POST /login/entry', () => {
@@ -68,17 +66,15 @@ describe('Login Integration', () => {
       });
       expect(user).toBeUndefined();
 
-      const res = await supertest()
-        .post('/khoury_login')
-        .send({
-          email: 'stenzel.w@northeastern.edu',
-          campus: 1,
-          first_name: 'Will',
-          last_name: 'Stenzel',
-          photo_url: 'sdf',
-          courses: [],
-          ta_courses: [],
-        });
+      const res = await supertest().post('/khoury_login').send({
+        email: 'stenzel.w@northeastern.edu',
+        campus: 1,
+        first_name: 'Will',
+        last_name: 'Stenzel',
+        photo_url: 'sdf',
+        courses: [],
+        ta_courses: [],
+      });
 
       // Expect that the new user has been created
       const newUser = await UserModel.findOne({

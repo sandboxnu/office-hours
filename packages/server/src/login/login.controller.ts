@@ -1,33 +1,32 @@
 import {
+  Body,
   Controller,
   Get,
-  Res,
-  Query,
   Post,
+  Query,
   Req,
-  Body,
-  UseGuards,
+  Res,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
-import { Request } from 'express';
-import { Connection } from 'typeorm';
-import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { UserModel } from '../../src/profile/user.entity';
-import { CourseModel } from '../../src/course/course.entity';
-import { UserCourseModel } from '../../src/profile/user-course.entity';
 import {
-  Role,
-  KhouryRedirectResponse,
   KhouryDataParams,
+  KhouryRedirectResponse,
   KhouryStudentCourse,
   KhouryTACourse,
+  Role,
 } from '@template/common';
-import { NonProductionGuard } from '../../src/non-production.guard';
-import { ConfigService } from '@nestjs/config';
-import { LoginCourseService } from './login-course.service';
-import { CourseSectionMappingModel } from './course-section-mapping.entity';
+import { Request, Response } from 'express';
 import * as httpSignature from 'http-signature';
+import { Connection } from 'typeorm';
+import { CourseModel } from '../../src/course/course.entity';
+import { NonProductionGuard } from '../../src/non-production.guard';
+import { UserCourseModel } from '../../src/profile/user-course.entity';
+import { UserModel } from '../../src/profile/user.entity';
+import { CourseSectionMappingModel } from './course-section-mapping.entity';
+import { LoginCourseService } from './login-course.service';
 
 @Controller()
 export class LoginController {
@@ -43,10 +42,15 @@ export class LoginController {
     @Req() req: Request,
     @Body() body: KhouryDataParams,
   ): Promise<KhouryRedirectResponse> {
-    if (process.env.NODE_ENV === 'production') { 
+    if (process.env.NODE_ENV === 'production') {
       // Check that request has come from Khoury
       const parsedRequest = httpSignature.parseRequest(req);
-      if (!httpSignature.verifyHMAC(parsedRequest, this.configService.get('KHOURY_PRIVATE_KEY'))) {
+      if (
+        !httpSignature.verifyHMAC(
+          parsedRequest,
+          this.configService.get('KHOURY_PRIVATE_KEY'),
+        )
+      ) {
         throw new UnauthorizedException('Invalid request signature');
       }
     }
@@ -65,7 +69,7 @@ export class LoginController {
     user = Object.assign(user, {
       email: body.email,
       name: body.first_name + body.last_name,
-      photoURL: body.photo_url, // We'll have to find away around this becuase the photo urls expire
+      photoURL: '',
     });
     await user.save();
 
