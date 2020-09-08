@@ -31,7 +31,7 @@ describe('Login Integration', () => {
         .get(`/login/entry?token=${token}`)
         .expect(302);
 
-      expect(res.header['location']).toBe('/nocourses');
+      expect(res.header['location']).toBe('/');
       expect(res.get('Set-Cookie')[0]).toContain('userId');
     });
 
