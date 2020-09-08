@@ -15,7 +15,7 @@ import {
   ListQuestionsResponse,
   Role,
   UpdateQueueParams,
-} from '@template/common';
+} from '@koh/common';
 import { Response } from 'express';
 import { UserId } from 'profile/user.decorator';
 import { Connection } from 'typeorm';

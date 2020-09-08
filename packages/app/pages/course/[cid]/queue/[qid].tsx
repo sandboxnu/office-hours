@@ -1,4 +1,4 @@
-import { Role } from "@template/common";
+import { Role } from "@koh/common";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { ReactElement } from "react";

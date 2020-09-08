@@ -14,7 +14,7 @@ module.exports = function (options) {
     watch: true,
     externals: [
       nodeExternals({
-        allowlist: ['webpack/hot/poll?100', '@template/common'],
+        allowlist: ['webpack/hot/poll?100', '@koh/common'],
         additionalModuleDirs: [path.resolve(__dirname, '../../node_modules')], // handle yarn workspaces https://github.com/liady/webpack-node-externals/issues/39
       }),
     ],
@@ -28,7 +28,7 @@ module.exports = function (options) {
         {
           test: /.tsx?$/,
           use: 'ts-loader',
-          include: /@template/, // Build packages we depend on
+          include: /@koh/, // Build packages we depend on
         },
       ],
     },

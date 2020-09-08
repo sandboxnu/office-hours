@@ -7,7 +7,7 @@ import {
 import { setupIntegrationTest } from './util/testUtils';
 import { SeedModule } from '../../server/src/seed/seed.module';
 import { QuestionModel } from '../../server/src/question/question.entity';
-import { Role } from '@template/common';
+import { Role } from '@koh/common';
 
 describe('Seed Integration', () => {
   const supertest = setupIntegrationTest(SeedModule);

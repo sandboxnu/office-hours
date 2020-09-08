@@ -1,4 +1,4 @@
-import { Question } from "@template/common";
+import { Question } from "@koh/common";
 import { Card, Col } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";

@@ -5,7 +5,7 @@ import { NotificationSettingsModal } from "./NotificationSettingsModal";
 import { useState, ReactElement } from "react";
 import Link from "next/link";
 import { useProfile } from "../../hooks/useProfile";
-import { PROD_URL } from "@template/common";
+import { PROD_URL } from "@koh/common";
 
 const StyleablePopover = ({ className, ...props }: { className: string }) => (
   <Popover {...props} overlayClassName={className} />

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { Card, Row, Col, Checkbox, Collapse, Button } from "antd";
 import { UserAddOutlined } from "@ant-design/icons";
-import { Question } from "@template/common";
+import { Question } from "@koh/common";
 import { CheckboxChangeEvent } from "antd/lib/checkbox";
 
 const { Panel } = Collapse;

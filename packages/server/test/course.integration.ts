@@ -13,7 +13,7 @@ import {
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
 import { QuestionModel } from '../src/question/question.entity';
-import { OpenQuestionStatus } from '@template/common';
+import { OpenQuestionStatus } from '@koh/common';
 import { In } from 'typeorm';
 
 describe('Course Integration', () => {

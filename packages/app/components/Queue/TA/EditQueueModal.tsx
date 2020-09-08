@@ -2,9 +2,9 @@ import { ReactElement } from "react";
 import Modal from "antd/lib/modal/Modal";
 import { Switch, Input, Form } from "antd";
 import styled from "styled-components";
-import { API } from "@template/api-client";
+import { API } from "@koh/api-client";
 import { useQueue } from "../../../hooks/useQueue";
-import { UpdateQueueParams } from "@template/common";
+import { UpdateQueueParams } from "@koh/common";
 import { pick } from "lodash";
 
 const NotesInput = styled(Input)`

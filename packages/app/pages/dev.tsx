@@ -1,10 +1,10 @@
 import React, { ReactElement } from "react";
-import { API } from "@template/api-client";
+import { API } from "@koh/api-client";
 import Link from "next/link";
 import styled from "styled-components";
 import { Button, Divider } from "antd";
 import { GetStaticProps } from "next";
-import { PROD_URL } from "@template/common";
+import { PROD_URL } from "@koh/common";
 import DefaultErrorPage from "next/error";
 
 const Container = styled.div`

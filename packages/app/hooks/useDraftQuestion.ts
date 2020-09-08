@@ -1,5 +1,5 @@
 import { useLocalStorage } from "./useLocalStorage";
-import { Question } from "@template/common";
+import { Question } from "@koh/common";
 
 interface UseDraftQuestionResult {
   draftQuestion: Question;

@@ -1,6 +1,6 @@
-import { API } from "@template/api-client";
+import { API } from "@koh/api-client";
 import Head from "next/head";
-import { QueuePartial, Role } from "@template/common";
+import { QueuePartial, Role } from "@koh/common";
 import { Col, Row } from "antd";
 import { useRouter } from "next/router";
 import React, { ReactElement } from "react";

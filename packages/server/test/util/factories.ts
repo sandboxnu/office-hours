@@ -1,4 +1,4 @@
-import { QuestionType, Role } from '@template/common';
+import { QuestionType, Role } from '@koh/common';
 import { Factory } from 'typeorm-factory';
 import { CourseModel } from '../../src/course/course.entity';
 import { OfficeHourModel } from '../../src/course/office-hour.entity';

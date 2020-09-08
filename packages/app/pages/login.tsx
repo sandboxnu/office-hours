@@ -2,7 +2,7 @@ import { Button } from "antd";
 import styled from "styled-components";
 import { ReactElement } from "react";
 import { useDefaultCourseRedirect } from "../hooks/useDefaultCourseRedirect";
-import { User } from "@template/common";
+import { User } from "@koh/common";
 import Router from "next/router";
 import { useProfile } from "../hooks/useProfile";
 

@@ -4,7 +4,7 @@ import * as cookieParser from 'cookie-parser';
 import * as morgan from 'morgan';
 import { AppModule } from './app.module';
 import { StripUndefinedPipe } from './stripUndefined.pipe';
-import { PROD_URL } from '@template/common';
+import { PROD_URL } from '@koh/common';
 import { ApmInterceptor } from './apm.interceptor';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types

@@ -2,7 +2,7 @@ import { Controller, Get, UseGuards, Patch, Body } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { UserModel } from './user.entity';
 import { pick } from 'lodash';
-import { GetProfileResponse, UpdateProfileParams } from '@template/common';
+import { GetProfileResponse, UpdateProfileParams } from '@koh/common';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { User } from './user.decorator';
 import { NotificationService } from '../notification/notification.service';

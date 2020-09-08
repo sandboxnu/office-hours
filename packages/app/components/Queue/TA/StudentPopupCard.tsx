@@ -1,5 +1,5 @@
-import { API } from "@template/api-client";
-import { OpenQuestionStatus, Question, QuestionStatus } from "@template/common";
+import { API } from "@koh/api-client";
+import { OpenQuestionStatus, Question, QuestionStatus } from "@koh/common";
 import {
   Avatar,
   Button,

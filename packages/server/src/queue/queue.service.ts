@@ -5,7 +5,7 @@ import {
   GetQueueResponse,
   ListQuestionsResponse,
   Role,
-} from '@template/common';
+} from '@koh/common';
 import { QuestionModel } from 'question/question.entity';
 import { pick } from 'lodash';
 

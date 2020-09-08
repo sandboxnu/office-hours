@@ -7,7 +7,7 @@ import {
   QuestionFactory,
   ClosedOfficeHourFactory,
 } from '../../../test/util/factories';
-import { OpenQuestionStatus } from '@template/common';
+import { OpenQuestionStatus } from '@koh/common';
 import { QuestionModel } from '../../question/question.entity';
 import { Connection } from 'typeorm';
 

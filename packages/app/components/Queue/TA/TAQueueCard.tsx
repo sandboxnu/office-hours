@@ -1,5 +1,5 @@
 import { RightOutlined, UserOutlined } from "@ant-design/icons";
-import { OpenQuestionStatus, Question } from "@template/common";
+import { OpenQuestionStatus, Question } from "@koh/common";
 import { Col } from "antd";
 import { ReactElement } from "react";
 import { getWaitTime } from "../../../utils/TimeUtil";

@@ -1,4 +1,4 @@
-import { API } from "@template/api-client";
+import { API } from "@koh/api-client";
 import { Button, Input, Modal, Radio } from "antd";
 import { useRouter } from "next/router";
 import { ReactElement, useState } from "react";

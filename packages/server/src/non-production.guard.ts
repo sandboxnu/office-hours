@@ -1,6 +1,6 @@
 import { Injectable, CanActivate } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PROD_URL } from '@template/common';
+import { PROD_URL } from '@koh/common';
 
 @Injectable()
 export class NonProductionGuard implements CanActivate {

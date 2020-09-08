@@ -2,7 +2,7 @@ import {
   OpenQuestionStatus,
   QuestionStatusKeys,
   QuestionType,
-} from '@template/common';
+} from '@koh/common';
 import { QuestionModel } from '../src/question/question.entity';
 import { QuestionModule } from '../src/question/question.module';
 import {

@@ -1,10 +1,10 @@
-import { API } from "@template/api-client";
+import { API } from "@koh/api-client";
 import {
   OpenQuestionStatus,
   Question,
   QuestionStatus,
   QuestionStatusKeys,
-} from "@template/common";
+} from "@koh/common";
 import { Card, Col, Row, Space, Tooltip } from "antd";
 import { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";

@@ -1,4 +1,4 @@
-import { Question, QuestionType, OpenQuestionStatus } from "@template/common";
+import { Question, QuestionType, OpenQuestionStatus } from "@koh/common";
 import { Modal, Alert, Button, Input, Radio } from "antd";
 import { RadioChangeEvent } from "antd/lib/radio";
 import { default as React, ReactElement, useEffect, useState } from "react";
