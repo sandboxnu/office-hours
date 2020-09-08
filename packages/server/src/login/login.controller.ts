@@ -91,14 +91,14 @@ export class LoginController {
     await Promise.all(
       body.ta_courses.map(async (c: KhouryTACourse) => {
         // Query for all the courses which match the name of the generic course from Khoury
-        const courses = await CourseSectionMappingModel.find({
+        const courseMappings = await CourseSectionMappingModel.find({
           where: { genericCourseName: c.course }, // TODO: Add semester support
         });
 
-        for (const course of courses) {
+        for (const courseMapping of courseMappings) {
           const taCourse = await this.loginCourseService.courseToUserCourse(
             user.id,
-            course.id,
+            courseMapping.courseId,
             Role.TA,
           );
           userCourses.push(taCourse);
