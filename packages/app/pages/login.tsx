@@ -2,6 +2,7 @@ import { Button } from "antd";
 import styled from "styled-components";
 import { useProfile } from "../hooks/useProfile";
 import { ReactElement } from "react";
+import Router from "next/router";
 
 const Container = styled.div`
   height: 80vh;
@@ -20,10 +21,10 @@ export default function Login(): ReactElement {
   if (profile) {
     const course = profile.courses;
     if (course.length !== 0) {
-      window.location.href = `course/${course[0].course.id}/today`;
+      Router.push("/course/[cid]/today", `course/${course[0].course.id}/today`);
       return;
     }
-    window.location.href = `nocourses`;
+    Router.push("nocourses");
   }
 
   return (

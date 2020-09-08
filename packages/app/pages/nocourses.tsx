@@ -1,13 +1,17 @@
 import { Result } from "antd";
 import { ReactElement } from "react";
 import { useProfile } from "../hooks/useProfile";
+import Router from "next/router";
 
 export default function NoCourses(): ReactElement {
-  const { courses } = useProfile();
+  const profile = useProfile();
 
-  if (courses) {
-    if (courses.length !== 0) {
-      window.location.href = `course/${courses[0].course.id}/today`;
+  if (profile) {
+    if (profile.courses.length !== 0) {
+      Router.push(
+        "/course/[cid]/today",
+        `course/${profile.courses[0].course.id}/today`
+      );
       return;
     }
   }
