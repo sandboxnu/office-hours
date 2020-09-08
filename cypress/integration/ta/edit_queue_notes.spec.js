@@ -1,7 +1,9 @@
 describe("Edit Queue Notes", () => {
   beforeEach(() => {
     // Set the state
-    cy.request("POST", "/api/v1/seeds/createUser", { role: "ta" })
+    cy.request("POST", "/api/v1/seeds/createUser", {
+      role: "ta",
+    })
       .then((res) => res.body)
       .as("ta");
     cy.get("@ta").then((ta) => {
@@ -23,7 +25,7 @@ describe("Edit Queue Notes", () => {
     });
   });
 
-  it("from the today page", () => {
+  it("can successfully edit queue notes as a ta on today page", () => {
     cy.get("@queue").then((queue) => {
       cy.visit(`/course/${queue.course.id}/today`);
     });
@@ -31,6 +33,7 @@ describe("Edit Queue Notes", () => {
     cy.mock("GET", "/api/v1/profile", "fixture:student_profile");
     cy.mock("GET", "/api/v1/courses/1", "fixture:queue_routes_no_notes");
     cy.mock("PATCH", "/api/v1/queues/1", "fixture:queues");
+    cy.get(".ant-modal-close-x").click();
     cy.get("button[class*='EditNotesButton']").click();
 
     cy.mock("GET", "/api/v1/courses/1", "fixture:queue_route_with_notes");

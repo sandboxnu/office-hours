@@ -11,6 +11,7 @@ describe("Student can delete their question", () => {
       // Create a queue
       cy.request("POST", "/api/v1/seeds/createQueue", {
         courseId: student.course.id,
+        allowQuestions: true,
       })
         .then((res) => res.body)
         .as("queue");
@@ -23,6 +24,7 @@ describe("Student can delete their question", () => {
           questionType: "Bug",
           isOnline: false,
           location: "Outside room, by the couches",
+          force: false,
         })
           .then((res) => res.body)
           .then((question) => {

@@ -1,0 +1,28 @@
+name: Enforce Migrations
+
+on: pull_request
+
+jobs:
+  is-migration-needed:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:11.5
+        env:
+          POSTGRES_DB: dev
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD:
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo "::add-matcher::.github/scripts/migration-problem-matcher.json"
+      - name: install node v12
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - run: yarn install
+      - name: Check is Migration Needed
+        run: .github/scripts/isMigrationNeeded.sh

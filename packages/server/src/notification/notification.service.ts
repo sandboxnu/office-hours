@@ -21,10 +21,12 @@ export const NotifMsgs = {
       'Thank you for verifying your number with Khoury Office Hours! You are now signed up for text notifications!',
   },
   queue: {
-    ALERT_BUTTON: 'Get ready! A TA is coming to help you.',
+    ALERT_BUTTON:
+      "The TA could't reach you, please have Microsoft Teams open and confirm you are back!",
     THIRD_PLACE: `You're 3rd in the queue. Be ready for a TA to call you soon!`,
     TA_HIT_HELPED: (taName: string): string =>
       `${taName} is coming to help you!`,
+    REMOVED: `You've been removed from the queue. Please return to the app for more information.`,
   },
 };
 
@@ -48,7 +50,11 @@ export class NotificationService {
 
   async registerDesktop(info: DeepPartial<DesktopNotifModel>): Promise<void> {
     // create if not exist
-    if ((await DesktopNotifModel.count(info)) === 0) {
+    if (
+      (await DesktopNotifModel.count({
+        where: { userId: info.userId, endpoint: info.endpoint },
+      })) === 0
+    ) {
       await DesktopNotifModel.create(info).save();
     }
   }

@@ -3,7 +3,8 @@ import { Button, Input, Modal, Radio } from "antd";
 import { useRouter } from "next/router";
 import { ReactElement, useState } from "react";
 import styled from "styled-components";
-import useSWR from "swr";
+import { useCourse } from "../../hooks/useCourse";
+import { useProfile } from "../../hooks/useProfile";
 
 const CheckinButton = styled(Button)`
   background: #2a9187;
@@ -13,6 +14,13 @@ const CheckinButton = styled(Button)`
   font-size: 14px;
 `;
 
+const CheckOutButton = styled(Button)`
+  color: #da3236;
+  font-weight: 500;
+  font-size: 14px;
+  border-radius: 6px;
+`;
+
 export default function TACheckinButton({
   courseId,
 }: {
@@ -20,75 +28,48 @@ export default function TACheckinButton({
 }): ReactElement {
   const router = useRouter();
 
-  const [viewCheckinModal, setViewCheckinModal] = useState(false);
-  const [value, setValue] = useState(0);
-  const [customRoom, setCustomRoom] = useState("");
-
-  const canSubmitCustomRoom = !(value === -1 && !customRoom);
-
-  const { data } = useSWR(courseId && `api/v1/courses/${courseId}`, async () =>
-    API.course.get(Number(courseId))
+  const { course, mutateCourse } = useCourse(courseId);
+  const { id } = useProfile();
+  const queueCheckedIn = course?.queues.find((queue) =>
+    queue.staffList.find((staff) => staff.id === id)
   );
 
-  const radioStyle = {
-    display: "block",
-    height: "30px",
-    lineHeight: "30px",
-  };
-
   async function checkInTA() {
-    if (canSubmitCustomRoom) {
-      const redirectID = await API.taStatus.checkIn(
-        courseId,
-        value === -1 ? customRoom : data?.queues[value].room
-      );
+    // to see old check in in person functionality look at commit b4768bbfb0f36444c80961703bdbba01ff4a5596
+    //trying to limit changes to the frontend, all queues will have the room online
+    const redirectID = await API.taStatus.checkIn(courseId, "Online");
 
-      router.push(
-        "/course/[cid]/queue/[qid]",
-        `/course/${courseId}/queue/${redirectID.id}`
-      );
-    }
+    router.push(
+      "/course/[cid]/queue/[qid]",
+      `/course/${courseId}/queue/${redirectID.id}`
+    );
   }
 
   return (
     <>
-      <CheckinButton
-        type="default"
-        size="large"
-        onClick={() => setViewCheckinModal(true)}
-        disabled={!data}
-        data-cy="check-in-button"
-      >
-        Check In
-      </CheckinButton>
-      <Modal
-        title="Check in to your office hours"
-        visible={viewCheckinModal}
-        onOk={checkInTA}
-        onCancel={() => setViewCheckinModal(false)}
-        okText="Check In"
-        okButtonProps={{ disabled: !canSubmitCustomRoom }}
-      >
-        <h3>Which room are you in?</h3>
-        <Radio.Group value={value} onChange={(e) => setValue(e.target.value)}>
-          {data?.queues.map((q, i) => (
-            <Radio key={q.id} style={radioStyle} value={i}>
-              {q.room}
-            </Radio>
-          ))}
-          <Radio style={radioStyle} value={-1}>
-            Other...
-            {value === -1 ? (
-              <Input
-                onChange={(v) => setCustomRoom(v.target.value)}
-                value={customRoom}
-                style={{ width: 100, marginLeft: 10 }}
-                onPressEnter={checkInTA}
-              />
-            ) : null}
-          </Radio>
-        </Radio.Group>
-      </Modal>
+      {queueCheckedIn ? (
+        <CheckOutButton
+          type="default"
+          size="large"
+          data-cy="check-out-button"
+          onClick={async () => {
+            await API.taStatus.checkOut(courseId, "Online");
+            mutateCourse();
+          }}
+        >
+          Check Out
+        </CheckOutButton>
+      ) : (
+        <CheckinButton
+          type="default"
+          size="large"
+          onClick={() => checkInTA()}
+          disabled={!course}
+          data-cy="check-in-button"
+        >
+          Check In
+        </CheckinButton>
+      )}
     </>
   );
 }

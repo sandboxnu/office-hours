@@ -1,4 +1,5 @@
-import { Avatar, Button, Card, Input, Row, Skeleton, Tooltip } from "antd";
+import { StopOutlined } from "@ant-design/icons";
+import { Avatar, Button, Card, Col, Input, Row, Skeleton, Tooltip } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
@@ -9,7 +10,7 @@ import { formatQueueTime } from "../../utils/TimeUtil";
 type OpenQueueCard = {
   queue: QueuePartial;
   isTA: boolean;
-  updateQueueNotes: (queueID: number, queueNotes: string) => Promise<void>;
+  updateQueueNotes: (queue: QueuePartial, queueNotes: string) => Promise<void>;
 };
 
 const PaddedCard = styled(Card)`
@@ -23,6 +24,18 @@ const HeaderDiv = styled.div`
   font-size: 24px;
   font-weight: 500;
   color: #212934;
+`;
+
+const QueueInfoRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+const RightQueueInfoRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 `;
 
 const QuestionNumberSpan = styled.span`
@@ -95,7 +108,7 @@ const OpenQueueCard = ({
 
   const handleUpdate = () => {
     setEditingNotes(false);
-    updateQueueNotes(queue.id, updatedNotes);
+    updateQueueNotes(queue, updatedNotes);
   };
 
   return (
@@ -107,12 +120,22 @@ const OpenQueueCard = ({
       }
       extra={queue.startTime && queue.endTime && formatQueueTime(queue)}
     >
-      <Row justify="space-between">
+      <QueueInfoRow>
         <HeaderDiv>{queue.room}</HeaderDiv>
-        <QueueSizeColorDiv>
-          <QuestionNumberSpan>{queue.queueSize}</QuestionNumberSpan> in queue
-        </QueueSizeColorDiv>
-      </Row>
+        <RightQueueInfoRow>
+          {!queue.allowQuestions && (
+            <Tooltip title="This queue is no longer accepting questions">
+              <StopOutlined
+                style={{ color: "red", fontSize: "24px", marginRight: "8px" }}
+              />
+            </Tooltip>
+          )}
+          <QueueSizeColorDiv>
+            <QuestionNumberSpan>{queue.queueSize}</QuestionNumberSpan> in queue
+          </QueueSizeColorDiv>
+        </RightQueueInfoRow>
+      </QueueInfoRow>
+
       <br />
 
       {editingNotes ? (
@@ -174,7 +197,11 @@ const OpenQueueCard = ({
               href="/course/[cid]/queue/[qid]"
               as={`/course/${cid}/queue/${queue.id}`}
             >
-              <OpenQueueButton type="primary" size="large">
+              <OpenQueueButton
+                type="primary"
+                size="large"
+                data-cy="open-queue-button"
+              >
                 Open Queue
               </OpenQueueButton>
             </Link>

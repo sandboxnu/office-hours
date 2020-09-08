@@ -1,12 +1,15 @@
 describe("Student can create a question", () => {
   beforeEach(() => {
     // Set the state
-    cy.request("POST", "/api/v1/seeds/createUser", { role: "student" })
+    cy.request("POST", "/api/v1/seeds/createUser", {
+      role: "student",
+    })
       .then((res) => res.body)
       .as("student");
     cy.get("@student").then((student) => {
       cy.request("POST", "/api/v1/seeds/createQueue", {
         courseId: student.course.id,
+        allowQuestions: true,
       })
         .then((res) => res.body)
         .as("queue");
@@ -25,22 +28,27 @@ describe("Student can create a question", () => {
 
         // Fill out the question form
         cy.get("body").should("contain", "Concept");
-        cy.get("label").contains("Concept").click({ force: true });
+        cy.get("label").contains("Concept").click({
+          force: true,
+        });
         cy.get("[data-cy='questionText']").type(
           "How do I use the design recipe?"
         );
-        cy.get("label").contains("Online").click();
 
         // Click Submit
-        cy.get("button").contains("Finish").click();
+        cy.get("[data-cy='finishQuestion']").click();
 
         // See that the question shows in the queue list
-        cy.get("body").should("contain", "Queued");
-        cy.get("body").contains("User");
-        cy.get("body").contains("Concept");
-        cy.get("body").contains("How do I use the design recipe?");
-        cy.get("body").contains("Online");
-        cy.get("[data-cy='waitTime']").contains("0");
+        cy.get("[data-cy='queueQuestions']").contains(
+          "How do I use the design recipe?"
+        );
+        cy.get("[data-cy='queueQuestions']").contains("0 min");
+
+        // See that the question shows in the banner
+        cy.get("[data-cy='banner']").contains("Concept");
+        cy.get("[data-cy='banner']").contains(
+          "How do I use the design recipe?"
+        );
       })
     );
   });
@@ -54,24 +62,27 @@ describe("Student can create a question", () => {
 
         // Fill out the question form
         cy.get("body").should("contain", "Concept");
-        cy.get("label").contains("Concept").click({ force: true });
+        cy.get("label").contains("Concept").click({
+          force: true,
+        });
         cy.get("[data-cy='questionText']").type(
           "How do I use the design recipe?"
         );
-        cy.get("[data-cy='locationText']").type(
-          "Outside room, behind the couches"
-        );
 
         // Click Submit
-        cy.get("button").contains("Finish").click();
+        cy.get("[data-cy='finishQuestion']").click();
 
         // See that the question shows in the queue list
-        cy.get("body").should("contain", "Queued");
-        cy.get("body").contains("User");
-        cy.get("body").contains("Concept");
-        cy.get("body").contains("How do I use the design recipe?");
-        cy.get("body").contains("Outside room, behind the couches");
-        cy.get("[data-cy='waitTime']").contains("0");
+        cy.get("[data-cy='queueQuestions']").contains(
+          "How do I use the design recipe?"
+        );
+        cy.get("[data-cy='queueQuestions']").contains("0 min");
+
+        // See that the question shows in the banner
+        cy.get("[data-cy='banner']").contains("Concept");
+        cy.get("[data-cy='banner']").contains(
+          "How do I use the design recipe?"
+        );
       })
     );
   });

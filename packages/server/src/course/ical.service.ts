@@ -50,6 +50,7 @@ export class IcalService {
         courseId: course.id,
         staffList: [],
         questions: [],
+        allowQuestions: false,
       }).save();
     }
 

@@ -51,7 +51,20 @@ describe('Seed Integration', () => {
     const res = await supertest()
       .post('/seeds/createUser')
       .send({ role: Role.TA });
-    expect(res.body).toMatchSnapshot();
+    expect(res.body).toMatchObject({
+      courseId: 1,
+      id: 1,
+      role: 'ta',
+      user: {
+        desktopNotifsEnabled: false,
+        email: 'user@neu.edu',
+        id: 1,
+        name: 'User',
+        phoneNotifsEnabled: false,
+        photoURL: 'https://pics/user',
+      },
+      userId: 1,
+    });
   });
 
   it('GET /seeds/createQueue', async () => {

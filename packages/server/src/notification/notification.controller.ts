@@ -4,7 +4,6 @@ import {
   Get,
   Header,
   Headers,
-  Param,
   Post,
   UnauthorizedException,
   UseGuards,
@@ -61,7 +60,7 @@ export class NotificationController {
   async verifyPhoneUser(
     @Body() body: TwilioBody,
     @Headers('x-twilio-signature') twilioSignature: string,
-  ): Promise<void> {
+  ): Promise<string> {
     const message = body.Body.trim().toUpperCase();
     const senderNumber = body.From;
 
@@ -82,7 +81,7 @@ export class NotificationController {
       senderNumber,
       message,
     );
-    const MessagingResponse = require('twilio').twiml.MessagingResponse;
+    const MessagingResponse = twilio.twiml.MessagingResponse;
     const twiml = new MessagingResponse();
     twiml.message(messageToUser);
 

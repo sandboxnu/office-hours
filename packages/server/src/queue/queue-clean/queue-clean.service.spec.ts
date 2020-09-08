@@ -5,6 +5,7 @@ import {
   QueueFactory,
   UserFactory,
   QuestionFactory,
+  ClosedOfficeHourFactory,
 } from '../../../test/util/factories';
 import { OpenQuestionStatus } from '@template/common';
 import { QuestionModel } from '../../question/question.entity';
@@ -46,7 +47,8 @@ describe('QueueService', () => {
     });
 
     it('if no staff are present all questions with open status are marked as stale', async () => {
-      const queue = await QueueFactory.create();
+      const ofs = await ClosedOfficeHourFactory.create();
+      const queue = await QueueFactory.create({ officeHours: [ofs] });
       const question = await QuestionFactory.create({
         status: OpenQuestionStatus.Queued,
         queue: queue,
