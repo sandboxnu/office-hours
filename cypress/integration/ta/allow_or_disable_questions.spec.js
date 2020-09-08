@@ -74,7 +74,7 @@ describe("Allow or disable new questions for a queue", () => {
     cy.get('[data-cy="open-queue-button"]').click();
 
     // See that the queue is not accpeting new questions on the queue page
-    cy.contains("This queue is not allowing new questions");
+    cy.get("[data-cy='stopQuestions']").should("exist");
 
     // And that the join queue button is disabled
     cy.get('[data-cy="join-queue-button"]').should("be.disabled");
