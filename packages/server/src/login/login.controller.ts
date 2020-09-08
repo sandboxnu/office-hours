@@ -154,18 +154,12 @@ export class LoginController {
 
   // Set cookie and redirect to proper page
   private async enter(res: Response, userId: number) {
-    const userCourse = await UserCourseModel.findOne({
-      where: { userId },
-    });
-    const redirectTo = userCourse
-      ? `/course/${userCourse.courseId}/today`
-      : '/nocourses';
     const authToken = await this.jwtService.signAsync({ userId });
     const isSecure = this.configService
       .get<string>('DOMAIN')
       .startsWith('https://');
     res
       .cookie('auth_token', authToken, { httpOnly: true, secure: isSecure })
-      .redirect(302, redirectTo);
+      .redirect(302, '/');
   }
 }
