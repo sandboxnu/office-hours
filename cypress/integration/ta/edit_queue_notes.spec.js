@@ -43,14 +43,17 @@ describe("Edit Queue Notes", () => {
     cy.get("body").contains("alex has a smooth brain");
   });
 
-  it.only("from the queue page", () => {
+  it("from the queue page", () => {
     cy.get("@queue").then((queue) => {
       cy.visit(`/course/${queue.course.id}/queue/${queue.id}`);
     });
 
-    cy.get("[data-cy='edit-queue-notes']").click();
+    cy.get("[data-cy='editQueue']").click();
 
     cy.get("input").type("read the question!{enter}");
+
+    cy.get("body").should("contain", "OK");
+    cy.contains("button", "OK").click();
 
     cy.contains("read the question!");
   });
