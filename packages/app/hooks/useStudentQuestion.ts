@@ -23,11 +23,15 @@ export function useStudentQuestion(qid: number): UseStudentQuestionReturn {
     profile && questions && questions.find((q) => q.creator.id === profile.id);
 
   const studentQuestionIndex =
-    (studentQuestion &&
-      studentQuestion.status !== OpenQuestionStatus.CantFind &&
-      studentQuestion.status !== OpenQuestionStatus.TADeleted &&
-      questions.indexOf(studentQuestion)) ||
-    -1;
+    studentQuestion &&
+    questions
+      .filter(
+        (question) =>
+          question.status !== OpenQuestionStatus.CantFind &&
+          question.status !== OpenQuestionStatus.TADeleted &&
+          question.status !== OpenQuestionStatus.Helping
+      )
+      .indexOf(studentQuestion);
 
   return {
     studentQuestion,
