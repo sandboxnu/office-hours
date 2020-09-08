@@ -48,9 +48,6 @@ describe("Student can delete their question", () => {
     cy.get("span").contains("Yes").click();
 
     // Check that the question is no longer on the page
-    cy.get("body").should(
-      "contain",
-      "There currently aren't any questions in the queue"
-    );
+    cy.get("body").should("contain", "There are no questions in the queue");
   });
 });

@@ -43,7 +43,9 @@ describe("TA interacts with student question", () => {
     cy.get("[data-cy='help-student']").click();
 
     // Click Remove from queue
-    cy.contains("button", "Remove from Queue").click();
+    cy.get("[data-cy='banner']")
+      .contains("button", "Remove from Queue")
+      .click();
   });
 
   it("clicks the help button then finish helping", () => {
@@ -63,7 +65,9 @@ describe("TA interacts with student question", () => {
     cy.get("[data-cy='help-student']").click();
 
     // Click Remove from queue
-    cy.contains("button", "Remove from Queue").click();
+    cy.get("[data-cy='banner']")
+      .contains("button", "Remove from Queue")
+      .click();
   });
 
   it("clicks the Help Next button to help the next student", () => {
@@ -81,6 +85,6 @@ describe("TA interacts with student question", () => {
     // Click yes on the modal
     cy.get("span").contains("Yes").click();
 
-    cy.contains("There currently aren't any questions in the queue");
+    cy.contains("There are no questions in the queue");
   });
 });

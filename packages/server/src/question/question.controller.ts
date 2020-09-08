@@ -241,8 +241,6 @@ export class QuestionController {
       relations: ['queue'],
     });
 
-    console.log(question);
-
     if (question.status === OpenQuestionStatus.CantFind) {
       await this.notifService.notifyUser(
         question.creatorId,

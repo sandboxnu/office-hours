@@ -1,13 +1,12 @@
 import styled from "styled-components";
 import React, { useState, ReactElement } from "react";
 import NavBarTabs, { NavBarTabsItem } from "./NavBarTabs";
-import { Drawer, Button, Menu } from "antd";
+import { Drawer, Button, Menu, Dropdown } from "antd";
 import Link from "next/link";
 import Settings from ".//Settings";
 import { useRouter } from "next/router";
 import { useProfile } from "../../hooks/useProfile";
 import { DownOutlined } from "@ant-design/icons";
-import SimpleDropdown from "./SimpleDropdown";
 import { useCourse } from "../../hooks/useCourse";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 
@@ -25,20 +24,22 @@ const Nav = styled.nav`
 `;
 
 const LogoContainer = styled.div`
-  flex: 225px 0 0;
   display: flex;
   align-items: center;
+  margin-left: 64px;
+  margin-right: 48px;
+  @media (max-width: 767px) {
+    margin-left: -20px;
+  }
 `;
 
 const Logo = styled.div`
   font-size: 20px;
   font-weight: 500;
   color: #262626;
-  padding-left: 64px;
   text-transform: capitalize;
 
   @media (max-width: 767px) {
-    margin-left: -20px;
     padding: 10px 20px;
   }
 `;
@@ -169,22 +170,24 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     <Nav>
       <LogoContainer>
         {profile?.courses.length > 1 ? (
-          <SimpleDropdown overlay={courseSelector}>
-            {course && (
-              <a>
-                <Logo>
-                  <span>{course?.name}</span>
-                  <DownOutlined
-                    style={{
-                      fontSize: "16px",
-                      verticalAlign: "-0.125em",
-                      marginLeft: "5px",
-                    }}
-                  />
-                </Logo>
-              </a>
-            )}
-          </SimpleDropdown>
+          <Dropdown
+            overlay={courseSelector}
+            trigger={["click"]}
+            placement="bottomLeft"
+          >
+            <a>
+              <Logo>
+                <span>{course?.name}</span>
+                <DownOutlined
+                  style={{
+                    fontSize: "16px",
+                    verticalAlign: "-0.125em",
+                    marginLeft: "5px",
+                  }}
+                />
+              </Logo>
+            </a>
+          </Dropdown>
         ) : (
           <Logo>
             <span>{course?.name}</span>

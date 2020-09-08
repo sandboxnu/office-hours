@@ -11,6 +11,7 @@ import {
   CourseAdmin,
   QueueAdmin,
   UserAdmin,
+  UserCourseAdmin,
   CourseSectionMappingAdmin,
 } from './admin-entities';
 import { AdminCommand } from './admin.command';
@@ -32,6 +33,7 @@ export class AdminModule {
   constructor(private readonly adminSite: DefaultAdminSite) {
     adminSite.register('Course', CourseAdmin);
     adminSite.register('User', UserAdmin);
+    adminSite.register('UserCourse', UserCourseAdmin);
     adminSite.register('Queue', QueueAdmin);
     adminSite.register('CourseSectionMapping', CourseSectionMappingAdmin);
   }

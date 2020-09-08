@@ -12,8 +12,8 @@ import {
 
 const mockJWT = {
   signAsync: async (payload, options?) => JSON.stringify(payload),
-  verifyAsync: async (payload) => JSON.parse(payload).token !== 'INVALID_TOKEN',
-  decode: (payload) => JSON.parse(payload),
+  verifyAsync: async payload => JSON.parse(payload).token !== 'INVALID_TOKEN',
+  decode: payload => JSON.parse(payload),
 };
 
 describe('Login Integration', () => {
@@ -35,7 +35,7 @@ describe('Login Integration', () => {
       expect(res.get('Set-Cookie')[0]).toContain('userId');
     });
 
-    it('entry as user with courses goes to today page', async () => {
+    it('entry as user with courses goes to root page', async () => {
       const user = await UserFactory.create();
       const usercourse = await UserCourseFactory.create({ user: user });
       const token = await mockJWT.signAsync({ userId: user.id });
@@ -44,9 +44,7 @@ describe('Login Integration', () => {
         .get(`/login/entry?token=${token}`)
         .expect(302);
 
-      expect(res.header['location']).toBe(
-        `/course/${usercourse.courseId}/today`,
-      );
+      expect(res.header['location']).toBe('/');
       expect(res.get('Set-Cookie')[0]).toContain('userId');
     });
 
@@ -66,15 +64,17 @@ describe('Login Integration', () => {
       });
       expect(user).toBeUndefined();
 
-      const res = await supertest().post('/khoury_login').send({
-        email: 'stenzel.w@northeastern.edu',
-        campus: 1,
-        first_name: 'Will',
-        last_name: 'Stenzel',
-        photo_url: 'sdf',
-        courses: [],
-        ta_courses: [],
-      });
+      const res = await supertest()
+        .post('/khoury_login')
+        .send({
+          email: 'stenzel.w@northeastern.edu',
+          campus: 1,
+          first_name: 'Will',
+          last_name: 'Stenzel',
+          photo_url: 'sdf',
+          courses: [],
+          ta_courses: [],
+        });
 
       // Expect that the new user has been created
       const newUser = await UserModel.findOne({

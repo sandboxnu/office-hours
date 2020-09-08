@@ -293,20 +293,28 @@ const QueueHeader = styled.h2`
   margin-bottom: 0;
 `;
 
+const NoQuestionsText = styled.div`
+  font-weight: 500;
+  font-size: 24px;
+  color: #212934;
+`;
+
 // I think we could share this with the TA
 interface QueueProps {
   questions: Question[];
   studentQuestion: Question;
 }
 function QueueQuestions({ questions, studentQuestion }: QueueProps) {
+  const renderedQuestions = questions?.filter(
+    (question) =>
+      question.status !== OpenQuestionStatus.TADeleted &&
+      question.status !== OpenQuestionStatus.Helping &&
+      question.status !== OpenQuestionStatus.CantFind
+  );
   return (
     <div data-cy="queueQuestions">
-      {questions?.filter(
-        (question) => question.status !== OpenQuestionStatus.TADeleted
-      ).length === 0 ? (
-        <h1 style={{ marginTop: "50px" }}>
-          There currently aren&apos;t any questions in the queue
-        </h1>
+      {renderedQuestions?.length === 0 ? (
+        <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
       ) : (
         <>
           <QueueHeader>Queue</QueueHeader>
@@ -325,21 +333,16 @@ function QueueQuestions({ questions, studentQuestion }: QueueProps) {
           </StudentHeaderCard>
         </>
       )}
-      {questions
-        ?.filter(
-          (question: Question) =>
-            question.status !== OpenQuestionStatus.TADeleted
-        )
-        .map((question: Question, index: number) => {
-          return (
-            <StudentQueueCard
-              key={question.id}
-              rank={index + 1}
-              question={question}
-              highlighted={studentQuestion === question}
-            />
-          );
-        })}
+      {renderedQuestions?.map((question: Question, index: number) => {
+        return (
+          <StudentQueueCard
+            key={question.id}
+            rank={index + 1}
+            question={question}
+            highlighted={studentQuestion === question}
+          />
+        );
+      })}
     </div>
   );
 }

@@ -54,6 +54,7 @@ export function questionStatusToColor(status: QuestionStatus): string {
     case QuestionStatusKeys.Helping:
       return "gold";
     case QuestionStatusKeys.CantFind:
+    case QuestionStatusKeys.TADeleted:
       return "red";
     case QuestionStatusKeys.Drafting:
       return "blue";
