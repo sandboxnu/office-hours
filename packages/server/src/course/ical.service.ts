@@ -41,6 +41,8 @@ export class IcalService {
    * @param course to parse
    */
   public async updateCalendarForCourse(course: CourseModel): Promise<void> {
+    console.log(`scraping ical for course "${course.name}"(${course.id} at url: ${course.icalURL}...`);
+    console.time(`scrape course ${course.id}`);
     let queue = await QueueModel.findOne({
       where: { courseId: course.id, room: 'Online' },
     });
@@ -65,12 +67,14 @@ export class IcalService {
         return OfficeHourModel.create(e);
       }),
     );
+    console.timeEnd(`scrape course ${course.id}`);
+    console.log('done scraping!');
   }
 
   @Cron('51 0 * * *')
   public async updateAllCourses(): Promise<void> {
     console.log('updating course icals');
     const courses = await CourseModel.find();
-    await Promise.all(courses.map((c) => this.updateCalendarForCourse(c)));
+    await Promise.all(courses.map(c => this.updateCalendarForCourse(c)));
   }
 }
