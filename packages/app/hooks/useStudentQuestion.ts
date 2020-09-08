@@ -25,8 +25,8 @@ export function useStudentQuestion(qid: number): UseStudentQuestionReturn {
     questions
       .filter(
         (question) =>
-          question.status === OpenQuestionStatus.CantFind ||
-          question.status === OpenQuestionStatus.TADeleted
+          question.status !== OpenQuestionStatus.CantFind &&
+          question.status !== OpenQuestionStatus.TADeleted
       )
       .findIndex((q) => q.creator.id === profile.id);
   return {

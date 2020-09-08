@@ -93,7 +93,8 @@ export class QueueModel extends BaseEntity {
     }
     return this.questions?.filter(
       (q) =>
-        q.status in [OpenQuestionStatus.Drafting, OpenQuestionStatus.Queued],
+        q.status === OpenQuestionStatus.Drafting ||
+        q.status === OpenQuestionStatus.Queued,
     ).length;
   }
 
