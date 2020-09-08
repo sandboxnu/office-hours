@@ -22,7 +22,8 @@ export function useLocalStorage<T>(
         value instanceof Function ? value(storedValue) : value;
       setStoredValue(valueToStore);
 
-      isWindow && window.localStorage.setItem(key, JSON.stringify(valueToStore));
+      isWindow &&
+        window.localStorage.setItem(key, JSON.stringify(valueToStore));
     } catch (error) {
       console.error(error);
     }

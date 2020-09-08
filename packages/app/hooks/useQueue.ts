@@ -1,5 +1,9 @@
 import { API } from "@template/api-client";
-import { GetQueueResponse, QueuePartial, SSEQueueResponse } from "@template/common";
+import {
+  GetQueueResponse,
+  QueuePartial,
+  SSEQueueResponse,
+} from "@template/common";
 import useSWR, { responseInterface } from "swr";
 import { useCallback } from "react";
 import { useEventSource } from "./useEventSource";

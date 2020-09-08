@@ -53,7 +53,7 @@ export default function Today(): ReactElement {
   };
 
   if (courseError) {
-    return <FatalError error={courseError}/>
+    return <FatalError error={courseError} />;
   }
   return (
     <div>

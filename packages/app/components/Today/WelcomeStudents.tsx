@@ -14,7 +14,9 @@ export default function WelcomeStudents(): ReactElement {
     >
       <div>
         <h1> Welcome to the Khoury Office Hours app! 🎉</h1>
-        This project was started by students in <a href="https://www.sandboxnu.com/">Sandbox</a> at the beginning of the summer and is still in development.
+        This project was started by students in{" "}
+        <a href="https://www.sandboxnu.com/">Sandbox</a> at the beginning of the
+        summer and is still in development.
         <br />
         <br />
         We appreciate your patience with any &quot;rough edges.&quot; 😅

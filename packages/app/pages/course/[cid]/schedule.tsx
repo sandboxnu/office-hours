@@ -20,10 +20,9 @@ export default function Schedule(): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
 
-  const {course, courseError} = useCourse(Number(cid));
+  const { course, courseError } = useCourse(Number(cid));
 
-  if (courseError)
-    return <FatalError error={courseError}/>
+  if (courseError) return <FatalError error={courseError} />;
 
   return (
     <div>

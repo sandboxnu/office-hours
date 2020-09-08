@@ -2,7 +2,8 @@ import {
   Calendar,
   momentLocalizer,
   CalendarProps,
-  Event, View
+  Event,
+  View,
 } from "react-big-calendar";
 import moment from "moment";
 import styled from "styled-components";
@@ -22,7 +23,7 @@ export default function SchedulePanel({
   courseId,
   defaultView = "week",
 }: ScheduleProps): ReactElement {
-  const {course} = useCourse(courseId);
+  const { course } = useCourse(courseId);
 
   const myEvents: Event[] =
     course?.officeHours.map((e) => ({

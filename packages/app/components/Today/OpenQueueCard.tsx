@@ -26,6 +26,18 @@ const HeaderDiv = styled.div`
   color: #212934;
 `;
 
+const QueueInfoRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+const RightQueueInfoRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
 const QuestionNumberSpan = styled.span`
   font-size: 24px;
 `;
@@ -108,23 +120,22 @@ const OpenQueueCard = ({
       }
       extra={queue.startTime && queue.endTime && formatQueueTime(queue)}
     >
-      <Row>
-        <Col span={20}>
-          <HeaderDiv>{queue.room}</HeaderDiv>
-        </Col>
-        <Col style={{ fontSize: 24 }} span={1}>
+      <QueueInfoRow>
+        <HeaderDiv>{queue.room}</HeaderDiv>
+        <RightQueueInfoRow>
           {!queue.allowQuestions && (
             <Tooltip title="This queue is no longer accepting questions">
-              <StopOutlined style={{ color: "red" }} />
+              <StopOutlined
+                style={{ color: "red", fontSize: "24px", marginRight: "8px" }}
+              />
             </Tooltip>
           )}
-        </Col>
-        <Col span={3}>
           <QueueSizeColorDiv>
             <QuestionNumberSpan>{queue.queueSize}</QuestionNumberSpan> in queue
           </QueueSizeColorDiv>
-        </Col>
-      </Row>
+        </RightQueueInfoRow>
+      </QueueInfoRow>
+
       <br />
 
       {editingNotes ? (
