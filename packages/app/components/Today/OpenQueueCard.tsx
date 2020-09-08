@@ -136,23 +136,6 @@ const OpenQueueCard = ({
         </RightQueueInfoRow>
       </QueueInfoRow>
 
-      {/* <Row>
-        <Col flex="0 0 64px">
-        </Col>
-        <Col flex="0 0 200px">
-          <Row>
-            {!queue.allowQuestions && (
-              <Tooltip title="This queue is no longer accepting questions">
-                <StopOutlined style={{ color: "red", fontSize: "24px" }} />
-              </Tooltip>
-            )}
-            <QueueSizeColorDiv>
-              <QuestionNumberSpan>{queue.queueSize}</QuestionNumberSpan> in
-              queue
-            </QueueSizeColorDiv>
-          </Row>
-        </Col>
-      </Row> */}
       <br />
 
       {editingNotes ? (
