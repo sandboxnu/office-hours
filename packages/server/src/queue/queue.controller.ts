@@ -17,17 +17,15 @@ import {
   UpdateQueueParams,
 } from '@template/common';
 import { Response } from 'express';
+import { UserId } from 'profile/user.decorator';
 import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { Roles } from '../profile/roles.decorator';
+import { QueueRole } from './queue-role.decorator';
 import { QueueRolesGuard } from './queue-role.guard';
 import { QueueSSEService } from './queue-sse.service';
 import { QueueModel } from './queue.entity';
 import { QueueService } from './queue.service';
-import { QueueRole } from './queue-role.decorator';
-import { pick } from 'lodash';
-import { User } from 'profile/user.decorator';
-import { UserModel } from 'profile/user.entity';
 
 @Controller('queues')
 @UseGuards(JwtAuthGuard, QueueRolesGuard)
@@ -49,19 +47,11 @@ export class QueueController {
   @Roles(Role.TA, Role.PROFESSOR, Role.STUDENT)
   async getQuestions(
     @Param('queueId') queueId: number,
-    @QueueRole() role: string,
-    @User() user: UserModel,
+    @QueueRole() role: Role,
+    @UserId() userId: number,
   ): Promise<ListQuestionsResponse> {
     const questions = await this.queueService.getQuestions(queueId);
-    if (role === Role.STUDENT) {
-      return questions.map((question) => {
-        if (question.creator.id !== user.id) {
-          question.creator = pick(question.creator, ['id']);
-        }
-        return question;
-      });
-    }
-    return questions;
+    return this.queueService.anonymizeQuestions(questions, userId, role);
   }
 
   @Patch(':queueId')
@@ -85,13 +75,18 @@ export class QueueController {
 
   // Endpoint to send frontend receive server-sent events when queue changes
   @Get(':queueId/sse')
-  sendEvent(@Param('queueId') queueId: number, @Res() res: Response): void {
+  sendEvent(
+    @Param('queueId') queueId: number,
+    @QueueRole() role: Role,
+    @UserId() userId: number,
+    @Res() res: Response,
+  ): void {
     res.set({
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
       Connection: 'keep-alive',
     });
 
-    this.queueSSEService.subscribeClient(queueId, res);
+    this.queueSSEService.subscribeClient(queueId, res, { role, userId });
   }
 }

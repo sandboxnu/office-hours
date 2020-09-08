@@ -130,7 +130,8 @@ export class SeedController {
       const user4 = await UserFactory.create({
         email: 'chu.daj@northeastern.edu',
         name: 'Da-Jin Chu',
-        photoURL: 'https://ca.slack-edge.com/TE565NU79-UE56Y5UT1-85db59a474f4-512'
+        photoURL:
+          'https://ca.slack-edge.com/TE565NU79-UE56Y5UT1-85db59a474f4-512',
       });
       await UserCourseFactory.create({
         user: user4,
@@ -148,6 +149,7 @@ export class SeedController {
         officeHoursTomorrow,
         officeHoursTodayOverlap,
       ],
+      allowQuestions: true,
     });
 
     await QuestionFactory.create({

@@ -362,5 +362,35 @@ describe('Question Integration', () => {
         })
         .expect(404); // Don't leak that course exists
     });
+    it('Tries to help more than one student', async () => {
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ courseId: course.id });
+      const q1 = await QuestionFactory.create({
+        text: 'Help pls',
+        queueId: queue.id,
+        queue: queue,
+      });
+      const q2 = await QuestionFactory.create({
+        text: 'Help pls 2',
+        queueId: queue.id,
+        queue: queue,
+      });
+      const ta = await UserFactory.create();
+      await TACourseFactory.create({ courseId: queue.courseId, user: ta });
+
+      await supertest({ userId: ta.id })
+        .patch(`/questions/${q1.id}`)
+        .send({
+          status: QuestionStatusKeys.Helping,
+        })
+        .expect(200);
+      const res = await supertest({ userId: ta.id })
+        .patch(`/questions/${q2.id}`)
+        .send({
+          status: QuestionStatusKeys.Helping,
+        })
+        .expect(200);
+      expect(res.body).toMatchObject({});
+    });
   });
 });

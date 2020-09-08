@@ -200,6 +200,18 @@ export class QuestionController {
           );
         }
       }
+
+      const isAlreadyHelpingOne =
+        (await QuestionModel.count({
+          where: {
+            taHelpedId: userId,
+            status: OpenQuestionStatus.Helping,
+          },
+        })) === 1;
+      if (isAlreadyHelpingOne && body.status === OpenQuestionStatus.Helping) {
+        return null;
+      }
+
       // Set TA as taHelped when the TA starts helping the student
       if (
         question.status !== OpenQuestionStatus.Helping &&
@@ -229,11 +241,18 @@ export class QuestionController {
       relations: ['queue'],
     });
 
-    // TODO: somehow store and check that the notifying TA is the one helping? new UnauthorizedException('Only TA can send alerts');
+    console.log(question);
 
-    await this.notifService.notifyUser(
-      question.creatorId,
-      NotifMsgs.queue.ALERT_BUTTON,
-    );
+    if (question.status === OpenQuestionStatus.CantFind) {
+      await this.notifService.notifyUser(
+        question.creatorId,
+        NotifMsgs.queue.ALERT_BUTTON,
+      );
+    } else if (question.status === OpenQuestionStatus.TADeleted) {
+      await this.notifService.notifyUser(
+        question.creatorId,
+        NotifMsgs.queue.REMOVED,
+      );
+    }
   }
 }

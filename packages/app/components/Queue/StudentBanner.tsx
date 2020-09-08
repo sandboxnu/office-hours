@@ -1,16 +1,16 @@
-import Banner, { BannerButton, BannerDangerButton } from "./Banner";
-import styled from "styled-components";
-import { Col, Popconfirm } from "antd";
-import { toOrdinal } from "../../utils/ordinal";
-import { useStudentQuestion } from "../../hooks/useStudentQuestion";
 import {
-  TeamOutlined,
   DeleteRowOutlined,
   EditOutlined,
+  TeamOutlined,
 } from "@ant-design/icons";
-import { ReactElement } from "react";
 import { API } from "@template/api-client";
+import { Col, Popconfirm } from "antd";
+import { ReactElement } from "react";
+import styled from "styled-components";
 import { useDraftQuestion } from "../../hooks/useDraftQuestion";
+import { useStudentQuestion } from "../../hooks/useStudentQuestion";
+import { toOrdinal } from "../../utils/ordinal";
+import Banner, { BannerButton, BannerDangerButton } from "./Banner";
 
 const BoldNumber = styled.span`
   font-weight: bold;
@@ -66,12 +66,11 @@ export default function StudentBanner({
                 onClick={async () => {
                   mutateStudentQuestion(
                     await API.questions.update(draftQuestion?.id, {
-                      questionType: draftQuestion.questionType,
-                      text: draftQuestion.text,
+                      questionType: draftQuestion?.questionType,
+                      text: draftQuestion?.text,
                       queueId: Number(queueId),
                     })
                   );
-
                   editQuestion();
                 }}
               >

@@ -78,7 +78,7 @@ function StatusCard({
   studentName,
   helpedAt,
 }: StatusCardProps): ReactElement {
-  const isBusy = !!studentName;
+  const isBusy = !!helpedAt;
   return (
     <StyledCard>
       <AvatarNoShrink size={48} src={taPhotoURL} />
@@ -114,7 +114,7 @@ function HelpingFor({ studentName, helpedAt }: HelpingForProps): ReactElement {
     <RenderEvery
       render={() => (
         <span>
-          Helping <BlueSpan>{studentName}</BlueSpan> for{" "}
+          Helping <BlueSpan>{studentName ?? 'a student'}</BlueSpan> for{" "}
           <BlueSpan>
             {Math.round((Date.now() - helpedAt.getTime()) / 60000) + " min"}
           </BlueSpan>
