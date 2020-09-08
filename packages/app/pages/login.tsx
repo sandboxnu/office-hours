@@ -1,5 +1,7 @@
 import { Button } from "antd";
 import styled from "styled-components";
+import { useProfile } from "../hooks/useProfile";
+import { ReactElement } from "react";
 
 const Container = styled.div`
   height: 80vh;
@@ -12,7 +14,18 @@ const ContentContainer = styled.div`
   text-align: center;
 `;
 
-export default function Login() {
+export default function Login(): ReactElement {
+  const profile = useProfile();
+
+  if (profile) {
+    const course = profile.courses;
+    if (course.length !== 0) {
+      window.location.href = `course/${course[0].course.id}/today`;
+      return;
+    }
+    window.location.href = `nocourses`;
+  }
+
   return (
     <Container>
       <ContentContainer>
