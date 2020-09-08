@@ -28,7 +28,11 @@ export default function Login() {
     if (course.length !== 0) {
       Router.push(
         "/course/[cid]/today",
-        `/course/${defaultCourse.id ?? course[0].course.id}/today`
+        `/course/${
+          defaultCourse !== null
+            ? defaultCourse.id
+            : profile.courses[0].course.id
+        }/today`
       );
       return "";
     }

@@ -14,7 +14,11 @@ export default function Home() {
     if (profile.courses.length > 0) {
       Router.push(
         "/course/[cid]/today",
-        "/course/" + defaultCourse.id ?? profile.courses[0].course.id + "/today"
+        `/course/${
+          defaultCourse !== null
+            ? defaultCourse.id
+            : profile.courses[0].course.id
+        }/today`
       );
     } else {
       Router.push("/nocourses");
