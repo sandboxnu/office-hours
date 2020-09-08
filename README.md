@@ -1,3 +1,5 @@
+<p class="callout info"><b>📣 Calling All Students</b><br/>If you are interested in learning how to build real world software or have a project of your own you want to build, check out <a href="https://oasisneu.com">Oasis</a>! Northeastern's student software project hub.</p> 
+
 # Motivation
 
 Many of us are familiar with that sense of dread walking into office hours the day the homework is due to see the board is filled with about a million names for people queued up to get help. We all love office hours but there are some things we’ve noticed could be improved. That’s why we set out to build this app.
