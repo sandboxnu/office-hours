@@ -12,7 +12,7 @@ import {
 } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
-import { getWaitTime } from "../../utils/TimeUtil";
+import { getWaitTime } from "../../../utils/TimeUtil";
 
 const FullWidth = styled.div`
   margin-top: 32px;

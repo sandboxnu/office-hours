@@ -3,7 +3,7 @@ import Modal from "antd/lib/modal/Modal";
 import { Switch, Input, Form } from "antd";
 import styled from "styled-components";
 import { API } from "@template/api-client";
-import { useQueue } from "../../hooks/useQueue";
+import { useQueue } from "../../../hooks/useQueue";
 import { UpdateQueueParams } from "@template/common";
 import { pick } from "lodash";
 

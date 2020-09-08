@@ -92,7 +92,6 @@ const QueueRoomGroup = styled.div`
   align-items: center;
   margin-bottom: 24px;
 `;
-//TODO: Make QuestionForm self contained so we can trigger it directly in this component and not pass down so many props
 interface QueueInfoColumnProps {
   queueId: number;
   buttons: ReactNode;

@@ -9,19 +9,19 @@ import { Card, Col, notification, Popconfirm, Row, Space } from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { mutate } from "swr";
-import { useDraftQuestion } from "../../hooks/useDraftQuestion";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { useQuestions } from "../../hooks/useQuestions";
-import { useQueue } from "../../hooks/useQueue";
-import { useStudentQuestion } from "../../hooks/useStudentQuestion";
-import { NotificationSettingsModal } from "../Nav/NotificationSettingsModal";
+import { useDraftQuestion } from "../../../hooks/useDraftQuestion";
+import { useLocalStorage } from "../../../hooks/useLocalStorage";
+import { useQuestions } from "../../../hooks/useQuestions";
+import { useQueue } from "../../../hooks/useQueue";
+import { useStudentQuestion } from "../../../hooks/useStudentQuestion";
+import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
 import QuestionForm from "./QuestionForm";
 import {
   QueueInfoColumn,
   QueueInfoColumnButton,
   QueuePageContainer,
   VerticalDivider,
-} from "./QueueListSharedComponents";
+} from "../QueueListSharedComponents";
 import StudentBanner from "./StudentBanner";
 import CantFindModal from "./StudentCantFindModal";
 import StudentQueueCard from "./StudentQueueCard";

@@ -2,7 +2,7 @@ import { RightOutlined, UserOutlined } from "@ant-design/icons";
 import { OpenQuestionStatus, Question } from "@template/common";
 import { Col } from "antd";
 import { ReactElement } from "react";
-import { getWaitTime } from "../../utils/TimeUtil";
+import { getWaitTime } from "../../../utils/TimeUtil";
 import {
   CenterRow,
   HorizontalTACard,
@@ -11,7 +11,7 @@ import {
   Rank,
   StatusTag,
   Text,
-} from "./QueueCardSharedComponents";
+} from "../QueueCardSharedComponents";
 
 interface TAQueueCardProps {
   rank: number;
