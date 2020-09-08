@@ -21,7 +21,9 @@ export class QueueSubscriber implements EntitySubscriberInterface<QueueModel> {
   }
 
   async afterUpdate(event: UpdateEvent<QueueModel>): Promise<void> {
-    // Send all listening clients an update
-    await this.queueSSEService.updateQueue(event.entity.id);
+    if (event.entity) {
+      // Send all listening clients an update
+      await this.queueSSEService.updateQueue(event.entity.id);
+    }
   }
 }
