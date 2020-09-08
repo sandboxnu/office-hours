@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
 import { CourseModule } from './course/course.module';
 import { NotificationModule } from './notification/notification.module';
 import { LoginModule } from './login/login.module';
@@ -16,6 +17,7 @@ import * as typeormConfig from '../ormconfig';
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeormConfig),
+    ScheduleModule.forRoot(),
     LoginModule,
     ProfileModule,
     CourseModule,
