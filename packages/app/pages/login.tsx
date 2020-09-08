@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useProfile } from "../hooks/useProfile";
 import { ReactElement } from "react";
 import Router from "next/router";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 
 const Container = styled.div`
   height: 80vh;
@@ -17,13 +18,17 @@ const ContentContainer = styled.div`
 
 export default function Login() {
   const profile = useProfile();
+  const [defaultCourse, setDefaultCourse] = useLocalStorage(
+    "defaultCourse",
+    null
+  );
 
   if (profile) {
     const course = profile.courses;
     if (course.length !== 0) {
       Router.push(
         "/course/[cid]/today",
-        `/course/${course[0].course.id}/today`
+        `/course/${defaultCourse.id ?? course[0].course.id}/today`
       );
       return "";
     }
