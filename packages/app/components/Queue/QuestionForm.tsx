@@ -38,12 +38,7 @@ interface QuestionFormProps {
   visible: boolean;
   question: Question;
   leaveQueue: () => void;
-  finishQuestion: (
-    text: string,
-    questionType: QuestionType,
-    isOnline: boolean,
-    location: string
-  ) => void;
+  finishQuestion: (text: string, questionType: QuestionType) => void;
   position: number;
   cancel: () => void;
 }
@@ -68,9 +63,6 @@ export default function QuestionForm({
   const [questionText, setQuestionText] = useState<string>(
     question?.text || ""
   );
-
-  const [isOnline, setIsOnline] = useState(question?.isOnline || false);
-  const [location, setLocation] = useState(question?.location || "");
 
   useEffect(() => {
     if (question) {
@@ -109,15 +101,7 @@ export default function QuestionForm({
   // on button submit click, conditionally choose to go back to the queue
   const onClickSubmit = () => {
     if (questionTypeInput && questionText && questionText !== "") {
-      finishQuestion(questionText, questionTypeInput, isOnline, location);
-    }
-  };
-
-  const onOfflineOrInPersonChange = (e: RadioChangeEvent) => {
-    if (e.target.value === "Online") {
-      setIsOnline(true);
-    } else {
-      setIsOnline(false);
+      finishQuestion(questionText, questionTypeInput);
     }
   };
 
@@ -125,7 +109,10 @@ export default function QuestionForm({
     <Modal
       visible={visible}
       closable={true}
-      onCancel={cancel}
+      onCancel={() => {
+        setStoredQuestion(question);
+        cancel();
+      }}
       title={drafting ? "Describe your question" : "Edit your question"}
       footer={
         <div>
@@ -137,12 +124,10 @@ export default function QuestionForm({
             <FormButton onClick={cancel}>Cancel</FormButton>
           )}
           <SaveChangesButton
+            data-cy="finishQuestion"
             type="primary"
             disabled={
-              !questionTypeInput ||
-              !questionText ||
-              questionText === "" ||
-              (!isOnline && !location.trim())
+              !questionTypeInput || !questionText || questionText === ""
             }
             onClick={onClickSubmit}
           >
@@ -190,38 +175,9 @@ export default function QuestionForm({
           onChange={onQuestionTextChange}
         />
         <QuestionCaption>
-          Be as descriptive and specific as possible in your answer. If your
-          question matches another student’s, your wait time may be reduced.
+          Be as descriptive and specific as possible in your answer. Your name
+          will be hidden to other students.
         </QuestionCaption>
-        <QuestionText>Where are you joining office hours?</QuestionText>
-
-        <Radio.Group
-          style={{ marginBottom: "16px" }}
-          onChange={onOfflineOrInPersonChange}
-          value={isOnline ? "Online" : "In person"}
-        >
-          <Radio style={{ display: "block" }} value={"In person"}>
-            In Person
-          </Radio>
-          <Radio style={{ display: "block" }} value={"Online"}>
-            Online
-          </Radio>
-        </Radio.Group>
-
-        {!isOnline && (
-          <div>
-            <QuestionText>Where in the room are you located?</QuestionText>
-            <Input
-              data-cy="locationText"
-              value={location}
-              placeholder="Outside room, by the couches"
-              onChange={(e) => {
-                setLocation(e.target.value);
-              }}
-            />
-            <QuestionCaption></QuestionCaption>
-          </div>
-        )}
       </Container>
     </Modal>
   );

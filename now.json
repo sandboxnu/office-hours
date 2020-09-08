@@ -1,5 +1,11 @@
 {
   "version": 2,
   "builds": [{ "src": "packages/app/package.json", "use": "@now/next" }],
-  "rewrites": [{ "source": "/(.*)", "destination": "/packages/app/$1" }]
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://staging.khouryofficehours.com/api/$1"
+    },
+    { "source": "/(.*)", "destination": "/packages/app/$1" }
+  ]
 }

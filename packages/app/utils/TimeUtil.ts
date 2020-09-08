@@ -1,9 +1,9 @@
 import { Question, QueuePartial } from "@template/common";
 
-export function getWaitTime(question: Question): number {
+export function getWaitTime(question: Question): string {
   const now = new Date();
   const difference = now.getTime() - question.createdAt.getTime();
-  return Math.round(difference / 60000);
+  return `${Math.round(difference / 60000)} min`;
 }
 
 export function formatQueueTime(queue: QueuePartial): string {

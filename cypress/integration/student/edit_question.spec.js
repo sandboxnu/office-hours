@@ -8,6 +8,7 @@ describe("Student can edit their question", () => {
     cy.get("@student").then((student) => {
       cy.request("POST", "/api/v1/seeds/createQueue", {
         courseId: student.course.id,
+        allowQuestions: true,
       })
         .then((res) => res.body)
         .as("queue");
@@ -23,6 +24,7 @@ describe("Student can edit their question", () => {
           questionType: "Bug",
           isOnline: false,
           location: "Outside room, by the couches",
+          force: false,
         })
           .then((res) => res.body)
           .then((question) => {
@@ -33,7 +35,7 @@ describe("Student can edit their question", () => {
       });
     });
   });
-  it("by changing the questions text, type, and location", () => {
+  it("by changing the questions text and type", () => {
     // Visit the queue page
     cy.get("@queue").then((queue) =>
       cy.visit(`/course/${queue.courseId}/queue/${queue.id}`)
@@ -48,10 +50,6 @@ describe("Student can edit their question", () => {
       .clear()
       .type("I want to type things");
 
-    cy.get('[data-cy="locationText"]')
-      .should("be.visible")
-      .clear()
-      .type("In ohio");
     cy.get("label").contains("Clarification").click({ force: true });
     cy.get("body").should("contain", "Clarification");
 
@@ -60,6 +58,7 @@ describe("Student can edit their question", () => {
 
     // See that the question is updated on the page
     cy.get("body").contains("I want to type things");
-    cy.get("body").contains("In ohio");
+    // TODO: Bring this back if we do in person stuff
+    // cy.get("body").contains("In ohio");
   });
 });

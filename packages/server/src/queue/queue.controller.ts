@@ -6,24 +6,26 @@ import {
   NotFoundException,
   Param,
   Patch,
+  Res,
   UseGuards,
   UseInterceptors,
-  Res,
 } from '@nestjs/common';
 import {
   GetQueueResponse,
   ListQuestionsResponse,
-  UpdateQueueNotesParams,
   Role,
+  UpdateQueueParams,
 } from '@template/common';
 import { Response } from 'express';
-import { Connection, In } from 'typeorm';
+import { UserId } from 'profile/user.decorator';
+import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
-import { QueueModel } from './queue.entity';
-import { QueueRolesGuard } from './queue-role.guard';
 import { Roles } from '../profile/roles.decorator';
-import { QueueService } from './queue.service';
+import { QueueRole } from './queue-role.decorator';
+import { QueueRolesGuard } from './queue-role.guard';
 import { QueueSSEService } from './queue-sse.service';
+import { QueueModel } from './queue.entity';
+import { QueueService } from './queue.service';
 
 @Controller('queues')
 @UseGuards(JwtAuthGuard, QueueRolesGuard)
@@ -45,15 +47,18 @@ export class QueueController {
   @Roles(Role.TA, Role.PROFESSOR, Role.STUDENT)
   async getQuestions(
     @Param('queueId') queueId: number,
+    @QueueRole() role: Role,
+    @UserId() userId: number,
   ): Promise<ListQuestionsResponse> {
-    return this.queueService.getQuestions(queueId);
+    const questions = await this.queueService.getQuestions(queueId);
+    return this.queueService.anonymizeQuestions(questions, userId, role);
   }
 
   @Patch(':queueId')
   @Roles(Role.TA, Role.PROFESSOR)
   async updateQueue(
     @Param('queueId') queueId: number,
-    @Body() body: UpdateQueueNotesParams,
+    @Body() body: UpdateQueueParams,
   ): Promise<QueueModel> {
     const queue = await QueueModel.findOne({
       where: { id: queueId },
@@ -63,19 +68,25 @@ export class QueueController {
     }
 
     queue.notes = body.notes;
+    queue.allowQuestions = body.allowQuestions;
     await queue.save();
     return queue;
   }
 
   // Endpoint to send frontend receive server-sent events when queue changes
   @Get(':queueId/sse')
-  sendEvent(@Param('queueId') queueId: number, @Res() res: Response): void {
+  sendEvent(
+    @Param('queueId') queueId: number,
+    @QueueRole() role: Role,
+    @UserId() userId: number,
+    @Res() res: Response,
+  ): void {
     res.set({
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
       Connection: 'keep-alive',
     });
 
-    this.queueSSEService.subscribeClient(queueId, res);
+    this.queueSSEService.subscribeClient(queueId, res, { role, userId });
   }
 }

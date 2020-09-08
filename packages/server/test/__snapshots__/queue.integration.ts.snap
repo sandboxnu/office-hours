@@ -1,15 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Queue Integration GET /queues/:id get a queue 1`] = `
-Object {
-  "id": 2,
-  "notes": null,
-  "queueSize": 1,
-  "room": "WVH 101",
-  "staffList": Array [],
-}
-`;
-
 exports[`Queue Integration GET /queues/:id returns 401 when not logged in 1`] = `
 Object {
   "error": "Unauthorized",
@@ -24,10 +14,7 @@ Array [
     "closedAt": null,
     "createdAt": "2020-03-01T05:00:00.000Z",
     "creator": Object {
-      "email": "user@neu.edu",
       "id": 1,
-      "name": "User",
-      "photoURL": "https://pics/user",
     },
     "helpedAt": null,
     "id": 1,

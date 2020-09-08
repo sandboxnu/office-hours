@@ -1,25 +1,26 @@
 import { API } from "@template/api-client";
 import {
-  ClosedQuestionStatus,
   OpenQuestionStatus,
   Question,
   QuestionStatus,
   QuestionStatusKeys,
 } from "@template/common";
-import { Button, Card, Col, Grid, Input, Row, Tooltip } from "antd";
+import { Card, Col, Row, Space, Tooltip } from "antd";
 import { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
-import { StatusRow } from "./StatusRow";
 import { useProfile } from "../../hooks/useProfile";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
-import QueueListHeader from "./QueueListSharedComponents";
-import StudentInfoCard from "./StudentInfoCard";
+import { EditQueueModal } from "./EditQueueModal";
+import {
+  QueueInfoColumn,
+  QueueInfoColumnButton,
+  QueuePageContainer,
+  VerticalDivider,
+} from "./QueueListSharedComponents";
 import StudentPopupCard from "./StudentPopupCard";
-import TAHelpingCard from "./TAHelpingCard";
+import TABanner from "./TABanner";
 import TAQueueCard from "./TAQueueCard";
-
-const { useBreakpoint } = Grid;
 
 const StatusText = styled.div`
   font-size: 14px;
@@ -45,17 +46,6 @@ const HeaderText = styled.div`
   font-variant: small-caps;
 `;
 
-const QueueTitle = styled.div`
-  font-weight: 500;
-  font-size: 24px;
-  color: #212934;
-
-  // unicode zero width space character to prevent layout shifting during loading
-  &:before {
-    content: "\\200b";
-  }
-`;
-
 const CenterRow = styled(Row)`
   align-items: center;
   justify-content: space-between;
@@ -65,67 +55,27 @@ const Placeholder = styled.div`
   width: 14px;
 `;
 
-const AlertButton = styled(Button)`
-  margin-right: 12px;
-  font-weight: 500;
-  font-size: 14px;
+const CheckOutButton = styled(QueueInfoColumnButton)`
   color: #da3236;
-  background: #f8f9fa;
-  border: 1px solid #cfd6de;
-  border-radius: 6px;
 `;
 
-const FinishButton = styled(Button)`
-  font-weight: 500;
-  font-size: 14px;
-  background: #3684c6;
-  border-radius: 6px;
-`;
-
-const CheckOutButton = styled(Button)`
-  font-weight: 500;
-  font-size: 14px;
-  color: #da3236;
-  background: #f8f9fa;
-  border: 1px solid #cfd6de;
-  border-radius: 6px;
-`;
-
-const CheckInButton = styled(Button)`
-  font-weight: 500;
-  font-size: 14px;
+const CheckInButton = styled(QueueInfoColumnButton)`
   color: white;
   background: #2a9187;
-  border: 1px solid #cfd6de;
-  border-radius: 6px;
 `;
 
-const HelpNextButton = styled(Button)`
-  font-weight: 500;
-  font-size: 14px;
-  color: #212934;
-  border: 1px solid #cfd6de;
-  border-radius: 6px;
-  margin-right: 16px;
-`;
-
-const HeaderRow = styled(Row)`
-  margin-bottom: 64px;
-`;
-
-const EditNotesButton = styled(Button)`
-  font-weight: 500;
-  font-size: 14px;
-  background: #317393;
+const HelpNextButton = styled(QueueInfoColumnButton)`
   color: white;
-  border: 1px solid #cfd6de;
-  border-radius: 6px;
-  margin-right: 16px;
+  background: #2a9187;
+  &:hover,
+  &:focus {
+    color: white;
+    background: #39aca1;
+  }
 `;
 
-const NotesInput = styled(Input)`
-  border-radius: 6px;
-  border: 1px solid #b8c4ce;
+const EditQueueButton = styled(QueueInfoColumnButton)`
+  color: #212934;
 `;
 
 interface TAQueueListProps {
@@ -137,30 +87,24 @@ export default function TAQueueList({
   qid,
   courseId,
 }: TAQueueListProps): ReactElement {
-  const screens = useBreakpoint();
   const user = useProfile();
 
   const { queue, queuesError, mutateQueue } = useQueue(qid);
 
   const { questions, questionsError, mutateQuestions } = useQuestions(qid);
 
-  const helpingQuestions: Question[] = questions?.filter(
+  const helpingQuestion: Question = questions?.find(
     (question) =>
       question.status === OpenQuestionStatus.Helping &&
       question.taHelped?.id === user.id
   );
-  const groupQuestions: Question[] = questions?.filter(
-    (question) => question.status !== OpenQuestionStatus.Helping
-  );
-  const helping = helpingQuestions?.length !== 0;
+  const isHelping = !!helpingQuestion;
 
   const [openPopup, setOpenPopup] = useState<boolean>(false);
+  const [queueSettingsModal, setQueueSettingsModal] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
-  const [editingNotes, setEditingNotes] = useState(false);
-  const [updatedNotes, setUpdatedNotes] = useState(queue?.notes);
-  const [oldNotes, setOldNotes] = useState(queue?.notes);
 
-  const onOpenClick = useCallback((question: Question): void => {
+  const onOpenCard = useCallback((question: Question): void => {
     setCurrentQuestion(question);
     setOpenPopup(true);
   }, []);
@@ -184,17 +128,7 @@ export default function TAQueueList({
     setOpenPopup(false);
   };
 
-  /**
-   * Adds every given question to the group that is currently being helped.
-   * @param selected the given list of questions to help
-   */
-  const addQuestionsToHelp = (selected: Question[]) => {
-    for (const question of selected) {
-      updateQuestionTA(question, OpenQuestionStatus.Helping);
-    }
-  };
-
-  const isStaffCheckedIn = queue?.staffList.some((e) => e.id === user.id);
+  const isStaffCheckedIn = queue?.staffList.some((e) => e.id === user?.id);
 
   const helpNext = async () => {
     const nextQuestion = questions.find(
@@ -204,111 +138,9 @@ export default function TAQueueList({
     updateQuestionTA(nextQuestion, OpenQuestionStatus.Helping);
   };
 
-  const updateQueueNotes = async () => {
-    setEditingNotes(false);
-    await API.queues.updateNotes(qid, updatedNotes);
-    setOldNotes(updatedNotes);
-    mutateQueue();
-  };
-
-  /**
-   * Renders the card headers for a TA who is not yet helping someone.
-   */
-  const renderTAHeader = () => {
-    return (
-      <TAHeaderCard bordered={false}>
-        {questions.length === 0 ? (
-          <h1 style={{ marginTop: "50px" }}>
-            There currently aren&apos;t any questions in the queue
-          </h1>
-        ) : (
-          <CenterRow justify="space-between">
-            <Col xs={2} lg={1}>
-              <HeaderText>#</HeaderText>
-            </Col>
-            <Col xs={14} sm={11} lg={5}>
-              <HeaderText>name</HeaderText>
-            </Col>
-            <Col xs={0} lg={2}>
-              <HeaderText>type</HeaderText>
-            </Col>
-            <Col xs={0} lg={7}>
-              <HeaderText>question</HeaderText>
-            </Col>
-            <Col xs={0} lg={2}>
-              <HeaderText>wait</HeaderText>
-            </Col>
-            <Col span={2}>
-              <StatusText>status</StatusText>
-            </Col>
-            <Col>
-              <Placeholder />
-            </Col>
-          </CenterRow>
-        )}
-      </TAHeaderCard>
-    );
-  };
-
-  /**
-   * Renders the card headers for a TA who is currently helping someone.
-   */
-  const renderHelpingHeader = () => {
-    return (
-      <TAHeaderCard bordered={false}>
-        <CenterRow justify="space-between">
-          <Col xs={2} lg={1}>
-            <HeaderText>#</HeaderText>
-          </Col>
-          <Col xs={14} sm={9} lg={11} xl={9} xxl={4}>
-            <HeaderText>name</HeaderText>
-          </Col>
-          <Col xs={0} xxl={7}>
-            <HeaderText>question</HeaderText>
-          </Col>
-          <Col xs={0} xl={3}>
-            <HeaderText>wait</HeaderText>
-          </Col>
-          <Col span={2}>
-            <StatusText>status</StatusText>
-          </Col>
-          <Col>
-            <Placeholder />
-          </Col>
-        </CenterRow>
-      </TAHeaderCard>
-    );
-  };
-
-  /**
-   * Renders the title and aggregate buttons for the helping column.
-   */
-  const renderHelpingTitle = () => {
-    return (
-      <Col xs={24} lg={10} xxl={6} order={screens.lg === false ? 1 : 2}>
-        <HeaderRow justify="space-between">
-          <QueueTitle>Helping</QueueTitle>
-        </HeaderRow>
-        {helpingQuestions &&
-          helpingQuestions.map((question) => (
-            <StudentInfoCard
-              key={question.id}
-              updateQuestion={updateQuestionTA}
-              question={question}
-            />
-          ))}
-        {/* {groupQuestions && groupQuestions.length !== 0 && (
-          <GroupQuestions
-            questions={groupQuestions}
-            addQuestions={addQuestionsToHelp}
-          />
-        )} */}
-      </Col>
-    );
-  };
-
   if (queue && questions) {
     return (
+<<<<<<< HEAD
       <div>
         <Row gutter={[64, 64]}>
           <Col flex="auto" order={screens.lg === false ? 2 : 1}>
@@ -340,6 +172,20 @@ export default function TAQueueList({
                     Edit Queue Notes
                   </EditNotesButton>
                 )}
+=======
+      <>
+        <QueuePageContainer>
+          <QueueInfoColumn
+            queueId={qid}
+            buttons={
+              <>
+                <EditQueueButton
+                  data-cy="editQueue"
+                  onClick={() => setQueueSettingsModal(true)}
+                >
+                  Edit Queue Details
+                </EditQueueButton>
+>>>>>>> master
                 <Tooltip
                   title={
                     !isStaffCheckedIn && "You must check in to help students!"
@@ -347,8 +193,13 @@ export default function TAQueueList({
                 >
                   <HelpNextButton
                     onClick={helpNext}
-                    disabled={!isStaffCheckedIn}
-                    size="large"
+                    disabled={
+                      !isStaffCheckedIn ||
+                      !questions.find(
+                        (q) => q.status === QuestionStatusKeys.Queued
+                      ) ||
+                      isHelping
+                    }
                     data-cy="help-next"
                   >
                     Help Next
@@ -357,7 +208,6 @@ export default function TAQueueList({
                 {isStaffCheckedIn ? (
                   <CheckOutButton
                     danger
-                    size="large"
                     data-cy="check-out-button"
                     onClick={async () => {
                       await API.taStatus.checkOut(courseId, queue?.room);
@@ -372,31 +222,29 @@ export default function TAQueueList({
                       await API.taStatus.checkIn(courseId, queue?.room);
                       mutateQueue();
                     }}
-                    size="large"
                     data-cy="check-in-button"
                   >
                     Check In
                   </CheckInButton>
                 )}
-              </Col>
-            </Row>
-            <StatusRow questions={questions} taList={queue.staffList} />
-            {!helping && renderTAHeader()}
-            {helping && renderHelpingHeader()}
-            {questions?.map((question: Question, index: number) => {
-              return helping ? (
-                <TAHelpingCard rank={index + 1} question={question} />
-              ) : (
-                <TAQueueCard
-                  rank={index + 1}
-                  question={question}
-                  onOpen={onOpenClick}
-                />
-              );
-            })}
-          </Col>
-          {helping && renderHelpingTitle()}
-        </Row>
+              </>
+            }
+          />
+          <VerticalDivider />
+          <Space direction="vertical" size={40} style={{ flexGrow: 1 }}>
+            {isHelping && (
+              <TABanner
+                helpingQuestion={helpingQuestion}
+                updateQuestion={updateQuestionTA}
+              />
+            )}
+            <QueueQuestions
+              questions={questions}
+              isHelping={isHelping}
+              onOpenCard={onOpenCard}
+            />
+          </Space>
+        </QueuePageContainer>
         {currentQuestion && (
           <StudentPopupCard
             onClose={onCloseClick}
@@ -406,9 +254,82 @@ export default function TAQueueList({
             isStaffCheckedIn={isStaffCheckedIn}
           />
         )}
-      </div>
+        <EditQueueModal
+          queueId={qid}
+          visible={queueSettingsModal}
+          onClose={() => setQueueSettingsModal(false)}
+        />
+      </>
     );
   } else {
     return <div />;
   }
+}
+
+const QueueHeader = styled.h2`
+  font-weight: 500;
+  font-size: 24px;
+  color: #212934;
+  margin-bottom: 0;
+`;
+interface QueueProps {
+  questions: Question[];
+  isHelping: boolean;
+  onOpenCard: (q: Question) => void;
+}
+function QueueQuestions({ questions, isHelping, onOpenCard }: QueueProps) {
+  return (
+    <div data-cy="queueQuestions">
+      {questions.filter(
+        (question) => question.status !== OpenQuestionStatus.TADeleted
+      ).length === 0 ? (
+        <h1 style={{ marginTop: "50px" }}>
+          There currently aren&apos;t any questions in the queue
+        </h1>
+      ) : (
+        <>
+          <QueueHeader>Queue</QueueHeader>
+          <TAHeaderCard bordered={false}>
+            <CenterRow justify="space-between">
+              <Col xs={2} lg={1}>
+                <HeaderText>#</HeaderText>
+              </Col>
+              <Col xs={14} sm={11} lg={5}>
+                <HeaderText>name</HeaderText>
+              </Col>
+              <Col xs={0} lg={2}>
+                <HeaderText>type</HeaderText>
+              </Col>
+              <Col xs={0} lg={7}>
+                <HeaderText>question</HeaderText>
+              </Col>
+              <Col xs={0} lg={2}>
+                <HeaderText>wait</HeaderText>
+              </Col>
+              <Col span={2}>
+                <StatusText>status</StatusText>
+              </Col>
+              <Col>
+                <Placeholder />
+              </Col>
+            </CenterRow>
+          </TAHeaderCard>
+        </>
+      )}
+
+      {questions
+        ?.filter(
+          (question: Question) =>
+            question.status !== OpenQuestionStatus.TADeleted
+        )
+        .map((question: Question, index: number) => (
+          <TAQueueCard
+            key={question.id}
+            rank={index + 1}
+            question={question}
+            onOpen={(q) => !isHelping && onOpenCard(q)}
+          />
+        ))}
+    </div>
+  );
 }
