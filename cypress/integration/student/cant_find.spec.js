@@ -62,6 +62,7 @@ describe("Can't find process", () => {
       })
     );
 
+    //TA opens the student's question
     cy.get("@queue").then((queue) => {
       cy.get("@ta").then((ta) => {
         cy.visit(`/api/v1/login/dev?userId=${ta.user.id}`);
@@ -70,10 +71,19 @@ describe("Can't find process", () => {
         // Visit the queue page
         cy.visit(`/course/${queue.courseId}/queue/${queue.id}`);
 
-        // Click on the 's question
+        // Click on the student's question
         cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
         // Click help
         cy.get("[data-cy='help-student']").click();
+      });
+    });
+  });
+
+  /*
+  it("Can't find student and student leaves the queue", () => {
+
+    cy.get("@queue").then((queue) => {
+      cy.get("@ta").then((ta) => {
 
         // Click Can't Find
         cy.get("body").should("contain", "Can't Find");
@@ -83,9 +93,7 @@ describe("Can't find process", () => {
         cy.get("button").contains("Yes").click();
       });
     });
-  });
 
-  it("Can't find student and student leaves the queue", () => {
     // Login the student
     cy.get("@student").then((student) => {
       cy.visit(`/api/v1/login/dev?userId=${student.user.id}`);
@@ -103,7 +111,21 @@ describe("Can't find process", () => {
     );
   });
 
+
   it("Can't find student and student rejoins the queue", () => {
+
+    cy.get("@queue").then((queue) => {
+      cy.get("@ta").then((ta) => {
+
+        // Click Can't Find
+        cy.get("body").should("contain", "Can't Find");
+        cy.get("button").contains("Can't Find").click();
+
+        cy.get("body").should("contain", "Yes");
+        cy.get("button").contains("Yes").click();
+      });
+    });
+
     // Login the student
     cy.get("@student").then((student) => {
       cy.visit(`/api/v1/login/dev?userId=${student.user.id}`);
@@ -117,6 +139,65 @@ describe("Can't find process", () => {
 
         //cy.get("body").should("contain", "Rejoin Queue");
         cy.get("button").contains("Rejoin Queue").click();
+      })
+    );
+  });
+*/
+
+  it("TA removes student question from the queue and rejoins", () => {
+    cy.get("@queue").then((queue) => {
+      cy.get("@ta").then((ta) => {
+        // Click Remove from queue
+        cy.get("body").should("contain", "Remove");
+        cy.get("button").contains("Remove").click();
+
+        cy.get("body").should("contain", "Yes");
+        cy.get("button").contains("Yes").click();
+      });
+    });
+
+    // Login the student
+    cy.get("@student").then((student) => {
+      cy.visit(`/api/v1/login/dev?userId=${student.user.id}`);
+    });
+    cy.get("@queue").then((queue) =>
+      cy.visit(`course/${queue.courseId}/queue/${queue.id}`).then(() => {
+        cy.get("body").should(
+          "contain",
+          "You've been removed from the queue by a TA. If you have any questions, please reach out to the TA. If you'd like to join back into the queue with your previous question, click Rejoin Queue, otherwise click Leave Queue."
+        );
+
+        cy.get("body").should("contain", "Rejoin Queue");
+        cy.get("button").contains("Rejoin Queue").click();
+      })
+    );
+  });
+
+  it("TA removes student question from the queue and leaves", () => {
+    cy.get("@queue").then((queue) => {
+      cy.get("@ta").then((ta) => {
+        // Click Remove from queue
+        cy.get("body").should("contain", "Remove");
+        cy.get("button").contains("Remove").click();
+
+        cy.get("body").should("contain", "Yes");
+        cy.get("button").contains("Yes").click();
+      });
+    });
+
+    // Login the student
+    cy.get("@student").then((student) => {
+      cy.visit(`/api/v1/login/dev?userId=${student.user.id}`);
+    });
+    cy.get("@queue").then((queue) =>
+      cy.visit(`course/${queue.courseId}/queue/${queue.id}`).then(() => {
+        cy.get("body").should(
+          "contain",
+          "You've been removed from the queue by a TA. If you have any questions, please reach out to the TA. If you'd like to join back into the queue with your previous question, click Rejoin Queue, otherwise click Leave Queue."
+        );
+
+        cy.get("body").should("contain", "Leave Queue");
+        cy.get("button").contains("Leave Queue").click();
       })
     );
   });
