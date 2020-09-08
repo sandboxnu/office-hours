@@ -3,7 +3,6 @@ import {
   EditOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
-import { API } from "@template/api-client";
 import { Col, Popconfirm } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
@@ -64,13 +63,6 @@ export default function StudentBanner({
                 data-cy="edit-question"
                 icon={<EditOutlined />}
                 onClick={async () => {
-                  mutateStudentQuestion(
-                    await API.questions.update(draftQuestion?.id, {
-                      questionType: draftQuestion?.questionType,
-                      text: draftQuestion?.text,
-                      queueId: Number(queueId),
-                    })
-                  );
                   editQuestion();
                 }}
               >
