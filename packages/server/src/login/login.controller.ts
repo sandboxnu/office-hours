@@ -17,7 +17,7 @@ import {
   KhouryStudentCourse,
   KhouryTACourse,
   Role,
-} from '@template/common';
+} from '@koh/common';
 import { Request, Response } from 'express';
 import * as httpSignature from 'http-signature';
 import { Connection } from 'typeorm';

@@ -1,5 +1,5 @@
-import { API } from "@template/api-client";
-import { OpenQuestionStatus, Question, QuestionStatus } from "@template/common";
+import { API } from "@koh/api-client";
+import { OpenQuestionStatus, Question, QuestionStatus } from "@koh/common";
 import {
   Avatar,
   Button,
@@ -12,7 +12,7 @@ import {
 } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
-import { getWaitTime } from "../../utils/TimeUtil";
+import { getWaitTime } from "../../../utils/TimeUtil";
 
 const FullWidth = styled.div`
   margin-top: 32px;

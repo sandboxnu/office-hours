@@ -1,4 +1,4 @@
-import { Question, QueuePartial } from "@template/common";
+import { Question, QueuePartial } from "@koh/common";
 
 export function getWaitTime(question: Question): string {
   const now = new Date();

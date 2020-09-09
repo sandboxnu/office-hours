@@ -6,10 +6,10 @@ import {
 import { Col, Popconfirm } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
-import { useDraftQuestion } from "../../hooks/useDraftQuestion";
-import { useStudentQuestion } from "../../hooks/useStudentQuestion";
-import { toOrdinal } from "../../utils/ordinal";
-import Banner, { BannerButton, BannerDangerButton } from "./Banner";
+import { useDraftQuestion } from "../../../hooks/useDraftQuestion";
+import { useStudentQuestion } from "../../../hooks/useStudentQuestion";
+import { toOrdinal } from "../../../utils/ordinal";
+import Banner, { BannerButton, BannerDangerButton } from "../Banner";
 
 const BoldNumber = styled.span`
   font-weight: bold;

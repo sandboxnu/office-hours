@@ -5,7 +5,7 @@ import {
   BaseEntity,
   OneToMany,
 } from 'typeorm';
-import { Season } from '@template/common';
+import { Season } from '@koh/common';
 import { CourseModel } from './course.entity';
 
 @Entity('semester_model')

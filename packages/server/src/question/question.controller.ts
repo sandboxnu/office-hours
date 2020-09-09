@@ -23,7 +23,7 @@ import {
   Role,
   UpdateQuestionParams,
   UpdateQuestionResponse,
-} from '@template/common';
+} from '@koh/common';
 import { Connection, In } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import {

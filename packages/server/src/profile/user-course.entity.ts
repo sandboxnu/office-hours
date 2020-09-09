@@ -8,7 +8,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { CourseModel } from '../course/course.entity';
-import { Role } from '@template/common';
+import { Role } from '@koh/common';
 import { UserModel } from './user.entity';
 
 @Entity('user_course_model')

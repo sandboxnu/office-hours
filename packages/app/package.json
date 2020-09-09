@@ -1,5 +1,5 @@
 {
-  "name": "@template/app",
+  "name": "@koh/app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -12,8 +12,8 @@
   "dependencies": {
     "@ant-design/icons": "^4.2.1",
     "@elastic/apm-rum": "^5.4.0",
-    "@template/api-client": "0.1.0",
-    "@template/common": "0.1.0",
+    "@koh/api-client": "0.1.0",
+    "@koh/common": "0.1.0",
     "antd": "^4.2.4",
     "axios": "^0.19.2",
     "class-transformer": "^0.3.1",

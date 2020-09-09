@@ -1,11 +1,11 @@
-import { Role } from "@template/common";
+import { Role } from "@koh/common";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { ReactElement } from "react";
 import styled from "styled-components";
 import NavBar from "../../../../components/Nav/NavBar";
-import StudentQueueList from "../../../../components/Queue/StudentQueueList";
-import TAQueueList from "../../../../components/Queue/TAQueueList";
+import StudentQueueList from "../../../../components/Queue/Student/StudentQueueList";
+import TAQueueList from "../../../../components/Queue/TA/TAQueueList";
 import { useQueue } from "../../../../hooks/useQueue";
 import { useRoleInCourse } from "../../../../hooks/useRoleInCourse";
 

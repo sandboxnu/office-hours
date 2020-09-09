@@ -1,15 +1,15 @@
 import { CheckOutlined, CloseOutlined, UserOutlined } from "@ant-design/icons";
-import { API } from "@template/api-client";
+import { API } from "@koh/api-client";
 import {
   ClosedQuestionStatus,
   OpenQuestionStatus,
   Question,
   QuestionStatus,
-} from "@template/common";
+} from "@koh/common";
 import { Avatar, Col, Popconfirm, Row } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
-import Banner, { BannerButton, BannerDangerButton } from "./Banner";
+import Banner, { BannerButton, BannerDangerButton } from "../Banner";
 
 const Bold = styled.span`
   font-weight: bold;

@@ -8,7 +8,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { GetCourseResponse, QueuePartial, Role } from '@template/common';
+import { GetCourseResponse, QueuePartial, Role } from '@koh/common';
 import async from 'async';
 import { Connection, getRepository } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';

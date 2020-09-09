@@ -3,7 +3,7 @@ import { SSEService } from 'sse/sse.service';
 import { QueueService } from './queue.service';
 import { Response } from 'express';
 import { throttle, update } from 'lodash';
-import { Role, SSEQueueResponse } from '@template/common';
+import { Role, SSEQueueResponse } from '@koh/common';
 import { updateFunctionDeclaration } from 'typescript';
 import { send } from 'process';
 

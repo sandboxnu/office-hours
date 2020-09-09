@@ -1,7 +1,7 @@
 import { Form, Input, Modal, Row, Switch } from "antd";
 import useSWR from "swr";
-import { API } from "@template/api-client";
-import { UpdateProfileParams } from "@template/common";
+import { API } from "@koh/api-client";
+import { UpdateProfileParams } from "@koh/common";
 import { pick } from "lodash";
 import { ReactElement } from "react";
 import {

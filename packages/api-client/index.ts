@@ -14,7 +14,7 @@ import {
   UpdateQuestionResponse,
   UpdateQueueParams,
   Question,
-} from "@template/common";
+} from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
 import { ClassType } from "class-transformer/ClassTransformer";

@@ -1,4 +1,4 @@
-import { OpenQuestionStatus } from '@template/common';
+import { OpenQuestionStatus } from '@koh/common';
 import { Exclude, Expose } from 'class-transformer';
 import {
   BaseEntity,

@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import { Avatar, Row, Col, Badge } from "antd";
-import { Question } from "@template/common";
+import { Question } from "@koh/common";
 import { RenderEvery } from "../RenderEvery";
 import styled from "styled-components";
 import { useQuestions } from "../../hooks/useQuestions";
