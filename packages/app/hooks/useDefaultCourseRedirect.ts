@@ -1,4 +1,4 @@
-import { User } from "@template/common";
+import { User } from "@koh/common";
 import Router, { useRouter } from "next/router";
 import { useLocalStorage } from "./useLocalStorage";
 import { useProfile } from "./useProfile";

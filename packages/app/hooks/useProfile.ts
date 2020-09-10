@@ -1,7 +1,7 @@
 import useSWR from "swr";
-import { API } from "@template/api-client";
+import { API } from "@koh/api-client";
 import Router, { useRouter } from "next/router";
-import { User } from "@template/common";
+import { User } from "@koh/common";
 
 type Hook = () => User;
 

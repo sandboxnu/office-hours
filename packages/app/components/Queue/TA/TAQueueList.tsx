@@ -1,23 +1,23 @@
-import { API } from "@template/api-client";
+import { API } from "@koh/api-client";
 import {
   OpenQuestionStatus,
   Question,
   QuestionStatus,
   QuestionStatusKeys,
-} from "@template/common";
+} from "@koh/common";
 import { Card, Col, Row, Space, Tooltip } from "antd";
 import { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
-import { useProfile } from "../../hooks/useProfile";
-import { useQuestions } from "../../hooks/useQuestions";
-import { useQueue } from "../../hooks/useQueue";
+import { useProfile } from "../../../hooks/useProfile";
+import { useQuestions } from "../../../hooks/useQuestions";
+import { useQueue } from "../../../hooks/useQueue";
 import { EditQueueModal } from "./EditQueueModal";
 import {
   QueueInfoColumn,
   QueueInfoColumnButton,
   QueuePageContainer,
   VerticalDivider,
-} from "./QueueListSharedComponents";
+} from "../QueueListSharedComponents";
 import StudentPopupCard from "./StudentPopupCard";
 import TABanner from "./TABanner";
 import TAQueueCard from "./TAQueueCard";

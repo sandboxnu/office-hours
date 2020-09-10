@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { Role } from '@template/common';
+import { Role } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { Connection } from 'typeorm';
 import {

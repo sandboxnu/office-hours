@@ -2,7 +2,7 @@ import {
   OpenQuestionStatus,
   QuestionStatus,
   QuestionType,
-} from '@template/common';
+} from '@koh/common';
 import { Exclude } from 'class-transformer';
 import {
   BaseEntity,

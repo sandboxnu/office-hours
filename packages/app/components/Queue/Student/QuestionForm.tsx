@@ -1,10 +1,10 @@
-import { Question, QuestionType, OpenQuestionStatus } from "@template/common";
+import { Question, QuestionType, OpenQuestionStatus } from "@koh/common";
 import { Modal, Alert, Button, Input, Radio } from "antd";
 import { RadioChangeEvent } from "antd/lib/radio";
 import { default as React, ReactElement, useEffect, useState } from "react";
 import styled from "styled-components";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { toOrdinal } from "../../utils/ordinal";
+import { useLocalStorage } from "../../../hooks/useLocalStorage";
+import { toOrdinal } from "../../../utils/ordinal";
 
 const Container = styled.div`
   max-width: 960px;

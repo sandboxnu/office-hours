@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DesktopNotifBody, TwilioBody } from '@template/common';
+import { DesktopNotifBody, TwilioBody } from '@koh/common';
 import * as twilio from 'twilio';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { NotificationService } from './notification.service';

@@ -1,4 +1,4 @@
-import { ClosedQuestionStatus } from '@template/common';
+import { ClosedQuestionStatus } from '@koh/common';
 import { QueueSSEService } from 'queue/queue-sse.service';
 import {
   Connection,

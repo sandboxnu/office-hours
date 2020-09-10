@@ -1,4 +1,4 @@
-const withTM = require("next-transpile-modules")(["@template"]);
+const withTM = require("next-transpile-modules")(["@koh"]);
 const withPlugins = require("next-compose-plugins");
 const withOffline = require("next-offline");
 

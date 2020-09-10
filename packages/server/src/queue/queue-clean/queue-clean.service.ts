@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Connection } from 'typeorm';
 import { QueueModel } from '../queue.entity';
-import { OpenQuestionStatus, ClosedQuestionStatus } from '@template/common';
+import { OpenQuestionStatus, ClosedQuestionStatus } from '@koh/common';
 import { QuestionModel } from '../../question/question.entity';
 
 /**

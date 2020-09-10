@@ -1,9 +1,9 @@
-import { Question } from "@template/common";
+import { Question } from "@koh/common";
 import { Card, Col } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
-import { getWaitTime } from "../../utils/TimeUtil";
-import { CenterRow, Text } from "./QueueCardSharedComponents";
+import { getWaitTime } from "../../../utils/TimeUtil";
+import { CenterRow, Text } from "../QueueCardSharedComponents";
 
 const HorizontalStudentCard = styled(Card)`
   margin-bottom: 8px;

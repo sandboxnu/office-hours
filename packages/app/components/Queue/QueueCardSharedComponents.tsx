@@ -1,4 +1,4 @@
-import { QuestionStatus, QuestionStatusKeys } from "@template/common";
+import { QuestionStatus, QuestionStatusKeys } from "@koh/common";
 import { Avatar, Card, Row, Tag } from "antd";
 import styled from "styled-components";
 

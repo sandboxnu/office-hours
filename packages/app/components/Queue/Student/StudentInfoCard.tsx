@@ -1,11 +1,11 @@
 import { UserOutlined } from "@ant-design/icons";
-import { API } from "@template/api-client";
+import { API } from "@koh/api-client";
 import {
   ClosedQuestionStatus,
   OpenQuestionStatus,
   Question,
   QuestionStatus,
-} from "@template/common";
+} from "@koh/common";
 import { Avatar, Button, Card, Col, Popconfirm, Row } from "antd";
 import React, { ReactElement } from "react";
 import styled from "styled-components";

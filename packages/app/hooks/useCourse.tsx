@@ -1,5 +1,5 @@
-import { API } from "@template/api-client";
-import { GetCourseResponse } from "@template/common";
+import { API } from "@koh/api-client";
+import { GetCourseResponse } from "@koh/common";
 import useSWR, { responseInterface } from "swr";
 
 type courseResponse = responseInterface<GetCourseResponse, any>;

@@ -1,9 +1,9 @@
-import { API } from "@template/api-client";
+import { API } from "@koh/api-client";
 import {
   GetQueueResponse,
   QueuePartial,
   SSEQueueResponse,
-} from "@template/common";
+} from "@koh/common";
 import useSWR, { responseInterface } from "swr";
 import { useCallback } from "react";
 import { useEventSource } from "./useEventSource";
