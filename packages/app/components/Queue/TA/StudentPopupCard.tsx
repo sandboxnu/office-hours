@@ -12,6 +12,8 @@ import {
 } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
+import nameToRGB from "../../../utils/ColorUtils";
+import getInitialsFromName from "../../../utils/NameUtils";
 import { getWaitTime } from "../../../utils/TimeUtil";
 
 const FullWidth = styled.div`
@@ -151,7 +153,16 @@ const StudentPopupCard = ({
       }
     >
       <Container>
-        <Avatar size={104} src={question.creator.photoURL} />
+        {
+          //TODO: bring back photo URL && get rid of RegeX
+          //src={question.creator.photoURL}
+        }
+        <Avatar
+          size={104}
+          style={{ backgroundColor: nameToRGB(question.creator.name) }}
+        >
+          {getInitialsFromName(question.creator.name)}
+        </Avatar>
 
         <InfoTextDiv>
           <Title>{question.creator.name}</Title>

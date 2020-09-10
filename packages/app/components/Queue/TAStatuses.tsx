@@ -1,10 +1,12 @@
-import { ReactElement } from "react";
-import { Avatar, Row, Col, Badge } from "antd";
 import { Question } from "@koh/common";
-import { RenderEvery } from "../RenderEvery";
+import { Avatar, Badge, Col, Row } from "antd";
+import { ReactElement } from "react";
 import styled from "styled-components";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
+import { RenderEvery } from "../RenderEvery";
+import nameToRGB from "../../utils/ColorUtils";
+import getInitialsFromName from "../../utils/NameUtils";
 
 interface StatusRowProps {
   queueId: number;
@@ -82,7 +84,13 @@ function StatusCard({
   const isBusy = !!helpedAt;
   return (
     <StyledCard>
-      <AvatarNoShrink size={48} src={taPhotoURL} />
+      {
+        //TODO: bring back photo URL && get rid of RegeX
+        // src={taPhotoURL}
+      }
+      <AvatarNoShrink size={48} style={{ backgroundColor: nameToRGB(taName) }}>
+        {getInitialsFromName(taName)}
+      </AvatarNoShrink>
       <CardContent>
         <Row justify="space-between">
           <TAName>{taName}</TAName>

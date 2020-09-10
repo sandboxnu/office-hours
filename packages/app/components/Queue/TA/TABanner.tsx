@@ -1,4 +1,4 @@
-import { CheckOutlined, CloseOutlined, UserOutlined } from "@ant-design/icons";
+import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import {
   ClosedQuestionStatus,
@@ -9,6 +9,8 @@ import {
 import { Avatar, Col, Popconfirm, Row } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
+import nameToRGB from "../../../utils/ColorUtils";
+import getInitialsFromName from "../../../utils/NameUtils";
 import Banner, { BannerButton, BannerDangerButton } from "../Banner";
 
 const Bold = styled.span`
@@ -48,11 +50,19 @@ export default function TABanner({
       content={
         <Row>
           <Col flex="88px">
+            {
+              //TODO: bring back photo URL && get rid of RegeX
+              //icon={<UserOutlined />}
+              //src={helpingQuestion.creator.photoURL}
+            }
             <Avatar
               size={64}
-              icon={<UserOutlined />}
-              src={helpingQuestion.creator.photoURL}
-            />
+              style={{
+                backgroundColor: nameToRGB(helpingQuestion.creator.name),
+              }}
+            >
+              {getInitialsFromName(helpingQuestion.creator.name)}
+            </Avatar>
           </Col>
           <Col>
             <InfoHeader>question</InfoHeader>

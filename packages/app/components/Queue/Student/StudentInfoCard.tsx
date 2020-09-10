@@ -1,4 +1,3 @@
-import { UserOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import {
   ClosedQuestionStatus,
@@ -9,6 +8,8 @@ import {
 import { Avatar, Button, Card, Col, Popconfirm, Row } from "antd";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
+import nameToRGB from "../../../utils/ColorUtils";
+import getInitialsFromName from "../../../utils/NameUtils";
 
 const HelpCard = styled(Card)`
   margin-bottom: 16px;
@@ -96,11 +97,17 @@ const StudentInfoCard = ({
     >
       <Row>
         <Col span={6}>
+          {
+            //TODO: bring back photo URL && get rid of RegeX
+            //icon={<UserOutlined />}
+            //src={question.creator.photoURL}
+          }
           <Avatar
             size={64}
-            icon={<UserOutlined />}
-            src={question.creator.photoURL}
-          />
+            style={{ backgroundColor: nameToRGB(question.creator.name) }}
+          >
+            {getInitialsFromName(question.creator.name)}
+          </Avatar>
         </Col>
         <Col span={18}>
           <HeadingText>question</HeadingText>
