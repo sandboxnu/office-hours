@@ -145,14 +145,14 @@ describe('IcalService', () => {
             .officeHours,
         ).toMatchObject([
           {
-            title: 'OH- Ameya, Julia',
+            title: 'OH: Ameya, Julia',
             courseId: course.id,
             startTime: new Date(1589317200000),
             endTime: new Date(1589324400000),
             queueId: queue.id,
           },
           {
-            title: 'OH-Elaina',
+            title: 'OH: Elaina',
             courseId: course.id,
             startTime: new Date(1589475600000),
             endTime: new Date(1589482800000),
