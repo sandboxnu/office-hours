@@ -27,7 +27,17 @@ export class IcalService {
         iCalElement.end !== undefined,
     );
 
-    return officeHours.map(event => ({
+    const isOfficeHoursEvent = (title: string) => {
+      const nonOfficeHourKeywords = ['Lecture', 'Lab', 'Exam', 'Class']
+      nonOfficeHourKeywords.forEach(keyword => {
+        if (title.includes(keyword)) {
+          return false;
+        }
+      });
+      return true; 
+    }
+
+    return officeHours.filter(event => isOfficeHoursEvent(event.summary)).map(event => ({
       title: event.summary,
       courseId: courseId,
       room: event.location,
