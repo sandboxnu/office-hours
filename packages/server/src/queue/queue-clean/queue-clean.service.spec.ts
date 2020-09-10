@@ -10,6 +10,7 @@ import {
 import { OpenQuestionStatus } from '@koh/common';
 import { QuestionModel } from '../../question/question.entity';
 import { Connection } from 'typeorm';
+import { QueueModel } from 'queue/queue.entity';
 
 describe('QueueService', () => {
   let service: QueueCleanService;
@@ -57,6 +58,19 @@ describe('QueueService', () => {
       await service.cleanQueue(queue.id);
       const updatedQuestion = await QuestionModel.findOne(question.id);
       expect(updatedQuestion.status).toEqual('Stale');
+    });
+
+    it('cleaning the queue removes the queue notes', async () => {
+      const ofs = await ClosedOfficeHourFactory.create();
+      const queue = await QueueFactory.create({ officeHours: [ofs], notes: "This note is no longer relevant" });
+      const question = await QuestionFactory.create({
+        status: OpenQuestionStatus.Queued,
+        queue: queue,
+      });
+
+      await service.cleanQueue(queue.id);
+      const cleanedQueue = await QueueModel.findOne(queue.id);
+      expect(cleanedQueue.notes).toBe('');
     });
   });
 });
