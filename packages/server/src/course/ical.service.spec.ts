@@ -48,7 +48,7 @@ LAST-MODIFIED:20200515T190535Z
 LOCATION:308b WVH
 SEQUENCE:0
 STATUS:CONFIRMED
-SUMMARY:OH- Ameya\\, Julia
+SUMMARY:OH: Ameya\\, Julia
 TRANSP:OPAQUE
 END:VEVENT
 BEGIN:VEVENT
@@ -63,7 +63,7 @@ LAST-MODIFIED:20200513T180615Z
 LOCATION:
 SEQUENCE:0
 STATUS:CONFIRMED
-SUMMARY:OH-Elaina
+SUMMARY:OH: Elaina
 TRANSP:OPAQUE
 END:VEVENT
 BEGIN:VEVENT
@@ -106,16 +106,17 @@ describe('IcalService', () => {
   describe('parseIcal', () => {
     it('handles a pre-generated subset of CS 2510 classes', () => {
       const endData = service.parseIcal(parsedICS, 123);
+      // Note that the lecture event has been filtered out
       expect(endData).toStrictEqual([
         {
-          title: 'OH- Ameya, Julia',
+          title: 'OH: Ameya, Julia',
           courseId: 123,
           room: '308b WVH',
           startTime: new Date(1589317200000),
           endTime: new Date(1589324400000),
         },
         {
-          title: 'OH-Elaina',
+          title: 'OH: Elaina',
           courseId: 123,
           room: '',
           startTime: new Date(1589475600000),
@@ -144,14 +145,14 @@ describe('IcalService', () => {
             .officeHours,
         ).toMatchObject([
           {
-            title: 'OH- Ameya, Julia',
+            title: 'OH: Ameya, Julia',
             courseId: course.id,
             startTime: new Date(1589317200000),
             endTime: new Date(1589324400000),
             queueId: queue.id,
           },
           {
-            title: 'OH-Elaina',
+            title: 'OH: Elaina',
             courseId: course.id,
             startTime: new Date(1589475600000),
             endTime: new Date(1589482800000),
