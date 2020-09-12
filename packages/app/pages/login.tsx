@@ -28,15 +28,9 @@ export default function Login(): ReactElement {
     <Container>
       <ContentContainer>
         <h1>You are currently not logged in</h1>
-        <p>Click one of the buttons below to login via Khoury Admin</p>
-        <Button href="https://admin.khoury.northeastern.edu/students/officehourslogin/">
-          Log in as Student/TA
-        </Button>
-        <Button
-          style={{ marginLeft: 16 }}
-          href="https://admin.khoury.northeastern.edu/teaching/officehourslogin/"
-        >
-          Log in as Professor
+        <p>Click the button below to login via Khoury Admin</p>
+        <Button href="https://admin.khoury.northeastern.edu/teaching/officehourslogin/">
+          Log in via Khoury Admin
         </Button>
       </ContentContainer>
     </Container>
