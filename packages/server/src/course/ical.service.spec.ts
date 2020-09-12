@@ -8,8 +8,7 @@ import { CalendarResponse } from 'node-ical';
 import { Connection } from 'typeorm';
 import { CourseModel } from './course.entity';
 
-// oopsah
-const parsedICS = iCal.parseICS(`BEGIN:VCALENDAR
+const mkCal = (events: string) => iCal.parseICS(`BEGIN:VCALENDAR
 PRODID:-//Google Inc//Google Calendar 70.9054//EN
 VERSION:2.0
 CALSCALE:GREGORIAN
@@ -36,21 +35,10 @@ DTSTART:19701101T020000
 RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
 END:STANDARD
 END:VTIMEZONE
-BEGIN:VEVENT
-DTSTART;TZID=America/New_York:20200512T170000
-DTEND;TZID=America/New_York:20200512T190000
-RRULE:FREQ=WEEKLY;WKST=SU;UNTIL=20200620T035959Z;BYDAY=TU
-DTSTAMP:20200518T220522Z
-UID:6l8vlk6bfr18lkgdqpm4m76ff2@google.com
-CREATED:20200512T192938Z
-DESCRIPTION:
-LAST-MODIFIED:20200515T190535Z
-LOCATION:308b WVH
-SEQUENCE:0
-STATUS:CONFIRMED
-SUMMARY:OH: Ameya\\, Julia
-TRANSP:OPAQUE
-END:VEVENT
+${events}
+END:VCALENDAR`)
+
+const VEVENT_NOROOM = `
 BEGIN:VEVENT
 DTSTART;TZID=America/New_York:20200514T130000
 DTEND;TZID=America/New_York:20200514T150000
@@ -65,7 +53,26 @@ SEQUENCE:0
 STATUS:CONFIRMED
 SUMMARY:OH: Elaina
 TRANSP:OPAQUE
-END:VEVENT
+END:VEVENT`;
+
+const VEVENT_ROOM = `
+BEGIN:VEVENT
+DTSTART;TZID=America/New_York:20200512T170000
+DTEND;TZID=America/New_York:20200512T190000
+RRULE:FREQ=WEEKLY;WKST=SU;UNTIL=20200620T035959Z;BYDAY=TU
+DTSTAMP:20200518T220522Z
+UID:6l8vlk6bfr18lkgdqpm4m76ff2@google.com
+CREATED:20200512T192938Z
+DESCRIPTION:
+LAST-MODIFIED:20200515T190535Z
+LOCATION:308b WVH
+SEQUENCE:0
+STATUS:CONFIRMED
+SUMMARY:OH: Ameya\\, Julia
+TRANSP:OPAQUE
+END:VEVENT`;
+
+const VEVENT_NOTIME = `
 BEGIN:VEVENT
 DTSTART:20180303T020000Z
 DTSTAMP:20200518T220522Z
@@ -78,8 +85,63 @@ SEQUENCE:0
 STATUS:CONFIRMED
 SUMMARY:HW 7 P2 DUE
 TRANSP:OPAQUE
-END:VEVENT
-END:VCALENDAR`);
+END:VEVENT`;
+
+const VEVENT_OUTLOOK_CET = `
+BEGIN:VEVENT
+DESCRIPTION:\n
+RRULE:FREQ=WEEKLY;UNTIL=20201207T170000Z;INTERVAL=1;BYDAY=MO;WKST=SU
+EXDATE;TZID=Romance Standard Time:20201012T120000
+UID:040000008200E00074C5B7101A82E00800000000FFA4A795B686D601000000000000000
+ 010000000B0F0238BEEA75243B42D6F11B2111977
+SUMMARY:Hours CS3700 - Ishan
+DTSTART;TZID=Romance Standard Time:20201114T120000
+DTEND;TZID=Romance Standard Time:20201114T150000
+CLASS:PUBLIC
+PRIORITY:5
+DTSTAMP:20200911T140704Z
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+SEQUENCE:1
+LOCATION:
+X-MICROSOFT-CDO-APPT-SEQUENCE:1
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MICROSOFT-CDO-INTENDEDSTATUS:BUSY
+X-MICROSOFT-CDO-ALLDAYEVENT:FALSE
+X-MICROSOFT-CDO-IMPORTANCE:1
+X-MICROSOFT-CDO-INSTTYPE:1
+X-MICROSOFT-DONOTFORWARDMEETING:FALSE
+X-MICROSOFT-DISALLOW-COUNTER:FALSE
+END:VEVENT`;
+
+
+// CEST instead of CET
+const VEVENT_OUTLOOK_CEST = `
+BEGIN:VEVENT
+DESCRIPTION:\n
+RRULE:FREQ=WEEKLY;UNTIL=20201207T170000Z;INTERVAL=1;BYDAY=MO;WKST=SU
+EXDATE;TZID=Romance Standard Time:20201012T120000
+UID:040000008200E00074C5B7101A82E00800000000FFA4A795B686D601000000000000000
+ 010000000B0F0238BEEA75243B42D6F11B2111977
+SUMMARY:Hours CS3700 - Ishan
+DTSTART;TZID=Romance Standard Time:20200914T120000
+DTEND;TZID=Romance Standard Time:20200914T150000
+CLASS:PUBLIC
+PRIORITY:5
+DTSTAMP:20200911T140704Z
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+SEQUENCE:1
+LOCATION:
+X-MICROSOFT-CDO-APPT-SEQUENCE:1
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MICROSOFT-CDO-INTENDEDSTATUS:BUSY
+X-MICROSOFT-CDO-ALLDAYEVENT:FALSE
+X-MICROSOFT-CDO-IMPORTANCE:1
+X-MICROSOFT-CDO-INSTTYPE:1
+X-MICROSOFT-DONOTFORWARDMEETING:FALSE
+X-MICROSOFT-DISALLOW-COUNTER:FALSE
+END:VEVENT`;
 
 describe('IcalService', () => {
   let service: IcalService;
@@ -105,6 +167,7 @@ describe('IcalService', () => {
 
   describe('parseIcal', () => {
     it('handles a pre-generated subset of CS 2510 classes', () => {
+      const parsedICS = mkCal(VEVENT_ROOM+VEVENT_NOROOM);
       const endData = service.parseIcal(parsedICS, 123);
       // Note that the lecture event has been filtered out
       expect(endData).toStrictEqual([
@@ -125,10 +188,46 @@ describe('IcalService', () => {
       ]);
     });
 
+    it('ignores events with no start/end time', () => {
+      const parsedICS = mkCal(VEVENT_NOTIME);
+      const endData = service.parseIcal(parsedICS, 123);
+      expect(endData).toStrictEqual([]);
+    });
+
+    it('converts Outlook time zones', () => {
+      const parsedICS = mkCal(VEVENT_OUTLOOK_CET);
+      const endData = service.parseIcal(parsedICS, 123);
+      expect(endData).toStrictEqual([
+        {
+          title: 'Hours CS3700 - Ishan',
+          courseId: 123,
+          room: '',
+          startTime: new Date("2020-11-14T11:00:00+0000"),
+          endTime: new Date("2020-11-14T14:00:00+0000"),
+        },
+      ]);
+    });
+
+    it('converts Outlook time zones during summer/daylight saving time', () => {
+      // 2 hour offset from UTC
+      const parsedICS = mkCal(VEVENT_OUTLOOK_CEST);
+      const endData = service.parseIcal(parsedICS, 123);
+      expect(endData).toStrictEqual([
+        {
+          title: 'Hours CS3700 - Ishan',
+          courseId: 123,
+          room: '',
+          startTime: new Date("2020-09-14T10:00:00+0000"),
+          endTime: new Date("2020-09-14T13:00:00+0000"),
+        },
+      ]);
+    });
+
     describe('updateCalendarForCourse', () => {
       it('creates officehours', async () => {
         const course = await CourseFactory.create({ id: 123 });
 
+        const parsedICS = mkCal(VEVENT_ROOM+VEVENT_NOROOM);
         const endData = service.parseIcal(parsedICS, course.id);
         const parseIcalMock = jest.spyOn(service, 'parseIcal');
         parseIcalMock.mockImplementation(
