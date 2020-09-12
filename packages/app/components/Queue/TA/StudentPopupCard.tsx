@@ -1,20 +1,11 @@
 import { API } from "@koh/api-client";
 import { OpenQuestionStatus, Question, QuestionStatus } from "@koh/common";
-import {
-  Avatar,
-  Button,
-  Col,
-  Drawer,
-  Popconfirm,
-  Row,
-  Tag,
-  Tooltip,
-} from "antd";
+import { Button, Col, Drawer, Popconfirm, Row, Tag, Tooltip } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
-import nameToRGB from "../../../utils/ColorUtils";
 import getInitialsFromName from "../../../utils/NameUtils";
 import { getWaitTime } from "../../../utils/TimeUtil";
+import AvatarWithInitals from "../../common/AvatarWithInitials";
 
 const FullWidth = styled.div`
   margin-top: 32px;
@@ -157,16 +148,11 @@ const StudentPopupCard = ({
           //TODO: bring back photo URL && get rid of RegeX
           //src={question.creator.photoURL}
         }
-        <Avatar
+        <AvatarWithInitals
           size={104}
-          style={{
-            backgroundColor: nameToRGB(question.creator.name),
-            fontSize: 56,
-          }}
-        >
-          {getInitialsFromName(question.creator.name)}
-        </Avatar>
-
+          fontSize={56}
+          name={question.creator.name}
+        />
         <InfoTextDiv>
           <Title>{question.creator.name}</Title>
           <Email>{question.creator.email}</Email>

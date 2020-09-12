@@ -1,10 +1,9 @@
 import { PROD_URL } from "@koh/common";
-import { Avatar, Menu, Popover } from "antd";
-import { ReactElement, useState } from "react";
+import { Menu, Popover } from "antd";
+import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../hooks/useProfile";
-import nameToRGB from "../../utils/ColorUtils";
-import getInitialsFromName from "../../utils/NameUtils";
+import AvatarWithInitals from "../common/AvatarWithInitials";
 import { NotificationSettingsModal } from "./NotificationSettingsModal";
 
 const StyleablePopover = ({ className, ...props }: { className: string }) => (
@@ -64,12 +63,7 @@ export default function Settings(): ReactElement {
             //TODO: bring back photo URL && get rid of RegeX
             //icon={<UserOutlined />} src={profile?.photoURL}
             profile && (
-              <Avatar
-                style={{ backgroundColor: nameToRGB(profile?.name) }}
-                size={40}
-              >
-                {getInitialsFromName(profile?.name)}
-              </Avatar>
+              <AvatarWithInitals name={profile?.name} size={40} fontSize={24} />
             )
           }
         </AvatarButton>
