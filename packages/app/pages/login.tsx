@@ -22,15 +22,15 @@ export default function Login(): ReactElement {
   const didRedirect = useDefaultCourseRedirect();
   if (profile && !didRedirect) {
     Router.push("/nocourses");
-  } 
+  }
 
   return (
     <Container>
       <ContentContainer>
         <h1>You are currently not logged in</h1>
         <p>Click the button below to login via Khoury Admin</p>
-        <Button href="https://admin.khoury.northeastern.edu/students/officehourslogin/">
-          Login with Khoury
+        <Button href="https://admin.khoury.northeastern.edu/teaching/officehourslogin/">
+          Log in via Khoury Admin
         </Button>
       </ContentContainer>
     </Container>
