@@ -5,7 +5,6 @@ import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { QueuePartial } from "../../../common/index";
-import getInitialsFromName from "../../utils/NameUtils";
 import { formatQueueTime } from "../../utils/TimeUtil";
 import AvatarWithInitals from "../common/AvatarWithInitials";
 
@@ -176,7 +175,7 @@ const OpenQueueCard = ({
             <Tooltip key={staffMember.id} title={staffMember.name}>
               <AvatarWithMargin
                 size={96}
-                fontSize={48}
+                fontSize={40}
                 name={staffMember.name}
               />
             </Tooltip>

@@ -4,7 +4,6 @@ import { ReactElement } from "react";
 import styled from "styled-components";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
-import getInitialsFromName from "../../utils/NameUtils";
 import AvatarWithInitals from "../common/AvatarWithInitials";
 import { RenderEvery } from "../RenderEvery";
 
@@ -88,7 +87,7 @@ function StatusCard({
         //TODO: bring back photo URL && get rid of RegeX
         // src={taPhotoURL}
       }
-      <AvatarNoShrink size={48} name={taName} />
+      <AvatarNoShrink size={48} fontSize={20} name={taName} />
       <CardContent>
         <Row justify="space-between">
           <TAName>{taName}</TAName>

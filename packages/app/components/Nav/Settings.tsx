@@ -63,7 +63,7 @@ export default function Settings(): ReactElement {
             //TODO: bring back photo URL && get rid of RegeX
             //icon={<UserOutlined />} src={profile?.photoURL}
             profile && (
-              <AvatarWithInitals name={profile?.name} size={40} fontSize={24} />
+              <AvatarWithInitals name={profile?.name} size={40} fontSize={16} />
             )
           }
         </AvatarButton>
