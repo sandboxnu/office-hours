@@ -4,9 +4,9 @@ import { ReactElement } from "react";
 import styled from "styled-components";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
-import { RenderEvery } from "../RenderEvery";
 import nameToRGB from "../../utils/ColorUtils";
 import getInitialsFromName from "../../utils/NameUtils";
+import { RenderEvery } from "../RenderEvery";
 
 interface StatusRowProps {
   queueId: number;

@@ -59,6 +59,7 @@ export default function TABanner({
               size={64}
               style={{
                 backgroundColor: nameToRGB(helpingQuestion.creator.name),
+                fontSize: 36,
               }}
             >
               {getInitialsFromName(helpingQuestion.creator.name)}

@@ -4,8 +4,8 @@ import { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../hooks/useProfile";
 import nameToRGB from "../../utils/ColorUtils";
-import { NotificationSettingsModal } from "./NotificationSettingsModal";
 import getInitialsFromName from "../../utils/NameUtils";
+import { NotificationSettingsModal } from "./NotificationSettingsModal";
 
 const StyleablePopover = ({ className, ...props }: { className: string }) => (
   <Popover {...props} overlayClassName={className} />

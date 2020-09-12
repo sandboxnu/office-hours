@@ -159,7 +159,10 @@ const StudentPopupCard = ({
         }
         <Avatar
           size={104}
-          style={{ backgroundColor: nameToRGB(question.creator.name) }}
+          style={{
+            backgroundColor: nameToRGB(question.creator.name),
+            fontSize: 56,
+          }}
         >
           {getInitialsFromName(question.creator.name)}
         </Avatar>
