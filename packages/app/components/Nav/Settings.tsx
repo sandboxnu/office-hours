@@ -1,11 +1,11 @@
-import { UserOutlined } from "@ant-design/icons";
-import { Avatar, Popover, Menu } from "antd";
-import styled from "styled-components";
-import { NotificationSettingsModal } from "./NotificationSettingsModal";
-import { useState, ReactElement } from "react";
-import Link from "next/link";
-import { useProfile } from "../../hooks/useProfile";
 import { PROD_URL } from "@koh/common";
+import { Avatar, Menu, Popover } from "antd";
+import { ReactElement, useState } from "react";
+import styled from "styled-components";
+import { useProfile } from "../../hooks/useProfile";
+import nameToRGB from "../../utils/ColorUtils";
+import getInitialsFromName from "../../utils/NameUtils";
+import { NotificationSettingsModal } from "./NotificationSettingsModal";
 
 const StyleablePopover = ({ className, ...props }: { className: string }) => (
   <Popover {...props} overlayClassName={className} />
@@ -60,9 +60,18 @@ export default function Settings(): ReactElement {
         onVisibleChange={setIsPopoverOpen}
       >
         <AvatarButton>
-          {profile && (
-            <Avatar size={40} icon={<UserOutlined />} src={profile.photoURL} />
-          )}
+          {
+            //TODO: bring back photo URL && get rid of RegeX
+            //icon={<UserOutlined />} src={profile?.photoURL}
+            profile && (
+              <Avatar
+                style={{ backgroundColor: nameToRGB(profile?.name) }}
+                size={40}
+              >
+                {getInitialsFromName(profile?.name)}
+              </Avatar>
+            )
+          }
         </AvatarButton>
       </NoPaddingPopover>
     </>

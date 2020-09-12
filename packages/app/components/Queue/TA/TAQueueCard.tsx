@@ -1,12 +1,13 @@
-import { RightOutlined, UserOutlined } from "@ant-design/icons";
+import { RightOutlined } from "@ant-design/icons";
 import { OpenQuestionStatus, Question } from "@koh/common";
-import { Col } from "antd";
+import { Avatar, Col } from "antd";
 import { ReactElement } from "react";
+import nameToRGB from "../../../utils/ColorUtils";
+import getInitialsFromName from "../../../utils/NameUtils";
 import { getWaitTime } from "../../../utils/TimeUtil";
 import {
   CenterRow,
   HorizontalTACard,
-  Photo,
   questionStatusToColor,
   Rank,
   StatusTag,
@@ -33,7 +34,18 @@ export default function TAQueueCard({
         </Col>
         <Col xs={14} sm={11} lg={5}>
           <CenterRow>
-            <Photo icon={<UserOutlined />} src={question.creator.photoURL} />
+            {
+              //bring back photo URL && get rid of RegeX
+              /*<Photo icon={<UserOutlined />} src={question.creator.photoURL} />*/
+            }
+            <Avatar
+              style={{
+                backgroundColor: nameToRGB(question.creator.name),
+                marginRight: "16px",
+              }}
+            >
+              {getInitialsFromName(question.creator.name)}
+            </Avatar>
             <Text>{question.creator.name}</Text>
           </CenterRow>
         </Col>

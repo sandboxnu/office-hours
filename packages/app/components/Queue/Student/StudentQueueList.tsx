@@ -15,13 +15,13 @@ import { useQuestions } from "../../../hooks/useQuestions";
 import { useQueue } from "../../../hooks/useQueue";
 import { useStudentQuestion } from "../../../hooks/useStudentQuestion";
 import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
-import QuestionForm from "./QuestionForm";
 import {
   QueueInfoColumn,
   QueueInfoColumnButton,
   QueuePageContainer,
   VerticalDivider,
 } from "../QueueListSharedComponents";
+import QuestionForm from "./QuestionForm";
 import StudentBanner from "./StudentBanner";
 import CantFindModal from "./StudentCantFindModal";
 import StudentQueueCard from "./StudentQueueCard";
@@ -167,6 +167,7 @@ export default function StudentQueueList({
         ) {
           return false;
         }
+        return true;
         // TODO: how should we handle error that happens for another reason?
       }
     },

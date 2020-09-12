@@ -1,10 +1,12 @@
 import { StopOutlined } from "@ant-design/icons";
-import { Avatar, Button, Card, Col, Input, Row, Skeleton, Tooltip } from "antd";
+import { Avatar, Button, Card, Input, Row, Skeleton, Tooltip } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { QueuePartial } from "../../../common/index";
+import nameToRGB from "../../utils/ColorUtils";
+import getInitialsFromName from "../../utils/NameUtils";
 import { formatQueueTime } from "../../utils/TimeUtil";
 
 type OpenQueueCard = {
@@ -170,9 +172,17 @@ const OpenQueueCard = ({
             <Tooltip key={staffMember.id} title={staffMember.name}>
               <AvatarWithMargin
                 size={96}
-                src={staffMember.photoURL}
-                shape="circle"
-              />
+                style={{
+                  backgroundColor: nameToRGB(staffMember.name),
+                  fontSize: 48,
+                }}
+              >
+                {
+                  // TODO: bring back photo URL && get rid of RegeX
+                  // src={staffMember.photoURL}
+                }
+                {getInitialsFromName(staffMember.name)}
+              </AvatarWithMargin>
             </Tooltip>
           ))}
         </div>
