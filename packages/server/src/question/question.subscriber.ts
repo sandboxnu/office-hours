@@ -1,12 +1,13 @@
-import { ClosedQuestionStatus } from '@koh/common';
+import { ClosedQuestionStatus, OpenQuestionStatus } from '@koh/common';
 import { QueueSSEService } from 'queue/queue-sse.service';
+import { QueueModel } from 'queue/queue.entity';
 import {
   Connection,
   EntitySubscriberInterface,
   EventSubscriber,
   InsertEvent,
-  UpdateEvent,
   RemoveEvent,
+  UpdateEvent,
 } from 'typeorm';
 import {
   NotificationService,
@@ -62,6 +63,29 @@ export class QuestionSubscriber
   }
 
   async afterInsert(event: InsertEvent<QuestionModel>): Promise<void> {
+    const numberOfQuestions = await QuestionModel.openInQueue(
+      event.entity.queueId,
+    )
+      .where('question.status IN (:...openStatus)', {
+        openStatus: [OpenQuestionStatus.Drafting, OpenQuestionStatus.Queued],
+      })
+      .getCount();
+
+    const staff = (
+      await QueueModel.findOne(event.entity.queueId, {
+        relations: ['staffList'],
+      })
+    ).staffList;
+
+    if (numberOfQuestions === 0) {
+      staff.forEach((staff) => {
+        this.notifService.notifyUser(
+          staff.id,
+          NotifMsgs.ta.STUDENT_JOINED_EMPTY_QUEUE,
+        );
+      });
+    }
+
     // Send all listening clients an update
     await this.queueSSEService.updateQuestions(event.entity.queueId);
   }

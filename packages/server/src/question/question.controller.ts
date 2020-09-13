@@ -132,24 +132,6 @@ export class QuestionController {
       isOnline: true,
     }).save();
 
-    if (
-      queue.questions.filter(
-        (question) =>
-          question.status !== OpenQuestionStatus.TADeleted &&
-          (Object.values(OpenQuestionStatus) as string[]).includes(
-            question.status,
-          ),
-      ).length === 0
-    ) {
-      // TODO: when limbo queue is implemented, don't need to do check for TA Deleted :)
-      queue.staffList.forEach((staff) => {
-        this.notifService.notifyUser(
-          staff.id,
-          NotifMsgs.ta.STUDENT_JOINED_EMPTY_QUEUE,
-        );
-      });
-    }
-
     return question;
   }
 
