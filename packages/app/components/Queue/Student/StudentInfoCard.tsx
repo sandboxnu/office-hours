@@ -84,7 +84,6 @@ const StudentInfoCard = ({
   question,
 }: StudentInfoCardProps): ReactElement => {
   const alertStudent = async () => await API.questions.notify(question.id);
-  console.log(question.creator);
   return (
     <HelpCard
       headStyle={{ padding: "0 16px", borderStyle: "none" }}

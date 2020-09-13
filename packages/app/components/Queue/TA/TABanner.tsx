@@ -38,8 +38,6 @@ export default function TABanner({
   const alertStudent = async () =>
     await API.questions.notify(helpingQuestion.id);
 
-  console.log(helpingQuestion.creator);
-
   return (
     <Banner
       titleColor="#3684C6"
