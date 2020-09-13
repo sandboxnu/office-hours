@@ -28,7 +28,6 @@ export class IcalService {
     if (iana) {
       const mome = moment(date);
       mome.tz(iana, true); // Move date to IANA
-      console.log(iana, mome.toDate(), moment(date).toDate());
       return mome.toDate();
     }
     return date;
