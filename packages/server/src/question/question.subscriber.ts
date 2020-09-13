@@ -77,7 +77,7 @@ export class QuestionSubscriber
       })
     ).staffList;
 
-    if (numberOfQuestions === 1) {
+    if (numberOfQuestions === 0) {
       staff.forEach((staff) => {
         this.notifService.notifyUser(
           staff.id,
