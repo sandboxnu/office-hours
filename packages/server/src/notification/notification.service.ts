@@ -28,6 +28,10 @@ export const NotifMsgs = {
       `${taName} is coming to help you!`,
     REMOVED: `You've been removed from the queue. Please return to the app for more information.`,
   },
+  ta: {
+    STUDENT_JOINED_EMPTY_QUEUE:
+      'A student has joined your (previously empty) queue!',
+  },
 };
 
 //TODO test this service omg
