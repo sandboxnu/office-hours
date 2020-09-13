@@ -3,7 +3,7 @@ module.exports = {
     {
       name: "app",
       script: "npm",
-      args: "run prod:start --max_old_space_size=4096",
+      args: "run prod:start",
       cwd: "./packages/app",
       env: {
         NODE_ENV: "production",
@@ -12,7 +12,7 @@ module.exports = {
     {
       name: "server",
       script: "npm",
-      args: "run prod:start --max_old_space_size=4096",
+      args: "run prod:start",
       cwd: "./packages/server",
       env: {
         NODE_ENV: "production",
