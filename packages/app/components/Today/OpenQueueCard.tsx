@@ -1,13 +1,12 @@
 import { StopOutlined } from "@ant-design/icons";
-import { Avatar, Button, Card, Input, Row, Skeleton, Tooltip } from "antd";
+import { Button, Card, Input, Row, Skeleton, Tooltip } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { QueuePartial } from "../../../common/index";
-import nameToRGB from "../../utils/ColorUtils";
-import getInitialsFromName from "../../utils/NameUtils";
 import { formatQueueTime } from "../../utils/TimeUtil";
+import AvatarWithInitals from "../common/AvatarWithInitials";
 
 type OpenQueueCard = {
   queue: QueuePartial;
@@ -58,7 +57,7 @@ const HeaderText = styled.div`
   margin-bottom: 8px;
 `;
 
-const AvatarWithMargin = styled(Avatar)`
+const AvatarWithMargin = styled(AvatarWithInitals)`
   margin-right: 25px;
 `;
 
@@ -167,22 +166,18 @@ const OpenQueueCard = ({
       }
 
       <Row justify="space-between" align="bottom">
+        {
+          // TODO: bring back photo URL && get rid of RegeX
+          // src={staffMember.photoURL}
+        }
         <div>
           {staffList.map((staffMember) => (
             <Tooltip key={staffMember.id} title={staffMember.name}>
               <AvatarWithMargin
                 size={96}
-                style={{
-                  backgroundColor: nameToRGB(staffMember.name),
-                  fontSize: 48,
-                }}
-              >
-                {
-                  // TODO: bring back photo URL && get rid of RegeX
-                  // src={staffMember.photoURL}
-                }
-                {getInitialsFromName(staffMember.name)}
-              </AvatarWithMargin>
+                fontSize={40}
+                name={staffMember.name}
+              />
             </Tooltip>
           ))}
         </div>

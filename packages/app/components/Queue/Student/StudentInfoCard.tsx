@@ -5,11 +5,11 @@ import {
   Question,
   QuestionStatus,
 } from "@koh/common";
-import { Avatar, Button, Card, Col, Popconfirm, Row } from "antd";
+import { Button, Card, Col, Popconfirm, Row } from "antd";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
-import nameToRGB from "../../../utils/ColorUtils";
 import getInitialsFromName from "../../../utils/NameUtils";
+import AvatarWithInitals from "../../common/AvatarWithInitials";
 
 const HelpCard = styled(Card)`
   margin-bottom: 16px;
@@ -102,12 +102,7 @@ const StudentInfoCard = ({
             //icon={<UserOutlined />}
             //src={question.creator.photoURL}
           }
-          <Avatar
-            size={64}
-            style={{ backgroundColor: nameToRGB(question.creator.name) }}
-          >
-            {getInitialsFromName(question.creator.name)}
-          </Avatar>
+          <AvatarWithInitals size={64} name={question.creator.name} />
         </Col>
         <Col span={18}>
           <HeadingText>question</HeadingText>
