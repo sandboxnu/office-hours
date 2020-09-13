@@ -71,13 +71,13 @@ export class QuestionSubscriber
       })
       .getCount();
 
-    const staff = (
-      await QueueModel.findOne(event.entity.queueId, {
-        relations: ['staffList'],
-      })
-    ).staffList;
-
     if (numberOfQuestions === 0) {
+      const staff = (
+        await QueueModel.findOne(event.entity.queueId, {
+          relations: ['staffList'],
+        })
+      ).staffList;
+
       staff.forEach((staff) => {
         this.notifService.notifyUser(
           staff.id,
