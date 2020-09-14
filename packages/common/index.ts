@@ -192,14 +192,22 @@ export enum OpenQuestionStatus {
   Drafting = "Drafting",
   Queued = "Queued",
   Helping = "Helping",
+  PriorityQueued = "PriorityQueued",
+}
+
+/**
+ * Limbo statuses are awaiting some confirmation from the student
+ */
+export enum LimboQuestionStatus {
   CantFind = "CantFind",
+  ReQueueing = "ReQueueing",
   TADeleted = "TADeleted",
 }
 
 export enum ClosedQuestionStatus {
   Resolved = "Resolved",
-  Deferred = "Deferred",
   ConfirmedDeleted = "ConfirmedDeleted",
+  StudentCancelled = "StudentCancelled",
   Stale = "Stale",
 }
 
@@ -209,6 +217,7 @@ export type QuestionStatus = keyof typeof QuestionStatusKeys;
 export const QuestionStatusKeys = {
   ...OpenQuestionStatus,
   ...ClosedQuestionStatus,
+  ...LimboQuestionStatus
 };
 
 /**
