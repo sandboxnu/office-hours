@@ -1,7 +1,7 @@
 import {
   Injectable,
-  UnauthorizedException,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { UserModel } from '../profile/user.entity';
 import { QuestionModel } from './question.entity';
@@ -14,12 +14,19 @@ export class QuestionRolesGuard extends RolesGuard {
   async setupData(
     request: any,
   ): Promise<{ courseId: number; user: UserModel }> {
-    let queueId = request.params.queueId;
+    let queueId;
 
-    //specific case when we are posting a new question to the queue
-    if (request.params.questionId && queueId) {
+    if (request.params.questionId) {
       const question = await QuestionModel.findOne(request.params.questionId);
+      if (!question) {
+        throw new NotFoundException('Question not found');
+      }
       queueId = question.queueId;
+    } else if (request.body.queueId) {
+      // If you are creating a new question
+      queueId = request.body.queueId;
+    } else {
+      throw new BadRequestException('Cannot find queue of question');
     }
 
     const queue = await QueueModel.findOne(queueId);

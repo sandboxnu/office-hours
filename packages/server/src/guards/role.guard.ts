@@ -33,7 +33,7 @@ export abstract class RolesGuard implements CanActivate {
     }
 
     if (!courseId) {
-      throw new NotFoundException();
+      throw new NotFoundException('No courseid found');
     }
 
     return this.matchRoles(roles, user, courseId);
@@ -41,12 +41,14 @@ export abstract class RolesGuard implements CanActivate {
 
   matchRoles(roles: string[], user: UserModel, courseId: number): boolean {
     const userCourse = user.courses.find((course) => {
+      console.log(course.courseId, courseId)
       return Number(course.courseId) === Number(courseId);
     });
+    console.log(user, courseId, userCourse)
 
     if (!userCourse) {
       // If the user isn't in this course, we shouldn't leak that the course event exists
-      throw new NotFoundException();
+      throw new NotFoundException('no user course');
     }
 
     const remaining = roles.filter((role) => {
