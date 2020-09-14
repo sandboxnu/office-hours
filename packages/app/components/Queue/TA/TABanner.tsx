@@ -83,7 +83,7 @@ export default function TABanner({
               await alertStudent();
             }}
           >
-            <BannerDangerButton icon={<CloseOutlined />}>
+            <BannerDangerButton icon={<CloseOutlined />} data-cy="remove-from-queue">
               Remove from Queue
             </BannerDangerButton>
           </Popconfirm>
