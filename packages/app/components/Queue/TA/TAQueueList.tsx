@@ -141,7 +141,7 @@ export default function TAQueueList({
       (question) => question.status === QuestionStatusKeys.Queued
     );
 
-    updateQuestionTA(nextQuestion, OpenQuestionStatus.Helping);
+    await updateQuestionTA(nextQuestion, OpenQuestionStatus.Helping);
     window.open(`https://teams.microsoft.com/l/chat/0/0?users=${nextQuestion.creator.email}`);
   };
 
