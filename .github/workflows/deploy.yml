@@ -16,12 +16,15 @@ jobs:
           name: id_rsa
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
       - uses: actions/checkout@v2
+        with:
+          ref: 'dist'
+          fetch-depth: 0
       - uses: actions/setup-node@v1
         with:
           node-version: "12"
+      - run: git merge master
       - run: yarn install
       - run: yarn build
-      - run: git checkout dist
       - uses: EndBug/add-and-commit@v4
         with:
           add: 'packages'
