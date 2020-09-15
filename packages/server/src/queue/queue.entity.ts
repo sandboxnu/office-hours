@@ -1,5 +1,4 @@
-import { OpenQuestionStatus } from '@koh/common';
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude } from 'class-transformer';
 import {
   BaseEntity,
   Column,
@@ -39,9 +38,7 @@ export class QueueModel extends BaseEntity {
   @Column('text')
   room: string;
 
-  @OneToMany((type) => QuestionModel, (qm) => qm.queue, {
-    eager: true,
-  })
+  @OneToMany((type) => QuestionModel, (qm) => qm.queue)
   @Exclude()
   questions: QuestionModel[];
 
@@ -82,20 +79,10 @@ export class QueueModel extends BaseEntity {
     return open;
   }
 
-  @Expose()
-  get queueSize(): number {
-    if (!this.questions) {
-      // if you're getting this, make sure you're loading `questions` in relations when you're getting a queue
-      // or you're adding questions to your QueueModel.create as []
-      throw new Error(
-        "Questions weren't loaded when trying to grab queue size",
-      );
-    }
-    return this.questions?.filter(
-      (q) =>
-        q.status === OpenQuestionStatus.Drafting ||
-        q.status === OpenQuestionStatus.Queued,
-    ).length;
+  queueSize: number;
+
+  async addQueueSize(): Promise<void> {
+    this.queueSize = await QuestionModel.openInQueue(this.id).getCount();
   }
 
   public async addQueueTimes(): Promise<void> {

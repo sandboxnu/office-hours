@@ -29,18 +29,19 @@ export class QueueCleanService {
 
   public async cleanQueue(queueId: number): Promise<void> {
     const queue = await QueueModel.findOne(queueId, {
-      relations: ['staffList', 'questions'],
+      relations: ['staffList'],
     });
 
     if (!(await queue.checkIsOpen())) {
       queue.notes = '';
       await queue.save();
-      await this.unsafeClean(queue);
+      await this.unsafeClean(queue.id);
     }
   }
 
-  private async unsafeClean(queue: QueueModel): Promise<void> {
-    const openQuestions = queue.questions.filter(
+  private async unsafeClean(queueId: number): Promise<void> {
+    const questions = await QuestionModel.openInQueue(queueId).getMany();
+    const openQuestions = questions.filter(
       (q) => q.status in OpenQuestionStatus,
     );
 
