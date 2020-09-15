@@ -47,7 +47,9 @@ describe('Question Integration', () => {
       expect(response.body).toMatchSnapshot();
     });
     it('fails to get a non-existent question', async () => {
-      await supertest({ userId: 99 }).get(`/questions/999`).expect(404);
+      await supertest({ userId: 99 })
+        .get(`/questions/999`)
+        .expect(404);
     });
   });
 
@@ -147,12 +149,10 @@ describe('Question Integration', () => {
         .expect(400);
     });
     it("can't create more than one open question at a time", async () => {
-      const ofs = await OfficeHourFactory.create();
-      const course = await CourseFactory.create({ officeHours: [ofs] });
+      const course = await CourseFactory.create({});
       const user = await UserFactory.create();
       const queue = await QueueFactory.create({
         allowQuestions: true,
-        officeHours: [ofs],
         courseId: course.id,
         course: course,
       });
@@ -179,6 +179,35 @@ describe('Question Integration', () => {
       expect(response.body.message).toBe(
         "You can't create more than one question at a time.",
       );
+    });
+    it('force a question when one is already open', async () => {
+      const course = await CourseFactory.create({});
+      const user = await UserFactory.create();
+      const queue = await QueueFactory.create({
+        allowQuestions: true,
+        courseId: course.id,
+        course: course,
+      });
+      await StudentCourseFactory.create({
+        userId: user.id,
+        courseId: queue.courseId,
+      });
+      await QuestionFactory.create({
+        queueId: queue.id,
+        creator: user,
+        status: OpenQuestionStatus.Drafting,
+      });
+
+      const response = await supertest({ userId: user.id })
+        .post('/questions')
+        .send({
+          text: 'i need to know where the alamo is',
+          queueId: queue.id,
+          questionType: QuestionType.Bug,
+          force: true,
+        });
+
+      expect(response.status).toBe(201);
     });
   });
 
