@@ -2,10 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { SSEService } from 'sse/sse.service';
 import { QueueService } from './queue.service';
 import { Response } from 'express';
-import { throttle, update } from 'lodash';
+import { throttle } from 'lodash';
 import { Role, SSEQueueResponse } from '@koh/common';
-import { updateFunctionDeclaration } from 'typescript';
-import { send } from 'process';
 
 type QueueClientMetadata = { userId: number; role: Role };
 

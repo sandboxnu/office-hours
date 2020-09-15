@@ -60,9 +60,7 @@ export class QueueController {
     @Param('queueId') queueId: number,
     @Body() body: UpdateQueueParams,
   ): Promise<QueueModel> {
-    const queue = await QueueModel.findOne({
-      where: { id: queueId },
-    });
+    const queue = await this.queueService.getQueue(queueId);
     if (queue === undefined) {
       throw new NotFoundException();
     }
