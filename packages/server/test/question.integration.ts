@@ -198,16 +198,64 @@ describe('Question Integration', () => {
         status: OpenQuestionStatus.Drafting,
       });
 
-      const response = await supertest({ userId: user.id })
+      await supertest({ userId: user.id })
         .post('/questions')
         .send({
           text: 'i need to know where the alamo is',
           queueId: queue.id,
           questionType: QuestionType.Bug,
           force: true,
-        });
+        })
+        .expect(201);
+    });
+    it('lets student (who is TA in other class) create question', async () => {
+      const user = await UserFactory.create();
 
-      expect(response.status).toBe(201);
+      // Make user a TA in other class
+      const queueOther = await QueueFactory.create({});
+      await TACourseFactory.create({
+        userId: user.id,
+        courseId: queueOther.courseId,
+      });
+
+      // Make them student
+      const queue = await QueueFactory.create({ allowQuestions: true });
+      await StudentCourseFactory.create({
+        userId: user.id,
+        courseId: queue.courseId,
+      });
+
+      await supertest({ userId: user.id })
+        .post('/questions')
+        .send({
+          text: 'i need to know where the alamo is',
+          queueId: queue.id,
+          questionType: QuestionType.Bug,
+          force: false,
+        })
+        .expect(201);
+    });
+    it('works when other queues and courses exist', async () => {
+      const user = await UserFactory.create();
+
+      await QueueFactory.create({});
+
+      // Make them student
+      const queue = await QueueFactory.create({ allowQuestions: true });
+      await StudentCourseFactory.create({
+        userId: user.id,
+        courseId: queue.courseId,
+      });
+
+      await supertest({ userId: user.id })
+        .post('/questions')
+        .send({
+          text: 'i need to know where the alamo is',
+          queueId: queue.id,
+          questionType: QuestionType.Bug,
+          force: false,
+        })
+        .expect(201);
     });
   });
 
