@@ -29,7 +29,7 @@ export class QueueCleanService {
 
   public async cleanQueue(queueId: number): Promise<void> {
     const queue = await QueueModel.findOne(queueId, {
-      relations: ['staffList', 'questions', 'officeHours'],
+      relations: ['staffList', 'questions'],
     });
 
     if (!(await queue.checkIsOpen())) {
