@@ -188,5 +188,13 @@ describe('Queue Integration', () => {
         .get(`/queues/${queue.id}/questions`)
         .expect(404);
     });
+
+    it('returns 404 when queue does not exist', async () => {
+      const user = await UserFactory.create();
+
+      await supertest({ userId: user.id })
+        .get(`/queues/8291390/questions`)
+        .expect(404);
+    });
   });
 });
