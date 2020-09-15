@@ -7,7 +7,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build --webpack --webpackPath webpack.config.js",
-    "dev": "TYPEORM_LOGGING=true nest build --webpack --webpackPath webpack-hmr.config.js",
+    "dev": "cross-env TYPEORM_LOGGING=true nest build --webpack --webpackPath webpack-hmr.config.js",
     "dev:debug": "nest start --debug --watch",
     "prod:start": "node --max-old-space-size=8192 dist/main",
     "tsc": "tsc",
@@ -18,7 +18,7 @@
     "test:integration": "jest --config ./test/jest-integration.json -i",
     "dev:db:reset": "yarn typeorm schema:drop",
     "migration:generate": "yarn typeorm schema:drop && yarn typeorm migration:run && yarn typeorm migration:generate",
-    "typeorm": "TYPEORM_CLI=true ts-node node_modules/.bin/typeorm",
+    "typeorm": "cross-env TYPEORM_CLI=true ts-node node_modules/.bin/typeorm",
     "cli": "nestjs-command"
   },
   "dependencies": {
@@ -71,6 +71,7 @@
     "@types/readline-sync": "^1.4.3",
     "@types/supertest": "^2.0.8",
     "@types/web-push": "^3.3.0",
+    "cross-env": "^7.0.2",
     "jest": "26.0.1",
     "prettier": "^1.19.1",
     "start-server-webpack-plugin": "^2.2.5",
