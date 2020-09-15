@@ -3,7 +3,7 @@ name: Deploy Staging
 on:
   push:
     branches:
-      - master
+      - dc-build-on-gh
 
 jobs:
   deploy:
@@ -19,5 +19,16 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "12"
+      - run: yarn install
+      - run: yarn build
+      - uses: EndBug/add-and-commit@v4
+        with:
+          author_name: KOH Build Bot
+          author_email: bot@khouryofficehours.com
+          force: true
+          message: 'Added built files'
+          ref: 'dist'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: "pm2 deploy to staging"
         run: "npx pm2 deploy infrastructure/prod/ecosystem.config.js staging update"
