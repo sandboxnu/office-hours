@@ -22,7 +22,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "12"
-      - run: git merge origin/master
+      - run: git merge origin/dc-build-on-gh
       - run: yarn install
       - run: yarn build
       - uses: EndBug/add-and-commit@v4
