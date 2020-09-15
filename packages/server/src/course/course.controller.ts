@@ -49,9 +49,9 @@ export class CourseController {
 
     course.queues = await async.filter(
       course.queues,
-      async (q) => await q.checkIsOpen(),
+      async q => await q.checkIsOpen(),
     );
-    await async.each(course.queues, async (q) => await q.addQueueTimes());
+    await async.each(course.queues, async q => await q.addQueueTimes());
 
     return course;
   }
@@ -107,13 +107,15 @@ export class CourseController {
       { relations: ['staffList'] },
     );
 
-    queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
+    queue.staffList = queue.staffList.filter(e => e.id !== user.id);
     if (queue.staffList.length === 0) {
       queue.allowQuestions = false;
     }
     await queue.save();
     // Clean up queue if necessary
-    await this.queueCleanService.cleanQueue(queue.id);
-    await this.queueSSEService.updateQueue(queue.id);
+    setTimeout(async () => {
+      await this.queueCleanService.cleanQueue(queue.id);
+      await this.queueSSEService.updateQueue(queue.id);
+    });
   }
 }
