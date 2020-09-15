@@ -119,6 +119,6 @@ export class CourseController {
     setTimeout(async () => {
       await this.queueCleanService.cleanQueue(queue.id);
       await this.queueSSEService.updateQueue(queue.id);
-    }, 1);
+    });
   }
 }
