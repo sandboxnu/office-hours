@@ -6,15 +6,9 @@ on:
       - dc-build-on-gh
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_KEY }}
-          name: id_rsa
-          known_hosts: ${{ secrets.KNOWN_HOSTS }}
       - uses: actions/checkout@v2
         with:
           ref: 'dist'
@@ -37,6 +31,15 @@ jobs:
           ref: 'dist'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: git status
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          name: id_rsa
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
       - name: "pm2 deploy to staging"
         run: "npx pm2 deploy infrastructure/prod/ecosystem.config.js staging update"
