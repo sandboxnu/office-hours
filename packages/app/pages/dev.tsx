@@ -24,7 +24,7 @@ const LoginContainer = styled.div`
 `;
 
 const SeedingContainer = styled.div`
-  margin-left: jjauto;
+  margin-left: auto;
   margin-right: auto;
   text-align: center;
 
