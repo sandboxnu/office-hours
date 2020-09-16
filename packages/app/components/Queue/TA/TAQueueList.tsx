@@ -181,6 +181,7 @@ export default function TAQueueList({
                 {isStaffCheckedIn ? (
                   <CheckOutButton
                     danger
+                    disabled={isHelping}
                     data-cy="check-out-button"
                     onClick={async () => {
                       await API.taStatus.checkOut(courseId, queue?.room);
