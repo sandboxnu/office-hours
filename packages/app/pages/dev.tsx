@@ -61,7 +61,7 @@ export default function DevPanel({ hidePage }: DevPanelProps): ReactElement {
   return (
     <Container>
       <h1>
-        <PageHeader>jaisfdo[ For Development Use Only ]</PageHeader>
+        <PageHeader>first[ For Development Use Only ]</PageHeader>
       </h1>
       <LoginContainer>
         <Divider plain>
