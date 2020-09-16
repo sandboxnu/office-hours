@@ -20,15 +20,18 @@ jobs:
       - name: "set git bot commiter"
         run: git config --global user.name "KOH Build Bot" && git config --global user.email "bot@khouryofficehours.com"
       - name: "merge new changes into dist"
-        run: git rebase origin/master
+        run: git merge origin/master
       - uses: bahmutov/npm-install@v1
       - run: yarn build
+      - name: Ensure latest commit
+        run: .github/scripts/isRepoUpToDate.sh
+        id: is-up-to-date
       - uses: EndBug/add-and-commit@v4
+        if: steps.is-up-to-date.outputs.uptodate != "true"
         with:
           add: 'packages'
           author_name: KOH Build Bot
           author_email: bot@khouryofficehours.com
-          force: true
           message: 'Added built files'
           ref: 'dist'
         env:
