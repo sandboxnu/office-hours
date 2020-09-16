@@ -7,6 +7,7 @@ on:
 
 jobs:
   build:
+    name: Build Dist Branch
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -41,5 +42,6 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           name: id_rsa
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
+      - uses: actions/checkout@v2
       - name: "pm2 deploy to staging"
         run: "npx pm2 deploy infrastructure/prod/ecosystem.config.js staging update"
