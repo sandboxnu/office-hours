@@ -20,7 +20,7 @@ jobs:
       - name: "set git bot commiter"
         run: git config --global user.name "KOH Build Bot" && git config --global user.email "bot@khouryofficehours.com"
       - name: "merge new changes into dist"
-        run: git merge origin/master
+        run: git rebase origin/master
       - uses: bahmutov/npm-install@v1
       - run: yarn build
       - uses: EndBug/add-and-commit@v4
