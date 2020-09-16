@@ -27,7 +27,7 @@ jobs:
         run: .github/scripts/isRepoUpToDate.sh
         id: is-up-to-date
       - uses: EndBug/add-and-commit@v4
-        if: steps.is-up-to-date.outputs.uptodate != "true"
+        if: steps.is-up-to-date.outputs.uptodate == "true"
         with:
           add: 'packages'
           author_name: KOH Build Bot
