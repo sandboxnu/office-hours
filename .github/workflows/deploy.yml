@@ -3,7 +3,7 @@ name: Deploy Staging
 on:
   push:
     branches:
-      - master
+      - dc-build-on-gh
 
 jobs:
   build:
@@ -20,13 +20,15 @@ jobs:
       - name: "set git bot commiter"
         run: git config --global user.name "KOH Build Bot" && git config --global user.email "bot@khouryofficehours.com"
       - name: "merge new changes into dist"
-        run: git merge origin/master
+        run: git merge origin/dc-build-on-gh
+      - run: echo "::set-output name=version::$(git rev-parse origin/dc-build-on-gh)"
+        id: pre-version
       - uses: bahmutov/npm-install@v1
       - run: yarn build
-      - name: Ensure latest commit
-        id: isuptodate
-        run: .github/scripts/isRepoUpToDate.sh
-      - if: steps.isuptodate.outputs.uptodate == 'true'
+      ## Ensure no new changes have been pushed in the time we spent building
+      - run: git fetch && echo "::set-output name=version::$(git rev-parse origin/dc-build-on-gh)"
+        id: post-version
+      - if: steps.pre-version.outputs.version == steps.post-version.outputs.version 
         uses: EndBug/add-and-commit@v4
         with:
           add: "packages"
