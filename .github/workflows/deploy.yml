@@ -28,6 +28,7 @@ jobs:
           add: 'packages'
           author_name: KOH Build Bot
           author_email: bot@khouryofficehours.com
+          force: true
           message: 'Added built files'
           ref: 'dist'
         env:
