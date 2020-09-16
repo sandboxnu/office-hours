@@ -44,8 +44,8 @@ export class IcalService {
     );
 
     const isOfficeHoursEvent = (title: string) => {
-      const nonOfficeHourKeywords = ['Lecture', 'Lab', 'Exam', 'Class'];
-      return nonOfficeHourKeywords.every(keyword => !title.includes(keyword));
+      const offficeHourKeywords = ['OH', 'Hours'];
+      return offficeHourKeywords.some(keyword => title.includes(keyword));
     };
 
     return officeHours
