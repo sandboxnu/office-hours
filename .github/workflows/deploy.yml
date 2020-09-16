@@ -26,7 +26,7 @@ jobs:
       - name: Ensure latest commit
         id: isuptodate
         run: .github/scripts/isRepoUpToDate.sh
-      - if: steps.isuptodate.outputs.uptodate == "true"
+      - if: steps.isuptodate.outputs.uptodate == 'true'
         uses: EndBug/add-and-commit@v4
         with:
           add: "packages"
