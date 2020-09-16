@@ -20,7 +20,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v1
-      - run: yarn install
+      - uses: bahmutov/npm-install@v1
       - run: yarn build
       - name: Cypress run
         uses: cypress-io/github-action@v2
