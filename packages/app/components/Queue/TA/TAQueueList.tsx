@@ -110,6 +110,12 @@ export default function TAQueueList({
   const [queueSettingsModal, setQueueSettingsModal] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
 
+  // Close popup if currentQuestion no longer exists in the cache
+  if (currentQuestion && !questions.includes(currentQuestion)) {
+    setCurrentQuestion(null);
+    setOpenPopup(false)
+  }
+
   const onOpenCard = useCallback((question: Question): void => {
     setCurrentQuestion(question);
     setOpenPopup(true);
