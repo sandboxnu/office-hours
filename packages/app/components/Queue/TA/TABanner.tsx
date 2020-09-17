@@ -2,14 +2,13 @@ import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import {
   ClosedQuestionStatus,
-  OpenQuestionStatus,
+  LimboQuestionStatus,
   Question,
   QuestionStatus,
 } from "@koh/common";
 import { Col, Popconfirm, Row } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
-import getInitialsFromName from "../../../utils/NameUtils";
 import AvatarWithInitals from "../../common/AvatarWithInitials";
 import Banner, { BannerButton, BannerDangerButton } from "../Banner";
 

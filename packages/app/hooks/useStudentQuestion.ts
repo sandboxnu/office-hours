@@ -1,4 +1,4 @@
-import { OpenQuestionStatus, Question } from "@koh/common";
+import { LimboQuestionStatus, OpenQuestionStatus, Question } from "@koh/common";
 import { responseInterface } from "swr";
 import { useProfile } from "./useProfile";
 import { useQuestions } from "./useQuestions";

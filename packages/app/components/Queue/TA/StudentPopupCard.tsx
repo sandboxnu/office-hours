@@ -1,9 +1,8 @@
 import { API } from "@koh/api-client";
-import { OpenQuestionStatus, Question, QuestionStatus } from "@koh/common";
+import { LimboQuestionStatus, OpenQuestionStatus, Question, QuestionStatus } from "@koh/common";
 import { Button, Col, Drawer, Popconfirm, Row, Tag, Tooltip } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
-import getInitialsFromName from "../../../utils/NameUtils";
 import { getWaitTime } from "../../../utils/TimeUtil";
 import AvatarWithInitals from "../../common/AvatarWithInitials";
 

@@ -1,4 +1,4 @@
-import { OpenQuestionStatus, Question } from "@koh/common";
+import { LimboQuestionStatus, Question } from "@koh/common";
 import { Button } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import { ReactElement } from "react";

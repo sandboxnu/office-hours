@@ -1,5 +1,5 @@
 import { RightOutlined } from "@ant-design/icons";
-import { OpenQuestionStatus, Question } from "@koh/common";
+import { LimboQuestionStatus, Question } from "@koh/common";
 import { Col } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";

@@ -1,6 +1,7 @@
 import { API } from "@koh/api-client";
 import {
   ClosedQuestionStatus,
+  LimboQuestionStatus,
   OpenQuestionStatus,
   Question,
   QuestionType,
