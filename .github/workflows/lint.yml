@@ -12,7 +12,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: yarn install
+      - uses: bahmutov/npm-install@v1
       - run: yarn pretty-quick --branch master --check
   lint:
     name: lint
@@ -23,7 +23,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: yarn install
+      - uses: bahmutov/npm-install@v1
       - run: yarn lint
   typescript:
     name: typescript
@@ -34,5 +34,5 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: yarn install
+      - uses: bahmutov/npm-install@v1
       - run: yarn tsc

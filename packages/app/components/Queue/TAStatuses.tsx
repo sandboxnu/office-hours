@@ -1,11 +1,10 @@
 import { Question } from "@koh/common";
-import { Avatar, Badge, Col, Row } from "antd";
+import { Badge, Col, Row } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
-import nameToRGB from "../../utils/ColorUtils";
-import getInitialsFromName from "../../utils/NameUtils";
+import AvatarWithInitals from "../common/AvatarWithInitials";
 import { RenderEvery } from "../RenderEvery";
 
 interface StatusRowProps {
@@ -51,7 +50,7 @@ const StyledCard = styled.div`
   display: flex;
   margin-bottom: 16px;
 `;
-const AvatarNoShrink = styled(Avatar)`
+const AvatarNoShrink = styled(AvatarWithInitals)`
   flex-shrink: 0;
 `;
 const CardContent = styled.div`
@@ -88,9 +87,7 @@ function StatusCard({
         //TODO: bring back photo URL && get rid of RegeX
         // src={taPhotoURL}
       }
-      <AvatarNoShrink size={48} style={{ backgroundColor: nameToRGB(taName) }}>
-        {getInitialsFromName(taName)}
-      </AvatarNoShrink>
+      <AvatarNoShrink size={48} fontSize={20} name={taName} />
       <CardContent>
         <Row justify="space-between">
           <TAName>{taName}</TAName>

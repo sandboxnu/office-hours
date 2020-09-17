@@ -110,6 +110,12 @@ export default function TAQueueList({
   const [queueSettingsModal, setQueueSettingsModal] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
 
+  // Close popup if currentQuestion no longer exists in the cache
+  if (currentQuestion && !questions.includes(currentQuestion)) {
+    setCurrentQuestion(null);
+    setOpenPopup(false)
+  }
+
   const onOpenCard = useCallback((question: Question): void => {
     setCurrentQuestion(question);
     setOpenPopup(true);
@@ -141,7 +147,8 @@ export default function TAQueueList({
       (question) => question.status === QuestionStatusKeys.Queued
     );
 
-    updateQuestionTA(nextQuestion, OpenQuestionStatus.Helping);
+    await updateQuestionTA(nextQuestion, OpenQuestionStatus.Helping);
+    window.open(`https://teams.microsoft.com/l/chat/0/0?users=${nextQuestion.creator.email}`);
   };
 
   if (queue && questions) {
@@ -180,6 +187,7 @@ export default function TAQueueList({
                 {isStaffCheckedIn ? (
                   <CheckOutButton
                     danger
+                    disabled={isHelping}
                     data-cy="check-out-button"
                     onClick={async () => {
                       await API.taStatus.checkOut(courseId, queue?.room);

@@ -23,6 +23,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: yarn install
+      - uses: bahmutov/npm-install@v1
       - name: Check is Migration Needed
         run: .github/scripts/isMigrationNeeded.sh

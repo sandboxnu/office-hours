@@ -82,8 +82,8 @@ describe("Removed from queue", () => {
         // Click help
         cy.get("[data-cy='help-student']").click();
         // Click Remove from queue on the Question card
-        cy.get("body").should("contain", "Remove");
-        cy.get("button").contains("Remove").click();
+        cy.contains('You are helping');
+        cy.get("[data-cy='remove-from-queue']").first().click();
 
         cy.get("body").should("contain", "Yes");
         cy.get("button").contains("Yes").click();
@@ -116,8 +116,7 @@ describe("Removed from queue", () => {
         // Click on the student's question
         cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
         // Click Remove from queue from the sidebar
-        cy.get("body").should("contain", "Remove");
-        cy.get("button").contains("Remove").click();
+        cy.get("[data-cy='remove-from-queue']").click();
 
         cy.get("body").should("contain", "Yes");
         cy.get("button").contains("Yes").click();

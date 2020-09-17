@@ -1,26 +1,52 @@
-<p class="callout info"><b>📣 Calling All Students</b><br/>If you are interested in learning how to build real world software or have a project of your own you want to build, check out <a href="https://oasisneu.com">Oasis</a>! Northeastern's student software project hub.</p> 
+> **📣 Calling All Students**
+>
+> If you are interested in learning how to build real world software or have a project of your own you want to build, check out <a href="https://oasisneu.com">Oasis</a>! Northeastern's student software project hub.
 
-# Motivation
 
-Many of us are familiar with that sense of dread walking into office hours the day the homework is due to see the board is filled with about a million names for people queued up to get help. We all love office hours but there are some things we’ve noticed could be improved. That’s why we set out to build this app.
+# Khoury Office Hours
 
-# Goals / Benefits
+Khoury Office Hours provides a platform for classes at [Khoury College](https://www.khoury.northeastern.edu/) to facilitate office hours and utilize data insights to decrease wait times. Students are able to ask questions and join automatically scheduled queues, and TA's are able to easily manage queues by helping students and limiting question load in stressful situations.
 
-Students
+Khoury Office Hours was developed by [Sandbox](https://www.sandboxnu.com/), Northeastern's student-led software consultancy.
 
-- Improve UI and UX for viewing the office hours schedule
-- Estimate wait times for students waiting to get help
+![Queue Demo](https://i.imgur.com/Z7C31nW.png)
 
-TAs
 
-- Create easy interface for a TA to see their own schedule
-- Improve efficiency by allowing TAs to group students who have similar questions
+## Features
 
-Professors
+- Automated office hours scraped from course calendars
 
-- Generate insights by displaying most frequently asked questions for a given assignment
-- Provide dashboard to view total office hours load to allow for more efficient use of TA resources
+- Microsoft Teams integration
 
-# Docs
+- Join the queue from anywhere
 
-See api documentation [here](https://documenter.getpostman.com/view/7402671/SVfWKk2E?version=latest)
+- Live TA status cards
+
+- Web and [Twilio](https://www.twilio.com/) SMS notifications
+
+- *[Coming Soon]* Question grouping
+
+- *[Coming Soon]* Wait time insights
+
+
+## Contribute
+
+> To get started with developing Khoury Office Hours, check out [DEVELOPING.md](https://github.com/sandboxnu/office-hours/blob/master/DEVELOPING.md)
+
+### Step 1
+Clone this repo to your local machine using `https://github.com/sandboxnu/office-hours.git`
+
+### Step 2
+Hack away! Take a look [here](https://github.com/sandboxnu/office-hours/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) for some good issues to start on.
+
+### Step 3
+Create a new pull request using <a href="https://github.com/sandboxnu/office-hours/compare/" target="_blank">`https://github.com/sandboxnu/office-hours/compare/`</a>
+
+
+## Support
+
+Found a bug? Report it [here](https://forms.monday.com/forms/06be3745a411353ad295249d43835d38) and we'll get back to you soon!
+
+## License
+
+[GPL](https://github.com/sandboxnu/office-hours/blob/master/LICENSE)

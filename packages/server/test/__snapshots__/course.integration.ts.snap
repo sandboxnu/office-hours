@@ -22,7 +22,6 @@ Object {
   "allowQuestions": true,
   "id": 1,
   "notes": null,
-  "queueSize": 0,
   "room": "WVH 101",
   "staffList": Array [
     Object {

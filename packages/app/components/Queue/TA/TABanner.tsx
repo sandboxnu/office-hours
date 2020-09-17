@@ -6,11 +6,11 @@ import {
   Question,
   QuestionStatus,
 } from "@koh/common";
-import { Avatar, Col, Popconfirm, Row } from "antd";
+import { Col, Popconfirm, Row } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
-import nameToRGB from "../../../utils/ColorUtils";
 import getInitialsFromName from "../../../utils/NameUtils";
+import AvatarWithInitals from "../../common/AvatarWithInitials";
 import Banner, { BannerButton, BannerDangerButton } from "../Banner";
 
 const Bold = styled.span`
@@ -55,15 +55,11 @@ export default function TABanner({
               //icon={<UserOutlined />}
               //src={helpingQuestion.creator.photoURL}
             }
-            <Avatar
+            <AvatarWithInitals
               size={64}
-              style={{
-                backgroundColor: nameToRGB(helpingQuestion.creator.name),
-                fontSize: 36,
-              }}
-            >
-              {getInitialsFromName(helpingQuestion.creator.name)}
-            </Avatar>
+              fontSize={36}
+              name={helpingQuestion.creator.name}
+            />
           </Col>
           <Col>
             <InfoHeader>question</InfoHeader>
@@ -87,7 +83,7 @@ export default function TABanner({
               await alertStudent();
             }}
           >
-            <BannerDangerButton icon={<CloseOutlined />}>
+            <BannerDangerButton icon={<CloseOutlined />} data-cy="remove-from-queue">
               Remove from Queue
             </BannerDangerButton>
           </Popconfirm>

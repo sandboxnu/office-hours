@@ -9,7 +9,7 @@
     "build": "nest build --webpack --webpackPath webpack.config.js",
     "dev": "TYPEORM_LOGGING=true nest build --webpack --webpackPath webpack-hmr.config.js",
     "dev:debug": "nest start --debug --watch",
-    "prod:start": "node dist/main",
+    "prod:start": "node --max-old-space-size=8192 dist/main",
     "tsc": "tsc",
     "test": "yarn test:unit && yarn test:integration",
     "test:unit": "jest -i",

@@ -16,6 +16,11 @@ import { QuestionModel } from '../src/question/question.entity';
 import { OpenQuestionStatus } from '@koh/common';
 import { In } from 'typeorm';
 
+async function delay(ms) {
+  // return await for better async stack trace support in case of errors.
+  return await new Promise(resolve => setTimeout(resolve, ms));
+}
+
 describe('Course Integration', () => {
   const supertest = setupIntegrationTest(CourseModule);
   describe('GET /courses/:id', () => {
@@ -69,7 +74,7 @@ describe('Course Integration', () => {
         .expect(200);
 
       expect(response.body).toMatchObject({
-        queues: [{ id: 2 }, { id: 1 }],
+        queues: [{ id: 1 }, { id: 2 }],
       });
     });
 
@@ -90,7 +95,9 @@ describe('Course Integration', () => {
         ],
       });
 
-      await supertest({ userId: 1 }).get(`/courses/${course.id}`).expect(401);
+      await supertest({ userId: 1 })
+        .get(`/courses/${course.id}`)
+        .expect(401);
     });
   });
 
@@ -209,6 +216,9 @@ describe('Course Integration', () => {
       await supertest({ userId: ta.id })
         .delete(`/courses/${tcf.courseId}/ta_location/The Alamo`)
         .expect(200);
+
+      // TODO: Super jank wait for setTimeout. Use jest timer? Or once we have Queues, just verify a job was added
+      await delay(200);
       expect((await getOpenQuestions()).length).toEqual(0);
     });
 

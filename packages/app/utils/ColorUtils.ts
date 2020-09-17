@@ -22,7 +22,8 @@ const colors = [
 
 export default function nameToRGB(str: string): string {
   let hash = 0; // java String#hashCode
-  for (let i = 0; i < str?.length; i++) {
+
+  for (let i = 0; i < str.split.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
   }
 
