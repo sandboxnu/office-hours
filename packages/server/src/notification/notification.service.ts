@@ -70,7 +70,6 @@ export class NotificationService {
 
     let phoneNotifModel = await PhoneNotifModel.findOne({
       userId: user.id,
-      phoneNumber,
     });
 
     if (phoneNotifModel) {
