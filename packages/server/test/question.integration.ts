@@ -3,6 +3,9 @@ import {
   QuestionStatusKeys,
   QuestionType,
 } from '@koh/common';
+import { UserModel } from 'profile/user.entity';
+import { QueueModel } from 'queue/queue.entity';
+import supertest from 'supertest';
 import { QuestionModel } from '../src/question/question.entity';
 import { QuestionModule } from '../src/question/question.module';
 import {
@@ -54,6 +57,20 @@ describe('Question Integration', () => {
   });
 
   describe('POST /questions', () => {
+    const postQuestion = (
+      user: UserModel,
+      queue: QueueModel,
+      force = false,
+    ): supertest.Test =>
+      supertest({ userId: user.id })
+        .post('/questions')
+        .send({
+          text: "Don't know recursion",
+          questionType: QuestionType.Concept,
+          queueId: queue.id,
+          force,
+        });
+
     it('posts a new question', async () => {
       const course = await CourseFactory.create();
       const queue = await QueueFactory.create({
@@ -63,15 +80,7 @@ describe('Question Integration', () => {
       const user = await UserFactory.create();
       await StudentCourseFactory.create({ user, courseId: queue.courseId });
       expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(0);
-      const response = await supertest({ userId: user.id })
-        .post('/questions')
-        .send({
-          text: "Don't know recursion",
-          questionType: QuestionType.Concept,
-          queueId: queue.id,
-          force: false,
-        })
-        .expect(201);
+      const response = await postQuestion(user, queue).expect(201);
       expect(response.body).toMatchObject({
         text: "Don't know recursion",
         helpedAt: null,
@@ -83,18 +92,14 @@ describe('Question Integration', () => {
     });
     it('ta cannot post  a new question', async () => {
       const course = await CourseFactory.create();
-      const queue = await QueueFactory.create({ courseId: course.id });
+      const queue = await QueueFactory.create({
+        course: course,
+        allowQuestions: true,
+      });
       const user = await UserFactory.create();
       await TACourseFactory.create({ user, courseId: queue.courseId });
       expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(0);
-      await supertest({ userId: user.id })
-        .post('/questions')
-        .send({
-          text: "Don't know recursion",
-          questionType: QuestionType.Concept,
-          queueId: queue.id,
-        })
-        .expect(401);
+      await postQuestion(user, queue).expect(401);
     });
     it('post question fails with non-existent queue', async () => {
       await supertest({ userId: 99 })
@@ -103,25 +108,20 @@ describe('Question Integration', () => {
           text: "Don't know recursion",
           questionType: QuestionType.Concept,
           queueId: 999,
+          force: false,
         })
         .expect(404);
     });
     it('does not allow posting in course student is not in', async () => {
-      const queueImNotIn = await QueueFactory.create();
+      const queueImNotIn = await QueueFactory.create({
+        allowQuestions: true,
+      });
       const user = await UserFactory.create();
       await StudentCourseFactory.create({
         user,
         course: await CourseFactory.create(),
       });
-      await supertest({ userId: user.id })
-        .post('/questions')
-        .send({
-          text: "Don't know recursion",
-          questionType: QuestionType.Concept,
-          queueId: queueImNotIn.id,
-          force: false,
-        })
-        .expect(404);
+      await postQuestion(user, queueImNotIn).expect(404);
     });
     it('post question fails on closed queue', async () => {
       const officeHours = await ClosedOfficeHourFactory.create();
@@ -132,23 +132,21 @@ describe('Question Integration', () => {
       const queue = await QueueFactory.create({
         course: course,
         officeHours: [officeHours],
+        allowQuestions: true,
       });
       expect(await queue.checkIsOpen()).toBe(false);
 
       const user = await UserFactory.create();
       await StudentCourseFactory.create({ user, courseId: queue.courseId });
-      await supertest({ userId: user.id })
-        .post('/questions')
-        .send({
-          text: 'I need help',
-          questionType: QuestionType.Concept,
-          queueId: queue.id,
-        })
-        .expect(400);
+      await supertest({ userId: user.id });
+      await postQuestion(user, queue).expect(400);
     });
     it('post question fails with bad params', async () => {
       const course = await CourseFactory.create();
-      const queue = await QueueFactory.create({ courseId: course.id });
+      const queue = await QueueFactory.create({
+        courseId: course.id,
+        allowQuestions: true,
+      });
       const user = await UserFactory.create();
       await StudentCourseFactory.create({ user, courseId: queue.courseId });
       await supertest({ userId: user.id })
@@ -157,6 +155,7 @@ describe('Question Integration', () => {
           text: 'I need help',
           questionType: 'bad param!',
           queueId: 1, // even with bad params we still need a queue
+          force: false
         })
         .expect(400);
     });
@@ -177,14 +176,7 @@ describe('Question Integration', () => {
         status: OpenQuestionStatus.Drafting,
       });
 
-      const response = await supertest({ userId: user.id })
-        .post('/questions')
-        .send({
-          text: 'i need to know where the alamo is',
-          queueId: queue.id,
-          questionType: QuestionType.Bug,
-          force: false,
-        });
+      const response = await postQuestion(user, queue);
 
       expect(response.status).toBe(400);
       expect(response.body.message).toBe(
@@ -208,15 +200,7 @@ describe('Question Integration', () => {
         status: OpenQuestionStatus.Drafting,
       });
 
-      await supertest({ userId: user.id })
-        .post('/questions')
-        .send({
-          text: 'i need to know where the alamo is',
-          queueId: queue.id,
-          questionType: QuestionType.Bug,
-          force: true,
-        })
-        .expect(201);
+      await postQuestion(user, queue, true).expect(201);
     });
     it('lets student (who is TA in other class) create question', async () => {
       const user = await UserFactory.create();
@@ -235,15 +219,7 @@ describe('Question Integration', () => {
         courseId: queue.courseId,
       });
 
-      await supertest({ userId: user.id })
-        .post('/questions')
-        .send({
-          text: 'i need to know where the alamo is',
-          queueId: queue.id,
-          questionType: QuestionType.Bug,
-          force: false,
-        })
-        .expect(201);
+      await postQuestion(user, queue).expect(201);
     });
     it('works when other queues and courses exist', async () => {
       const user = await UserFactory.create();
@@ -257,15 +233,7 @@ describe('Question Integration', () => {
         courseId: queue.courseId,
       });
 
-      await supertest({ userId: user.id })
-        .post('/questions')
-        .send({
-          text: 'i need to know where the alamo is',
-          queueId: queue.id,
-          questionType: QuestionType.Bug,
-          force: false,
-        })
-        .expect(201);
+      await postQuestion(user, queue).expect(201);
     });
   });
 

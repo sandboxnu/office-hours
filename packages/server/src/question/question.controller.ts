@@ -75,34 +75,11 @@ export class QuestionController {
       relations: ['staffList'],
     });
 
-    if (!queue) {
-      throw new NotFoundException('Posted to an invalid queue');
-    }
-
     if (!queue.allowQuestions) {
-      throw new MethodNotAllowedException();
+      throw new BadRequestException('Queue not allowing new questions');
     }
-
-    // TODO: think of a neat way to make this abstracted
-    const isUserInCourse =
-      (await UserCourseModel.count({
-        where: {
-          role: Role.STUDENT,
-          courseId: queue.courseId,
-          userId: user.id,
-        },
-      })) === 1;
-
-    if (!isUserInCourse) {
-      throw new UnauthorizedException(
-        "Can't post question to course you're not in!",
-      );
-    }
-
     if (!(await queue.checkIsOpen())) {
-      throw new BadRequestException(
-        "You can't post a question to a closed queue",
-      );
+      throw new BadRequestException('Queue is closed');
     }
 
     const previousUserQuestion = await QuestionModel.findOne({

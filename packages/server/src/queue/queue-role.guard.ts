@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UserModel } from '../profile/user.entity';
 import { RolesGuard } from '../guards/role.guard';
 import { QueueModel } from './queue.entity';
@@ -10,7 +10,10 @@ export class QueueRolesGuard extends RolesGuard {
     request: any,
   ): Promise<{ courseId: number; user: UserModel }> {
     const queue = await QueueModel.findOne(request.params.queueId);
-    const courseId = queue?.courseId;
+    if (!queue) {
+      throw new NotFoundException('Queue not found');
+    }
+    const courseId = queue.courseId;
     const user = await UserModel.findOne(request.user.userId, {
       relations: ['courses'],
     });
