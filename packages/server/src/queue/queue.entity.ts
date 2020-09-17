@@ -16,6 +16,7 @@ import { CourseModel } from '../course/course.entity';
 import { OfficeHourModel } from '../course/office-hour.entity';
 import { UserModel } from '../profile/user.entity';
 import { QuestionModel } from '../question/question.entity';
+import { OpenQuestionStatus } from '@koh/common';
 
 interface TimeInterval {
   startTime: Date;
@@ -82,7 +83,11 @@ export class QueueModel extends BaseEntity {
   queueSize: number;
 
   async addQueueSize(): Promise<void> {
-    this.queueSize = await QuestionModel.openInQueue(this.id).getCount();
+    this.queueSize = await QuestionModel.openInQueue(this.id)
+      .where('question.status IN (:...openStatus)', {
+        openStatus: [OpenQuestionStatus.Drafting, OpenQuestionStatus.Queued],
+      })
+      .getCount();
   }
 
   public async addQueueTimes(): Promise<void> {

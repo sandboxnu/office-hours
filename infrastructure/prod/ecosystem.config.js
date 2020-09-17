@@ -23,12 +23,12 @@ module.exports = {
     staging: {
       user: "ubuntu",
       host: "128.31.24.252",
-      ref: "origin/master",
+      ref: "origin/dist",
       repo: "https://github.com/sandboxnu/office-hours.git",
       path: "/var/www",
       "pre-deploy-local": "",
       "post-deploy":
-        "yarn && yarn build && yarn typeorm migration:run && yarn prod:start",
+        "yarn && yarn typeorm migration:run && yarn prod:start",
       "pre-setup": "",
     },
     production: {
