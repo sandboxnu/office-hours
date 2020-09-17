@@ -18,7 +18,7 @@
     "test:integration": "jest --config ./test/jest-integration.json -i",
     "dev:db:reset": "yarn typeorm schema:drop",
     "migration:generate": "yarn typeorm schema:drop && yarn typeorm migration:run && yarn typeorm migration:generate",
-    "typeorm": "cross-env TYPEORM_CLI=true ts-node node_modules/.bin/typeorm",
+    "typeorm": "cross-env TYPEORM_CLI=true ts-node ../../node_modules/typeorm/cli.js",
     "cli": "nestjs-command"
   },
   "dependencies": {
