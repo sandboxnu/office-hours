@@ -1,4 +1,5 @@
 import {
+  ClosedQuestionStatus,
   OpenQuestionStatus,
   QuestionStatusKeys,
   QuestionType,
@@ -345,13 +346,15 @@ describe('Question Integration', () => {
     it('PATCH status to Resolved as TA works', async () => {
       const course = await CourseFactory.create();
       const queue = await QueueFactory.create({ courseId: course.id });
-      const q = await QuestionFactory.create({
-        text: 'Help pls',
-        status: QuestionStatusKeys.Queued,
-        queue: queue,
-      });
       const ta = await UserFactory.create();
       await TACourseFactory.create({ courseId: queue.courseId, user: ta });
+
+      const q = await QuestionFactory.create({
+        text: 'Help pls',
+        status: QuestionStatusKeys.Helping,
+        queue: queue,
+        taHelped: ta,
+      });
 
       const res = await supertest({ userId: ta.id })
         .patch(`/questions/${q.id}`)
@@ -374,6 +377,19 @@ describe('Question Integration', () => {
           text: 'bonjour',
         })
         .expect(401);
+    });
+    it('PATCH invalid state transition not allowed', async () => {
+      const q = await QuestionFactory.create({ text: 'Help pls' });
+      const ta = await UserFactory.create();
+      await TACourseFactory.create({ course: q.queue.course, user: ta });
+
+      const res = await supertest({ userId: ta.id })
+        .patch(`/questions/${q.id}`)
+        .send({
+          status: ClosedQuestionStatus.StudentCancelled
+        })
+        .expect(401);
+      expect(res.body?.message).toContain("TA cannot change status from ")
     });
     it('PATCH question fails when you are not the question creator', async () => {
       const q = await QuestionFactory.create({ text: 'Help pls' });
@@ -427,13 +443,12 @@ describe('Question Integration', () => {
           status: QuestionStatusKeys.Helping,
         })
         .expect(200);
-      const res = await supertest({ userId: ta.id })
+      await supertest({ userId: ta.id })
         .patch(`/questions/${q2.id}`)
         .send({
           status: QuestionStatusKeys.Helping,
         })
-        .expect(200);
-      expect(res.body).toMatchObject({});
+        .expect(400);
     });
   });
 });
