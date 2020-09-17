@@ -82,7 +82,7 @@ export default function TABanner({
             onConfirm={async () => {
               await updateQuestion(
                 helpingQuestion,
-                OpenQuestionStatus.TADeleted
+                LimboQuestionStatus.TADeleted
               );
               await alertStudent();
             }}

@@ -114,7 +114,7 @@ const StudentPopupCard = ({
               cancelText="No"
               onConfirm={async () => {
                 await onClose();
-                await updateQuestion(question, OpenQuestionStatus.TADeleted);
+                await updateQuestion(question, LimboQuestionStatus.TADeleted);
                 await API.questions.notify(question.id);
               }}
               disabled={!isStaffCheckedIn}

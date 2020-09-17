@@ -27,8 +27,8 @@ export function useStudentQuestion(qid: number): UseStudentQuestionReturn {
     questions
       .filter(
         (question) =>
-          question.status !== OpenQuestionStatus.CantFind &&
-          question.status !== OpenQuestionStatus.TADeleted &&
+          question.status !== LimboQuestionStatus.CantFind &&
+          question.status !== LimboQuestionStatus.TADeleted &&
           question.status !== OpenQuestionStatus.Helping
       )
       .indexOf(studentQuestion);

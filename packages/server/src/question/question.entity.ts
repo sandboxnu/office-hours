@@ -2,6 +2,7 @@ import {
   OpenQuestionStatus,
   QuestionStatus,
   QuestionType,
+  Role,
 } from '@koh/common';
 import { Exclude } from 'class-transformer';
 import {
@@ -15,6 +16,7 @@ import {
 } from 'typeorm';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
+import { canChangeQuestionStatus } from './question-fsm';
 
 @Entity('question_model')
 export class QuestionModel extends BaseEntity {
@@ -69,6 +71,20 @@ export class QuestionModel extends BaseEntity {
 
   @Column({ nullable: true })
   isOnline: boolean;
+
+  /**
+   * change the status of the question as the given role
+   * 
+   * @returns whether status change succeeded
+   */
+  public changeStatus(newStatus: QuestionStatus, role: Role): boolean {
+    if(canChangeQuestionStatus(this.status, newStatus, role)) {
+      this.status = newStatus;
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   /**
    * Scopes

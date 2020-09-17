@@ -14,7 +14,7 @@ export default function StudentRemovedFromQueueModal(
 ): ReactElement {
   return (
     <Modal
-      visible={props.question?.status === OpenQuestionStatus.TADeleted}
+      visible={props.question?.status === LimboQuestionStatus.TADeleted}
       footer={[
         <Button key="leave" danger onClick={props.leaveQueue}>
           Leave Queue

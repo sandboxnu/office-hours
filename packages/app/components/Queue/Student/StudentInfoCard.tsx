@@ -125,7 +125,7 @@ const StudentInfoCard = ({
           okText="Yes"
           cancelText="No"
           onConfirm={() => {
-            updateQuestion(question, OpenQuestionStatus.CantFind);
+            updateQuestion(question, LimboQuestionStatus.CantFind);
             alertStudent();
           }}
         >

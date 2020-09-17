@@ -56,8 +56,7 @@
     "twilio": "^3.47.0",
     "typeorm": "^0.2.25",
     "web-push": "^3.4.4",
-    "windows-iana": "^4.2.1",
-    "xstate": "^4.13.0"
+    "windows-iana": "^4.2.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.4.0",

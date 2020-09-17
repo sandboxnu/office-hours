@@ -212,7 +212,7 @@ export default function StudentQueueList({
       <>
         <QueuePageContainer>
           <CantFindModal
-            visible={studentQuestion?.status === OpenQuestionStatus.CantFind}
+            visible={studentQuestion?.status === LimboQuestionStatus.CantFind}
             leaveQueue={leaveQueue}
             rejoinQueue={rejoinQueue}
           />
@@ -308,9 +308,9 @@ interface QueueProps {
 function QueueQuestions({ questions, studentQuestion }: QueueProps) {
   const renderedQuestions = questions?.filter(
     (question) =>
-      question.status !== OpenQuestionStatus.TADeleted &&
+      question.status !== LimboQuestionStatus.TADeleted &&
       question.status !== OpenQuestionStatus.Helping &&
-      question.status !== OpenQuestionStatus.CantFind
+      question.status !== LimboQuestionStatus.CantFind
   );
   return (
     <div data-cy="queueQuestions">

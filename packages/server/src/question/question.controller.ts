@@ -3,6 +3,7 @@ import {
   CreateQuestionParams,
   CreateQuestionResponse,
   GetQuestionResponse,
+  LimboQuestionStatus,
   OpenQuestionStatus,
   QuestionStatusKeys,
   Role,
@@ -113,7 +114,7 @@ export class QuestionController {
 
     if (!!previousUserQuestion) {
       if (force) {
-        previousUserQuestion.status = ClosedQuestionStatus.Resolved;
+        previousUserQuestion.status = ClosedQuestionStatus.StudentCancelled;
         await previousUserQuestion.save();
       } else {
         throw new BadRequestException(
@@ -241,12 +242,12 @@ export class QuestionController {
       relations: ['queue'],
     });
 
-    if (question.status === OpenQuestionStatus.CantFind) {
+    if (question.status === LimboQuestionStatus.CantFind) {
       await this.notifService.notifyUser(
         question.creatorId,
         NotifMsgs.queue.ALERT_BUTTON,
       );
-    } else if (question.status === OpenQuestionStatus.TADeleted) {
+    } else if (question.status === LimboQuestionStatus.TADeleted) {
       await this.notifService.notifyUser(
         question.creatorId,
         NotifMsgs.queue.REMOVED,
