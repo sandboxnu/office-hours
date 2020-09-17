@@ -111,15 +111,6 @@ class APIClient {
           payload
         ),
     },
-    phone: {
-      register: async (payload: PhoneNotifBody): Promise<string> =>
-        this.req(
-          "POST",
-          `/api/v1/notifications/phone/register`,
-          undefined,
-          payload
-        ),
-    },
   };
   seeds = {
     delete: async () => this.req("GET", `/api/v1/seeds/delete`),
