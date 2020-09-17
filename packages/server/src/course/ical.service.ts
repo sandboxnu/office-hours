@@ -43,7 +43,7 @@ export class IcalService {
         iCalElement.end !== undefined,
     );
 
-    const officeHoursEventRegex = /\b(OH|Hours)\b/g;
+    const officeHoursEventRegex = /\b^(OH|Hours)\b/;
 
     return officeHours
       .filter(event => officeHoursEventRegex.test(event.summary))
