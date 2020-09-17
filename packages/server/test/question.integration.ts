@@ -55,12 +55,9 @@ describe('Question Integration', () => {
 
   describe('POST /questions', () => {
     it('posts a new question', async () => {
-      const ofs = await OfficeHourFactory.create();
-      const course = await CourseFactory.create({ officeHours: [ofs] });
+      const course = await CourseFactory.create();
       const queue = await QueueFactory.create({
-        courseId: course.id,
         course: course,
-        officeHours: [ofs],
         allowQuestions: true,
       });
       const user = await UserFactory.create();
@@ -109,7 +106,23 @@ describe('Question Integration', () => {
         })
         .expect(404);
     });
-
+    it('does not allow posting in course student is not in', async () => {
+      const queueImNotIn = await QueueFactory.create();
+      const user = await UserFactory.create();
+      await StudentCourseFactory.create({
+        user,
+        course: await CourseFactory.create(),
+      });
+      await supertest({ userId: user.id })
+        .post('/questions')
+        .send({
+          text: "Don't know recursion",
+          questionType: QuestionType.Concept,
+          queueId: queueImNotIn.id,
+          force: false,
+        })
+        .expect(404);
+    });
     it('post question fails on closed queue', async () => {
       const officeHours = await ClosedOfficeHourFactory.create();
       const course = await CourseFactory.create({
@@ -117,7 +130,6 @@ describe('Question Integration', () => {
       });
 
       const queue = await QueueFactory.create({
-        courseId: course.id,
         course: course,
         officeHours: [officeHours],
       });
@@ -153,7 +165,6 @@ describe('Question Integration', () => {
       const user = await UserFactory.create();
       const queue = await QueueFactory.create({
         allowQuestions: true,
-        courseId: course.id,
         course: course,
       });
       await StudentCourseFactory.create({
@@ -185,7 +196,6 @@ describe('Question Integration', () => {
       const user = await UserFactory.create();
       const queue = await QueueFactory.create({
         allowQuestions: true,
-        courseId: course.id,
         course: course,
       });
       await StudentCourseFactory.create({
@@ -267,10 +277,8 @@ describe('Question Integration', () => {
       await StudentCourseFactory.create({ user, courseId: queue.courseId });
       const q = await QuestionFactory.create({
         text: 'Help pls',
-        queueId: queue.id,
         queue: queue,
         creator: user,
-        creatorId: user.id,
       });
 
       const response = await supertest({ userId: q.creatorId })
@@ -306,8 +314,6 @@ describe('Question Integration', () => {
 
       const q = await QuestionFactory.create({
         text: 'Help pls',
-        queueId: queue.id,
-        creatorId: student.id,
         creator: student,
         queue: queue,
       });
@@ -335,8 +341,6 @@ describe('Question Integration', () => {
       });
       const q = await QuestionFactory.create({
         text: 'Help pls',
-        queueId: queue.id,
-        creatorId: student.id,
         creator: student,
         queue: queue,
       });
@@ -353,7 +357,6 @@ describe('Question Integration', () => {
       const queue = await QueueFactory.create({ courseId: course.id });
       const q = await QuestionFactory.create({
         text: 'Help pls',
-        queueId: queue.id,
         queue: queue,
       });
       const ta = await UserFactory.create();
@@ -377,7 +380,6 @@ describe('Question Integration', () => {
       const q = await QuestionFactory.create({
         text: 'Help pls',
         status: QuestionStatusKeys.Queued,
-        queueId: queue.id,
         queue: queue,
       });
       const ta = await UserFactory.create();
@@ -426,10 +428,8 @@ describe('Question Integration', () => {
       const user = await UserFactory.create();
       const q = await QuestionFactory.create({
         text: 'Help pls',
-        queueId: queue.id,
         queue: queue,
         creator: user,
-        creatorId: user.id,
       });
 
       await supertest({ userId: q.creatorId })
@@ -444,12 +444,10 @@ describe('Question Integration', () => {
       const queue = await QueueFactory.create({ courseId: course.id });
       const q1 = await QuestionFactory.create({
         text: 'Help pls',
-        queueId: queue.id,
         queue: queue,
       });
       const q2 = await QuestionFactory.create({
         text: 'Help pls 2',
-        queueId: queue.id,
         queue: queue,
       });
       const ta = await UserFactory.create();
