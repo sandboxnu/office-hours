@@ -63,13 +63,13 @@ export class NotificationService {
     }
   }
 
-  async registerPhone(phoneNumber: string, userId: number): Promise<void> {
+  async registerPhone(phoneNumber: string, user: UserModel): Promise<void> {
     if (!this.twilioService.isPhoneNumberReal) {
       throw new BadRequestException('phone number invalid');
     }
 
     let phoneNotifModel = await PhoneNotifModel.findOne({
-      userId,
+      userId: user.id,
       phoneNumber,
     });
 
@@ -86,9 +86,12 @@ export class NotificationService {
     } else {
       phoneNotifModel = await PhoneNotifModel.create({
         phoneNumber,
-        userId,
+        userId: user.id,
         verified: false,
       }).save();
+      
+      // MUTATE so if user.save() is called later it doesn't dis-associate
+      user.phoneNotif = phoneNotifModel;
     }
 
     await this.notifyPhone(
