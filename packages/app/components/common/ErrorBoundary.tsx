@@ -13,13 +13,10 @@ export class ErrorBoundary extends React.Component<{}, EBState> {
   }
 
   static getDerivedStateFromError(error): EBState {
-    // Update state so the next render will show the fallback UI.
     return { hasError: true };
   }
 
   componentDidCatch(error, errorInfo): void {
-    // You can also log the error to an error reporting service
-    // logErrorToMyService(error, errorInfo);
     if (window) {
       apm.captureError(error);
     }
@@ -27,7 +24,6 @@ export class ErrorBoundary extends React.Component<{}, EBState> {
 
   render(): ReactNode {
     if (this.state.hasError) {
-      // You can render any custom fallback UI
       return (
         <Result
           status="500"
