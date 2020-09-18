@@ -20,7 +20,6 @@ export class ErrorBoundary extends React.Component<{}, EBState> {
   componentDidCatch(error, errorInfo): void {
     // You can also log the error to an error reporting service
     // logErrorToMyService(error, errorInfo);
-    console.log(error, apm)
     if (window) {
       apm.captureError(error);
     }
