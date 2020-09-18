@@ -47,7 +47,9 @@ describe('Question Integration', () => {
       expect(response.body).toMatchSnapshot();
     });
     it('fails to get a non-existent question', async () => {
-      await supertest({ userId: 99 }).get(`/questions/999`).expect(404);
+      await supertest({ userId: 99 })
+        .get(`/questions/999`)
+        .expect(404);
     });
   });
 
@@ -147,12 +149,10 @@ describe('Question Integration', () => {
         .expect(400);
     });
     it("can't create more than one open question at a time", async () => {
-      const ofs = await OfficeHourFactory.create();
-      const course = await CourseFactory.create({ officeHours: [ofs] });
+      const course = await CourseFactory.create({});
       const user = await UserFactory.create();
       const queue = await QueueFactory.create({
         allowQuestions: true,
-        officeHours: [ofs],
         courseId: course.id,
         course: course,
       });
@@ -179,6 +179,83 @@ describe('Question Integration', () => {
       expect(response.body.message).toBe(
         "You can't create more than one question at a time.",
       );
+    });
+    it('force a question when one is already open', async () => {
+      const course = await CourseFactory.create({});
+      const user = await UserFactory.create();
+      const queue = await QueueFactory.create({
+        allowQuestions: true,
+        courseId: course.id,
+        course: course,
+      });
+      await StudentCourseFactory.create({
+        userId: user.id,
+        courseId: queue.courseId,
+      });
+      await QuestionFactory.create({
+        queueId: queue.id,
+        creator: user,
+        status: OpenQuestionStatus.Drafting,
+      });
+
+      await supertest({ userId: user.id })
+        .post('/questions')
+        .send({
+          text: 'i need to know where the alamo is',
+          queueId: queue.id,
+          questionType: QuestionType.Bug,
+          force: true,
+        })
+        .expect(201);
+    });
+    it('lets student (who is TA in other class) create question', async () => {
+      const user = await UserFactory.create();
+
+      // Make user a TA in other class
+      const queueOther = await QueueFactory.create({});
+      await TACourseFactory.create({
+        userId: user.id,
+        courseId: queueOther.courseId,
+      });
+
+      // Make them student
+      const queue = await QueueFactory.create({ allowQuestions: true });
+      await StudentCourseFactory.create({
+        userId: user.id,
+        courseId: queue.courseId,
+      });
+
+      await supertest({ userId: user.id })
+        .post('/questions')
+        .send({
+          text: 'i need to know where the alamo is',
+          queueId: queue.id,
+          questionType: QuestionType.Bug,
+          force: false,
+        })
+        .expect(201);
+    });
+    it('works when other queues and courses exist', async () => {
+      const user = await UserFactory.create();
+
+      await QueueFactory.create({});
+
+      // Make them student
+      const queue = await QueueFactory.create({ allowQuestions: true });
+      await StudentCourseFactory.create({
+        userId: user.id,
+        courseId: queue.courseId,
+      });
+
+      await supertest({ userId: user.id })
+        .post('/questions')
+        .send({
+          text: 'i need to know where the alamo is',
+          queueId: queue.id,
+          questionType: QuestionType.Bug,
+          force: false,
+        })
+        .expect(201);
     });
   });
 

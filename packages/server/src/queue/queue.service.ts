@@ -1,11 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { QueueModel } from './queue.entity';
-import {
-  GetQueueResponse,
-  ListQuestionsResponse,
-  Role,
-} from '@koh/common';
+import { ListQuestionsResponse, Role } from '@koh/common';
 import { QuestionModel } from 'question/question.entity';
 import { pick } from 'lodash';
 
@@ -17,13 +13,13 @@ import { pick } from 'lodash';
 export class QueueService {
   constructor(private connection: Connection) {}
 
-  async getQueue(queueId: number): Promise<GetQueueResponse> {
+  async getQueue(queueId: number): Promise<QueueModel> {
     const queue = await QueueModel.findOne(queueId, {
       relations: ['staffList'],
     });
-
     await queue.addQueueTimes();
     await queue.checkIsOpen();
+    await queue.addQueueSize();
 
     return queue;
   }

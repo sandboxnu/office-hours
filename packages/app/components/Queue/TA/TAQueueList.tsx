@@ -89,7 +89,7 @@ export default function TAQueueList({
 }: TAQueueListProps): ReactElement {
   const user = useProfile();
 
-  const { queue, queuesError, mutateQueue } = useQueue(qid);
+  const { queue, mutateQueue } = useQueue(qid);
 
   const { questions, questionsError, mutateQuestions } = useQuestions(qid);
 
@@ -109,6 +109,12 @@ export default function TAQueueList({
   const [openPopup, setOpenPopup] = useState<boolean>(false);
   const [queueSettingsModal, setQueueSettingsModal] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
+
+  // Close popup if currentQuestion no longer exists in the cache
+  if (currentQuestion && !questions.includes(currentQuestion)) {
+    setCurrentQuestion(null);
+    setOpenPopup(false)
+  }
 
   const onOpenCard = useCallback((question: Question): void => {
     setCurrentQuestion(question);
@@ -181,6 +187,7 @@ export default function TAQueueList({
                 {isStaffCheckedIn ? (
                   <CheckOutButton
                     danger
+                    disabled={isHelping}
                     data-cy="check-out-button"
                     onClick={async () => {
                       await API.taStatus.checkOut(courseId, queue?.room);

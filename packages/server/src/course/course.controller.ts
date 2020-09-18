@@ -51,7 +51,10 @@ export class CourseController {
       course.queues,
       async (q) => await q.checkIsOpen(),
     );
-    await async.each(course.queues, async (q) => await q.addQueueTimes());
+    await async.each(course.queues, async (q) => {
+      await q.addQueueTimes();
+      await q.addQueueSize();
+    });
 
     return course;
   }
@@ -113,7 +116,9 @@ export class CourseController {
     }
     await queue.save();
     // Clean up queue if necessary
-    await this.queueCleanService.cleanQueue(queue.id);
-    await this.queueSSEService.updateQueue(queue.id);
+    setTimeout(async () => {
+      await this.queueCleanService.cleanQueue(queue.id);
+      await this.queueSSEService.updateQueue(queue.id);
+    });
   }
 }

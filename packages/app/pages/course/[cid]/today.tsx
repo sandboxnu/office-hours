@@ -14,7 +14,6 @@ import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import { useCourse } from "../../../hooks/useCourse";
 import SchedulePanel from "../../../components/Schedule/SchedulePanel";
-import { FatalError } from "../../../components/common/FatalError";
 
 const Container = styled.div`
   margin: 32px 64px;
@@ -34,7 +33,7 @@ export default function Today(): ReactElement {
   const { cid } = router.query;
   const role = useRoleInCourse(Number(cid));
 
-  const { course, courseError, mutateCourse } = useCourse(Number(cid));
+  const { course, mutateCourse } = useCourse(Number(cid));
 
   const updateQueueNotes = async (
     queue: QueuePartial,
@@ -52,9 +51,6 @@ export default function Today(): ReactElement {
     mutateCourse();
   };
 
-  if (courseError) {
-    return <FatalError error={courseError} />;
-  }
   return (
     <div>
       <Head>

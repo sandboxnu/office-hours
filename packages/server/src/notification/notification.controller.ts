@@ -44,16 +44,6 @@ export class NotificationController {
     return 'registration success';
   }
 
-  @Post('phone/register')
-  @UseGuards(JwtAuthGuard)
-  async registerPhoneUser(
-    @Body() body: { phoneNumber: string },
-    @UserId() userId: number,
-  ): Promise<string> {
-    await this.notifService.registerPhone(body.phoneNumber, userId);
-    return `registration success for ${body.phoneNumber}`;
-  }
-
   // Webhook from twilio
   @Post('/phone/verify')
   @Header('Content-Type', 'text/xml')
