@@ -6,6 +6,7 @@ import { init as initApm } from "@elastic/apm-rum";
 import { Footer } from "../components/common/Footer";
 import styled from "styled-components";
 import { ReactElement } from "react";
+import { ErrorBoundary } from "../components/common/ErrorBoundary";
 
 if (process.env.NODE_ENV === "production" && typeof window !== "undefined") {
   initApm({
@@ -28,7 +29,9 @@ function MyApp({ Component, pageProps }: AppProps): ReactElement {
   return (
     <Layout>
       <Content>
-        <Component {...pageProps} />
+        <ErrorBoundary>
+          <Component {...pageProps} />
+        </ErrorBoundary>
       </Content>
       <Footer />
     </Layout>
