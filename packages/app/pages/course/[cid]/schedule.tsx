@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
 import { useCourse } from "../../../hooks/useCourse";
 import { useProfile } from "../../../hooks/useProfile";
-import { FatalError } from "../../../components/common/FatalError";
 import Head from "next/head";
 import NavBar from "../../../components/Nav/NavBar";
 import SchedulePanel from "../../../components/Schedule/SchedulePanel";
@@ -20,9 +19,7 @@ export default function Schedule(): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
 
-  const { course, courseError } = useCourse(Number(cid));
-
-  if (courseError) return <FatalError error={courseError} />;
+  const { course } = useCourse(Number(cid));
 
   return (
     <div>
