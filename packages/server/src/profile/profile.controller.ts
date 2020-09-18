@@ -51,14 +51,12 @@ export class ProfileController {
     @Body() userPatch: UpdateProfileParams,
     @User(['courses', 'courses.course', 'phoneNotif']) user: UserModel,
   ): Promise<GetProfileResponse> {
-    const prevPhoneNotifsEnabled = user.phoneNotifsEnabled;
     user = Object.assign(user, userPatch);
     if (
-      !prevPhoneNotifsEnabled &&
       user.phoneNotifsEnabled &&
-      userPatch.phoneNumber
+      userPatch.phoneNumber !== user.phoneNotif?.phoneNumber
     ) {
-      await this.notifService.registerPhone(userPatch.phoneNumber, user.id);
+      await this.notifService.registerPhone(userPatch.phoneNumber, user);
     }
     await user.save();
 

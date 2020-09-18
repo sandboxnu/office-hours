@@ -15,24 +15,6 @@ describe('Notif Integration', () => {
     });
   });
 
-  describe('POST /notifications/phone/register', () => {
-    it("registers a user & phone number, tests it's in the db", async () => {
-      const user = await UserFactory.create();
-      await supertest({ userId: user.id })
-        .post(`/notifications/phone/register`)
-        .send({ phoneNumber: '+16175551212' })
-        .expect(201);
-
-      const notifModel = await PhoneNotifModel.findOne();
-      expect(notifModel).toEqual({
-        id: 1,
-        phoneNumber: '+16175551212',
-        verified: false,
-        userId: user.id,
-      });
-    });
-  });
-
   describe('POST notifications/desktop/register', () => {
     it('registers desktop notif', async () => {
       // TODO this could be a unit test!
