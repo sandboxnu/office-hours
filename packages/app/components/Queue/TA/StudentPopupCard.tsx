@@ -6,6 +6,7 @@ import styled from "styled-components";
 import getInitialsFromName from "../../../utils/NameUtils";
 import { getWaitTime } from "../../../utils/TimeUtil";
 import AvatarWithInitals from "../../common/AvatarWithInitials";
+import { questionStatusToColor } from "../QueueCardSharedComponents";
 
 const FullWidth = styled.div`
   margin-top: 32px;
@@ -158,7 +159,11 @@ const StudentPopupCard = ({
           <Email>{question.creator.email}</Email>
         </InfoTextDiv>
 
-        <StatusTag color="purple">{question.status}</StatusTag>
+        <StatusTag color={questionStatusToColor(question.status)}>
+          {question.status === OpenQuestionStatus.CantFind
+            ? "Can't Find"
+            : question.status}
+        </StatusTag>
 
         <StyledRow gutter={[8, 0]}>
           <Col span={12}>
