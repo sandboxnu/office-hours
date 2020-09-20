@@ -59,7 +59,7 @@ export class NotificationController {
     const isValidated = twilio.validateRequest(
       twilioAuthToken,
       twilioSignature.trim(),
-      'https://28a88b3af262.ngrok.io/api/v1/notifications/phone/verify',
+      `${this.configService.get('DOMAIN')}/api/v1/notifications/phone/verify`,
       body,
     );
 
