@@ -39,7 +39,6 @@
     "dotenv": "^8.2.0",
     "elastic-apm-node": "^3.6.1",
     "lodash": "^4.17.19",
-    "luxon": "^1.25.0",
     "moment": "^2.27.0",
     "moment-timezone": "^0.5.31",
     "morgan": "^1.10.0",

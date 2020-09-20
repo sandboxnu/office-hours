@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import {
   fromURL,
   CalendarComponent,
   CalendarResponse,
   VEvent,
-  DateWithTimeZone,
 } from 'node-ical';
 import { DeepPartial, Connection } from 'typeorm';
 import { OfficeHourModel } from './office-hour.entity';
@@ -14,9 +13,7 @@ import { QueueModel } from '../queue/queue.entity';
 import { findOneIana } from 'windows-iana/dist';
 import 'moment-timezone';
 import moment = require('moment');
-import { RRule, RRuleSet, rrulestr } from 'rrule';
-import { DateTime } from 'luxon';
-import { pick } from 'lodash';
+import { RRule } from 'rrule';
 
 type CreateOfficeHour = DeepPartial<OfficeHourModel>[];
 
@@ -26,15 +23,18 @@ export class IcalService {
 
   // tz should not be preconverted by findOneIana
   private fixTimezone(date: Date, tz: string): Date {
-    const iana = findOneIana(tz); // Get IANA timezone from windows timezone
-    if (iana) {
-      // If iana is not null, timezone was in Windows, so adjust it to account for the difference,
-      // because node-ical doesn't handle Windows timezones
-      const mome = moment(date);
-      mome.tz(iana, true); // Move date to IANA
-      return mome.toDate();
+    if (!tz) {
+      return date;
     }
-    return date;
+    const iana = findOneIana(tz); // Get IANA timezone from windows timezone
+
+    const eventoffset = moment.tz.zone(iana || tz).utcOffset(date.getTime());
+    const serveroffset = date.getTimezoneOffset();
+    const mome = moment(date);
+    if (iana) {
+      mome.subtract(serveroffset-eventoffset, 'minutes');
+    } 
+    return mome.toDate();
   }
 
   parseIcal(icalData: CalendarResponse, courseId: number): CreateOfficeHour {
@@ -62,22 +62,14 @@ export class IcalService {
     //   officeHours.find((oh) => oh.summary.includes('OH-Cole Stansbury')).rrule,
     // );
 
-    filteredOfficeHours.forEach(oh => {
+    filteredOfficeHours.forEach((oh: VEvent) => {
       // This office hour timezone. ASSUMING every date field has same timezone as oh.start
       const eventTZ = oh.start.tz;
-      // Minutes of offset between server timezone to calendar event timezone
-      const offset =
-        moment.tz
-          .zone(findOneIana(eventTZ) || eventTZ)
-          .utcOffset(oh.start.getTime()) - new Date().getTimezoneOffset();
-      console.log('offset', offset);
-      if (oh.rrule) {
-        const { options } = oh.rrule;
+      const { rrule } = oh as any;
+      if (rrule) {
+        const { options } = rrule;
         const dtstart = this.fixTimezone(options.dtstart, eventTZ);
         const until = this.fixTimezone(options.until, eventTZ);
-        dtstart.setMinutes(dtstart.getMinutes() - offset);
-        until.setMinutes(until.getMinutes() - offset);
-        console.log('dtstart', dtstart);
 
         const rule = new RRule({
           freq: options.freq,
@@ -89,7 +81,6 @@ export class IcalService {
         });
         const allDates = rule.all();
 
-        console.log(oh.summary, allDates[0]);
         const duration = oh.end.getTime() - oh.start.getTime();
 
         const generatedOfficeHours = allDates.map(date => ({
@@ -101,9 +92,6 @@ export class IcalService {
         }));
         resultOfficeHours = resultOfficeHours.concat(generatedOfficeHours);
       } else {
-        console.log(oh.summary, offset);
-        oh.start.setMinutes(oh.start.getMinutes() - offset);
-        oh.end.setMinutes(oh.end.getMinutes() - offset);
         resultOfficeHours.push({
           title: oh.summary,
           courseId: courseId,
