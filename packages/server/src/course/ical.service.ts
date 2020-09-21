@@ -62,7 +62,7 @@ export class IcalService {
       if (rrule) {
         const { options } = rrule;
         const dtstart = this.fixTimezone(options.dtstart, eventTZ);
-        const until = this.fixTimezone(options.until, eventTZ);
+        const until = options.until && this.fixTimezone(options.until, eventTZ);
 
         const rule = new RRule({
           freq: options.freq,
@@ -72,7 +72,10 @@ export class IcalService {
           dtstart: dtstart,
           until: until,
         });
-        const allDates = rule.all();
+        const in10Weeks = moment(dtstart)
+          .add(10, 'weeks')
+          .toDate();
+        const allDates = rule.all(d => !!until || d < in10Weeks);
 
         const duration = oh.end.getTime() - oh.start.getTime();
 
