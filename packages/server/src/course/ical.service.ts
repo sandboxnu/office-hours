@@ -58,10 +58,6 @@ export class IcalService {
 
     let resultOfficeHours = [];
 
-    // console.log(
-    //   officeHours.find((oh) => oh.summary.includes('OH-Cole Stansbury')).rrule,
-    // );
-
     filteredOfficeHours.forEach((oh: VEvent) => {
       // This office hour timezone. ASSUMING every date field has same timezone as oh.start
       const eventTZ = oh.start.tz;
