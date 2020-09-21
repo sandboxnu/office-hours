@@ -43,13 +43,10 @@ export class IcalService {
         iCalElement.end !== undefined,
     );
 
-    const isOfficeHoursEvent = (title: string) => {
-      const nonOfficeHourKeywords = ['Lecture', 'Lab', 'Exam', 'Class'];
-      return nonOfficeHourKeywords.every(keyword => !title.includes(keyword));
-    };
+    const officeHoursEventRegex = /\b^(OH|Hours)\b/;
 
     return officeHours
-      .filter(event => isOfficeHoursEvent(event.summary))
+      .filter(event => officeHoursEventRegex.test(event.summary))
       .map(event => ({
         title: event.summary,
         courseId: courseId,
