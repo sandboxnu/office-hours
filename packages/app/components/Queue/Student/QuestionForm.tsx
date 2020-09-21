@@ -176,7 +176,8 @@ export default function QuestionForm({
         />
         <QuestionCaption>
           Be as descriptive and specific as possible in your answer. Your name
-          will be hidden to other students.
+          will be hidden to other students, but your question will be visible so
+          don&apos;t frame your question in a way that gives away the answer.
         </QuestionCaption>
       </Container>
     </Modal>
