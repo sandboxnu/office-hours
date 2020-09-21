@@ -32,8 +32,8 @@ export class IcalService {
     const serveroffset = date.getTimezoneOffset();
     const mome = moment(date);
     if (iana) {
-      mome.subtract(serveroffset-eventoffset, 'minutes');
-    } 
+      mome.subtract(serveroffset - eventoffset, 'minutes');
+    }
     return mome.toDate();
   }
 
@@ -47,13 +47,10 @@ export class IcalService {
         iCalElement.end !== undefined,
     );
 
-    const isOfficeHoursEvent = (title: string) => {
-      const nonOfficeHourKeywords = ['Lecture', 'Lab', 'Exam', 'Class'];
-      return nonOfficeHourKeywords.every(keyword => !title.includes(keyword));
-    };
+    const officeHoursEventRegex = /\b^(OH|Hours)\b/;
 
     const filteredOfficeHours = officeHours.filter(event =>
-      isOfficeHoursEvent(event.summary),
+      officeHoursEventRegex.test(event.summary),
     );
 
     let resultOfficeHours = [];

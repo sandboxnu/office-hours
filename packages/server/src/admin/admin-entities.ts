@@ -19,6 +19,14 @@ export class UserAdmin extends AdminEntity {
   entity = UserModel;
   listDisplay = ['id', 'email', 'name'];
   searchFields = ['email', 'name'];
+  fields = [
+    'id',
+    'email',
+    'name',
+    'desktopNotifsEnabled',
+    'phoneNotifsEnabled',
+    'queues',
+  ];
 }
 
 export class UserCourseAdmin extends AdminEntity {

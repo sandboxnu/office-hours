@@ -89,7 +89,7 @@ export default function TAQueueList({
 }: TAQueueListProps): ReactElement {
   const user = useProfile();
 
-  const { queue, queuesError, mutateQueue } = useQueue(qid);
+  const { queue, mutateQueue } = useQueue(qid);
 
   const { questions, questionsError, mutateQuestions } = useQuestions(qid);
 
@@ -187,6 +187,7 @@ export default function TAQueueList({
                 {isStaffCheckedIn ? (
                   <CheckOutButton
                     danger
+                    disabled={isHelping}
                     data-cy="check-out-button"
                     onClick={async () => {
                       await API.taStatus.checkOut(courseId, queue?.room);

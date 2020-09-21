@@ -58,7 +58,7 @@ interface StudentQueueListProps {
 export default function StudentQueueList({
   qid,
 }: StudentQueueListProps): ReactElement {
-  const { queue, queuesError, mutateQueue } = useQueue(qid);
+  const { queue, mutateQueue } = useQueue(qid);
   const { questions, questionsError, mutateQuestions } = useQuestions(qid);
   const { studentQuestion, studentQuestionIndex } = useStudentQuestion(qid);
   const [isFirstQuestion, setIsFirstQuestion] = useLocalStorage(
