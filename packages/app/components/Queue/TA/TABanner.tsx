@@ -66,6 +66,8 @@ export default function TABanner({
             <Info>{helpingQuestion.text ?? ""}</Info>
             <InfoHeader>type</InfoHeader>
             <Info>{helpingQuestion.questionType ?? ""}</Info>
+            <InfoHeader>email</InfoHeader>
+            <Info>{helpingQuestion.creator.email ?? ""}</Info>
           </Col>
         </Row>
       }
