@@ -6,7 +6,7 @@ const path = require("path");
 const serverUrl = process.env.NEXT_PUBLIC_APM_SERVER;
 const domain = process.env.DOMAIN || "khouryofficehours.com";
 const service_name = `${domain.replace(/\./g, "-")}-frontend`;
-const service_version = process.env.GIT_SHA
+const service_version = process.env.SERVICE_VERSION
 const token = process.env.ELASTIC_APM_SECRET_TOKEN;
 
 async function main() {

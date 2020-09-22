@@ -28,7 +28,8 @@ jobs:
         run: rm -rf packages/app/.next
       - run: yarn build
         env:
-          NEXT_PUBLIC_APM_SERVER: ${{ secrets.NEXT_PUBLIC_APM_SERVER }}
+          NEXT_PUBLIC_APM_SERVER: ${{ secrets.ELASTIC_APM_SERVER_URL}}
+          NEXT_PUBLIC_SERVICE_VERSION: ${{ github.sha }}
       ## Ensure no new changes have been pushed in the time we spent building
       - run: git fetch && echo "::set-output name=version::$(git rev-parse origin/master)"
         id: post-version
@@ -45,9 +46,9 @@ jobs:
       - name: Upload Sourcemaps to Elastic APM
         run: yarn ts-node packages/app/scripts/uploadSourceMapToAPM.ts
         env:
-          NEXT_PUBLIC_APM_SERVER: ${{ secrets.NEXT_PUBLIC_APM_SERVER }}
+          ELASTIC_APM_SERVER_URL: ${{ secrets.ELASTIC_APM_SERVER_URL}}
           ELASTIC_APM_SECRET_TOKEN: ${{ secrets.ELASTIC_APM_SECRET_TOKEN }}
-          GIT_SHA: ${{ github.sha }}
+          SERVICE_VERSION: ${{ github.sha }}
   deploy:
     needs: build
     runs-on: ubuntu-latest

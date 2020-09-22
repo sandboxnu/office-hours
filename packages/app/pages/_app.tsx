@@ -12,6 +12,7 @@ if (process.env.NODE_ENV === "production" && typeof window !== "undefined") {
   initApm({
     serviceName: `${window.location.hostname.replace(/\./g, "-")}-frontend`,
     serverUrl: process.env.NEXT_PUBLIC_APM_SERVER,
+    serviceVersion: process.env.NEXT_PUBLIC_SERVICE_VERSION
   });
 }
 
