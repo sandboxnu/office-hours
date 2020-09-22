@@ -46,6 +46,8 @@ jobs:
         run: yarn ts-node packages/app/scripts/uploadSourceMapToAPM.ts
         env:
           NEXT_PUBLIC_APM_SERVER: ${{ secrets.NEXT_PUBLIC_APM_SERVER }}
+          ELASTIC_APM_SECRET_TOKEN: ${{ secrets.ELASTIC_APM_SECRET_TOKEN }}
+          GIT_SHA: ${{ github.sha }}
   deploy:
     needs: build
     runs-on: ubuntu-latest
