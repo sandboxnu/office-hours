@@ -44,7 +44,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload Sourcemaps to Elastic APM
-        run: yarn ts-node packages/app/scripts/uploadSourceMapToAPM.ts
+        run: yarn ts-node packages/app/scripts/uploadSourceMapToAPM.js
         env:
           ELASTIC_APM_SERVER_URL: ${{ secrets.ELASTIC_APM_SERVER_URL}}
           ELASTIC_APM_SECRET_TOKEN: ${{ secrets.ELASTIC_APM_SECRET_TOKEN }}
