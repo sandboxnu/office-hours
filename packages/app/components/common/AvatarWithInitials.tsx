@@ -17,7 +17,7 @@ export default function AvatarWithInitals({
   return (
     <Avatar
       style={{
-        backgroundColor: nameToRGB(name),
+        backgroundColor: name ? nameToRGB(name) : "#1abc9c",
         fontSize,
       }}
       {...props}
