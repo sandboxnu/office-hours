@@ -326,7 +326,7 @@ describe('IcalService', () => {
         startTime: new Date('2020-09-16T10:00:00+0000'),
         endTime: new Date('2020-09-16T13:00:00+0000'),
       });
-      expect(endData.length).toEqual(10*7/2+1)
+      expect(endData.length).toEqual(10*7/2)
     });
 
     describe('updateCalendarForCourse', () => {

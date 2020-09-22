@@ -72,9 +72,11 @@ export class IcalService {
           dtstart: dtstart,
           until: until,
         });
-        const in10Weeks = moment(dtstart)
-          .add(10, 'weeks')
-          .toDate();
+        // Doing math here because moment.add changes behavior based on server timezone
+        const in10Weeks = new Date(
+          dtstart.getTime() + 1000 * 60 * 60 * 24 * 7 * 10,
+        );
+        console.log(dtstart, in10Weeks);
         const allDates = rule.all(d => !!until || d < in10Weeks);
 
         const duration = oh.end.getTime() - oh.start.getTime();
