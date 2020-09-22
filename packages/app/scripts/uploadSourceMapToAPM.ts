@@ -14,7 +14,7 @@ async function main() {
   const service_version = git.long();
 
   const filenames = await fs.promises.readdir(chunkFolder);
-  const dotJs = filenames.filter((f) => f.endsWith(".js"));
+  const dotJs = filenames.filter((f) => f.endsWith(".js") && filenames.includes(`${f}.map`));
   await Promise.all(
     dotJs.map((filename) => {
       const filepath = path.join(chunkFolder, filename);
