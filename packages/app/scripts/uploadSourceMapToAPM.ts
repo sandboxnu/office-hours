@@ -1,4 +1,3 @@
-import { FieldBinaryOutlined } from "@ant-design/icons";
 import Axios from "axios";
 import * as fs from "fs";
 import * as path from "path";
@@ -9,7 +8,7 @@ const domain = process.env.DOMAIN || 'https://khouryofficehours.com';
 
 async function main() {
   console.log("Uploading sourcemaps!");
-  const chunkFolder = "../.next/static/chunks";
+  const chunkFolder = path.join(__dirname, "../.next/static/chunks");
   const service_name = `${domain.replace(/\./g, "-")}-frontend`;
 
   const service_version = git.long();
