@@ -11,7 +11,7 @@ import { ReactElement } from "react";
 import styled from "styled-components";
 import getInitialsFromName from "../../../utils/NameUtils";
 import AvatarWithInitals from "../../common/AvatarWithInitials";
-import Banner, { BannerButton, BannerDangerButton } from "../Banner";
+import Banner, { TABannerButton, TABannerDangerButton } from "../Banner";
 
 const Bold = styled.span`
   font-weight: bold;
@@ -83,18 +83,21 @@ export default function TABanner({
               await alertStudent();
             }}
           >
-            <BannerDangerButton icon={<CloseOutlined />} data-cy="remove-from-queue">
+            <TABannerDangerButton
+              icon={<CloseOutlined />}
+              data-cy="remove-from-queue"
+            >
               Remove from Queue
-            </BannerDangerButton>
+            </TABannerDangerButton>
           </Popconfirm>
-          <BannerButton
+          <TABannerButton
             icon={<CheckOutlined />}
             onClick={() =>
               updateQuestion(helpingQuestion, ClosedQuestionStatus.Resolved)
             }
           >
             Finish Helping
-          </BannerButton>
+          </TABannerButton>
         </>
       }
     />
