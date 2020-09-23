@@ -3,7 +3,7 @@ const FormData = require("form-data");
 const fs = require("fs");
 const path = require("path");
 
-const serverUrl = process.env.NEXT_PUBLIC_APM_SERVER;
+const serverUrl = process.env.ELASTIC_APM_SERVER_URL;
 const domain = process.env.DOMAIN || "khouryofficehours.com";
 const service_name = `${domain.replace(/\./g, "-")}-frontend`;
 const service_version = process.env.SERVICE_VERSION
