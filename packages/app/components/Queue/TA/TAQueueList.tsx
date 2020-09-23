@@ -5,7 +5,7 @@ import {
   QuestionStatus,
   QuestionStatusKeys,
 } from "@koh/common";
-import { Card, Col, Row, Space, Tooltip } from "antd";
+import { Button, Card, Col, Row, Space, Tooltip } from "antd";
 import { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
@@ -21,6 +21,7 @@ import {
 import StudentPopupCard from "./StudentPopupCard";
 import TABanner from "./TABanner";
 import TAQueueCard from "./TAQueueCard";
+import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
 
 const StatusText = styled.div`
   font-size: 14px;
@@ -113,7 +114,7 @@ export default function TAQueueList({
   // Close popup if currentQuestion no longer exists in the cache
   if (currentQuestion && !questions.includes(currentQuestion)) {
     setCurrentQuestion(null);
-    setOpenPopup(false)
+    setOpenPopup(false);
   }
 
   const onOpenCard = useCallback((question: Question): void => {
@@ -148,7 +149,9 @@ export default function TAQueueList({
     );
 
     await updateQuestionTA(nextQuestion, OpenQuestionStatus.Helping);
-    window.open(`https://teams.microsoft.com/l/chat/0/0?users=${nextQuestion.creator.email}`);
+    window.open(
+      `https://teams.microsoft.com/l/chat/0/0?users=${nextQuestion.creator.email}`
+    );
   };
 
   if (queue && questions) {
@@ -259,16 +262,46 @@ const NoQuestionsText = styled.div`
   color: #212934;
 `;
 
+function NotifReminderButton() {
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const NotifRemindText = styled(Button)`
+    margin-top: 16px;
+    border-radius: 6px;
+    border: 0;
+    background: #fff;
+  `;
+
+  return (
+    <>
+      <NotifRemindText onClick={(e) => setIsNotifOpen(true)}>
+        Sign Up for Notifications
+      </NotifRemindText>
+      {isNotifOpen && (
+        <NotificationSettingsModal
+          visible={isNotifOpen}
+          onClose={() => setIsNotifOpen(false)}
+        />
+      )}
+    </>
+  );
+}
+
 interface QueueProps {
   questions: Question[];
   isHelping: boolean;
   onOpenCard: (q: Question) => void;
 }
 function QueueQuestions({ questions, isHelping, onOpenCard }: QueueProps) {
+  const { phoneNotifsEnabled, desktopNotifsEnabled } = useProfile();
   return (
     <div data-cy="queueQuestions">
       {questions.length === 0 ? (
-        <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
+        <>
+          <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
+          {(!phoneNotifsEnabled || !desktopNotifsEnabled) && (
+            <NotifReminderButton />
+          )}
+        </>
       ) : (
         <>
           <QueueHeader>Queue</QueueHeader>
