@@ -78,3 +78,27 @@ export const BannerDangerButton = styled(BannerButton)`
     color: #fff;
   }
 `;
+
+export const TABannerButton = styled(Button)`
+  margin-left: 16px;
+  border-radius: 6px;
+  border: 0;
+  background: #66bb6a;
+  color: #fff;
+  &:hover,
+  &:focus {
+    background: #82c985;
+    color: #fff;
+  }
+`;
+
+export const TABannerDangerButton = styled(BannerButton)`
+  background: #fff;
+  border: 1px solid #e26567;
+  color: #e26567;
+  &:hover,
+  &:focus {
+    background: #fc7f81;
+    color: #fff;
+  }
+`;
