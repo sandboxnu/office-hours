@@ -41,7 +41,6 @@ export class NotificationService {
   desktopPublicKey: string;
 
   constructor(
-    private connection: Connection,
     private configService: ConfigService,
     private twilioService: TwilioService,
   ) {

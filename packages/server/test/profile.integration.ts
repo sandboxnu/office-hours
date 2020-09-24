@@ -82,7 +82,7 @@ describe('Profile Integration', () => {
       expect(res.body).toMatchObject({
         desktopNotifsEnabled: false,
         phoneNotifsEnabled: true,
-        phoneNumber: '911'
+        phoneNumber: 'real911'
       });
     });
     it('does not let student enable without phone number', async () => {
@@ -112,7 +112,7 @@ describe('Profile Integration', () => {
         .send({ phoneNumber: '0987654321' })
         .expect(200);
       profile = await supertest({ userId: user.id }).get('/profile');
-      expect(profile.body?.phoneNumber).toEqual('0987654321');
+      expect(profile.body?.phoneNumber).toEqual('real0987654321');
     });
   });
 });
