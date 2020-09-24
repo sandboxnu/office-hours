@@ -1,3 +1,4 @@
+import { OpenQuestionStatus } from '@koh/common';
 import { Exclude } from 'class-transformer';
 import {
   BaseEntity,
@@ -16,7 +17,6 @@ import { CourseModel } from '../course/course.entity';
 import { OfficeHourModel } from '../course/office-hour.entity';
 import { UserModel } from '../profile/user.entity';
 import { QuestionModel } from '../question/question.entity';
-import { OpenQuestionStatus } from '@koh/common';
 
 interface TimeInterval {
   startTime: Date;
@@ -84,7 +84,7 @@ export class QueueModel extends BaseEntity {
 
   async addQueueSize(): Promise<void> {
     this.queueSize = await QuestionModel.openInQueue(this.id)
-      .where('question.status IN (:...openStatus)', {
+      .andWhere('question.status IN (:...openStatus)', {
         openStatus: [OpenQuestionStatus.Drafting, OpenQuestionStatus.Queued],
       })
       .getCount();

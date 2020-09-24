@@ -46,6 +46,7 @@
     "cypress": "^4.9.0",
     "eslint-plugin-react": "^7.20.6",
     "eslint-plugin-react-hooks": "^4.1.0",
+    "form-data": "^3.0.0",
     "jest": "^26.0.1",
     "typescript": "^4.0.0"
   },

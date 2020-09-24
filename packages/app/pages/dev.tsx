@@ -45,17 +45,11 @@ const PageHeader = styled.div`
   margin-top: 40px;
 `;
 
-export const getStaticProps: GetStaticProps = async () => {
-  const hidePage = PROD_URL === process.env.DOMAIN;
-  return { props: { hidePage } };
-};
-
-interface DevPanelProps {
-  hidePage: boolean;
-}
-
-export default function DevPanel({ hidePage }: DevPanelProps): ReactElement {
-  if (hidePage) {
+export default function DevPanel(): ReactElement {
+  if (
+    typeof window === "undefined" ||
+    window?.location?.hostname === PROD_URL
+  ) {
     return <DefaultErrorPage statusCode={404} />;
   }
   return (

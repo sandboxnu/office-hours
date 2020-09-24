@@ -6,6 +6,7 @@ import { UserModel } from '../profile/user.entity';
 import { DesktopNotifModel } from './desktop-notif.entity';
 import { PhoneNotifModel } from './phone-notif.entity';
 import { TwilioService } from './twilio/twilio.service';
+import * as apm from 'elastic-apm-node';
 
 export const NotifMsgs = {
   phone: {
@@ -162,6 +163,8 @@ export class NotificationService {
     });
 
     if (!phoneNotif) {
+      apm.setCustomContext({phoneNumber})
+      apm.captureError(new Error('Could not find phone number during verification'));
       return NotifMsgs.phone.COULD_NOT_FIND_NUMBER;
     } else if (message !== 'YES' && message !== 'NO' && message !== 'STOP') {
       return NotifMsgs.phone.WRONG_MESSAGE;

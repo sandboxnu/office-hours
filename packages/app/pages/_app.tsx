@@ -6,11 +6,13 @@ import { init as initApm } from "@elastic/apm-rum";
 import { Footer } from "../components/common/Footer";
 import styled from "styled-components";
 import { ReactElement } from "react";
+import { ErrorBoundary } from "../components/common/ErrorBoundary";
 
 if (process.env.NODE_ENV === "production" && typeof window !== "undefined") {
   initApm({
     serviceName: `${window.location.hostname.replace(/\./g, "-")}-frontend`,
     serverUrl: process.env.NEXT_PUBLIC_APM_SERVER,
+    serviceVersion: process.env.NEXT_PUBLIC_SERVICE_VERSION
   });
 }
 
@@ -28,7 +30,9 @@ function MyApp({ Component, pageProps }: AppProps): ReactElement {
   return (
     <Layout>
       <Content>
-        <Component {...pageProps} />
+        <ErrorBoundary>
+          <Component {...pageProps} />
+        </ErrorBoundary>
       </Content>
       <Footer />
     </Layout>
