@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Connection, DeepPartial } from 'typeorm';
+import { DeepPartial } from 'typeorm';
 import * as webPush from 'web-push';
 import { UserModel } from '../profile/user.entity';
 import { DesktopNotifModel } from './desktop-notif.entity';
