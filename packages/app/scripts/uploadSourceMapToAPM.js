@@ -31,7 +31,7 @@ async function main() {
         formData.append("service_version", service_version);
         formData.append(
           "bundle_filepath",
-          `${domain}/_next/static/chunks/${filename}.js`
+          `https://${domain}/_next/static/chunks/${filename}`
         );
         formData.append("service_name", service_name);
         try {
