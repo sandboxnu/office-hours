@@ -64,7 +64,8 @@ export class NotificationService {
   }
 
   async registerPhone(phoneNumber: string, user: UserModel): Promise<void> {
-    if (!this.twilioService.isPhoneNumberReal) {
+    const fullNumber = await this.twilioService.getFullPhoneNumber(phoneNumber);
+    if (!fullNumber) {
       throw new BadRequestException('phone number invalid');
     }
 
@@ -74,17 +75,17 @@ export class NotificationService {
 
     if (phoneNotifModel) {
       // Phone number has not changed
-      if (phoneNotifModel.phoneNumber === phoneNumber) {
+      if (phoneNotifModel.phoneNumber === fullNumber) {
         return;
       } else {
         // Need to just change it
-        phoneNotifModel.phoneNumber = phoneNumber;
+        phoneNotifModel.phoneNumber = fullNumber;
         phoneNotifModel.verified = false;
         await phoneNotifModel.save();
       }
     } else {
       phoneNotifModel = await PhoneNotifModel.create({
-        phoneNumber,
+        phoneNumber: fullNumber,
         userId: user.id,
         verified: false,
       }).save();
