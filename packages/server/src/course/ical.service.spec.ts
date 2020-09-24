@@ -204,11 +204,8 @@ describe('IcalService', () => {
     await conn.close();
   });
 
-  beforeEach(async () => {
-    await conn.synchronize(true);
-  });
-
   describe('parseIcal', () => {
+    // NO DB NEEDED
     it('handles a pre-generated subset of CS 2510 classes', () => {
       const parsedICS = mkCal(VEVENT_ROOM + VEVENT_NOROOM);
       const endData = service.parseIcal(parsedICS, 123);
@@ -326,10 +323,13 @@ describe('IcalService', () => {
         startTime: new Date('2020-09-16T10:00:00+0000'),
         endTime: new Date('2020-09-16T13:00:00+0000'),
       });
-      expect(endData.length).toEqual(10*7/2)
+      expect(endData.length).toEqual((10 * 7) / 2);
     });
 
     describe('updateCalendarForCourse', () => {
+      beforeEach(async () => {
+        await conn.synchronize(true);
+      });
       it('creates officehours', async () => {
         const course = await CourseFactory.create({ id: 123 });
 
