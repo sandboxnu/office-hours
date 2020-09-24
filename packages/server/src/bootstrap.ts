@@ -4,7 +4,7 @@ import * as cookieParser from 'cookie-parser';
 import * as morgan from 'morgan';
 import { AppModule } from './app.module';
 import { StripUndefinedPipe } from './stripUndefined.pipe';
-import { PROD_URL } from '@koh/common';
+import { isProd } from '@koh/common';
 import { ApmInterceptor } from './apm.interceptor';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -16,12 +16,12 @@ export async function bootstrap(hot: any): Promise<void> {
   app.setGlobalPrefix('api/v1');
   app.useGlobalInterceptors(new ApmInterceptor());
 
-  if (process.env.DOMAIN !== PROD_URL) {
+  if (isProd()) {
+    console.log(`Running production at ${process.env.DOMAIN}.`);
+  } else {
     console.log(
       `Running non-production at ${process.env.DOMAIN}. THIS MSG SHOULD NOT APPEAR ON PROD VM`,
     );
-  } else {
-    console.log(`Running production at ${process.env.DOMAIN}.`);
   }
   app.use(morgan('dev'));
   await app.listen(3002);
