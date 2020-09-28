@@ -27,10 +27,16 @@ export const TestTypeOrmModule = TypeOrmModule.forRoot({
 });
 
 // Fake twilio so we don't try to text people in tests
-const mockTwilio = {
-  isPhoneNumberReal: async () => true,
+export const mockTwilio = {
+  getFullPhoneNumber: async (s: string) =>
+    s.startsWith('real') ? s : 'real' + s,
   sendSMS: async () => null,
 };
+
+export const TestConfigModule = ConfigModule.forRoot({
+  envFilePath: ['.env.development'],
+  isGlobal: true,
+});
 
 export function setupIntegrationTest(
   module: Type<any>,
@@ -42,15 +48,7 @@ export function setupIntegrationTest(
 
   beforeAll(async () => {
     let testModuleBuilder = Test.createTestingModule({
-      imports: [
-        module,
-        LoginModule,
-        TestTypeOrmModule,
-        ConfigModule.forRoot({
-          envFilePath: ['.env', '.env.development'],
-          isGlobal: true,
-        }),
-      ],
+      imports: [module, LoginModule, TestTypeOrmModule, TestConfigModule],
     })
       .overrideProvider(TwilioService)
       .useValue(mockTwilio);
@@ -93,7 +91,7 @@ const notifMock = mocked({ notifyUser: jest.fn() }, true);
  * const supertest = setupIntegrationTest(QuestionModule, modifyMockNotifs);
  */
 
-export const modifyMockNotifs: ModuleModifier = (t) =>
+export const modifyMockNotifs: ModuleModifier = t =>
   t.overrideProvider(NotificationService).useValue(notifMock);
 export const expectUserNotified = (userId: number): void =>
   expect(notifMock.notifyUser).toHaveBeenCalledWith(userId, expect.any(String));
