@@ -43,20 +43,22 @@ export class LoginController {
     @Req() req: Request,
     @Body() body: KhouryDataParams,
   ): Promise<KhouryRedirectResponse> {
-    throw new NotFoundException();
     if (process.env.NODE_ENV === 'production') {
       // Check that request has come from Khoury
       const parsedRequest = httpSignature.parseRequest(req);
-      if (
-        !httpSignature.verifyHMAC(
-          parsedRequest,
-          this.configService.get('KHOURY_PRIVATE_KEY'),
-        )
-      ) {
+      console.log('parsed request');
+      const verify = httpSignature.verifyHMAC(
+        parsedRequest,
+        this.configService.get('KHOURY_PRIVATE_KEY'),
+      );
+      if (!verify) {
+        console.log('invalid');
         throw new UnauthorizedException('Invalid request signature');
       }
+      console.log('valid');
     }
 
+    throw new NotFoundException();
     let user: UserModel;
     user = await UserModel.findOne({
       where: { email: body.email },
@@ -70,7 +72,7 @@ export class LoginController {
     // Q: Do we need this if it's not going to change?
     user = Object.assign(user, {
       email: body.email,
-      name: body.first_name +  ' ' + body.last_name,
+      name: body.first_name + ' ' + body.last_name,
       photoURL: '',
     });
     await user.save();
