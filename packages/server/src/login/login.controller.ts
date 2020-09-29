@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Post,
   Query,
   Req,
@@ -42,6 +43,7 @@ export class LoginController {
     @Req() req: Request,
     @Body() body: KhouryDataParams,
   ): Promise<KhouryRedirectResponse> {
+    throw new NotFoundException();
     if (process.env.NODE_ENV === 'production') {
       // Check that request has come from Khoury
       const parsedRequest = httpSignature.parseRequest(req);
