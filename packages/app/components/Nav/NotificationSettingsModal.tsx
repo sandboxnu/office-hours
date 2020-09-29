@@ -52,6 +52,7 @@ export function NotificationSettingsModal({
         const value = await form.validateFields();
         try {
           await editProfile(value);
+          form.setFieldsValue(profile);
           onClose();
         } catch (e) {
           if (
