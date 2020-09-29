@@ -58,7 +58,6 @@ export class LoginController {
       console.log('valid');
     }
 
-    throw new NotFoundException();
     let user: UserModel;
     user = await UserModel.findOne({
       where: { email: body.email },
