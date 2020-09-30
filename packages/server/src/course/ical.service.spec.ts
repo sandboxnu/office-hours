@@ -301,7 +301,7 @@ describe('IcalService', () => {
       ]);
     });
 
-    it.only('creates all events in a week when there is a multi day rrule', () => {
+    it('creates all events in a week when there is a multi day rrule', () => {
       const parsedICS = mkCal(VEVENT_RRULE_MULTI_DAY);
       const endData = service.parseIcal(parsedICS, 123);
       endData.length = 4;
