@@ -264,18 +264,17 @@ const NoQuestionsText = styled.div`
 
 function NotifReminderButton() {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
-  const NotifRemindText = styled(Button)`
+  const NotifRemindButton = styled(QueueInfoColumnButton)`
     margin-top: 16px;
     border-radius: 6px;
-    border: 0;
     background: #fff;
   `;
 
   return (
     <>
-      <NotifRemindText onClick={(e) => setIsNotifOpen(true)}>
+      <NotifRemindButton onClick={(e) => setIsNotifOpen(true)}>
         Sign Up for Notifications
-      </NotifRemindText>
+      </NotifRemindButton>
       {isNotifOpen && (
         <NotificationSettingsModal
           visible={isNotifOpen}
@@ -298,7 +297,7 @@ function QueueQuestions({ questions, isHelping, onOpenCard }: QueueProps) {
       {questions.length === 0 ? (
         <>
           <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
-          {(!phoneNotifsEnabled && !desktopNotifsEnabled) && (
+          {!phoneNotifsEnabled && !desktopNotifsEnabled && (
             <NotifReminderButton />
           )}
         </>
