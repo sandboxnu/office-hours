@@ -29,6 +29,7 @@ export const isProd = (): boolean =>
  * @param name - The full name of this user: First Last.
  * @param photoURL - The URL string of this user photo. This is pulled from the admin site
  * @param courses - The list of courses that the user is accociated with (as either a 'student', 'ta' or 'professor')
+ * @param desktopNotifs - list of endpoints so that frontend can figure out if device is enabled
  */
 export type User = {
   id: number;
@@ -37,9 +38,15 @@ export type User = {
   photoURL: string;
   courses: UserCourse[];
   desktopNotifsEnabled: boolean;
+  desktopNotifs: DesktopNotifPartial[];
   phoneNotifsEnabled: boolean;
   phoneNumber: string;
 };
+
+export interface DesktopNotifPartial {
+  id: number;
+  endpoint: string;
+}
 
 /**
  * Contains the partial user info needed by the frontend when nested in a response

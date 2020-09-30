@@ -6,6 +6,7 @@ import {
 import { setupIntegrationTest } from './util/testUtils';
 import { ProfileModule } from '../src/profile/profile.module';
 import { PhoneNotifModel } from 'notification/phone-notif.entity';
+import { DesktopNotifModel } from 'notification/desktop-notif.entity';
 
 describe('Profile Integration', () => {
   const supertest = setupIntegrationTest(ProfileModule);
@@ -47,6 +48,23 @@ describe('Profile Integration', () => {
       ]);
     });
 
+    it('returns desktop notif information', async () => {
+      const user = await UserFactory.create();
+      const dn = await DesktopNotifModel.create({
+        user,
+        auth: '',
+        p256dh:'',
+        endpoint: 'abc',
+      }).save();
+      await dn.reload();
+      const res = await supertest({ userId: user.id })
+        .get('/profile')
+        .expect(200);
+      expect(res.body.desktopNotifs).toEqual([
+        { id: dn.id, endpoint: dn.endpoint },
+      ]);
+    });
+
     it('returns 401 when not logged in', async () => {
       await UserFactory.create();
       await supertest()
@@ -82,7 +100,7 @@ describe('Profile Integration', () => {
       expect(res.body).toMatchObject({
         desktopNotifsEnabled: false,
         phoneNotifsEnabled: true,
-        phoneNumber: 'real911'
+        phoneNumber: 'real911',
       });
     });
     it('does not let student enable without phone number', async () => {

@@ -103,12 +103,18 @@ class APIClient {
     desktop: {
       credentials: async (): Promise<string> =>
         this.req("GET", "/api/v1/notifications/desktop/credentials"),
-      register: async (payload: DesktopNotifBody): Promise<string> =>
+      register: async (payload: DesktopNotifBody): Promise<number> =>
         this.req(
           "POST",
-          `/api/v1/notifications/desktop/register`,
+          `/api/v1/notifications/desktop/device`,
           undefined,
           payload
+        ),
+      unregister: async (deviceId: number): Promise<string> =>
+        this.req(
+          "POST",
+          `/api/v1/notifications/desktop/device/${deviceId}`,
+          undefined,
         ),
     },
   };
