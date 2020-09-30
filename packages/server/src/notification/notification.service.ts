@@ -52,15 +52,18 @@ export class NotificationService {
     this.desktopPublicKey = this.configService.get('PUBLICKEY');
   }
 
-  async registerDesktop(info: DeepPartial<DesktopNotifModel>): Promise<void> {
+  async registerDesktop(
+    info: DeepPartial<DesktopNotifModel>,
+  ): Promise<DesktopNotifModel> {
     // create if not exist
-    if (
-      (await DesktopNotifModel.count({
-        where: { userId: info.userId, endpoint: info.endpoint },
-      })) === 0
-    ) {
-      await DesktopNotifModel.create(info).save();
+    let dn = await DesktopNotifModel.findOne({
+      where: { userId: info.userId, endpoint: info.endpoint },
+    });
+    if (!dn) {
+      dn = await DesktopNotifModel.create(info).save();
+      await dn.reload();
     }
+    return dn;
   }
 
   async registerPhone(phoneNumber: string, user: UserModel): Promise<void> {
@@ -89,7 +92,7 @@ export class NotificationService {
         userId: user.id,
         verified: false,
       }).save();
-      
+
       // MUTATE so if user.save() is called later it doesn't dis-associate
       user.phoneNotif = phoneNotifModel;
     }
@@ -113,7 +116,7 @@ export class NotificationService {
     // run the promises concurrently
     if (notifModelsOfUser.desktopNotifsEnabled) {
       await Promise.all(
-        notifModelsOfUser.desktopNotifs.map(async (nm) =>
+        notifModelsOfUser.desktopNotifs.map(async nm =>
           this.notifyDesktop(nm, message),
         ),
       );
@@ -162,8 +165,10 @@ export class NotificationService {
     });
 
     if (!phoneNotif) {
-      apm.setCustomContext({phoneNumber})
-      apm.captureError(new Error('Could not find phone number during verification'));
+      apm.setCustomContext({ phoneNumber });
+      apm.captureError(
+        new Error('Could not find phone number during verification'),
+      );
       return NotifMsgs.phone.COULD_NOT_FIND_NUMBER;
     } else if (message !== 'YES' && message !== 'NO' && message !== 'STOP') {
       return NotifMsgs.phone.WRONG_MESSAGE;

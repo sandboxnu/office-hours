@@ -13,7 +13,7 @@ import {
   UpdateQuestionParams,
   UpdateQuestionResponse,
   UpdateQueueParams,
-  Question,
+  Question,, DesktopNotifPartial
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -103,7 +103,7 @@ class APIClient {
     desktop: {
       credentials: async (): Promise<string> =>
         this.req("GET", "/api/v1/notifications/desktop/credentials"),
-      register: async (payload: DesktopNotifBody): Promise<number> =>
+      register: async (payload: DesktopNotifBody): Promise<DesktopNotifPartial> =>
         this.req(
           "POST",
           `/api/v1/notifications/desktop/device`,

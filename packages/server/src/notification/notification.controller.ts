@@ -1,19 +1,23 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Header,
   Headers,
+  NotFoundException,
+  Param,
   Post,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DesktopNotifBody, TwilioBody } from '@koh/common';
+import { DesktopNotifBody, DesktopNotifPartial, TwilioBody } from '@koh/common';
 import * as twilio from 'twilio';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { NotificationService } from './notification.service';
 import { UserId } from '../profile/user.decorator';
+import { DesktopNotifModel } from './desktop-notif.entity';
 
 @Controller('notifications')
 export class NotificationController {
@@ -28,20 +32,34 @@ export class NotificationController {
     return JSON.stringify(this.notifService.desktopPublicKey);
   }
 
-  @Post('desktop/register')
+  @Post('desktop/device')
   @UseGuards(JwtAuthGuard)
   async registerDesktopUser(
     @Body() body: DesktopNotifBody,
     @UserId() userId: number,
-  ): Promise<string> {
-    await this.notifService.registerDesktop({
+  ): Promise<DesktopNotifPartial> {
+    const device = await this.notifService.registerDesktop({
       endpoint: body.endpoint,
       expirationTime: body.expirationTime && new Date(body.expirationTime),
       p256dh: body.keys.p256dh,
       auth: body.keys.auth,
       userId: userId,
     });
-    return 'registration success';
+    return { id: device.id, endpoint: device.endpoint };
+  }
+
+  @Delete('desktop/device/:deviceId')
+  @UseGuards(JwtAuthGuard)
+  async deleteDesktopUser(
+    @Param('deviceId') deviceId: number,
+    @UserId() userId: number,
+  ): Promise<void> {
+    const dn = await DesktopNotifModel.find({ id: deviceId, userId });
+    if (dn.length > 0) {
+      await DesktopNotifModel.remove(dn);
+    } else {
+      throw new NotFoundException();
+    }
   }
 
   // Webhook from twilio
