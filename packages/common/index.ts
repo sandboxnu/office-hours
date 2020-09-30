@@ -1,3 +1,4 @@
+import { Type } from "class-transformer";
 import {
   IsBoolean,
   IsDefined,
@@ -8,7 +9,6 @@ import {
   IsString,
   ValidateIf,
 } from "class-validator";
-import { Type } from "class-transformer";
 import "reflect-metadata";
 
 export const PROD_URL = "https://khouryofficehours.com";
@@ -189,6 +189,7 @@ export enum QuestionType {
   Bug = "Bug",
   Setup = "Setup",
   Other = "Other",
+  Drafting = "Drafting",
 }
 
 export enum OpenQuestionStatus {
