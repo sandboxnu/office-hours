@@ -49,7 +49,7 @@ export class IcalService {
 
     const officeHoursEventRegex = /\b^(OH|Hours)\b/;
 
-    const filteredOfficeHours = officeHours.filter(event =>
+    const filteredOfficeHours = officeHours.filter((event) =>
       officeHoursEventRegex.test(event.summary),
     );
 
@@ -69,6 +69,7 @@ export class IcalService {
           interval: options.interval,
           wkst: options.wkst,
           count: options.count,
+          byweekday: options.byweekday,
           dtstart: dtstart,
           until: until,
         });
@@ -76,11 +77,11 @@ export class IcalService {
         const in10Weeks = new Date(
           dtstart.getTime() + 1000 * 60 * 60 * 24 * 7 * 10,
         );
-        const allDates = rule.all(d => !!until || d < in10Weeks);
+        const allDates = rule.all((d) => !!until || d < in10Weeks);
 
         const duration = oh.end.getTime() - oh.start.getTime();
 
-        const generatedOfficeHours = allDates.map(date => ({
+        const generatedOfficeHours = allDates.map((date) => ({
           title: oh.summary,
           courseId: courseId,
           room: oh.location,
@@ -129,7 +130,7 @@ export class IcalService {
     );
     await OfficeHourModel.delete({ courseId: course.id });
     await OfficeHourModel.save(
-      officeHours.map(e => {
+      officeHours.map((e) => {
         e.queueId = queue.id;
         return OfficeHourModel.create(e);
       }),
@@ -142,6 +143,6 @@ export class IcalService {
   public async updateAllCourses(): Promise<void> {
     console.log('updating course icals');
     const courses = await CourseModel.find();
-    await Promise.all(courses.map(c => this.updateCalendarForCourse(c)));
+    await Promise.all(courses.map((c) => this.updateCalendarForCourse(c)));
   }
 }
