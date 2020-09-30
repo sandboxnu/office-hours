@@ -25,8 +25,8 @@ export class ProfileController {
     user: UserModel,
   ): Promise<GetProfileResponse> {
     const courses = user.courses
-      .filter(userCourse => userCourse.course.enabled)
-      .map(userCourse => {
+      .filter((userCourse) => userCourse.course.enabled)
+      .map((userCourse) => {
         return {
           course: {
             id: userCourse.courseId,
@@ -36,10 +36,12 @@ export class ProfileController {
         };
       });
 
-    const desktopNotifs: DesktopNotifPartial[] = user.desktopNotifs.map(d => ({
-      endpoint: d.endpoint,
-      id: d.id,
-    }));
+    const desktopNotifs: DesktopNotifPartial[] = user.desktopNotifs.map(
+      (d) => ({
+        endpoint: d.endpoint,
+        id: d.id,
+      }),
+    );
 
     const userResponse = pick(user, [
       'id',

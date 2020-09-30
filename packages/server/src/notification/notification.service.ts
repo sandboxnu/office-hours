@@ -116,7 +116,7 @@ export class NotificationService {
     // run the promises concurrently
     if (notifModelsOfUser.desktopNotifsEnabled) {
       await Promise.all(
-        notifModelsOfUser.desktopNotifs.map(async nm =>
+        notifModelsOfUser.desktopNotifs.map(async (nm) =>
           this.notifyDesktop(nm, message),
         ),
       );

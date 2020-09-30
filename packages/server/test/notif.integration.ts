@@ -58,13 +58,13 @@ describe('Notif Integration', () => {
         endpoint: 'abc',
       }).save();
       await dn.reload();
-      expect(await DesktopNotifModel.count()).toEqual(1)
+      expect(await DesktopNotifModel.count()).toEqual(1);
 
       await supertest({ userId: user.id })
         .delete(`/notifications/desktop/device/${dn.id}`)
         .expect(200);
 
-      expect(await DesktopNotifModel.count()).toEqual(0)
+      expect(await DesktopNotifModel.count()).toEqual(0);
     });
 
     it('does not let users remove other users desktopnotifs', async () => {
@@ -77,14 +77,14 @@ describe('Notif Integration', () => {
         endpoint: 'abc',
       }).save();
       await dn.reload();
-      expect(await DesktopNotifModel.count()).toEqual(1)
+      expect(await DesktopNotifModel.count()).toEqual(1);
 
       const hackerman = await UserFactory.create();
       await supertest({ userId: hackerman.id })
         .delete(`/notifications/desktop/device/${dn.id}`)
         .expect(404);
 
-      expect(await DesktopNotifModel.count()).toEqual(1)
+      expect(await DesktopNotifModel.count()).toEqual(1);
     });
   });
 });

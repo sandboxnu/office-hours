@@ -53,7 +53,7 @@ describe('Profile Integration', () => {
       const dn = await DesktopNotifModel.create({
         user,
         auth: '',
-        p256dh:'',
+        p256dh: '',
         endpoint: 'abc',
       }).save();
       await dn.reload();
@@ -67,9 +67,7 @@ describe('Profile Integration', () => {
 
     it('returns 401 when not logged in', async () => {
       await UserFactory.create();
-      await supertest()
-        .get('/profile')
-        .expect(401);
+      await supertest().get('/profile').expect(401);
     });
   });
 
