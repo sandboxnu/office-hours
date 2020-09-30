@@ -180,12 +180,13 @@ const StudentPopupCard = ({
           <HeadingText>question</HeadingText>
           <BodyText>{question.text}</BodyText>
         </FullWidth>
-        <FullWidth>
+        {/* TODO: Add this back for in person office hours */}
+        {/* <FullWidth>
           <HeadingText>location</HeadingText>
           <BodyText>
             {question.location || (question.isOnline && "Online")}
           </BodyText>
-        </FullWidth>
+        </FullWidth> */}
       </Container>
     </Drawer>
   );
