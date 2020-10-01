@@ -65,16 +65,20 @@ export default function Today(): ReactElement {
               <Title>Current Office Hours</Title>
               {role === Role.TA && <TACheckinButton courseId={Number(cid)} />}
             </Row>
-            {course.queues.length === 0
-              ? "There are currently no scheduled office hours"
-              : course?.queues?.map((q) => (
-                  <OpenQueueCard
-                    key={q.id}
-                    queue={q}
-                    isTA={role === Role.TA}
-                    updateQueueNotes={updateQueueNotes}
-                  />
-                ))}
+            {course?.queues?.length === 0 ? (
+              <h1 style={{ paddingTop: "100px" }}>
+                There are currently no scheduled office hours
+              </h1>
+            ) : (
+              course?.queues?.map((q) => (
+                <OpenQueueCard
+                  key={q.id}
+                  queue={q}
+                  isTA={role === Role.TA}
+                  updateQueueNotes={updateQueueNotes}
+                />
+              ))
+            )}
             {!course && <OpenQueueCardSkeleton />}
           </Col>
           <Col md={12} sm={24}>
