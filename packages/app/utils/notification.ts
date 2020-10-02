@@ -43,7 +43,10 @@ export const registerNotificationSubscription = async (): Promise<void> => {
   if (doesBrowserSupportNotifications()) {
     const subscription = await ensureSubscription();
     const subData = subscription.toJSON() as DesktopNotifBody;
-    await API.notif.desktop.register({ ...subData }); //, name: `${platform.name} on ${platform.os}`});
+    await API.notif.desktop.register({
+      ...subData,
+      name: `${platform.name} on ${platform.os}`,
+    });
   }
 };
 
