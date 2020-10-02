@@ -1,6 +1,7 @@
 import { API } from "@koh/api-client";
 import { DesktopNotifBody } from "@koh/common";
 import { urlB64ToUint8Array } from "./urlB64ToUint8Array";
+import platform from "platform";
 
 const doesBrowserSupportNotifications = () =>
   "serviceWorker" in window.navigator && "PushManager" in window;
@@ -41,7 +42,8 @@ const getRegistration = async (): Promise<ServiceWorkerRegistration> =>
 export const registerNotificationSubscription = async (): Promise<void> => {
   if (doesBrowserSupportNotifications()) {
     const subscription = await ensureSubscription();
-    await API.notif.desktop.register(subscription.toJSON() as DesktopNotifBody);
+    const subData = subscription.toJSON() as DesktopNotifBody;
+    await API.notif.desktop.register({ ...subData }); //, name: `${platform.name} on ${platform.os}`});
   }
 };
 
@@ -62,6 +64,8 @@ async function ensureSubscription(): Promise<PushSubscription> {
 }
 
 export async function getEndpoint(): Promise<string | NotificationStates> {
-  const subscription = (await (await getRegistration())?.pushManager?.getSubscription());
+  const subscription = await (
+    await getRegistration()
+  )?.pushManager?.getSubscription();
   return subscription?.endpoint;
 }

@@ -43,6 +43,7 @@ export class NotificationController {
       expirationTime: body.expirationTime && new Date(body.expirationTime),
       p256dh: body.keys.p256dh,
       auth: body.keys.auth,
+      name: body.name,
       userId: userId,
     });
     return {

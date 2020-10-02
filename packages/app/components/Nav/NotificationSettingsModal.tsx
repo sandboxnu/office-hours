@@ -130,6 +130,17 @@ function useThisDeviceEndpoint(): null | string {
   return endpoint;
 }
 
+function renderDeviceInfo(
+  device: DesktopNotifPartial,
+  isThisDevice: boolean
+): string {
+  if (device.name) {
+    return isThisDevice ? `${device.name} (This Device)` : device.name;
+  } else {
+    return isThisDevice ? "This Device" : "Other Device";
+  }
+}
+
 function DeviceNotifPanel() {
   const thisEndpoint = useThisDeviceEndpoint();
   const { data: profile, mutate } = useSWR(`api/v1/profile`, async () =>
@@ -174,26 +185,22 @@ function DeviceNotifPanel() {
         bordered
         dataSource={profile.desktopNotifs}
         locale={{ emptyText: "No Devices Registered To Receive Notifications" }}
-        renderItem={(item: DesktopNotifPartial) => (
+        renderItem={(device: DesktopNotifPartial) => (
           <List.Item
             actions={[
               <MinusCircleOutlined
                 style={{ fontSize: "20px" }}
                 key={0}
                 onClick={async () => {
-                  await API.notif.desktop.unregister(item.id);
+                  await API.notif.desktop.unregister(device.id);
                   mutate();
                 }}
               />,
             ]}
           >
             <List.Item.Meta
-              title={
-                item.endpoint === thisEndpoint
-                  ? "This Device"
-                  : "Unknown Device"
-              }
-              description={`Registered ${item.createdAt.toLocaleDateString()}`}
+              title={renderDeviceInfo(device, device.endpoint === thisEndpoint)}
+              description={`Registered ${device.createdAt.toLocaleDateString()}`}
             />
           </List.Item>
         )}

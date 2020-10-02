@@ -26,10 +26,7 @@ export class DesktopNotifModel extends BaseEntity {
   @Column('text')
   auth: string;
 
-  @ManyToOne(
-    type => UserModel,
-    user => user.desktopNotifs,
-  )
+  @ManyToOne((type) => UserModel, (user) => user.desktopNotifs)
   @JoinColumn({ name: 'userId' })
   user: UserModel;
 

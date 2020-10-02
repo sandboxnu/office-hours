@@ -249,6 +249,7 @@ export type DesktopNotifBody = {
     p256dh: string;
     auth: string;
   };
+  name?: string;
 };
 
 export type PhoneNotifBody = {
