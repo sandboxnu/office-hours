@@ -7,7 +7,6 @@ import {
   GetQuestionResponse,
   GetQueueResponse,
   ListQuestionsResponse,
-  PhoneNotifBody,
   TAUpdateStatusResponse,
   UpdateProfileParams,
   UpdateQuestionParams,
@@ -51,7 +50,7 @@ class APIClient {
 
   profile = {
     index: async (): Promise<GetProfileResponse> =>
-      this.req("GET", `/api/v1/profile`),
+      this.req("GET", `/api/v1/profile`, GetProfileResponse),
     patch: async (body: UpdateProfileParams): Promise<GetProfileResponse> =>
       this.req("PATCH", `/api/v1/profile`, undefined, body),
   };
@@ -110,12 +109,12 @@ class APIClient {
         this.req(
           "POST",
           `/api/v1/notifications/desktop/device`,
-          undefined,
+          DesktopNotifPartial,
           payload
         ),
       unregister: async (deviceId: number): Promise<string> =>
         this.req(
-          "POST",
+          "DELETE",
           `/api/v1/notifications/desktop/device/${deviceId}`,
           undefined
         ),

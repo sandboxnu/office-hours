@@ -31,21 +31,27 @@ export const isProd = (): boolean =>
  * @param courses - The list of courses that the user is accociated with (as either a 'student', 'ta' or 'professor')
  * @param desktopNotifs - list of endpoints so that frontend can figure out if device is enabled
  */
-export type User = {
-  id: number;
-  email: string;
-  name: string;
-  photoURL: string;
-  courses: UserCourse[];
-  desktopNotifsEnabled: boolean;
-  desktopNotifs: DesktopNotifPartial[];
-  phoneNotifsEnabled: boolean;
-  phoneNumber: string;
-};
+export class User {
+  id!: number;
+  email!: string;
+  name!: string;
+  photoURL!: string;
+  courses!: UserCourse[];
+  desktopNotifsEnabled!: boolean;
 
-export interface DesktopNotifPartial {
-  id: number;
-  endpoint: string;
+  @Type(() => DesktopNotifPartial)
+  desktopNotifs!: DesktopNotifPartial[];
+
+  phoneNotifsEnabled!: boolean;
+  phoneNumber!: string;
+}
+
+export class DesktopNotifPartial {
+  id!: number;
+  endpoint!: string;
+  name?: string;
+  @Type(() => Date)
+  createdAt!: Date;
 }
 
 /**
@@ -254,7 +260,7 @@ export type PhoneNotifBody = {
 // API route Params and Responses
 
 // Office Hours Response Types
-export type GetProfileResponse = User;
+export class GetProfileResponse extends User {}
 
 export class KhouryDataParams {
   @IsString()

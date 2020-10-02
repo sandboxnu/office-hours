@@ -5,8 +5,7 @@ import {
   BaseEntity,
   ManyToOne,
   JoinColumn,
-  AfterInsert,
-  AfterLoad,
+  CreateDateColumn,
 } from 'typeorm';
 import { UserModel } from '../profile/user.entity';
 
@@ -27,10 +26,19 @@ export class DesktopNotifModel extends BaseEntity {
   @Column('text')
   auth: string;
 
-  @ManyToOne((type) => UserModel, (user) => user.desktopNotifs)
+  @ManyToOne(
+    type => UserModel,
+    user => user.desktopNotifs,
+  )
   @JoinColumn({ name: 'userId' })
   user: UserModel;
 
   @Column({ nullable: true })
   userId: number;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+
+  @Column({ type: 'text', nullable: true })
+  name: string;
 }

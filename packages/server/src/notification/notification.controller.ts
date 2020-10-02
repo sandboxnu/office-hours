@@ -45,7 +45,12 @@ export class NotificationController {
       auth: body.keys.auth,
       userId: userId,
     });
-    return { id: device.id, endpoint: device.endpoint };
+    return {
+      id: device.id,
+      endpoint: device.endpoint,
+      createdAt: device.createdAt,
+      name: device.name,
+    };
   }
 
   @Delete('desktop/device/:deviceId')
