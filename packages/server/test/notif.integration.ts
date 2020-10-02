@@ -29,9 +29,15 @@ describe('Notif Integration', () => {
             p256dh: 'some_key',
             auth: 'some_key_as_well',
           },
+          name: 'chrome',
         })
         .expect(201);
-      expect(res.body).toEqual({ endpoint: 'biggoogle.com', id: 1 });
+      expect(res.body).toEqual({
+        createdAt: expect.any(String),
+        name: 'chrome',
+        endpoint: 'biggoogle.com',
+        id: 1,
+      });
 
       const notifModels = await DesktopNotifModel.find();
       expect(notifModels).toEqual([
@@ -42,6 +48,8 @@ describe('Notif Integration', () => {
           id: 1,
           p256dh: 'some_key',
           userId: 1,
+          createdAt: expect.any(Date),
+          name: 'chrome',
         },
       ]);
     });

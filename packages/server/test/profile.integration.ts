@@ -55,13 +55,19 @@ describe('Profile Integration', () => {
         auth: '',
         p256dh: '',
         endpoint: 'abc',
+        name: 'firefox',
       }).save();
       await dn.reload();
       const res = await supertest({ userId: user.id })
         .get('/profile')
         .expect(200);
       expect(res.body.desktopNotifs).toEqual([
-        { id: dn.id, endpoint: dn.endpoint },
+        {
+          createdAt: expect.any(String),
+          name: 'firefox',
+          id: dn.id,
+          endpoint: dn.endpoint,
+        },
       ]);
     });
 
