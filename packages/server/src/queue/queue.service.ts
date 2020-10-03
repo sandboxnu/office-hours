@@ -52,7 +52,7 @@ export class QueueService {
           question.creator.id === userId
             ? question.creator
             : pick(question.creator, ['id']);
-        return { ...question, creator };
+        return QuestionModel.create({ ...question, creator });
       });
     }
     return questions;
