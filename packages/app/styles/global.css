@@ -31,6 +31,23 @@ body {
   background-color: #3684c6;
 }
 
+.ant-modal-body {
+  padding: 0px 24px;
+}
+
 .notion-image-inset {
-  max-width: 15%;
+  width: 100%;
+}
+
+.notion-asset-wrapper {
+  width: 100% !important;
+}
+
+.notion-asset-wrapper > div {
+  padding-bottom: 0px !important;
+}
+
+.notion-list {
+  margin: 0px;
+  padding-inline-start: 20px;
 }
