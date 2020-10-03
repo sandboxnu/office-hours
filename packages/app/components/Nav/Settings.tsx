@@ -1,4 +1,4 @@
-import { PROD_URL } from "@koh/common";
+import { isProd } from "@koh/common";
 import { Menu, Popover } from "antd";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
@@ -29,7 +29,7 @@ export default function Settings(): ReactElement {
   const profile = useProfile();
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const loginPath = PROD_URL === process.env.DOMAIN ? "/login" : "/dev";
+  const loginPath = isProd() ? "/login" : "/dev";
 
   return (
     <>

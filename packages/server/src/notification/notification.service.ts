@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Connection, DeepPartial } from 'typeorm';
+import { DeepPartial } from 'typeorm';
 import * as webPush from 'web-push';
 import { UserModel } from '../profile/user.entity';
 import { DesktopNotifModel } from './desktop-notif.entity';
@@ -41,7 +41,6 @@ export class NotificationService {
   desktopPublicKey: string;
 
   constructor(
-    private connection: Connection,
     private configService: ConfigService,
     private twilioService: TwilioService,
   ) {
@@ -65,7 +64,8 @@ export class NotificationService {
   }
 
   async registerPhone(phoneNumber: string, user: UserModel): Promise<void> {
-    if (!this.twilioService.isPhoneNumberReal) {
+    const fullNumber = await this.twilioService.getFullPhoneNumber(phoneNumber);
+    if (!fullNumber) {
       throw new BadRequestException('phone number invalid');
     }
 
@@ -75,17 +75,17 @@ export class NotificationService {
 
     if (phoneNotifModel) {
       // Phone number has not changed
-      if (phoneNotifModel.phoneNumber === phoneNumber) {
+      if (phoneNotifModel.phoneNumber === fullNumber) {
         return;
       } else {
         // Need to just change it
-        phoneNotifModel.phoneNumber = phoneNumber;
+        phoneNotifModel.phoneNumber = fullNumber;
         phoneNotifModel.verified = false;
         await phoneNotifModel.save();
       }
     } else {
       phoneNotifModel = await PhoneNotifModel.create({
-        phoneNumber,
+        phoneNumber: fullNumber,
         userId: user.id,
         verified: false,
       }).save();

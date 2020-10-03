@@ -12,6 +12,9 @@ import { Type } from "class-transformer";
 import "reflect-metadata";
 
 export const PROD_URL = "https://khouryofficehours.com";
+export const isProd = (): boolean =>
+  process.env.DOMAIN === PROD_URL ||
+  (typeof window !== "undefined" && window?.location?.origin === PROD_URL);
 
 /////////////////////////
 // API Base Data Types //
