@@ -8,11 +8,9 @@ export default function ReleaseNotes(): ReactElement {
     "releaseNotesLastSeen",
     null
   );
-  const [releaseNotesLastUpdated, setReleaseNotesLastUpdated] = useState(
-    new Date(0)
-  );
+  const [releaseNotesLastUpdated, setReleaseNotesLastUpdated] = useState(0);
   const [notionReleaseNotes, setNotionReleaseNotes] = useState();
-  const [showReleaseNotes, setShowReleaseNotes] = useState(true);
+  const [showReleaseNotes, setShowReleaseNotes] = useState(false);
 
   useEffect(() => {
     fetch(
@@ -24,11 +22,10 @@ export default function ReleaseNotes(): ReactElement {
           const timeText =
             result["beae2a02-249e-4b61-9bfc-81258d93f20d"]?.value?.properties
               ?.title[0][0];
-          console.log("text", timeText);
-          setReleaseNotesLastUpdated(
-            new Date(timeText.split("Unix ")[1] * 1000)
-          );
-          // TODO: Remove the last updated property from the notion response
+          setReleaseNotesLastUpdated(timeText.split("Unix ")[1] * 1000);
+          // Remove the time block and page link block from page
+          result["beae2a02-249e-4b61-9bfc-81258d93f20d"].value.properties.title = []
+          result["4d25f393-e570-4cd5-ad66-b278a0924225"].value.properties.title = []
           setNotionReleaseNotes(result);
         },
         (error) => {
@@ -37,8 +34,7 @@ export default function ReleaseNotes(): ReactElement {
       );
   }, []);
 
-  if (new Date(releaseNotesLastSeen) < releaseNotesLastUpdated) {
-    setReleaseNotesLastSeen(new Date());
+  if (new Date(releaseNotesLastSeen) < new Date(releaseNotesLastUpdated)) {
     notification.open({
       message: "We've got new features/bug fixes",
       type: "info",
@@ -49,20 +45,20 @@ export default function ReleaseNotes(): ReactElement {
         notification.destroy();
       },
     });
+    setReleaseNotesLastSeen(new Date());
   }
 
   return (
     <div>
       {notionReleaseNotes ? (
         <Modal
+          title={"Release Notes"}
           visible={showReleaseNotes}
-          footer={null}
+          footer={<><b>Want to see more? </b><a href="https://www.notion.so/Release-Notes-Archive-9a1a0eab073a463096fc3699bf48219c"> Click here to view the archive</a></>}
           width={625}
           onCancel={() => setShowReleaseNotes(false)}
         >
-          <div>
-            <NotionRenderer blockMap={notionReleaseNotes} />
-          </div>
+          <NotionRenderer blockMap={notionReleaseNotes} />
         </Modal>
       ) : null}
     </div>
