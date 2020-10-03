@@ -1,20 +1,20 @@
 import { API } from "@koh/api-client";
-import Head from "next/head";
 import { QueuePartial, Role } from "@koh/common";
 import { Col, Row } from "antd";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
 import NavBar from "../../../components/Nav/NavBar";
+import SchedulePanel from "../../../components/Schedule/SchedulePanel";
 import OpenQueueCard, {
   OpenQueueCardSkeleton,
 } from "../../../components/Today/OpenQueueCard";
 import TACheckinButton from "../../../components/Today/TACheckinButton";
 import ReleaseNotes from "../../../components/Today/ReleaseNotes";
 import WelcomeStudents from "../../../components/Today/WelcomeStudents";
-import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import { useCourse } from "../../../hooks/useCourse";
-import SchedulePanel from "../../../components/Schedule/SchedulePanel";
+import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 
 const Container = styled.div`
   margin: 32px 64px;
@@ -67,14 +67,20 @@ export default function Today(): ReactElement {
               <Title>Current Office Hours</Title>
               {role === Role.TA && <TACheckinButton courseId={Number(cid)} />}
             </Row>
-            {course?.queues?.map((q) => (
-              <OpenQueueCard
-                key={q.id}
-                queue={q}
-                isTA={role === Role.TA}
-                updateQueueNotes={updateQueueNotes}
-              />
-            ))}
+            {course?.queues?.length === 0 ? (
+              <h1 style={{ paddingTop: "100px" }}>
+                There are currently no scheduled office hours
+              </h1>
+            ) : (
+              course?.queues?.map((q) => (
+                <OpenQueueCard
+                  key={q.id}
+                  queue={q}
+                  isTA={role === Role.TA}
+                  updateQueueNotes={updateQueueNotes}
+                />
+              ))
+            )}
             {!course && <OpenQueueCardSkeleton />}
           </Col>
           <Col md={12} sm={24}>
