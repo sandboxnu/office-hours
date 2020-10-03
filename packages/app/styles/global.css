@@ -30,3 +30,7 @@ body {
   border-color: #3684c6;
   background-color: #3684c6;
 }
+
+.notion-image-inset {
+  max-width: 15%;
+}
