@@ -54,6 +54,7 @@ export default function ReleaseNotes(): ReactElement {
 
   return (
     <div>
+      <base target="_blank" />
       {notionReleaseNotes ? (
         <Modal
           title={"Release Notes"}

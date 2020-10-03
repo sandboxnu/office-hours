@@ -18,7 +18,6 @@ export default class MyDocument extends Document {
         ...initialProps,
         styles: (
           <>
-            <base target="_blank" />
             {initialProps.styles}
             {sheet.getStyleElement()}
           </>
