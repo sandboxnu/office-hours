@@ -12,6 +12,10 @@ export default function ReleaseNotes(): ReactElement {
   const [notionReleaseNotes, setNotionReleaseNotes] = useState();
   const [showReleaseNotes, setShowReleaseNotes] = useState(false);
 
+  if (!releaseNotesLastSeen) {
+    setReleaseNotesLastSeen(new Date());
+  }
+
   useEffect(() => {
     fetch(
       "https://notion-api.splitbee.io/v1/page/abba246bfa0847baa2706ab30d0c6c7d"
