@@ -1,16 +1,16 @@
+import { OpenQuestionStatus } from '@koh/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestTypeOrmModule } from '../../../test/util/testUtils';
-import { QueueCleanService } from './queue-clean.service';
+import { QueueModel } from 'queue/queue.entity';
+import { Connection } from 'typeorm';
 import {
+  ClosedOfficeHourFactory,
+  QuestionFactory,
   QueueFactory,
   UserFactory,
-  QuestionFactory,
-  ClosedOfficeHourFactory,
 } from '../../../test/util/factories';
-import { OpenQuestionStatus } from '@koh/common';
+import { TestTypeOrmModule } from '../../../test/util/testUtils';
 import { QuestionModel } from '../../question/question.entity';
-import { Connection } from 'typeorm';
-import { QueueModel } from 'queue/queue.entity';
+import { QueueCleanService } from './queue-clean.service';
 
 describe('QueueService', () => {
   let service: QueueCleanService;
@@ -43,8 +43,14 @@ describe('QueueService', () => {
       });
 
       await service.cleanQueue(queue.id);
+
+      const cleanedQueue = await QueueModel.findOne(queue.id, {
+        relations: ['staffList'],
+      });
+
       const question = await QuestionModel.findOne({});
       expect(question.status).toEqual('Queued');
+      expect(cleanedQueue.staffList).toEqual([]);
     });
 
     it('if no staff are present all questions with open status are marked as stale', async () => {
@@ -62,7 +68,10 @@ describe('QueueService', () => {
 
     it('cleaning the queue removes the queue notes', async () => {
       const ofs = await ClosedOfficeHourFactory.create();
-      const queue = await QueueFactory.create({ officeHours: [ofs], notes: "This note is no longer relevant" });
+      const queue = await QueueFactory.create({
+        officeHours: [ofs],
+        notes: 'This note is no longer relevant',
+      });
       const question = await QuestionFactory.create({
         status: OpenQuestionStatus.Queued,
         queue: queue,

@@ -1,11 +1,9 @@
 import React, { ReactElement } from "react";
 import { API } from "@koh/api-client";
-import Link from "next/link";
 import styled from "styled-components";
 import { Button, Divider } from "antd";
-import { GetStaticProps } from "next";
-import { PROD_URL } from "@koh/common";
 import DefaultErrorPage from "next/error";
+import { isProd } from "@koh/common";
 
 const Container = styled.div`
   width: auto;
@@ -45,17 +43,8 @@ const PageHeader = styled.div`
   margin-top: 40px;
 `;
 
-export const getStaticProps: GetStaticProps = async () => {
-  const hidePage = PROD_URL === process.env.DOMAIN;
-  return { props: { hidePage } };
-};
-
-interface DevPanelProps {
-  hidePage: boolean;
-}
-
-export default function DevPanel({ hidePage }: DevPanelProps): ReactElement {
-  if (hidePage) {
+export default function DevPanel(): ReactElement {
+  if (isProd()) {
     return <DefaultErrorPage statusCode={404} />;
   }
   return (

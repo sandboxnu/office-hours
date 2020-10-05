@@ -18,12 +18,11 @@ export class TwilioService {
   }
 
   /**
-   * Check that phone number is real
+   * Get full phone number or return false if phone number isn't real
    */
-  public async isPhoneNumberReal(phoneNumber: string): Promise<boolean> {
+  public async getFullPhoneNumber(phoneNumber: string): Promise<string | false> {
     try {
-      await this.twilioClient.lookups.phoneNumbers(phoneNumber).fetch();
-      return true;
+      return (await this.twilioClient.lookups.phoneNumbers(phoneNumber).fetch()).phoneNumber;
     } catch (err) {
       // if the phone number is not found, then endpoint should return invalid
       return false;

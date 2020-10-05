@@ -48,10 +48,11 @@ export class QueueService {
   ): ListQuestionsResponse {
     if (role === Role.STUDENT) {
       return questions.map((question) => {
-        if (question.creator.id !== userId) {
-          question.creator = pick(question.creator, ['id']);
-        }
-        return question;
+        const creator =
+          question.creator.id === userId
+            ? question.creator
+            : pick(question.creator, ['id']);
+        return QuestionModel.create({ ...question, creator });
       });
     }
     return questions;

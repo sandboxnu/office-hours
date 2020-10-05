@@ -7,6 +7,6 @@ import { TwilioService } from './twilio/twilio.service';
 @Module({
   controllers: [NotificationController],
   providers: [NotificationService, DesktopNotifSubscriber, TwilioService],
-  exports: [NotificationService],
+  exports: [NotificationService, TwilioService],
 })
 export class NotificationModule {}

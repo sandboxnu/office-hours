@@ -3,7 +3,7 @@ const FormData = require("form-data");
 const fs = require("fs");
 const path = require("path");
 
-const serverUrl = process.env.NEXT_PUBLIC_APM_SERVER;
+const serverUrl = process.env.ELASTIC_APM_SERVER_URL;
 const domain = process.env.DOMAIN || "khouryofficehours.com";
 const service_name = `${domain.replace(/\./g, "-")}-frontend`;
 const service_version = process.env.SERVICE_VERSION
@@ -31,7 +31,7 @@ async function main() {
         formData.append("service_version", service_version);
         formData.append(
           "bundle_filepath",
-          `${domain}/_next/static/chunks/${filename}.js`
+          `https://${domain}/_next/static/chunks/${filename}`
         );
         formData.append("service_name", service_name);
         try {

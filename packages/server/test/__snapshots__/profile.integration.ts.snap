@@ -11,6 +11,7 @@ Object {
       "role": "student",
     },
   ],
+  "desktopNotifs": Array [],
   "desktopNotifsEnabled": false,
   "email": "user@neu.edu",
   "id": 1,
