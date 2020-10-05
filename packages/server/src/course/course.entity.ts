@@ -12,6 +12,7 @@ import { QueueModel } from '../queue/queue.entity';
 import { UserCourseModel } from '../profile/user-course.entity';
 import { SemesterModel } from './semester.entity';
 import { Exclude } from 'class-transformer';
+import { Heatmap } from '@koh/common';
 
 /**
  * Represents a course in the context of office hours.
@@ -61,4 +62,6 @@ export class CourseModel extends BaseEntity {
 
   @Column('boolean', { nullable: true })
   enabled: boolean; // Set to true if the given the course is using our app
+
+  heatmap: Heatmap;
 }
