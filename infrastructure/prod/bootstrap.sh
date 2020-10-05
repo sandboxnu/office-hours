@@ -28,13 +28,13 @@ sudo -u postgres psql -c "CREATE DATABASE prod"
 sudo ufw allow ssh
 sudo ufw allow http
 sudo ufw allow https
-sudo ufw enable
+yes | sudo ufw enable
 
 sudo chown ubuntu /var/www
 yarn global add pm2
 
 sudo apt -y install nginx
-cp nginx.conf /etc/nginx/nginx.conf
+sudo cp nginx.conf /etc/nginx/nginx.conf
 sudo service nginx restart
 
 echo "You still need to pm2 startup, add ssh keys, and add certbot"
