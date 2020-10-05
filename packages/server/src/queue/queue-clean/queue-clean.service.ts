@@ -1,9 +1,9 @@
+import { ClosedQuestionStatus, OpenQuestionStatus } from '@koh/common';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Connection } from 'typeorm';
-import { QueueModel } from '../queue.entity';
-import { OpenQuestionStatus, ClosedQuestionStatus } from '@koh/common';
 import { QuestionModel } from '../../question/question.entity';
+import { QueueModel } from '../queue.entity';
 
 /**
  * Clean the queue and mark stale
@@ -31,6 +31,9 @@ export class QueueCleanService {
     const queue = await QueueModel.findOne(queueId, {
       relations: ['staffList'],
     });
+
+    queue.staffList = [];
+    await queue.save(); // TODO: somehow keep track of this in the future and tell the TAs
 
     if (!(await queue.checkIsOpen())) {
       queue.notes = '';
