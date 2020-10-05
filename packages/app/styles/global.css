@@ -31,10 +31,6 @@ body {
   background-color: #3684c6;
 }
 
-.ant-modal-body {
-  padding: 0px 24px;
-}
-
 .notion-image-inset {
   width: 100%;
 }
@@ -50,4 +46,8 @@ body {
 .notion-list {
   margin: 0px;
   padding-inline-start: 20px;
+}
+
+.notion-toggle {
+  padding-inline-start: 5px;
 }

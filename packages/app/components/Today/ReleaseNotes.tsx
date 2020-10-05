@@ -59,6 +59,7 @@ export default function ReleaseNotes(): ReactElement {
         <Modal
           title={"Release Notes"}
           visible={showReleaseNotes}
+          bodyStyle={{padding: "0px 24px"}}
           footer={<><b>Want to see more? </b><a href="https://www.notion.so/Release-Notes-Archive-9a1a0eab073a463096fc3699bf48219c"> Click here to view the archive</a></>}
           width={625}
           onCancel={() => setShowReleaseNotes(false)}
