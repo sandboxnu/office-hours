@@ -29,17 +29,30 @@ export const isProd = (): boolean =>
  * @param name - The full name of this user: First Last.
  * @param photoURL - The URL string of this user photo. This is pulled from the admin site
  * @param courses - The list of courses that the user is accociated with (as either a 'student', 'ta' or 'professor')
+ * @param desktopNotifs - list of endpoints so that frontend can figure out if device is enabled
  */
-export type User = {
-  id: number;
-  email: string;
-  name: string;
-  photoURL: string;
-  courses: UserCourse[];
-  desktopNotifsEnabled: boolean;
-  phoneNotifsEnabled: boolean;
-  phoneNumber: string;
-};
+export class User {
+  id!: number;
+  email!: string;
+  name!: string;
+  photoURL!: string;
+  courses!: UserCourse[];
+  desktopNotifsEnabled!: boolean;
+
+  @Type(() => DesktopNotifPartial)
+  desktopNotifs!: DesktopNotifPartial[];
+
+  phoneNotifsEnabled!: boolean;
+  phoneNumber!: string;
+}
+
+export class DesktopNotifPartial {
+  id!: number;
+  endpoint!: string;
+  name?: string;
+  @Type(() => Date)
+  createdAt!: Date;
+}
 
 /**
  * Contains the partial user info needed by the frontend when nested in a response
@@ -236,6 +249,7 @@ export type DesktopNotifBody = {
     p256dh: string;
     auth: string;
   };
+  name?: string;
 };
 
 export type PhoneNotifBody = {
@@ -247,7 +261,7 @@ export type PhoneNotifBody = {
 // API route Params and Responses
 
 // Office Hours Response Types
-export type GetProfileResponse = User;
+export class GetProfileResponse extends User {}
 
 export class KhouryDataParams {
   @IsString()
