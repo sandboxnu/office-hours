@@ -23,6 +23,7 @@ PSQL_PWD=$(openssl rand -base64 16)
 echo $PSQL_PWD > psqlpwd.txt
 sudo -u postgres psql -c "CREATE USER server WITH PASSWORD '$PSQL_PWD'"
 sudo -u postgres psql -c "CREATE DATABASE prod"
+sudo -u postgres createuser $(whoami)
 
 
 sudo ufw allow ssh
