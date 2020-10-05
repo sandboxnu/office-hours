@@ -20,7 +20,7 @@ sudo apt -y install postgresql-11
 sudo update-rc.d postgresql enable
 
 PSQL_PWD=$(openssl rand -base64 16)
-cat $PSQL_PWD > psqlpwd.txt
+echo $PSQL_PWD > psqlpwd.txt
 sudo -u postgres psql -c "CREATE USER server WITH PASSWORD '$PSQL_PWD'"
 sudo -u postgres psql -c "CREATE DATABASE prod"
 
@@ -37,7 +37,7 @@ sudo apt -y install nginx
 sudo cp nginx.conf /etc/nginx/nginx.conf
 sudo service nginx restart
 
-yarn start:prod
+yarn prod:start
 pm2 save
 
 echo "You still need to pm2 startup, add ssh keys, and add certbot"
