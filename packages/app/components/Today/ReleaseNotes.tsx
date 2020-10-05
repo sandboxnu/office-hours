@@ -28,8 +28,8 @@ export default function ReleaseNotes(): ReactElement {
               ?.title[0][0];
           setReleaseNotesLastUpdated(timeText.split("Unix ")[1] * 1000);
           // Remove the time block and page link block from page
-          result["beae2a02-249e-4b61-9bfc-81258d93f20d"].value.properties.title = []
-          result["4d25f393-e570-4cd5-ad66-b278a0924225"].value.properties.title = []
+          result["beae2a02-249e-4b61-9bfc-81258d93f20d"].value.properties.title = [];
+          result["4d25f393-e570-4cd5-ad66-b278a0924225"].value.properties.title = [];
           setNotionReleaseNotes(result);
         },
         (error) => {
@@ -42,8 +42,12 @@ export default function ReleaseNotes(): ReactElement {
     notification.open({
       message: "We've got new features/bug fixes",
       type: "info",
-      description: "Click to see what's new!",
       duration: 0,
+      description: "Click to see what's new!",
+      className: "clickable-notification",
+      style: { 
+        cursor: 'pointer',
+      },
       onClick: () => {
         setShowReleaseNotes(true);
         notification.destroy();
