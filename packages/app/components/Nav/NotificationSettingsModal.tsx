@@ -109,7 +109,13 @@ export function NotificationSettingsModal({
           >
             <Switch />
           </Form.Item>
-          <DeviceNotifPanel />
+          <Form.Item shouldUpdate noStyle>
+            {() =>
+              form?.getFieldValue("desktopNotifsEnabled") && (
+                <DeviceNotifPanel />
+              )
+            }
+          </Form.Item>
           {/* <Divider orientation="left">SMS</Divider> */}
           <Form.Item
             style={{ marginTop: "30px" }}
