@@ -37,4 +37,7 @@ sudo apt -y install nginx
 sudo cp nginx.conf /etc/nginx/nginx.conf
 sudo service nginx restart
 
+yarn start:prod
+pm2 save
+
 echo "You still need to pm2 startup, add ssh keys, and add certbot"
