@@ -9,7 +9,6 @@ import {
   SettingOutlined,
   QuestionCircleOutlined,
   FileTextOutlined,
-  // UserOutlined,
 } from "@ant-design/icons";
 
 const StyleablePopover = ({ className, ...props }: { className: string }) => (
