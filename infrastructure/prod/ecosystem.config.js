@@ -33,7 +33,7 @@ module.exports = {
     production: {
       user: "dajinchu",
       host: "amato.ccs.neu.edu",
-      ssh_options: "ProxyJump=dajinchu@login.ccs.neu.edu",
+      ssh_options: "ProxyCommand=ssh login nc %h %p 2> /dev/null",
       ref: "origin/dist",
       repo: "https://github.com/sandboxnu/office-hours.git",
       path: "/var/www",
