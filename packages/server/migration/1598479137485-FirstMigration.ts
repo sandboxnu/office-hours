@@ -89,7 +89,7 @@ export class FirstMigration1598479137485 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `ALTER TABLE "queue_model_staff_list_user_model" CONSTRAINT "FK_afc7595c6141d48fc334da22409"`,
+      `ALTER TABLE "queue_model_staff_list_user_model" DROP CONSTRAINT "FK_afc7595c6141d48fc334da22409"`,
     );
     await queryRunner.query(
       `ALTER TABLE "queue_model_staff_list_user_model" DROP CONSTRAINT "FK_2fd33d9360492e0ae1cc3332bde"`,
