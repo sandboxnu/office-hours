@@ -39,13 +39,20 @@ describe("TA interacts with student question", () => {
   it("clicks the help button then remove question", () => {
     // Click on the student's question
     cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
+
+    cy.percySnapshot("TA Queue Page - Student Popup Open");
+
     // Click help
     cy.get("[data-cy='help-student']").click();
+
+    cy.percySnapshot("TA Queue Page - Helping Student Banner");
 
     // Click Remove from queue
     cy.get("[data-cy='banner']")
       .contains("button", "Remove from Queue")
       .click();
+
+    cy.percySnapshot("TA Queue Page - Student Queue");
   });
 
   it("clicks the help button then finish helping", () => {
