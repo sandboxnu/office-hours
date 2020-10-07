@@ -28,25 +28,13 @@ describe("Can successfuly check in and out of a queue", () => {
     cy.get("body").should("contain", "There are no questions in the queue");
     cy.get("[data-cy='check-in-button']").click();
 
-    // Click "Check out"
-    cy.get("[data-cy='check-out-button']").click();
-    cy.get("button").should("contain", "Check In");
-  });
-
-  it("from the today page", () => {
-    cy.get(".ant-modal-close-x").click();
-    // Wait for page to load
-    cy.contains("No Staff Checked In");
-
-    // Click "Check in"
-    cy.get("[data-cy='check-in-button']").click();
-
-    cy.location("pathname").should("contain", "/queue");
-    cy.get("body").should("contain", "There are no questions in the queue");
+    cy.percySnapshot("TA Queue Page - TA Checked In");
 
     // Click "Check out"
     cy.get("[data-cy='check-out-button']").click();
     cy.get("button").should("contain", "Check In");
+
+    cy.percySnapshot("TA Queue Page - TA Checked Out");
   });
 
   it("checkout from the today page", () => {
@@ -61,11 +49,15 @@ describe("Can successfuly check in and out of a queue", () => {
       cy.location("pathname").should("contain", "/queue");
       cy.get("body").should("contain", "There are no questions in the queue");
 
+      cy.percySnapshot("TA Today Page - TA Checked In");
+
       cy.visit(`/course/${ta.courseId}/today`);
 
       // Click "Check out"
       cy.get("[data-cy='check-out-button']").click();
       cy.get("button").should("contain", "Check In");
+
+      cy.percySnapshot("TA Today Page - TA Checked Out");
     });
   });
 });
