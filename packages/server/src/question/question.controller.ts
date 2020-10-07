@@ -67,7 +67,6 @@ export class QuestionController {
     @Body() body: CreateQuestionParams,
     @User() user: UserModel,
   ): Promise<CreateQuestionResponse> {
-    console.log('here, or type check');
     const { text, questionType, queueId, force } = body;
 
     const queue = await QueueModel.findOne({
