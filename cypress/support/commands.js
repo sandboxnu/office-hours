@@ -24,6 +24,8 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
+import '@percy/cypress';
+
 // Q: doest cy.server(); need to be run before this?
 // or could it be added to a before each in a the support file so it runs before each test
 Cypress.Commands.add("mock", (method, url, fixture) => {
