@@ -43,11 +43,11 @@ export function useQuestions(qid: number): UseQuestionReturn {
   );
 
   const mutateQuestion = useCallback(
-    (newQuestion) => {
+    (newQuestion, revalidate = true) => {
       const newQuestions = questions?.map((q) =>
         q.id === newQuestion.id ? newQuestion : q
       );
-      mutateQuestions(newQuestions);
+      mutateQuestions(newQuestions, revalidate);
     },
     [questions, mutateQuestions]
   );
