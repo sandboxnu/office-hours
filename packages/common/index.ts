@@ -1,3 +1,4 @@
+import { Type } from "class-transformer";
 import {
   IsBoolean,
   IsDefined,
@@ -8,7 +9,6 @@ import {
   IsString,
   ValidateIf,
 } from "class-validator";
-import { Type } from "class-transformer";
 import "reflect-metadata";
 
 export const PROD_URL = "https://khouryofficehours.com";
@@ -360,7 +360,8 @@ export class CreateQuestionParams {
   text!: string;
 
   @IsEnum(QuestionType)
-  questionType!: QuestionType;
+  @IsOptional()
+  questionType?: QuestionType;
 
   @IsInt()
   queueId!: number;
