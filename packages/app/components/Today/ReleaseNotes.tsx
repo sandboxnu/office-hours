@@ -12,10 +12,6 @@ export default function ReleaseNotes(): ReactElement {
   const [notionReleaseNotes, setNotionReleaseNotes] = useState();
   const [showReleaseNotes, setShowReleaseNotes] = useState(false);
 
-  if (!releaseNotesLastSeen) {
-    setReleaseNotesLastSeen(new Date());
-  }
-
   useEffect(() => {
     fetch(
       "https://notion-api.splitbee.io/v1/page/abba246bfa0847baa2706ab30d0c6c7d"
@@ -23,13 +19,22 @@ export default function ReleaseNotes(): ReactElement {
       .then((res) => res.json())
       .then(
         (result) => {
-          const timeText =
-            result["beae2a02-249e-4b61-9bfc-81258d93f20d"]?.value?.properties
-              ?.title[0][0];
-          setReleaseNotesLastUpdated(timeText.split("Unix ")[1] * 1000);
+          try {
+            const timeText =
+              result["beae2a02-249e-4b61-9bfc-81258d93f20d"]?.value?.properties
+                ?.title[0][0];
+            setReleaseNotesLastUpdated(timeText.split("Unix ")[1] * 1000);
+            console.log("unix time", timeText.split("Unix ")[1]);
+          } catch (e) {
+            console.log("Error Parsing release notes time:", e);
+          }
           // Remove the time block and page link block from page
-          result["beae2a02-249e-4b61-9bfc-81258d93f20d"].value.properties.title = [];
-          result["4d25f393-e570-4cd5-ad66-b278a0924225"].value.properties.title = [];
+          result[
+            "beae2a02-249e-4b61-9bfc-81258d93f20d"
+          ].value.properties.title = [];
+          result[
+            "4d25f393-e570-4cd5-ad66-b278a0924225"
+          ].value.properties.title = [];
           setNotionReleaseNotes(result);
         },
         (error) => {
@@ -38,15 +43,18 @@ export default function ReleaseNotes(): ReactElement {
       );
   }, []);
 
-  if (new Date(releaseNotesLastSeen) < new Date(releaseNotesLastUpdated)) {
+  if (
+    (!releaseNotesLastSeen && releaseNotesLastUpdated) ||
+    new Date(releaseNotesLastSeen) < new Date(releaseNotesLastUpdated)
+  ) {
     notification.open({
       message: "We've got new features/bug fixes",
       type: "info",
       duration: 0,
       description: "Click to see what's new!",
       className: "clickable-notification",
-      style: { 
-        cursor: 'pointer',
+      style: {
+        cursor: "pointer",
       },
       onClick: () => {
         setShowReleaseNotes(true);
@@ -63,8 +71,16 @@ export default function ReleaseNotes(): ReactElement {
         <Modal
           title={"Release Notes"}
           visible={showReleaseNotes}
-          bodyStyle={{padding: "0px 24px"}}
-          footer={<><b>Want to see more? </b><a href="https://www.notion.so/Release-Notes-Archive-9a1a0eab073a463096fc3699bf48219c"> Click here to view the archive</a></>}
+          bodyStyle={{ padding: "0px 24px" }}
+          footer={
+            <>
+              <b>Want to see more? </b>
+              <a href="https://www.notion.so/Release-Notes-Archive-9a1a0eab073a463096fc3699bf48219c">
+                {" "}
+                Click here to view the archive
+              </a>
+            </>
+          }
           width={625}
           onCancel={() => setShowReleaseNotes(false)}
         >
