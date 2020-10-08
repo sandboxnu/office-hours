@@ -22,10 +22,10 @@ describe("Student can create a question", () => {
     // Visit the queue page
     cy.get("@queue").then((queue) =>
       cy.visit(`/course/${queue.courseId}/queue/${queue.id}`).then(() => {
-        cy.percySnapshot("Student Queue Page - Empty Student Queue");
-
+        
         // Click "Join Queue"
         cy.get("body").should("contain", "Join Queue");
+        cy.percySnapshot("Student Queue Page - Empty Student Queue");
         cy.get("button").contains("Join Queue").click();
 
         // Fill out the question form
