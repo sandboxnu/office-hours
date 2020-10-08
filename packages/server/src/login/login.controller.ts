@@ -28,6 +28,7 @@ import { UserCourseModel } from '../../src/profile/user-course.entity';
 import { UserModel } from '../../src/profile/user.entity';
 import { CourseSectionMappingModel } from './course-section-mapping.entity';
 import { LoginCourseService } from './login-course.service';
+import { ERROR_MESSAGES } from '@koh/common/constants';
 
 @Controller()
 export class LoginController {
@@ -53,7 +54,9 @@ export class LoginController {
       );
       if (!verify) {
         console.log('invalid');
-        throw new UnauthorizedException('Invalid request signature');
+        throw new UnauthorizedException(
+          ERROR_MESSAGES.loginController.receiveDataFromKhoury.invalidSignature,
+        );
       }
       console.log('valid');
     }

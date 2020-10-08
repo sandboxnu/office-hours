@@ -26,6 +26,7 @@ import StudentBanner from "./StudentBanner";
 import CantFindModal from "./StudentCantFindModal";
 import StudentQueueCard from "./StudentQueueCard";
 import StudentRemovedFromQueueModal from "./StudentRemovedFromQueueModal";
+import ERROR_MESSAGES from "../../../../common/constants";
 
 const JoinButton = styled(QueueInfoColumnButton)`
   background-color: #3684c6;
@@ -162,7 +163,7 @@ export default function StudentQueueList({
       } catch (e) {
         if (
           e.response?.data?.message?.includes(
-            "You can't create more than one question at a time"
+            ERROR_MESSAGES.questionController.createQuestion.multipleQuestions
           )
         ) {
           return false;

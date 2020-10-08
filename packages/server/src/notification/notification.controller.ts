@@ -18,6 +18,7 @@ import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { NotificationService } from './notification.service';
 import { UserId } from '../profile/user.decorator';
 import { DesktopNotifModel } from './desktop-notif.entity';
+import { ERROR_MESSAGES } from '@koh/common/constants';
 
 @Controller('notifications')
 export class NotificationController {
@@ -88,7 +89,9 @@ export class NotificationController {
     );
 
     if (!isValidated) {
-      throw new UnauthorizedException('Message not from Twilio');
+      throw new UnauthorizedException(
+        ERROR_MESSAGES.notificationController.verifyPhoneUser.messageNotFromTwilio,
+      );
     }
 
     const messageToUser = await this.notifService.verifyPhone(

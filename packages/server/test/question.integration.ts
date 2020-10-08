@@ -3,6 +3,7 @@ import {
   QuestionStatusKeys,
   QuestionType,
 } from '@koh/common';
+import { ERROR_MESSAGES } from '@koh/common/constants';
 import { QuestionModel } from '../src/question/question.entity';
 import { QuestionModule } from '../src/question/question.module';
 import {
@@ -47,9 +48,7 @@ describe('Question Integration', () => {
       expect(response.body).toMatchSnapshot();
     });
     it('fails to get a non-existent question', async () => {
-      await supertest({ userId: 99 })
-        .get(`/questions/999`)
-        .expect(404);
+      await supertest({ userId: 99 }).get(`/questions/999`).expect(404);
     });
   });
 
@@ -177,7 +176,7 @@ describe('Question Integration', () => {
 
       expect(response.status).toBe(400);
       expect(response.body.message).toBe(
-        "You can't create more than one question at a time.",
+        ERROR_MESSAGES.questionController.createQuestion.multipleQuestions,
       );
     });
     it('force a question when one is already open', async () => {

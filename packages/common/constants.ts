@@ -18,4 +18,14 @@ export const ERROR_MESSAGES = {
         "Logged-in user does not have edit access",
     },
   },
+  loginController: {
+    receiveDataFromKhoury: {
+      invalidSignature: "Invalid request signature",
+    },
+  },
+  notificationController: {
+    verifyPhoneUser: {
+      messageNotFromTwilio: "Message not from Twilio",
+    },
+  },
 };
