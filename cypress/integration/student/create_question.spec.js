@@ -22,6 +22,8 @@ describe("Student can create a question", () => {
     // Visit the queue page
     cy.get("@queue").then((queue) =>
       cy.visit(`/course/${queue.courseId}/queue/${queue.id}`).then(() => {
+        cy.percySnapshot("Student Queue Page - Empty Student Queue");
+
         // Click "Join Queue"
         cy.get("body").should("contain", "Join Queue");
         cy.get("button").contains("Join Queue").click();
@@ -34,6 +36,8 @@ describe("Student can create a question", () => {
         cy.get("[data-cy='questionText']").type(
           "How do I use the design recipe?"
         );
+
+        cy.percySnapshot("Student Queue Page - Student Question Form");
 
         // Click Submit
         cy.get("[data-cy='finishQuestion']").click();
@@ -49,40 +53,8 @@ describe("Student can create a question", () => {
         cy.get("[data-cy='banner']").contains(
           "How do I use the design recipe?"
         );
-      })
-    );
-  });
-  it("Create in person question", () => {
-    // Visit the queue page
-    cy.get("@queue").then((queue) =>
-      cy.visit(`/course/${queue.courseId}/queue/${queue.id}`).then(() => {
-        // Click "Join Queue"
-        cy.get("body").should("contain", "Join Queue");
-        cy.get("button").contains("Join Queue").click();
 
-        // Fill out the question form
-        cy.get("body").should("contain", "Concept");
-        cy.get("label").contains("Concept").click({
-          force: true,
-        });
-        cy.get("[data-cy='questionText']").type(
-          "How do I use the design recipe?"
-        );
-
-        // Click Submit
-        cy.get("[data-cy='finishQuestion']").click();
-
-        // See that the question shows in the queue list
-        cy.get("[data-cy='queueQuestions']").contains(
-          "How do I use the design recipe?"
-        );
-        cy.get("[data-cy='queueQuestions']").contains("0 min");
-
-        // See that the question shows in the banner
-        cy.get("[data-cy='banner']").contains("Concept");
-        cy.get("[data-cy='banner']").contains(
-          "How do I use the design recipe?"
-        );
+        cy.percySnapshot("Student Queue Page - Non Empty Student Queue");
       })
     );
   });

@@ -52,17 +52,20 @@ describe("TA interacts with student question", () => {
       .contains("button", "Remove from Queue")
       .click();
 
-    cy.percySnapshot("TA Queue Page - Student Queue");
+    cy.contains("There are no questions in the queue");
   });
 
   it("clicks the help button then finish helping", () => {
     // Click on the student's question
     cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
+
     // Click help
     cy.get("[data-cy='help-student']").click();
 
     // Click Finish Helping
     cy.contains("button", "Finish Helping").click();
+
+    cy.contains("There are no questions in the queue");
   });
 
   it("clicks help button then remove question", () => {
@@ -75,11 +78,15 @@ describe("TA interacts with student question", () => {
     cy.get("[data-cy='banner']")
       .contains("button", "Remove from Queue")
       .click();
+
+    cy.percySnapshot("TA Queue Page - Student Queue");
   });
 
   it("clicks the Help Next button to help the next student", () => {
     // Click on the Help Next button
     cy.get("[data-cy='help-next']").click();
+
+    cy.percySnapshot("TA Queue Page - TA Banner");
     // See that the students question is shown as helping
     cy.contains("Helping");
   });

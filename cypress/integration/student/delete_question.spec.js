@@ -44,6 +44,8 @@ describe("Student can delete their question", () => {
     // Click the Leave Queue button
     cy.get('[data-cy="leave-queue"]').should("be.visible").click();
 
+    cy.percySnapshot("Student Queue Page - Leave Queue Pop Confirm");
+
     // Click Yes on the Pop confirm
     cy.get("span").contains("Yes").click();
 

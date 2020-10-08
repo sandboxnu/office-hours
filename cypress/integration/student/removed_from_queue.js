@@ -82,7 +82,7 @@ describe("Removed from queue", () => {
         // Click help
         cy.get("[data-cy='help-student']").click();
         // Click Remove from queue on the Question card
-        cy.contains('You are helping');
+        cy.contains("You are helping");
         cy.get("[data-cy='remove-from-queue']").first().click();
 
         cy.get("body").should("contain", "Yes");
@@ -102,6 +102,7 @@ describe("Removed from queue", () => {
         );
 
         cy.get("body").should("contain", "Rejoin Queue");
+        cy.percySnapshot("Student Queue Page - Rejoin Queue Button");
         cy.get("button").contains("Rejoin Queue").click();
 
         // Check that the student was sucessfully but back into the queue
@@ -135,8 +136,9 @@ describe("Removed from queue", () => {
         );
 
         cy.get("body").should("contain", "Leave Queue");
+        cy.percySnapshot("Student Queue Page - Leave Queue Button");
         cy.get("button").contains("Leave Queue").click();
-        
+
         // Check to see that there are no more questions in the queue
         cy.contains("There are no questions in the queue");
       })
