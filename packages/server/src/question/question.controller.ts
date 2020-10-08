@@ -9,6 +9,7 @@ import {
   UpdateQuestionParams,
   UpdateQuestionResponse,
 } from '@koh/common';
+import { ERROR_MESSAGES } from '@koh/common/constants';
 import {
   BadRequestException,
   Body,
@@ -25,7 +26,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { Connection, In } from 'typeorm';
-import { ERROR_MESSAGES } from '../../../common/en';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import {
   NotificationService,
@@ -161,12 +161,12 @@ export class QuestionController {
       // Creator can always edit
       if (body.status === OpenQuestionStatus.Helping) {
         throw new UnauthorizedException(
-          'Students cannot mark question as helping',
+          ERROR_MESSAGES.questionController.updateQuestion.studentCannotMarkAsHelping,
         );
       }
       if (body.status === ClosedQuestionStatus.Resolved) {
         throw new UnauthorizedException(
-          'Students cannot mark question as resolved',
+          ERROR_MESSAGES.questionController.updateQuestion.studentCannotMarkAsResolved,
         );
       }
       question = Object.assign(question, body);
@@ -187,19 +187,19 @@ export class QuestionController {
     if (isTaOrProf) {
       if (Object.keys(body).length !== 1 || Object.keys(body)[0] !== 'status') {
         throw new UnauthorizedException(
-          'TA/Professors can only edit question status',
+          ERROR_MESSAGES.questionController.updateQuestion.taProfOnlyCanEditQuestionStatus,
         );
       }
       // If the taHelped is already set, make sure the same ta updates the status
       if (question.taHelped?.id !== userId) {
         if (question.status === OpenQuestionStatus.Helping) {
           throw new UnauthorizedException(
-            'Another TA is currently helping with this question',
+            ERROR_MESSAGES.questionController.updateQuestion.anotherTAAlreadyHelping,
           );
         }
         if (question.status === ClosedQuestionStatus.Resolved) {
           throw new UnauthorizedException(
-            'Another TA has already resolved this question',
+            ERROR_MESSAGES.questionController.updateQuestion.anotherTAAlreadyResolved,
           );
         }
       }
@@ -232,7 +232,7 @@ export class QuestionController {
       return question;
     } else {
       throw new UnauthorizedException(
-        'Logged-in user does not have edit access',
+        ERROR_MESSAGES.questionController.updateQuestion.loggedInUserDoesNotHaveEditAccess,
       );
     }
   }
