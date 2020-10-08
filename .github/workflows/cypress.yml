@@ -28,7 +28,7 @@ jobs:
           record: true
           start: yarn ci:start
           wait-on: "http://localhost:3000"
-          command-prefix: 'percy exec -- npx'
+          command-prefix: 'yarn run percy exec'
         env:
           CYPRESS_USE_LIVE_API: true
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
