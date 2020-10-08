@@ -1,0 +1,1 @@
+{"ast":null,"code":"// From https://gist.github.com/jlbruno/1535691/db35b4f3af3dcbb42babc01541410f291a8e8fac\nexport function toOrdinal(n) {\n  const s = [\"th\", \"st\", \"nd\", \"rd\"],\n        v = n % 100;\n  return n + (s[(v - 20) % 10] || s[v] || s[0]);\n}","map":null,"metadata":{},"sourceType":"module"}
