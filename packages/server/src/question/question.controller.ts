@@ -25,6 +25,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { Connection, In } from 'typeorm';
+import { ERROR_MESSAGES } from '../../../common/en';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import {
   NotificationService,
@@ -75,7 +76,9 @@ export class QuestionController {
     });
 
     if (!queue) {
-      throw new NotFoundException('Posted to an invalid queue');
+      throw new NotFoundException(
+        ERROR_MESSAGES.questionController.createQuestion.invalidQueue,
+      );
     }
 
     if (!queue.allowQuestions) {
@@ -94,13 +97,13 @@ export class QuestionController {
 
     if (!isUserInCourse) {
       throw new UnauthorizedException(
-        "Can't post question to course you're not in!",
+        ERROR_MESSAGES.questionController.createQuestion.notInQueue,
       );
     }
 
     if (!(await queue.checkIsOpen())) {
       throw new BadRequestException(
-        "You can't post a question to a closed queue",
+        ERROR_MESSAGES.questionController.createQuestion.closedQueue,
       );
     }
 
@@ -117,7 +120,7 @@ export class QuestionController {
         await previousUserQuestion.save();
       } else {
         throw new BadRequestException(
-          "You can't create more than one question at a time.",
+          ERROR_MESSAGES.questionController.createQuestion.multipleQuestions,
         );
       }
     }
