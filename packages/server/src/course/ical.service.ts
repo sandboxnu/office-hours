@@ -64,21 +64,25 @@ export class IcalService {
         const dtstart = this.fixTimezone(options.dtstart, eventTZ);
         const until = options.until && this.fixTimezone(options.until, eventTZ);
 
+        let byweekday = options.byweekday;
+        if (options.byhour[0] >= 0 && options.byhour[0] < 4) {
+          byweekday = options.byweekday.map((bwd) => (bwd + 1) % 7);
+        }
         const rule = new RRule({
           freq: options.freq,
           interval: options.interval,
           wkst: options.wkst,
           count: options.count,
-          byweekday: options.byweekday,
+          byweekday,
           dtstart: dtstart,
           until: until,
         });
+
         // Doing math here because moment.add changes behavior based on server timezone
         const in10Weeks = new Date(
           dtstart.getTime() + 1000 * 60 * 60 * 24 * 7 * 10,
         );
         const allDates = rule.all((d) => !!until || d < in10Weeks);
-
         const duration = oh.end.getTime() - oh.start.getTime();
 
         const generatedOfficeHours = allDates.map((date) => ({
