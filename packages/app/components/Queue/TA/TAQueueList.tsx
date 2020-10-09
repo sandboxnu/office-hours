@@ -297,7 +297,7 @@ function QueueQuestions({ questions, isHelping, onOpenCard }: QueueProps) {
       {questions.length === 0 ? (
         <>
           <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
-          {!phoneNotifsEnabled && !desktopNotifsEnabled && (
+          {!isHelping && !phoneNotifsEnabled && !desktopNotifsEnabled && (
             <NotifReminderButton />
           )}
         </>
