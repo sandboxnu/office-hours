@@ -20,7 +20,7 @@ import {
   getEndpoint,
   getNotificationState,
 } from "../../utils/notification";
-import { MinusCircleOutlined } from "@ant-design/icons";
+import { MinusCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
 const DeviceAddHeader = styled.div`
@@ -55,28 +55,50 @@ export function NotificationSettingsModal({
     mutate();
   };
 
+  const handleOk = async () => {
+    const value = await form.validateFields();
+    try {
+      await editProfile(value);
+      form.setFieldsValue(profile);
+      onClose();
+    } catch (e) {
+      if (
+        e.response?.status === 400 &&
+        e.response?.data?.message === "phone number invalid"
+      ) {
+        form.setFields([
+          { name: "phoneNumber", errors: ["Invalid phone number"] },
+        ]);
+      }
+    }
+  };
+
+  const handleCancel = () => onClose();
+
   return (
     <Modal
       title="Notification Settings"
       visible={visible}
-      onCancel={() => onClose()}
-      onOk={async () => {
-        const value = await form.validateFields();
-        try {
-          await editProfile(value);
-          form.setFieldsValue(profile);
-          onClose();
-        } catch (e) {
-          if (
-            e.response?.status === 400 &&
-            e.response?.data?.message === "phone number invalid"
-          ) {
-            form.setFields([
-              { name: "phoneNumber", errors: ["Invalid phone number"] },
-            ]);
-          }
-        }
-      }}
+      onOk={handleOk}
+      onCancel={handleCancel}
+      footer={
+        <>
+          <QuestionCircleOutlined
+            style={{ float: "left", fontSize: "25px" }}
+            onClick={() =>
+              window.open(
+                "https://www.notion.so/593f9eb67eb04abbb8008c285ed5a8dd?v=b3d8ef6b3d2742f1985a6406e582601a"
+              )
+            }
+          />
+          <Button key="back" onClick={handleCancel}>
+            Cancel
+          </Button>
+          <Button key="submit" type="primary" onClick={handleOk}>
+            Ok
+          </Button>
+        </>
+      }
     >
       {profile && (
         <Form form={form} initialValues={profile}>
@@ -87,7 +109,13 @@ export function NotificationSettingsModal({
           >
             <Switch />
           </Form.Item>
-          <DeviceNotifPanel />
+          <Form.Item shouldUpdate noStyle>
+            {() =>
+              form?.getFieldValue("desktopNotifsEnabled") && (
+                <DeviceNotifPanel />
+              )
+            }
+          </Form.Item>
           {/* <Divider orientation="left">SMS</Divider> */}
           <Form.Item
             style={{ marginTop: "30px" }}
@@ -175,6 +203,7 @@ function DeviceNotifPanel() {
               disabled={
                 getNotificationState() === NotificationStates.browserUnsupported
               }
+              style={{marginBottom: "4px"}}
             >
               Add This Device
             </Button>

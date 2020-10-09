@@ -21,6 +21,7 @@ import {
 import StudentPopupCard from "./StudentPopupCard";
 import TABanner from "./TABanner";
 import TAQueueCard from "./TAQueueCard";
+import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
 
 const StatusText = styled.div`
   font-size: 14px;
@@ -113,7 +114,7 @@ export default function TAQueueList({
   // Close popup if currentQuestion no longer exists in the cache
   if (currentQuestion && !questions.includes(currentQuestion)) {
     setCurrentQuestion(null);
-    setOpenPopup(false)
+    setOpenPopup(false);
   }
 
   const onOpenCard = useCallback((question: Question): void => {
@@ -162,7 +163,9 @@ export default function TAQueueList({
     );
 
     await updateQuestionTA(nextQuestion, OpenQuestionStatus.Helping);
-    window.open(`https://teams.microsoft.com/l/chat/0/0?users=${nextQuestion.creator.email}`);
+    window.open(
+      `https://teams.microsoft.com/l/chat/0/0?users=${nextQuestion.creator.email}`
+    );
   };
 
   if (queue && questions) {
@@ -273,16 +276,45 @@ const NoQuestionsText = styled.div`
   color: #212934;
 `;
 
+function NotifReminderButton() {
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const NotifRemindButton = styled(QueueInfoColumnButton)`
+    margin-top: 16px;
+    border-radius: 6px;
+    background: #fff;
+  `;
+
+  return (
+    <>
+      <NotifRemindButton onClick={(e) => setIsNotifOpen(true)}>
+        Sign Up for Notifications
+      </NotifRemindButton>
+      {isNotifOpen && (
+        <NotificationSettingsModal
+          visible={isNotifOpen}
+          onClose={() => setIsNotifOpen(false)}
+        />
+      )}
+    </>
+  );
+}
+
 interface QueueProps {
   questions: Question[];
   isHelping: boolean;
   onOpenCard: (q: Question) => void;
 }
 function QueueQuestions({ questions, isHelping, onOpenCard }: QueueProps) {
+  const { phoneNotifsEnabled, desktopNotifsEnabled } = useProfile();
   return (
     <div data-cy="queueQuestions">
       {questions.length === 0 ? (
-        <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
+        <>
+          <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
+          {!phoneNotifsEnabled && !desktopNotifsEnabled && (
+            <NotifReminderButton />
+          )}
+        </>
       ) : (
         <>
           <QueueHeader>Queue</QueueHeader>
