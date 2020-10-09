@@ -220,6 +220,25 @@ SUMMARY:OH- Cole Stansbury
 TRANSP:OPAQUE
 END:VEVENT`;
 
+const VEVENT_RRULE_MULTI_DAY_EXDATE = `
+BEGIN:VEVENT
+DTSTART;TZID=America/New_York:20200921T100000
+DTEND;TZID=America/New_York:20200921T120000
+RRULE:FREQ=WEEKLY;WKST=SU;UNTIL=20201212T045959Z;BYDAY=MO,TH
+EXDATE;TZID=America/New_York:20200928T100000
+EXDATE;TZID=America/New_York:20200924T100000
+DTSTAMP:20200930T014722Z
+UID:2l78nihhi7j3pd00v3u5o7vsfq@google.com
+CREATED:20200921T140232Z
+DESCRIPTION:
+LAST-MODIFIED:20200921T140232Z
+LOCATION:
+SEQUENCE:0
+STATUS:CONFIRMED
+SUMMARY:OH- Amit Shesh
+TRANSP:OPAQUE
+END:VEVENT`;
+
 describe('IcalService', () => {
   let service: IcalService;
   let conn: Connection;
@@ -354,7 +373,7 @@ describe('IcalService', () => {
       ]);
     });
 
-    it.only('creates all events in a week with a multi day rrule at UTC midnight', () => {
+    it('creates all events in a week with a multi day rrule at UTC midnight', () => {
       const parsedICS = mkCal(VEVENT_RRULE_MULTI_DAY_8PM);
       const endData = service.parseIcal(parsedICS, 123);
       endData.length = 4;
@@ -386,6 +405,35 @@ describe('IcalService', () => {
           room: '',
           startTime: new Date('2020-10-01T20:00:00-0400'),
           endTime: new Date('2020-10-01T22:00:00-0400'),
+        },
+      ]);
+    });
+
+    it('excludes deleted date in rrule', () => {
+      const parsedICS = mkCal(VEVENT_RRULE_MULTI_DAY_EXDATE);
+      const endData = service.parseIcal(parsedICS, 123);
+      endData.length = 3;
+      expect(endData).toStrictEqual([
+        {
+          title: 'OH- Amit Shesh',
+          courseId: 123,
+          room: '',
+          startTime: new Date('2020-09-21T10:00:00-0400'),
+          endTime: new Date('2020-09-21T12:00:00-0400'),
+        },
+        {
+          title: 'OH- Amit Shesh',
+          courseId: 123,
+          room: '',
+          startTime: new Date('2020-10-01T10:00:00-0400'),
+          endTime: new Date('2020-10-01T12:00:00-0400'),
+        },
+        {
+          title: 'OH- Amit Shesh',
+          courseId: 123,
+          room: '',
+          startTime: new Date('2020-10-05T10:00:00-0400'),
+          endTime: new Date('2020-10-05T12:00:00-0400'),
         },
       ]);
     });

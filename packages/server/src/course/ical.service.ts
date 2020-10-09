@@ -78,11 +78,20 @@ export class IcalService {
           until: until,
         });
 
+        // Dates to exclude from recurrence, separate exdate ISOStrings for filtering
+        const exdates = [];
+        for (const date in oh.exdate) {
+          exdates.push(oh.exdate[date].toISOString());
+        }
+
         // Doing math here because moment.add changes behavior based on server timezone
         const in10Weeks = new Date(
           dtstart.getTime() + 1000 * 60 * 60 * 24 * 7 * 10,
         );
-        const allDates = rule.all((d) => !!until || d < in10Weeks);
+        const allDates = rule
+          .all((d) => !!until || d < in10Weeks)
+          .filter((date) => !exdates.includes(date.toISOString()));
+
         const duration = oh.end.getTime() - oh.start.getTime();
 
         const generatedOfficeHours = allDates.map((date) => ({
