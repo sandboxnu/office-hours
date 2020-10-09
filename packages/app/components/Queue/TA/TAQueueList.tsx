@@ -131,19 +131,6 @@ export default function TAQueueList({
     question: Question,
     status: QuestionStatus
   ) => {
-    let newQuestions;
-    if (status in ClosedQuestionStatus) {
-      newQuestions = questions?.filter(q => q.id !== question.id);
-    } else if (status === OpenQuestionStatus.Helping) {
-      newQuestions = questions?.map((q) =>
-        q.id === question.id ? { ...q, status, taHelped: { id: user.id } } : q
-      );
-    } else {
-      newQuestions = questions?.map((q) =>
-        q.id === question.id ? { ...q, status } : q
-      );
-    }
-    mutateQuestions(newQuestions, false);
     await API.questions.update(question.id, {
       status: status,
     });
