@@ -239,6 +239,33 @@ SUMMARY:OH- Amit Shesh
 TRANSP:OPAQUE
 END:VEVENT`;
 
+const VEVENT_RRULE_OUTLOOK_EXDATE = `
+BEGIN:VEVENT
+RRULE:FREQ=WEEKLY;UNTIL=20201019T170000Z;INTERVAL=1;BYDAY=MO;WKST=SU
+EXDATE;TZID=Eastern Standard Time:20201012T120000
+UID:040000008200E00074C5B7101A82E0080000000015AA42D4B686D601000000000000000
+ 010000000103558E135B36F4089C2D45B6001924E
+SUMMARY:Hours CS3700 - Ashwin
+DTSTART;TZID=Eastern Standard Time:20200928T120000
+DTEND;TZID=Eastern Standard Time:20200928T140000
+CLASS:PUBLIC
+PRIORITY:5
+DTSTAMP:20201012T184435Z
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+SEQUENCE:0
+LOCATION:
+X-MICROSOFT-CDO-APPT-SEQUENCE:0
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MICROSOFT-CDO-INTENDEDSTATUS:BUSY
+X-MICROSOFT-CDO-ALLDAYEVENT:FALSE
+X-MICROSOFT-CDO-IMPORTANCE:1
+X-MICROSOFT-CDO-INSTTYPE:1
+X-MICROSOFT-DONOTFORWARDMEETING:FALSE
+X-MICROSOFT-DISALLOW-COUNTER:FALSE
+END:VEVENT
+`;
+
 describe('IcalService', () => {
   let service: IcalService;
   let conn: Connection;
@@ -312,6 +339,35 @@ describe('IcalService', () => {
           room: '',
           startTime: new Date('2020-09-14T10:00:00+0000'),
           endTime: new Date('2020-09-14T13:00:00+0000'),
+        },
+      ]);
+    });
+
+    it('correctly excludes exdate with Outlook time zones', () => {
+      const parsedICS = mkCal(VEVENT_RRULE_OUTLOOK_EXDATE);
+      const endData = service.parseIcal(parsedICS, 123);
+      expect(endData).not;
+      expect(endData).toStrictEqual([
+        {
+          title: 'Hours CS3700 - Ashwin',
+          courseId: 123,
+          room: '',
+          startTime: new Date('2020-09-28T12:00:00-0400'),
+          endTime: new Date('2020-09-28T14:00:00-0400'),
+        },
+        {
+          title: 'Hours CS3700 - Ashwin',
+          courseId: 123,
+          room: '',
+          startTime: new Date('2020-10-05T12:00:00-0400'),
+          endTime: new Date('2020-10-05T14:00:00-0400'),
+        },
+        {
+          title: 'Hours CS3700 - Ashwin',
+          courseId: 123,
+          room: '',
+          startTime: new Date('2020-10-19T12:00:00-0400'),
+          endTime: new Date('2020-10-19T14:00:00-0400'),
         },
       ]);
     });
@@ -477,7 +533,7 @@ describe('IcalService', () => {
         startTime: new Date('2020-09-16T10:00:00+0000'),
         endTime: new Date('2020-09-16T13:00:00+0000'),
       });
-      expect(endData.length).toEqual((10 * 7) / 2);
+      expect(endData.length).toEqual((10 * 7) / 2 - 1);
     });
 
     describe('updateCalendarForCourse', () => {

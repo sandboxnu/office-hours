@@ -79,9 +79,10 @@ export class IcalService {
         });
 
         // Dates to exclude from recurrence, separate exdate ISOStrings for filtering
-        const exdates = [];
+        const exdates: string[] = [];
         for (const date in oh.exdate) {
-          exdates.push(oh.exdate[date].toISOString());
+          const exdate = this.fixTimezone(oh.exdate[date], eventTZ);
+          exdates.push(exdate.toISOString());
         }
 
         // Doing math here because moment.add changes behavior based on server timezone
