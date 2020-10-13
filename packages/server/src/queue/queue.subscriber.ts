@@ -1,4 +1,4 @@
-import { QueueSSEService } from 'queue/queue-sse.service';
+import { QueueSSEService } from '../queue/queue-sse.service';
 import {
   Connection,
   EntitySubscriberInterface,
