@@ -102,7 +102,7 @@ describe("Removed from queue", () => {
         );
 
         cy.get("body").should("contain", "Rejoin Queue");
-        cy.percySnapshot("Student Queue Page - Rejoin Queue Button");
+        cy.percySnapshot("Student Queue Page - Rejoin Queue Modal");
         cy.get("button").contains("Rejoin Queue").click();
 
         // Check that the student was sucessfully but back into the queue
@@ -136,7 +136,7 @@ describe("Removed from queue", () => {
         );
 
         cy.get("body").should("contain", "Leave Queue");
-        cy.percySnapshot("Student Queue Page - Leave Queue Button");
+        cy.percySnapshot("Student Queue Page - Leave Queue Modal");
         cy.get("button").contains("Leave Queue").click();
 
         // Check to see that there are no more questions in the queue

@@ -69,6 +69,7 @@ describe("Allow or disable new questions for a queue", () => {
     });
 
     cy.get(".ant-modal-close-x").click();
+    cy.get(".ant-modal-close-x").should("not.be.visible");
 
     // Check that the queue is not acccpeting new questions on the today page
     cy.get('[data-icon="stop"]').should("exist");

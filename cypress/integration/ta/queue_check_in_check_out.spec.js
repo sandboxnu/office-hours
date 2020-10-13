@@ -28,6 +28,8 @@ describe("Can successfuly check in and out of a queue", () => {
     cy.get("body").should("contain", "There are no questions in the queue");
     cy.get("[data-cy='check-in-button']").click();
 
+    // Wait to see that the user has been checked in
+    cy.contains("Check Out");
     cy.percySnapshot("TA Queue Page - TA Checked In");
 
     // Click "Check out"
