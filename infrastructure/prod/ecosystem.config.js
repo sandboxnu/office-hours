@@ -31,9 +31,9 @@ module.exports = {
       "pre-setup": "",
     },
     production: {
-      user: "dajinchu",
+      user: "stanleyliu",
       host: "amato.ccs.neu.edu",
-      ssh_options: "ProxyJump=dajinchu@login.ccs.neu.edu",
+      ssh_options: "ProxyJump=stanleyliu@login.ccs.neu.edu",
       ref: "origin/dist",
       repo: "https://github.com/sandboxnu/office-hours.git",
       path: "/var/www",
