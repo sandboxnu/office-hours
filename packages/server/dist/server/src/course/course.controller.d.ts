@@ -2,7 +2,7 @@ import { GetCourseResponse, QueuePartial } from '@koh/common';
 import { Connection } from 'typeorm';
 import { UserModel } from '../profile/user.entity';
 import { QueueCleanService } from '../queue/queue-clean/queue-clean.service';
-import { QueueSSEService } from 'queue/queue-sse.service';
+import { QueueSSEService } from '../queue/queue-sse.service';
 export declare class CourseController {
     private connection;
     private queueCleanService;

@@ -1,4 +1,4 @@
-import { QueueSSEService } from 'queue/queue-sse.service';
+import { QueueSSEService } from '../queue/queue-sse.service';
 import { Connection, EntitySubscriberInterface, UpdateEvent } from 'typeorm';
 import { QueueModel } from './queue.entity';
 export declare class QueueSubscriber implements EntitySubscriberInterface<QueueModel> {
