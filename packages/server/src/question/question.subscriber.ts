@@ -1,6 +1,6 @@
 import { ClosedQuestionStatus, OpenQuestionStatus } from '@koh/common';
-import { QueueSSEService } from 'queue/queue-sse.service';
-import { QueueModel } from 'queue/queue.entity';
+import { QueueSSEService } from '../queue/queue-sse.service';
+import { QueueModel } from '../queue/queue.entity';
 import {
   Connection,
   EntitySubscriberInterface,
