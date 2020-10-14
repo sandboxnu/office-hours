@@ -32,7 +32,7 @@ body {
 }
 
 @media only percy {
-  .open-queue-card > .ant-card-extra {
+  .open-queue-card .ant-card-extra {
     visibility: hidden;
   }
   .hide-in-percy {
