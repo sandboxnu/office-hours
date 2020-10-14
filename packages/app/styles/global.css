@@ -38,4 +38,10 @@ body {
   .hide-in-percy {
     visibility: hidden;
   }
+  .rbc-toolbar-label {
+    visibility: hidden;
+  }
+  .rbc-event {
+    visibility: hidden;
+  }
 }
