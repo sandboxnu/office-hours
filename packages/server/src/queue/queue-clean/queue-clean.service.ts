@@ -32,9 +32,6 @@ export class QueueCleanService {
       relations: ['staffList'],
     });
 
-    queue.staffList = [];
-    await queue.save(); // TODO: somehow keep track of this in the future and tell the TAs
-
     if (!(await queue.checkIsOpen())) {
       queue.notes = '';
       await queue.save();

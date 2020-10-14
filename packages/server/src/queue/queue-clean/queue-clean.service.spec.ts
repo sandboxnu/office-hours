@@ -50,7 +50,6 @@ describe('QueueService', () => {
 
       const question = await QuestionModel.findOne({});
       expect(question.status).toEqual('Queued');
-      expect(cleanedQueue.staffList).toEqual([]);
     });
 
     it('if no staff are present all questions with open status are marked as stale', async () => {
