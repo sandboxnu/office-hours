@@ -30,3 +30,12 @@ body {
   border-color: #3684c6;
   background-color: #3684c6;
 }
+
+@media only percy {
+  .open-queue-card > .ant-card-extra {
+    visibility: hidden;
+  }
+  .hide-in-percy {
+    visibility: hidden;
+  }
+}
