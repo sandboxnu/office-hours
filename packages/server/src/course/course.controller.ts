@@ -20,7 +20,7 @@ import { QueueModel } from '../queue/queue.entity';
 import { CourseRolesGuard } from './course-roles.guard';
 import { CourseModel } from './course.entity';
 import { OfficeHourModel } from './office-hour.entity';
-import { QueueSSEService } from 'queue/queue-sse.service';
+import { QueueSSEService } from '../queue/queue-sse.service';
 
 @Controller('courses')
 @UseGuards(JwtAuthGuard, CourseRolesGuard)

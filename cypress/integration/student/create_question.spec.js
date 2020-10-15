@@ -86,4 +86,32 @@ describe("Student can create a question", () => {
       })
     );
   });
+  it("Can't finish question before both fields are filled", () => {
+    // Visit the queue page
+    cy.get("@queue").then((queue) =>
+      cy.visit(`/course/${queue.courseId}/queue/${queue.id}`).then(() => {
+        // Click "Join Queue"
+        cy.get("body").should("contain", "Join Queue");
+        cy.get("button").contains("Join Queue").click();
+
+        // Check that you can't finish the question without pushing the buttons
+        cy.get("[data-cy=finishQuestion]").should("be.disabled");
+
+        cy.get("[data-cy='questionText']").type(
+          "How many woks does Gordon Ramsay use to make fried rice?"
+        );
+        cy.get("[data-cy=finishQuestion]").should("be.disabled");
+
+        // Fill out the question form
+        cy.get("body").should("contain", "Bug");
+        cy.get("label").contains("Bug").click({
+          force: true,
+        });
+        cy.get("[data-cy=finishQuestion]").should("not.be.disabled");
+
+        // Click Submit
+        cy.get("[data-cy='finishQuestion']").click();
+      })
+    );
+  });
 });

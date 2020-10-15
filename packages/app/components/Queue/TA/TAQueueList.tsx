@@ -5,7 +5,7 @@ import {
   QuestionStatus,
   QuestionStatusKeys,
 } from "@koh/common";
-import { Button, Card, Col, Row, Space, Tooltip } from "antd";
+import { Card, Col, Row, Space, Tooltip, notification } from "antd";
 import { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
@@ -131,13 +131,27 @@ export default function TAQueueList({
     question: Question,
     status: QuestionStatus
   ) => {
-    await API.questions.update(question.id, {
-      status: status,
-    });
-    const newQuestions = questions?.map((q) =>
-      q.id === question.id ? { ...q, status } : q
-    );
-    mutateQuestions(newQuestions);
+    try {
+      await API.questions.update(question.id, {
+        status: status,
+      });
+    } catch (e) {
+      if (
+        e.response?.status === 401 &&
+        e.response?.data?.message === "Another TA is currently helping with this question"
+      ) {
+        notification.open({
+          message: "Another TA is currently helping the student",
+          description: "This happens when another TA clicks help at the exact same time",
+          type: "error",
+          duration: 3,
+          style: {
+            width: 450,
+          }
+      });
+      }
+    }
+    mutateQuestions();
     setOpenPopup(false);
   };
 
@@ -297,7 +311,7 @@ function QueueQuestions({ questions, isHelping, onOpenCard }: QueueProps) {
       {questions.length === 0 ? (
         <>
           <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
-          {!phoneNotifsEnabled && !desktopNotifsEnabled && (
+          {!isHelping && !phoneNotifsEnabled && !desktopNotifsEnabled && (
             <NotifReminderButton />
           )}
         </>

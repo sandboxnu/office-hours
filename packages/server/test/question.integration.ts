@@ -7,15 +7,15 @@ import { ERROR_MESSAGES } from '@koh/common/constants';
 import { QuestionModel } from '../src/question/question.entity';
 import { QuestionModule } from '../src/question/question.module';
 import {
+  ClosedOfficeHourFactory,
   CourseFactory,
+  OfficeHourFactory,
   QuestionFactory,
   QueueFactory,
   StudentCourseFactory,
   TACourseFactory,
   UserCourseFactory,
   UserFactory,
-  OfficeHourFactory,
-  ClosedOfficeHourFactory,
 } from './util/factories';
 import {
   expectUserNotified,
@@ -69,7 +69,7 @@ describe('Question Integration', () => {
         .post('/questions')
         .send({
           text: "Don't know recursion",
-          questionType: QuestionType.Concept,
+          questionType: null,
           queueId: queue.id,
           force: false,
         })
@@ -78,7 +78,7 @@ describe('Question Integration', () => {
         text: "Don't know recursion",
         helpedAt: null,
         closedAt: null,
-        questionType: 'Concept',
+        questionType: null,
         status: 'Drafting',
       });
       expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(1);

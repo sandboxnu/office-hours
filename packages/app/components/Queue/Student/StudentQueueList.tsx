@@ -153,8 +153,7 @@ export default function StudentQueueList({
           queueId: Number(qid),
           text: "",
           force: force,
-          questionType: QuestionType.Bug, // TODO: endpoint needs to be changed to allow empty questionType for drafts
-          // for the moment I am defaulting this data so that there is no error
+          questionType: null,
         });
         const newQuestions = [...questions, createdQuestion];
         await mutateQuestions(newQuestions);
