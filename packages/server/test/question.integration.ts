@@ -6,15 +6,15 @@ import {
 import { QuestionModel } from '../src/question/question.entity';
 import { QuestionModule } from '../src/question/question.module';
 import {
+  ClosedOfficeHourFactory,
   CourseFactory,
+  OfficeHourFactory,
   QuestionFactory,
   QueueFactory,
   StudentCourseFactory,
   TACourseFactory,
   UserCourseFactory,
   UserFactory,
-  OfficeHourFactory,
-  ClosedOfficeHourFactory,
 } from './util/factories';
 import {
   expectUserNotified,
@@ -47,9 +47,7 @@ describe('Question Integration', () => {
       expect(response.body).toMatchSnapshot();
     });
     it('fails to get a non-existent question', async () => {
-      await supertest({ userId: 99 })
-        .get(`/questions/999`)
-        .expect(404);
+      await supertest({ userId: 99 }).get(`/questions/999`).expect(404);
     });
   });
 
@@ -70,7 +68,7 @@ describe('Question Integration', () => {
         .post('/questions')
         .send({
           text: "Don't know recursion",
-          questionType: QuestionType.Concept,
+          questionType: null,
           queueId: queue.id,
           force: false,
         })
@@ -79,7 +77,7 @@ describe('Question Integration', () => {
         text: "Don't know recursion",
         helpedAt: null,
         closedAt: null,
-        questionType: 'Concept',
+        questionType: null,
         status: 'Drafting',
       });
       expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(1);

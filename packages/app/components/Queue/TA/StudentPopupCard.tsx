@@ -3,7 +3,6 @@ import { OpenQuestionStatus, Question, QuestionStatus } from "@koh/common";
 import { Button, Col, Drawer, Popconfirm, Row, Tag, Tooltip } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
-import getInitialsFromName from "../../../utils/NameUtils";
 import { getWaitTime } from "../../../utils/TimeUtil";
 import AvatarWithInitals from "../../common/AvatarWithInitials";
 import { questionStatusToColor } from "../QueueCardSharedComponents";
@@ -172,7 +171,7 @@ const StudentPopupCard = ({
           </Col>
           <Col span={12}>
             <HeadingText>type</HeadingText>
-            <BodyText>{question.questionType.toString()}</BodyText>
+            <BodyText>{question.questionType}</BodyText>
           </Col>
         </StyledRow>
 

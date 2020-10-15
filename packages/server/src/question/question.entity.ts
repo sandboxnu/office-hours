@@ -1,8 +1,4 @@
-import {
-  OpenQuestionStatus,
-  QuestionStatus,
-  QuestionType,
-} from '@koh/common';
+import { OpenQuestionStatus, QuestionStatus, QuestionType } from '@koh/common';
 import { Exclude } from 'class-transformer';
 import {
   BaseEntity,
@@ -58,7 +54,7 @@ export class QuestionModel extends BaseEntity {
   @Column({ nullable: true })
   closedAt: Date;
 
-  @Column('text')
+  @Column('text', { nullable: true })
   questionType: QuestionType;
 
   @Column('text')
