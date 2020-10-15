@@ -24,7 +24,6 @@ export default function ReleaseNotes(): ReactElement {
               result["beae2a02-249e-4b61-9bfc-81258d93f20d"]?.value?.properties
                 ?.title[0][0];
             setReleaseNotesLastUpdated(timeText.split("Unix ")[1] * 1000);
-            console.log("unix time", timeText.split("Unix ")[1]);
           } catch (e) {
             console.log("Error Parsing release notes time:", e);
           }
@@ -64,9 +63,15 @@ export default function ReleaseNotes(): ReactElement {
     setReleaseNotesLastSeen(new Date());
   }
 
+  const openLinksInNewTab = (e) => {
+    if (e.target.className === "notion-link") {
+      e.preventDefault();
+      window.open(e.target.href);
+    }
+  };
+
   return (
-    <div>
-      <base target="_blank" />
+    <div onClick={openLinksInNewTab}>
       {notionReleaseNotes ? (
         <Modal
           title={"Release Notes"}
