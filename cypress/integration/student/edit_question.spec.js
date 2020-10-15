@@ -35,6 +35,7 @@ describe("Student can edit their question", () => {
       });
     });
   });
+
   it("by changing the questions text and type", () => {
     // Visit the queue page
     cy.get("@queue").then((queue) =>
