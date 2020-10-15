@@ -98,7 +98,7 @@ export default function StudentBanner({
           }
           content={
             <QuestionDetails>
-              <Col flex="1 1">
+              <Col flex="1 1" style={{marginRight: '32px'}}>
                 <InfoHeader>question</InfoHeader>
                 <div>{studentQuestion.text}</div>
               </Col>
