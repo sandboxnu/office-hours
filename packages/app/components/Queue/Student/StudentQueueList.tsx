@@ -9,6 +9,7 @@ import { Card, Col, notification, Popconfirm, Row, Space } from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { mutate } from "swr";
+import { ERROR_MESSAGES } from "../../../../common/constants";
 import { useDraftQuestion } from "../../../hooks/useDraftQuestion";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { useQuestions } from "../../../hooks/useQuestions";
@@ -26,7 +27,6 @@ import StudentBanner from "./StudentBanner";
 import CantFindModal from "./StudentCantFindModal";
 import StudentQueueCard from "./StudentQueueCard";
 import StudentRemovedFromQueueModal from "./StudentRemovedFromQueueModal";
-import ERROR_MESSAGES from "../../../../common/constants";
 
 const JoinButton = styled(QueueInfoColumnButton)`
   background-color: #3684c6;
