@@ -14,7 +14,10 @@ export default function ReleaseNotes(): ReactElement {
 
   useEffect(() => {
     fetch(
-      "https://notion-api.splitbee.io/v1/page/abba246bfa0847baa2706ab30d0c6c7d"
+      "https://notion-api.splitbee.io/v1/page/abba246bfa0847baa2706ab30d0c6c7d",
+      {
+        mode: "cors",
+      }
     )
       .then((res) => res.json())
       .then(
