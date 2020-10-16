@@ -51,3 +51,18 @@ body {
 .notion-toggle {
   padding-inline-start: 5px;
 }
+
+@media only percy {
+  .open-queue-card .ant-card-extra {
+    visibility: hidden;
+  }
+  .hide-in-percy {
+    visibility: hidden;
+  }
+  .rbc-toolbar-label {
+    visibility: hidden;
+  }
+  .rbc-event {
+    visibility: hidden;
+  }
+}
