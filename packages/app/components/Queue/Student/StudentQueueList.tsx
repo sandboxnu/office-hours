@@ -94,10 +94,10 @@ export default function StudentQueueList({
         status: OpenQuestionStatus.Queued,
       };
       await API.questions.update(studentQuestion?.id, updateStudent);
-      const newQuestions = questions?.map((q: Question) =>
+      const newQuestionsInQueue = questions?.queue?.map((q: Question) =>
         q.id === studentQuestion?.id ? { ...q, updateStudent } : q
       );
-      mutateQuestions(newQuestions);
+      mutateQuestions({ ...questions, queue: newQuestionsInQueue });
     },
     [questions, studentQuestion?.id, mutateQuestions]
   );
@@ -155,8 +155,8 @@ export default function StudentQueueList({
           force: force,
           questionType: null,
         });
-        const newQuestions = [...questions, createdQuestion];
-        await mutateQuestions(newQuestions);
+        const newQuestionsInQueue = [...questions?.queue, createdQuestion];
+        await mutateQuestions({ ...questions, queue: newQuestionsInQueue });
         setPopupEditQuestion(true);
         return true;
       } catch (e) {
@@ -258,7 +258,7 @@ export default function StudentQueueList({
               />
             )}
             <QueueQuestions
-              questions={questions}
+              questions={questions?.queue}
               studentQuestion={studentQuestion}
             />
           </Space>

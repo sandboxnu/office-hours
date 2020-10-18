@@ -95,16 +95,10 @@ export default function TAQueueList({
 
   const { questions, questionsError, mutateQuestions } = useQuestions(qid);
 
-  const renderedQuestions = questions?.filter(
-    (question) =>
-      question.status !== LimboQuestionStatus.TADeleted &&
-      question.status !== OpenQuestionStatus.Helping
-  );
+  const renderedQuestions = questions?.queue;
 
-  const helpingQuestion: Question = questions?.find(
-    (question) =>
-      question.status === OpenQuestionStatus.Helping &&
-      question.taHelped?.id === user.id
+  const helpingQuestion = questions?.questionsGettingHelp?.find(
+    (question) => question.taHelped?.id === user.id
   );
   const isHelping = !!helpingQuestion;
 
@@ -113,7 +107,11 @@ export default function TAQueueList({
   const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
 
   // Close popup if currentQuestion no longer exists in the cache
-  if (currentQuestion && !questions.includes(currentQuestion)) {
+  if (
+    currentQuestion &&
+    (!questions?.queue?.includes(currentQuestion) ||
+      !questions?.priorityQueue?.includes(currentQuestion))
+  ) {
     setCurrentQuestion(null);
     setOpenPopup(false);
   }
@@ -160,11 +158,15 @@ export default function TAQueueList({
 
   const isStaffCheckedIn = queue?.staffList.some((e) => e.id === user?.id);
 
-  const helpNext = async () => {
-    const nextQuestion = questions.find(
+  const nextQuestion =
+    questions?.priorityQueue?.find(
+      (question) => question.status === QuestionStatusKeys.Queued
+    ) ||
+    questions?.queue?.find(
       (question) => question.status === QuestionStatusKeys.Queued
     );
 
+  const helpNext = async () => {
     await updateQuestionTA(nextQuestion, OpenQuestionStatus.Helping);
     window.open(
       `https://teams.microsoft.com/l/chat/0/0?users=${nextQuestion.creator.email}`
@@ -192,13 +194,7 @@ export default function TAQueueList({
                 >
                   <HelpNextButton
                     onClick={helpNext}
-                    disabled={
-                      !isStaffCheckedIn ||
-                      !questions.find(
-                        (q) => q.status === QuestionStatusKeys.Queued
-                      ) ||
-                      isHelping
-                    }
+                    disabled={!isStaffCheckedIn || !nextQuestion || isHelping}
                     data-cy="help-next"
                   >
                     Help Next

@@ -19,19 +19,10 @@ export function useStudentQuestion(qid: number): UseStudentQuestionReturn {
   const profile = useProfile();
   const { questions, questionsError, mutateQuestion } = useQuestions(qid);
 
-  const studentQuestion =
-    profile && questions && questions.find((q) => q.creator.id === profile.id);
+  const studentQuestion = profile && questions && questions?.yourQuestion;
 
   const studentQuestionIndex =
-    studentQuestion &&
-    questions
-      .filter(
-        (question) =>
-          question.status !== LimboQuestionStatus.CantFind &&
-          question.status !== LimboQuestionStatus.TADeleted &&
-          question.status !== OpenQuestionStatus.Helping
-      )
-      .indexOf(studentQuestion);
+    studentQuestion && questions.queue.indexOf(studentQuestion);
 
   return {
     studentQuestion,

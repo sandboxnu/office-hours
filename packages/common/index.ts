@@ -368,6 +368,7 @@ export class GetQueueResponse extends QueuePartial {}
 export class GetCourseQueuesResponse extends Array<QueuePartial> {}
 
 export class ListQuestionsResponse {
+  @Type(() => Question)
   yourQuestion?: Question;
 
   @Type(() => Question)

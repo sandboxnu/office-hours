@@ -48,21 +48,25 @@ export class QueueService {
     const questions = new ListQuestionsResponse();
 
     questions.queue = await QuestionModel.find({
+      relations: ['creator', 'taHelped'],
       where: { queueId, status: In(StatusInQueue) },
     });
     questions.questionsGettingHelp = await QuestionModel.find({
+      relations: ['creator', 'taHelped'],
       where: { queueId, status: OpenQuestionStatus.Helping },
     });
 
     if (role === Role.STUDENT) {
       questions.yourQuestion = await QuestionModel.findOne({
-        where: { userId },
+        relations: ['creator', 'taHelped'],
+        where: { creatorId: userId },
       });
       questions.priorityQueue = [];
     }
 
     if (role === Role.TA) {
       questions.priorityQueue = await QuestionModel.find({
+        relations: ['creator', 'taHelped'],
         where: { queueId, status: In(StatusInPriorityQueue) },
       });
     }
