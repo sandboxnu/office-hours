@@ -39,42 +39,62 @@ describe("TA interacts with student question", () => {
   it("clicks the help button then remove question", () => {
     // Click on the student's question
     cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
+
+    cy.percySnapshot("TA Queue Page - Student Popup Open");
+
     // Click help
     cy.get("[data-cy='help-student']").click();
+
+    cy.percySnapshot("TA Queue Page - Helping Student Banner");
 
     // Click Remove from queue
     cy.get("[data-cy='banner']")
       .contains("button", "Remove from Queue")
       .click();
+
+    cy.contains("There are no questions in the queue");
   });
 
   it("clicks the help button then finish helping", () => {
     // Click on the student's question
     cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
+
     // Click help
     cy.get("[data-cy='help-student']").click();
 
     // Click Finish Helping
     cy.contains("button", "Finish Helping").click();
+
+    cy.contains("There are no questions in the queue");
   });
 
   it("clicks help button then remove question", () => {
     // Click on the student's question
     cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
     // Click help
-    cy.get("[data-cy='help-student']").click();
+    cy.get("[data-cy='help-student']").click({ force: true });
 
     // Click Remove from queue
     cy.get("[data-cy='banner']")
       .contains("button", "Remove from Queue")
       .click();
+
+    cy.percySnapshot("TA Queue Page - Remove From Queue Popconfirm");
+
+    // Click Yes on the Pop confirm
+    cy.get("span").contains("Yes").click();
+
+    cy.get("body").contains("You are helping").should("not.exist");
   });
 
   it("clicks the Help Next button to help the next student", () => {
     // Click on the Help Next button
     cy.get("[data-cy='help-next']").click();
+
     // See that the students question is shown as helping
     cy.contains("Helping");
+
+    cy.percySnapshot("TA Queue Page - TA Banner");
   });
 
   it("clicks a students question and then removes it from the queue", () => {

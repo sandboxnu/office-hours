@@ -1,10 +1,16 @@
 import { API } from "@koh/api-client";
-import { LimboQuestionStatus, OpenQuestionStatus, Question, QuestionStatus } from "@koh/common";
+import {
+  LimboQuestionStatus,
+  OpenQuestionStatus,
+  Question,
+  QuestionStatus,
+} from "@koh/common";
 import { Button, Col, Drawer, Popconfirm, Row, Tag, Tooltip } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
 import { getWaitTime } from "../../../utils/TimeUtil";
 import AvatarWithInitals from "../../common/AvatarWithInitials";
+import { questionStatusToColor } from "../QueueCardSharedComponents";
 
 const FullWidth = styled.div`
   margin-top: 32px;
@@ -157,7 +163,11 @@ const StudentPopupCard = ({
           <Email>{question.creator.email}</Email>
         </InfoTextDiv>
 
-        <StatusTag color="purple">{question.status}</StatusTag>
+        <StatusTag color={questionStatusToColor(question.status)}>
+          {question.status === OpenQuestionStatus.CantFind
+            ? "Can't Find"
+            : question.status}
+        </StatusTag>
 
         <StyledRow gutter={[8, 0]}>
           <Col span={12}>
@@ -166,7 +176,7 @@ const StudentPopupCard = ({
           </Col>
           <Col span={12}>
             <HeadingText>type</HeadingText>
-            <BodyText>{question.questionType.toString()}</BodyText>
+            <BodyText>{question.questionType}</BodyText>
           </Col>
         </StyledRow>
 
@@ -174,12 +184,13 @@ const StudentPopupCard = ({
           <HeadingText>question</HeadingText>
           <BodyText>{question.text}</BodyText>
         </FullWidth>
-        <FullWidth>
+        {/* TODO: Add this back for in person office hours */}
+        {/* <FullWidth>
           <HeadingText>location</HeadingText>
           <BodyText>
             {question.location || (question.isOnline && "Online")}
           </BodyText>
-        </FullWidth>
+        </FullWidth> */}
       </Container>
     </Drawer>
   );

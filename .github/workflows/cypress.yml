@@ -28,9 +28,11 @@ jobs:
           record: true
           start: yarn ci:start
           wait-on: "http://localhost:3000"
+          command-prefix: "yarn run percy exec"
         env:
           CYPRESS_USE_LIVE_API: true
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # after the test run completes
       # store videos and any screenshots

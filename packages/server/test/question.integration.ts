@@ -10,15 +10,15 @@ import supertest from 'supertest';
 import { QuestionModel } from '../src/question/question.entity';
 import { QuestionModule } from '../src/question/question.module';
 import {
+  ClosedOfficeHourFactory,
   CourseFactory,
+  OfficeHourFactory,
   QuestionFactory,
   QueueFactory,
   StudentCourseFactory,
   TACourseFactory,
   UserCourseFactory,
   UserFactory,
-  OfficeHourFactory,
-  ClosedOfficeHourFactory,
 } from './util/factories';
 import {
   expectUserNotified,
@@ -51,9 +51,7 @@ describe('Question Integration', () => {
       expect(response.body).toMatchSnapshot();
     });
     it('fails to get a non-existent question', async () => {
-      await supertest({ userId: 99 })
-        .get(`/questions/999`)
-        .expect(404);
+      await supertest({ userId: 99 }).get(`/questions/999`).expect(404);
     });
   });
 
@@ -63,14 +61,12 @@ describe('Question Integration', () => {
       queue: QueueModel,
       force = false,
     ): supertest.Test =>
-      supertest({ userId: user.id })
-        .post('/questions')
-        .send({
-          text: "Don't know recursion",
-          questionType: QuestionType.Concept,
-          queueId: queue.id,
-          force,
-        });
+      supertest({ userId: user.id }).post('/questions').send({
+        text: "Don't know recursion",
+        questionType: QuestionType.Concept,
+        queueId: queue.id,
+        force,
+      });
 
     it('posts a new question', async () => {
       const course = await CourseFactory.create();
@@ -81,12 +77,20 @@ describe('Question Integration', () => {
       const user = await UserFactory.create();
       await StudentCourseFactory.create({ user, courseId: queue.courseId });
       expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(0);
-      const response = await postQuestion(user, queue).expect(201);
+      const response = await supertest({ userId: user.id })
+        .post('/questions')
+        .send({
+          text: "Don't know recursion",
+          questionType: null,
+          queueId: queue.id,
+          force: false,
+        })
+        .expect(201);
       expect(response.body).toMatchObject({
         text: "Don't know recursion",
         helpedAt: null,
         closedAt: null,
-        questionType: 'Concept',
+        questionType: null,
         status: 'Drafting',
       });
       expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(1);
@@ -156,7 +160,7 @@ describe('Question Integration', () => {
           text: 'I need help',
           questionType: 'bad param!',
           queueId: 1, // even with bad params we still need a queue
-          force: false
+          force: false,
         })
         .expect(400);
     });
@@ -386,10 +390,10 @@ describe('Question Integration', () => {
       const res = await supertest({ userId: ta.id })
         .patch(`/questions/${q.id}`)
         .send({
-          status: ClosedQuestionStatus.StudentCancelled
+          status: ClosedQuestionStatus.StudentCancelled,
         })
         .expect(401);
-      expect(res.body?.message).toContain("TA cannot change status from ")
+      expect(res.body?.message).toContain('TA cannot change status from ');
     });
     it('PATCH question fails when you are not the question creator', async () => {
       const q = await QuestionFactory.create({ text: 'Help pls' });

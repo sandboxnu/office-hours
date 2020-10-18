@@ -1,9 +1,4 @@
-import {
-  OpenQuestionStatus,
-  QuestionStatus,
-  QuestionType,
-  Role,
-} from '@koh/common';
+import { OpenQuestionStatus, QuestionStatus, QuestionType } from '@koh/common';
 import { Exclude } from 'class-transformer';
 import {
   BaseEntity,
@@ -60,7 +55,7 @@ export class QuestionModel extends BaseEntity {
   @Column({ nullable: true })
   closedAt: Date;
 
-  @Column('text')
+  @Column('text', { nullable: true })
   questionType: QuestionType;
 
   @Column('text')
@@ -74,11 +69,11 @@ export class QuestionModel extends BaseEntity {
 
   /**
    * change the status of the question as the given role
-   * 
+   *
    * @returns whether status change succeeded
    */
   public changeStatus(newStatus: QuestionStatus, role: Role): boolean {
-    if(canChangeQuestionStatus(this.status, newStatus, role)) {
+    if (canChangeQuestionStatus(this.status, newStatus, role)) {
       this.status = newStatus;
       return true;
     } else {

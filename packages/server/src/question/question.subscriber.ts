@@ -1,6 +1,6 @@
 import { ClosedQuestionStatus, OpenQuestionStatus } from '@koh/common';
-import { QueueSSEService } from 'queue/queue-sse.service';
-import { QueueModel } from 'queue/queue.entity';
+import { QueueSSEService } from '../queue/queue-sse.service';
+import { QueueModel } from '../queue/queue.entity';
 import {
   Connection,
   EntitySubscriberInterface,
@@ -66,7 +66,7 @@ export class QuestionSubscriber
     const numberOfQuestions = await QuestionModel.openInQueue(
       event.entity.queueId,
     )
-      .where('question.status IN (:...openStatus)', {
+      .andWhere('question.status IN (:...openStatus)', {
         openStatus: [OpenQuestionStatus.Drafting, OpenQuestionStatus.Queued],
       })
       .getCount();

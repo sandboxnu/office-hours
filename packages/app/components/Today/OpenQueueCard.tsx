@@ -115,6 +115,7 @@ const OpenQueueCard = ({
   return (
     <PaddedCard
       headStyle={{ background: "#F3F5F7" }}
+      className={"open-queue-card"}
       title={
         staffList.map((staffMember) => staffMember.name).join(", ") ||
         "No Staff Checked In!"

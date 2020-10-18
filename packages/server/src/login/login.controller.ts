@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Post,
   Query,
   Req,
@@ -45,14 +46,16 @@ export class LoginController {
     if (process.env.NODE_ENV === 'production') {
       // Check that request has come from Khoury
       const parsedRequest = httpSignature.parseRequest(req);
-      if (
-        !httpSignature.verifyHMAC(
-          parsedRequest,
-          this.configService.get('KHOURY_PRIVATE_KEY'),
-        )
-      ) {
+      console.log('parsed request');
+      const verify = httpSignature.verifyHMAC(
+        parsedRequest,
+        this.configService.get('KHOURY_PRIVATE_KEY'),
+      );
+      if (!verify) {
+        console.log('invalid');
         throw new UnauthorizedException('Invalid request signature');
       }
+      console.log('valid');
     }
 
     let user: UserModel;
@@ -68,7 +71,7 @@ export class LoginController {
     // Q: Do we need this if it's not going to change?
     user = Object.assign(user, {
       email: body.email,
-      name: body.first_name +  ' ' + body.last_name,
+      name: body.first_name + ' ' + body.last_name,
       photoURL: '',
     });
     await user.save();

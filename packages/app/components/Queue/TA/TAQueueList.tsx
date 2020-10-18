@@ -6,7 +6,7 @@ import {
   QuestionStatus,
   QuestionStatusKeys,
 } from "@koh/common";
-import { Card, Col, Row, Space, Tooltip } from "antd";
+import { Card, Col, Row, Space, Tooltip, notification } from "antd";
 import { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
@@ -22,6 +22,7 @@ import {
 import StudentPopupCard from "./StudentPopupCard";
 import TABanner from "./TABanner";
 import TAQueueCard from "./TAQueueCard";
+import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
 
 const StatusText = styled.div`
   font-size: 14px;
@@ -90,7 +91,7 @@ export default function TAQueueList({
 }: TAQueueListProps): ReactElement {
   const user = useProfile();
 
-  const { queue, queuesError, mutateQueue } = useQueue(qid);
+  const { queue, mutateQueue } = useQueue(qid);
 
   const { questions, questionsError, mutateQuestions } = useQuestions(qid);
 
@@ -114,7 +115,7 @@ export default function TAQueueList({
   // Close popup if currentQuestion no longer exists in the cache
   if (currentQuestion && !questions.includes(currentQuestion)) {
     setCurrentQuestion(null);
-    setOpenPopup(false)
+    setOpenPopup(false);
   }
 
   const onOpenCard = useCallback((question: Question): void => {
@@ -131,13 +132,29 @@ export default function TAQueueList({
     question: Question,
     status: QuestionStatus
   ) => {
-    await API.questions.update(question.id, {
-      status: status,
-    });
-    const newQuestions = questions?.map((q) =>
-      q.id === question.id ? { ...q, status } : q
-    );
-    mutateQuestions(newQuestions);
+    try {
+      await API.questions.update(question.id, {
+        status: status,
+      });
+    } catch (e) {
+      if (
+        e.response?.status === 401 &&
+        e.response?.data?.message ===
+          "Another TA is currently helping with this question"
+      ) {
+        notification.open({
+          message: "Another TA is currently helping the student",
+          description:
+            "This happens when another TA clicks help at the exact same time",
+          type: "error",
+          duration: 3,
+          style: {
+            width: 450,
+          },
+        });
+      }
+    }
+    mutateQuestions();
     setOpenPopup(false);
   };
 
@@ -149,7 +166,9 @@ export default function TAQueueList({
     );
 
     await updateQuestionTA(nextQuestion, OpenQuestionStatus.Helping);
-    window.open(`https://teams.microsoft.com/l/chat/0/0?users=${nextQuestion.creator.email}`);
+    window.open(
+      `https://teams.microsoft.com/l/chat/0/0?users=${nextQuestion.creator.email}`
+    );
   };
 
   if (queue && questions) {
@@ -260,16 +279,45 @@ const NoQuestionsText = styled.div`
   color: #212934;
 `;
 
+function NotifReminderButton() {
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const NotifRemindButton = styled(QueueInfoColumnButton)`
+    margin-top: 16px;
+    border-radius: 6px;
+    background: #fff;
+  `;
+
+  return (
+    <>
+      <NotifRemindButton onClick={(e) => setIsNotifOpen(true)}>
+        Sign Up for Notifications
+      </NotifRemindButton>
+      {isNotifOpen && (
+        <NotificationSettingsModal
+          visible={isNotifOpen}
+          onClose={() => setIsNotifOpen(false)}
+        />
+      )}
+    </>
+  );
+}
+
 interface QueueProps {
   questions: Question[];
   isHelping: boolean;
   onOpenCard: (q: Question) => void;
 }
 function QueueQuestions({ questions, isHelping, onOpenCard }: QueueProps) {
+  const { phoneNotifsEnabled, desktopNotifsEnabled } = useProfile();
   return (
     <div data-cy="queueQuestions">
       {questions.length === 0 ? (
-        <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
+        <>
+          <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
+          {!isHelping && !phoneNotifsEnabled && !desktopNotifsEnabled && (
+            <NotifReminderButton />
+          )}
+        </>
       ) : (
         <>
           <QueueHeader>Queue</QueueHeader>

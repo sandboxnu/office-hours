@@ -7,13 +7,13 @@ import {
   GetQuestionResponse,
   GetQueueResponse,
   ListQuestionsResponse,
-  PhoneNotifBody,
   TAUpdateStatusResponse,
   UpdateProfileParams,
   UpdateQuestionParams,
   UpdateQuestionResponse,
   UpdateQueueParams,
   Question,
+  DesktopNotifPartial,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -50,7 +50,7 @@ class APIClient {
 
   profile = {
     index: async (): Promise<GetProfileResponse> =>
-      this.req("GET", `/api/v1/profile`),
+      this.req("GET", `/api/v1/profile`, GetProfileResponse),
     patch: async (body: UpdateProfileParams): Promise<GetProfileResponse> =>
       this.req("PATCH", `/api/v1/profile`, undefined, body),
   };
@@ -103,21 +103,20 @@ class APIClient {
     desktop: {
       credentials: async (): Promise<string> =>
         this.req("GET", "/api/v1/notifications/desktop/credentials"),
-      register: async (payload: DesktopNotifBody): Promise<string> =>
+      register: async (
+        payload: DesktopNotifBody
+      ): Promise<DesktopNotifPartial> =>
         this.req(
           "POST",
-          `/api/v1/notifications/desktop/register`,
-          undefined,
+          `/api/v1/notifications/desktop/device`,
+          DesktopNotifPartial,
           payload
         ),
-    },
-    phone: {
-      register: async (payload: PhoneNotifBody): Promise<string> =>
+      unregister: async (deviceId: number): Promise<string> =>
         this.req(
-          "POST",
-          `/api/v1/notifications/phone/register`,
-          undefined,
-          payload
+          "DELETE",
+          `/api/v1/notifications/desktop/device/${deviceId}`,
+          undefined
         ),
     },
   };

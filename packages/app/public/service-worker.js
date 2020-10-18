@@ -2,12 +2,6 @@
 
 // some code taken from https://medium.com/izettle-engineering/beginners-guide-to-web-push-notifications-using-service-workers-cb3474a17679
 
-// important constants
-// todo: replace with actual user id.
-const USER_ID = 1;
-const ENDPOINT_REGISTER = `api/v1/notifications/desktop/register/${USER_ID}`;
-const ENDPOINT_CREDENTIALS = `api/v1/notifications/desktop/credentials`;
-
 self.addEventListener("push", async function (event) {
   if (event.data) {
     try {

@@ -81,10 +81,11 @@ export class QueueService {
       Object.assign(newLQR, questions);
 
       newLQR.queue = questions.queue.map((question) => {
-        if (question.creator.id !== userId) {
-          question.creator = pick(question.creator, ['id']);
-        }
-        return question;
+        const creator =
+          question.creator.id === userId
+            ? question.creator
+            : pick(question.creator, ['id']);
+        return QuestionModel.create({ ...question, creator });
       });
       return newLQR;
     }

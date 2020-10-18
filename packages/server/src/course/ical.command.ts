@@ -1,4 +1,4 @@
-import { Command, Positional } from 'nestjs-command';
+import { Command } from 'nestjs-command';
 import { Injectable } from '@nestjs/common';
 import { IcalService } from './ical.service';
 

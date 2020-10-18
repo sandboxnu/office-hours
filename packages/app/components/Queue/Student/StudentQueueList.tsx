@@ -59,7 +59,7 @@ interface StudentQueueListProps {
 export default function StudentQueueList({
   qid,
 }: StudentQueueListProps): ReactElement {
-  const { queue, queuesError, mutateQueue } = useQueue(qid);
+  const { queue, mutateQueue } = useQueue(qid);
   const { questions, questionsError, mutateQuestions } = useQuestions(qid);
   const { studentQuestion, studentQuestionIndex } = useStudentQuestion(qid);
   const [isFirstQuestion, setIsFirstQuestion] = useLocalStorage(
@@ -153,8 +153,7 @@ export default function StudentQueueList({
           queueId: Number(qid),
           text: "",
           force: force,
-          questionType: QuestionType.Bug, // TODO: endpoint needs to be changed to allow empty questionType for drafts
-          // for the moment I am defaulting this data so that there is no error
+          questionType: null,
         });
         const newQuestions = [...questions, createdQuestion];
         await mutateQuestions(newQuestions);

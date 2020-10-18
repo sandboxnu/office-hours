@@ -10,7 +10,7 @@ import { Col, Popconfirm, Row } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
 import AvatarWithInitals from "../../common/AvatarWithInitials";
-import Banner, { BannerButton, BannerDangerButton } from "../Banner";
+import Banner, { TABannerButton, TABannerDangerButton } from "../Banner";
 
 const Bold = styled.span`
   font-weight: bold;
@@ -65,6 +65,8 @@ export default function TABanner({
             <Info>{helpingQuestion.text ?? ""}</Info>
             <InfoHeader>type</InfoHeader>
             <Info>{helpingQuestion.questionType ?? ""}</Info>
+            <InfoHeader>email</InfoHeader>
+            <Info>{helpingQuestion.creator.email ?? ""}</Info>
           </Col>
         </Row>
       }
@@ -82,18 +84,21 @@ export default function TABanner({
               await alertStudent();
             }}
           >
-            <BannerDangerButton icon={<CloseOutlined />} data-cy="remove-from-queue">
+            <TABannerDangerButton
+              icon={<CloseOutlined />}
+              data-cy="remove-from-queue"
+            >
               Remove from Queue
-            </BannerDangerButton>
+            </TABannerDangerButton>
           </Popconfirm>
-          <BannerButton
+          <TABannerButton
             icon={<CheckOutlined />}
             onClick={() =>
               updateQuestion(helpingQuestion, ClosedQuestionStatus.Resolved)
             }
           >
             Finish Helping
-          </BannerButton>
+          </TABannerButton>
         </>
       }
     />

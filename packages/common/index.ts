@@ -1,3 +1,4 @@
+import { Type } from "class-transformer";
 import {
   IsBoolean,
   IsDefined,
@@ -8,10 +9,12 @@ import {
   IsString,
   ValidateIf,
 } from "class-validator";
-import { Type } from "class-transformer";
 import "reflect-metadata";
 
 export const PROD_URL = "https://khouryofficehours.com";
+export const isProd = (): boolean =>
+  process.env.DOMAIN === PROD_URL ||
+  (typeof window !== "undefined" && window?.location?.origin === PROD_URL);
 
 /////////////////////////
 // API Base Data Types //
@@ -26,17 +29,30 @@ export const PROD_URL = "https://khouryofficehours.com";
  * @param name - The full name of this user: First Last.
  * @param photoURL - The URL string of this user photo. This is pulled from the admin site
  * @param courses - The list of courses that the user is accociated with (as either a 'student', 'ta' or 'professor')
+ * @param desktopNotifs - list of endpoints so that frontend can figure out if device is enabled
  */
-export type User = {
-  id: number;
-  email: string;
-  name: string;
-  photoURL: string;
-  courses: UserCourse[];
-  desktopNotifsEnabled: boolean;
-  phoneNotifsEnabled: boolean;
-  phoneNumber: string;
-};
+export class User {
+  id!: number;
+  email!: string;
+  name!: string;
+  photoURL!: string;
+  courses!: UserCourse[];
+  desktopNotifsEnabled!: boolean;
+
+  @Type(() => DesktopNotifPartial)
+  desktopNotifs!: DesktopNotifPartial[];
+
+  phoneNotifsEnabled!: boolean;
+  phoneNumber!: string;
+}
+
+export class DesktopNotifPartial {
+  id!: number;
+  endpoint!: string;
+  name?: string;
+  @Type(() => Date)
+  createdAt!: Date;
+}
 
 /**
  * Contains the partial user info needed by the frontend when nested in a response
@@ -249,6 +265,7 @@ export type DesktopNotifBody = {
     p256dh: string;
     auth: string;
   };
+  name?: string;
 };
 
 export type PhoneNotifBody = {
@@ -260,7 +277,7 @@ export type PhoneNotifBody = {
 // API route Params and Responses
 
 // Office Hours Response Types
-export type GetProfileResponse = User;
+export class GetProfileResponse extends User {}
 
 export class KhouryDataParams {
   @IsString()
@@ -370,7 +387,8 @@ export class CreateQuestionParams {
   text!: string;
 
   @IsEnum(QuestionType)
-  questionType!: QuestionType;
+  @IsOptional()
+  questionType?: QuestionType;
 
   @IsInt()
   queueId!: number;

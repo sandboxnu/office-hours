@@ -1,9 +1,5 @@
 import { API } from "@koh/api-client";
-import {
-  GetQueueResponse,
-  QueuePartial,
-  SSEQueueResponse,
-} from "@koh/common";
+import { GetQueueResponse, QueuePartial, SSEQueueResponse } from "@koh/common";
 import useSWR, { responseInterface } from "swr";
 import { useCallback } from "react";
 import { useEventSource } from "./useEventSource";
@@ -13,13 +9,13 @@ type queueResponse = responseInterface<QueuePartial, any>;
 
 interface UseQueueReturn {
   queue?: queueResponse["data"];
-  queuesError: queueResponse["error"];
+  queueError: queueResponse["error"];
   mutateQueue: queueResponse["mutate"];
   isQueueLive: boolean;
 }
 
 export function useQueue(qid: number): UseQueueReturn {
-  const { data: queue, error: queuesError, mutate: mutateQueue } = useSWR(
+  const { data: queue, error: queueError, mutate: mutateQueue } = useSWR(
     qid && `/api/v1/queues/${qid}`,
     async () => API.queues.get(Number(qid))
   );
@@ -39,7 +35,7 @@ export function useQueue(qid: number): UseQueueReturn {
 
   return {
     queue,
-    queuesError,
+    queueError,
     mutateQueue,
     isQueueLive,
   };

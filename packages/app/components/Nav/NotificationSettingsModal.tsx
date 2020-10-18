@@ -1,14 +1,32 @@
-import { Form, Input, Modal, Row, Switch } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  List,
+  message,
+  Modal,
+  Switch,
+  Tooltip,
+} from "antd";
 import useSWR from "swr";
 import { API } from "@koh/api-client";
-import { UpdateProfileParams } from "@koh/common";
+import { DesktopNotifPartial, UpdateProfileParams } from "@koh/common";
 import { pick } from "lodash";
-import { ReactElement } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import {
   requestNotificationPermission,
   registerNotificationSubscription,
   NotificationStates,
+  getEndpoint,
+  getNotificationState,
 } from "../../utils/notification";
+import { MinusCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import styled from "styled-components";
+
+const DeviceAddHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
 
 interface NotificationSettingsModalProps {
   visible: boolean;
@@ -34,67 +52,73 @@ export function NotificationSettingsModal({
         "phoneNumber",
       ])
     );
-    if (!profile.desktopNotifsEnabled && updateProfile.desktopNotifsEnabled) {
-      const canNotify = await requestNotificationPermission();
-      if (canNotify === NotificationStates.granted) {
-        await registerNotificationSubscription();
-      }
-    }
     mutate();
   };
+
+  const handleOk = async () => {
+    const value = await form.validateFields();
+    try {
+      await editProfile(value);
+      form.setFieldsValue(profile);
+      onClose();
+    } catch (e) {
+      if (
+        e.response?.status === 400 &&
+        e.response?.data?.message === "phone number invalid"
+      ) {
+        form.setFields([
+          { name: "phoneNumber", errors: ["Invalid phone number"] },
+        ]);
+      }
+    }
+  };
+
+  const handleCancel = () => onClose();
 
   return (
     <Modal
       title="Notification Settings"
       visible={visible}
-      onCancel={() => onClose()}
-      onOk={async () => {
-        const value = await form.validateFields();
-        try {
-          await editProfile(value);
-          onClose();
-        } catch (e) {
-          if (
-            e.response?.status === 400 &&
-            e.response?.data?.message === "phone number invalid"
-          ) {
-            form.setFields([
-              { name: "phoneNumber", errors: ["Invalid phone number"] },
-            ]);
-          }
-        }
-      }}
+      onOk={handleOk}
+      onCancel={handleCancel}
+      footer={
+        <>
+          <QuestionCircleOutlined
+            style={{ float: "left", fontSize: "25px" }}
+            onClick={() =>
+              window.open(
+                "https://www.notion.so/593f9eb67eb04abbb8008c285ed5a8dd?v=b3d8ef6b3d2742f1985a6406e582601a"
+              )
+            }
+          />
+          <Button key="back" onClick={handleCancel}>
+            Cancel
+          </Button>
+          <Button key="submit" type="primary" onClick={handleOk}>
+            Ok
+          </Button>
+        </>
+      }
     >
       {profile && (
         <Form form={form} initialValues={profile}>
-          <p>Get notified when you reach the top of the queue.</p>
           <Form.Item
-            label="Enable browser notifications"
+            label="Enable notifications on all devices"
             name="desktopNotifsEnabled"
             valuePropName="checked"
           >
-            <Switch
-              onChange={async (checked) => {
-                if (checked) {
-                  const canNotify = await requestNotificationPermission();
-                  if (canNotify !== NotificationStates.granted) {
-                    form.setFieldsValue({ desktopNotifsEnabled: false });
-                    form.setFields([
-                      {
-                        name: "desktopNotifsEnabled",
-                        errors: [
-                          canNotify === NotificationStates.notAllowed
-                            ? "Please allow notifications in this browser"
-                            : "Browser does not support notifications. Please use Chrome or Firefox.",
-                        ],
-                      },
-                    ]);
-                  }
-                }
-              }}
-            />
+            <Switch />
           </Form.Item>
+          <Form.Item shouldUpdate noStyle>
+            {() =>
+              form?.getFieldValue("desktopNotifsEnabled") && (
+                <DeviceNotifPanel />
+              )
+            }
+          </Form.Item>
+          {/* <Divider orientation="left">SMS</Divider> */}
           <Form.Item
+            style={{ marginTop: "30px" }}
             label="Enable SMS notifications"
             name="phoneNotifsEnabled"
             valuePropName="checked"
@@ -123,5 +147,93 @@ export function NotificationSettingsModal({
         </Form>
       )}
     </Modal>
+  );
+}
+
+function useThisDeviceEndpoint(): null | string {
+  const [endpoint, setEndpoint] = useState(null);
+  useEffect(() => {
+    (async () => setEndpoint(await getEndpoint()))();
+  });
+  return endpoint;
+}
+
+function renderDeviceInfo(
+  device: DesktopNotifPartial,
+  isThisDevice: boolean
+): string {
+  if (device.name) {
+    return isThisDevice ? `${device.name} (This Device)` : device.name;
+  } else {
+    return isThisDevice ? "This Device" : "Other Device";
+  }
+}
+
+function DeviceNotifPanel() {
+  const thisEndpoint = useThisDeviceEndpoint();
+  const { data: profile, mutate } = useSWR(`api/v1/profile`, async () =>
+    API.profile.index()
+  );
+  const thisDesktopNotif = profile?.desktopNotifs?.find(
+    (dn) => dn.endpoint === thisEndpoint
+  );
+  return (
+    <div>
+      <DeviceAddHeader>
+        <h3>Your Devices</h3>
+        {!thisDesktopNotif && (
+          <Tooltip
+            title={
+              getNotificationState() ===
+                NotificationStates.browserUnsupported &&
+              "Browser does not support notifications. Please use Chrome or Firefox, and not Incognito Mode."
+            }
+          >
+            <Button
+              onClick={async () => {
+                const canNotify = await requestNotificationPermission();
+                if (canNotify === NotificationStates.notAllowed) {
+                  message.warning("Please allow notifications in this browser");
+                }
+                if (canNotify === NotificationStates.granted) {
+                  await registerNotificationSubscription();
+                  mutate();
+                }
+              }}
+              disabled={
+                getNotificationState() === NotificationStates.browserUnsupported
+              }
+              style={{ marginBottom: "4px" }}
+            >
+              Add This Device
+            </Button>
+          </Tooltip>
+        )}
+      </DeviceAddHeader>
+      <List
+        bordered
+        dataSource={profile.desktopNotifs}
+        locale={{ emptyText: "No Devices Registered To Receive Notifications" }}
+        renderItem={(device: DesktopNotifPartial) => (
+          <List.Item
+            actions={[
+              <MinusCircleOutlined
+                style={{ fontSize: "20px" }}
+                key={0}
+                onClick={async () => {
+                  await API.notif.desktop.unregister(device.id);
+                  mutate();
+                }}
+              />,
+            ]}
+          >
+            <List.Item.Meta
+              title={renderDeviceInfo(device, device.endpoint === thisEndpoint)}
+              description={`Registered ${device.createdAt.toLocaleDateString()}`}
+            />
+          </List.Item>
+        )}
+      />
+    </div>
   );
 }
