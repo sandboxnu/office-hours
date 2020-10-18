@@ -18,7 +18,7 @@ export class HeatmapService {
       .leftJoinAndSelect('question.queue', 'queue')
       .where('queue.courseId = :courseId', { courseId })
       .andWhere('question.createdAt > :recent', {
-        recent: moment().subtract(3, 'weeks').toISOString(),
+        recent: moment().subtract(5, 'weeks').toISOString(),
       })
       .getMany();
 
@@ -35,7 +35,7 @@ export class HeatmapService {
     const questionBuckets = groupBy(completedQuestions, (q) =>
       bucketDate(q.createdAt),
     );
-    const heatmap: Record<number, { avg: number }> = {};
+    const heatmap: Record<number, { median: number }> = {};
     for (const [i, qs] of Object.entries(questionBuckets)) {
       const waitTimes = qs.map((q) => timeDiffInMins(q.helpedAt, q.createdAt));
       const averageWaitTime = sum(waitTimes) / waitTimes.length;
@@ -46,10 +46,10 @@ export class HeatmapService {
       waitTimes.sort();
       const median = waitTimes[Math.floor(waitTimes.length / 2)];
       heatmap[i] = {
-        avg: averageWaitTime,
+        // avg: averageWaitTime,
         median,
-        stdDev,
-        count: waitTimes.length,
+        // stdDev,
+        // count: waitTimes.length,
         // data: waitTimes,
       };
     }
@@ -59,7 +59,7 @@ export class HeatmapService {
     );
     console.log(pretty);
 
-    return mapValues(heatmap, (h) => h.avg);
+    return mapValues(heatmap, (h) => h.median);
   }
 
   @Command({

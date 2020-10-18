@@ -27,8 +27,8 @@ export default function SchedulePanel({
 }: ScheduleProps): ReactElement {
   const { course } = useCourse(courseId);
 
-  const maxHeatmap = 30; //course && Math.max(...Object.values(course.heatmap));
-  const minHeatmap = course && Math.min(...Object.values(course.heatmap));
+  const maxHeatmap = 60; //course && Math.max(...Object.values(course.heatmap));
+  const minHeatmap = 0; // course && Math.min(...Object.values(course.heatmap));
 
   const myEvents: Event[] =
     course?.officeHours.map((e) => ({
