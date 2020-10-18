@@ -217,7 +217,7 @@ export type QuestionStatus = keyof typeof QuestionStatusKeys;
 export const QuestionStatusKeys = {
   ...OpenQuestionStatus,
   ...ClosedQuestionStatus,
-  ...LimboQuestionStatus
+  ...LimboQuestionStatus,
 };
 
 /**
@@ -343,7 +343,18 @@ export class GetQueueResponse extends QueuePartial {}
 
 export class GetCourseQueuesResponse extends Array<QueuePartial> {}
 
-export class ListQuestionsResponse extends Array<Question> {}
+export class ListQuestionsResponse {
+  yourQuestion?: Question;
+
+  @Type(() => Question)
+  questionsGettingHelp!: Array<Question>;
+
+  @Type(() => Question)
+  queue!: Array<Question>;
+
+  @Type(() => Question)
+  priorityQueue!: Array<Question>;
+}
 
 export class GetQuestionResponse extends Question {}
 
