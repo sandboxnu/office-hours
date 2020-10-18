@@ -1,7 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Connection } from 'typeorm';
+import { Connection, In } from 'typeorm';
 import { QueueModel } from './queue.entity';
-import { ListQuestionsResponse, Role } from '@koh/common';
+import {
+  ListQuestionsResponse,
+  OpenQuestionStatus,
+  Role,
+  StatusInPriorityQueue,
+  StatusInQueue,
+} from '@koh/common';
 import { QuestionModel } from 'question/question.entity';
 import { pick } from 'lodash';
 
@@ -24,7 +30,11 @@ export class QueueService {
     return queue;
   }
 
-  async getQuestions(queueId: number): Promise<ListQuestionsResponse> {
+  async getQuestions(
+    queueId: number,
+    userId: number,
+    role: Role,
+  ): Promise<ListQuestionsResponse> {
     // todo: Make a student and a TA version of this function, and switch which one to use in the controller
     // for now, just return the student response
     const queueSize = await QueueModel.count({
@@ -34,10 +44,30 @@ export class QueueService {
     if (queueSize === 0) {
       throw new NotFoundException();
     }
-    return QuestionModel.openInQueue(queueId)
-      .leftJoinAndSelect('question.creator', 'creator')
-      .leftJoinAndSelect('question.taHelped', 'taHelped')
-      .getMany();
+
+    const questions = new ListQuestionsResponse();
+
+    questions.queue = await QuestionModel.find({
+      where: { queueId, status: In(StatusInQueue) },
+    });
+    questions.questionsGettingHelp = await QuestionModel.find({
+      where: { queueId, status: OpenQuestionStatus.Helping },
+    });
+
+    if (role === Role.STUDENT) {
+      questions.yourQuestion = await QuestionModel.findOne({
+        where: { userId },
+      });
+      questions.priorityQueue = [];
+    }
+
+    if (role === Role.TA) {
+      questions.priorityQueue = await QuestionModel.find({
+        where: { queueId, status: In(StatusInPriorityQueue) },
+      });
+    }
+
+    return questions;
   }
 
   /** Hide sensitive data to other students */
@@ -47,12 +77,16 @@ export class QueueService {
     role: Role,
   ): ListQuestionsResponse {
     if (role === Role.STUDENT) {
-      return questions.map((question) => {
+      const newLQR = new ListQuestionsResponse();
+      Object.assign(newLQR, questions);
+
+      newLQR.queue = questions.queue.map((question) => {
         if (question.creator.id !== userId) {
           question.creator = pick(question.creator, ['id']);
         }
         return question;
       });
+      return newLQR;
     }
     return questions;
   }

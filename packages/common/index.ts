@@ -211,6 +211,13 @@ export enum ClosedQuestionStatus {
   Stale = "Stale",
 }
 
+export const StatusInQueue = [
+  OpenQuestionStatus.Drafting,
+  OpenQuestionStatus.Queued,
+];
+
+export const StatusInPriorityQueue = [OpenQuestionStatus.PriorityQueued];
+
 // Ticket Status - Represents a given status of as student's ticket
 export type QuestionStatus = keyof typeof QuestionStatusKeys;
 // an Enum-like constant that contains all the statuses for convenience.

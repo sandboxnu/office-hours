@@ -50,7 +50,11 @@ export class QueueController {
     @QueueRole() role: Role,
     @UserId() userId: number,
   ): Promise<ListQuestionsResponse> {
-    const questions = await this.queueService.getQuestions(queueId);
+    const questions = await this.queueService.getQuestions(
+      queueId,
+      userId,
+      role,
+    );
     return this.queueService.anonymizeQuestions(questions, userId, role);
   }
 
