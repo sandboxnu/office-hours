@@ -10,9 +10,12 @@ import SchedulePanel from "../../../components/Schedule/SchedulePanel";
 import OpenQueueCard, {
   OpenQueueCardSkeleton,
 } from "../../../components/Today/OpenQueueCard";
-import TACheckinButton from "../../../components/Today/TACheckinButton";
+import TACheckinButton, {
+  CheckInButtonState,
+} from "../../../components/Today/TACheckinButton";
 import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useCourse } from "../../../hooks/useCourse";
+import { useProfile } from "../../../hooks/useProfile";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 
 const Container = styled.div`
@@ -31,6 +34,7 @@ const Title = styled.div`
 export default function Today(): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
+  const profile = useProfile();
   const role = useRoleInCourse(Number(cid));
 
   const { course, mutateCourse } = useCourse(Number(cid));
@@ -51,6 +55,10 @@ export default function Today(): ReactElement {
     mutateCourse();
   };
 
+  const queueCheckedIn = course?.queues.find((queue) =>
+    queue.staffList.find((staff) => staff.id === profile.id)
+  );
+
   return (
     <div>
       <Head>
@@ -63,7 +71,13 @@ export default function Today(): ReactElement {
           <Col md={12} xs={24}>
             <Row justify="space-between">
               <Title>Current Office Hours</Title>
-              {role === Role.TA && <TACheckinButton courseId={Number(cid)} />}
+              {role === Role.TA && (
+                <TACheckinButton
+                  courseId={Number(cid)}
+                  room="Online"
+                  state={queueCheckedIn ? "CheckedIn" : "CheckedOut"}
+                />
+              )}
             </Row>
             {course?.queues?.length === 0 ? (
               <h1 style={{ paddingTop: "100px" }}>

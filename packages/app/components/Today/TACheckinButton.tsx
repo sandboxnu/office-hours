@@ -1,5 +1,6 @@
 import { API } from "@koh/api-client";
 import { Button, Input, Modal, Radio } from "antd";
+import { SizeType } from "antd/lib/config-provider/SizeContext";
 import { useRouter } from "next/router";
 import { ReactElement, useState } from "react";
 import styled from "styled-components";
@@ -21,23 +22,32 @@ const CheckOutButton = styled(Button)`
   border-radius: 6px;
 `;
 
+type CheckInButtonState =
+  | "CheckedIn"
+  | "CheckedOut"
+  | "CheckedIntoOtherQueueAlready";
+
+interface TACheckinButtonProps {
+  courseId: number;
+  room: string; // name of room to check into
+  state: CheckInButtonState; // State of the button
+  block?: boolean;
+}
+
 export default function TACheckinButton({
   courseId,
-}: {
-  courseId: number;
-}): ReactElement {
+  room,
+  state,
+  block = false,
+}: TACheckinButtonProps): ReactElement {
   const router = useRouter();
 
   const { course, mutateCourse } = useCourse(courseId);
-  const { id } = useProfile();
-  const queueCheckedIn = course?.queues.find((queue) =>
-    queue.staffList.find((staff) => staff.id === id)
-  );
 
   async function checkInTA() {
     // to see old check in in person functionality look at commit b4768bbfb0f36444c80961703bdbba01ff4a5596
     //trying to limit changes to the frontend, all queues will have the room online
-    const redirectID = await API.taStatus.checkIn(courseId, "Online");
+    const redirectID = await API.taStatus.checkIn(courseId, room);
 
     router.push(
       "/course/[cid]/queue/[qid]",
@@ -45,31 +55,34 @@ export default function TACheckinButton({
     );
   }
 
-  return (
-    <>
-      {queueCheckedIn ? (
+  switch (state) {
+    case "CheckedIn":
+      return (
         <CheckOutButton
           type="default"
           size="large"
+          block={block}
           data-cy="check-out-button"
           onClick={async () => {
-            await API.taStatus.checkOut(courseId, "Online");
+            await API.taStatus.checkOut(courseId, room);
             mutateCourse();
           }}
         >
           Check Out
         </CheckOutButton>
-      ) : (
+      );
+    case "CheckedOut":
+      return (
         <CheckinButton
           type="default"
           size="large"
+          block={block}
           onClick={() => checkInTA()}
           disabled={!course}
           data-cy="check-in-button"
         >
           Check In
         </CheckinButton>
-      )}
-    </>
-  );
+      );
+  }
 }

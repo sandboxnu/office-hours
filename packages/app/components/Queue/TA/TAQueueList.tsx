@@ -6,7 +6,7 @@ import {
   QuestionStatusKeys,
 } from "@koh/common";
 import { Card, Col, Row, Space, Tooltip, notification } from "antd";
-import { ReactElement, useCallback, useState } from "react";
+import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
@@ -22,6 +22,7 @@ import StudentPopupCard from "./StudentPopupCard";
 import TABanner from "./TABanner";
 import TAQueueCard from "./TAQueueCard";
 import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
+import TACheckinButton from "../../Today/TACheckinButton";
 
 const StatusText = styled.div`
   font-size: 14px;
@@ -54,15 +55,6 @@ const CenterRow = styled(Row)`
 
 const Placeholder = styled.div`
   width: 14px;
-`;
-
-const CheckOutButton = styled(QueueInfoColumnButton)`
-  color: #da3236;
-`;
-
-const CheckInButton = styled(QueueInfoColumnButton)`
-  color: white;
-  background: #2a9187;
 `;
 
 const HelpNextButton = styled(QueueInfoColumnButton)`
@@ -138,17 +130,19 @@ export default function TAQueueList({
     } catch (e) {
       if (
         e.response?.status === 401 &&
-        e.response?.data?.message === "Another TA is currently helping with this question"
+        e.response?.data?.message ===
+          "Another TA is currently helping with this question"
       ) {
         notification.open({
           message: "Another TA is currently helping the student",
-          description: "This happens when another TA clicks help at the exact same time",
+          description:
+            "This happens when another TA clicks help at the exact same time",
           type: "error",
           duration: 3,
           style: {
             width: 450,
-          }
-      });
+          },
+        });
       }
     }
     mutateQuestions();
@@ -201,29 +195,12 @@ export default function TAQueueList({
                     Help Next
                   </HelpNextButton>
                 </Tooltip>
-                {isStaffCheckedIn ? (
-                  <CheckOutButton
-                    danger
-                    disabled={isHelping}
-                    data-cy="check-out-button"
-                    onClick={async () => {
-                      await API.taStatus.checkOut(courseId, queue?.room);
-                      mutateQueue();
-                    }}
-                  >
-                    Check Out
-                  </CheckOutButton>
-                ) : (
-                  <CheckInButton
-                    onClick={async () => {
-                      await API.taStatus.checkIn(courseId, queue?.room);
-                      mutateQueue();
-                    }}
-                    data-cy="check-in-button"
-                  >
-                    Check In
-                  </CheckInButton>
-                )}
+                <TACheckinButton
+                  courseId={courseId}
+                  room={queue?.room}
+                  state={isStaffCheckedIn ? "CheckedIn" : "CheckedOut"}
+                  block
+                />
               </>
             }
           />
