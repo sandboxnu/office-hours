@@ -44,4 +44,7 @@ body {
   .rbc-event {
     visibility: hidden;
   }
+  .rbc-current-time-indicator {
+    visibility: hidden;
+  }
 }
