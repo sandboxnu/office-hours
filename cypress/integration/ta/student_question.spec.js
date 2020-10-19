@@ -45,7 +45,7 @@ describe("TA interacts with student question", () => {
     // Click help
     cy.get("[data-cy='help-student']").click();
 
-    cy.percySnapshot("TA Queue Page - Helping Student Banner");
+    cy.contains("You are helping");
 
     // Click Remove from queue
     cy.get("[data-cy='banner']")
@@ -79,8 +79,6 @@ describe("TA interacts with student question", () => {
       .contains("button", "Remove from Queue")
       .click();
 
-    cy.percySnapshot("TA Queue Page - Remove From Queue Popconfirm");
-
     // Click Yes on the Pop confirm
     cy.get("span").contains("Yes").click();  
 
@@ -93,8 +91,7 @@ describe("TA interacts with student question", () => {
 
     // See that the students question is shown as helping
     cy.contains("Helping");
-
-    cy.percySnapshot("TA Queue Page - TA Banner");
+    cy.percySnapshot("TA Queue Page - Helping Student Banner");
   });
 
   it("clicks a students question and then removes it from the queue", () => {
