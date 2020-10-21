@@ -119,7 +119,9 @@ export function QueueInfoColumn({
       {queue.startTime && queue.endTime && (
         <QueuePropertyRow>
           <ClockCircleOutlined />
-          <QueuePropertyText>{formatQueueTime(queue)}</QueuePropertyText>
+          <QueuePropertyText className={"hide-in-percy"}>
+            {formatQueueTime(queue)}
+          </QueuePropertyText>
         </QueuePropertyRow>
       )}
       {queue?.notes && (
