@@ -16,21 +16,10 @@ export const isProd = (): boolean =>
   process.env.DOMAIN === PROD_URL ||
   (typeof window !== "undefined" && window?.location?.origin === PROD_URL);
 
-const BUCKET_SIZE_IN_MINS = 60;
-
 // TODO: Clean this up, move it somwhere else, use moment???
 // a - b, in minutes
 export function timeDiffInMins(a: Date, b: Date): number {
   return (a.getTime() - b.getTime()) / (1000 * 60);
-}
-// get the bucket for a date
-export function bucketDate(date: Date): number {
-  // Sunday of the week of date (since bucketing is weekly)
-  const sunday = new Date(date);
-  sunday.setDate(date.getDate() - date.getDay());
-  sunday.setHours(0, 0, 0, 0);
-  const minuteDiff = timeDiffInMins(date, sunday);
-  return Math.floor(minuteDiff / BUCKET_SIZE_IN_MINS);
 }
 
 /////////////////////////
@@ -173,7 +162,9 @@ export class QueuePartial {
   allowQuestions!: boolean;
 }
 
-export type Heatmap = Record<number, number>;
+// Represents a list of office hours wait times of each hour of each day of the week.
+//  -1 represents no office hours data at that time.
+export type Heatmap = number[][];
 
 /**
  * A Question is created when a student wants help from a TA.

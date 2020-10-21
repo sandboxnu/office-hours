@@ -7,6 +7,7 @@ import React, { ReactElement } from "react";
 import styled from "styled-components";
 import NavBar from "../../../components/Nav/NavBar";
 import SchedulePanel from "../../../components/Schedule/SchedulePanel";
+import PopularTimes from "../../../components/Today/PopularTimes";
 import OpenQueueCard, {
   OpenQueueCardSkeleton,
 } from "../../../components/Today/OpenQueueCard";
@@ -80,6 +81,7 @@ export default function Today(): ReactElement {
               ))
             )}
             {!course && <OpenQueueCardSkeleton />}
+            {course && <PopularTimes heatmap={course.heatmap} />}
           </Col>
           <Col md={12} sm={24}>
             <SchedulePanel courseId={Number(cid)} defaultView="day" />

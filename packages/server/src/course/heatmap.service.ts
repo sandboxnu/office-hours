@@ -1,14 +1,11 @@
-import {
-  bucketDate,
-  ClosedQuestionStatus,
-  Heatmap,
-  timeDiffInMins,
-} from '@koh/common';
+import { ClosedQuestionStatus, Heatmap, timeDiffInMins } from '@koh/common';
 import { Injectable } from '@nestjs/common';
 import { groupBy, mapKeys, mapValues, sum, sumBy } from 'lodash';
 import moment = require('moment');
 import { Command } from 'nestjs-command';
 import { QuestionModel } from 'question/question.entity';
+
+const BUCKET_SIZE_IN_MINS = 60;
 
 @Injectable()
 export class HeatmapService {
@@ -32,34 +29,46 @@ export class HeatmapService {
       (q) => q.helpedAt && q.status === ClosedQuestionStatus.Resolved,
     );
     console.log(`generating heat map from ${questions.length} questions`);
-    const questionBuckets = groupBy(completedQuestions, (q) =>
-      bucketDate(q.createdAt),
+    const questionBuckets: QuestionModel[][][] =  [...Array(7)].map(() =>
+      [...Array(24)].map(() => []),
     );
-    const heatmap: Record<number, { median: number }> = {};
-    for (const [i, qs] of Object.entries(questionBuckets)) {
-      const waitTimes = qs.map((q) => timeDiffInMins(q.helpedAt, q.createdAt));
-      const averageWaitTime = sum(waitTimes) / waitTimes.length;
-      const stdDev = Math.sqrt(
-        sumBy(waitTimes, (w) => Math.pow(w - averageWaitTime, 2)) /
-          waitTimes.length,
-      );
-      waitTimes.sort();
-      const median = waitTimes[Math.floor(waitTimes.length / 2)];
-      heatmap[i] = {
-        // avg: averageWaitTime,
-        median,
-        // stdDev,
-        // count: waitTimes.length,
-        // data: waitTimes,
-      };
+    for (const q of completedQuestions) {
+      const [day, hour] = this.bucketDate(q.createdAt);
+      questionBuckets[day][hour].push(q);
     }
-    const pretty = mapKeys(
-      heatmap,
-      (_, n) => `Day ${Math.floor(Number(n) / 24)}, Hour ${Number(n) % 24}`,
-    );
-    console.log(pretty);
+    console.log(questionBuckets[0]);
+    const heatmap: Heatmap = [];
+    for (const day of questionBuckets) {
+      const dayMedians = [];
+      for (const hour of day) {
+        const waitTimes = hour.map((q) =>
+          timeDiffInMins(q.helpedAt, q.createdAt),
+        );
+        waitTimes.sort();
+        const median = waitTimes[Math.floor(waitTimes.length / 2)];
+        dayMedians.push(median);
+      }
+      heatmap.push(dayMedians);
+    }
+    // const pretty = mapKeys(
+    //   heatmap,
+    //   (_, n) => `Day ${Math.floor(Number(n) / 24)}, Hour ${Number(n) % 24}`,
+    // );
+    // console.log(pretty);
 
-    return mapValues(heatmap, (h) => h.median);
+    // bucket by day
+    return heatmap;
+  }
+
+  // get the bucket for a date as [dayofweek, hour]
+  private bucketDate(date: Date): [number, number] {
+    // Sunday of the week of date (since bucketing is weekly)
+    const sunday = new Date(date);
+    sunday.setDate(date.getDate() - date.getDay());
+    sunday.setHours(0, 0, 0, 0);
+    const minuteDiff = timeDiffInMins(date, sunday);
+    const bucketnum = Math.floor(minuteDiff / BUCKET_SIZE_IN_MINS);
+    return [Math.floor(bucketnum / 24), bucketnum % 24];
   }
 
   @Command({
