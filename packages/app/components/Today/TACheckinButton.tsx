@@ -1,11 +1,12 @@
 import { API } from "@koh/api-client";
-import { Button, Input, Modal, Radio } from "antd";
-import { SizeType } from "antd/lib/config-provider/SizeContext";
+import { TACheckoutResponse } from "@koh/common";
+import { Button, Modal, Space } from "antd";
+import moment from "moment";
 import { useRouter } from "next/router";
 import { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useCourse } from "../../hooks/useCourse";
-import { useProfile } from "../../hooks/useProfile";
+import { useQueue } from "../../hooks/useQueue";
 
 const CheckinButton = styled(Button)`
   background: #2a9187;
@@ -22,6 +23,11 @@ const CheckOutButton = styled(Button)`
   border-radius: 6px;
 `;
 
+const CheckoutModalButtonRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
 type CheckInButtonState =
   | "CheckedIn"
   | "CheckedOut"
@@ -33,6 +39,7 @@ interface TACheckinButtonProps {
   state: CheckInButtonState; // State of the button
   block?: boolean;
 }
+const EMPTY_CHECKOUT_INFO = { canClearQueue: false, nextOfficeHourTime: null };
 
 export default function TACheckinButton({
   courseId,
@@ -43,6 +50,7 @@ export default function TACheckinButton({
   const router = useRouter();
 
   const { course, mutateCourse } = useCourse(courseId);
+  const { queue } = useQueue(course?.queues?.find((q) => q.room === room)?.id);
 
   async function checkInTA() {
     // to see old check in in person functionality look at commit b4768bbfb0f36444c80961703bdbba01ff4a5596
@@ -55,24 +63,27 @@ export default function TACheckinButton({
     );
   }
 
-  switch (state) {
-    case "CheckedIn":
-      return (
+  const [checkoutModalInfo, setCheckoutModalInfo] = useState<
+    TACheckoutResponse
+  >(EMPTY_CHECKOUT_INFO);
+
+  return (
+    <>
+      {state === "CheckedIn" && (
         <CheckOutButton
           type="default"
           size="large"
           block={block}
           data-cy="check-out-button"
           onClick={async () => {
-            await API.taStatus.checkOut(courseId, room);
+            setCheckoutModalInfo(await API.taStatus.checkOut(courseId, room));
             mutateCourse();
           }}
         >
           Check Out
         </CheckOutButton>
-      );
-    case "CheckedOut":
-      return (
+      )}
+      {state === "CheckedOut" && (
         <CheckinButton
           type="default"
           size="large"
@@ -83,6 +94,32 @@ export default function TACheckinButton({
         >
           Check In
         </CheckinButton>
-      );
-  }
+      )}
+      <Modal
+        visible={checkoutModalInfo.canClearQueue}
+        title="Let's clean up..."
+        footer={[
+          <Button
+            key="keep"
+            onClick={() => setCheckoutModalInfo(EMPTY_CHECKOUT_INFO)}
+          >
+            Leave Students In Queue
+          </Button>,
+          <Button
+            key="clear"
+            type="primary"
+            onClick={() => API.queues.clean(queue?.id)}
+          >
+            Clear Queue
+          </Button>,
+        ]}
+      >
+        You are the last TA to leave. There will not be any office hours for{" "}
+        <strong>
+          {moment(checkoutModalInfo.nextOfficeHourTime).fromNow(true)}
+        </strong>
+        . Do you want to clear the remaining students out of the queue?
+      </Modal>
+    </>
+  );
 }

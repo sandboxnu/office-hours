@@ -8,9 +8,14 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { GetCourseResponse, QueuePartial, Role } from '@koh/common';
+import {
+  GetCourseResponse,
+  QueuePartial,
+  Role,
+  TACheckoutResponse,
+} from '@koh/common';
 import async from 'async';
-import { Connection, getRepository } from 'typeorm';
+import { Between, Connection, getRepository, MoreThanOrEqual } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { Roles } from '../profile/roles.decorator';
 import { User } from '../profile/user.decorator';
@@ -21,6 +26,8 @@ import { CourseRolesGuard } from './course-roles.guard';
 import { CourseModel } from './course.entity';
 import { OfficeHourModel } from './office-hour.entity';
 import { QueueSSEService } from '../queue/queue-sse.service';
+import moment = require('moment');
+import { QuestionModel } from 'question/question.entity';
 
 @Controller('courses')
 @UseGuards(JwtAuthGuard, CourseRolesGuard)
@@ -101,7 +108,7 @@ export class CourseController {
     @Param('id') courseId: number,
     @Param('room') room: string,
     @User() user: UserModel,
-  ): Promise<void> {
+  ): Promise<TACheckoutResponse> {
     const queue = await QueueModel.findOne(
       {
         room,
@@ -109,16 +116,26 @@ export class CourseController {
       },
       { relations: ['staffList'] },
     );
-
-    queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
     if (queue.staffList.length === 0) {
       queue.allowQuestions = false;
     }
+
+    const canClearQueue = await this.queueCleanService.shouldCleanQueue(queue);
+    let nextOfficeHourTime = null;
+
+    // find out how long until next office hour
+    if (canClearQueue) {
+      const soon = moment().add(15, 'minutes').toDate();
+      const nextOfficeHour = await OfficeHourModel.findOne({
+        where: { startTime: MoreThanOrEqual(soon) },
+        order: {
+          startTime: 'ASC',
+        },
+      });
+      nextOfficeHourTime = nextOfficeHour.startTime;
+    }
+    queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
     await queue.save();
-    // Clean up queue if necessary
-    setTimeout(async () => {
-      await this.queueCleanService.cleanQueue(queue.id);
-      await this.queueSSEService.updateQueue(queue.id);
-    });
+    return { canClearQueue, nextOfficeHourTime };
   }
 }

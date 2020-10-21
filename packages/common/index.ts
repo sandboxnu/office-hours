@@ -411,6 +411,13 @@ export type QueueNotePayloadType = {
   notes: string;
 };
 
+export class TACheckoutResponse {
+  canClearQueue!: boolean;
+
+  @Type(() => Date)
+  nextOfficeHourTime?: Date;
+}
+
 export class UpdateQueueParams {
   @IsString()
   @IsOptional()
