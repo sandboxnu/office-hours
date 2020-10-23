@@ -119,8 +119,11 @@ export class CourseController {
     if (queue.staffList.length === 0) {
       queue.allowQuestions = false;
     }
+    queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
+    await queue.save();
 
     const canClearQueue = await this.queueCleanService.shouldCleanQueue(queue);
+    console.log('canClearQueue', canClearQueue);
     let nextOfficeHourTime = null;
 
     // find out how long until next office hour
@@ -132,10 +135,8 @@ export class CourseController {
           startTime: 'ASC',
         },
       });
-      nextOfficeHourTime = nextOfficeHour.startTime;
+      nextOfficeHourTime = nextOfficeHour?.startTime;
     }
-    queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
-    await queue.save();
-    return { canClearQueue, nextOfficeHourTime };
+    return { queueId: queue.id, canClearQueue, nextOfficeHourTime };
   }
 }

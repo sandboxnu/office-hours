@@ -50,7 +50,7 @@ export default function TACheckinButton({
   const router = useRouter();
 
   const { course, mutateCourse } = useCourse(courseId);
-  const { queue } = useQueue(course?.queues?.find((q) => q.room === room)?.id);
+  const [queueIdToClean, setQueueIdToClean] = useState(-1);
 
   async function checkInTA() {
     // to see old check in in person functionality look at commit b4768bbfb0f36444c80961703bdbba01ff4a5596
@@ -63,9 +63,11 @@ export default function TACheckinButton({
     );
   }
 
-  const [checkoutModalInfo, setCheckoutModalInfo] = useState<
-    TACheckoutResponse
-  >(EMPTY_CHECKOUT_INFO);
+  const [checkoutModalInfo, setCheckoutModalInfo] = useState<{
+    canClearQueue: boolean;
+    nextOfficeHourTime?: Date;
+  }>(EMPTY_CHECKOUT_INFO);
+  const closeModal = () => setCheckoutModalInfo(EMPTY_CHECKOUT_INFO);
 
   return (
     <>
@@ -76,7 +78,12 @@ export default function TACheckinButton({
           block={block}
           data-cy="check-out-button"
           onClick={async () => {
-            setCheckoutModalInfo(await API.taStatus.checkOut(courseId, room));
+            const { queueId, ...modalInfo } = await API.taStatus.checkOut(
+              courseId,
+              room
+            );
+            setQueueIdToClean(queueId);
+            setCheckoutModalInfo(modalInfo);
             mutateCourse();
           }}
         >
@@ -99,25 +106,32 @@ export default function TACheckinButton({
         visible={checkoutModalInfo.canClearQueue}
         title="Let's clean up..."
         footer={[
-          <Button
-            key="keep"
-            onClick={() => setCheckoutModalInfo(EMPTY_CHECKOUT_INFO)}
-          >
+          <Button key="keep" onClick={closeModal}>
             Leave Students In Queue
           </Button>,
           <Button
             key="clear"
             type="primary"
-            onClick={() => API.queues.clean(queue?.id)}
+            onClick={async () => {
+              await API.queues.clean(queueIdToClean);
+              closeModal();
+            }}
           >
             Clear Queue
           </Button>,
         ]}
       >
-        You are the last TA to leave. There will not be any office hours for{" "}
-        <strong>
-          {moment(checkoutModalInfo.nextOfficeHourTime).fromNow(true)}
-        </strong>
+        You are the last TA to leave.{" "}
+        {checkoutModalInfo.nextOfficeHourTime ? (
+          <>
+            There will not be any office hours for{" "}
+            <strong>
+              {moment(checkoutModalInfo.nextOfficeHourTime).fromNow(true)}
+            </strong>
+          </>
+        ) : (
+          <strong>There are no later office hours scheduled</strong>
+        )}
         . Do you want to clear the remaining students out of the queue?
       </Modal>
     </>

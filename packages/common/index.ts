@@ -412,6 +412,8 @@ export type QueueNotePayloadType = {
 };
 
 export class TACheckoutResponse {
+  // The ID of the queue we checked out of
+  queueId!: number;
   canClearQueue!: boolean;
 
   @Type(() => Date)

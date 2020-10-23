@@ -102,7 +102,7 @@ class APIClient {
         UpdateQuestionResponse,
         params
       ),
-    clean: async (queueId: number) =>
+    clean: async (queueId: number): Promise<void> =>
       this.req("POST", `/api/v1/queues/${queueId}/clean`),
   };
   notif = {
