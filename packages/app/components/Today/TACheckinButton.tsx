@@ -105,6 +105,7 @@ export default function TACheckinButton({
       <Modal
         visible={checkoutModalInfo.canClearQueue}
         title="Let's clean up..."
+        onCancel={closeModal}
         footer={[
           <Button key="keep" onClick={closeModal}>
             Leave Students In Queue
