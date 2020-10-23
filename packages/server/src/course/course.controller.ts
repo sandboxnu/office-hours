@@ -123,7 +123,6 @@ export class CourseController {
     await queue.save();
 
     const canClearQueue = await this.queueCleanService.shouldCleanQueue(queue);
-    console.log('canClearQueue', canClearQueue);
     let nextOfficeHourTime = null;
 
     // find out how long until next office hour

@@ -54,7 +54,6 @@ export class QueueCleanService {
       // Last TA to checkout, so check if we might want to clear the queue
       const areAnyQuestionsOpen =
         (await QuestionModel.openInQueue(queue.id).getCount()) > 0;
-      console.log('areanyquestionsopen', areAnyQuestionsOpen);
       if (areAnyQuestionsOpen) {
         const soon = moment()
           .add(15, 'minutes')
@@ -66,7 +65,6 @@ export class QueueCleanService {
               endTime: MoreThanOrEqual(soon),
             },
           })) > 0;
-        console.log('areOfficehourssoon', areOfficeHourSoon);
         if (!areOfficeHourSoon) {
           return true;
         }
