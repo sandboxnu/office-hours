@@ -79,7 +79,7 @@ export class QueueController {
   async cleanQueue(@Param('queueId') queueId: number): Promise<void> {
     // Clean up queue if necessary
     setTimeout(async () => {
-      await this.queueCleanService.cleanQueue(queueId);
+      await this.queueCleanService.cleanQueue(queueId, true);
       await this.queueSSEService.updateQueue(queueId);
     });
   }

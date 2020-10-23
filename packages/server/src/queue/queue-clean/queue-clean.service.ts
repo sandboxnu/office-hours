@@ -35,12 +35,12 @@ export class QueueCleanService {
     });
   }
 
-  public async cleanQueue(queueId: number): Promise<void> {
+  public async cleanQueue(queueId: number, force?: boolean): Promise<void> {
     const queue = await QueueModel.findOne(queueId, {
       relations: ['staffList'],
     });
 
-    if (!(await queue.checkIsOpen())) {
+    if (force || !(await queue.checkIsOpen())) {
       queue.notes = '';
       await queue.save();
       await this.unsafeClean(queue.id);
