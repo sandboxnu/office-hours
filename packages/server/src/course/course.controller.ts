@@ -136,6 +136,7 @@ export class CourseController {
       });
       nextOfficeHourTime = nextOfficeHour?.startTime;
     }
+    await this.queueSSEService.updateQueue(queue.id);
     return { queueId: queue.id, canClearQueue, nextOfficeHourTime };
   }
 }
