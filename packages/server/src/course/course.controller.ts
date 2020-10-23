@@ -116,10 +116,10 @@ export class CourseController {
       },
       { relations: ['staffList'] },
     );
+    queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
     if (queue.staffList.length === 0) {
       queue.allowQuestions = false;
     }
-    queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
     await queue.save();
 
     const canClearQueue = await this.queueCleanService.shouldCleanQueue(queue);
