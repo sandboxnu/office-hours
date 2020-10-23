@@ -30,9 +30,9 @@ export class QueueCleanService {
       })
       .getMany();
 
-    queuesWithOpenQuestions.forEach(queue => {
-      this.cleanQueue(queue.id);
-    });
+    await Promise.all(
+      queuesWithOpenQuestions.map(queue => this.cleanQueue(queue.id)),
+    );
   }
 
   public async cleanQueue(queueId: number, force?: boolean): Promise<void> {
