@@ -10,9 +10,7 @@ import SchedulePanel from "../../../components/Schedule/SchedulePanel";
 import OpenQueueCard, {
   OpenQueueCardSkeleton,
 } from "../../../components/Today/OpenQueueCard";
-import TACheckinButton, {
-  CheckInButtonState,
-} from "../../../components/Today/TACheckinButton";
+import TACheckinButton from "../../../components/Today/TACheckinButton";
 import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useCourse } from "../../../hooks/useCourse";
 import { useProfile } from "../../../hooks/useProfile";
