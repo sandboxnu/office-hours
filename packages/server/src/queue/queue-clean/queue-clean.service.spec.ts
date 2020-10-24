@@ -37,9 +37,9 @@ describe('QueueService', () => {
 
   describe('shouldCleanQueue', () => {
     it('returns true when no staff, 1 question, and no other office hours', async () => {
-      console.log(await OfficeHourModel.count())
+      console.log(await OfficeHourModel.count());
       const queue = await QueueFactory.create({ officeHours: [] });
-      console.log(await OfficeHourModel.count())
+      console.log(await OfficeHourModel.count());
       await QuestionFactory.create({
         status: OpenQuestionStatus.Queued,
         queue: queue,
@@ -54,12 +54,8 @@ describe('QueueService', () => {
         queue: queue,
       });
       await OfficeHourFactory.create({
-        startTime: moment()
-          .add(10, 'minutes')
-          .toDate(),
-        endTime: moment()
-          .add(30, 'minutes')
-          .toDate(),
+        startTime: moment().add(10, 'minutes').toDate(),
+        endTime: moment().add(30, 'minutes').toDate(),
       });
       expect(await service.shouldCleanQueue(queue)).toBeFalsy();
     });

@@ -31,7 +31,7 @@ export class QueueCleanService {
       .getMany();
 
     await Promise.all(
-      queuesWithOpenQuestions.map(queue => this.cleanQueue(queue.id)),
+      queuesWithOpenQuestions.map((queue) => this.cleanQueue(queue.id)),
     );
   }
 
@@ -55,9 +55,7 @@ export class QueueCleanService {
       const areAnyQuestionsOpen =
         (await QuestionModel.openInQueue(queue.id).getCount()) > 0;
       if (areAnyQuestionsOpen) {
-        const soon = moment()
-          .add(15, 'minutes')
-          .toDate();
+        const soon = moment().add(15, 'minutes').toDate();
         const areOfficeHourSoon =
           (await OfficeHourModel.count({
             where: {
@@ -75,7 +73,9 @@ export class QueueCleanService {
 
   private async unsafeClean(queueId: number): Promise<void> {
     const questions = await QuestionModel.openInQueue(queueId).getMany();
-    const openQuestions = questions.filter(q => q.status in OpenQuestionStatus);
+    const openQuestions = questions.filter(
+      (q) => q.status in OpenQuestionStatus,
+    );
 
     openQuestions.forEach((q: QuestionModel) => {
       q.status = ClosedQuestionStatus.Stale;

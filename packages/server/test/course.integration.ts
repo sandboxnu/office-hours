@@ -88,9 +88,7 @@ describe('Course Integration', () => {
         ],
       });
 
-      await supertest({ userId: 1 })
-        .get(`/courses/${course.id}`)
-        .expect(401);
+      await supertest({ userId: 1 }).get(`/courses/${course.id}`).expect(401);
     });
   });
 
