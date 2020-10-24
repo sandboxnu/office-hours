@@ -195,12 +195,14 @@ export default function TAQueueList({
                     Help Next
                   </HelpNextButton>
                 </Tooltip>
-                <TACheckinButton
-                  courseId={courseId}
-                  room={queue?.room}
-                  state={isStaffCheckedIn ? "CheckedIn" : "CheckedOut"}
-                  block
-                />
+                <div style={{ marginBottom: "12px" }}>
+                  <TACheckinButton
+                    courseId={courseId}
+                    room={queue?.room}
+                    state={isStaffCheckedIn ? "CheckedIn" : "CheckedOut"}
+                    block
+                  />
+                </div>
               </>
             }
           />
