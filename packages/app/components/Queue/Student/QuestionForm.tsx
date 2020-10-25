@@ -65,11 +65,11 @@ export default function QuestionForm({
   );
 
   useEffect(() => {
-    if (question) {
+    if (question && !visible) {
       setQuestionText(question.text);
       setQuestionTypeInput(question.questionType);
     }
-  }, [question]);
+  }, [question, visible]);
 
   // on question type change, update the question type state
   const onCategoryChange = (e: RadioChangeEvent) => {
