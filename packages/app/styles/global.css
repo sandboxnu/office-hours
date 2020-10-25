@@ -53,10 +53,10 @@ body {
 }
 
 @media only percy {
-  .open-queue-card .ant-card-extra {
+  .hide-in-percy {
     visibility: hidden;
   }
-  .hide-in-percy {
+  .open-queue-card .ant-card-extra {
     visibility: hidden;
   }
   .rbc-toolbar-label {
