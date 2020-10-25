@@ -77,21 +77,24 @@ export default function StudentQueueList({
 
     setIsJoining(false);
     await mutateQuestions();
-  }, [studentQuestion?.id, mutateQuestions]);
+  }, [mutateQuestions, studentQuestion?.id]);
 
   const rejoinQueue = useCallback(async () => {
     await API.questions.update(studentQuestion?.id, {
-      status: OpenQuestionStatus.Queued,
+      status: OpenQuestionStatus.PriorityQueued,
     });
     await mutateQuestions();
-  }, [studentQuestion?.id, mutateQuestions]);
+  }, [mutateQuestions, studentQuestion?.id]);
 
   const finishQuestion = useCallback(
     async (text: string, questionType: QuestionType) => {
       const updateStudent = {
         text,
         questionType,
-        status: OpenQuestionStatus.Queued,
+        status:
+          studentQuestion.status === OpenQuestionStatus.PriorityQueued
+            ? OpenQuestionStatus.PriorityQueued
+            : OpenQuestionStatus.Queued,
       };
       await API.questions.update(studentQuestion?.id, updateStudent);
       const newQuestionsInQueue = questions?.queue?.map((q: Question) =>
@@ -99,7 +102,7 @@ export default function StudentQueueList({
       );
       mutateQuestions({ ...questions, queue: newQuestionsInQueue });
     },
-    [questions, studentQuestion?.id, mutateQuestions]
+    [studentQuestion?.id, questions, mutateQuestions]
   );
 
   const joinQueueAfterDeletion = useCallback(async () => {

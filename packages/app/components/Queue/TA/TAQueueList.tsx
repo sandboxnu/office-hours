@@ -158,9 +158,7 @@ export default function TAQueueList({
   const isStaffCheckedIn = queue?.staffList.some((e) => e.id === user?.id);
 
   const nextQuestion =
-    questions?.priorityQueue?.find(
-      (question) => question.status === QuestionStatusKeys.Queued
-    ) ||
+    questions?.priorityQueue[0] || // gets the first item of priority queue if it exists
     questions?.queue?.find(
       (question) => question.status === QuestionStatusKeys.Queued
     );
@@ -233,10 +231,19 @@ export default function TAQueueList({
                 updateQuestion={updateQuestionTA}
               />
             )}
+            {!!questions.priorityQueue.length && (
+              <QueueQuestions
+                questions={questions.priorityQueue}
+                isHelping={isHelping}
+                onOpenCard={onOpenCard}
+                title={"Priority Queue"}
+              />
+            )}
             <QueueQuestions
               questions={renderedQuestions}
               isHelping={isHelping}
               onOpenCard={onOpenCard}
+              title={"Queue"}
             />
           </Space>
         </QueuePageContainer>
@@ -301,21 +308,29 @@ interface QueueProps {
   questions: Question[];
   isHelping: boolean;
   onOpenCard: (q: Question) => void;
+  title: string;
 }
-function QueueQuestions({ questions, isHelping, onOpenCard }: QueueProps) {
+function QueueQuestions({
+  questions,
+  isHelping,
+  onOpenCard,
+  title,
+}: QueueProps) {
   const { phoneNotifsEnabled, desktopNotifsEnabled } = useProfile();
   return (
     <div data-cy="queueQuestions">
       {questions.length === 0 ? (
         <>
-          <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
+          <NoQuestionsText>
+            There are no questions in the {title.toLowerCase()}
+          </NoQuestionsText>
           {!isHelping && !phoneNotifsEnabled && !desktopNotifsEnabled && (
             <NotifReminderButton />
           )}
         </>
       ) : (
         <>
-          <QueueHeader>Queue</QueueHeader>
+          <QueueHeader>{title}</QueueHeader>
           <TAHeaderCard bordered={false}>
             <CenterRow justify="space-between">
               <Col xs={2} lg={1}>

@@ -1,6 +1,6 @@
-import { ReactNode, ReactElement } from "react";
+import { Button } from "antd";
+import { ReactElement, ReactNode } from "react";
 import styled from "styled-components";
-import { Button, Space } from "antd";
 
 const BannerContainer = styled.div`
   width: 100%;
@@ -100,5 +100,16 @@ export const TABannerDangerButton = styled(BannerButton)`
   &:focus {
     background: #fc7f81;
     color: #fff;
+  }
+`;
+
+export const RequeueButton = styled(BannerButton)`
+  background: #fadb14;
+  border: 1px solid #9e1068;
+  color: #061178;
+  &:hover,
+  &:focus {
+    background: ##ffffb8;
+    color: #ffffb8;
   }
 `;

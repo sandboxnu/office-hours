@@ -56,5 +56,8 @@ export function canChangeQuestionStatus(
   goalStatus: QuestionStatus,
   role: Role,
 ): boolean {
-  return QUESTION_STATES[oldStatus][role]?.includes(goalStatus);
+  return (
+    oldStatus === goalStatus ||
+    QUESTION_STATES[oldStatus][role]?.includes(goalStatus)
+  );
 }
