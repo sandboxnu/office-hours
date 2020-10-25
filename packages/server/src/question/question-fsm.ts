@@ -27,6 +27,7 @@ const QUESTION_STATES: Record<QuestionStatus, AllowableTransitions> = {
       LimboQuestionStatus.CantFind,
       LimboQuestionStatus.ReQueueing,
       ClosedQuestionStatus.Resolved,
+      LimboQuestionStatus.TADeleted,
     ],
   },
   [LimboQuestionStatus.CantFind]: {

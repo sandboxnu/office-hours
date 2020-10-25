@@ -1,4 +1,4 @@
-import { LimboQuestionStatus, OpenQuestionStatus, Question } from "@koh/common";
+import { Question } from "@koh/common";
 import { responseInterface } from "swr";
 import { useProfile } from "./useProfile";
 import { useQuestions } from "./useQuestions";
@@ -9,7 +9,7 @@ interface UseStudentQuestionReturn {
   studentQuestion?: queueResponse["data"];
   studentQuestionIndex?: number;
   studentQuestionError: queueResponse["error"];
-  mutateStudentQuestion: (q: Question) => void;
+  // mutateStudentQuestion: (q: Question) => void;
 }
 
 /**
@@ -17,17 +17,17 @@ interface UseStudentQuestionReturn {
  */
 export function useStudentQuestion(qid: number): UseStudentQuestionReturn {
   const profile = useProfile();
-  const { questions, questionsError, mutateQuestion } = useQuestions(qid);
+  const { questions, questionsError } = useQuestions(qid);
 
   const studentQuestion = profile && questions && questions?.yourQuestion;
 
   const studentQuestionIndex =
-    studentQuestion && questions.queue.indexOf(studentQuestion);
+    studentQuestion &&
+    questions.queue.findIndex((question) => studentQuestion.id === question.id);
 
   return {
     studentQuestion,
     studentQuestionIndex,
     studentQuestionError: questionsError,
-    mutateStudentQuestion: mutateQuestion,
   };
 }

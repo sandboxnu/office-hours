@@ -2,6 +2,7 @@ import {
   CreateQuestionParams,
   CreateQuestionResponse,
   DesktopNotifBody,
+  DesktopNotifPartial,
   GetCourseResponse,
   GetProfileResponse,
   GetQuestionResponse,
@@ -12,8 +13,6 @@ import {
   UpdateQuestionParams,
   UpdateQuestionResponse,
   UpdateQueueParams,
-  Question,
-  DesktopNotifPartial,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";

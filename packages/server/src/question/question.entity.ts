@@ -1,4 +1,9 @@
-import { OpenQuestionStatus, QuestionStatus, QuestionType } from '@koh/common';
+import {
+  OpenQuestionStatus,
+  QuestionStatus,
+  QuestionType,
+  Role,
+} from '@koh/common';
 import { Exclude } from 'class-transformer';
 import {
   BaseEntity,

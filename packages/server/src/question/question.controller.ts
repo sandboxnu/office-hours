@@ -16,7 +16,6 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
-  MethodNotAllowedException,
   NotFoundException,
   Param,
   Patch,

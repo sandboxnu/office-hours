@@ -1,15 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Connection, In } from 'typeorm';
-import { QueueModel } from './queue.entity';
 import {
   ListQuestionsResponse,
   OpenQuestionStatus,
   Role,
   StatusInPriorityQueue,
   StatusInQueue,
+  StatusSentToCreator,
 } from '@koh/common';
-import { QuestionModel } from 'question/question.entity';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { pick } from 'lodash';
+import { QuestionModel } from 'question/question.entity';
+import { Connection, In } from 'typeorm';
+import { QueueModel } from './queue.entity';
 
 /**
  * Get data in service of the queue controller and SSE
@@ -30,11 +31,7 @@ export class QueueService {
     return queue;
   }
 
-  async getQuestions(
-    queueId: number,
-    userId: number,
-    role: Role,
-  ): Promise<ListQuestionsResponse> {
+  async getQuestions(queueId: number): Promise<ListQuestionsResponse> {
     // todo: Make a student and a TA version of this function, and switch which one to use in the controller
     // for now, just return the student response
     const queueSize = await QueueModel.count({
@@ -56,30 +53,20 @@ export class QueueService {
       where: { queueId, status: OpenQuestionStatus.Helping },
     });
 
-    if (role === Role.STUDENT) {
-      questions.yourQuestion = await QuestionModel.findOne({
-        relations: ['creator', 'taHelped'],
-        where: { creatorId: userId },
-      });
-      questions.priorityQueue = [];
-    }
-
-    if (role === Role.TA) {
-      questions.priorityQueue = await QuestionModel.find({
-        relations: ['creator', 'taHelped'],
-        where: { queueId, status: In(StatusInPriorityQueue) },
-      });
-    }
+    questions.priorityQueue = await QuestionModel.find({
+      relations: ['creator', 'taHelped'],
+      where: { queueId, status: In(StatusInPriorityQueue) },
+    });
 
     return questions;
   }
 
   /** Hide sensitive data to other students */
-  anonymizeQuestions(
+  async personalizeQuestions(
     questions: ListQuestionsResponse,
     userId: number,
     role: Role,
-  ): ListQuestionsResponse {
+  ): Promise<ListQuestionsResponse> {
     if (role === Role.STUDENT) {
       const newLQR = new ListQuestionsResponse();
       Object.assign(newLQR, questions);
@@ -91,6 +78,16 @@ export class QueueService {
             : pick(question.creator, ['id']);
         return QuestionModel.create({ ...question, creator });
       });
+
+      newLQR.yourQuestion = await QuestionModel.findOne({
+        relations: ['creator', 'taHelped'],
+        where: {
+          creatorId: userId,
+          status: In(StatusSentToCreator),
+        },
+      });
+      newLQR.priorityQueue = [];
+
       return newLQR;
     }
     return questions;

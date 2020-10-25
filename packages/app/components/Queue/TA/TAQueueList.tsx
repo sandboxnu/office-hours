@@ -1,28 +1,27 @@
 import { API } from "@koh/api-client";
 import {
-  LimboQuestionStatus,
   OpenQuestionStatus,
   Question,
   QuestionStatus,
   QuestionStatusKeys,
 } from "@koh/common";
-import { Card, Col, Row, Space, Tooltip, notification } from "antd";
+import { Card, Col, notification, Row, Space, Tooltip } from "antd";
 import { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { useQueue } from "../../../hooks/useQueue";
-import { EditQueueModal } from "./EditQueueModal";
+import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
 import {
   QueueInfoColumn,
   QueueInfoColumnButton,
   QueuePageContainer,
   VerticalDivider,
 } from "../QueueListSharedComponents";
+import { EditQueueModal } from "./EditQueueModal";
 import StudentPopupCard from "./StudentPopupCard";
 import TABanner from "./TABanner";
 import TAQueueCard from "./TAQueueCard";
-import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
 
 const StatusText = styled.div`
   font-size: 14px;
@@ -109,8 +108,8 @@ export default function TAQueueList({
   // Close popup if currentQuestion no longer exists in the cache
   if (
     currentQuestion &&
-    (!questions?.queue?.includes(currentQuestion) ||
-      !questions?.priorityQueue?.includes(currentQuestion))
+    !questions?.queue?.includes(currentQuestion) &&
+    !questions?.priorityQueue?.includes(currentQuestion)
   ) {
     setCurrentQuestion(null);
     setOpenPopup(false);

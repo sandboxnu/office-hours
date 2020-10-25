@@ -38,11 +38,7 @@ export default function StudentBanner({
   editQuestion,
   leaveQueue,
 }: StudentBannerProps): ReactElement {
-  const {
-    studentQuestion,
-    studentQuestionIndex,
-    mutateStudentQuestion,
-  } = useStudentQuestion(queueId);
+  const { studentQuestion, studentQuestionIndex } = useStudentQuestion(queueId);
 
   const { draftQuestion } = useDraftQuestion();
 

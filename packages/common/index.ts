@@ -215,9 +215,9 @@ export enum OpenQuestionStatus {
  * Limbo statuses are awaiting some confirmation from the student
  */
 export enum LimboQuestionStatus {
-  CantFind = "CantFind",
-  ReQueueing = "ReQueueing",
-  TADeleted = "TADeleted",
+  CantFind = "CantFind", // represents when a student can't be found by a TA
+  ReQueueing = "ReQueueing", // represents when a TA wants to get back to a student later and give them the option to be put into the priority queue
+  TADeleted = "TADeleted", // When a TA deletes a question for a multitude of reasons
 }
 
 export enum ClosedQuestionStatus {
@@ -233,6 +233,14 @@ export const StatusInQueue = [
 ];
 
 export const StatusInPriorityQueue = [OpenQuestionStatus.PriorityQueued];
+export const StatusSentToCreator = [
+  ...StatusInPriorityQueue,
+  ...StatusInQueue,
+  OpenQuestionStatus.Helping,
+  LimboQuestionStatus.ReQueueing,
+  LimboQuestionStatus.CantFind,
+  LimboQuestionStatus.TADeleted,
+];
 
 // Ticket Status - Represents a given status of as student's ticket
 export type QuestionStatus = keyof typeof QuestionStatusKeys;
