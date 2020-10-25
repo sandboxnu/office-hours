@@ -31,11 +31,32 @@ body {
   background-color: #3684c6;
 }
 
+.notion-image-inset {
+  width: 100%;
+}
+
+.notion-asset-wrapper {
+  width: 100% !important;
+}
+
+.notion-asset-wrapper > div {
+  padding-bottom: 0px !important;
+}
+
+.notion-list {
+  margin: 0px;
+  padding-inline-start: 20px;
+}
+
+.notion-toggle {
+  padding-inline-start: 5px;
+}
+
 @media only percy {
-  .open-queue-card .ant-card-extra {
+  .hide-in-percy {
     visibility: hidden;
   }
-  .hide-in-percy {
+  .open-queue-card .ant-card-extra {
     visibility: hidden;
   }
   .rbc-toolbar-label {
