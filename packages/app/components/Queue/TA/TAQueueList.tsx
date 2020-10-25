@@ -145,6 +145,7 @@ export default function TAQueueList({
           description: "This happens when another TA clicks help at the exact same time",
           type: "error",
           duration: 3,
+          className: 'hide-in-percy',
           style: {
             width: 450,
           }

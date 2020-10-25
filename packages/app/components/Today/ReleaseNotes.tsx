@@ -51,7 +51,7 @@ export default function ReleaseNotes(): ReactElement {
       type: "info",
       duration: 0,
       description: "Click to see what's new!",
-      className: "clickable-notification",
+      className: "clickable-notification hide-in-percy",
       style: {
         cursor: "pointer",
       },
