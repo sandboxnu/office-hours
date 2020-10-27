@@ -24,7 +24,6 @@ import * as httpSignature from 'http-signature';
 import { Connection } from 'typeorm';
 import { CourseModel } from '../../src/course/course.entity';
 import { NonProductionGuard } from '../../src/non-production.guard';
-import { UserCourseModel } from '../../src/profile/user-course.entity';
 import { UserModel } from '../../src/profile/user.entity';
 import { CourseSectionMappingModel } from './course-section-mapping.entity';
 import { LoginCourseService } from './login-course.service';
@@ -46,16 +45,13 @@ export class LoginController {
     if (process.env.NODE_ENV === 'production') {
       // Check that request has come from Khoury
       const parsedRequest = httpSignature.parseRequest(req);
-      console.log('parsed request');
       const verify = httpSignature.verifyHMAC(
         parsedRequest,
         this.configService.get('KHOURY_PRIVATE_KEY'),
       );
       if (!verify) {
-        console.log('invalid');
         throw new UnauthorizedException('Invalid request signature');
       }
-      console.log('valid');
     }
 
     let user: UserModel;
