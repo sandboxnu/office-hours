@@ -32,12 +32,16 @@ export default function SchedulePanel({
       title: e.title,
     })) ?? [];
 
+  const today: Date = new Date();
   return (
     <div>
       <ScheduleCalendar
         localizer={momentLocalizer(moment)}
         events={myEvents}
         defaultView={defaultView}
+        scrollToTime={
+          new Date(today.getFullYear(), today.getMonth(), today.getDate(), 8)
+        }
       />
     </div>
   );
