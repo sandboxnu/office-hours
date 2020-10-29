@@ -7,10 +7,14 @@ export function useDefaultCourseRedirect(): boolean {
   const profile: User = useProfile();
   const [defaultCourse] = useLocalStorage("defaultCourse", null);
   if (profile && profile.courses.length > 0) {
+    /// defaultCourse can get out-of-sync with the user's actual registered course (dropped class etc)
+    const isUserInDefaultCourse =
+      !!defaultCourse &&
+      profile.courses.some((c) => c.course.id === defaultCourse?.id);
     Router.push(
       "/course/[cid]/today",
       `/course/${
-        defaultCourse !== null ? defaultCourse.id : profile.courses[0].course.id
+        isUserInDefaultCourse ? defaultCourse.id : profile.courses[0].course.id
       }/today`
     );
     return true;
