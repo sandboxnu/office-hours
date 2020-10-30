@@ -12,6 +12,12 @@ import { Dropdown, Menu } from "antd";
 import { range } from "lodash";
 import React, { useMemo, useState } from "react";
 import styled from "styled-components";
+import { formatWaitTime } from "../../utils/TimeUtil";
+
+// TODO:
+// - Current time labeling?
+// - Min time is weird?
+// - Label Offset
 
 const TitleRow = styled.div`
   display: flex;
@@ -123,6 +129,11 @@ const tooltipStyles = {
   backgroundColor: "rgba(0,0,0,0.9)",
   color: "white",
 };
+const HORIZONTAL_PADDING = 20;
+const VERTICAL_MARGIN = 40;
+// number of minutes between each grid row line
+const GRID_ROW_INTERVAL = 30;
+const BAR_PADDING = 0.2;
 
 function TimeGraph({
   values,
@@ -149,13 +160,10 @@ function TimeGraph({
   } = useTooltip<number>();
 
   const { containerRef, TooltipInPortal } = useTooltipInPortal();
-  const verticalMargin = 40;
-  // number of minutes between each grid row line
-  const GRID_ROW_INTERVAL = 30;
 
   // bounds
-  const xMax = width;
-  const yMax = height - verticalMargin;
+  const xMax = width - HORIZONTAL_PADDING;
+  const yMax = height - VERTICAL_MARGIN;
 
   // scales, memoize for performance
   const xScale = useMemo(
@@ -163,8 +171,8 @@ function TimeGraph({
       scaleBand<number>({
         range: [0, xMax],
         round: true,
-        domain: range(Math.max(0, firstHour - 1), Math.min(lastHour + 1, 23)),
-        padding: 0.2,
+        domain: range(Math.max(0, firstHour), Math.min(lastHour + 1, 24)),
+        padding: BAR_PADDING,
       }),
     [xMax, firstHour, lastHour]
   );
@@ -177,6 +185,9 @@ function TimeGraph({
       }),
     [yMax, maxTime]
   );
+  const barWidth = xScale.bandwidth();
+
+  const LEFT_PADDING = HORIZONTAL_PADDING / 2 - barWidth / 2;
 
   return width < 10 ? null : (
     // relative position is needed for correct tooltip positioning
@@ -191,17 +202,16 @@ function TimeGraph({
           rx={14}
         />
         <GridRows
-          top={verticalMargin / 2}
-          width={xMax}
+          top={VERTICAL_MARGIN / 2}
+          width={width}
           scale={yScale}
           tickValues={range(0, maxTime, GRID_ROW_INTERVAL)}
           stroke="#cccccc"
         />
-        <Group top={verticalMargin / 2}>
+        <Group left={LEFT_PADDING} top={VERTICAL_MARGIN / 2}>
           {values.map((value, i) => {
-            const barWidth = xScale.bandwidth();
             const barHeight = yMax - yScale(value);
-            const barX = xScale(i);
+            const barX = xScale(i) + (barWidth * (1 + BAR_PADDING)) / 2;
             const barY = yMax - barHeight;
             return (
               <BarRounded
@@ -212,7 +222,7 @@ function TimeGraph({
                 height={barHeight}
                 radius={20}
                 top
-                fill="rgba(23, 233, 217, 1)"
+                fill="#40a9ff" //"#3684c6"
                 onMouseLeave={() => {
                   tooltipTimeout = window.setTimeout(() => {
                     hideTooltip();
@@ -220,8 +230,8 @@ function TimeGraph({
                 }}
                 onMouseDown={(event) => {
                   if (tooltipTimeout) clearTimeout(tooltipTimeout);
-                  const top = event.clientY - verticalMargin; // - verticalMargin - barHeight;
-                  const left = event.clientX - barX + barWidth / 2;
+                  const top = yMax-barHeight; // - VERTICAL_MARGIN - barHeight;
+                  const left = barX + (barWidth / 2);
                   showTooltip({
                     tooltipData: value,
                     tooltipTop: top,
@@ -232,29 +242,26 @@ function TimeGraph({
             );
           })}
         </Group>
-        <AxisBottom
-          top={yMax + verticalMargin / 2}
-          scale={xScale}
-          tickFormat={(hour: number) =>
-            hour < 12 ? `${hour + 1}AM` : `${hour - 11}PM`
-          }
-          tickLabelProps={() => ({
-            fill: "",
-            fontSize: 11,
-            textAnchor: "middle",
-          })}
-        />
+        <Group left={LEFT_PADDING}>
+          <AxisBottom
+            top={yMax + VERTICAL_MARGIN / 2}
+            rangePadding={HORIZONTAL_PADDING + barWidth}
+            scale={xScale}
+            tickFormat={(hour: number) =>
+              (hour - firstHour) % 3 == 0
+                ? hour < 12
+                  ? `${hour + 1}AM`
+                  : `${hour - 11}PM`
+                : ""
+            }
+            tickLabelProps={() => ({
+              fill: "",
+              fontSize: 11,
+              textAnchor: "middle",
+            })}
+          />
+        </Group>
       </svg>
-      <div
-        style={{
-          position: "absolute",
-          top: verticalMargin / 4 - 10,
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-          fontSize: "14px",
-        }}
-      ></div>
 
       {tooltipOpen && tooltipData && (
         <TooltipInPortal
@@ -263,7 +270,7 @@ function TimeGraph({
           left={tooltipLeft}
           style={tooltipStyles}
         >
-          {tooltipData}
+          {formatWaitTime(Math.floor(tooltipData))}
         </TooltipInPortal>
       )}
     </div>
