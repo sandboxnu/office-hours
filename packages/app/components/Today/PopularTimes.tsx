@@ -1,4 +1,4 @@
-import { DownOutlined } from "@ant-design/icons";
+import { DownOutlined, LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { Heatmap } from "@koh/common";
 import { AxisBottom } from "@visx/axis";
 import { Group } from "@visx/group";
@@ -24,10 +24,20 @@ interface HeatmapProps {
 
 const WeekdayDropdown = styled.h2`
   display: flex;
-  flex-direction: row;
   align-items: center;
   margin-left: 8px;
   color: #1890ff;
+  cursor: pointer;
+`;
+
+const GraphWithArrow = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: 1.5em;
+`;
+
+const GraphArrowButtons = styled.div`
+  padding: 20px 10px;
   cursor: pointer;
 `;
 
@@ -83,14 +93,26 @@ export default function PopularTimes({ heatmap }: HeatmapProps) {
           </WeekdayDropdown>
         </Dropdown>
       </TitleRow>
-      <TimeGraph
-        values={heatmap[currentDayOfWeek]}
-        maxTime={Math.max(...heatmap.map((daymap) => Math.max(...daymap)))}
-        firstHour={firstHour}
-        lastHour={lastHour}
-        width={500}
-        height={200}
-      />
+      <GraphWithArrow>
+        <GraphArrowButtons
+          onClick={() => setCurrentDayOfWeek((7 + currentDayOfWeek - 1) % 7)}
+        >
+          <LeftOutlined />
+        </GraphArrowButtons>
+        <TimeGraph
+          values={heatmap[currentDayOfWeek]}
+          maxTime={Math.max(...heatmap.map((daymap) => Math.max(...daymap)))}
+          firstHour={firstHour}
+          lastHour={lastHour}
+          width={500}
+          height={200}
+        />
+        <GraphArrowButtons
+          onClick={() => setCurrentDayOfWeek((currentDayOfWeek + 1) % 7)}
+        >
+          <RightOutlined />
+        </GraphArrowButtons>
+      </GraphWithArrow>
     </div>
   );
 }
