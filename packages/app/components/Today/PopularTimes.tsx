@@ -135,6 +135,14 @@ const VERTICAL_MARGIN = 40;
 const GRID_ROW_INTERVAL = 30;
 const BAR_PADDING = 0.2;
 
+const GraphContainer = styled.div`
+  position: relative;
+
+  & .popularTimes__bar {
+    cursor: pointer;
+  }
+`;
+
 function TimeGraph({
   values,
   maxTime,
@@ -191,7 +199,7 @@ function TimeGraph({
 
   return width < 10 ? null : (
     // relative position is needed for correct tooltip positioning
-    <div style={{ position: "relative" }}>
+    <GraphContainer>
       <svg ref={containerRef} width={width} height={height}>
         <rect
           x={0}
@@ -216,22 +224,23 @@ function TimeGraph({
             return (
               <BarRounded
                 key={`bar-${value}`}
+                className="popularTimes__bar"
                 x={barX}
                 y={barY}
                 width={barWidth}
                 height={barHeight}
                 radius={20}
                 top
-                fill="#40a9ff" //"#3684c6"
+                fill="#40a9ff"
                 onMouseLeave={() => {
                   tooltipTimeout = window.setTimeout(() => {
                     hideTooltip();
                   }, 300);
                 }}
-                onMouseDown={(event) => {
+                onMouseDown={() => {
                   if (tooltipTimeout) clearTimeout(tooltipTimeout);
-                  const top = yMax-barHeight; // - VERTICAL_MARGIN - barHeight;
-                  const left = barX + (barWidth / 2);
+                  const top = yMax - barHeight; // - VERTICAL_MARGIN - barHeight;
+                  const left = barX + barWidth / 2;
                   showTooltip({
                     tooltipData: value,
                     tooltipTop: top,
@@ -273,6 +282,6 @@ function TimeGraph({
           {formatWaitTime(Math.floor(tooltipData))}
         </TooltipInPortal>
       )}
-    </div>
+    </GraphContainer>
   );
 }
