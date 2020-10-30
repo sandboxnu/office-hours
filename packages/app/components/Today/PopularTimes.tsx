@@ -3,22 +3,33 @@ import { Heatmap } from "@koh/common";
 import { AxisBottom } from "@visx/axis";
 import { Group } from "@visx/group";
 import { scaleBand, scaleLinear } from "@visx/scale";
-import { Bar, BarRounded } from "@visx/shape";
+import { BarRounded } from "@visx/shape";
 import { defaultStyles } from "@visx/tooltip";
 import useTooltip from "@visx/tooltip/lib/hooks/useTooltip";
 import useTooltipInPortal from "@visx/tooltip/lib/hooks/useTooltipInPortal";
+import { GridRows } from "@visx/grid";
 import { Dropdown, Menu } from "antd";
-import { max, maxBy, range } from "lodash";
+import { range } from "lodash";
 import React, { useMemo, useState } from "react";
 import styled from "styled-components";
 
 const TitleRow = styled.div`
   display: flex;
+  align-items: baseline;
 `;
 
 interface HeatmapProps {
   heatmap: Heatmap;
 }
+
+const WeekdayDropdown = styled.h2`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: 8px;
+  color: #1890ff;
+  cursor: pointer;
+`;
 
 const DAYS_OF_WEEK = [
   "Sunday",
@@ -30,13 +41,30 @@ const DAYS_OF_WEEK = [
   "Saturday",
 ];
 
+function findWeekMinAndMax(days: Heatmap) {
+  let minHourInWeek = 24;
+  let maxHourInWeek = 0;
+  days.forEach((day) =>
+    day.forEach((v, hour) => {
+      if (v) {
+        if (hour > maxHourInWeek) {
+          maxHourInWeek = hour;
+        } else if (hour < minHourInWeek) {
+          minHourInWeek = hour;
+        }
+      }
+    })
+  );
+  return [minHourInWeek, maxHourInWeek];
+}
+
 export default function PopularTimes({ heatmap }: HeatmapProps) {
   const [currentDayOfWeek, setCurrentDayOfWeek] = useState(new Date().getDay());
-
+  const [firstHour, lastHour] = findWeekMinAndMax(heatmap);
   return (
     <div>
       <TitleRow>
-        <h2>Popular Times</h2>
+        <h2>Wait Times on</h2>
         <Dropdown
           trigger={["click"]}
           overlay={
@@ -49,17 +77,19 @@ export default function PopularTimes({ heatmap }: HeatmapProps) {
             </Menu>
           }
         >
-          <a>
+          <WeekdayDropdown>
             {DAYS_OF_WEEK[currentDayOfWeek]}
             <DownOutlined />
-          </a>
+          </WeekdayDropdown>
         </Dropdown>
       </TitleRow>
       <TimeGraph
         values={heatmap[currentDayOfWeek]}
         maxTime={Math.max(...heatmap.map((daymap) => Math.max(...daymap)))}
+        firstHour={firstHour}
+        lastHour={lastHour}
         width={500}
-        height={500}
+        height={200}
       />
     </div>
   );
@@ -75,11 +105,15 @@ const tooltipStyles = {
 function TimeGraph({
   values,
   maxTime,
+  firstHour,
+  lastHour,
   width,
   height,
 }: {
   values: number[];
   maxTime: number;
+  firstHour: number;
+  lastHour: number;
   width: number;
   height: number;
 }) {
@@ -93,17 +127,13 @@ function TimeGraph({
   } = useTooltip<number>();
 
   const { containerRef, TooltipInPortal } = useTooltipInPortal();
-  const verticalMargin = 120;
+  const verticalMargin = 40;
+  // number of minutes between each grid row line
+  const GRID_ROW_INTERVAL = 30;
 
   // bounds
   const xMax = width;
   const yMax = height - verticalMargin;
-
-  // Get the bounds of non-null values in the array
-  const [firstHour, lastHour] = values.reduce(
-    ([f, l], v, i) => (v ? (f > 0 ? [f, i] : [i, l]) : [f, l]),
-    [0, 23]
-  );
 
   // scales, memoize for performance
   const xScale = useMemo(
@@ -138,6 +168,13 @@ function TimeGraph({
           fill="rgba(0,0,0,0)"
           rx={14}
         />
+        <GridRows
+          top={verticalMargin / 2}
+          width={xMax}
+          scale={yScale}
+          tickValues={range(0, maxTime, GRID_ROW_INTERVAL)}
+          stroke="#cccccc"
+        />
         <Group top={verticalMargin / 2}>
           {values.map((value, i) => {
             const barWidth = xScale.bandwidth();
@@ -153,16 +190,16 @@ function TimeGraph({
                 height={barHeight}
                 radius={20}
                 top
-                fill="rgba(23, 233, 217, .5)"
+                fill="rgba(23, 233, 217, 1)"
                 onMouseLeave={() => {
                   tooltipTimeout = window.setTimeout(() => {
                     hideTooltip();
                   }, 300);
                 }}
-                onMouseMove={(event) => {
+                onMouseDown={(event) => {
                   if (tooltipTimeout) clearTimeout(tooltipTimeout);
-                  const top = event.clientY - verticalMargin / 2 - barHeight;
-                  const left = barX + barWidth / 2;
+                  const top = event.clientY - verticalMargin; // - verticalMargin - barHeight;
+                  const left = event.clientX - barX + barWidth / 2;
                   showTooltip({
                     tooltipData: value,
                     tooltipTop: top,
