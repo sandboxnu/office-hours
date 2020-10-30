@@ -14,6 +14,7 @@ import {
   UpdateQueueParams,
   Question,
   DesktopNotifPartial,
+  GetReleaseNotesResponse,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -125,6 +126,9 @@ class APIClient {
     create: async () => this.req("GET", `/api/v1/seeds/create`),
     fillQueue: async () => this.req("GET", `/api/v1/seeds/fillQueue`),
   };
+  releaseNotes = {
+    get: async (): Promise<GetReleaseNotesResponse> => this.req("GET", `/api/v1/release_notes`),
+  }
   constructor(baseURL = "") {
     this.axios = Axios.create({ baseURL: baseURL });
   }
