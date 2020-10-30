@@ -1,6 +1,5 @@
 import { ClosedQuestionStatus, Heatmap, timeDiffInMins } from '@koh/common';
 import { Injectable } from '@nestjs/common';
-import { groupBy, mapKeys, mapValues, sum, sumBy } from 'lodash';
 import moment = require('moment');
 import { Command } from 'nestjs-command';
 import { QuestionModel } from 'question/question.entity';
@@ -14,8 +13,13 @@ export class HeatmapService {
     const questions = await QuestionModel.createQueryBuilder('question')
       .leftJoinAndSelect('question.queue', 'queue')
       .where('queue.courseId = :courseId', { courseId })
+      .andWhere('question.status = :status', {
+        status: ClosedQuestionStatus.Resolved,
+      })
       .andWhere('question.createdAt > :recent', {
-        recent: moment().subtract(5, 'weeks').toISOString(),
+        recent: moment()
+          .subtract(5, 'weeks')
+          .toISOString(),
       })
       .getMany();
 
@@ -26,35 +30,29 @@ export class HeatmapService {
 
   private generateHeatMap(questions: QuestionModel[]): Heatmap {
     const completedQuestions = questions.filter(
-      (q) => q.helpedAt && q.status === ClosedQuestionStatus.Resolved,
+      q => q.helpedAt && q.status === ClosedQuestionStatus.Resolved,
     );
     console.log(`generating heat map from ${questions.length} questions`);
-    const questionBuckets: QuestionModel[][][] =  [...Array(7)].map(() =>
+    const questionBuckets: QuestionModel[][][] = [...Array(7)].map(() =>
       [...Array(24)].map(() => []),
     );
     for (const q of completedQuestions) {
       const [day, hour] = this.bucketDate(q.createdAt);
       questionBuckets[day][hour].push(q);
     }
-    console.log(questionBuckets[0]);
     const heatmap: Heatmap = [];
     for (const day of questionBuckets) {
       const dayMedians = [];
       for (const hour of day) {
-        const waitTimes = hour.map((q) =>
-          timeDiffInMins(q.helpedAt, q.createdAt),
-        );
+        const waitTimes = hour
+          .filter(q => q.helpedAt.getDate() === q.createdAt.getDate()) // Ignore questions that cross midnight (usually a fluke)
+          .map(q => timeDiffInMins(q.helpedAt, q.createdAt));
         waitTimes.sort();
         const median = waitTimes[Math.floor(waitTimes.length / 2)];
         dayMedians.push(median);
       }
       heatmap.push(dayMedians);
     }
-    // const pretty = mapKeys(
-    //   heatmap,
-    //   (_, n) => `Day ${Math.floor(Number(n) / 24)}, Hour ${Number(n) % 24}`,
-    // );
-    // console.log(pretty);
 
     // bucket by day
     return heatmap;
