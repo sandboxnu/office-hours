@@ -164,7 +164,7 @@ export class QueuePartial {
 
 // Represents a list of office hours wait times of each hour of each day of the week.
 //  -1 represents no office hours data at that time.
-export type Heatmap = number[][];
+export type Heatmap = Array<Array<number>>;
 
 /**
  * A Question is created when a student wants help from a TA.

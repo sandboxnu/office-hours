@@ -3,7 +3,15 @@ import { Question, QueuePartial } from "@koh/common";
 export function getWaitTime(question: Question): string {
   const now = new Date();
   const difference = now.getTime() - question.createdAt.getTime();
-  return `${Math.round(difference / 60000)} min`;
+  return formatWaitTime(Math.floor(difference / 60000));
+}
+
+export function formatWaitTime(minutes: number): string {
+  if (minutes >= 60) {
+    return `${Math.floor(minutes / 60)}hr ${minutes % 60}m`;
+  } else {
+    return `${minutes} min`;
+  }
 }
 
 export function formatQueueTime(queue: QueuePartial): string {

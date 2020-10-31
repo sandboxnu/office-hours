@@ -15,6 +15,7 @@
     "@koh/api-client": "0.1.0",
     "@koh/common": "0.1.0",
     "@visx/axis": "^1.1.0",
+    "@visx/grid": "^1.1.0",
     "@visx/group": "^1.0.0",
     "@visx/scale": "^1.1.0",
     "@visx/shape": "^1.1.0",
