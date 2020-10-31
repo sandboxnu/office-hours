@@ -1,13 +1,20 @@
-import { ClockCircleOutlined, DownOutlined, HourglassOutlined, LeftOutlined, RightOutlined } from "@ant-design/icons";
+import {
+  ClockCircleOutlined,
+  DownOutlined,
+  HourglassOutlined,
+  LeftOutlined,
+  RightOutlined,
+} from "@ant-design/icons";
 import { Heatmap } from "@koh/common";
 import { Dropdown, Menu } from "antd";
+import { range, sum, uniq } from "lodash";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
+import { formatDateHour, formatWaitTime } from "../../utils/TimeUtil";
 import TimeGraph from "./TimeGraph";
 
 // TODO:
-// - Thursdays have {the shortest} / {shorter than usual} / {average} / {longer than usual} / {the longest} wait times
-// - At {4pm}, people generally wait for {4} hour{s}
+// - Case to handle: No office hours in a week? Right now heatmap is full of nulls, we cant graph nulls
 
 const TitleRow = styled.div`
   display: flex;
@@ -62,6 +69,7 @@ function findWeekMinAndMax(days: Heatmap) {
       }
     })
   );
+
   return [minHourInWeek, maxHourInWeek];
 }
 
@@ -70,6 +78,28 @@ const GraphNotes = styled.h4`
   color: #111;
   padding-left: 40px;
 `;
+
+function generateBusyText(day: number, heatmap: Heatmap): String {
+  let dailySumWaitTimes = heatmap.map((hours) => sum(hours));
+  const dayWaitTime = dailySumWaitTimes[day];
+  dailySumWaitTimes = uniq(dailySumWaitTimes).sort((a, b) => a - b);
+  let mid =
+    dailySumWaitTimes.length % 2 == 0
+      ? dailySumWaitTimes.length / 2 - 1
+      : Math.ceil(dailySumWaitTimes.length / 2) - 1;
+  const rank = dailySumWaitTimes.indexOf(dayWaitTime);
+  if (rank === mid) {
+    return "average";
+  } else if (rank === 0) {
+    return "the shortest";
+  } else if (rank === dailySumWaitTimes.length - 1) {
+    return "the longest";
+  } else if (rank > 0 && rank < mid) {
+    return "shorter than usual";
+  } else {
+    return "longer than usual";
+  }
+}
 
 export default function PopularTimes({ heatmap }: HeatmapProps): ReactElement {
   const [currentDayOfWeek, setCurrentDayOfWeek] = useState(new Date().getDay());
@@ -117,16 +147,12 @@ export default function PopularTimes({ heatmap }: HeatmapProps): ReactElement {
         </GraphArrowButtons>
       </GraphWithArrow>
       <GraphNotes>
-       <HourglassOutlined />
-        {" "}
-        {/* function to generate text */}
-        Today is busier than usual
+        <ClockCircleOutlined /> {DAYS_OF_WEEK[currentDayOfWeek]}s have{" "}
+        {generateBusyText(currentDayOfWeek, heatmap)} wait times.
       </GraphNotes>
       <GraphNotes>
-        <ClockCircleOutlined />
-        {" "}
-        {/* function to generate text */}
-        At 4pm, people generally wait {}. 
+        <HourglassOutlined /> At {formatDateHour(new Date())}, people generally
+        wait {formatWaitTime(heatmap[currentDayOfWeek][new Date().getHours()])}.
       </GraphNotes>
     </div>
   );
