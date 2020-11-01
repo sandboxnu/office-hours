@@ -166,7 +166,7 @@ export default function TimeGraph({
           left={tooltipLeft}
           style={tooltipStyles}
         >
-          {formatWaitTime(Math.floor(tooltipData))}
+          {formatWaitTime(tooltipData)}
         </TooltipInPortal>
       )}
     </GraphContainer>
