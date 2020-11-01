@@ -13,12 +13,19 @@ interface AllowableTransitions {
 
 const QUEUE_TRANSITIONS: AllowableTransitions = {
   ta: [OpenQuestionStatus.Helping, LimboQuestionStatus.TADeleted],
-  student: [ClosedQuestionStatus.StudentCancelled],
+  student: [
+    ClosedQuestionStatus.StudentCancelled,
+    ClosedQuestionStatus.ConfirmedDeleted,
+  ],
 };
 
 const QUESTION_STATES: Record<QuestionStatus, AllowableTransitions> = {
   [OpenQuestionStatus.Drafting]: {
-    student: [OpenQuestionStatus.Queued, ClosedQuestionStatus.StudentCancelled],
+    student: [
+      OpenQuestionStatus.Queued,
+      ClosedQuestionStatus.StudentCancelled,
+      ClosedQuestionStatus.ConfirmedDeleted,
+    ],
   },
   [OpenQuestionStatus.Queued]: QUEUE_TRANSITIONS,
   [OpenQuestionStatus.PriorityQueued]: QUEUE_TRANSITIONS,
@@ -29,6 +36,7 @@ const QUESTION_STATES: Record<QuestionStatus, AllowableTransitions> = {
       ClosedQuestionStatus.Resolved,
       LimboQuestionStatus.TADeleted,
     ],
+    student: [ClosedQuestionStatus.ConfirmedDeleted],
   },
   [LimboQuestionStatus.CantFind]: {
     student: [
