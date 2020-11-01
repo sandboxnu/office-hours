@@ -5,15 +5,13 @@ import moment = require('moment');
 import { Command } from 'nestjs-command';
 import { QuestionModel } from 'question/question.entity';
 
-// The number of minutes to average across
-const BUCKET_SIZE_IN_MINS = 60;
-// Number of samples to gather per bucket
-const SAMPLES_PER_BUCKET = 5;
-const SAMPLE_INTERVAL = BUCKET_SIZE_IN_MINS / SAMPLES_PER_BUCKET;
-
 @Injectable()
 export class HeatmapService {
   async getHeatmapFor(courseId: number): Promise<Heatmap> {
+    // The number of minutes to average across
+    const BUCKET_SIZE_IN_MINS = 60;
+    // Number of samples to gather per bucket
+    const SAMPLES_PER_BUCKET = 5;
     console.time('heatmap');
     const questions = await QuestionModel.createQueryBuilder('question')
       .leftJoinAndSelect('question.queue', 'queue')
@@ -30,17 +28,25 @@ export class HeatmapService {
       .orderBy('question.createdAt', 'ASC')
       .getMany();
 
-    const heatmap = this.generateHeatMapWithReplay(
+    const heatmap = this._generateHeatMapWithReplay(
       // Ignore questions that cross midnight (usually a fluke)
       questions.filter(q => q.helpedAt.getDate() === q.createdAt.getDate()),
+      BUCKET_SIZE_IN_MINS,
+      SAMPLES_PER_BUCKET,
     );
     console.timeEnd('heatmap');
     return heatmap;
   }
 
+  // PRIVATE function that is public for testing purposes
   // Rewind through the last few weeks and for each time interval,
   // figure out how long wait time would have been if you had joined the queue at that time
-  private generateHeatMapWithReplay(questions: QuestionModel[]): Heatmap {
+  _generateHeatMapWithReplay(
+    questions: QuestionModel[],
+    bucketSize: number,
+    samplesPerBucket: number,
+  ): Heatmap {
+    const sampleInterval = bucketSize / samplesPerBucket;
     /*
     TEST: Question1 is  3:05 - 3:25
     // The next question is 3:21 - 3:49
@@ -65,18 +71,18 @@ export class HeatmapService {
 
     const startDate = questions[0].createdAt;
     const sunday = new Date(startDate);
-    sunday.setDate(startDate.getDate() - startDate.getDay());
-    sunday.setHours(0, 0, 0, 0);
+    sunday.setUTCDate(startDate.getUTCDate() - startDate.getUTCDay());
+    sunday.setUTCHours(0, 0, 0, 0);
 
     function getNextTimepointIndex(date: Date): number {
-      return Math.floor(timeDiffInMins(date, sunday) / SAMPLE_INTERVAL) + 1;
+      return Math.floor(timeDiffInMins(date, sunday) / sampleInterval) + 1;
     }
 
     // Get the date of the sample timepoint immediately after the given date
     function getNextSampleTimepoint(date: Date): Date {
       const timepointIndex = getNextTimepointIndex(date);
       return new Date(
-        sunday.getTime() + timepointIndex * SAMPLE_INTERVAL * 60 * 1000,
+        sunday.getTime() + timepointIndex * sampleInterval * 60 * 1000,
       );
     }
 
@@ -97,13 +103,13 @@ export class HeatmapService {
       const curr = questions[i];
       const next = questions[i + 1];
 
-      // get the timepoints in between 
+      // get the timepoints in between
       const sampledTimepoints = getSampleTimepointsInDateRange(
         curr.createdAt,
         next.createdAt,
       );
 
-      // When we would have gotten help at this timepoint 
+      // When we would have gotten help at this timepoint
       for (const c of sampledTimepoints) {
         allTimepointWaitTimes[getNextTimepointIndex(c)] = Math.max(
           0,
@@ -113,10 +119,10 @@ export class HeatmapService {
     }
 
     // Bucket the timepoints
-    const SAMPLES_PER_HOUR = 60 / SAMPLE_INTERVAL;
+    const SAMPLES_PER_HOUR = 60 / sampleInterval;
     const SAMPLES_PER_DAY = 24 * SAMPLES_PER_HOUR;
     const SAMPLES_PER_WEEK = 7 * SAMPLES_PER_DAY;
-    const heatmap = [...Array(7)].map(() => [...Array(24)]);
+    const heatmap = [...Array(7 * 24)];
     // for 24 hrs 7 days
     for (let day = 0; day < 7; day++) {
       for (let hour = 0; hour < 24; hour++) {
@@ -131,7 +137,7 @@ export class HeatmapService {
         while (index < allTimepointWaitTimes.length) {
           for (
             let s = 0;
-            s < SAMPLES_PER_BUCKET && index + s < allTimepointWaitTimes.length;
+            s < sampleInterval && index + s < allTimepointWaitTimes.length;
             s++
           ) {
             // Grab all the samples in this bucket from current week
@@ -148,52 +154,11 @@ export class HeatmapService {
         }
         // times.sort();
         // const median = times[Math.floor(times.length / 2)];
-        heatmap[day][hour] = mean(times);
+        heatmap[day * 7 + hour] = mean(times);
       }
     }
 
     return heatmap;
-  }
-
-  private generateHeatMap(questions: QuestionModel[]): Heatmap {
-    const completedQuestions = questions.filter(
-      q => q.helpedAt && q.status === ClosedQuestionStatus.Resolved,
-    );
-    console.log(`generating heat map from ${questions.length} questions`);
-    const questionBuckets: QuestionModel[][][] = [...Array(7)].map(() =>
-      [...Array(24)].map(() => []),
-    );
-    for (const q of completedQuestions) {
-      const [day, hour] = this.bucketDate(q.createdAt);
-      questionBuckets[day][hour].push(q);
-    }
-    const heatmap: Heatmap = [];
-    for (const day of questionBuckets) {
-      const dayMedians = [];
-      for (const hour of day) {
-        const waitTimes = hour
-          .filter(q => q.helpedAt.getDate() === q.createdAt.getDate()) // Ignore questions that cross midnight (usually a fluke)
-          .map(q => timeDiffInMins(q.helpedAt, q.createdAt));
-        waitTimes.sort();
-        const median = waitTimes[Math.floor(waitTimes.length / 2)];
-        dayMedians.push(median);
-      }
-      heatmap.push(dayMedians);
-    }
-
-    // bucket by day
-    return heatmap;
-  }
-
-  // get the bucket for a date as [dayofweek, hour]
-  private bucketDate(date: Date): [number, number] {
-    // Sunday of the week of date (since bucketing is weekly)
-    const sunday = new Date(date);
-    sunday.setDate(date.getDate() - date.getDay());
-    sunday.setHours(0, 0, 0, 0);
-    const minuteDiff = timeDiffInMins(date, sunday);
-    const bucketnum = Math.floor(minuteDiff / BUCKET_SIZE_IN_MINS);
-    return [Math.floor(bucketnum / 24), bucketnum % 24];
   }
 
   @Command({
