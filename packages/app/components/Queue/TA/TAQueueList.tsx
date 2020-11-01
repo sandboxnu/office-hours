@@ -138,17 +138,20 @@ export default function TAQueueList({
     } catch (e) {
       if (
         e.response?.status === 401 &&
-        e.response?.data?.message === "Another TA is currently helping with this question"
+        e.response?.data?.message ===
+          "Another TA is currently helping with this question"
       ) {
         notification.open({
           message: "Another TA is currently helping the student",
-          description: "This happens when another TA clicks help at the exact same time",
+          description:
+            "This happens when another TA clicks help at the exact same time",
           type: "error",
           duration: 3,
+          className: "hide-in-percy",
           style: {
             width: 450,
-          }
-      });
+          },
+        });
       }
     }
     mutateQuestions();

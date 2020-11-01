@@ -11,7 +11,6 @@ describe("Allow or disable new questions for a queue", () => {
       })
         .then((res) => res.body)
         .as("queue");
-
       // Login the ta
       cy.visit(`/api/v1/login/dev?userId=${ta.user.id}`);
     });
@@ -37,6 +36,8 @@ describe("Allow or disable new questions for a queue", () => {
     // See that allow questions has been toggled off
     cy.get("[data-cy='stopQuestions']").should("exist");
 
+    cy.percySnapshot("TA Queue Page - Not Allowing Questions");
+
     // Change the toggle back to allow new questions
     cy.get("[data-cy='editQueue']").click();
     cy.get("[data-cy='allow-questions-toggle']").click();
@@ -44,6 +45,8 @@ describe("Allow or disable new questions for a queue", () => {
 
     // See that the 'not allowing new questions' icon is not there any more
     cy.get("[data-cy='stopQuestions']").should("not.exist");
+
+    cy.percySnapshot("TA Queue Page - Allowing Questions");
   });
 
   it("student cannot add new questions when new questions are disabled", () => {
@@ -66,9 +69,12 @@ describe("Allow or disable new questions for a queue", () => {
     });
 
     cy.get(".ant-modal-close-x").click();
+    cy.get(".ant-modal-close-x").should("not.be.visible");
 
     // Check that the queue is not acccpeting new questions on the today page
     cy.get('[data-icon="stop"]').should("exist");
+
+    cy.percySnapshot("Student Today Page - Not Allowing Questions");
 
     // Navigate to the queue
     cy.get('[data-cy="open-queue-button"]').click();
@@ -78,5 +84,7 @@ describe("Allow or disable new questions for a queue", () => {
 
     // And that the join queue button is disabled
     cy.get('[data-cy="join-queue-button"]').should("be.disabled");
+
+    cy.percySnapshot("Student Queue Page - Not Allowing Questions");
   });
 });

@@ -1,8 +1,15 @@
 import {
+  KhouryDataParams,
+  KhouryRedirectResponse,
+  KhouryStudentCourse,
+  KhouryTACourse,
+  Role,
+} from '@koh/common';
+import { ERROR_MESSAGES } from '@koh/common/constants';
+import {
   Body,
   Controller,
   Get,
-  NotFoundException,
   Post,
   Query,
   Req,
@@ -12,23 +19,14 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import {
-  KhouryDataParams,
-  KhouryRedirectResponse,
-  KhouryStudentCourse,
-  KhouryTACourse,
-  Role,
-} from '@koh/common';
 import { Request, Response } from 'express';
 import * as httpSignature from 'http-signature';
 import { Connection } from 'typeorm';
 import { CourseModel } from '../../src/course/course.entity';
 import { NonProductionGuard } from '../../src/non-production.guard';
-import { UserCourseModel } from '../../src/profile/user-course.entity';
 import { UserModel } from '../../src/profile/user.entity';
 import { CourseSectionMappingModel } from './course-section-mapping.entity';
 import { LoginCourseService } from './login-course.service';
-import { ERROR_MESSAGES } from '@koh/common/constants';
 
 @Controller()
 export class LoginController {
@@ -47,18 +45,15 @@ export class LoginController {
     if (process.env.NODE_ENV === 'production') {
       // Check that request has come from Khoury
       const parsedRequest = httpSignature.parseRequest(req);
-      console.log('parsed request');
       const verify = httpSignature.verifyHMAC(
         parsedRequest,
         this.configService.get('KHOURY_PRIVATE_KEY'),
       );
       if (!verify) {
-        console.log('invalid');
         throw new UnauthorizedException(
           ERROR_MESSAGES.loginController.receiveDataFromKhoury.invalidSignature,
         );
       }
-      console.log('valid');
     }
 
     let user: UserModel;
