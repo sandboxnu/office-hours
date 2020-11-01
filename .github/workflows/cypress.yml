@@ -1,6 +1,6 @@
 name: Cypress
 
-on: pull_request
+on: [push, pull_request]
 
 jobs:
   cypress-tests:
@@ -25,7 +25,7 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          record: true
+          record: ${{ github.event_name == 'pull_request' }}
           start: yarn ci:start
           wait-on: "http://localhost:3000"
           command-prefix: "yarn run percy exec"

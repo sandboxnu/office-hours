@@ -41,6 +41,8 @@ describe("Student can create a question", () => {
         // Click Submit
         cy.get("[data-cy='finishQuestion']").click();
 
+        cy.get(".ant-modal-content").should("not.visible");
+        cy.percySnapshot("Student Queue Page - Non Empty Student Queue");
         // See that the question shows in the queue list
         cy.get("[data-cy='queueQuestions']").contains(
           "How do I use the design recipe?"
@@ -52,8 +54,6 @@ describe("Student can create a question", () => {
         cy.get("[data-cy='banner']").contains(
           "How do I use the design recipe?"
         );
-
-        cy.percySnapshot("Student Queue Page - Non Empty Student Queue");
       })
     );
   });
