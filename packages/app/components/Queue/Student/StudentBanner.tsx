@@ -150,7 +150,7 @@ export default function StudentBanner({
         <Banner
           titleColor="#66BB6A"
           contentColor="#82C985"
-          title={<span>Are you ready to be requeued?</span>}
+          title={<span>Are you ready to re-join the queue?</span>}
           buttons={
             <>
               <LeaveQueueButton leaveQueue={leaveQueue} />
@@ -163,7 +163,7 @@ export default function StudentBanner({
                     });
                   }}
                 >
-                  Requeue
+                  Re-join Queue
                 </BannerButton>
               )}
             </>
