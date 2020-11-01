@@ -164,7 +164,7 @@ const StudentPopupCard = ({
         </InfoTextDiv>
 
         <StatusTag color={questionStatusToColor(question.status)}>
-          {question.status === OpenQuestionStatus.CantFind
+          {question.status === LimboQuestionStatus.CantFind
             ? "Can't Find"
             : question.status}
         </StatusTag>
