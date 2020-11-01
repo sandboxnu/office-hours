@@ -13,7 +13,7 @@ export function formatWaitTime(minutes: number): string {
   if (minutes >= 60) {
     return `${Math.floor(minutes / 60)}hr ${minutes % 60}m`;
   } else {
-    return `${minutes} min`;
+    return `${Math.floor(minutes)} min`;
   }
 }
 

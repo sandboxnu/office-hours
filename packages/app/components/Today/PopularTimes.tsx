@@ -15,6 +15,7 @@ import TimeGraph from "./TimeGraph";
 
 // TODO:
 // - Case to handle: No office hours in a week? Right now heatmap is full of nulls, we cant graph nulls
+// right now the day ranking includes days with no office hours at all i believe, we want to filter out days with no wait times
 
 const TitleRow = styled.div`
   display: flex;
@@ -79,11 +80,11 @@ const GraphNotes = styled.h4`
   padding-left: 40px;
 `;
 
-function generateBusyText(day: number, heatmap: Heatmap): String {
+function generateBusyText(day: number, heatmap: Heatmap): string {
   let dailySumWaitTimes = heatmap.map((hours) => sum(hours));
   const dayWaitTime = dailySumWaitTimes[day];
   dailySumWaitTimes = uniq(dailySumWaitTimes).sort((a, b) => a - b);
-  let mid =
+  const mid =
     dailySumWaitTimes.length % 2 == 0
       ? dailySumWaitTimes.length / 2 - 1
       : Math.ceil(dailySumWaitTimes.length / 2) - 1;
@@ -148,11 +149,16 @@ export default function PopularTimes({ heatmap }: HeatmapProps): ReactElement {
       </GraphWithArrow>
       <GraphNotes>
         <ClockCircleOutlined /> {DAYS_OF_WEEK[currentDayOfWeek]}s have{" "}
-        {generateBusyText(currentDayOfWeek, heatmap)} wait times.
+        <strong>{generateBusyText(currentDayOfWeek, heatmap)}</strong> wait
+        times.
       </GraphNotes>
       <GraphNotes>
         <HourglassOutlined /> At {formatDateHour(new Date())}, people generally
-        wait {formatWaitTime(heatmap[currentDayOfWeek][new Date().getHours()])}.
+        wait{" "}
+        <strong>
+          {formatWaitTime(heatmap[currentDayOfWeek][new Date().getHours()])}
+        </strong>
+        .
       </GraphNotes>
     </div>
   );
