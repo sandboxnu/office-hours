@@ -80,7 +80,7 @@ describe("TA interacts with student question", () => {
       .click();
 
     // Click Yes on the Pop confirm
-    cy.get("span").contains("Yes").click();  
+    cy.get("span").contains("Yes").click();
 
     cy.get("body").contains("You are helping").should("not.exist");
   });

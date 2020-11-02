@@ -27,7 +27,7 @@ export class ErrorBoundary extends React.Component<{}, EBState> {
       return (
         <Result
           status="500"
-          title='We hit an unexpected error.'
+          title="We hit an unexpected error."
           subTitle="Sorry about that! A report has automatically been filed. Try refreshing the page."
         />
       );

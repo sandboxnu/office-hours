@@ -203,7 +203,7 @@ function DeviceNotifPanel() {
               disabled={
                 getNotificationState() === NotificationStates.browserUnsupported
               }
-              style={{marginBottom: "4px"}}
+              style={{ marginBottom: "4px" }}
             >
               Add This Device
             </Button>

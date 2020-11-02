@@ -57,7 +57,7 @@ export default function Today(): ReactElement {
       <Head>
         <title>{course?.name} | Khoury Office Hours</title>
       </Head>
-      <ReleaseNotes/>
+      <ReleaseNotes />
       <WelcomeStudents />
       <NavBar courseId={Number(cid)} />
       <Container>
