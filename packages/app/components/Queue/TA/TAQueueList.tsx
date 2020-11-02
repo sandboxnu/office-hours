@@ -1,3 +1,4 @@
+import { QuestionCircleOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import {
   OpenQuestionStatus,
@@ -6,7 +7,7 @@ import {
   QuestionStatusKeys,
 } from "@koh/common";
 import { Card, Col, notification, Row, Space, Tooltip } from "antd";
-import { ReactElement, useCallback, useState } from "react";
+import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
@@ -237,14 +238,18 @@ export default function TAQueueList({
                 questions={questions.priorityQueue}
                 isHelping={isHelping}
                 onOpenCard={onOpenCard}
-                title={"Priority Queue"}
+                title={
+                  <Tooltip title="Students in the priority queue were at the top of the queue before for some reason (e.g. they were at the top but AFK, or a TA helped them previously, and then hit 'requeue student.' You should communicate with your fellow staff members to prioritize these students first.">
+                    <QuestionCircleOutlined style={{ fontSize: 14 }} />
+                  </Tooltip>
+                }
               />
             )}
             <QueueQuestions
               questions={renderedQuestions}
               isHelping={isHelping}
               onOpenCard={onOpenCard}
-              title={"Queue"}
+              title={<div>Queue</div>}
             />
           </Space>
         </QueuePageContainer>
@@ -309,7 +314,7 @@ interface QueueProps {
   questions: Question[];
   isHelping: boolean;
   onOpenCard: (q: Question) => void;
-  title: string;
+  title: ReactElement;
 }
 function QueueQuestions({
   questions,
@@ -322,16 +327,16 @@ function QueueQuestions({
     <div data-cy="queueQuestions">
       {questions.length === 0 ? (
         <>
-          <NoQuestionsText>
-            There are no questions in the {title.toLowerCase()}
-          </NoQuestionsText>
+          <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
           {!isHelping && !phoneNotifsEnabled && !desktopNotifsEnabled && (
             <NotifReminderButton />
           )}
         </>
       ) : (
         <>
-          <QueueHeader>{title}</QueueHeader>
+          <>
+            <QueueHeader>{title}</QueueHeader>
+          </>
           <TAHeaderCard bordered={false}>
             <CenterRow justify="space-between">
               <Col xs={2} lg={1}>
