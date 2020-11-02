@@ -37,6 +37,10 @@ export class IcalService {
     return mome.toDate();
   }
 
+  private fixDaylightSavings(date: Date): Date {
+    return moment(date).isDST() ? date : moment(date).add(1, 'hour').toDate();
+  }
+
   parseIcal(icalData: CalendarResponse, courseId: number): CreateOfficeHour {
     const icalDataValues: Array<CalendarComponent> = Object.values(icalData);
 
@@ -99,8 +103,8 @@ export class IcalService {
           title: oh.summary,
           courseId: courseId,
           room: oh.location,
-          startTime: date,
-          endTime: new Date(date.getTime() + duration),
+          startTime: this.fixDaylightSavings(date),
+          endTime: this.fixDaylightSavings(new Date(date.getTime() + duration)),
         }));
         resultOfficeHours = resultOfficeHours.concat(generatedOfficeHours);
       } else {
@@ -108,8 +112,10 @@ export class IcalService {
           title: oh.summary,
           courseId: courseId,
           room: oh.location,
-          startTime: this.fixTimezone(oh.start, eventTZ),
-          endTime: this.fixTimezone(oh.end, eventTZ),
+          startTime: this.fixDaylightSavings(
+            this.fixTimezone(oh.start, eventTZ),
+          ),
+          endTime: this.fixDaylightSavings(this.fixTimezone(oh.end, eventTZ)),
         });
       }
     });
