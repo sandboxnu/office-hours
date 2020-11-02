@@ -53,7 +53,11 @@ export default function ReleaseNotes(): ReactElement {
           footer={
             <>
               <b>Want to see more? </b>
-              <a href="https://www.notion.so/Release-Notes-Archive-9a1a0eab073a463096fc3699bf48219c">
+              <a
+                href="https://www.notion.so/Release-Notes-Archive-9a1a0eab073a463096fc3699bf48219c"
+                target="_blank"
+                rel="noreferrer"
+              >
                 {" "}
                 Click here to view the archive
               </a>
