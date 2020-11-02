@@ -340,8 +340,8 @@ describe('IcalService', () => {
           title: 'Hours CS3700 - Ishan',
           courseId: 123,
           room: '',
-          startTime: new Date('2020-11-14T11:00:00+0000'),
-          endTime: new Date('2020-11-14T14:00:00+0000'),
+          startTime: new Date('2020-11-14T12:00:00+0000'),
+          endTime: new Date('2020-11-14T15:00:00+0000'),
         },
       ]);
     });
@@ -554,7 +554,7 @@ describe('IcalService', () => {
       expect(endData.length).toEqual((10 * 7) / 2 - 1);
     });
 
-    it('event times should be the same before and after daylight savings', () => {
+    it('correct times after daylight savings', () => {
       const parsedICS = mkCal(VEVENT_DAYLIGHT_SAVINGS);
       const endData = service.parseIcal(parsedICS, 123);
       expect(endData).toContainEqual({
@@ -568,8 +568,8 @@ describe('IcalService', () => {
         title: 'OH: Anurag',
         courseId: 123,
         room: '',
-        startTime: new Date('2020-11-01T19:00:00+0000'),
-        endTime: new Date('2020-11-01T21:00:00+0000'),
+        startTime: new Date('2020-11-01T20:00:00+0000'),
+        endTime: new Date('2020-11-01T22:00:00+0000'),
       });
       // expect(endData.length).toEqual((10 * 7) / 2 - 1);
     });
