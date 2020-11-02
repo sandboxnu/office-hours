@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserModel } from '../profile/user.entity';
 import { RolesGuard } from '../guards/role.guard';
 import { QueueModel } from './queue.entity';
