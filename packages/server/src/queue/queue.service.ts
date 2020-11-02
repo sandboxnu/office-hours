@@ -42,21 +42,24 @@ export class QueueService {
       throw new NotFoundException();
     }
 
+    const questionsFromDb = await QuestionModel.find({
+      relations: ['creator', 'taHelped'],
+      where: { queueId },
+    });
+
     const questions = new ListQuestionsResponse();
 
-    questions.queue = await QuestionModel.find({
-      relations: ['creator', 'taHelped'],
-      where: { queueId, status: In(StatusInQueue) },
-    });
-    questions.questionsGettingHelp = await QuestionModel.find({
-      relations: ['creator', 'taHelped'],
-      where: { queueId, status: OpenQuestionStatus.Helping },
-    });
+    questions.queue = questionsFromDb.filter((question) =>
+      StatusInQueue.includes(question.status as OpenQuestionStatus),
+    );
 
-    questions.priorityQueue = await QuestionModel.find({
-      relations: ['creator', 'taHelped'],
-      where: { queueId, status: In(StatusInPriorityQueue) },
-    });
+    questions.questionsGettingHelp = questionsFromDb.filter(
+      (question) => question.status === OpenQuestionStatus.Helping,
+    );
+
+    questions.priorityQueue = questionsFromDb.filter((question) =>
+      StatusInPriorityQueue.includes(question.status as OpenQuestionStatus),
+    );
 
     return questions;
   }
