@@ -255,18 +255,10 @@ TRANSP:OPAQUE
 STATUS:CONFIRMED
 SEQUENCE:0
 LOCATION:
-X-MICROSOFT-CDO-APPT-SEQUENCE:0
-X-MICROSOFT-CDO-BUSYSTATUS:BUSY
-X-MICROSOFT-CDO-INTENDEDSTATUS:BUSY
-X-MICROSOFT-CDO-ALLDAYEVENT:FALSE
-X-MICROSOFT-CDO-IMPORTANCE:1
-X-MICROSOFT-CDO-INSTTYPE:1
-X-MICROSOFT-DONOTFORWARDMEETING:FALSE
-X-MICROSOFT-DISALLOW-COUNTER:FALSE
 END:VEVENT
 `;
 
-const VEVENT_DAYLIGHT_SAVINGS = `
+const VEVENT_DAYLIGHT_SAVINGS_FALL_BACK = `
 BEGIN:VEVENT
 DTSTART;TZID=America/New_York:20200913T150000
 DTEND;TZID=America/New_York:20200913T170000
@@ -281,6 +273,42 @@ SEQUENCE:0
 STATUS:CONFIRMED
 SUMMARY:OH: Anurag
 TRANSP:OPAQUE
+END:VEVENT
+`;
+
+const VEVENT_DAYLIGHT_SAVINGS_SPRING_FORWARD = `
+BEGIN:VEVENT
+RRULE:FREQ=WEEKLY;UNTIL=20200315T210000Z;INTERVAL=1;BYDAY=SA;WKST=SU
+EXDATE;TZID=America/New_York:20200306T210000
+UID:040000008200E00074C5B7101A82E0080000000015AA42D4B686D601000000000000000
+ 010000000103558E135B36F4089C2D45B6001924E
+SUMMARY:Hours CS3700 - Ashwin
+DTSTART;TZID=America/New_York:20200307T210000
+DTEND;TZID=America/New_York:20200307T230000
+DTSTAMP:20201012T184435Z
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+SEQUENCE:0
+LOCATION:
+END:VEVENT
+`;
+
+const VEVENT_DAYLIGHT_SAVINGS_SPRING_FORWARD_OUTLOOK = `
+BEGIN:VEVENT
+RRULE:FREQ=WEEKLY;UNTIL=20210321T210000Z;INTERVAL=1;BYDAY=MO;WKST=SU
+EXDATE;TZID=Eastern Standard Time:20210307T210000
+UID:040000008200E00074C5B7101A82E0080000000015AA42D4B686D601000000000000000
+ 010000000103558E135B36F4089C2D45B6001924E
+SUMMARY:Hours CS3700 - Ashwin
+DTSTART;TZID=Eastern Standard Time:20210308T210000
+DTEND;TZID=Eastern Standard Time:20210308T230000
+CLASS:PUBLIC
+PRIORITY:5
+DTSTAMP:20201012T184435Z
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+SEQUENCE:0
+LOCATION:
 END:VEVENT
 `;
 
@@ -340,8 +368,8 @@ describe('IcalService', () => {
           title: 'Hours CS3700 - Ishan',
           courseId: 123,
           room: '',
-          startTime: new Date('2020-11-14T12:00:00+0000'),
-          endTime: new Date('2020-11-14T15:00:00+0000'),
+          startTime: new Date('2020-11-14T11:00:00+0000'),
+          endTime: new Date('2020-11-14T14:00:00+0000'),
         },
       ]);
     });
@@ -555,7 +583,7 @@ describe('IcalService', () => {
     });
 
     it('correct times after daylight savings', () => {
-      const parsedICS = mkCal(VEVENT_DAYLIGHT_SAVINGS);
+      const parsedICS = mkCal(VEVENT_DAYLIGHT_SAVINGS_FALL_BACK);
       const endData = service.parseIcal(parsedICS, 123);
       expect(endData).toContainEqual({
         title: 'OH: Anurag',
@@ -571,7 +599,44 @@ describe('IcalService', () => {
         startTime: new Date('2020-11-01T20:00:00+0000'),
         endTime: new Date('2020-11-01T22:00:00+0000'),
       });
-      // expect(endData.length).toEqual((10 * 7) / 2 - 1);
+    });
+
+    it('correct times after daylight savings spring forward', () => {
+      const parsedICS = mkCal(VEVENT_DAYLIGHT_SAVINGS_SPRING_FORWARD);
+      const endData = service.parseIcal(parsedICS, 123);
+      expect(endData).toContainEqual({
+        title: 'Hours CS3700 - Ashwin',
+        courseId: 123,
+        room: '',
+        startTime: new Date('2020-03-08T02:00:00+0000'),
+        endTime: new Date('2020-03-08T04:00:00+0000'),
+      });
+      expect(endData).toContainEqual({
+        title: 'Hours CS3700 - Ashwin',
+        courseId: 123,
+        room: '',
+        startTime: new Date('2020-03-15T01:00:00+0000'),
+        endTime: new Date('2020-03-15T03:00:00+0000'),
+      });
+    });
+
+    it('correct times after daylight savings spring forward outlook', () => {
+      const parsedICS = mkCal(VEVENT_DAYLIGHT_SAVINGS_SPRING_FORWARD_OUTLOOK);
+      const endData = service.parseIcal(parsedICS, 123);
+      expect(endData).toContainEqual({
+        title: 'Hours CS3700 - Ashwin',
+        courseId: 123,
+        room: '',
+        startTime: new Date('2021-03-09T02:00:00+0000'),
+        endTime: new Date('2021-03-09T04:00:00+0000'),
+      });
+      expect(endData).toContainEqual({
+        title: 'Hours CS3700 - Ashwin',
+        courseId: 123,
+        room: '',
+        startTime: new Date('2021-03-16T01:00:00+0000'),
+        endTime: new Date('2021-03-16T03:00:00+0000'),
+      });
     });
 
     describe('updateCalendarForCourse', () => {

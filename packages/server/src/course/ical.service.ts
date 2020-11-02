@@ -32,13 +32,15 @@ export class IcalService {
     const serveroffset = date.getTimezoneOffset();
     const mome = moment(date);
     if (iana) {
+      // if windows timezone
       mome.subtract(serveroffset - eventoffset, 'minutes');
     }
     return mome.toDate();
   }
 
-  private fixDaylightSavings(date: Date): Date {
-    return moment(date).isDST() ? date : moment(date).add(1, 'hour').toDate();
+  // If IANA, just return, else convert windows timezone to IANA
+  private ensureIana(tz: string): string {
+    return findOneIana(tz) || tz;
   }
 
   parseIcal(icalData: CalendarResponse, courseId: number): CreateOfficeHour {
@@ -65,8 +67,11 @@ export class IcalService {
       const { rrule } = oh as any;
       if (rrule) {
         const { options } = rrule;
-        const dtstart = this.fixTimezone(options.dtstart, eventTZ);
-        const until = options.until && this.fixTimezone(options.until, eventTZ);
+        const dtstart: Date = this.fixTimezone(options.dtstart, eventTZ);
+        const until: Date =
+          options.until && this.fixTimezone(options.until, eventTZ);
+        const eventTZMoment = moment.tz.zone(this.ensureIana(eventTZ));
+        const dtstartUTCOffset = eventTZMoment.utcOffset(dtstart.getTime());
 
         let byweekday = options.byweekday;
         if (options.byhour[0] >= 0 && options.byhour[0] < 4) {
@@ -99,12 +104,20 @@ export class IcalService {
 
         const duration = oh.end.getTime() - oh.start.getTime();
 
+        const fixDST = (date: number) =>
+          moment(date)
+            .subtract(
+              dtstartUTCOffset - eventTZMoment.utcOffset(date),
+              'minutes',
+            )
+            .toDate();
+
         const generatedOfficeHours = allDates.map((date) => ({
           title: oh.summary,
           courseId: courseId,
           room: oh.location,
-          startTime: this.fixDaylightSavings(date),
-          endTime: this.fixDaylightSavings(new Date(date.getTime() + duration)),
+          startTime: fixDST(date.getTime()),
+          endTime: fixDST(date.getTime() + duration),
         }));
         resultOfficeHours = resultOfficeHours.concat(generatedOfficeHours);
       } else {
@@ -112,10 +125,8 @@ export class IcalService {
           title: oh.summary,
           courseId: courseId,
           room: oh.location,
-          startTime: this.fixDaylightSavings(
-            this.fixTimezone(oh.start, eventTZ),
-          ),
-          endTime: this.fixDaylightSavings(this.fixTimezone(oh.end, eventTZ)),
+          startTime: this.fixTimezone(oh.start, eventTZ),
+          endTime: this.fixTimezone(oh.end, eventTZ),
         });
       }
     });
