@@ -18,7 +18,7 @@ import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { NotificationService } from './notification.service';
 import { UserId } from '../profile/user.decorator';
 import { DesktopNotifModel } from './desktop-notif.entity';
-import { ERROR_MESSAGES } from '@koh/common/constants';
+import { ERROR_MESSAGES } from '@koh/common';
 
 @Controller('notifications')
 export class NotificationController {

@@ -1,6 +1,7 @@
 import { API } from "@koh/api-client";
 import {
   ClosedQuestionStatus,
+  ERROR_MESSAGES,
   OpenQuestionStatus,
   Question,
   QuestionType,
@@ -9,7 +10,6 @@ import { Card, Col, notification, Popconfirm, Row, Space } from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { mutate } from "swr";
-import { ERROR_MESSAGES } from "../../../../common/constants";
 import { useDraftQuestion } from "../../../hooks/useDraftQuestion";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { useQuestions } from "../../../hooks/useQuestions";

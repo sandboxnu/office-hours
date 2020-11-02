@@ -1,9 +1,9 @@
 import {
+  ERROR_MESSAGES,
   OpenQuestionStatus,
   QuestionStatusKeys,
   QuestionType,
 } from '@koh/common';
-import { ERROR_MESSAGES } from '@koh/common/constants';
 import { QuestionModel } from '../src/question/question.entity';
 import { QuestionModule } from '../src/question/question.module';
 import {

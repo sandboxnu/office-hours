@@ -5,7 +5,7 @@ import {
   KhouryTACourse,
   Role,
 } from '@koh/common';
-import { ERROR_MESSAGES } from '@koh/common/constants';
+import { ERROR_MESSAGES } from '@koh/common';
 import {
   Body,
   Controller,

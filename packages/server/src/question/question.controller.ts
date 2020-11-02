@@ -2,6 +2,7 @@ import {
   ClosedQuestionStatus,
   CreateQuestionParams,
   CreateQuestionResponse,
+  ERROR_MESSAGES,
   GetQuestionResponse,
   OpenQuestionStatus,
   QuestionStatusKeys,
@@ -9,7 +10,6 @@ import {
   UpdateQuestionParams,
   UpdateQuestionResponse,
 } from '@koh/common';
-import { ERROR_MESSAGES } from '@koh/common/constants';
 import {
   BadRequestException,
   Body,
