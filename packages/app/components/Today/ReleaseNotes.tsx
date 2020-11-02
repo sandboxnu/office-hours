@@ -1,3 +1,4 @@
+import useSWR from "swr";
 import { Modal, notification } from "antd";
 import { ReactElement, useState, useEffect } from "react";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
@@ -9,21 +10,14 @@ export default function ReleaseNotes(): ReactElement {
     "releaseNotesLastSeen",
     null
   );
-  const [releaseNotesLastUpdated, setReleaseNotesLastUpdated] = useState(0);
-  const [notionReleaseNotes, setNotionReleaseNotes] = useState<BlockMapType>();
   const [showReleaseNotes, setShowReleaseNotes] = useState(false);
-
-  useEffect(() => {
-    (async () => {
-      const data = await API.releaseNotes.get()
-      setNotionReleaseNotes(data.releaseNotes as BlockMapType)
-      setReleaseNotesLastUpdated(data.lastUpdatedUnixTime);
-    })();
-  }, []);
+  const { data } = useSWR(`api/v1/release_notes`, async () =>
+    API.releaseNotes.get()
+  );
 
   if (
-    (!releaseNotesLastSeen && releaseNotesLastUpdated) ||
-    new Date(releaseNotesLastSeen) < new Date(releaseNotesLastUpdated)
+    (!releaseNotesLastSeen && data?.lastUpdatedUnixTime) ||
+    new Date(releaseNotesLastSeen) < new Date(data?.lastUpdatedUnixTime)
   ) {
     notification.open({
       message: "We've got new features/bug fixes",
@@ -51,7 +45,7 @@ export default function ReleaseNotes(): ReactElement {
 
   return (
     <div onClick={openLinksInNewTab}>
-      {notionReleaseNotes ? (
+      {data?.releaseNotes ? (
         <Modal
           title={"Release Notes"}
           visible={showReleaseNotes}
@@ -68,7 +62,7 @@ export default function ReleaseNotes(): ReactElement {
           width={625}
           onCancel={() => setShowReleaseNotes(false)}
         >
-          <NotionRenderer blockMap={notionReleaseNotes} />
+          <NotionRenderer blockMap={data.releaseNotes as BlockMapType} />
         </Modal>
       ) : null}
     </div>
