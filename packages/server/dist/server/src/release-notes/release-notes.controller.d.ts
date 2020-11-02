@@ -1,6 +1,6 @@
-import { HttpService } from "@nestjs/common";
-import { Connection } from "typeorm";
-import { GetReleaseNotesResponse } from "@koh/common";
+import { HttpService } from '@nestjs/common';
+import { Connection } from 'typeorm';
+import { GetReleaseNotesResponse } from '@koh/common';
 export declare class ReleaseNotesController {
     private connection;
     private httpService;
