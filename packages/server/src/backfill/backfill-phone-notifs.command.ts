@@ -54,10 +54,10 @@ export class BackfillPhoneNotifs {
     // Delete and make sure to disable phonenotif for user
     console.log(
       'deleting phone notifs: ',
-      toDelete.map(d => d.phoneNumber),
+      toDelete.map((d) => d.phoneNumber),
     );
     if (toDelete.length) {
-      await PhoneNotifModel.delete(toDelete.map(d => d.id));
+      await PhoneNotifModel.delete(toDelete.map((d) => d.id));
     }
 
     const usersToDisable = (
@@ -65,8 +65,8 @@ export class BackfillPhoneNotifs {
         where: { phoneNotifsEnabled: true },
         relations: ['phoneNotif'],
       })
-    ).filter(u => !u.phoneNotif);
-    usersToDisable.forEach(u => (u.phoneNotifsEnabled = false));
+    ).filter((u) => !u.phoneNotif);
+    usersToDisable.forEach((u) => (u.phoneNotifsEnabled = false));
 
     await UserModel.save(usersToDisable);
     console.log(`disabled phonenotifs for ${usersToDisable.length} users`);

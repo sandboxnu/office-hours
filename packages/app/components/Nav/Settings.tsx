@@ -62,10 +62,9 @@ export default function Settings(): ReactElement {
                   onClick={() => {
                     window.open(
                       "https://www.notion.so/Office-Hours-Help-Guide-a89c73dd53204cc3970ac44d61917417"
-                    )
+                    );
                     setIsPopoverOpen(false);
-                  }
-                  }
+                  }}
                 >
                   Help Guide
                 </Menu.Item>
@@ -75,10 +74,9 @@ export default function Settings(): ReactElement {
                   onClick={() => {
                     window.open(
                       "https://www.notion.so/Release-Notes-Archive-9a1a0eab073a463096fc3699bf48219c"
-                    )
+                    );
                     setIsPopoverOpen(false);
-                  }
-                  }
+                  }}
                 >
                   Release Notes
                 </Menu.Item>
