@@ -186,6 +186,7 @@ export default function StudentQueueList({
         notification.warn({
           style: { cursor: "pointer" },
           message: "Enable Notifications",
+          className: "hide-in-percy",
           description:
             "Turn on notifications for when it's almost your turn to get help.",
           placement: "bottomRight",

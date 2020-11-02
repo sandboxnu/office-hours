@@ -13,6 +13,7 @@ import {
   UpdateQuestionParams,
   UpdateQuestionResponse,
   UpdateQueueParams,
+  GetReleaseNotesResponse,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -122,7 +123,11 @@ class APIClient {
   seeds = {
     delete: async () => this.req("GET", `/api/v1/seeds/delete`),
     create: async () => this.req("GET", `/api/v1/seeds/create`),
-    fillQueue: async () => this.req("GET", `/api/v1/seeds/fillQueue`),
+    fillQueue: async () => this.req("GET", `/api/v1/seeds/fill_queue`),
+  };
+  releaseNotes = {
+    get: async (): Promise<GetReleaseNotesResponse> =>
+      this.req("GET", `/api/v1/release_notes`),
   };
   constructor(baseURL = "") {
     this.axios = Axios.create({ baseURL: baseURL });

@@ -73,7 +73,7 @@ export default function Settings(): ReactElement {
                   icon={<FileTextOutlined />}
                   onClick={() => {
                     window.open(
-                      "https://www.notion.so/Release-Notes-abba246bfa0847baa2706ab30d0c6c7d"
+                      "https://www.notion.so/Release-Notes-Archive-9a1a0eab073a463096fc3699bf48219c"
                     );
                     setIsPopoverOpen(false);
                   }}

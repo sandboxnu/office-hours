@@ -482,3 +482,8 @@ export interface TwilioBody {
   From: string;
   ApiVersion: string;
 }
+
+export interface GetReleaseNotesResponse {
+  releaseNotes: unknown;
+  lastUpdatedUnixTime: number;
+}
