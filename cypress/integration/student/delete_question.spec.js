@@ -43,7 +43,7 @@ describe("Student can delete their question", () => {
 
     // Click the Leave Queue button
     cy.get('[data-cy="leave-queue"]').should("be.visible");
-    
+
     cy.get('[data-cy="leave-queue"]').click();
 
     // Click Yes on the Pop confirm
