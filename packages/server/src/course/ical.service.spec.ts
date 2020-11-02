@@ -312,6 +312,46 @@ LOCATION:
 END:VEVENT
 `;
 
+// Give time on monday, but late enough that in some timezones it becomes tuesday, potentially breaking the BYDAY=MO
+const VEVENT_OUTLOOK_SPILLOVER = `
+BEGIN:VEVENT
+RRULE:FREQ=WEEKLY;UNTIL=20210221T210000Z;INTERVAL=1;BYDAY=MO;WKST=SU
+EXDATE;TZID=Alaskan Standard Time:20210207T210000
+UID:040000008200E00074C5B7101A82E0080000000015AA42D4B686D601000000000000000
+ 010000000103558E135B36F4089C2D45B6001924E
+SUMMARY:Hours CS3700 - Ashwin
+DTSTART;TZID=Alaskan Standard Time:20210208T210000
+DTEND;TZID=Alaskan Standard Time:20210208T230000
+CLASS:PUBLIC
+PRIORITY:5
+DTSTAMP:20201012T184435Z
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+SEQUENCE:0
+LOCATION:
+END:VEVENT
+`;
+
+// time is on monday, but running in timezone makes it tuesday. also daylight savings threshold
+const VEVENT_OUTLOOK_SPILLOVER_DST = `
+BEGIN:VEVENT
+RRULE:FREQ=WEEKLY;UNTIL=20210321T210000Z;INTERVAL=1;BYDAY=MO;WKST=SU
+EXDATE;TZID=Alaskan Standard Time:20210307T210000
+UID:040000008200E00074C5B7101A82E0080000000015AA42D4B686D601000000000000000
+ 010000000103558E135B36F4089C2D45B6001924E
+SUMMARY:Hours CS3700 - Ashwin
+DTSTART;TZID=Alaskan Standard Time:20210308T210000
+DTEND;TZID=Alaskan Standard Time:20210308T230000
+CLASS:PUBLIC
+PRIORITY:5
+DTSTAMP:20201012T184435Z
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+SEQUENCE:0
+LOCATION:
+END:VEVENT
+`;
+
 describe('IcalService', () => {
   let service: IcalService;
   let conn: Connection;
@@ -636,6 +676,44 @@ describe('IcalService', () => {
         room: '',
         startTime: new Date('2021-03-15T15:00:00+0000'),
         endTime: new Date('2021-03-15T17:00:00+0000'),
+      });
+    });
+
+    it('correct times in outlook with timezone spillover', () => {
+      const parsedICS = mkCal(VEVENT_OUTLOOK_SPILLOVER);
+      const endData = service.parseIcal(parsedICS, 123);
+      expect(endData).toContainEqual({
+        title: 'Hours CS3700 - Ashwin',
+        courseId: 123,
+        room: '',
+        startTime: new Date('2021-02-09T06:00:00+0000'),
+        endTime: new Date('2021-02-09T08:00:00+0000'),
+      });
+      expect(endData).toContainEqual({
+        title: 'Hours CS3700 - Ashwin',
+        courseId: 123,
+        room: '',
+        startTime: new Date('2021-02-16T06:00:00+0000'),
+        endTime: new Date('2021-02-16T08:00:00+0000'),
+      });
+    });
+
+    it('correct times in outlook with timezone spillover, across DST', () => {
+      const parsedICS = mkCal(VEVENT_OUTLOOK_SPILLOVER_DST);
+      const endData = service.parseIcal(parsedICS, 123);
+      expect(endData).toContainEqual({
+        title: 'Hours CS3700 - Ashwin',
+        courseId: 123,
+        room: '',
+        startTime: new Date('2021-03-09T06:00:00+0000'),
+        endTime: new Date('2021-03-09T08:00:00+0000'),
+      });
+      expect(endData).toContainEqual({
+        title: 'Hours CS3700 - Ashwin',
+        courseId: 123,
+        room: '',
+        startTime: new Date('2021-03-16T05:00:00+0000'),
+        endTime: new Date('2021-03-16T07:00:00+0000'),
       });
     });
 
