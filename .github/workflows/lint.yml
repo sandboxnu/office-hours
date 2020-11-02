@@ -8,12 +8,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: install node v12
-        uses: actions/setup-node@v1
         with:
-          node-version: 12
-      - uses: bahmutov/npm-install@v1
-      - run: yarn pretty-quick --branch master --check
+          ref: ${{ github.head_ref }}
+      - name: Prettify code
+        uses: creyD/prettier_action@v3.0
+        with:
+          prettier_options: --write **/*.{js,jsx,ts,tsx}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   lint:
     name: lint
     runs-on: ubuntu-latest
