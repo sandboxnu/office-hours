@@ -295,13 +295,13 @@ END:VEVENT
 
 const VEVENT_DAYLIGHT_SAVINGS_SPRING_FORWARD_OUTLOOK = `
 BEGIN:VEVENT
-RRULE:FREQ=WEEKLY;UNTIL=20210321T210000Z;INTERVAL=1;BYDAY=MO;WKST=SU
-EXDATE;TZID=Eastern Standard Time:20210307T210000
+RRULE:FREQ=WEEKLY;UNTIL=20210321T110000Z;INTERVAL=1;BYDAY=MO;WKST=SU
+EXDATE;TZID=Eastern Standard Time:20210307T110000
 UID:040000008200E00074C5B7101A82E0080000000015AA42D4B686D601000000000000000
  010000000103558E135B36F4089C2D45B6001924E
 SUMMARY:Hours CS3700 - Ashwin
-DTSTART;TZID=Eastern Standard Time:20210308T210000
-DTEND;TZID=Eastern Standard Time:20210308T230000
+DTSTART;TZID=Eastern Standard Time:20210308T110000
+DTEND;TZID=Eastern Standard Time:20210308T130000
 CLASS:PUBLIC
 PRIORITY:5
 DTSTAMP:20201012T184435Z
@@ -627,15 +627,15 @@ describe('IcalService', () => {
         title: 'Hours CS3700 - Ashwin',
         courseId: 123,
         room: '',
-        startTime: new Date('2021-03-09T02:00:00+0000'),
-        endTime: new Date('2021-03-09T04:00:00+0000'),
+        startTime: new Date('2021-03-08T16:00:00+0000'),
+        endTime: new Date('2021-03-08T18:00:00+0000'),
       });
       expect(endData).toContainEqual({
         title: 'Hours CS3700 - Ashwin',
         courseId: 123,
         room: '',
-        startTime: new Date('2021-03-16T01:00:00+0000'),
-        endTime: new Date('2021-03-16T03:00:00+0000'),
+        startTime: new Date('2021-03-15T15:00:00+0000'),
+        endTime: new Date('2021-03-15T17:00:00+0000'),
       });
     });
 
