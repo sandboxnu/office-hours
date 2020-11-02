@@ -266,6 +266,24 @@ X-MICROSOFT-DISALLOW-COUNTER:FALSE
 END:VEVENT
 `;
 
+const VEVENT_DAYLIGHT_SAVINGS = `
+BEGIN:VEVENT
+DTSTART;TZID=America/New_York:20200913T150000
+DTEND;TZID=America/New_York:20200913T170000
+RRULE:FREQ=WEEKLY;WKST=SU;UNTIL=20201207T045959Z;BYDAY=SU
+DTSTAMP:20201101T205139Z
+UID:2s1c10e3ti5s47i9t81pp01i8u@google.com
+CREATED:20200910T202032Z
+DESCRIPTION:
+LAST-MODIFIED:20200910T202032Z
+LOCATION:
+SEQUENCE:0
+STATUS:CONFIRMED
+SUMMARY:OH: Anurag
+TRANSP:OPAQUE
+END:VEVENT
+`;
+
 describe('IcalService', () => {
   let service: IcalService;
   let conn: Connection;
@@ -534,6 +552,26 @@ describe('IcalService', () => {
         endTime: new Date('2020-09-16T13:00:00+0000'),
       });
       expect(endData.length).toEqual((10 * 7) / 2 - 1);
+    });
+
+    it('event times should be the same before and after daylight savings', () => {
+      const parsedICS = mkCal(VEVENT_DAYLIGHT_SAVINGS);
+      const endData = service.parseIcal(parsedICS, 123);
+      expect(endData).toContainEqual({
+        title: 'OH: Anurag',
+        courseId: 123,
+        room: '',
+        startTime: new Date('2020-10-25T19:00:00+0000'),
+        endTime: new Date('2020-10-25T21:00:00+0000'),
+      });
+      expect(endData).toContainEqual({
+        title: 'OH: Anurag',
+        courseId: 123,
+        room: '',
+        startTime: new Date('2020-11-01T19:00:00+0000'),
+        endTime: new Date('2020-11-01T21:00:00+0000'),
+      });
+      // expect(endData.length).toEqual((10 * 7) / 2 - 1);
     });
 
     describe('updateCalendarForCourse', () => {
