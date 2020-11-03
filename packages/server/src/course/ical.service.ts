@@ -35,6 +35,61 @@ export class IcalService {
     }
   }
 
+  // Generate date of occurences for an rrule in the given timezone, excluding the list of dates
+  private rruleToDates(rrule: any, eventTZ: string, exdateRaw: Date[]): Date[] {
+    const { options } = rrule;
+    const dtstart: Moment = this.fixOutlookTZ(moment(options.dtstart), eventTZ);
+    const until: Moment =
+      options.until && this.fixOutlookTZ(moment(options.until), eventTZ);
+    const eventTZMoment = moment.tz.zone(findOneIana(eventTZ) || eventTZ);
+
+    // Get the UTC Offset in this event's timezone, at this time. Accounts for Daylight Savings and other oddities
+    const tzUTCOffsetOnDate = (date: Moment) =>
+      eventTZMoment.utcOffset(date.valueOf());
+    const dtstartUTCOffset = tzUTCOffsetOnDate(dtstart);
+
+    // Apply a UTC offset in minutes to the given Moment
+    const applyOffset = (date: Moment, utcOffset: number): Moment =>
+      moment(date).subtract(utcOffset, 'minutes');
+    // apply the UTC adjustment required by the rrule lib
+    const preRRule = (date: Moment) => applyOffset(date, dtstartUTCOffset);
+    // Revert the UTC adjustment required by the rrule lib
+    const postRRule = (date: Moment) => applyOffset(date, -dtstartUTCOffset);
+
+    // Adjust for rrule not taking into account DST in locale
+    //   ie. "8pm every friday" means having to push back 60 minutes after Fall Backwards
+    const fixDST = (date: Moment): Moment =>
+      moment(date).subtract(
+        // Get the difference in UTC offset between dtstart and this date (so if we crossed DST switch, this will be nonzero)
+        dtstartUTCOffset - tzUTCOffsetOnDate(date),
+        'minutes',
+      );
+
+    const rule = new RRule({
+      freq: options.freq,
+      interval: options.interval,
+      wkst: options.wkst,
+      count: options.count,
+      byweekday: options.byweekday,
+      dtstart: preRRule(dtstart).toDate(),
+      until: until && preRRule(until).toDate(),
+    });
+
+    // Dates to exclude from recurrence, separate exdate timestamp for filtering
+    const exdates: number[] = Object.values(exdateRaw || {})
+      .map((d) => this.fixOutlookTZ(moment(d), eventTZ))
+      .map((d) => applyOffset(d, tzUTCOffsetOnDate(d)).valueOf());
+
+    // Doing math here because moment.add changes behavior based on server timezone
+    const in10Weeks = new Date(
+      dtstart.valueOf() + 1000 * 60 * 60 * 24 * 7 * 10,
+    );
+    return rule
+      .all((d) => !!until || d < in10Weeks)
+      .filter((date) => !exdates.includes(date.getTime()))
+      .map((d) => fixDST(postRRule(moment(d))).toDate());
+  }
+
   parseIcal(icalData: CalendarResponse, courseId: number): CreateOfficeHour {
     const icalDataValues: Array<CalendarComponent> = Object.values(icalData);
 
@@ -58,69 +113,15 @@ export class IcalService {
       const eventTZ = oh.start.tz;
       const { rrule } = oh as any;
       if (rrule) {
-        const { options } = rrule;
-        const dtstart: Moment = this.fixOutlookTZ(
-          moment(options.dtstart),
-          eventTZ,
-        );
-        const until: Moment =
-          options.until && this.fixOutlookTZ(moment(options.until), eventTZ);
-        const eventTZMoment = moment.tz.zone(findOneIana(eventTZ) || eventTZ);
-
-        // Get the UTC Offset in this event's timezone, at this time. Accounts for Daylight Savings and other oddities
-        const tzUTCOffsetOnDate = (date: Moment) =>
-          eventTZMoment.utcOffset(date.valueOf());
-        const dtstartUTCOffset = tzUTCOffsetOnDate(dtstart);
-
-        // Apply a UTC offset in minutes to the given Moment
-        const applyOffset = (date: Moment, utcOffset: number): Moment =>
-          moment(date).subtract(utcOffset, 'minutes');
-        // apply the UTC adjustment required by the rrule lib
-        const preRRule = (date: Moment) => applyOffset(date, dtstartUTCOffset);
-        // Revert the UTC adjustment required by the rrule lib
-        const postRRule = (date: Moment) =>
-          applyOffset(date, -dtstartUTCOffset);
-
-        // Adjust for rrule not taking into account DST in locale
-        const fixDST = (date: Moment): Moment =>
-          moment(date).subtract(
-            // Get the difference in UTC offset between dtstart and this date (so if we crossed DST switch, this will be nonzero)
-            dtstartUTCOffset - tzUTCOffsetOnDate(date),
-            'minutes',
-          );
-
-        const rule = new RRule({
-          freq: options.freq,
-          interval: options.interval,
-          wkst: options.wkst,
-          count: options.count,
-          byweekday: options.byweekday,
-          dtstart: preRRule(dtstart).toDate(),
-          until: until && preRRule(until).toDate(),
-        });
-
-        // Dates to exclude from recurrence, separate exdate timestamp for filtering
-        const exdates: number[] = Object.values(oh.exdate || {})
-          .map((d) => this.fixOutlookTZ(moment(d), eventTZ))
-          .map((d) => applyOffset(d, tzUTCOffsetOnDate(d)).valueOf());
-
-        // Doing math here because moment.add changes behavior based on server timezone
-        const in10Weeks = new Date(
-          dtstart.valueOf() + 1000 * 60 * 60 * 24 * 7 * 10,
-        );
-        const allDates: Moment[] = rule
-          .all((d) => !!until || d < in10Weeks)
-          .filter((date) => !exdates.includes(date.getTime()))
-          .map((d) => fixDST(postRRule(moment(d))));
-
         const duration = oh.end.getTime() - oh.start.getTime();
 
+        const allDates = this.rruleToDates(rrule, eventTZ, oh.exdate);
         const generatedOfficeHours = allDates.map((date) => ({
           title: oh.summary,
           courseId: courseId,
           room: oh.location,
-          startTime: date.toDate(),
-          endTime: new Date(date.valueOf() + duration),
+          startTime: date,
+          endTime: new Date(date.getTime() + duration),
         }));
         resultOfficeHours = resultOfficeHours.concat(generatedOfficeHours);
       } else {
