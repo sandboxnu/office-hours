@@ -14,7 +14,6 @@ import { findOneIana } from 'windows-iana/dist';
 import 'moment-timezone';
 import moment = require('moment');
 import { RRule } from 'rrule';
-import { apply } from 'async';
 
 type Moment = moment.Moment;
 
@@ -50,7 +49,7 @@ export class IcalService {
 
     // Apply a UTC offset in minutes to the given Moment
     const applyOffset = (date: Moment, utcOffset: number): Moment =>
-      moment(date).subtract(utcOffset, 'minutes');
+      moment(date).subtract(utcOffset, 'm');
     // apply the UTC adjustment required by the rrule lib
     const preRRule = (date: Moment) => applyOffset(date, dtstartUTCOffset);
     // Revert the UTC adjustment required by the rrule lib
@@ -59,11 +58,8 @@ export class IcalService {
     // Adjust for rrule not taking into account DST in locale
     //   ie. "8pm every friday" means having to push back 60 minutes after Fall Backwards
     const fixDST = (date: Moment): Moment =>
-      moment(date).subtract(
-        // Get the difference in UTC offset between dtstart and this date (so if we crossed DST switch, this will be nonzero)
-        dtstartUTCOffset - tzUTCOffsetOnDate(date),
-        'minutes',
-      );
+      // Get the difference in UTC offset between dtstart and this date (so if we crossed DST switch, this will be nonzero)
+      moment(date).subtract(dtstartUTCOffset - tzUTCOffsetOnDate(date), 'm');
 
     const rule = new RRule({
       freq: options.freq,
