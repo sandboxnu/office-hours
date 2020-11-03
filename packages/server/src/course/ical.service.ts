@@ -14,6 +14,9 @@ import { findOneIana } from 'windows-iana/dist';
 import 'moment-timezone';
 import moment = require('moment');
 import { RRule } from 'rrule';
+import { apply } from 'async';
+
+type Moment = moment.Moment;
 
 type CreateOfficeHour = DeepPartial<OfficeHourModel>[];
 
@@ -22,27 +25,14 @@ export class IcalService {
   constructor(private connection: Connection) {}
 
   // tz should not be preconverted by findOneIana
-  private fixTimezone(date: Date, tz: string): Date {
-    if (!tz) {
+  private fixOutlookTZ(date: Moment, tz: string): Moment {
+    const iana = findOneIana(tz); // Get IANA timezone from windows timezone
+    if (iana) {
+      // Move to the timezone because node-ical didn't do it for us, since it does not recognize windows timezone
+      return moment(date).tz(iana, true);
+    } else {
       return date;
     }
-    const iana = findOneIana(tz); // Get IANA timezone from windows timezone
-
-    const eventoffset = moment.tz.zone(iana || tz).utcOffset(date.getTime());
-    const serveroffset = moment.tz
-      .zone(moment.tz.guess())
-      .utcOffset(date.getTime()); //date.getTimezoneOffset();
-    const mome = moment(date);
-    if (iana) {
-      // if windows timezone
-      mome.subtract(serveroffset - eventoffset, 'minutes');
-    }
-    return mome.toDate();
-  }
-
-  // If IANA, just return, else convert windows timezone to IANA
-  private ensureIana(tz: string): string {
-    return findOneIana(tz) || tz;
   }
 
   parseIcal(icalData: CalendarResponse, courseId: number): CreateOfficeHour {
@@ -69,20 +59,35 @@ export class IcalService {
       const { rrule } = oh as any;
       if (rrule) {
         const { options } = rrule;
-        const dtstart: Date = this.fixTimezone(options.dtstart, eventTZ);
-        const until: Date =
-          options.until && this.fixTimezone(options.until, eventTZ);
-        const eventTZMoment = moment.tz.zone(this.ensureIana(eventTZ));
-        const dtstartUTCOffset = eventTZMoment.utcOffset(dtstart.getTime());
+        const dtstart: Moment = this.fixOutlookTZ(
+          moment(options.dtstart),
+          eventTZ,
+        );
+        const until: Moment =
+          options.until && this.fixOutlookTZ(moment(options.until), eventTZ);
+        const eventTZMoment = moment.tz.zone(findOneIana(eventTZ) || eventTZ);
 
-        const toUTC = (date: Date): Date =>
-          moment(date)
-            .subtract(eventTZMoment.utcOffset(date.getTime()), 'minutes')
-            .toDate();
-        const rruleAdjust = (date: Date): Date =>
-          moment(date).subtract(dtstartUTCOffset, 'minutes').toDate();
-        const rruleDeAdjust = (date: number): moment.Moment =>
-          moment(date).add(dtstartUTCOffset, 'minutes');
+        // Get the UTC Offset in this event's timezone, at this time. Accounts for Daylight Savings and other oddities
+        const tzUTCOffsetOnDate = (date: Moment) =>
+          eventTZMoment.utcOffset(date.valueOf());
+        const dtstartUTCOffset = tzUTCOffsetOnDate(dtstart);
+
+        // Apply a UTC offset in minutes to the given Moment
+        const applyOffset = (date: Moment, utcOffset: number): Moment =>
+          moment(date).subtract(utcOffset, 'minutes');
+        // apply the UTC adjustment required by the rrule lib
+        const preRRule = (date: Moment) => applyOffset(date, dtstartUTCOffset);
+        // Revert the UTC adjustment required by the rrule lib
+        const postRRule = (date: Moment) =>
+          applyOffset(date, -dtstartUTCOffset);
+
+        // Adjust for rrule not taking into account DST in locale
+        const fixDST = (date: Moment): Moment =>
+          moment(date).subtract(
+            // Get the difference in UTC offset between dtstart and this date (so if we crossed DST switch, this will be nonzero)
+            dtstartUTCOffset - tzUTCOffsetOnDate(date),
+            'minutes',
+          );
 
         const rule = new RRule({
           freq: options.freq,
@@ -90,43 +95,32 @@ export class IcalService {
           wkst: options.wkst,
           count: options.count,
           byweekday: options.byweekday,
-          dtstart: rruleAdjust(dtstart),
-          until:
-            until &&
-            moment(until)
-              .subtract(eventTZMoment.utcOffset(until.getTime()), 'minutes')
-              .toDate(),
+          dtstart: preRRule(dtstart).toDate(),
+          until: until && preRRule(until).toDate(),
         });
 
-        // Dates to exclude from recurrence, separate exdate ISOStrings for filtering
-        const exdates: string[] = Object.values(
-          oh.exdate || [],
-        ).map((d: Date) => toUTC(this.fixTimezone(d, eventTZ)).toISOString());
+        // Dates to exclude from recurrence, separate exdate timestamp for filtering
+        const exdates: number[] = Object.values(oh.exdate || {})
+          .map((d) => this.fixOutlookTZ(moment(d), eventTZ))
+          .map((d) => applyOffset(d, tzUTCOffsetOnDate(d)).valueOf());
 
         // Doing math here because moment.add changes behavior based on server timezone
         const in10Weeks = new Date(
-          dtstart.getTime() + 1000 * 60 * 60 * 24 * 7 * 10,
+          dtstart.valueOf() + 1000 * 60 * 60 * 24 * 7 * 10,
         );
-        const allDates = rule
+        const allDates: Moment[] = rule
           .all((d) => !!until || d < in10Weeks)
-          .filter((date) => !exdates.includes(date.toISOString()));
+          .filter((date) => !exdates.includes(date.getTime()))
+          .map((d) => fixDST(postRRule(moment(d))));
 
         const duration = oh.end.getTime() - oh.start.getTime();
-
-        const fixDST = (date: moment.Moment) =>
-          date
-            .subtract(
-              dtstartUTCOffset - eventTZMoment.utcOffset(date.valueOf()),
-              'minutes',
-            )
-            .toDate();
 
         const generatedOfficeHours = allDates.map((date) => ({
           title: oh.summary,
           courseId: courseId,
           room: oh.location,
-          startTime: fixDST(rruleDeAdjust(date.getTime())),
-          endTime: fixDST(rruleDeAdjust(date.getTime() + duration)),
+          startTime: date.toDate(),
+          endTime: new Date(date.valueOf() + duration),
         }));
         resultOfficeHours = resultOfficeHours.concat(generatedOfficeHours);
       } else {
@@ -134,8 +128,8 @@ export class IcalService {
           title: oh.summary,
           courseId: courseId,
           room: oh.location,
-          startTime: this.fixTimezone(oh.start, eventTZ),
-          endTime: this.fixTimezone(oh.end, eventTZ),
+          startTime: this.fixOutlookTZ(moment(oh.start), eventTZ).toDate(),
+          endTime: this.fixOutlookTZ(moment(oh.end), eventTZ).toDate(),
         });
       }
     });
