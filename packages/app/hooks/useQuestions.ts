@@ -1,9 +1,5 @@
 import { API } from "@koh/api-client";
-import {
-  ListQuestionsResponse,
-  Question,
-  SSEQueueResponse,
-} from "@koh/common";
+import { ListQuestionsResponse, Question, SSEQueueResponse } from "@koh/common";
 import useSWR, { responseInterface } from "swr";
 import { plainToClass } from "class-transformer";
 import { useCallback } from "react";
