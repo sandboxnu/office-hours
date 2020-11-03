@@ -239,6 +239,25 @@ SUMMARY:OH- Amit Shesh
 TRANSP:OPAQUE
 END:VEVENT`;
 
+const VEVENT_RRULE_MULTI_DAY_EXDATE_DST = `
+BEGIN:VEVENT
+DTSTART;TZID=America/New_York:20201022T100000
+DTEND;TZID=America/New_York:20201022T120000
+RRULE:FREQ=WEEKLY;WKST=SU;UNTIL=20201113T045959Z;BYDAY=TH
+EXDATE;TZID=America/New_York:20201029T100000
+EXDATE;TZID=America/New_York:20201105T100000
+DTSTAMP:20200930T014722Z
+UID:2l78nihhi7j3pd00v3u5o7vsfq@google.com
+CREATED:20200921T140232Z
+DESCRIPTION:
+LAST-MODIFIED:20200921T140232Z
+LOCATION:
+SEQUENCE:0
+STATUS:CONFIRMED
+SUMMARY:OH- Amit Shesh
+TRANSP:OPAQUE
+END:VEVENT`;
+
 const VEVENT_RRULE_OUTLOOK_EXDATE = `
 BEGIN:VEVENT
 RRULE:FREQ=WEEKLY;UNTIL=20201019T170000Z;INTERVAL=1;BYDAY=MO;WKST=SU
@@ -576,6 +595,27 @@ describe('IcalService', () => {
           room: '',
           startTime: new Date('2020-10-05T10:00:00-0400'),
           endTime: new Date('2020-10-05T12:00:00-0400'),
+        },
+      ]);
+    });
+
+    it('excludes deleted date in rrule crossing dst', () => {
+      const parsedICS = mkCal(VEVENT_RRULE_MULTI_DAY_EXDATE_DST);
+      const endData = service.parseIcal(parsedICS, 123);
+      expect(endData).toStrictEqual([
+        {
+          title: 'OH- Amit Shesh',
+          courseId: 123,
+          room: '',
+          startTime: new Date('2020-10-22T10:00:00-0400'),
+          endTime: new Date('2020-10-22T12:00:00-0400'),
+        },
+        {
+          title: 'OH- Amit Shesh',
+          courseId: 123,
+          room: '',
+          startTime: new Date('2020-11-12T11:00:00-0400'),
+          endTime: new Date('2020-11-12T13:00:00-0400'),
         },
       ]);
     });

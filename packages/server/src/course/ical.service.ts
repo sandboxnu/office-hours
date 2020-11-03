@@ -76,8 +76,12 @@ export class IcalService {
         const dtstartUTCOffset = eventTZMoment.utcOffset(dtstart.getTime());
 
         const toUTC = (date: Date): Date =>
+          moment(date)
+            .subtract(eventTZMoment.utcOffset(date.getTime()), 'minutes')
+            .toDate();
+        const rruleAdjust = (date: Date): Date =>
           moment(date).subtract(dtstartUTCOffset, 'minutes').toDate();
-        const undoUTC = (date: number): moment.Moment =>
+        const rruleDeAdjust = (date: number): moment.Moment =>
           moment(date).add(dtstartUTCOffset, 'minutes');
 
         const rule = new RRule({
@@ -86,7 +90,7 @@ export class IcalService {
           wkst: options.wkst,
           count: options.count,
           byweekday: options.byweekday,
-          dtstart: toUTC(dtstart),
+          dtstart: rruleAdjust(dtstart),
           until:
             until &&
             moment(until)
@@ -121,8 +125,8 @@ export class IcalService {
           title: oh.summary,
           courseId: courseId,
           room: oh.location,
-          startTime: fixDST(undoUTC(date.getTime())),
-          endTime: fixDST(undoUTC(date.getTime() + duration)),
+          startTime: fixDST(rruleDeAdjust(date.getTime())),
+          endTime: fixDST(rruleDeAdjust(date.getTime() + duration)),
         }));
         resultOfficeHours = resultOfficeHours.concat(generatedOfficeHours);
       } else {
