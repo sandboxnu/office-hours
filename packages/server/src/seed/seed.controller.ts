@@ -168,7 +168,7 @@ export class SeedController {
     return 'Data successfully seeded';
   }
 
-  @Get('fillQueue')
+  @Get('fill_queue')
   async fillQueue(): Promise<string> {
     const queue = await QueueModel.findOne();
 
