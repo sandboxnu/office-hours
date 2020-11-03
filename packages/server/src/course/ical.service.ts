@@ -29,7 +29,9 @@ export class IcalService {
     const iana = findOneIana(tz); // Get IANA timezone from windows timezone
 
     const eventoffset = moment.tz.zone(iana || tz).utcOffset(date.getTime());
-    const serveroffset = date.getTimezoneOffset();
+    const serveroffset = moment.tz
+      .zone(moment.tz.guess())
+      .utcOffset(date.getTime()); //date.getTimezoneOffset();
     const mome = moment(date);
     if (iana) {
       // if windows timezone
@@ -73,26 +75,29 @@ export class IcalService {
         const eventTZMoment = moment.tz.zone(this.ensureIana(eventTZ));
         const dtstartUTCOffset = eventTZMoment.utcOffset(dtstart.getTime());
 
-        let byweekday = options.byweekday;
-        if (options.byhour[0] >= 0 && options.byhour[0] < 4) {
-          byweekday = options.byweekday.map((bwd) => (bwd + 1) % 7);
-        }
+        const toUTC = (date: Date): Date =>
+          moment(date).subtract(dtstartUTCOffset, 'minutes').toDate();
+        const undoUTC = (date: number): moment.Moment =>
+          moment(date).add(dtstartUTCOffset, 'minutes');
+
         const rule = new RRule({
           freq: options.freq,
           interval: options.interval,
           wkst: options.wkst,
           count: options.count,
-          byweekday,
-          dtstart: dtstart,
-          until: until,
+          byweekday: options.byweekday,
+          dtstart: toUTC(dtstart),
+          until:
+            until &&
+            moment(until)
+              .subtract(eventTZMoment.utcOffset(until.getTime()), 'minutes')
+              .toDate(),
         });
 
         // Dates to exclude from recurrence, separate exdate ISOStrings for filtering
-        const exdates: string[] = [];
-        for (const date in oh.exdate) {
-          const exdate = this.fixTimezone(oh.exdate[date], eventTZ);
-          exdates.push(exdate.toISOString());
-        }
+        const exdates: string[] = Object.values(
+          oh.exdate || [],
+        ).map((d: Date) => toUTC(this.fixTimezone(d, eventTZ)).toISOString());
 
         // Doing math here because moment.add changes behavior based on server timezone
         const in10Weeks = new Date(
@@ -104,10 +109,10 @@ export class IcalService {
 
         const duration = oh.end.getTime() - oh.start.getTime();
 
-        const fixDST = (date: number) =>
-          moment(date)
+        const fixDST = (date: moment.Moment) =>
+          date
             .subtract(
-              dtstartUTCOffset - eventTZMoment.utcOffset(date),
+              dtstartUTCOffset - eventTZMoment.utcOffset(date.valueOf()),
               'minutes',
             )
             .toDate();
@@ -116,8 +121,8 @@ export class IcalService {
           title: oh.summary,
           courseId: courseId,
           room: oh.location,
-          startTime: fixDST(date.getTime()),
-          endTime: fixDST(date.getTime() + duration),
+          startTime: fixDST(undoUTC(date.getTime())),
+          endTime: fixDST(undoUTC(date.getTime() + duration)),
         }));
         resultOfficeHours = resultOfficeHours.concat(generatedOfficeHours);
       } else {
