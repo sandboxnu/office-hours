@@ -1,11 +1,21 @@
+const loginUser = (role, identifier) => {
+  //create the user
+  cy.request("POST", "/api/v1/seeds/createUser", {
+    role: role,
+  })
+    .then((res) => res.body)
+    .as(identifier);
+  // log them in
+  cy.get(`@${identifier}`).then((userCourse) => {
+    cy.visit(`/api/v1/login/dev?userId=${userCourse.user.id}`);
+    cy.visit(`/course/${userCourse.courseId}/today`);
+  });
+};
+
 describe("Can successfuly check in and out of a queue", () => {
   beforeEach(() => {
     // Set the state
-    cy.request("POST", "/api/v1/seeds/createUser", {
-      role: "ta",
-    })
-      .then((res) => res.body)
-      .as("ta");
+    loginUser("ta", "ta");
     cy.get("@ta").then((ta) => {
       // Create a queue
       cy.request("POST", "/api/v1/seeds/createQueue", {
@@ -13,10 +23,12 @@ describe("Can successfuly check in and out of a queue", () => {
       })
         .then((res) => res.body)
         .as("queue");
-      // Login the ta
-      cy.visit(`/api/v1/login/dev?userId=${ta.user.id}`);
-      cy.visit(`/course/${ta.courseId}/today`);
     });
+  });
+
+  it("checking in multiple TAs then checking one out", () => {
+    loginUser("ta", "ta2");
+    //cy.request("POST", "/id/ta_location/:room", {courseId = ta2.course.id, room = "", user=})
   });
 
   it("from the queue page", () => {
