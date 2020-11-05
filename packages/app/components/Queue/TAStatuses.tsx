@@ -82,7 +82,7 @@ function StatusCard({
 }: StatusCardProps): ReactElement {
   const isBusy = !!helpedAt;
   return (
-    <StyledCard>
+    <StyledCard data-cy="ta-status-card">
       {
         //TODO: bring back photo URL && get rid of RegeX
         // src={taPhotoURL}

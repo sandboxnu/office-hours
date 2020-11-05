@@ -1,7 +1,8 @@
-const loginUser = (role, identifier) => {
+function loginUser (role, identifier, courseId = null) {
   //create the user
   cy.request("POST", "/api/v1/seeds/createUser", {
     role: role,
+    courseId
   })
     .then((res) => res.body)
     .as(identifier);
@@ -9,6 +10,7 @@ const loginUser = (role, identifier) => {
   cy.get(`@${identifier}`).then((userCourse) => {
     cy.visit(`/api/v1/login/dev?userId=${userCourse.user.id}`);
     cy.visit(`/course/${userCourse.courseId}/today`);
+    cy.getCookie("auth_token").as(`${identifier}_auth_token`);
   });
 };
 
@@ -21,17 +23,41 @@ describe("Can successfuly check in and out of a queue", () => {
       cy.request("POST", "/api/v1/seeds/createQueue", {
         courseId: ta.course.id,
       })
-        .then((res) => res.body)
-        .as("queue");
+      .then((res) => res.body)
+      .as("queue");
+      loginUser("ta", "ta2", ta.course.id);
     });
   });
 
-  it("checking in multiple TAs then checking one out", () => {
-    loginUser("ta", "ta2");
-    //cy.request("POST", "/id/ta_location/:room", {courseId = ta2.course.id, room = "", user=})
+  it("checking in multiple TAs then checking one out", function () {
+    cy.request({
+      method: "POST", 
+      url: `/api/v1/courses/${this.ta.course.id}/ta_location/${"Online"}`,
+      headers: {
+        'Cookie': `auth_token=${this.ta_auth_token.value}`
+      }});
+    cy.get(".ant-modal-close-x").click();
+    // Click "Check in"
+    cy.get("[data-cy='check-in-button']").click();
+
+    cy.location("pathname").should("contain", "/queue");
+    cy.get("body").should("contain", "There are no questions in the queue");
+
+    // Wait to see that the user has been checked in
+    cy.contains("Check Out");
+    cy.get("[data-cy='ta-status-card']").should('have.length', '2');
+    cy.percySnapshot("TA Queue Page - Two TA's Checked In");
+
+    
+    // Click "Check out"
+    cy.get("[data-cy='check-out-button']").click();
+    cy.get("button").should("contain", "Check In");
+    
+    cy.get("[data-cy='ta-status-card']").should('have.length', '1');
+    cy.percySnapshot("TA Queue Page - One TA Checked out One TA Checked In");
   });
 
-  it("from the queue page", () => {
+  it("from the queue page", function () {
     // Visit the queue page
     cy.get("@queue").then((queue) =>
       cy.visit(`/course/${queue.courseId}/queue/${queue.id}`)
