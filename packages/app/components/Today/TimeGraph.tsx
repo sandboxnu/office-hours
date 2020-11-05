@@ -110,7 +110,7 @@ export default function TimeGraph({
             const barY = yMax - barHeight;
             return (
               <BarRounded
-                key={`bar-${value}`}
+                key={`bar-${formatWaitTime(i)}`}
                 className="popularTimes__bar"
                 x={barX}
                 y={barY}

@@ -7,7 +7,7 @@ import {
 } from "@ant-design/icons";
 import { Heatmap } from "@koh/common";
 import { Dropdown, Menu } from "antd";
-import { range, sum, uniq } from "lodash";
+import { uniq } from "lodash";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { formatDateHour, formatWaitTime } from "../../utils/TimeUtil";
@@ -59,18 +59,15 @@ const DAYS_OF_WEEK = [
 function findWeekMinAndMax(days: Heatmap) {
   let minHourInWeek = 24;
   let maxHourInWeek = 0;
-  days.forEach((day) =>
-    day.forEach((v, hour) => {
-      if (v) {
-        if (hour > maxHourInWeek) {
-          maxHourInWeek = hour;
-        } else if (hour < minHourInWeek) {
-          minHourInWeek = hour;
-        }
+  days.forEach((v, hour) => {
+    if (v) {
+      if (hour % 24 > maxHourInWeek) {
+        maxHourInWeek = hour % 24;
+      } else if (hour % 24 < minHourInWeek) {
+        minHourInWeek = hour % 24;
       }
-    })
-  );
-
+    }
+  });
   return [minHourInWeek, maxHourInWeek];
 }
 
@@ -81,7 +78,14 @@ const GraphNotes = styled.h4`
 `;
 
 function generateBusyText(day: number, heatmap: Heatmap): string {
-  let dailySumWaitTimes = heatmap.map((hours) => sum(hours));
+  let dailySumWaitTimes = [];
+  for (let d = 0; d < 7; d++) {
+    let dailySum = 0;
+    for (let hr = 0; hr < 24; hr++) {
+      dailySum += heatmap[hr + d * 7];
+    }
+    dailySumWaitTimes.push(dailySum);
+  }
   const dayWaitTime = dailySumWaitTimes[day];
   dailySumWaitTimes = uniq(dailySumWaitTimes).sort((a, b) => a - b);
   const mid =
@@ -134,8 +138,11 @@ export default function PopularTimes({ heatmap }: HeatmapProps): ReactElement {
           <LeftOutlined />
         </GraphArrowButtons>
         <TimeGraph
-          values={heatmap[currentDayOfWeek]}
-          maxTime={Math.max(...heatmap.map((daymap) => Math.max(...daymap)))}
+          values={heatmap.slice(
+            currentDayOfWeek * 24,
+            (currentDayOfWeek + 1) * 24 - 1
+          )}
+          maxTime={Math.max(...heatmap)}
           firstHour={firstHour}
           lastHour={lastHour}
           width={500}
@@ -156,7 +163,9 @@ export default function PopularTimes({ heatmap }: HeatmapProps): ReactElement {
         <HourglassOutlined /> At {formatDateHour(new Date())}, people generally
         wait{" "}
         <strong>
-          {formatWaitTime(heatmap[currentDayOfWeek][new Date().getHours()])}
+          {formatWaitTime(
+            heatmap[currentDayOfWeek * 24 + new Date().getHours()]
+          )}
         </strong>
         .
       </GraphNotes>

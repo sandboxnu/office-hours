@@ -16,6 +16,8 @@ import ReleaseNotes from "../../../components/Today/ReleaseNotes";
 import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useCourse } from "../../../hooks/useCourse";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
+import { range } from "lodash";
+import moment from "moment";
 
 const Container = styled.div`
   margin: 32px 64px;
@@ -29,6 +31,12 @@ const Title = styled.div`
   font-size: 30px;
   color: #212934;
 `;
+
+function arrayRotate(arr, count) {
+  count -= arr.length * Math.floor(count / arr.length);
+  arr.push.apply(arr, arr.splice(0, count));
+  return arr;
+}
 
 export default function Today(): ReactElement {
   const router = useRouter();
@@ -58,7 +66,7 @@ export default function Today(): ReactElement {
       <Head>
         <title>{course?.name} | Khoury Office Hours</title>
       </Head>
-      <ReleaseNotes/>
+      <ReleaseNotes />
       <WelcomeStudents />
       <NavBar courseId={Number(cid)} />
       <Container>
@@ -83,7 +91,12 @@ export default function Today(): ReactElement {
               ))
             )}
             {!course && <OpenQueueCardSkeleton />}
-            {course && <PopularTimes heatmap={course.heatmap} />}
+            {/*This only works with UTC offsets in the form N:00, to help with other offsets, the size of the array might have to change to a size of 24*7*4 (for every 15 min interval) */}
+            {course && (
+              <PopularTimes
+                heatmap={arrayRotate(course.heatmap, moment().utcOffset() / 60)}
+              />
+            )}
           </Col>
           <Col md={12} sm={24}>
             <SchedulePanel courseId={Number(cid)} defaultView="day" />
