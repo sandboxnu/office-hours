@@ -7,8 +7,8 @@ declare type CreateOfficeHour = DeepPartial<OfficeHourModel>[];
 export declare class IcalService {
     private connection;
     constructor(connection: Connection);
-    private fixTimezone;
-    private ensureIana;
+    private fixOutlookTZ;
+    private rruleToDates;
     parseIcal(icalData: CalendarResponse, courseId: number): CreateOfficeHour;
     updateCalendarForCourse(course: CourseModel): Promise<void>;
     updateAllCourses(): Promise<void>;
