@@ -80,6 +80,11 @@ const EditQueueButton = styled(QueueInfoColumnButton)`
   color: #212934;
 `;
 
+const PriorityQueueQuestionBubble = styled(QuestionCircleOutlined)`
+  fontsize: 20;
+  margin-left: 20px;
+`;
+
 interface TAQueueListProps {
   qid: number;
   courseId: number;
@@ -243,9 +248,7 @@ export default function TAQueueList({
                   <>
                     Priority Queue
                     <Tooltip title="Students in the priority queue were at the top of the queue before for some reason (e.g. they were at the top but AFK, or a TA helped them previously, and then hit 'requeue student.' You should communicate with your fellow staff members to prioritize these students first.">
-                      <QuestionCircleOutlined
-                        style={{ fontSize: 20, marginLeft: "20px" }}
-                      />
+                      <PriorityQueueQuestionBubble />
                     </Tooltip>
                   </>
                 }

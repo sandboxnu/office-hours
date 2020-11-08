@@ -18,6 +18,10 @@ const AvatarWithMargin = styled(AvatarWithInitals)`
   margin-right: 16px;
 `;
 
+const TAQueueCardQuestionBubble = styled(QuestionCircleOutlined)`
+  margin-left: 10px;
+`;
+
 interface TAQueueCardProps {
   rank: number;
   question: Question;
@@ -49,7 +53,7 @@ export default function TAQueueCard({
             <Text>{question.creator.name}</Text>
             {question.taHelped ? (
               <Tooltip title={"Last helped by: " + question.taHelped.name}>
-                <QuestionCircleOutlined style={{ marginLeft: "10px" }} />
+                <TAQueueCardQuestionBubble />
               </Tooltip>
             ) : null}
           </CenterRow>

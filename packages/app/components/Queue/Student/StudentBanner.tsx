@@ -30,6 +30,10 @@ const Bullets = styled.ul`
   color: #000;
 `;
 
+const ColWithRightMargin = styled(Col)`
+  margin-right: 32px;
+`;
+
 interface StudentBannerProps {
   queueId: number;
   editQuestion: () => void;
@@ -96,10 +100,10 @@ export default function StudentBanner({
           }
           content={
             <QuestionDetails>
-              <Col flex="1 1" style={{ marginRight: "32px" }}>
+              <ColWithRightMargin flex="1 1">
                 <InfoHeader>question</InfoHeader>
                 <div>{studentQuestion.text}</div>
-              </Col>
+              </ColWithRightMargin>
               <Col flex="0 0 89px">
                 <InfoHeader>type</InfoHeader>
                 <div>{studentQuestion.questionType}</div>
@@ -203,10 +207,10 @@ export default function StudentBanner({
           }
           content={
             <QuestionDetails>
-              <Col flex="1 1" style={{ marginRight: "32px" }}>
+              <ColWithRightMargin flex="1 1">
                 <InfoHeader>question</InfoHeader>
                 <div>{studentQuestion.text}</div>
-              </Col>
+              </ColWithRightMargin>
               <Col flex="0 0 89px">
                 <InfoHeader>type</InfoHeader>
                 <div>{studentQuestion.questionType}</div>

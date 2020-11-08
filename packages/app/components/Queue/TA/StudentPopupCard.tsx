@@ -180,6 +180,13 @@ const StudentPopupCard = ({
           </Col>
         </StyledRow>
 
+        {question.taHelped ? (
+          <FullWidth>
+            <HeadingText>last helped by</HeadingText>
+            <BodyText>{question.taHelped.name}</BodyText>
+          </FullWidth>
+        ) : null}
+
         <FullWidth>
           <HeadingText>question</HeadingText>
           <BodyText>{question.text}</BodyText>
