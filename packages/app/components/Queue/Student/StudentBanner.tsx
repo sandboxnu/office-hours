@@ -189,8 +189,8 @@ export default function StudentBanner({
           contentColor="#ABD4F3"
           title={
             <span>
-              You are now in a priority queue, you will be helped soon. You were
-              last helped by {studentQuestion.taHelped.name}.
+              You are now in a priority queue, you will be helped soon. <br />
+              You were last helped by {studentQuestion.taHelped.name}.
             </span>
           }
           buttons={

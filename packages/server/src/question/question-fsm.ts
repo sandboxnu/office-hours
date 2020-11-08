@@ -42,12 +42,14 @@ const QUESTION_STATES: Record<QuestionStatus, AllowableTransitions> = {
     student: [
       OpenQuestionStatus.PriorityQueued,
       ClosedQuestionStatus.StudentCancelled,
+      ClosedQuestionStatus.ConfirmedDeleted,
     ],
   },
   [LimboQuestionStatus.ReQueueing]: {
     student: [
       OpenQuestionStatus.PriorityQueued,
       ClosedQuestionStatus.StudentCancelled,
+      ClosedQuestionStatus.ConfirmedDeleted,
     ],
   },
   [LimboQuestionStatus.TADeleted]: {

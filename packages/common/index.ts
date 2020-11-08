@@ -233,6 +233,7 @@ export const StatusInQueue = [
 ];
 
 export const StatusInPriorityQueue = [OpenQuestionStatus.PriorityQueued];
+
 export const StatusSentToCreator = [
   ...StatusInPriorityQueue,
   ...StatusInQueue,

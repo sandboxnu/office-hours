@@ -74,6 +74,10 @@ export class QuestionController {
       relations: ['staffList'],
     });
 
+    if (!queue) {
+      throw new NotFoundException('Posted to an invalid queue');
+    }
+
     if (!queue.allowQuestions) {
       throw new BadRequestException('Queue not allowing new questions');
     }

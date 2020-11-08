@@ -96,10 +96,19 @@ export default function StudentQueueList({
             ? OpenQuestionStatus.PriorityQueued
             : OpenQuestionStatus.Queued,
       };
-      await API.questions.update(studentQuestion?.id, updateStudent);
-      const newQuestionsInQueue = questions?.queue?.map((q: Question) =>
-        q.id === studentQuestion?.id ? { ...q, updateStudent } : q
+
+      const updatedQuestionFromStudent = await API.questions.update(
+        studentQuestion?.id,
+        updateStudent
       );
+
+      const newQuestionsInQueue = questions?.queue?.map((question: Question) =>
+        question.id === studentQuestion?.id
+          ? updatedQuestionFromStudent
+          : question
+      );
+
+      // questions are the old questions and newQuestionsInQueue are questions that've been added since.
       mutateQuestions({ ...questions, queue: newQuestionsInQueue });
     },
     [studentQuestion?.id, questions, mutateQuestions]
@@ -310,15 +319,9 @@ interface QueueProps {
   studentQuestion: Question;
 }
 function QueueQuestions({ questions, studentQuestion }: QueueProps) {
-  const renderedQuestions = questions?.filter(
-    (question) =>
-      question.status !== LimboQuestionStatus.TADeleted &&
-      question.status !== OpenQuestionStatus.Helping &&
-      question.status !== LimboQuestionStatus.CantFind
-  );
   return (
     <div data-cy="queueQuestions">
-      {renderedQuestions?.length === 0 ? (
+      {questions?.length === 0 ? (
         <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
       ) : (
         <>
@@ -338,7 +341,7 @@ function QueueQuestions({ questions, studentQuestion }: QueueProps) {
           </StudentHeaderCard>
         </>
       )}
-      {renderedQuestions?.map((question: Question, index: number) => {
+      {questions?.map((question: Question, index: number) => {
         return (
           <StudentQueueCard
             key={question.id}
