@@ -1,6 +1,6 @@
 set -e
 
-yarn migration:generate -n CHECK
+yarn migration:generate -n CHECK || true
 # Check if migration file exists
 if ls packages/server/migration/*-CHECK.ts 1> /dev/null 2>&1; then
   git fetch origin master
