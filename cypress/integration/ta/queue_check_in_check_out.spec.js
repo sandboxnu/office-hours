@@ -62,6 +62,32 @@ describe("Can successfuly check in and out of a queue", () => {
       cy.percySnapshot("TA Today Page - TA Checked Out");
     });
   });
+
+  describe("it opens the clean queue page", () => {
+    beforeEach(() => {
+      // Check in
+      cy.get("@queue").then((queue) => {
+        cy.request(
+          "POST",
+          `/api/v1/courses/${queue.courseId}/ta_location/${queue.room}`
+        );
+        // populate with question
+        cy.request("POST", "/api/v1/seeds/createQuestion", {
+          queueId: queue.id,
+        });
+      });
+    });
+    it.only("from the queue apge", () => {
+      // TODO: change the office hour time
+      // Visit the queue page
+      cy.get("@queue").then((queue) => {
+        cy.visit(`/course/${queue.courseId}/queue/${queue.id}`);
+        // Click "Check out"
+        cy.get("[data-cy='check-out-button']").click();
+        cy.get("button").should("contain", "Check In");
+      });
+    });
+  });
 });
 
 // future tests: add one where there are more TAs than one, add one where
