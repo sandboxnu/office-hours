@@ -7,11 +7,17 @@ const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
 const StartServerPlugin = require('razzle-start-server-webpack-plugin');
 
-module.exports = function(options) {
+module.exports = function (options) {
   return {
     ...options,
     entry: ['webpack/hot/poll?100', options.entry],
     watch: true,
+    cache: {
+      type: 'filesystem',
+      buildDependencies: {
+        config: [__filename],
+      },
+    },
     externals: [
       nodeExternals({
         allowlist: ['webpack/hot/poll?100', '@koh/common'],
@@ -36,7 +42,7 @@ module.exports = function(options) {
     plugins: [
       ...options.plugins,
       new webpack.HotModuleReplacementPlugin(),
-      new webpack.WatchIgnorePlugin({paths: [/\.js$/, /\.d\.ts$/]}),
+      new webpack.WatchIgnorePlugin({ paths: [/\.js$/, /\.d\.ts$/] }),
       new StartServerPlugin(),
     ],
   };
