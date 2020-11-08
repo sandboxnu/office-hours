@@ -239,9 +239,15 @@ export default function TAQueueList({
                 isHelping={isHelping}
                 onOpenCard={onOpenCard}
                 title={
-                  <Tooltip title="Students in the priority queue were at the top of the queue before for some reason (e.g. they were at the top but AFK, or a TA helped them previously, and then hit 'requeue student.' You should communicate with your fellow staff members to prioritize these students first.">
-                    <QuestionCircleOutlined style={{ fontSize: 14 }} />
-                  </Tooltip>
+                  //TODO
+                  <>
+                    Priority Queue
+                    <Tooltip title="Students in the priority queue were at the top of the queue before for some reason (e.g. they were at the top but AFK, or a TA helped them previously, and then hit 'requeue student.' You should communicate with your fellow staff members to prioritize these students first.">
+                      <QuestionCircleOutlined
+                        style={{ fontSize: 20, marginLeft: "20px" }}
+                      />
+                    </Tooltip>
+                  </>
                 }
               />
             )}

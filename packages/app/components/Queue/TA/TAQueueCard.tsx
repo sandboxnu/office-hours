@@ -1,7 +1,7 @@
-import { RightOutlined } from "@ant-design/icons";
+import { QuestionCircleOutlined, RightOutlined } from "@ant-design/icons";
 import { LimboQuestionStatus, Question } from "@koh/common";
-import { Col } from "antd";
-import { ReactElement } from "react";
+import { Col, Tooltip } from "antd";
+import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { getWaitTime } from "../../../utils/TimeUtil";
 import AvatarWithInitals from "../../common/AvatarWithInitials";
@@ -47,6 +47,11 @@ export default function TAQueueCard({
               name={question.creator.name}
             />
             <Text>{question.creator.name}</Text>
+            {question.taHelped ? (
+              <Tooltip title={"Last helped by: " + question.taHelped.name}>
+                <QuestionCircleOutlined style={{ marginLeft: "10px" }} />
+              </Tooltip>
+            ) : null}
           </CenterRow>
         </Col>
         <Col xs={0} lg={2}>
