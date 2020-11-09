@@ -137,10 +137,10 @@ export class HeatmapService {
         ),
       );
 
-      if (sampledTimepoints.length && isFirst) {
+      if (sampledTimepoints.length > 0 && isFirst) {
         isFirst = false;
-        const timeDiff = timeDiffInMins(curr.createdAt, sunday);
-        const intervals = Math.floor((timeDiff % bucketSize) / sampleInterval);
+        const timeDiff = timeDiffInMins(sampledTimepoints[0], sunday);
+        const intervals = Math.ceil((timeDiff % bucketSize) / sampleInterval);
         const bucketIndex = Math.floor(timeDiff / bucketSize);
         for (let i = 0; i < intervals; i++) {
           timepointBuckets[bucketIndex].push(0);
@@ -166,7 +166,12 @@ export class HeatmapService {
     const h: Heatmap = timepointBuckets.map((samples) =>
       samples.length > 0 ? mean(samples) : -1,
     );
-    arrayRotate(h, -moment.tz.zone(timezone).utcOffset(Date.now()) / 60);
+    arrayRotate(
+      h,
+      -moment.tz
+        .zone(timezone)
+        .utcOffset(questions[questions.length - 1].helpedAt.getTime()) / 60,
+    );
     return h;
 
     // rotate to UTC
