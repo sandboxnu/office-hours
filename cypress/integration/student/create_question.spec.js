@@ -1,21 +1,14 @@
+import { loginUser, createQueue } from "../utils";
+
 describe("Student can create a question", () => {
   beforeEach(() => {
-    // Set the state
-    cy.request("POST", "/api/v1/seeds/createUser", {
+    loginUser({
       role: "student",
-    })
-      .then((res) => res.body)
-      .as("student");
-    cy.get("@student").then((student) => {
-      cy.request("POST", "/api/v1/seeds/createQueue", {
-        courseId: student.course.id,
-        allowQuestions: true,
-      })
-        .then((res) => res.body)
-        .as("queue");
-
-      // Login the student
-      cy.visit(`/api/v1/login/dev?userId=${student.user.id}`);
+      identifier: "student",
+    });
+    createQueue({
+      courseId: "student.course.id",
+      identifier: "queue",
     });
   });
   it("Create online question", () => {
