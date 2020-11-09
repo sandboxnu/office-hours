@@ -1,17 +1,24 @@
 import { ClosedQuestionStatus, Heatmap, timeDiffInMins } from '@koh/common';
 import { Injectable } from '@nestjs/common';
-import { mean } from 'lodash';
+import { mean, sample } from 'lodash';
 import moment = require('moment');
 import { Command } from 'nestjs-command';
 import { QuestionModel } from 'question/question.entity';
+import { OfficeHourModel } from './office-hour.entity';
+
+function arrayRotate(arr, count) {
+  count -= arr.length * Math.floor(count / arr.length);
+  arr.push.apply(arr, arr.splice(0, count));
+  return arr;
+}
 
 @Injectable()
 export class HeatmapService {
   async getHeatmapFor(courseId: number): Promise<Heatmap> {
     // The number of minutes to average across
-    const BUCKET_SIZE_IN_MINS = 60;
+    const BUCKET_SIZE_IN_MINS = 15;
     // Number of samples to gather per bucket
-    const SAMPLES_PER_BUCKET = 5;
+    const SAMPLES_PER_BUCKET = 3;
     console.time('heatmap');
     const questions = await QuestionModel.createQueryBuilder('question')
       .leftJoinAndSelect('question.queue', 'queue')
@@ -21,16 +28,16 @@ export class HeatmapService {
       })
       .andWhere('question.helpedAt IS NOT NULL')
       .andWhere('question.createdAt > :recent', {
-        recent: moment()
-          .subtract(8, 'weeks')
-          .toISOString(),
+        recent: moment().subtract(8, 'weeks').toISOString(),
       })
       .orderBy('question.createdAt', 'ASC')
       .getMany();
 
     const heatmap = this._generateHeatMapWithReplay(
       // Ignore questions that cross midnight (usually a fluke)
-      questions.filter(q => q.helpedAt.getDate() === q.createdAt.getDate()),
+      questions.filter((q) => q.helpedAt.getDate() === q.createdAt.getDate()),
+      [], //TODO: query for office hours
+      'America/New_York',
       BUCKET_SIZE_IN_MINS,
       SAMPLES_PER_BUCKET,
     );
@@ -41,8 +48,11 @@ export class HeatmapService {
   // PRIVATE function that is public for testing purposes
   // Rewind through the last few weeks and for each time interval,
   // figure out how long wait time would have been if you had joined the queue at that time
+  // Timezone should be IANA
   _generateHeatMapWithReplay(
     questions: QuestionModel[],
+    hours: OfficeHourModel[],
+    timezone: string,
     bucketSize: number,
     samplesPerBucket: number,
   ): Heatmap {
@@ -69,10 +79,17 @@ export class HeatmapService {
        - sample = Q1.closedAt - timepoint (if negative, then it's 0)
     */
 
+    if (!questions.length) {
+      return [...Array((24 * 7 * 60) / bucketSize)].map(() => -1);
+    }
+
+    const hourTimestamps: [number, number][] = hours.map((hours) => [
+      hours.startTime.getTime(),
+      hours.endTime.getTime(),
+    ]);
+
     const startDate = questions[0].createdAt;
-    const sunday = new Date(startDate);
-    sunday.setUTCDate(startDate.getUTCDate() - startDate.getUTCDay());
-    sunday.setUTCHours(0, 0, 0, 0);
+    const sunday = moment.tz(startDate, timezone).startOf('week').toDate();
 
     function getNextTimepointIndex(date: Date): number {
       return Math.floor(timeDiffInMins(date, sunday) / sampleInterval) + 1;
@@ -86,6 +103,7 @@ export class HeatmapService {
       );
     }
 
+    // Get all timepoints between the two dates
     function getSampleTimepointsInDateRange(date1: Date, date2: Date): Date[] {
       const ret = [];
       let curr = getNextSampleTimepoint(date1);
@@ -98,25 +116,60 @@ export class HeatmapService {
 
     const allTimepointWaitTimes: number[] = [];
 
+    const timepointBuckets: number[][] = [
+      ...Array((24 * 7 * 60) / bucketSize),
+    ].map(() => []);
+
     // go two questions at a time
-    for (let i = 0; i < questions.length - 1; i++) {
+    let isFirst = true;
+    for (let i = 0; i < questions.length; i++) {
       const curr = questions[i];
       const next = questions[i + 1];
+      const isLast = i === questions.length - 1;
 
       // get the timepoints in between
       const sampledTimepoints = getSampleTimepointsInDateRange(
         curr.createdAt,
-        next.createdAt,
+        isLast ? curr.helpedAt : next.createdAt,
+      ).filter((time) =>
+        hourTimestamps.some(
+          ([start, end]) => start <= time.getTime() && time.getTime() < end,
+        ),
       );
 
-      // When we would have gotten help at this timepoint
+      if (sampledTimepoints.length && isFirst) {
+        isFirst = false;
+        const timeDiff = timeDiffInMins(curr.createdAt, sunday);
+        const intervals = Math.floor((timeDiff % bucketSize) / sampleInterval);
+        const bucketIndex = Math.floor(timeDiff / bucketSize);
+        for (let i = 0; i < intervals; i++) {
+          timepointBuckets[bucketIndex].push(0);
+        }
+      }
+      // When we would have hypothetically gotten help at this timepoint
       for (const c of sampledTimepoints) {
-        allTimepointWaitTimes[getNextTimepointIndex(c)] = Math.max(
+        const wait = Math.max(
           0,
           (curr.helpedAt.getTime() - c.getTime()) / 60000,
         );
+        // parse in zone to handle daylight savings by getting day/hour/minute within that IANA zone
+        const cInZone = moment.tz(c, timezone);
+
+        const bucketIndex = Math.floor(
+          (cInZone.day() * 24 * 60 + cInZone.hour() * 60 + cInZone.minute()) /
+            bucketSize,
+        );
+        timepointBuckets[bucketIndex].push(wait);
       }
     }
+
+    const h: Heatmap = timepointBuckets.map((samples) =>
+      samples.length > 0 ? mean(samples) : -1,
+    );
+    arrayRotate(h, -moment.tz.zone(timezone).utcOffset(Date.now()) / 60);
+    return h;
+
+    // rotate to UTC
 
     // Bucket the timepoints
     const SAMPLES_PER_HOUR = 60 / sampleInterval;
