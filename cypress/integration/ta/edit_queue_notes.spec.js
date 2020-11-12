@@ -1,34 +1,19 @@
+import { loginUser, createQueue } from "../utils";
+
 describe("Edit Queue Notes", () => {
   beforeEach(() => {
-    // Set the state
-    cy.request("POST", "/api/v1/seeds/createUser", {
+    loginUser({
       role: "ta",
-    })
-      .then((res) => res.body)
-      .as("ta");
-    cy.get("@ta").then((ta) => {
-      cy.request("POST", "/api/v1/seeds/createQueue", {
-        courseId: ta.course.id,
-      })
-        .then((res) => res.body)
-        .as("queue");
-
-      // Login the ta
-      cy.visit(`/api/v1/login/dev?userId=${ta.user.id}`);
-
-      cy.get("@queue").then((queue) => {
-        cy.request(
-          "POST",
-          `/api/v1/courses/${queue.course.id}/ta_location/${queue.room}`
-        );
-      });
+      identifier: "ta",
+    });
+    createQueue({
+      courseId: "ta.course.id",
+      identifier: "queue",
     });
   });
 
-  it("can successfully edit queue notes as a ta on today page", () => {
-    cy.get("@queue").then((queue) => {
-      cy.visit(`/course/${queue.course.id}/today`);
-    });
+  it("can successfully edit queue notes as a ta on today page", function () {
+    cy.visit(`/course/${this.queue.course.id}/today`);
 
     cy.mock("GET", "/api/v1/profile", "fixture:student_profile");
     cy.mock("GET", "/api/v1/courses/1", "fixture:queue_routes_no_notes");
@@ -43,10 +28,8 @@ describe("Edit Queue Notes", () => {
     cy.get("body").contains("alex has a smooth brain");
   });
 
-  it("from the queue page", () => {
-    cy.get("@queue").then((queue) => {
-      cy.visit(`/course/${queue.course.id}/queue/${queue.id}`);
-    });
+  it("from the queue page", function () {
+    cy.visit(`/course/${this.queue.course.id}/queue/${this.queue.id}`);
 
     cy.get("[data-cy='editQueue']").click();
 

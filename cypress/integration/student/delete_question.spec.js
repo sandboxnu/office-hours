@@ -1,40 +1,22 @@
+import { loginUser, createQueue, createQuestion } from "../utils";
+
 describe("Student can delete their question", () => {
   beforeEach(() => {
-    // Set the state
-    cy.request("POST", "/api/v1/seeds/createUser", { role: "student" })
-      .then((res) => res.body)
-      .as("student");
-    cy.get("@student").then((student) => {
-      // Login the student
-      cy.request(`/api/v1/login/dev?userId=${student.user.id}`);
-
-      // Create a queue
-      cy.request("POST", "/api/v1/seeds/createQueue", {
-        courseId: student.course.id,
-        allowQuestions: true,
-      })
-        .then((res) => res.body)
-        .as("queue");
-
-      // Create a question for the student   // TODO: This could be done through the /seeds/createQuestion endpoint with a little modification
-      cy.get("@queue").then((queue) => {
-        cy.request("POST", "/api/v1/questions", {
-          text: "Test question text",
-          queueId: queue.id,
-          questionType: "Bug",
-          isOnline: false,
-          location: "Outside room, by the couches",
-          force: false,
-        })
-          .then((res) => res.body)
-          .then((question) => {
-            cy.request("PATCH", `/api/v1/questions/${question.id}`, {
-              status: "Queued",
-            });
-          });
-      });
+    loginUser({
+      role: "student",
+      identifier: "student",
+    });
+    createQueue({
+      courseId: "student.course.id",
+      identifier: "queue",
+    });
+    createQuestion({
+      userId: "student.user.id",
+      queueId: "queue.id",
+      identifier: "question",
     });
   });
+
   it("from the queue page", () => {
     // Visit the queue page
     cy.get("@queue").then((queue) =>

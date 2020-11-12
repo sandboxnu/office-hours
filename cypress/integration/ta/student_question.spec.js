@@ -1,42 +1,31 @@
+import { loginUser, createQuestion, createQueue, checkInTA } from "../utils";
+
 describe("TA interacts with student question", () => {
   beforeEach(() => {
-    // Setting up the state
-    cy.request("POST", "/api/v1/seeds/createUser", {
+    loginUser({
       role: "ta",
-    })
-      .then((res) => res.body)
-      .as("ta");
-
-    cy.get("@ta").then((ta) => {
-      cy.request("POST", "/api/v1/seeds/createQueue", {
-        courseId: ta.course.id,
-      })
-        .then((res) => res.body)
-        .as("queue")
-        .then((queue) =>
-          cy.request("POST", "/api/v1/seeds/createQuestion", {
-            queueId: queue.id,
-          })
-        );
+      identifier: "ta",
+    });
+    createQueue({
+      courseId: "ta.course.id",
+      identifier: "queue",
+    });
+    createQuestion({
+      queueId: "queue.id",
+      identifier: "question",
+    });
+    checkInTA({
+      ta: "ta",
+      queue: "queue",
     });
 
-    cy.get("@ta").then((ta) => {
-      // Login the ta
-      cy.request("GET", `/api/v1/login/dev?userId=${ta.user.id}`);
-    });
-
+    // Visit the queue page
     cy.get("@queue").then((queue) => {
-      // Check the TA into the queue
-      cy.request(
-        "POST",
-        `/api/v1/courses/${queue.course.id}/ta_location/${queue.room}`
-      );
-      // Visit the queue page
       cy.visit(`/course/${queue.courseId}/queue/${queue.id}`);
     });
   });
 
-  it("clicks the help button then remove question", () => {
+  it("clicks the help button then remove question", function () {
     // Click on the student's question
     cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
 
@@ -55,7 +44,7 @@ describe("TA interacts with student question", () => {
     cy.contains("There are no questions in the queue");
   });
 
-  it("clicks the help button then finish helping", () => {
+  it("clicks the help button then finish helping", function () {
     // Click on the student's question
     cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
 
@@ -68,7 +57,7 @@ describe("TA interacts with student question", () => {
     cy.contains("There are no questions in the queue");
   });
 
-  it("clicks help button then remove question", () => {
+  it("clicks help button then remove question", function () {
     // Click on the student's question
     cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
     // Click help
@@ -85,7 +74,7 @@ describe("TA interacts with student question", () => {
     cy.get("body").contains("You are helping").should("not.exist");
   });
 
-  it("clicks the Help Next button to help the next student", () => {
+  it("clicks the Help Next button to help the next student", function () {
     // Click on the Help Next button
     cy.get("[data-cy='help-next']").click();
 
@@ -94,7 +83,7 @@ describe("TA interacts with student question", () => {
     cy.percySnapshot("TA Queue Page - Helping Student Banner");
   });
 
-  it("clicks a students question and then removes it from the queue", () => {
+  it("clicks a students question and then removes it from the queue", function () {
     // Click on the student's question
     cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
     // Click Remove from Queue

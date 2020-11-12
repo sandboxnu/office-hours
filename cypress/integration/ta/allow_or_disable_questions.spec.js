@@ -1,34 +1,23 @@
+import { loginUser, createQueue, checkInTA } from "../utils";
+
 describe("Allow or disable new questions for a queue", () => {
   beforeEach(() => {
-    cy.request("POST", "/api/v1/seeds/createUser", {
+    loginUser({
       role: "ta",
-    })
-      .then((res) => res.body)
-      .as("ta");
-    cy.get("@ta").then((ta) => {
-      cy.request("POST", "/api/v1/seeds/createQueue", {
-        courseId: ta.course.id,
-      })
-        .then((res) => res.body)
-        .as("queue");
-      // Login the ta
-      cy.visit(`/api/v1/login/dev?userId=${ta.user.id}`);
+      identifier: "ta",
     });
-    cy.get("@queue").then((queue) => {
-      cy.request(
-        "POST",
-        `/api/v1/courses/${queue.course.id}/ta_location/${queue.room}`
-      );
+    createQueue({
+      courseId: "ta.course.id",
+      identifier: "queue",
+    });
+    checkInTA({
+      ta: "ta",
+      queue: "queue",
     });
   });
 
-  it("can toggle allow questions on and off", () => {
-    // Visit the queue page
-    cy.get("@queue").then((queue) => {
-      cy.visit(`/course/${queue.course.id}/queue/${queue.id}`);
-    });
-
-    // Chnage the toggle to not allow new quetsions
+  it("can toggle allow questions on and off", function () {
+    // Change the toggle to not allow new quetsions
     cy.get("[data-cy='editQueue']").click();
     cy.get("[data-cy='allow-questions-toggle']").click();
     cy.get("span").contains("OK").click();
@@ -48,25 +37,23 @@ describe("Allow or disable new questions for a queue", () => {
 
     cy.percySnapshot("TA Queue Page - Allowing Questions");
   });
+});
 
-  it("student cannot add new questions when new questions are disabled", () => {
-    cy.request("POST", "/api/v1/seeds/createUser", {
+describe("When allow questions is disabled", () => {
+  beforeEach(() => {
+    loginUser({
       role: "student",
-    })
-      .then((res) => res.body)
-      .as("student");
-
-    cy.get("@student").then((student) => {
-      // Create a queue
-      cy.request("POST", "/api/v1/seeds/createQueue", {
-        courseId: student.course.id,
-      })
-        .then((res) => res.body)
-        .as("queue");
-
-      // Login the student
-      cy.visit(`/api/v1/login/dev?userId=${student.user.id}`);
+      identifier: "student",
     });
+    createQueue({
+      courseId: "student.course.id",
+      allowQuestions: false,
+      identifier: "queue",
+    });
+  });
+  it("student cannot add a new question", function () {
+    // Visit the today page
+    cy.visit(`/course/${this.queue.courseId}/today`);
 
     cy.get(".ant-modal-close-x").click();
     cy.get(".ant-modal-close-x").should("not.be.visible");
