@@ -30,6 +30,11 @@ describe("Can successfuly check in and out of a queue", () => {
         Cookie: `auth_token=${this.ta_auth_token.value}`,
       },
     });
+
+    // add a question to the queue
+    cy.request("POST", "/api/v1/seeds/createQuestion", {
+      queueId: this.queue.queueId,
+    });
     cy.get(".ant-modal-close-x").click();
     // Click "Check in"
     cy.get("[data-cy='check-in-button']").click();
@@ -46,7 +51,9 @@ describe("Can successfuly check in and out of a queue", () => {
     cy.get("[data-cy='check-out-button']").click();
     cy.get("button").should("contain", "Check In");
 
+    // Other TA should still be checked in, and there should still be students in the queue
     cy.get("[data-cy='ta-status-card']").should("have.length", "1");
+    // CHECK FOR STUDENTS STILL IN QUEUE
     cy.percySnapshot("TA Queue Page - One TA Checked out One TA Checked In");
   });
 
