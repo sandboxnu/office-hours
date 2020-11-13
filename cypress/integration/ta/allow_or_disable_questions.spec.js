@@ -17,6 +17,9 @@ describe("Allow or disable new questions for a queue", () => {
   });
 
   it("can toggle allow questions on and off", function () {
+    // Visit the queue page
+    cy.visit(`/course/${this.queue.courseId}/queue/${this.queue.id}`);
+
     // Change the toggle to not allow new quetsions
     cy.get("[data-cy='editQueue']").click();
     cy.get("[data-cy='allow-questions-toggle']").click();
