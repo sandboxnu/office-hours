@@ -44,7 +44,10 @@ export class QueueService {
 
     const questionsFromDb = await QuestionModel.find({
       relations: ['creator', 'taHelped'],
-      where: { queueId },
+      where: {
+        queueId,
+        status: In(StatusSentToCreator),
+      },
     });
 
     const questions = new ListQuestionsResponse();
