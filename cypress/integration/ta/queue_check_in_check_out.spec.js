@@ -1,4 +1,4 @@
-import { loginUser, checkInTA, createQueue } from "../utils";
+import { loginUser, checkInTA, createQueue, createQuestion } from "../utils";
 
 describe("Can successfuly check in and out of a queue", () => {
   beforeEach(() => {
@@ -24,11 +24,10 @@ describe("Can successfuly check in and out of a queue", () => {
       ta: "ta",
       queue: "queue",
     });
-
-    // add a question to the queue
-    cy.request("POST", "/api/v1/seeds/createQuestion", {
-      queueId: this.queue.queueId,
+    createQuestion({
+      queueId: "queue.id",
     });
+
     cy.get(".ant-modal-close-x").click();
     // Click "Check in"
     cy.get("[data-cy='check-in-button']").click();
@@ -41,13 +40,16 @@ describe("Can successfuly check in and out of a queue", () => {
     cy.get("[data-cy='ta-status-card']").should("have.length", "2");
     cy.percySnapshot("TA Queue Page - Two TA's Checked In");
 
+    // 1 student should be in the queu
+    cy.get("[data-cy='ta-queue-card]").should("have.length", "1");
+
     // Click "Check out"
     cy.get("[data-cy='check-out-button']").click();
     cy.get("button").should("contain", "Check In");
 
-    // Other TA should still be checked in, and there should still be students in the queue
+    // Other TA should still be checked in, and there should still be 1 student in the queue
     cy.get("[data-cy='ta-status-card']").should("have.length", "1");
-    // TODO: CHECK FOR STUDENTS STILL IN QUEUE
+    cy.get("[data-cy='ta-queue-card]").should("have.length", "1");
     cy.percySnapshot("TA Queue Page - One TA Checked out One TA Checked In");
   });
 
@@ -95,3 +97,41 @@ describe("Can successfuly check in and out of a queue", () => {
 
 // future tests: add one where there are more TAs than one, add one where
 // there are more than 1 office hour at a time
+describe("Checking in and out when there arent scheduled office hours", () => {
+  beforeEach(() => {
+    // Set the state
+    loginUser({
+      role: "ta",
+      identifier: "ta",
+    });
+  });
+
+  it("checking in multiple TAs when there is not a scheduled office hours", function () {
+    // check into the queue
+    cy.request({
+      method: "POST",
+      url: `/api/v1/courses/${this.ta.courseId}/ta_location/Online}`,
+    })
+      .then((res) => res.body)
+      .as("@queue");
+
+    // add a question to the queue
+    createQuestion({
+      queueId: "queue.id",
+    });
+
+    // Navigate to the queue page
+    cy.visit(`/course/${this.queue.courseId}/queue/${this.queue.id}`);
+
+    // 1 student should be in the queue
+    cy.get("[data-cy='ta-queue-card]").should("have.length", "1");
+
+    // Click "Check out"
+    cy.get("[data-cy='check-out-button']").click();
+    cy.get("button").should("contain", "Check In");
+
+    // No TAs should be checked in, and there should not be any student in the queue
+    cy.get("[data-cy='ta-status-card']").should("have.length", "0");
+    cy.get("[data-cy='ta-queue-card]").should("have.length", "0");
+  });
+});
