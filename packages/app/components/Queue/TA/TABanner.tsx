@@ -77,7 +77,7 @@ export default function TABanner({
       buttons={
         <>
           <Popconfirm
-            title="Are you sure you want to requeue this student?" //TODO: text sucks
+            title="Are you sure you want to requeue this student?"
             okText="Yes"
             cancelText="No"
             onConfirm={async () => {
@@ -92,7 +92,7 @@ export default function TABanner({
             </RequeueButton>
           </Popconfirm>
           <Popconfirm
-            title="Are you sure you can't find this student??" // TODO: text
+            title="Are you sure you can't find this student??"
             okText="Yes"
             cancelText="No"
             onConfirm={async () => {
