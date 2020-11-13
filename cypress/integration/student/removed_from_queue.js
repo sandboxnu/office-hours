@@ -1,4 +1,4 @@
-import { loginUser, createQueue, createQuestion, checkInTA } from "../utils";
+import { loginUser, createQueue, createQuestion, checkInTA } from "../../utils";
 
 describe("Removed from queue", () => {
   beforeEach(() => {

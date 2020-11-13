@@ -1,4 +1,4 @@
-import { loginUser } from "../utils";
+import { loginUser } from "../../utils";
 
 describe("Notification settings", () => {
   beforeEach(() => {

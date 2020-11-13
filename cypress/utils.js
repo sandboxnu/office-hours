@@ -44,7 +44,14 @@ export const accessAttributes = (str, identifier) => {
     .as(identifier);
 };
 
-export const createQueue = ({ courseId, room, allowQuestions, identifier }) => {
+export const createQueue = (
+  { courseId, room, allowQuestions, identifier } = {
+    courseId: "CS 2500",
+    room: "Online",
+    allowQuestions: true,
+    identifier: "queue",
+  }
+) => {
   saveId(courseId, "courseId");
   cy.get("@courseId").then((id) => {
     cy.request("POST", "/api/v1/seeds/createQueue", {

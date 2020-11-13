@@ -1,4 +1,4 @@
-import { loginUser, createQueue, checkInTA } from "../utils";
+import { loginUser, createQueue, checkInTA } from "../../utils";
 
 describe("Allow or disable new questions for a queue", () => {
   beforeEach(() => {

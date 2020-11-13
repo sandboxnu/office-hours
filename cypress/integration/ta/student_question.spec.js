@@ -1,4 +1,4 @@
-import { loginUser, createQuestion, createQueue, checkInTA } from "../utils";
+import { loginUser, createQuestion, createQueue, checkInTA } from "../../utils";
 
 describe("TA interacts with student question", () => {
   beforeEach(() => {

@@ -1,4 +1,4 @@
-import { loginUser, createQueue } from "../utils";
+import { loginUser, createQueue } from "../../utils";
 
 describe("Student can create a question", () => {
   beforeEach(() => {

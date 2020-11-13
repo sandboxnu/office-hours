@@ -1,4 +1,4 @@
-import { loginUser, checkInTA, createQueue, createQuestion } from "../utils";
+import { loginUser, checkInTA, createQueue, createQuestion } from "../../utils";
 
 describe("Can successfuly check in and out of a queue when their is scheduled office hours", () => {
   beforeEach(() => {
