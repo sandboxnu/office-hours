@@ -75,7 +75,6 @@ export default function TABanner({
         </Row>
       }
       buttons={
-        // REALLY NEED DESIGN HELP ON REQUEUEUEUBUTTON
         <>
           <Popconfirm
             title="Are you sure you want to requeue this student?" //TODO: text sucks

@@ -104,12 +104,12 @@ export const TABannerDangerButton = styled(BannerButton)`
 `;
 
 export const RequeueButton = styled(BannerButton)`
-  background: #fadb14;
-  border: 1px solid #9e1068;
-  color: #061178;
+  background: #ffffff;
+  border: 1px solid #f0f0f0;
+  color: #000000;
   &:hover,
   &:focus {
-    background: ##ffffb8;
-    color: #ffffb8;
+    background: #f0f0f0;
+    color: #000000;
   }
 `;
