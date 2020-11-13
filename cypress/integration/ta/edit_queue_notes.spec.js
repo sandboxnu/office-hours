@@ -1,14 +1,10 @@
-import { loginUser, createQueue } from "../../utils";
+import { loginTA, createQueue, loginTA } from "../../utils";
 
 describe("Edit Queue Notes", () => {
   beforeEach(() => {
-    loginUser({
-      role: "ta",
-      identifier: "ta",
-    });
+    loginTA();
     createQueue({
       courseId: "ta.course.id",
-      identifier: "queue",
     });
   });
 

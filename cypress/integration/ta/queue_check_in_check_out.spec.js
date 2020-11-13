@@ -1,22 +1,16 @@
-import { loginUser, checkInTA, createQueue, createQuestion } from "../../utils";
+import { loginTA, checkInTA, createQueue, createQuestion } from "../../utils";
 
 describe("Can successfuly check in and out of a queue when their is scheduled office hours", () => {
   beforeEach(() => {
     // Set the state
-    loginUser({
-      role: "ta",
-      identifier: "ta",
-    });
+    loginTA();
     createQueue({
       courseId: "ta.course.id",
-      room: "Online",
-      identifier: "queue",
     });
   });
 
   it("checking in multiple TAs then checking one out", function () {
-    loginUser({
-      role: "ta",
+    loginTA({
       identifier: "ta2",
       courseId: "ta.course.id",
     });
@@ -26,7 +20,6 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
     });
     createQuestion({
       queueId: "queue.id",
-      identifier: "question", // TODO: Remove this once we have default values
     });
 
     cy.get(".ant-modal-close-x").click();
@@ -99,11 +92,7 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
 
 describe("Checking in and out when there arent scheduled office hours", () => {
   beforeEach(() => {
-    // Set the state
-    loginUser({
-      role: "ta",
-      identifier: "ta",
-    });
+    loginTA();
   });
 
   it("checking in a TA when there is not scheduled office hours", function () {

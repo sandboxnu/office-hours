@@ -1,27 +1,20 @@
-import { loginUser, createQueue, createQuestion } from "../../utils";
+import { loginStudent, createQueue, createQuestion } from "../../utils";
 
 describe("Student can edit their question", () => {
   beforeEach(() => {
-    loginUser({
-      role: "student",
-      identifier: "student",
-    });
+    loginStudent();
     createQueue({
       courseId: "student.course.id",
-      identifier: "queue",
     });
     createQuestion({
       userId: "student.user.id",
       queueId: "queue.id",
-      identifier: "question",
     });
   });
 
-  it("by changing the questions text and type", () => {
+  it("by changing the questions text and type", function () {
     // Visit the queue page
-    cy.get("@queue").then((queue) =>
-      cy.visit(`/course/${queue.courseId}/queue/${queue.id}`)
-    );
+    cy.visit(`/course/${this.queue.courseId}/queue/${this.queue.id}`);
 
     // Click the Edit Question button
     cy.get('[data-cy="edit-question"]').should("be.visible").click();

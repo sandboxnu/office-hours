@@ -1,14 +1,10 @@
-import { loginUser, createQueue, checkInTA } from "../../utils";
+import { loginTA, createQueue, checkInTA, loginStudent } from "../../utils";
 
 describe("Allow or disable new questions for a queue", () => {
   beforeEach(() => {
-    loginUser({
-      role: "ta",
-      identifier: "ta",
-    });
+    loginTA();
     createQueue({
       courseId: "ta.course.id",
-      identifier: "queue",
     });
     checkInTA({
       ta: "ta",
@@ -44,10 +40,7 @@ describe("Allow or disable new questions for a queue", () => {
 
 describe("When allow questions is disabled", () => {
   beforeEach(() => {
-    loginUser({
-      role: "student",
-      identifier: "student",
-    });
+    loginStudent();
     createQueue({
       courseId: "student.course.id",
       allowQuestions: false,

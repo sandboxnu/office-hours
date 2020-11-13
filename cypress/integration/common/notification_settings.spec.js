@@ -1,11 +1,8 @@
-import { loginUser } from "../../utils";
+import { loginStudent } from "../../utils";
 
 describe("Notification settings", () => {
   beforeEach(() => {
-    loginUser({
-      role: "student",
-      identifier: "student",
-    });
+    loginStudent();
   });
 
   it("can sucsessfully enable web notifications", () => {

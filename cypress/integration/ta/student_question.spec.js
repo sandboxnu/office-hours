@@ -1,18 +1,13 @@
-import { loginUser, createQuestion, createQueue, checkInTA } from "../../utils";
+import { loginTA, createQuestion, createQueue, checkInTA } from "../../utils";
 
 describe("TA interacts with student question", () => {
   beforeEach(() => {
-    loginUser({
-      role: "ta",
-      identifier: "ta",
-    });
+    loginTA();
     createQueue({
       courseId: "ta.course.id",
-      identifier: "queue",
     });
     createQuestion({
       queueId: "queue.id",
-      identifier: "question",
     });
     checkInTA({
       ta: "ta",

@@ -1,9 +1,37 @@
-export const loginUser = ({ role, courseId, identifier }) => {
-  const action = (courseId) => {
+export const getId = (id) => {
+  if (!id) {
+    return cy.wrap();
+  } else if (typeof id == "number") {
+    return cy.wrap(id);
+  } else {
+    return accessAttributes(id);
+  }
+};
+
+export const accessAttributes = (str) => {
+  const arr = str.split(".");
+  const primaryObj = arr.shift();
+  return cy
+    .get(`@${primaryObj}`)
+    .then((obj) => arr.reduce((data, attr) => data[attr], obj));
+};
+
+const makeRequest = (request, identifier, { ...params }) => {
+  if (identifier) {
+    request(params)
+      .then((res) => res.body)
+      .as(identifier);
+  } else {
+    request(params);
+  }
+};
+
+const loginUser = ({ role, courseId, identifier }) => {
+  const req = (parsedId) => {
     // create the user
     cy.request("POST", "/api/v1/seeds/createUser", {
       role: role,
-      courseId,
+      courseId: parsedId,
     })
       .then((res) => res.body)
       .then((userCourse) => {
@@ -18,70 +46,60 @@ export const loginUser = ({ role, courseId, identifier }) => {
           .as(identifier);
       });
   };
+
   if (courseId) {
-    cy.get("@courseId").then(action);
+    getId(courseId).then((courseId) => req(courseId));
   } else {
-    action();
+    req();
   }
 };
 
-export const saveId = (id, identifier) => {
-  if (!id) {
-    cy.wrap(null).as(identifier);
-  }
-  if (typeof id == "number") {
-    cy.wrap(id).as(identifier);
-  } else {
-    accessAttributes(id, identifier);
-  }
-};
+export const loginTA = ({ courseId = null, identifier = "ta" } = {}) =>
+  loginUser({
+    role: "ta",
+    courseId,
+    identifier,
+  });
 
-export const accessAttributes = (str, identifier) => {
-  const arr = str.split(".");
-  const primaryObj = arr.shift();
-  cy.get(`@${primaryObj}`)
-    .then((obj) => arr.reduce((data, attr) => data[attr], obj))
-    .as(identifier);
-};
+export const loginStudent = ({
+  courseId = null,
+  identifier = "student",
+} = {}) =>
+  loginUser({
+    role: "student",
+    courseId,
+    identifier,
+  });
 
-export const createQueue = (
-  { courseId, room, allowQuestions, identifier } = {
-    courseId: "CS 2500",
-    room: "Online",
-    allowQuestions: true,
-    identifier: "queue",
-  }
-) => {
-  saveId(courseId, "courseId");
-  cy.get("@courseId").then((id) => {
+export const createQueue = ({
+  courseId = null,
+  room = "Online",
+  allowQuestions = true,
+  identifier = "queue",
+}) => {
+  const req = ({ id }) =>
     cy.request("POST", "/api/v1/seeds/createQueue", {
       courseId: id,
-      room: room,
-      allowQuestions: allowQuestions ?? true,
-    })
-      .then((res) => res.body)
-      .as(identifier);
+      room,
+      allowQuestions,
+    });
+  getId(courseId).then((id) => {
+    makeRequest(req, identifier, { id });
   });
 };
 
 export const createQuestion = ({ queueId, userId, data, identifier }) => {
-  saveId(queueId, "queueId");
-  const req = (queueId, userId) =>
-    cy
-      .request("POST", "/api/v1/seeds/createQuestion", {
-        userId,
-        queueId,
-        data,
-      })
-      .then((res) => res.body)
-      .as(identifier);
-  cy.get("@queueId").then((queueId) => {
-    if (userId) {
-      saveId(userId, "userId");
-      cy.get("@userId").then((userId) => req(queueId, userId));
-    } else {
-      req(queueId, null);
-    }
+  const req = ({ queueId, userId }) =>
+    cy.request("POST", "/api/v1/seeds/createQuestion", {
+      userId,
+      queueId,
+      data,
+    });
+
+  getId(queueId).then((queueId) => {
+    getId(userId).then((userId) =>
+      makeRequest(req, identifier, { queueId, userId })
+    );
   });
 };
 
