@@ -52,28 +52,28 @@ describe('HeatmapService', () => {
       );
     }
 
-    // OCT 8 is a Thursday
+    // OCT 8 is a Thursday (EDT timezone)
     const OCT8 = (start: string, end: string): [string, string] => [
-      `2020-10-04T${start}:00.000Z`,
-      `2020-10-04T${end}:00.000Z`,
+      `2020-10-08T${start}:00-0400`,
+      `2020-10-08T${end}:00-0400`,
     ];
 
     // OCT 4 is a Sunday
     const OCT4 = (start: string, end: string): [string, string] => [
-      `2020-10-04T${start}:00.000Z`,
-      `2020-10-04T${end}:00.000Z`,
+      `2020-10-04T${start}:00-0400`,
+      `2020-10-04T${end}:00-0400`,
     ];
 
     // OCT 11 is a Sunday
     const OCT11 = (start: string, end: string): [string, string] => [
-      `2020-10-11T${start}:00.000Z`,
-      `2020-10-11T${end}:00.000Z`,
+      `2020-10-11T${start}:00-0400`,
+      `2020-10-11T${end}:00-0400`,
     ];
 
     // OCT 18 is a Sunday
     const OCT18 = (start: string, end: string): [string, string] => [
-      `2020-10-18T${start}:00.000Z`,
-      `2020-10-18T${end}:00.000Z`,
+      `2020-10-18T${start}:00-0400`,
+      `2020-10-18T${end}:00-0400`,
     ];
 
     const BUCKET_SIZE = 60;
@@ -149,7 +149,7 @@ describe('HeatmapService', () => {
     it('returns heatmap when questions overlap spanning multiple buckets', () => {
       const heatmap = heatmapFromDates(
         [
-          OCT4('03:30', '04:10'), // spans two buckets
+          OCT4('03:29', '04:10'), // spans two buckets
           OCT4('04:01', '04:21'), // spans first 4 o clock bucket
         ],
         [OCT4('03:00', '05:00')],
@@ -177,7 +177,7 @@ describe('HeatmapService', () => {
     it('returns heatmap when questions overlap spanning multiple buckets and a question is skipped', () => {
       const heatmap = heatmapFromDates(
         [
-          OCT4('03:30', '04:10'), // spans two buckets
+          OCT4('03:29', '04:10'), // spans two buckets
           OCT4('04:01', '04:21'), // spans first 4 o clock bucket
           OCT4('04:05', '04:16'), // somehow gets help before the previous guy
         ],
@@ -246,29 +246,29 @@ describe('HeatmapService', () => {
     it('returns heatmap when questions are later in the week', () => {
       const heatmap = heatmapFromDates(
         [
-          OCT4('03:30', '04:10'),
+          OCT4('03:29', '04:10'),
           OCT4('04:01', '04:21'),
           // Thursday
-          OCT8('03:30', '04:10'),
+          OCT8('03:29', '04:14'),
           OCT8('04:01', '04:21'),
         ],
         [OCT4('03:00', '05:00'), OCT8('03:00', '05:00')],
       );
       const expected = sparseHeatmap({
         3: 16.25,
-        4: 2.5,
-        [24 * 3 + 3]: 16.25,
-        [24 * 3 + 3]: 2.5,
+        4: 4,
+        [24 * 4 + 3]: 73 / 4,
+        [24 * 4 + 4]: 5,
       });
 
-      expect(expected).toEqual(heatmap);
+      expect(heatmap).toEqual(expected);
     });
 
     it('returns heatmap when questions are across multiple weeks', () => {
       // avg of the office hours results
       const heatmap = heatmapFromDates(
         [
-          OCT4('03:30', '04:10'),
+          OCT4('03:29', '04:10'),
           OCT4('04:01', '04:21'),
 
           OCT11('03:21', '04:25'),
@@ -320,8 +320,8 @@ describe('HeatmapService', () => {
     it('returns heatmap when questions are across multiple weeks but no office hours during one of the weeks', () => {
       // avg of the office hours results, ignore any -1s and divide accordingly (to get the right avg)
       const heatmap = heatmapFromDates(
-        [OCT4('03:30', '04:10'), OCT18('03:21', '04:25')],
-        [OCT4('03:00', '45:00'), OCT18('03:00', '04:00')],
+        [OCT4('03:29', '04:10'), OCT18('03:21', '04:25')],
+        [OCT4('03:00', '04:00'), OCT18('03:00', '04:00')],
       );
       /**
        *   Timepoint | Wait time   | Question in front of you
@@ -369,9 +369,9 @@ describe('HeatmapService', () => {
        */
 
       const expected = sparseHeatmap({
-        8: 19 / 4,
+        4: 19 / 4,
       });
-      expect(expected).toEqual(heatmap);
+      expect(heatmap).toEqual(expected);
     });
 
     it('returns heatmap during a week with daylight savings, but the course is not in a DST timezone', () => {
@@ -394,10 +394,10 @@ describe('HeatmapService', () => {
        */
 
       const expected = sparseHeatmap({
-        8: 19 / 4,
-        9: 19 / 4,
+        4: 19 / 4,
+        5: 19 / 4,
       });
-      expect(expected).toEqual(heatmap);
+      expect(heatmap).toEqual(expected);
     });
 
     it('returns heatmap during a week with daylight savings spring forward', () => {
@@ -417,9 +417,9 @@ describe('HeatmapService', () => {
        */
 
       const expected = sparseHeatmap({
-        8: 19 / 4,
+        3: 19 / 4,
       });
-      expect(expected).toEqual(heatmap);
+      expect(heatmap).toEqual(expected);
     });
 
     it('returns heatmap during fall back with question crossing boundary', () => {
@@ -443,7 +443,7 @@ describe('HeatmapService', () => {
       const expected = sparseHeatmap({
         1: 40 / 8,
       });
-      expect(expected).toEqual(heatmap);
+      expect(heatmap).toEqual(expected);
     });
 
     it('returns heatmap during spring forward with question crossing boundary', () => {
@@ -469,7 +469,7 @@ describe('HeatmapService', () => {
         1: 28 / 4,
         3: 12 / 4,
       });
-      expect(expected).toEqual(heatmap);
+      expect(heatmap).toEqual(expected);
     });
 
     it('returns heatmap when a question crosses the midnight boundary', () => {
@@ -482,7 +482,7 @@ describe('HeatmapService', () => {
       const expected = sparseHeatmap({
         3: 0,
       });
-      expect(expected).toEqual(heatmap);
+      expect(heatmap).toEqual(expected);
     });
 
     it('works when the bucketsize and sample interval are different', () => {});

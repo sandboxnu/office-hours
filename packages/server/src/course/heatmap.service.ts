@@ -1,6 +1,6 @@
 import { ClosedQuestionStatus, Heatmap, timeDiffInMins } from '@koh/common';
 import { Injectable } from '@nestjs/common';
-import { mean, sample } from 'lodash';
+import { inRange, mean, range, sample } from 'lodash';
 import moment = require('moment');
 import { Command } from 'nestjs-command';
 import { QuestionModel } from 'question/question.entity';
@@ -33,14 +33,16 @@ export class HeatmapService {
       .orderBy('question.createdAt', 'ASC')
       .getMany();
 
+    const tz = 'America/New_York';
     const heatmap = this._generateHeatMapWithReplay(
       // Ignore questions that cross midnight (usually a fluke)
       questions.filter((q) => q.helpedAt.getDate() === q.createdAt.getDate()),
       [], //TODO: query for office hours
-      'America/New_York',
+      tz,
       BUCKET_SIZE_IN_MINS,
       SAMPLES_PER_BUCKET,
     );
+    arrayRotate(heatmap, -moment.tz.zone(tz).utcOffset(Date.now()) / 60);
     console.timeEnd('heatmap');
     return heatmap;
   }
@@ -49,6 +51,7 @@ export class HeatmapService {
   // Rewind through the last few weeks and for each time interval,
   // figure out how long wait time would have been if you had joined the queue at that time
   // Timezone should be IANA
+  // Returns heatmap in the timezone (ie 3rd bucket is 3am in that timezone)
   _generateHeatMapWithReplay(
     questions: QuestionModel[],
     hours: OfficeHourModel[],
@@ -79,144 +82,135 @@ export class HeatmapService {
        - sample = Q1.closedAt - timepoint (if negative, then it's 0)
     */
 
-    if (!questions.length) {
-      return [...Array((24 * 7 * 60) / bucketSize)].map(() => -1);
-    }
-
     const hourTimestamps: [number, number][] = hours.map((hours) => [
       hours.startTime.getTime(),
       hours.endTime.getTime(),
     ]);
 
-    const startDate = questions[0].createdAt;
-    const sunday = moment.tz(startDate, timezone).startOf('week').toDate();
-
-    function getNextTimepointIndex(date: Date): number {
-      return Math.floor(timeDiffInMins(date, sunday) / sampleInterval) + 1;
-    }
-
-    // Get the date of the sample timepoint immediately after the given date
-    function getNextSampleTimepoint(date: Date): Date {
-      const timepointIndex = getNextTimepointIndex(date);
-      return new Date(
-        sunday.getTime() + timepointIndex * sampleInterval * 60 * 1000,
+    function dateToBucket(date: Date | number): number {
+      // parse in zone to handle daylight savings by getting day/hour/minute within that IANA zone
+      const cInZone = moment.tz(date, timezone);
+      return Math.floor(
+        (cInZone.day() * 24 * 60 + cInZone.hour() * 60 + cInZone.minute()) /
+          bucketSize,
       );
     }
-
-    // Get all timepoints between the two dates
-    function getSampleTimepointsInDateRange(date1: Date, date2: Date): Date[] {
-      const ret = [];
-      let curr = getNextSampleTimepoint(date1);
-      while (curr.getTime() < date2.getTime()) {
-        ret.push(curr);
-        curr = getNextSampleTimepoint(curr);
-      }
-      return ret;
-    }
-
-    const allTimepointWaitTimes: number[] = [];
-
     const timepointBuckets: number[][] = [
       ...Array((24 * 7 * 60) / bucketSize),
     ].map(() => []);
 
-    // go two questions at a time
-    let isFirst = true;
-    for (let i = 0; i < questions.length; i++) {
-      const curr = questions[i];
-      const next = questions[i + 1];
-      const isLast = i === questions.length - 1;
+    if (questions.length) {
+      const startDate = questions[0].createdAt;
+      const sunday = moment.tz(startDate, timezone).startOf('week').toDate();
 
-      // get the timepoints in between
-      const sampledTimepoints = getSampleTimepointsInDateRange(
-        curr.createdAt,
-        isLast ? curr.helpedAt : next.createdAt,
-      ).filter((time) =>
-        hourTimestamps.some(
-          ([start, end]) => start <= time.getTime() && time.getTime() < end,
-        ),
-      );
+      function getNextTimepointIndex(date: Date): number {
+        return Math.floor(timeDiffInMins(date, sunday) / sampleInterval) + 1;
+      }
 
-      if (sampledTimepoints.length > 0 && isFirst) {
-        isFirst = false;
-        const timeDiff = timeDiffInMins(sampledTimepoints[0], sunday);
-        const intervals = Math.ceil((timeDiff % bucketSize) / sampleInterval);
-        const bucketIndex = Math.floor(timeDiff / bucketSize);
-        for (let i = 0; i < intervals; i++) {
-          timepointBuckets[bucketIndex].push(0);
+      // Get the date of the sample timepoint immediately after the given date
+      function getNextSampleTimepoint(date: Date): Date {
+        const timepointIndex = getNextTimepointIndex(date);
+        return new Date(
+          sunday.getTime() + timepointIndex * sampleInterval * 60 * 1000,
+        );
+      }
+
+      // Get all timepoints between the two dates
+      function getSampleTimepointsInDateRange(
+        date1: Date,
+        date2: Date,
+      ): Date[] {
+        const ret = [];
+        let curr = getNextSampleTimepoint(date1);
+        while (curr.getTime() < date2.getTime()) {
+          ret.push(curr);
+          curr = getNextSampleTimepoint(curr);
         }
+        return ret;
       }
-      // When we would have hypothetically gotten help at this timepoint
-      for (const c of sampledTimepoints) {
-        const wait = Math.max(
-          0,
-          (curr.helpedAt.getTime() - c.getTime()) / 60000,
-        );
-        // parse in zone to handle daylight savings by getting day/hour/minute within that IANA zone
-        const cInZone = moment.tz(c, timezone);
 
-        const bucketIndex = Math.floor(
-          (cInZone.day() * 24 * 60 + cInZone.hour() * 60 + cInZone.minute()) /
-            bucketSize,
-        );
-        timepointBuckets[bucketIndex].push(wait);
+      // Get the start time of the current bucket
+      function lastBucketBoundary(date: Date): moment.Moment {
+        const startOfWeek = moment.tz(date, timezone).startOf('week');
+        const m = moment(date);
+        return m.subtract(m.diff(startOfWeek, 'm') % bucketSize, 'm');
       }
-    }
 
-    const h: Heatmap = timepointBuckets.map((samples) =>
-      samples.length > 0 ? mean(samples) : -1,
-    );
-    arrayRotate(
-      h,
-      -moment.tz
-        .zone(timezone)
-        .utcOffset(questions[questions.length - 1].helpedAt.getTime()) / 60,
-    );
-    return h;
+      // go two questions at a time
+      let isFirst = true;
+      for (let i = 0; i < questions.length; i++) {
+        const curr = questions[i];
+        const next = questions[i + 1];
+        const isLast = i === questions.length - 1;
 
-    // rotate to UTC
+        // get the timepoints in between
+        let sampledTimepoints = getSampleTimepointsInDateRange(
+          isFirst
+            ? lastBucketBoundary(curr.createdAt)
+                .subtract(1, 's') // so that we get the first timepoint
+                .toDate()
+            : curr.createdAt,
+          isLast
+            ? lastBucketBoundary(curr.helpedAt)
+                .add(bucketSize, 'm') // to get the nextBucketBoundary
+                .toDate()
+            : next.createdAt,
+        );
+        sampledTimepoints = sampledTimepoints.filter((time) =>
+          hourTimestamps.some(([start, end]) =>
+            inRange(time.getTime(), start, end),
+          ),
+        );
 
-    // Bucket the timepoints
-    const SAMPLES_PER_HOUR = 60 / sampleInterval;
-    const SAMPLES_PER_DAY = 24 * SAMPLES_PER_HOUR;
-    const SAMPLES_PER_WEEK = 7 * SAMPLES_PER_DAY;
-    const heatmap = [...Array(7 * 24)];
-    // for 24 hrs 7 days
-    for (let day = 0; day < 7; day++) {
-      for (let hour = 0; hour < 24; hour++) {
-        const times = [];
-        // Iterate through each week
-        let week = 0;
-        // index in alltimepoints array
-        let index =
-          week * SAMPLES_PER_WEEK +
-          day * SAMPLES_PER_DAY +
-          SAMPLES_PER_HOUR * hour;
-        while (index < allTimepointWaitTimes.length) {
-          for (
-            let s = 0;
-            s < sampleInterval && index + s < allTimepointWaitTimes.length;
-            s++
+        // Pad the first bucket with zeros to account for timepoints before the first
+        if (sampledTimepoints.length > 0 && isFirst) {
+          isFirst = false;
+          //   const timeDiff = timeDiffInMins(sampledTimepoints[0], sunday);
+          //   const intervals = Math.ceil((timeDiff % bucketSize) / sampleInterval);
+          //   const bucketIndex = Math.floor(timeDiff / bucketSize);
+          //   for (let i = 0; i < intervals; i++) {
+          //     timepointBuckets[bucketIndex].push(0);
+          //   }
+        }
+        // When we would have hypothetically gotten help at this timepoint
+        for (const c of sampledTimepoints) {
+          let wait = 0;
+          if (
+            inRange(
+              c.getTime(),
+              curr.createdAt.getTime(),
+              curr.helpedAt.getTime(),
+            )
           ) {
-            // Grab all the samples in this bucket from current week
-            const t = allTimepointWaitTimes[index + s];
-            if (t) {
-              times.push(t);
-            }
+            wait = (curr.helpedAt.getTime() - c.getTime()) / 60000;
           }
-          week++;
-          index =
-            week * SAMPLES_PER_WEEK +
-            day * SAMPLES_PER_DAY +
-            SAMPLES_PER_HOUR * hour;
+
+          const bucketIndex = dateToBucket(c);
+          timepointBuckets[bucketIndex].push(wait);
         }
-        // times.sort();
-        // const median = times[Math.floor(times.length / 2)];
-        heatmap[day * 7 + hour] = mean(times);
       }
     }
 
-    return heatmap;
+    // Were there ever office hours in this bucket?
+    const wereHoursDuringBucket: boolean[] = [
+      ...Array((24 * 7 * 60) / bucketSize),
+    ];
+    for (const [start, end] of hourTimestamps) {
+      for (const i of range(dateToBucket(start), dateToBucket(end))) {
+        wereHoursDuringBucket[i] = true;
+      }
+    }
+
+    const h: Heatmap = timepointBuckets.map((samples, i) => {
+      if (samples.length > 0) {
+        return mean(samples);
+      } else if (wereHoursDuringBucket[i]) {
+        return 0;
+      } else {
+        return -1;
+      }
+    });
+    return h;
   }
 
   @Command({
