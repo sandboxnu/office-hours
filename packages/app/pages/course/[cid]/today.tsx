@@ -98,7 +98,7 @@ export default function Today(): ReactElement {
             {course && (
               <PopularTimes
                 heatmap={collapseHeatmap(
-                  arrayRotate(course.heatmap, moment().utcOffset() / 60)
+                  arrayRotate(course.heatmap, moment().utcOffset() / 60 + 4)
                 )}
               />
             )}
