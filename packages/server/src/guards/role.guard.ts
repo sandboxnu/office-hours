@@ -45,8 +45,7 @@ export abstract class RolesGuard implements CanActivate {
     });
 
     if (!userCourse) {
-      // If the user isn't in this course, we shouldn't leak that the course event exists
-      throw new NotFoundException('no user course');
+      throw new NotFoundException('Not In This Course');
     }
 
     const remaining = roles.filter((role) => {
