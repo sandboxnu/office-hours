@@ -356,12 +356,12 @@ describe('HeatmapService', () => {
       // while course is in America/New_York
       const heatmap = heatmapFromDates(
         [
-          [`2020-10-25T08:04.000Z`, `2020-10-25T08:32.000Z`],
-          [`2020-11-01T09:04.000Z`, `2020-10-25T09:32.000Z`],
+          [`2020-10-25T08:04:00.000Z`, `2020-10-25T08:32:00.000Z`],
+          [`2020-11-01T09:04:00.000Z`, `2020-11-01T09:32:00.000Z`],
         ],
         [
-          [`2020-10-25T08:00.000Z`, `2020-10-25T08:00.000Z`],
-          [`2020-11-01T09:00.000Z`, `2020-11-01T09:00.000Z`], // same office hour after falling back
+          [`2020-10-25T08:00:00.000Z`, `2020-10-25T09:00:00.000Z`],
+          [`2020-11-01T09:00:00.000Z`, `2020-11-01T10:00:00.000Z`], // same office hour after falling back
         ],
       );
       /**
@@ -378,12 +378,12 @@ describe('HeatmapService', () => {
       // Honolulu doesn't have DST (Pacific/Honolulu)
       const heatmap = service._generateHeatMapWithReplay(
         questionsFromDates([
-          [`2020-10-25T08:04.000Z`, `2020-10-25T08:32.000Z`],
-          [`2020-11-01T09:04.000Z`, `2020-10-25T09:32.000Z`],
+          [`2020-10-25T04:04:00-1000`, `2020-10-25T04:32:00-1000`],
+          [`2020-11-01T05:04:00-1000`, `2020-11-01T05:32:00-1000`],
         ]),
         officehoursFromDates([
-          [`2020-10-25T08:00.000Z`, `2020-10-25T08:00.000Z`],
-          [`2020-11-01T09:00.000Z`, `2020-11-01T09:00.000Z`], // same office hour after falling back
+          [`2020-10-25T04:00:00-1000`, `2020-10-25T05:00:00-1000`],
+          [`2020-11-01T05:00:00-1000`, `2020-11-01T06:00:00-1000`], // same office hour after falling back
         ]),
         'Pacific/Honolulu',
         BUCKET_SIZE,
@@ -404,12 +404,13 @@ describe('HeatmapService', () => {
       // while course is in America/New_York
       const heatmap = heatmapFromDates(
         [
-          [`2020-03-07T08:04.000Z`, `2020-03-07T08:32.000Z`],
-          [`2020-03-14T07:04.000Z`, `2020-03-14T07:32.000Z`],
+          // Saturday
+          [`2020-03-07T08:04:00.000Z`, `2020-03-07T08:32:00.000Z`],
+          [`2020-03-14T07:04:00.000Z`, `2020-03-14T07:32:00.000Z`],
         ],
         [
-          [`2020-03-07T08:00.000Z`, `2020-03-07T08:00.000Z`],
-          [`2020-03-14T07:00.000Z`, `2020-03-14T07:00.000Z`], // same office hour after spring forward
+          [`2020-03-07T08:00:00.000Z`, `2020-03-07T09:00:00.000Z`],
+          [`2020-03-14T07:00:00.000Z`, `2020-03-14T08:00:00.000Z`], // same office hour after spring forward
         ],
       );
       /**
@@ -417,7 +418,7 @@ describe('HeatmapService', () => {
        */
 
       const expected = sparseHeatmap({
-        3: 19 / 4,
+        [24 * 6 + 3]: 19 / 4,
       });
       expect(heatmap).toEqual(expected);
     });
@@ -426,14 +427,14 @@ describe('HeatmapService', () => {
       // while course is in America/New_York
       const heatmap = heatmapFromDates(
         [
-          [`2020-11-01T05:44.000Z`, `2020-11-01T06:12.000Z`], // 1:44 EDT -> 1:12 EST
+          [`2020-11-01T05:44:00.000Z`, `2020-11-01T06:12:00.000Z`], // 1:44 EDT -> 1:12 EST
         ],
-        [[`2020-11-01T05:00.000Z`, `2020-11-01T07:00.000Z`]],
+        [[`2020-11-01T05:00:00.000Z`, `2020-11-01T07:00:00.000Z`]],
       );
       /**
        *   Timepoint | Wait time   | Question in front of you
        *   -----------------------------------------------------
-       *     1:45    | 28 minutes  | Q1
+       *     1:45    | 27 minutes  | Q1
        *
        *     1:00    | 12 mintues  | Q1
        *
@@ -441,7 +442,7 @@ describe('HeatmapService', () => {
        **/
 
       const expected = sparseHeatmap({
-        1: 40 / 8,
+        1: 39 / 8,
       });
       expect(heatmap).toEqual(expected);
     });
@@ -450,14 +451,14 @@ describe('HeatmapService', () => {
       // while course is in America/New_York
       const heatmap = heatmapFromDates(
         [
-          [`2020-03-08T06:44.000Z`, `2020-03-08T07:12.000Z`], // 1:44 EST -> 3:12 EDT
+          [`2020-03-08T06:44:00.000Z`, `2020-03-08T07:12:00.000Z`], // 1:44 EST -> 3:12 EDT
         ],
-        [[`2020-03-08T06:00.000Z`, `2020-03-07T08:00.000Z`]],
+        [[`2020-03-08T06:00:00.000Z`, `2020-03-08T08:00:00.000Z`]],
       );
       /**
        *   Timepoint | Wait time   | Question in front of you
        *   -----------------------------------------------------
-       *     1:45    | 28 minutes  | Q1
+       *     1:45    | 27 minutes  | Q1
        *
        *     3:00    | 12 mintues  | Q1
        *
@@ -466,7 +467,8 @@ describe('HeatmapService', () => {
        **/
 
       const expected = sparseHeatmap({
-        1: 28 / 4,
+        1: 27 / 4,
+        2: 0,
         3: 12 / 4,
       });
       expect(heatmap).toEqual(expected);
@@ -475,7 +477,7 @@ describe('HeatmapService', () => {
     it('returns heatmap when a question crosses the midnight boundary', () => {
       // should be completely ignored
       const heatmap = heatmapFromDates(
-        [[`2020-10-11T05:00.000Z`, `2020-10-12T02:00.000Z`]],
+        [[`2020-10-11T05:00:00.000Z`, `2020-10-12T02:00:00.000Z`]],
         [OCT4('03:00', '04:00')],
       );
 

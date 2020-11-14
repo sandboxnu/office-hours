@@ -165,12 +165,6 @@ export class HeatmapService {
         // Pad the first bucket with zeros to account for timepoints before the first
         if (sampledTimepoints.length > 0 && isFirst) {
           isFirst = false;
-          //   const timeDiff = timeDiffInMins(sampledTimepoints[0], sunday);
-          //   const intervals = Math.ceil((timeDiff % bucketSize) / sampleInterval);
-          //   const bucketIndex = Math.floor(timeDiff / bucketSize);
-          //   for (let i = 0; i < intervals; i++) {
-          //     timepointBuckets[bucketIndex].push(0);
-          //   }
         }
         // When we would have hypothetically gotten help at this timepoint
         for (const c of sampledTimepoints) {
