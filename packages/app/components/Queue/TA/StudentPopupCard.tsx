@@ -1,5 +1,10 @@
 import { API } from "@koh/api-client";
-import { OpenQuestionStatus, Question, QuestionStatus } from "@koh/common";
+import {
+  LimboQuestionStatus,
+  OpenQuestionStatus,
+  Question,
+  QuestionStatus,
+} from "@koh/common";
 import { Button, Col, Drawer, Popconfirm, Row, Tag, Tooltip } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
@@ -105,7 +110,7 @@ const StudentPopupCard = ({
               cancelText="No"
               onConfirm={async () => {
                 await onClose();
-                await updateQuestion(question, OpenQuestionStatus.TADeleted);
+                await updateQuestion(question, LimboQuestionStatus.TADeleted);
                 await API.questions.notify(question.id);
               }}
               disabled={!isStaffCheckedIn}
@@ -159,7 +164,7 @@ const StudentPopupCard = ({
         </InfoTextDiv>
 
         <StatusTag color={questionStatusToColor(question.status)}>
-          {question.status === OpenQuestionStatus.CantFind
+          {question.status === LimboQuestionStatus.CantFind
             ? "Can't Find"
             : question.status}
         </StatusTag>
@@ -174,6 +179,13 @@ const StudentPopupCard = ({
             <BodyText>{question.questionType}</BodyText>
           </Col>
         </StyledRow>
+
+        {question.taHelped ? (
+          <FullWidth>
+            <HeadingText>last helped by</HeadingText>
+            <BodyText>{question.taHelped.name}</BodyText>
+          </FullWidth>
+        ) : null}
 
         <FullWidth>
           <HeadingText>question</HeadingText>

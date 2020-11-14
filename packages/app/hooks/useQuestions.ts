@@ -1,8 +1,8 @@
 import { API } from "@koh/api-client";
-import { ListQuestionsResponse, Question, SSEQueueResponse } from "@koh/common";
-import useSWR, { responseInterface } from "swr";
+import { ListQuestionsResponse, SSEQueueResponse } from "@koh/common";
 import { plainToClass } from "class-transformer";
 import { useCallback } from "react";
+import useSWR, { responseInterface } from "swr";
 import { useEventSource } from "./useEventSource";
 
 type questionsResponse = responseInterface<ListQuestionsResponse, any>;
@@ -11,8 +11,6 @@ interface UseQuestionReturn {
   questions?: questionsResponse["data"];
   questionsError: questionsResponse["error"];
   mutateQuestions: questionsResponse["mutate"];
-  // Mutate a specific question
-  mutateQuestion: (newQuestion: Question) => void;
 }
 
 export function useQuestions(qid: number): UseQuestionReturn {
@@ -31,22 +29,15 @@ export function useQuestions(qid: number): UseQuestionReturn {
     useCallback(
       (data: SSEQueueResponse) => {
         if (data.questions) {
-          mutateQuestions(plainToClass(Question, data.questions), false);
+          mutateQuestions(
+            plainToClass(ListQuestionsResponse, data.questions),
+            false
+          );
         }
       },
       [mutateQuestions]
     )
   );
 
-  const mutateQuestion = useCallback(
-    (newQuestion) => {
-      const newQuestions = questions?.map((q) =>
-        q.id === newQuestion.id ? newQuestion : q
-      );
-      mutateQuestions(newQuestions);
-    },
-    [questions, mutateQuestions]
-  );
-
-  return { questions, questionsError, mutateQuestions, mutateQuestion };
+  return { questions, questionsError, mutateQuestions };
 }

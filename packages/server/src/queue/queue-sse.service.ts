@@ -1,9 +1,9 @@
+import { Role, SSEQueueResponse } from '@koh/common';
 import { Injectable } from '@nestjs/common';
-import { SSEService } from 'sse/sse.service';
-import { QueueService } from './queue.service';
 import { Response } from 'express';
 import { throttle } from 'lodash';
-import { Role, SSEQueueResponse } from '@koh/common';
+import { SSEService } from 'sse/sse.service';
+import { QueueService } from './queue.service';
 
 type QueueClientMetadata = { userId: number; role: Role };
 
@@ -30,8 +30,8 @@ export class QueueSSEService {
   updateQuestions = this.throttleUpdate(async (queueId) => {
     const questions = await this.queueService.getQuestions(queueId);
     if (questions) {
-      this.sendToRoom(queueId, ({ role, userId }) => ({
-        questions: this.queueService.anonymizeQuestions(
+      this.sendToRoom(queueId, async ({ role, userId }) => ({
+        questions: await this.queueService.personalizeQuestions(
           questions,
           userId,
           role,
@@ -43,15 +43,15 @@ export class QueueSSEService {
   updateQueue = this.throttleUpdate(async (queueId) => {
     const queue = await this.queueService.getQueue(queueId);
     if (queue) {
-      this.sendToRoom(queueId, () => ({ queue }));
+      await this.sendToRoom(queueId, async () => ({ queue }));
     }
   });
 
-  private sendToRoom(
+  private async sendToRoom(
     queueId: number,
-    data: (metadata: QueueClientMetadata) => SSEQueueResponse,
+    data: (metadata: QueueClientMetadata) => Promise<SSEQueueResponse>,
   ) {
-    this.sseService.sendEvent(idToRoom(queueId), data);
+    await this.sseService.sendEvent(idToRoom(queueId), data);
   }
 
   private throttleUpdate(updateFunction: (queueId: number) => Promise<void>) {

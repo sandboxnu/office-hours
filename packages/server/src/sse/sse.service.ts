@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Response } from 'express';
 import { serialize } from 'class-transformer';
 import * as apm from 'elastic-apm-node';
+import { Response } from 'express';
 
 export interface Client<T> {
   metadata: T;
@@ -33,7 +33,10 @@ export class SSEService<T> {
   }
 
   /** Send some data to everyone in a room */
-  sendEvent<D>(room: string, payload: (metadata: T) => D): void {
+  async sendEvent<D>(
+    room: string,
+    payload: (metadata: T) => Promise<D>,
+  ): Promise<void> {
     if (room in this.clients) {
       console.log(
         `sending sse to ${this.clients[room].length} clients in ${room}`,
@@ -41,7 +44,7 @@ export class SSEService<T> {
       console.time(`sending sse time: `);
       apm.startTransaction('sse');
       for (const { res, metadata } of this.clients[room]) {
-        const toSend = `data: ${serialize(payload(metadata))}\n\n`;
+        const toSend = `data: ${serialize(await payload(metadata))}\n\n`;
         res.write(toSend);
       }
       apm.endTransaction();

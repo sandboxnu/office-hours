@@ -2,6 +2,7 @@ import {
   CreateQuestionParams,
   CreateQuestionResponse,
   DesktopNotifBody,
+  DesktopNotifPartial,
   GetCourseResponse,
   GetProfileResponse,
   GetQuestionResponse,
@@ -12,8 +13,6 @@ import {
   UpdateQuestionParams,
   UpdateQuestionResponse,
   UpdateQueueParams,
-  Question,
-  DesktopNotifPartial,
   GetReleaseNotesResponse,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
@@ -73,7 +72,7 @@ class APIClient {
       this.req<ListQuestionsResponse>(
         "GET",
         `/api/v1/queues/${queueId}/questions`,
-        Question
+        ListQuestionsResponse
       ),
     create: async (params: CreateQuestionParams) =>
       this.req("POST", `/api/v1/questions`, CreateQuestionResponse, params),

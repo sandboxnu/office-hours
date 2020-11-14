@@ -1,4 +1,10 @@
 import {
+  GetQueueResponse,
+  ListQuestionsResponse,
+  Role,
+  UpdateQueueParams,
+} from '@koh/common';
+import {
   Body,
   ClassSerializerInterceptor,
   Controller,
@@ -10,12 +16,6 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import {
-  GetQueueResponse,
-  ListQuestionsResponse,
-  Role,
-  UpdateQueueParams,
-} from '@koh/common';
 import { Response } from 'express';
 import { UserId } from 'profile/user.decorator';
 import { Connection } from 'typeorm';
@@ -51,7 +51,11 @@ export class QueueController {
     @UserId() userId: number,
   ): Promise<ListQuestionsResponse> {
     const questions = await this.queueService.getQuestions(queueId);
-    return this.queueService.anonymizeQuestions(questions, userId, role);
+    return await this.queueService.personalizeQuestions(
+      questions,
+      userId,
+      role,
+    );
   }
 
   @Patch(':queueId')
