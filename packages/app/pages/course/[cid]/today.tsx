@@ -1,5 +1,5 @@
 import { API } from "@koh/api-client";
-import { QueuePartial, Role } from "@koh/common";
+import { Heatmap, QueuePartial, Role } from "@koh/common";
 import { Col, Row } from "antd";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -16,7 +16,7 @@ import ReleaseNotes from "../../../components/Today/ReleaseNotes";
 import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useCourse } from "../../../hooks/useCourse";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
-import { range } from "lodash";
+import { chunk, range, sum } from "lodash";
 import moment from "moment";
 
 const Container = styled.div`
@@ -37,6 +37,9 @@ function arrayRotate(arr, count) {
   arr.push.apply(arr, arr.splice(0, count));
   return arr;
 }
+
+const collapseHeatmap = (heatmap: Heatmap): Heatmap =>
+  chunk(heatmap, 4).map(sum); // TODO: Parametrize this by a constant
 
 export default function Today(): ReactElement {
   const router = useRouter();
@@ -94,7 +97,9 @@ export default function Today(): ReactElement {
             {/*This only works with UTC offsets in the form N:00, to help with other offsets, the size of the array might have to change to a size of 24*7*4 (for every 15 min interval) */}
             {course && (
               <PopularTimes
-                heatmap={arrayRotate(course.heatmap, moment().utcOffset() / 60)}
+                heatmap={collapseHeatmap(
+                  arrayRotate(course.heatmap, moment().utcOffset() / 60)
+                )}
               />
             )}
           </Col>

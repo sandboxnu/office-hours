@@ -7,7 +7,7 @@ import {
 } from "@ant-design/icons";
 import { Heatmap } from "@koh/common";
 import { Dropdown, Menu } from "antd";
-import { uniq } from "lodash";
+import { chunk, sum, uniq, range } from "lodash";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { formatDateHour, formatWaitTime } from "../../utils/TimeUtil";
@@ -77,38 +77,60 @@ const GraphNotes = styled.h4`
   padding-left: 40px;
 `;
 
-function generateBusyText(day: number, heatmap: Heatmap): string {
-  let dailySumWaitTimes = [];
-  for (let d = 0; d < 7; d++) {
-    let dailySum = 0;
-    for (let hr = 0; hr < 24; hr++) {
-      dailySum += heatmap[hr + d * 7];
-    }
-    dailySumWaitTimes.push(dailySum);
+const BUSY = {
+  shortest: "the shortest",
+  shorter: "shorter than usual",
+  avg: "average",
+  longer: "longer than usual",
+  longest: "the longest",
+};
+
+// Mapping for text describing level of business, given the length of the unique wait times that week (to account for days without hours)
+const BUSY_TEXTS: string[][] = range(1, 8).map((len) => {
+  const arr = [];
+  if (len % 2 == 1) {
+    arr.push(BUSY.avg);
   }
+  if (len > 1) {
+    arr.unshift(BUSY.shortest); // add to front
+    arr.push(BUSY.longest);
+  }
+  const usual_texts = Math.floor((len - 2) / 2);
+  for (let i = 0; i < usual_texts; i++) {
+    arr.splice(1, 0, BUSY.shorter);
+    arr.splice(arr.length - 1, 0, BUSY.longer);
+  }
+  return arr;
+});
+
+// {
+//   1: ['average'],
+//   2: ['the shortest', 'the longest'],
+//   3: ['the shortest', 'average', 'the longest'],
+//   4: ['the shortest', 'shorter than usual', 'longer than usual', 'the longest'],
+//   5: ['the shortest', 'shorter than usual', 'average', 'longer than usual', 'the longest'],
+//   6: ['the shortest', 'shorter than usual',  'shorter than usual', 'longer than usual', 'longer than usual', 'the longest'],
+//   7: ['the shortest', 'shorter than usual', 'shorter than usual',  'average', 'longer than usual', 'longer than usual', 'the longest'],
+// }
+
+function generateBusyText(
+  day: number,
+  heatmap: Heatmap,
+  dailySumWaitTimes: number[]
+): string {
   const dayWaitTime = dailySumWaitTimes[day];
-  dailySumWaitTimes = uniq(dailySumWaitTimes).sort((a, b) => a - b);
-  const mid =
-    dailySumWaitTimes.length % 2 == 0
-      ? dailySumWaitTimes.length / 2 - 1
-      : Math.ceil(dailySumWaitTimes.length / 2) - 1;
-  const rank = dailySumWaitTimes.indexOf(dayWaitTime);
-  if (rank === mid) {
-    return "average";
-  } else if (rank === 0) {
-    return "the shortest";
-  } else if (rank === dailySumWaitTimes.length - 1) {
-    return "the longest";
-  } else if (rank > 0 && rank < mid) {
-    return "shorter than usual";
-  } else {
-    return "longer than usual";
-  }
+  const uniqSumWaitTimes = uniq(
+    dailySumWaitTimes.filter((v) => v > 0).sort((a, b) => a - b)
+  );
+  const rank = uniqSumWaitTimes.indexOf(dayWaitTime);
+  console.log(uniqSumWaitTimes.length);
+  return BUSY_TEXTS[uniqSumWaitTimes.length - 1][rank];
 }
 
 export default function PopularTimes({ heatmap }: HeatmapProps): ReactElement {
   const [currentDayOfWeek, setCurrentDayOfWeek] = useState(new Date().getDay());
   const [firstHour, lastHour] = findWeekMinAndMax(heatmap);
+  const dailySumWaitTimes: number[] = chunk(heatmap, 24).map(sum);
   return (
     <div>
       <TitleRow>
@@ -138,10 +160,9 @@ export default function PopularTimes({ heatmap }: HeatmapProps): ReactElement {
           <LeftOutlined />
         </GraphArrowButtons>
         <TimeGraph
-          values={heatmap.slice(
-            currentDayOfWeek * 24,
-            (currentDayOfWeek + 1) * 24 - 1
-          )}
+          values={heatmap
+            .slice(currentDayOfWeek * 24, (currentDayOfWeek + 1) * 24 - 1)
+            .map((i) => (i < 0 ? 0 : i))}
           maxTime={Math.max(...heatmap)}
           firstHour={firstHour}
           lastHour={lastHour}
@@ -154,21 +175,27 @@ export default function PopularTimes({ heatmap }: HeatmapProps): ReactElement {
           <RightOutlined />
         </GraphArrowButtons>
       </GraphWithArrow>
-      <GraphNotes>
-        <ClockCircleOutlined /> {DAYS_OF_WEEK[currentDayOfWeek]}s have{" "}
-        <strong>{generateBusyText(currentDayOfWeek, heatmap)}</strong> wait
-        times.
-      </GraphNotes>
-      <GraphNotes>
-        <HourglassOutlined /> At {formatDateHour(new Date())}, people generally
-        wait{" "}
-        <strong>
-          {formatWaitTime(
-            heatmap[currentDayOfWeek * 24 + new Date().getHours()]
-          )}
-        </strong>
-        .
-      </GraphNotes>
+      {dailySumWaitTimes[currentDayOfWeek] > 0 && (
+        <GraphNotes>
+          <ClockCircleOutlined /> {DAYS_OF_WEEK[currentDayOfWeek]}s have{" "}
+          <strong>
+            {generateBusyText(currentDayOfWeek, heatmap, dailySumWaitTimes)}
+          </strong>{" "}
+          wait times.
+        </GraphNotes>
+      )}
+      {heatmap[currentDayOfWeek * 24 + new Date().getHours()] > 0 && (
+        <GraphNotes>
+          <HourglassOutlined /> At {formatDateHour(new Date())}, people
+          generally wait{" "}
+          <strong>
+            {formatWaitTime(
+              heatmap[currentDayOfWeek * 24 + new Date().getHours()]
+            )}
+          </strong>
+          .
+        </GraphNotes>
+      )}
     </div>
   );
 }

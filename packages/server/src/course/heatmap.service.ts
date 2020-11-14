@@ -4,6 +4,7 @@ import { inRange, mean, range, sample } from 'lodash';
 import moment = require('moment');
 import { Command } from 'nestjs-command';
 import { QuestionModel } from 'question/question.entity';
+import { MoreThan } from 'typeorm';
 import { OfficeHourModel } from './office-hour.entity';
 
 function arrayRotate(arr, count) {
@@ -20,6 +21,7 @@ export class HeatmapService {
     // Number of samples to gather per bucket
     const SAMPLES_PER_BUCKET = 3;
     console.time('heatmap');
+    const recent = moment().subtract(8, 'weeks').toISOString();
     const questions = await QuestionModel.createQueryBuilder('question')
       .leftJoinAndSelect('question.queue', 'queue')
       .where('queue.courseId = :courseId', { courseId })
@@ -27,17 +29,20 @@ export class HeatmapService {
         status: ClosedQuestionStatus.Resolved,
       })
       .andWhere('question.helpedAt IS NOT NULL')
-      .andWhere('question.createdAt > :recent', {
-        recent: moment().subtract(8, 'weeks').toISOString(),
-      })
+      .andWhere('question.createdAt > :recent', { recent })
       .orderBy('question.createdAt', 'ASC')
       .getMany();
 
+    const officeHours = await OfficeHourModel.find({
+      where: { startTime: MoreThan(recent) },
+    });
+
+    console.log('heamtap on questions ', questions.length);
     const tz = 'America/New_York';
     const heatmap = this._generateHeatMapWithReplay(
       // Ignore questions that cross midnight (usually a fluke)
       questions.filter((q) => q.helpedAt.getDate() === q.createdAt.getDate()),
-      [], //TODO: query for office hours
+      officeHours,
       tz,
       BUCKET_SIZE_IN_MINS,
       SAMPLES_PER_BUCKET,
