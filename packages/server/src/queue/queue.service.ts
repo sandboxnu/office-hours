@@ -46,11 +46,7 @@ export class QueueService {
       relations: ['creator', 'taHelped'],
       where: {
         queueId,
-        status: In([
-          ...StatusInPriorityQueue,
-          ...StatusInQueue,
-          ...OpenQuestionStatus.Helping,
-        ]),
+        status: In(StatusSentToCreator),
       },
     });
 
