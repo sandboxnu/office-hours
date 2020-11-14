@@ -89,26 +89,35 @@ export declare enum OpenQuestionStatus {
     Drafting = "Drafting",
     Queued = "Queued",
     Helping = "Helping",
+    PriorityQueued = "PriorityQueued"
+}
+export declare enum LimboQuestionStatus {
     CantFind = "CantFind",
+    ReQueueing = "ReQueueing",
     TADeleted = "TADeleted"
 }
 export declare enum ClosedQuestionStatus {
     Resolved = "Resolved",
-    Deferred = "Deferred",
     ConfirmedDeleted = "ConfirmedDeleted",
+    StudentCancelled = "StudentCancelled",
     Stale = "Stale"
 }
+export declare const StatusInQueue: OpenQuestionStatus[];
+export declare const StatusInPriorityQueue: OpenQuestionStatus[];
+export declare const StatusSentToCreator: (OpenQuestionStatus | LimboQuestionStatus)[];
 export declare type QuestionStatus = keyof typeof QuestionStatusKeys;
 export declare const QuestionStatusKeys: {
+    CantFind: LimboQuestionStatus.CantFind;
+    ReQueueing: LimboQuestionStatus.ReQueueing;
+    TADeleted: LimboQuestionStatus.TADeleted;
     Resolved: ClosedQuestionStatus.Resolved;
-    Deferred: ClosedQuestionStatus.Deferred;
     ConfirmedDeleted: ClosedQuestionStatus.ConfirmedDeleted;
+    StudentCancelled: ClosedQuestionStatus.StudentCancelled;
     Stale: ClosedQuestionStatus.Stale;
     Drafting: OpenQuestionStatus.Drafting;
     Queued: OpenQuestionStatus.Queued;
     Helping: OpenQuestionStatus.Helping;
-    CantFind: OpenQuestionStatus.CantFind;
-    TADeleted: OpenQuestionStatus.TADeleted;
+    PriorityQueued: OpenQuestionStatus.PriorityQueued;
 };
 export declare type Season = "Fall" | "Spring" | "Summer 1" | "Summer 2";
 export declare type DesktopNotifBody = {
@@ -164,7 +173,11 @@ export declare class GetQueueResponse extends QueuePartial {
 }
 export declare class GetCourseQueuesResponse extends Array<QueuePartial> {
 }
-export declare class ListQuestionsResponse extends Array<Question> {
+export declare class ListQuestionsResponse {
+    yourQuestion?: Question;
+    questionsGettingHelp: Array<Question>;
+    queue: Array<Question>;
+    priorityQueue: Array<Question>;
 }
 export declare class GetQuestionResponse extends Question {
 }

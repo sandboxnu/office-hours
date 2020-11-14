@@ -1,8 +1,8 @@
 /// <reference types="lodash" />
+import { Role } from '@koh/common';
+import { Response } from 'express';
 import { SSEService } from 'sse/sse.service';
 import { QueueService } from './queue.service';
-import { Response } from 'express';
-import { Role } from '@koh/common';
 declare type QueueClientMetadata = {
     userId: number;
     role: Role;

@@ -6,5 +6,5 @@ export interface Client<T> {
 export declare class SSEService<T> {
     private clients;
     subscribeClient(room: string, client: Client<T>): void;
-    sendEvent<D>(room: string, payload: (metadata: T) => D): void;
+    sendEvent<D>(room: string, payload: (metadata: T) => Promise<D>): Promise<void>;
 }
