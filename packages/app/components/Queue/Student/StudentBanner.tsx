@@ -3,6 +3,8 @@ import {
   EditOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
+import { API } from "@koh/api-client";
+import { OpenQuestionStatus } from "@koh/common";
 import { Col, Popconfirm } from "antd";
 import { ReactElement } from "react";
 import styled from "styled-components";
@@ -28,6 +30,10 @@ const Bullets = styled.ul`
   color: #000;
 `;
 
+const ColWithRightMargin = styled(Col)`
+  margin-right: 32px;
+`;
+
 interface StudentBannerProps {
   queueId: number;
   editQuestion: () => void;
@@ -38,11 +44,7 @@ export default function StudentBanner({
   editQuestion,
   leaveQueue,
 }: StudentBannerProps): ReactElement {
-  const {
-    studentQuestion,
-    studentQuestionIndex,
-    mutateStudentQuestion,
-  } = useStudentQuestion(queueId);
+  const { studentQuestion, studentQuestionIndex } = useStudentQuestion(queueId);
 
   const { draftQuestion } = useDraftQuestion();
 
@@ -98,10 +100,10 @@ export default function StudentBanner({
           }
           content={
             <QuestionDetails>
-              <Col flex="1 1" style={{ marginRight: "32px" }}>
+              <ColWithRightMargin flex="1 1">
                 <InfoHeader>question</InfoHeader>
                 <div>{studentQuestion.text}</div>
-              </Col>
+              </ColWithRightMargin>
               <Col flex="0 0 89px">
                 <InfoHeader>type</InfoHeader>
                 <div>{studentQuestion.questionType}</div>
@@ -144,6 +146,76 @@ export default function StudentBanner({
               <li>Be respectful of the TA’s time</li>
               <li>Come prepared with your question!</li>
             </Bullets>
+          }
+        />
+      );
+    case "ReQueueing":
+      return (
+        <Banner
+          titleColor="#66BB6A"
+          contentColor="#82C985"
+          title={<span>Are you ready to re-join the queue?</span>}
+          buttons={
+            <>
+              <LeaveQueueButton leaveQueue={leaveQueue} />
+              {studentQuestion.isOnline && (
+                <BannerButton
+                  icon={<TeamOutlined />}
+                  onClick={async () => {
+                    await API.questions.update(studentQuestion.id, {
+                      status: OpenQuestionStatus.PriorityQueued,
+                    });
+                  }}
+                >
+                  Re-join Queue
+                </BannerButton>
+              )}
+            </>
+          }
+          content={
+            <Bullets>
+              <li>Have you finished doing what the TA has told you?</li>
+              <li>
+                Once you hit requeue, you will be placed at the top of the queue
+              </li>
+            </Bullets>
+          }
+        />
+      );
+    case "PriorityQueued":
+      return (
+        <Banner
+          titleColor="#3684C6"
+          contentColor="#ABD4F3"
+          title={
+            <span>
+              You are now in a priority queue, you will be helped soon. <br />
+              You were last helped by {studentQuestion.taHelped.name}.
+            </span>
+          }
+          buttons={
+            <>
+              <LeaveQueueButton leaveQueue={leaveQueue} />
+              <BannerButton
+                data-cy="edit-question"
+                icon={<EditOutlined />}
+                onClick={editQuestion}
+              >
+                Edit Question
+              </BannerButton>
+            </>
+          }
+          content={
+            <QuestionDetails>
+              <ColWithRightMargin flex="1 1">
+                <InfoHeader>question</InfoHeader>
+                <div>{studentQuestion.text}</div>
+              </ColWithRightMargin>
+              <Col flex="0 0 89px">
+                <InfoHeader>type</InfoHeader>
+                <div>{studentQuestion.questionType}</div>
+              </Col>
+            </QuestionDetails>
           }
         />
       );

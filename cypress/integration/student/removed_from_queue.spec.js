@@ -47,7 +47,7 @@ describe("Removed from queue", () => {
       () => {
         cy.get("body").should(
           "contain",
-          "You've been removed from the queue by a TA. If you have any questions, please reach out to the TA. If you'd like to join back into the queue with your previous question, click Rejoin Queue, otherwise click Leave Queue."
+          "A TA tried to help you, but couldn't reach you. Are you still in the queue? If you are, make sure you have Teams open, and rejoin the queue."
         );
 
         cy.get("body").should("contain", "Rejoin Queue");
@@ -55,7 +55,9 @@ describe("Removed from queue", () => {
         cy.get("button").contains("Rejoin Queue").click();
 
         // Check that the student was sucessfully but back into the queue
-        cy.contains("You are 1st");
+        cy.contains(
+          "You are now in a priority queue, you will be helped soon. You were last helped by User."
+        );
       }
     );
   });

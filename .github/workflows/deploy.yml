@@ -33,7 +33,7 @@ jobs:
       ## Ensure no new changes have been pushed in the time we spent building
       - run: git fetch && echo "::set-output name=version::$(git rev-parse origin/master)"
         id: post-version
-      - if: steps.pre-version.outputs.version == steps.post-version.outputs.version 
+      - if: steps.pre-version.outputs.version == steps.post-version.outputs.version
         uses: EndBug/add-and-commit@v4
         with:
           add: "packages"
