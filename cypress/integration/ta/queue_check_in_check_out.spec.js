@@ -41,8 +41,11 @@ describe("Can successfuly check in and out of a queue", () => {
 
   it("checkout from the today page", () => {
     cy.get("@ta").then((ta) => {
-      cy.get(".ant-modal-close-x").click();
+      // Visit the today page
+      cy.visit(`/course/${ta.course.id}/today`);
+
       // Wait for page to load
+      cy.get(".ant-modal-close-x").click();
       cy.contains("No Staff Checked In");
 
       // Click "Check in"
