@@ -1,8 +1,8 @@
-import { loginStudent, createQueue } from "../../utils";
+import { createAndLoginStudent, createQueue } from "../../utils";
 
 describe("Student can create a question", () => {
   beforeEach(() => {
-    loginStudent();
+    createAndLoginStudent();
     createQueue({
       courseId: "student.course.id",
     });

@@ -1,19 +1,19 @@
 import {
-  loginStudent,
-  loginTA,
+  createAndLoginStudent,
+  createAndLoginTA,
   createQueue,
   createQuestion,
   checkInTA,
-  loginStudent,
+  createAndLoginStudent,
 } from "../../utils";
 
 describe("Removed from queue", () => {
   beforeEach(() => {
-    loginStudent();
+    createAndLoginStudent();
     createQueue({
       courseId: "student.course.id",
     });
-    loginTA({
+    createAndLoginTA({
       courseId: "student.course.id",
     });
     checkInTA({
@@ -21,7 +21,7 @@ describe("Removed from queue", () => {
       queue: "queue",
     });
     createQuestion({
-      userId: "student.user.id",
+      studentId: "student.user.id",
       queueId: "queue.id",
     });
   });
@@ -41,7 +41,7 @@ describe("Removed from queue", () => {
     cy.get("button").contains("Yes").click();
 
     // Login the student
-    cy.visit(`/api/v1/login/dev?userId=${this.student.user.id}`);
+    loginUser("student");
 
     cy.visit(`course/${this.queue.courseId}/queue/${this.queue.id}`).then(
       () => {
@@ -74,7 +74,7 @@ describe("Removed from queue", () => {
     cy.get("button").contains("Yes").click();
 
     // Login the student
-    cy.visit(`/api/v1/login/dev?userId=${this.student.user.id}`);
+    loginUser("student");
 
     cy.visit(`course/${this.queue.courseId}/queue/${this.queue.id}`).then(
       () => {

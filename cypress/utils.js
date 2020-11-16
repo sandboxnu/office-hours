@@ -26,7 +26,13 @@ const makeRequest = (request, identifier, { ...params }) => {
   }
 };
 
-const loginUser = ({ role, courseId, identifier }) => {
+export const loginUser = (identifier) => {
+  cy.get(`@${identifier}`).then((userCourse) => {
+    cy.visit(`/api/v1/login/dev?userId=${userCourse.user.id}`);
+  });
+};
+
+const createUserAndLogin = ({ role, courseId, identifier }) => {
   const req = (parsedId) => {
     // create the user
     cy.request("POST", "/api/v1/seeds/createUser", {
@@ -38,6 +44,7 @@ const loginUser = ({ role, courseId, identifier }) => {
         // log them in
         cy.visit(`/api/v1/login/dev?userId=${userCourse.user.id}`);
         cy.visit(`/course/${userCourse.courseId}/today`);
+        // save the auth token incase it is needed for future requests
         cy.getCookie("auth_token")
           .then((auth_token) => ({
             ...userCourse,
@@ -54,18 +61,18 @@ const loginUser = ({ role, courseId, identifier }) => {
   }
 };
 
-export const loginTA = ({ courseId = null, identifier = "ta" } = {}) =>
-  loginUser({
+export const createAndLoginTA = ({ courseId = null, identifier = "ta" } = {}) =>
+  createUserAndLogin({
     role: "ta",
     courseId,
     identifier,
   });
 
-export const loginStudent = ({
+export const createAndLoginStudent = ({
   courseId = null,
   identifier = "student",
 } = {}) =>
-  loginUser({
+  createUserAndLogin({
     role: "student",
     courseId,
     identifier,
@@ -88,10 +95,10 @@ export const createQueue = ({
   });
 };
 
-export const createQuestion = ({ queueId, userId, data, identifier }) => {
+export const createQuestion = ({ queueId, studentId, data, identifier }) => {
   const req = ({ queueId, userId }) =>
     cy.request("POST", "/api/v1/seeds/createQuestion", {
-      userId,
+      studentId,
       queueId,
       data,
     });

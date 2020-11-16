@@ -1,18 +1,19 @@
-const {
+import {
   createQueue,
   checkInTA,
   createQuestion,
-  loginStudent,
-  loginTA,
-} = require("../../utils");
+  createAndLoginStudent,
+  createAndLoginTA,
+  loginUser,
+} from "../../utils";
 
 describe("can't be found", () => {
   beforeEach(() => {
-    loginStudent();
+    createAndLoginStudent();
     createQueue({
       courseId: "student.course.id",
     });
-    loginTA({
+    createAndLoginTA({
       courseId: "student.course.id",
     });
     checkInTA({
@@ -21,21 +22,14 @@ describe("can't be found", () => {
     });
     createQuestion({
       queueId: "queue.id",
-      userId: "student.user.id",
+      studentId: "student.user.id",
       data: {
         text: "How do I use the design recipe?",
       },
     });
-
-    //TA opens the student's question
+    loginUser("ta");
     cy.get("@queue").then((queue) => {
-      cy.get("@ta").then((ta) => {
-        cy.visit(`/api/v1/login/dev?userId=${ta.user.id}`);
-
-        cy.get(".ant-modal-close-x").click();
-        // Visit the queue page
-        cy.visit(`/course/${queue.courseId}/queue/${queue.id}`);
-      });
+      cy.visit(`/course/${queue.courseId}/queue/${queue.id}`);
     });
   });
 
@@ -50,7 +44,7 @@ describe("can't be found", () => {
     cy.get("body").should("contain", "Yes");
     cy.get("button").contains("Yes").click();
 
-    cy.visit(`/api/v1/login/dev?userId=${this.student.user.id}`);
+    loginUser("student");
 
     cy.visit(`course/${this.queue.courseId}/queue/${this.queue.id}`).then(
       () => {
@@ -75,7 +69,7 @@ describe("can't be found", () => {
     cy.get("body").should("contain", "Yes");
     cy.get("button").contains("Yes").click();
 
-    cy.visit(`/api/v1/login/dev?userId=${this.student.user.id}`);
+    loginUser("student");
 
     cy.visit(`course/${this.queue.courseId}/queue/${this.queue.id}`).then(
       () => {

@@ -1,8 +1,8 @@
-import { loginTA, createQueue, loginTA } from "../../utils";
+import { createAndLoginTA, createQueue } from "../../utils";
 
 describe("Edit Queue Notes", () => {
   beforeEach(() => {
-    loginTA();
+    createAndLoginTA();
     createQueue({
       courseId: "ta.course.id",
     });

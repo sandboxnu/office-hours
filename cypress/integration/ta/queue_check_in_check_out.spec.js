@@ -1,16 +1,21 @@
-import { loginTA, checkInTA, createQueue, createQuestion } from "../../utils";
+import {
+  createAndLoginTA,
+  checkInTA,
+  createQueue,
+  createQuestion,
+} from "../../utils";
 
 describe("Can successfuly check in and out of a queue when their is scheduled office hours", () => {
   beforeEach(() => {
     // Set the state
-    loginTA();
+    createAndLoginTA();
     createQueue({
       courseId: "ta.course.id",
     });
   });
 
   it("checking in multiple TAs then checking one out", function () {
-    loginTA({
+    createAndLoginTA({
       identifier: "ta2",
       courseId: "ta.course.id",
     });
@@ -92,7 +97,7 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
 
 describe("Checking in and out when there arent scheduled office hours", () => {
   beforeEach(() => {
-    loginTA();
+    createAndLoginTA();
   });
 
   it("checking in a TA when there is not scheduled office hours", function () {
@@ -107,7 +112,6 @@ describe("Checking in and out when there arent scheduled office hours", () => {
         // add a question to the queue
         createQuestion({
           queueId: "queue.id",
-          identifier: "question",
         });
         // Navigate to the queue page
         cy.visit(`/course/${this.ta.courseId}/queue/${queue.id}`);
