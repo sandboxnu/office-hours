@@ -109,7 +109,11 @@ export default function StudentQueueList({
       );
 
       // questions are the old questions and newQuestionsInQueue are questions that've been added since.
-      mutateQuestions({ ...questions, queue: newQuestionsInQueue });
+      mutateQuestions({
+        ...questions,
+        yourQuestion: updatedQuestionFromStudent,
+        queue: newQuestionsInQueue,
+      });
     },
     [studentQuestion?.id, questions, mutateQuestions]
   );

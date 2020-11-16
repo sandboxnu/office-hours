@@ -66,6 +66,8 @@ describe("Allow or disable new questions for a queue", () => {
 
       // Login the student
       cy.visit(`/api/v1/login/dev?userId=${student.user.id}`);
+      // Visit the today page
+      cy.visit(`/course/${student.course.id}/today`);
     });
 
     cy.get(".ant-modal-close-x").click();
