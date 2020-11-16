@@ -1,8 +1,8 @@
 import {
-  createAndLoginTA,
-  createQueue,
-  checkInTA,
   createAndLoginStudent,
+  createAndLoginTA,
+  checkInTA,
+  createQueue,
 } from "../../utils";
 
 describe("Allow or disable new questions for a queue", () => {

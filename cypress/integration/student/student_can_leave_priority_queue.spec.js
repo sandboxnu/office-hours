@@ -1,4 +1,11 @@
-import { createAndLoginStudent, createAndLoginTA, checkInTA, createQuestion, loginUser } from "../../utils";
+import {
+  createAndLoginStudent,
+  createAndLoginTA,
+  checkInTA,
+  createQueue,
+  createQuestion,
+  loginUser,
+} from "../../utils";
 
 describe("can't be found", () => {
   beforeEach(() => {
@@ -11,7 +18,11 @@ describe("can't be found", () => {
     });
     checkInTA();
     createQuestion({
+      queueId: "queue.id",
       studentId: "student.user.id",
+      data: {
+        text: "How do I use the design recipe?",
+      },
     });
 
     loginUser("ta");

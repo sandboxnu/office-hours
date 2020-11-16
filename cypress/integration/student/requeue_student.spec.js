@@ -1,9 +1,10 @@
 import {
   createAndLoginStudent,
-  createQueue,
-  createQuestion,
   createAndLoginTA,
   checkInTA,
+  createQueue,
+  createQuestion,
+  loginUser,
 } from "../../utils";
 
 describe("can't be found", () => {
@@ -17,7 +18,11 @@ describe("can't be found", () => {
     });
     checkInTA();
     createQuestion({
-      studentId: "student",
+      queueId: "queue.id",
+      studentId: "student.user.id",
+      data: {
+        text: "How do I use the design recipe?",
+      },
     });
 
     //TA opens the student's question

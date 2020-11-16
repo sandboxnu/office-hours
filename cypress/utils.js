@@ -96,7 +96,7 @@ export const createQueue = ({
 };
 
 export const createQuestion = ({ queueId, studentId, data, identifier }) => {
-  const req = ({ queueId, userId }) =>
+  const req = ({ queueId, studentId }) =>
     cy.request("POST", "/api/v1/seeds/createQuestion", {
       studentId,
       queueId,
@@ -104,8 +104,8 @@ export const createQuestion = ({ queueId, studentId, data, identifier }) => {
     });
 
   getId(queueId).then((queueId) => {
-    getId(userId).then((userId) =>
-      makeRequest(req, identifier, { queueId, userId })
+    getId(studentId).then((studentId) =>
+      makeRequest(req, identifier, { queueId, studentId })
     );
   });
 };

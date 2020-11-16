@@ -1,10 +1,10 @@
 import {
   createAndLoginStudent,
   createAndLoginTA,
+  checkInTA,
   createQueue,
   createQuestion,
-  checkInTA,
-  createAndLoginStudent,
+  loginUser,
 } from "../../utils";
 
 describe("Removed from queue", () => {

@@ -1,8 +1,8 @@
 import {
   createAndLoginTA,
-  createQuestion,
-  createQueue,
   checkInTA,
+  createQueue,
+  createQuestion,
 } from "../../utils";
 
 describe("TA interacts with student question", () => {
