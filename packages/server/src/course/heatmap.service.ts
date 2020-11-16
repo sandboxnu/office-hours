@@ -1,6 +1,6 @@
 import { ClosedQuestionStatus, Heatmap, timeDiffInMins } from '@koh/common';
 import { Injectable } from '@nestjs/common';
-import { inRange, mean, range, sample } from 'lodash';
+import { inRange, mean, range, sample, uniq } from 'lodash';
 import moment = require('moment');
 import { Command } from 'nestjs-command';
 import { QuestionModel } from 'question/question.entity';
@@ -34,7 +34,7 @@ export class HeatmapService {
       .getMany();
 
     const officeHours = await OfficeHourModel.find({
-      where: { startTime: MoreThan(recent) },
+      where: { startTime: MoreThan(recent), courseId },
     });
 
     console.log('heamtap on questions ', questions.length);
@@ -47,7 +47,10 @@ export class HeatmapService {
       BUCKET_SIZE_IN_MINS,
       SAMPLES_PER_BUCKET,
     );
-    arrayRotate(heatmap, -moment.tz.zone(tz).utcOffset(Date.now()) / 60);
+    arrayRotate(
+      heatmap,
+      -moment.tz.zone(tz).utcOffset(Date.now()) / BUCKET_SIZE_IN_MINS,
+    );
     console.timeEnd('heatmap');
     return heatmap;
   }

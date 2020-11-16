@@ -1,4 +1,4 @@
-import { AxisBottom } from "@visx/axis";
+import { AxisBottom, AxisLeft } from "@visx/axis";
 import { GridRows } from "@visx/grid";
 import { Group } from "@visx/group";
 import { scaleBand, scaleLinear } from "@visx/scale";
@@ -7,8 +7,12 @@ import { defaultStyles, useTooltip, useTooltipInPortal } from "@visx/tooltip";
 import { range } from "lodash";
 import React, { ReactElement, useMemo } from "react";
 import styled from "styled-components";
-import { formatWaitTime } from "../../utils/TimeUtil";
+import { formatDateHour, formatWaitTime } from "../../utils/TimeUtil";
 
+//TODO:
+// - Fix Y axis
+// - Fix Gridlines (incremented by 30 min?)
+// - radius of the bars
 let tooltipTimeout: number;
 const tooltipStyles = {
   ...defaultStyles,
@@ -16,7 +20,7 @@ const tooltipStyles = {
   backgroundColor: "rgba(0,0,0,0.9)",
   color: "white",
 };
-const HORIZONTAL_PADDING = 20;
+const HORIZONTAL_PADDING = 40;
 const VERTICAL_MARGIN = 40;
 // number of minutes between each grid row line
 const GRID_ROW_INTERVAL = 30;
@@ -76,7 +80,7 @@ export default function TimeGraph({
       scaleLinear<number>({
         range: [yMax, 0],
         round: true,
-        domain: [0, maxTime],
+        domain: [0, Math.max(maxTime, 1)],
       }),
     [yMax, maxTime]
   );
@@ -98,7 +102,7 @@ export default function TimeGraph({
         />
         <GridRows
           top={VERTICAL_MARGIN / 2}
-          width={width}
+          width={width - HORIZONTAL_PADDING}
           scale={yScale}
           tickValues={range(0, maxTime, GRID_ROW_INTERVAL)}
           stroke="#cccccc"
@@ -108,15 +112,25 @@ export default function TimeGraph({
             const barHeight = yMax - yScale(value);
             const barX = xScale(i) + (barWidth * (1 + BAR_PADDING)) / 2;
             const barY = yMax - barHeight;
+            const interactWithBar = () => {
+              if (tooltipTimeout) clearTimeout(tooltipTimeout);
+              const top = yMax - barHeight; // - VERTICAL_MARGIN - barHeight;
+              const left = barX + barWidth / 2;
+              showTooltip({
+                tooltipData: value,
+                tooltipTop: top,
+                tooltipLeft: left,
+              });
+            };
             return (
               <BarRounded
-                key={`bar-${formatWaitTime(i)}`}
+                key={`bar-${formatDateHour(i)}`}
                 className="popularTimes__bar"
                 x={barX}
                 y={barY}
                 width={barWidth}
                 height={barHeight}
-                radius={20}
+                radius={10}
                 top
                 fill="#40a9ff"
                 onMouseLeave={() => {
@@ -124,16 +138,8 @@ export default function TimeGraph({
                     hideTooltip();
                   }, 300);
                 }}
-                onMouseDown={() => {
-                  if (tooltipTimeout) clearTimeout(tooltipTimeout);
-                  const top = yMax - barHeight; // - VERTICAL_MARGIN - barHeight;
-                  const left = barX + barWidth / 2;
-                  showTooltip({
-                    tooltipData: value,
-                    tooltipTop: top,
-                    tooltipLeft: left,
-                  });
-                }}
+                onMouseOver={interactWithBar}
+                onMouseDown={interactWithBar}
               />
             );
           })}
@@ -141,19 +147,29 @@ export default function TimeGraph({
         <Group left={LEFT_PADDING}>
           <AxisBottom
             top={yMax + VERTICAL_MARGIN / 2}
-            rangePadding={HORIZONTAL_PADDING + barWidth}
+            rangePadding={HORIZONTAL_PADDING / 2}
             scale={xScale}
             tickFormat={(hour: number) =>
-              (hour - firstHour) % 3 == 0
-                ? hour < 12
-                  ? `${hour + 1}AM`
-                  : `${hour - 11}PM`
-                : ""
+              (hour - firstHour) % 3 == 0 ? formatDateHour(hour) : ""
             }
             tickLabelProps={() => ({
               fill: "",
               fontSize: 11,
               textAnchor: "middle",
+            })}
+          />
+        </Group>
+        <Group top={VERTICAL_MARGIN / 2} left={LEFT_PADDING}>
+          <AxisLeft
+            scale={yScale}
+            tickValues={range(0, maxTime, 30)}
+            tickFormat={(hour: number) => formatWaitTime(hour)}
+            tickLabelProps={() => ({
+              fill: "",
+              fontSize: 10,
+              textAnchor: "middle",
+              display: "flex",
+              marginRight: "30px",
             })}
           />
         </Group>

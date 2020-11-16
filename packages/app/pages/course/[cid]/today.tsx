@@ -16,7 +16,7 @@ import ReleaseNotes from "../../../components/Today/ReleaseNotes";
 import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useCourse } from "../../../hooks/useCourse";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
-import { chunk, range, sum } from "lodash";
+import { chunk, mean, range, sum, zip } from "lodash";
 import moment from "moment";
 
 const Container = styled.div`
@@ -32,14 +32,26 @@ const Title = styled.div`
   color: #212934;
 `;
 
+function rotateCalendar(arr: number[], count: number) {
+  return arr.concat(arr.splice(0, new Date().getMonth()));
+}
+
 function arrayRotate(arr, count) {
-  count -= arr.length * Math.floor(count / arr.length);
-  arr.push.apply(arr, arr.splice(0, count));
-  return arr;
+  const adjustedCount = (arr.length + count) % arr.length;
+  return arr
+    .slice(adjustedCount, arr.length)
+    .concat(arr.slice(0, adjustedCount));
 }
 
 const collapseHeatmap = (heatmap: Heatmap): Heatmap =>
-  chunk(heatmap, 4).map(sum); // TODO: Parametrize this by a constant
+  chunk(heatmap, 4).map(
+    (hours) => {
+      const filteredOfficeHours = hours.filter((v) => v !== -1);
+      return filteredOfficeHours.length > 0 ? mean(filteredOfficeHours) : -1;
+    }
+    // TODO:
+    // - Parametrize this by a constant
+  );
 
 export default function Today(): ReactElement {
   const router = useRouter();
@@ -98,7 +110,10 @@ export default function Today(): ReactElement {
             {course && (
               <PopularTimes
                 heatmap={collapseHeatmap(
-                  arrayRotate(course.heatmap, moment().utcOffset() / 60 + 4)
+                  arrayRotate(
+                    course.heatmap,
+                    -1 * Math.floor(moment().utcOffset() / 15)
+                  ) // 150 / 15 = 10
                 )}
               />
             )}

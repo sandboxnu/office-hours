@@ -7,15 +7,14 @@ import {
 } from "@ant-design/icons";
 import { Heatmap } from "@koh/common";
 import { Dropdown, Menu } from "antd";
-import { chunk, sum, uniq, range } from "lodash";
+import { chunk, uniq, range, mean, zip } from "lodash";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { formatDateHour, formatWaitTime } from "../../utils/TimeUtil";
 import TimeGraph from "./TimeGraph";
 
 // TODO:
-// - Case to handle: No office hours in a week? Right now heatmap is full of nulls, we cant graph nulls
-// right now the day ranking includes days with no office hours at all i believe, we want to filter out days with no wait times
+// - Fix Responsiveness
 
 const TitleRow = styled.div`
   display: flex;
@@ -60,14 +59,18 @@ function findWeekMinAndMax(days: Heatmap) {
   let minHourInWeek = 24;
   let maxHourInWeek = 0;
   days.forEach((v, hour) => {
-    if (v) {
+    if (v >= 0) {
       if (hour % 24 > maxHourInWeek) {
         maxHourInWeek = hour % 24;
-      } else if (hour % 24 < minHourInWeek) {
+      }
+      if (hour % 24 < minHourInWeek) {
         minHourInWeek = hour % 24;
       }
     }
   });
+  if (maxHourInWeek < minHourInWeek) {
+    return [0, 23];
+  }
   return [minHourInWeek, maxHourInWeek];
 }
 
@@ -123,14 +126,18 @@ function generateBusyText(
     dailySumWaitTimes.filter((v) => v > 0).sort((a, b) => a - b)
   );
   const rank = uniqSumWaitTimes.indexOf(dayWaitTime);
-  console.log(uniqSumWaitTimes.length);
   return BUSY_TEXTS[uniqSumWaitTimes.length - 1][rank];
 }
 
 export default function PopularTimes({ heatmap }: HeatmapProps): ReactElement {
   const [currentDayOfWeek, setCurrentDayOfWeek] = useState(new Date().getDay());
   const [firstHour, lastHour] = findWeekMinAndMax(heatmap);
-  const dailySumWaitTimes: number[] = chunk(heatmap, 24).map(sum);
+  const dailyAvgWaitTimes: number[] = chunk(heatmap, 24).map((hours) => {
+    const filteredOfficeHours = hours.filter((v) => v !== -1);
+    return filteredOfficeHours.length > 0 ? mean(filteredOfficeHours) : -1;
+  });
+
+  // useful for debugging (console.table(zip(range(heatmap.length).map(v=> v % 24), heatmap)));
   return (
     <div>
       <TitleRow>
@@ -162,7 +169,7 @@ export default function PopularTimes({ heatmap }: HeatmapProps): ReactElement {
         <TimeGraph
           values={heatmap
             .slice(currentDayOfWeek * 24, (currentDayOfWeek + 1) * 24 - 1)
-            .map((i) => (i < 0 ? 0 : i))}
+            .map((i) => (i < 0 ? 0 : Math.floor(i)))}
           maxTime={Math.max(...heatmap)}
           firstHour={firstHour}
           lastHour={lastHour}
@@ -175,27 +182,28 @@ export default function PopularTimes({ heatmap }: HeatmapProps): ReactElement {
           <RightOutlined />
         </GraphArrowButtons>
       </GraphWithArrow>
-      {dailySumWaitTimes[currentDayOfWeek] > 0 && (
+      {dailyAvgWaitTimes[currentDayOfWeek] >= 0 && (
         <GraphNotes>
           <ClockCircleOutlined /> {DAYS_OF_WEEK[currentDayOfWeek]}s have{" "}
           <strong>
-            {generateBusyText(currentDayOfWeek, heatmap, dailySumWaitTimes)}
+            {generateBusyText(currentDayOfWeek, heatmap, dailyAvgWaitTimes)}
           </strong>{" "}
           wait times.
         </GraphNotes>
       )}
-      {heatmap[currentDayOfWeek * 24 + new Date().getHours()] > 0 && (
-        <GraphNotes>
-          <HourglassOutlined /> At {formatDateHour(new Date())}, people
-          generally wait{" "}
-          <strong>
-            {formatWaitTime(
-              heatmap[currentDayOfWeek * 24 + new Date().getHours()]
-            )}
-          </strong>
-          .
-        </GraphNotes>
-      )}
+      {new Date().getDay() === currentDayOfWeek &&
+        heatmap[currentDayOfWeek * 24 + new Date().getHours()] >= 0 && (
+          <GraphNotes>
+            <HourglassOutlined /> At {formatDateHour(new Date().getHours())},
+            people generally wait{" "}
+            <strong>
+              {formatWaitTime(
+                heatmap[currentDayOfWeek * 24 + new Date().getHours()]
+              )}
+            </strong>
+            .
+          </GraphNotes>
+        )}
     </div>
   );
 }
