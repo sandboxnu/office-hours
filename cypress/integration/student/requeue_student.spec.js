@@ -1,7 +1,9 @@
 import {
   createAndLoginStudent,
   createQueue,
+  createQuestion,
   createAndLoginTA,
+  checkInTA,
 } from "../../utils";
 
 describe("can't be found", () => {
@@ -13,10 +15,7 @@ describe("can't be found", () => {
     createAndLoginTA({
       courseId: "student.course.id",
     });
-    checkInTA({
-      ta: "ta",
-      queue: "queue",
-    });
+    checkInTA();
     createQuestion({
       studentId: "student",
     });

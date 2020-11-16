@@ -11,10 +11,7 @@ describe("Allow or disable new questions for a queue", () => {
     createQueue({
       courseId: "ta.course.id",
     });
-    checkInTA({
-      ta: "ta",
-      queue: "queue",
-    });
+    checkInTA();
   });
 
   it("can toggle allow questions on and off", function () {

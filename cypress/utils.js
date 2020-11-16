@@ -110,7 +110,7 @@ export const createQuestion = ({ queueId, studentId, data, identifier }) => {
   });
 };
 
-export const checkInTA = ({ ta, queue }) => {
+export const checkInTA = ({ ta = "ta", queue = "queue" } = {}) => {
   cy.get(`@${ta}`).then((ta) => {
     cy.get(`@${queue}`).then((queue) => {
       cy.request({

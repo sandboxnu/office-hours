@@ -16,10 +16,7 @@ describe("Removed from queue", () => {
     createAndLoginTA({
       courseId: "student.course.id",
     });
-    checkInTA({
-      ta: "ta",
-      queue: "queue",
-    });
+    checkInTA();
     createQuestion({
       studentId: "student.user.id",
       queueId: "queue.id",

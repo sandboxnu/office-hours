@@ -19,10 +19,7 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
       identifier: "ta2",
       courseId: "ta.course.id",
     });
-    checkInTA({
-      ta: "ta",
-      queue: "queue",
-    });
+    checkInTA();
     createQuestion({
       queueId: "queue.id",
     });

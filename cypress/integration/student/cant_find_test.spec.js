@@ -16,10 +16,7 @@ describe("can't be found", () => {
     createAndLoginTA({
       courseId: "student.course.id",
     });
-    checkInTA({
-      ta: "ta",
-      queue: "queue",
-    });
+    checkInTA();
     createQuestion({
       queueId: "queue.id",
       studentId: "student.user.id",

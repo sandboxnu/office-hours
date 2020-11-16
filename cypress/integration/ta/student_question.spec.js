@@ -14,10 +14,7 @@ describe("TA interacts with student question", () => {
     createQuestion({
       queueId: "queue.id",
     });
-    checkInTA({
-      ta: "ta",
-      queue: "queue",
-    });
+    checkInTA();
 
     // Visit the queue page
     cy.get("@queue").then((queue) => {

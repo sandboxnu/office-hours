@@ -1,4 +1,4 @@
-import { createAndLoginTA, checkInTA } from "../../utils";
+import { createAndLoginStudent, createAndLoginTA, checkInTA, createQuestion, loginUser } from "../../utils";
 
 describe("can't be found", () => {
   beforeEach(() => {
@@ -9,10 +9,7 @@ describe("can't be found", () => {
     createAndLoginTA({
       couresId: "student.course.id",
     });
-    checkInTA({
-      ta: "ta",
-      queue: "queue",
-    });
+    checkInTA();
     createQuestion({
       studentId: "student.user.id",
     });
