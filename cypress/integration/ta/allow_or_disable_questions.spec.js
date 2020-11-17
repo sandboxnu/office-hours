@@ -49,7 +49,7 @@ describe("When allow questions is disabled", () => {
       identifier: "queue",
     });
   });
-  it("student cannot add a new question", function () {
+  it("student cannot add new questions when new questions are disabled", function () {
     // Visit the today page
     cy.visit(`/course/${this.queue.courseId}/today`);
 
