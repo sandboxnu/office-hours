@@ -54,8 +54,6 @@ describe("TA Priority Queue", () => {
             "A TA tried to help you, but couldn't reach you. Are you still in the queue? If you are, make sure you have Teams open, and rejoin the queue."
           );
 
-          cy.percySnapshot("Student Queue Page - Can't Find Banner");
-
           cy.get("button").contains("Leave Queue").click();
         }
       );
@@ -89,6 +87,7 @@ describe("TA Priority Queue", () => {
           );
 
           cy.get("button").contains("Rejoin Queue").click();
+          cy.get("body").contains("Rejoin Queue").should("not.visible");
           cy.contains(
             "You are now in a priority queue, you will be helped soon. You were last helped by User."
           );
