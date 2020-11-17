@@ -228,7 +228,7 @@ export class SeedController {
     @Body()
     body: {
       queueId: number;
-      userId: number;
+      studentId: number;
       data: CreateQuestionParams;
     },
   ): Promise<QuestionModel> {
@@ -237,9 +237,9 @@ export class SeedController {
       const queue = await QueueModel.findOneOrFail(body.queueId);
       options['queue'] = queue;
     }
-    if (body.userId) {
-      const user = await UserModel.findOneOrFail(body.userId);
-      options['creator'] = user;
+    if (body.studentId) {
+      const student = await UserModel.findOneOrFail(body.studentId);
+      options['creator'] = student;
     }
     const question: QuestionModel = await QuestionFactory.create({
       ...options,

@@ -1,18 +1,20 @@
-import { loginTA, createQuestion, createQueue, checkInTA } from "../../utils";
+import {
+  createAndLoginTA,
+  checkInTA,
+  createQueue,
+  createQuestion,
+} from "../../utils";
 
 describe("TA interacts with student question", () => {
   beforeEach(() => {
-    loginTA();
+    createAndLoginTA();
     createQueue({
       courseId: "ta.course.id",
     });
     createQuestion({
       queueId: "queue.id",
     });
-    checkInTA({
-      ta: "ta",
-      queue: "queue",
-    });
+    checkInTA();
 
     // Visit the queue page
     cy.get("@queue").then((queue) => {

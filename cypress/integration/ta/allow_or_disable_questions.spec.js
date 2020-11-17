@@ -1,15 +1,17 @@
-import { loginTA, createQueue, checkInTA, loginStudent } from "../../utils";
+import {
+  createAndLoginStudent,
+  createAndLoginTA,
+  checkInTA,
+  createQueue,
+} from "../../utils";
 
 describe("Allow or disable new questions for a queue", () => {
   beforeEach(() => {
-    loginTA();
+    createAndLoginTA();
     createQueue({
       courseId: "ta.course.id",
     });
-    checkInTA({
-      ta: "ta",
-      queue: "queue",
-    });
+    checkInTA();
   });
 
   it("can toggle allow questions on and off", function () {
@@ -40,14 +42,14 @@ describe("Allow or disable new questions for a queue", () => {
 
 describe("When allow questions is disabled", () => {
   beforeEach(() => {
-    loginStudent();
+    createAndLoginStudent();
     createQueue({
       courseId: "student.course.id",
       allowQuestions: false,
       identifier: "queue",
     });
   });
-  it("student cannot add a new question", function () {
+  it("student cannot add new questions when new questions are disabled", function () {
     // Visit the today page
     cy.visit(`/course/${this.queue.courseId}/today`);
 

@@ -1,13 +1,17 @@
-import { loginStudent, createQueue, createQuestion } from "../../utils";
+import {
+  createAndLoginStudent,
+  createQueue,
+  createQuestion,
+} from "../../utils";
 
 describe("Student can edit their question", () => {
   beforeEach(() => {
-    loginStudent();
+    createAndLoginStudent();
     createQueue({
       courseId: "student.course.id",
     });
     createQuestion({
-      userId: "student.user.id",
+      studentId: "student.user.id",
       queueId: "queue.id",
     });
   });
