@@ -158,18 +158,16 @@ export default function StudentBanner({
           buttons={
             <>
               <LeaveQueueButton leaveQueue={leaveQueue} />
-              {studentQuestion.isOnline && (
-                <BannerButton
-                  icon={<TeamOutlined />}
-                  onClick={async () => {
-                    await API.questions.update(studentQuestion.id, {
-                      status: OpenQuestionStatus.PriorityQueued,
-                    });
-                  }}
-                >
-                  Re-join Queue
-                </BannerButton>
-              )}
+              <BannerButton
+                icon={<TeamOutlined />}
+                onClick={async () => {
+                  await API.questions.update(studentQuestion.id, {
+                    status: OpenQuestionStatus.PriorityQueued,
+                  });
+                }}
+              >
+                Re-join Queue
+              </BannerButton>
             </>
           }
           content={
