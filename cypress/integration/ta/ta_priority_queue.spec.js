@@ -53,6 +53,9 @@ describe("TA Priority Queue", () => {
             "contain",
             "A TA tried to help you, but couldn't reach you. Are you still in the queue? If you are, make sure you have Teams open, and rejoin the queue."
           );
+
+          cy.percySnapshot("Student Queue Page - Can't Find Banner");
+
           cy.get("button").contains("Leave Queue").click();
         }
       );
@@ -89,6 +92,8 @@ describe("TA Priority Queue", () => {
           cy.contains(
             "You are now in a priority queue, you will be helped soon. You were last helped by User."
           );
+
+          cy.percySnapshot("Student Queue Page - Priority Queued");
         }
       );
 
@@ -99,12 +104,14 @@ describe("TA Priority Queue", () => {
       cy.get("body").should("contain", "Priority Queue");
       cy.get("body").should("contain", "How do I use the design recipe?");
 
+      cy.percySnapshot("TA Queue Page - Priority Queue");
+
       cy.get("body").should("contain", "Help Next");
       cy.get("button").contains("Help Next").click();
     });
   });
 
-  describe.only("Re-queue Student", () => {
+  describe("Requeue Student", () => {
     it("TA requeues student and student leaves the queue", function () {
       cy.get("body").should("contain", "Help Next");
       cy.get("button").contains("Help Next").click();
@@ -124,6 +131,9 @@ describe("TA Priority Queue", () => {
             "contain",
             "Are you ready to re-join the queue?"
           );
+
+          cy.percySnapshot("Student Queue Page - Requeue Banner");
+
           cy.get("button").contains("Leave Queue").click();
         }
       );
