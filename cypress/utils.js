@@ -37,7 +37,7 @@ export const loginUser = (identifier) => {
 };
 
 /**
- * Creates a user and logs them in with the given role into the given course, then aliases it to cypress using the identifier.
+ * Creates a user and logs them in with the given role into the given course, then aliases the userCourse to cypress using the identifier.
  * @param {string} role - One of "ta" or "student", represents a role a user has in our application.
  * @param {stirng} courseId - The id of the course this user is being added to.
  * @param {string} identifier -  The id that cypress will alias this logged-in user to.
@@ -72,7 +72,7 @@ const createUserAndLogin = ({ role, courseId, identifier }) => {
 };
 
 /**
- * Creates and logs in a TA into the course and binds the student to cypress with an alias of the identifier.
+ * Creates and logs in a TA into the course and uses the identifier to alias the TA userCourse.
  * @param {number} courseId - the course that this TA will be added to (defaults to null).
  * @param {string} identifier - the id that cypress will alias this logged-in TA to (defaults to "ta").
  */
@@ -84,7 +84,7 @@ export const createAndLoginTA = ({ courseId = null, identifier = "ta" } = {}) =>
   });
 
 /**
- * Creates and logs in a student into the course and binds the student to cypress with an alias of the identifier.
+ * Creates and logs in a student into the course and uses the identifier to alias the student userCourse.
  * @param {number} courseId - the course that this student will be added to (defaults to null).
  * @param {string} identifier - the id that cypress will alias this logged-in student to. (defaults to "student").
  */
