@@ -10,9 +10,8 @@ import styled from "styled-components";
 import { formatDateHour, formatWaitTime } from "../../utils/TimeUtil";
 
 //TODO:
-// - Fix Y axis
-// - Fix Gridlines (incremented by 30 min?)
-// - radius of the bars
+// - Fix Y axis (Ticks on the left side are cut off, we need CSS to mess around with positioning)
+// - Fix Gridlines (incremented by 30 min?, incremented as a function of the maxWaitTime (like if its less than 30 min should it be 15 min? How about less than 15 min?))
 let tooltipTimeout: number;
 const tooltipStyles = {
   ...defaultStyles,
@@ -104,7 +103,7 @@ export default function TimeGraph({
           top={VERTICAL_MARGIN / 2}
           width={width - HORIZONTAL_PADDING}
           scale={yScale}
-          tickValues={range(0, maxTime, GRID_ROW_INTERVAL)}
+          tickValues={range(1, maxTime, GRID_ROW_INTERVAL)} // gridrow should not be at 0
           stroke="#cccccc"
         />
         <Group left={LEFT_PADDING} top={VERTICAL_MARGIN / 2}>
@@ -162,7 +161,7 @@ export default function TimeGraph({
         <Group top={VERTICAL_MARGIN / 2} left={LEFT_PADDING}>
           <AxisLeft
             scale={yScale}
-            tickValues={range(0, maxTime, 30)}
+            tickValues={range(0, maxTime, GRID_ROW_INTERVAL)}
             tickFormat={(hour: number) => formatWaitTime(hour)}
             tickLabelProps={() => ({
               fill: "",
