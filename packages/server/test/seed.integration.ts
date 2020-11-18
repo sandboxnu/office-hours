@@ -83,7 +83,7 @@ describe('Seed Integration', () => {
           title: 'Alex & Stanley',
         },
       ],
-      room: 'WVH 101',
+      room: 'Online',
     });
   });
 
