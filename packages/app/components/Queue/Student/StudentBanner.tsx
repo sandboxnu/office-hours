@@ -5,8 +5,8 @@ import {
 } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import { OpenQuestionStatus } from "@koh/common";
-import { Col, Popconfirm } from "antd";
-import { ReactElement } from "react";
+import { Col, Popconfirm, Tooltip } from "antd";
+import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { useDraftQuestion } from "../../../hooks/useDraftQuestion";
 import { useStudentQuestion } from "../../../hooks/useStudentQuestion";
@@ -58,18 +58,21 @@ export default function StudentBanner({
           content="Your spot in queue has been temporarily reserved. Please finish describing your question to receive help and finish joining the queue."
           buttons={
             <>
-              <BannerButton icon={<DeleteRowOutlined />} onClick={leaveQueue}>
-                Delete Draft
-              </BannerButton>
-              <BannerButton
-                data-cy="edit-question"
-                icon={<EditOutlined />}
-                onClick={async () => {
-                  editQuestion();
-                }}
-              >
-                Finish Draft
-              </BannerButton>
+              <Tooltip title="Delete Draft">
+                <BannerButton
+                  icon={<DeleteRowOutlined />}
+                  onClick={leaveQueue}
+                />
+              </Tooltip>
+              <Tooltip title="Finish Draft">
+                <BannerButton
+                  data-cy="edit-question"
+                  icon={<EditOutlined />}
+                  onClick={async () => {
+                    editQuestion();
+                  }}
+                />
+              </Tooltip>
             </>
           }
         />
@@ -89,13 +92,13 @@ export default function StudentBanner({
           buttons={
             <>
               <LeaveQueueButton leaveQueue={leaveQueue} />
-              <BannerButton
-                data-cy="edit-question"
-                icon={<EditOutlined />}
-                onClick={editQuestion}
-              >
-                Edit Question
-              </BannerButton>
+              <Tooltip title="Edit Question">
+                <BannerButton
+                  data-cy="edit-question"
+                  icon={<EditOutlined />}
+                  onClick={editQuestion}
+                />
+              </Tooltip>
             </>
           }
           content={
@@ -127,16 +130,16 @@ export default function StudentBanner({
             <>
               <LeaveQueueButton leaveQueue={leaveQueue} />
               {studentQuestion.isOnline && (
-                <BannerButton
-                  icon={<TeamOutlined />}
-                  onClick={() => {
-                    window.open(
-                      `https://teams.microsoft.com/l/chat/0/0?users=${studentQuestion.taHelped.email}`
-                    );
-                  }}
-                >
-                  Open Teams DM
-                </BannerButton>
+                <Tooltip title="Open Teams DM">
+                  <BannerButton
+                    icon={<TeamOutlined />}
+                    onClick={() => {
+                      window.open(
+                        `https://teams.microsoft.com/l/chat/0/0?users=${studentQuestion.taHelped.email}`
+                      );
+                    }}
+                  />
+                </Tooltip>
               )}
             </>
           }
@@ -159,16 +162,16 @@ export default function StudentBanner({
             <>
               <LeaveQueueButton leaveQueue={leaveQueue} />
               {studentQuestion.isOnline && (
-                <BannerButton
-                  icon={<TeamOutlined />}
-                  onClick={async () => {
-                    await API.questions.update(studentQuestion.id, {
-                      status: OpenQuestionStatus.PriorityQueued,
-                    });
-                  }}
-                >
-                  Re-join Queue
-                </BannerButton>
+                <Tooltip title="Re-join Queue">
+                  <BannerButton
+                    icon={<TeamOutlined />}
+                    onClick={async () => {
+                      await API.questions.update(studentQuestion.id, {
+                        status: OpenQuestionStatus.PriorityQueued,
+                      });
+                    }}
+                  />
+                </Tooltip>
               )}
             </>
           }
@@ -196,13 +199,13 @@ export default function StudentBanner({
           buttons={
             <>
               <LeaveQueueButton leaveQueue={leaveQueue} />
-              <BannerButton
-                data-cy="edit-question"
-                icon={<EditOutlined />}
-                onClick={editQuestion}
-              >
-                Edit Question
-              </BannerButton>
+              <Tooltip title="Edit Question">
+                <BannerButton
+                  data-cy="edit-question"
+                  icon={<EditOutlined />}
+                  onClick={editQuestion}
+                />
+              </Tooltip>
             </>
           }
           content={
@@ -232,9 +235,12 @@ function LeaveQueueButton({ leaveQueue }: { leaveQueue: () => void }) {
       cancelText="No"
       onConfirm={leaveQueue}
     >
-      <BannerDangerButton data-cy="leave-queue" icon={<DeleteRowOutlined />}>
-        Leave Queue
-      </BannerDangerButton>
+      <Tooltip title="Leave Queue">
+        <BannerDangerButton
+          data-cy="leave-queue"
+          icon={<DeleteRowOutlined />}
+        />
+      </Tooltip>
     </Popconfirm>
   );
 }
