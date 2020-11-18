@@ -32,7 +32,7 @@ describe('Queue Integration', () => {
         id: 2,
         notes: null,
         queueSize: 1,
-        room: 'WVH 101',
+        room: 'Online',
         staffList: expect.any(Array),
         isOpen: true,
         startTime: expect.any(String),
