@@ -1,4 +1,4 @@
-import { Role } from '@koh/common';
+import { Role, CreateQuestionParams } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { Connection } from 'typeorm';
 import { QuestionModel } from '../question/question.entity';
@@ -21,5 +21,7 @@ export declare class SeedController {
     }): Promise<QueueModel>;
     createQuestion(body: {
         queueId: number;
+        studentId: number;
+        data: CreateQuestionParams;
     }): Promise<QuestionModel>;
 }
