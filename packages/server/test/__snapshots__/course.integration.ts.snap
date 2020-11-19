@@ -22,7 +22,7 @@ Object {
   "allowQuestions": true,
   "id": 1,
   "notes": null,
-  "room": "WVH 101",
+  "room": "Online",
   "staffList": Array [
     Object {
       "email": "user@neu.edu",

@@ -1,37 +1,23 @@
+import {
+  createAndLoginTA,
+  checkInTA,
+  createQueue,
+  createQuestion,
+} from "../../utils";
+
 describe("TA interacts with student question", () => {
   beforeEach(() => {
-    // Setting up the state
-    cy.request("POST", "/api/v1/seeds/createUser", {
-      role: "ta",
-    })
-      .then((res) => res.body)
-      .as("ta");
-
-    cy.get("@ta").then((ta) => {
-      cy.request("POST", "/api/v1/seeds/createQueue", {
-        courseId: ta.course.id,
-      })
-        .then((res) => res.body)
-        .as("queue")
-        .then((queue) =>
-          cy.request("POST", "/api/v1/seeds/createQuestion", {
-            queueId: queue.id,
-          })
-        );
+    createAndLoginTA();
+    createQueue({
+      courseId: "ta.course.id",
     });
-
-    cy.get("@ta").then((ta) => {
-      // Login the ta
-      cy.request("GET", `/api/v1/login/dev?userId=${ta.user.id}`);
+    createQuestion({
+      queueId: "queue.id",
     });
+    checkInTA();
 
+    // Visit the queue page
     cy.get("@queue").then((queue) => {
-      // Check the TA into the queue
-      cy.request(
-        "POST",
-        `/api/v1/courses/${queue.course.id}/ta_location/${queue.room}`
-      );
-      // Visit the queue page
       cy.visit(`/course/${queue.courseId}/queue/${queue.id}`);
     });
   });
@@ -58,7 +44,7 @@ describe("TA interacts with student question", () => {
     cy.percySnapshot("TA Queue Page - Helping Student Banner");
   });
 
-  it("clicks a students question and then removes it from the queue", () => {
+  it("clicks a students question and then removes it from the queue", function () {
     // Click on the student's question
     cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
     // Click Remove from Queue
