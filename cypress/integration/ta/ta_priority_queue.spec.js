@@ -158,7 +158,7 @@ describe("TA Priority Queue", () => {
             "Are you ready to re-join the queue?"
           );
 
-          cy.get("button").contains("Re-join Queue").click();
+          cy.get("[data-cy='re-join-queue']").click();
           cy.contains(
             "You are now in a priority queue, you will be helped soon. You were last helped by User."
           );
