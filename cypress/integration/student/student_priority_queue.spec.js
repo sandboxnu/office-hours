@@ -93,10 +93,6 @@ describe("Student Priority Queue", () => {
     it("TA removes student question from the queue and student rejoins", function () {
       // Click on the student's question
       cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
-      // Click help
-      cy.get("[data-cy='help-student']").click();
-      // Click Remove from queue on the Question card
-      cy.contains("You are helping");
       cy.get("[data-cy='remove-from-queue']").first().click();
 
       cy.get("body").should("contain", "Yes");
@@ -147,7 +143,7 @@ describe("Student Priority Queue", () => {
           );
 
           cy.percySnapshot("Student Queue Page - Leave Queue Modal");
-          cy.get('[data-cy="leave-queue"]').should("be.visible").click();
+          cy.get("button").contains("Leave Queue").click();
 
           // Check to see that the student sucessfully left the queue
           cy.get("body").should(

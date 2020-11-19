@@ -52,7 +52,7 @@ describe("TA Priority Queue", () => {
             "A TA tried to help you, but couldn't reach you. Are you still in the queue? If you are, make sure you have Teams open, and rejoin the queue."
           );
 
-          cy.get('[data-cy="leave-queue"]').should("be.visible").click();
+          cy.get("button").contains("Leave Queue");
         }
       );
 
