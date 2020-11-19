@@ -105,7 +105,7 @@ describe("Student Priority Queue", () => {
         () => {
           cy.get("body").should(
             "contain",
-            "A TA tried to help you, but couldn't reach you. Are you still in the queue? If you are, make sure you have Teams open, and rejoin the queue."
+            "You've been removed from the queue by a TA. If you have any questions, please reach out to the TA. If you'd like to join back into the queue with your previous question, click Rejoin Queue, otherwise click Leave Queue."
           );
 
           cy.get("body").should("contain", "Rejoin Queue");
