@@ -86,7 +86,7 @@ class APIClient {
         params
       ),
     notify: async (questionId: number): Promise<void> =>
-      this.req("PATCH", `/api/v1/questions/${questionId}/notify`),
+      this.req("POST", `/api/v1/questions/${questionId}/notify`),
   };
   queues = {
     get: async (queueId: number): Promise<GetQueueResponse> =>
