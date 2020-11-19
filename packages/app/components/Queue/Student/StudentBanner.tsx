@@ -2,6 +2,7 @@ import {
   DeleteRowOutlined,
   EditOutlined,
   TeamOutlined,
+  UndoOutlined,
 } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import { OpenQuestionStatus } from "@koh/common";
@@ -162,12 +163,13 @@ export default function StudentBanner({
             <>
               <LeaveQueueButton leaveQueue={leaveQueue} />
               <BannerButton
-                icon={<TeamOutlined />}
+                icon={<UndoOutlined />}
                 onClick={async () => {
                   await API.questions.update(studentQuestion.id, {
                     status: OpenQuestionStatus.PriorityQueued,
                   });
                 }}
+                type="primary"
               >
                 Re-join Queue
               </BannerButton>
