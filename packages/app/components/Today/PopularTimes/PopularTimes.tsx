@@ -10,11 +10,14 @@ import { Dropdown, Menu } from "antd";
 import { chunk, uniq, range, mean, zip } from "lodash";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
-import { formatDateHour, formatWaitTime } from "../../utils/TimeUtil";
+import { formatWaitTime } from "../../../utils/TimeUtil";
+import { formatDateHour } from "./FormatDateHour";
 import TimeGraph from "./TimeGraph";
 
 // TODO:
 // - Fix Responsiveness
+// - 13PM? Including an extra tick at the end of the graph might make things a little funky
+// - No data? What do we render?
 
 const TitleRow = styled.div`
   display: flex;
@@ -123,7 +126,7 @@ function generateBusyText(
 ): string {
   const dayWaitTime = dailySumWaitTimes[day];
   const uniqSumWaitTimes = uniq(
-    dailySumWaitTimes.filter((v) => v > 0).sort((a, b) => a - b)
+    dailySumWaitTimes.filter((v) => v >= 0).sort((a, b) => a - b)
   );
   const rank = uniqSumWaitTimes.indexOf(dayWaitTime);
   return BUSY_TEXTS[uniqSumWaitTimes.length - 1][rank];
@@ -137,7 +140,7 @@ export default function PopularTimes({ heatmap }: HeatmapProps): ReactElement {
     return filteredOfficeHours.length > 0 ? mean(filteredOfficeHours) : -1;
   });
 
-  // useful for debugging (console.table(zip(range(heatmap.length).map(v=> v % 24), heatmap)));
+  //console.table(zip(range(heatmap.length).map(v=> v % 24), heatmap));
   return (
     <div>
       <TitleRow>

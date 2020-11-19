@@ -9,9 +9,10 @@ export function getWaitTime(question: Question): string {
 export function formatWaitTime(minutes: number): string {
   if (!minutes) {
     return "0 min";
-  }
-  if (minutes >= 60) {
-    return `${Math.floor(minutes / 60)}hr ${Math.floor(minutes) % 60}m`;
+  } else if (minutes % 60 == 0) {
+    return `${Math.floor(minutes / 60)}hr`;
+  } else if (minutes >= 60) {
+    return `${Math.floor(minutes / 60)}hr ${Math.floor(minutes) % 60}min`;
   } else {
     return `${Math.floor(minutes)} min`;
   }
@@ -31,11 +32,4 @@ function formatDateTime(date: Date) {
   hours = hours ? hours : 12; // the hour '0' should be '12'
   minutes = minutes < 10 ? "0" + minutes : minutes;
   return hours + ":" + minutes + " " + ampm;
-}
-
-export function formatDateHour(hours: number): string {
-  const ampm = hours >= 12 ? "PM" : "AM";
-  hours = hours % 12;
-  hours = hours ? hours : 12; // the hour '0' should be '12'
-  return hours + ampm;
 }

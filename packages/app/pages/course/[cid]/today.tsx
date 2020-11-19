@@ -7,7 +7,7 @@ import React, { ReactElement } from "react";
 import styled from "styled-components";
 import NavBar from "../../../components/Nav/NavBar";
 import SchedulePanel from "../../../components/Schedule/SchedulePanel";
-import PopularTimes from "../../../components/Today/PopularTimes";
+import PopularTimes from "../../../components/Today/PopularTimes/PopularTimes";
 import OpenQueueCard, {
   OpenQueueCardSkeleton,
 } from "../../../components/Today/OpenQueueCard";
