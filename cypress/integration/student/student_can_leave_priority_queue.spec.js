@@ -104,7 +104,7 @@ describe("can't be found", () => {
           "You are now in a priority queue, you will be helped soon. You were last helped by User."
         );
 
-        cy.get("button").contains("Leave Queue").click();
+        cy.get('[data-cy="leave-queue"]').should("be.visible").click();
         cy.get("span").contains("Yes").click();
         cy.get("body").should("not.contain", "How do I use the design recipe?");
       })

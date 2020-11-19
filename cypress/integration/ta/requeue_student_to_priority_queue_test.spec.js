@@ -74,25 +74,17 @@ describe("can't be found", () => {
     });
   });
 
-  it("TA requeues student and student leaves the queue", () => {
-    cy.get("@queue").then((queue) => {
-      cy.get("@ta").then((ta) => {
-        cy.get("body").should("contain", "Help Next");
-        cy.get("button").contains("Help Next").click();
+  it("TA requeues student and student leaves the queue", function () {
+    cy.get("body").should("contain", "Help Next");
+    cy.get("button").contains("Help Next").click();
 
-        // Click Can't Find
-        cy.get("body").should("contain", "Requeue Student");
-        cy.get("button").contains("Requeue Student").click();
+    cy.get("[data-cy='requeue-student']").first().click();
 
-        cy.get("body").should("contain", "Yes");
-        cy.get("button").contains("Yes").click();
-      });
-    });
+    cy.get("body").should("contain", "Yes");
+    cy.get("button").contains("Yes").click();
 
-    // Login the student
-    cy.get("@student").then((student) => {
-      cy.visit(`/api/v1/login/dev?userId=${student.user.id}`);
-    });
+    cy.visit(`/api/v1/login/dev?userId=${this.student.user.id}`);
+
     cy.get("@queue").then((queue) =>
       cy.visit(`course/${queue.courseId}/queue/${queue.id}`).then(() => {
         cy.get("body").should("contain", "Are you ready to re-join the queue?");
@@ -108,9 +100,8 @@ describe("can't be found", () => {
       cy.get("@ta").then((ta) => {
         cy.get("body").should("contain", "Help Next");
         cy.get("button").contains("Help Next").click();
-        // Click Can't Find
-        cy.get("body").should("contain", "Requeue Student");
-        cy.get("button").contains("Requeue Student").click();
+
+        cy.get("[data-cy='requeue-student']").first().click();
 
         cy.get("body").should("contain", "Yes");
         cy.get("button").contains("Yes").click();
@@ -125,7 +116,7 @@ describe("can't be found", () => {
       cy.visit(`course/${queue.courseId}/queue/${queue.id}`).then(() => {
         cy.get("body").should("contain", "Are you ready to re-join the queue?");
 
-        cy.get("button").contains("Re-join Queue").click();
+        cy.get("[data-cy='rejoin-queue']").should("be.visible").click();
         cy.contains(
           "You are now in a priority queue, you will be helped soon. You were last helped by User."
         );
@@ -215,9 +206,7 @@ describe("can't be found", () => {
         cy.get("body").should("contain", "Help Next");
         cy.get("button").contains("Help Next").click();
 
-        // Click Can't Find
-        cy.get("body").should("contain", "Requeue Student");
-        cy.get("button").contains("Requeue Student").click();
+        cy.get("[data-cy='requeue-student']").first().click();
 
         cy.get("body").should("contain", "Yes");
         cy.get("button").contains("Yes").click();
@@ -254,9 +243,8 @@ describe("can't be found", () => {
       cy.get("@ta").then((ta) => {
         cy.get("body").should("contain", "Help Next");
         cy.get("button").contains("Help Next").click();
-        // Click Can't Find
-        cy.get("body").should("contain", "Requeue Student");
-        cy.get("button").contains("Requeue Student").click();
+
+        cy.get("[data-cy='requeue-student']").first().click();
 
         cy.get("body").should("contain", "Yes");
         cy.get("button").contains("Yes").click();
@@ -271,7 +259,7 @@ describe("can't be found", () => {
       cy.visit(`course/${queue.courseId}/queue/${queue.id}`).then(() => {
         cy.get("body").should("contain", "Are you ready to re-join the queue?");
 
-        cy.get("button").contains("Re-join Queue").click();
+        cy.get("[data-cy='rejoin-queue']").should("be.visible").click();
         cy.contains(
           "You are now in a priority queue, you will be helped soon. You were last helped by User."
         );

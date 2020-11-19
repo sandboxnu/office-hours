@@ -137,9 +137,8 @@ describe("Removed from queue", () => {
           "You've been removed from the queue by a TA. If you have any questions, please reach out to the TA. If you'd like to join back into the queue with your previous question, click Rejoin Queue, otherwise click Leave Queue."
         );
 
-        cy.get("body").should("contain", "Leave Queue");
         cy.percySnapshot("Student Queue Page - Leave Queue Modal");
-        cy.get("button").contains("Leave Queue").click();
+        cy.get('[data-cy="leave-queue"]').should("be.visible").click();
 
         // Check to see that there are no more questions in the queue
         cy.contains("There are no questions in the queue");

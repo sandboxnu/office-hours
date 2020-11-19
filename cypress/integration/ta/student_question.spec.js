@@ -43,8 +43,7 @@ describe("TA interacts with student question", () => {
     // Click help
     cy.get("[data-cy='help-student']").click();
 
-    // Click Finish Helping
-    cy.contains("button", "Finish Helping").click();
+    cy.get("[data-cy='requeue-student']").first().click();
 
     cy.contains("There are no questions in the queue");
   });

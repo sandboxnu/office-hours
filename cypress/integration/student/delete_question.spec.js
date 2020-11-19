@@ -41,7 +41,6 @@ describe("Student can delete their question", () => {
       cy.visit(`/course/${queue.courseId}/queue/${queue.id}`)
     );
 
-    // Click the Leave Queue button
     cy.get('[data-cy="leave-queue"]').should("be.visible");
 
     cy.get('[data-cy="leave-queue"]').click();
