@@ -107,7 +107,7 @@ export default function Today(): ReactElement {
             )}
             {!course && <OpenQueueCardSkeleton />}
             {/*This only works with UTC offsets in the form N:00, to help with other offsets, the size of the array might have to change to a size of 24*7*4 (for every 15 min interval) */}
-            {course && (
+            {course && course.heatmap && (
               <PopularTimes
                 heatmap={collapseHeatmap(
                   arrayRotate(

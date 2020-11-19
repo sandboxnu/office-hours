@@ -19,7 +19,7 @@ const tooltipStyles = {
 };
 
 // The distance in pixels from the left side of the component to the origin of the graph
-const LEFT_MARGIN = 25;
+const LEFT_MARGIN = 45;
 // The distance in pixels from the end of the bottom axis to the right side of the component
 const RIGHT_MARGIN = 10;
 // The distance in pixels from the top of the component to the top of the y axis
@@ -78,18 +78,27 @@ export default function TimeGraph({
       }),
     [xMax, firstHour, lastHour]
   );
+
+  // number of minutes between each grid row line
+  const gridRowInterval = maxTime >= 60 ? 60 : 30;
+  const maxTickVal = Math.max(maxTime, gridRowInterval);
+
   const yScale = useMemo(
     () =>
       scaleLinear<number>({
         range: [yMax, 0],
         round: true,
-        domain: [0, Math.max(maxTime, 30)],
+        domain: [0, maxTickVal + 5],
       }),
-    [yMax, maxTime]
+    [yMax, maxTickVal]
   );
   const barWidth = xScale.bandwidth();
-  // number of minutes between each grid row line
-  const gridRowInterval = maxTime >= 60 ? 60 : 30;
+  // the tick values for the y axis
+  const yAxisTickValues = range(
+    gridRowInterval,
+    maxTickVal + 1,
+    gridRowInterval
+  );
 
   return width < 10 ? null : (
     // relative position is needed for correct tooltip positioning
@@ -108,7 +117,7 @@ export default function TimeGraph({
           left={LEFT_MARGIN}
           width={width - RIGHT_MARGIN - LEFT_MARGIN}
           scale={yScale}
-          tickValues={range(gridRowInterval, maxTime, gridRowInterval)}
+          tickValues={yAxisTickValues}
           stroke="#cccccc"
         />
         <Group left={LEFT_MARGIN} top={TOP_MARGIN}>
@@ -118,7 +127,7 @@ export default function TimeGraph({
             const barY = yMax - barHeight;
             const interactWithBar = () => {
               if (tooltipTimeout) clearTimeout(tooltipTimeout);
-              const top = yMax - barHeight; // - VERTICAL_MARGIN - barHeight;
+              const top = yMax - barHeight - TOP_MARGIN; // - VERTICAL_MARGIN - barHeight;
               const left = barX + barWidth;
               showTooltip({
                 tooltipData: value,
@@ -166,7 +175,7 @@ export default function TimeGraph({
           <AxisLeft
             scale={yScale}
             hideTicks={true}
-            tickValues={range(gridRowInterval, maxTime, gridRowInterval)}
+            tickValues={yAxisTickValues}
             tickFormat={(hour: number) => formatWaitTime(hour)}
             tickLabelProps={() => ({
               fill: "",

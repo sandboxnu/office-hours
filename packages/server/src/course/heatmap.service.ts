@@ -15,7 +15,7 @@ function arrayRotate(arr, count) {
 
 @Injectable()
 export class HeatmapService {
-  async getHeatmapFor(courseId: number): Promise<Heatmap> {
+  async getHeatmapFor(courseId: number): Promise<Heatmap | false> {
     // The number of minutes to average across
     const BUCKET_SIZE_IN_MINS = 15;
     // Number of samples to gather per bucket
@@ -32,10 +32,17 @@ export class HeatmapService {
       .andWhere('question.createdAt > :recent', { recent })
       .orderBy('question.createdAt', 'ASC')
       .getMany();
+    if (questions.length === 0) {
+      return false;
+    }
 
     const officeHours = await OfficeHourModel.find({
       where: { startTime: MoreThan(recent), courseId },
     });
+
+    if (officeHours.length === 0) {
+      return false;
+    }
 
     console.log('heamtap on questions ', questions.length);
     const tz = 'America/New_York';
