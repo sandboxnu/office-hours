@@ -3,6 +3,7 @@ import {
   checkInTA,
   createQueue,
   createQuestion,
+  loginUser,
 } from "../../utils";
 
 describe("TA interacts with student question", () => {
@@ -75,7 +76,7 @@ describe("TA interacts with student question", () => {
 
           cy.get("body").should("contain", "Rejoin Queue");
           cy.percySnapshot("Student Queue Page - Rejoin Queue Modal");
-          cy.get("button").contains("Rejoin Queue").click();
+          cy.get("[data-cy='re-join-queue']").click();
 
           // Check that the student was sucessfully but back into the queue
           cy.get("body").should("contain", "You are 1st in queue");

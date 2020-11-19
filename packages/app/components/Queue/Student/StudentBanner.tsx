@@ -162,17 +162,18 @@ export default function StudentBanner({
           buttons={
             <>
               <LeaveQueueButton leaveQueue={leaveQueue} />
-              <BannerButton
-                icon={<UndoOutlined />}
-                onClick={async () => {
-                  await API.questions.update(studentQuestion.id, {
-                    status: OpenQuestionStatus.PriorityQueued,
-                  });
-                }}
-                type="primary"
-              >
-                Re-join Queue
-              </BannerButton>
+              <Tooltip title="Re-join Queue">
+                <BannerButton
+                  icon={<UndoOutlined />}
+                  onClick={async () => {
+                    await API.questions.update(studentQuestion.id, {
+                      status: OpenQuestionStatus.PriorityQueued,
+                    });
+                  }}
+                  type="primary"
+                  data-cy="re-join-queue"
+                />
+              </Tooltip>
             </>
           }
           content={
