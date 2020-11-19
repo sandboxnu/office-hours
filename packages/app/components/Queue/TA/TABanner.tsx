@@ -11,9 +11,9 @@ import React, { ReactElement } from "react";
 import styled from "styled-components";
 import AvatarWithInitals from "../../common/AvatarWithInitials";
 import Banner, {
-  RequeueButton,
-  FinishHelpingButton,
   CantFindButton,
+  FinishHelpingButton,
+  RequeueButton,
 } from "../Banner";
 
 const Bold = styled.span`
@@ -88,7 +88,10 @@ export default function TABanner({
             }}
           >
             <Tooltip title="Requeue Student">
-              <RequeueButton icon={<UndoOutlined />} />
+              <RequeueButton
+                icon={<UndoOutlined />}
+                data-cy="requeue-student-button"
+              />
             </Tooltip>
           </Popconfirm>
           <Popconfirm
@@ -107,7 +110,7 @@ export default function TABanner({
               <CantFindButton
                 shape="circle"
                 icon={<CloseOutlined />}
-                data-cy="remove-from-queue"
+                data-cy="cant-find-button"
               />
             </Tooltip>
           </Popconfirm>
@@ -117,6 +120,7 @@ export default function TABanner({
               onClick={() =>
                 updateQuestion(helpingQuestion, ClosedQuestionStatus.Resolved)
               }
+              data-cy="finish-helping-button"
             />
           </Tooltip>
         </>

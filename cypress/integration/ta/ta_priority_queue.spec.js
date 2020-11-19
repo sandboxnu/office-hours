@@ -37,9 +37,7 @@ describe("TA Priority Queue", () => {
       cy.get("body").should("contain", "Help Next");
       cy.get("button").contains("Help Next").click();
 
-      // Click Can't Find
-      cy.get("body").should("contain", "Can't Find");
-      cy.get("button").contains("Can't Find").click();
+      cy.get('[data-cy="cant-find-button"]').should("be.visible").click();
 
       cy.get("body").should("contain", "Yes");
       cy.get("button").contains("Yes").click();
@@ -54,7 +52,7 @@ describe("TA Priority Queue", () => {
             "A TA tried to help you, but couldn't reach you. Are you still in the queue? If you are, make sure you have Teams open, and rejoin the queue."
           );
 
-          cy.get("button").contains("Leave Queue").click();
+          cy.get('[data-cy="leave-queue"]').should("be.visible").click();
         }
       );
 
@@ -69,9 +67,8 @@ describe("TA Priority Queue", () => {
     it("Can't find student and student rejoins the queue", function () {
       cy.get("body").should("contain", "Help Next");
       cy.get("button").contains("Help Next").click();
-      // Click Can't Find
-      cy.get("body").should("contain", "Can't Find");
-      cy.get("button").contains("Can't Find").click();
+
+      cy.get('[data-cy="cant-find-button"]').should("be.visible").click();
 
       cy.get("body").should("contain", "Yes");
       cy.get("button").contains("Yes").click();
@@ -115,9 +112,7 @@ describe("TA Priority Queue", () => {
       cy.get("body").should("contain", "Help Next");
       cy.get("button").contains("Help Next").click();
 
-      // Click Can't Find
-      cy.get("body").should("contain", "Requeue Student");
-      cy.get("button").contains("Requeue Student").click();
+      cy.get('[data-cy="requeue-student-button"]').should("be.visible").click();
 
       cy.get("body").should("contain", "Yes");
       cy.get("button").contains("Yes").click();
@@ -133,7 +128,7 @@ describe("TA Priority Queue", () => {
 
           cy.percySnapshot("Student Queue Page - Requeue Banner");
 
-          cy.get("button").contains("Leave Queue").click();
+          cy.get('[data-cy="leave-queue"]').should("be.visible").click();
         }
       );
 
@@ -148,9 +143,8 @@ describe("TA Priority Queue", () => {
     it("TA requeues student and student rejoins the queue", function () {
       cy.get("body").should("contain", "Help Next");
       cy.get("button").contains("Help Next").click();
-      // Click Can't Find
-      cy.get("body").should("contain", "Requeue Student");
-      cy.get("button").contains("Requeue Student").click();
+
+      cy.get('[data-cy="requeue-student-button"]').should("be.visible").click();
 
       cy.get("body").should("contain", "Yes");
       cy.get("button").contains("Yes").click();
