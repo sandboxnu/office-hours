@@ -103,10 +103,7 @@ export default function TABanner({
               await alertStudent();
             }}
           >
-            <TABannerDangerButton
-              icon={<CloseOutlined />}
-              data-cy="remove-from-queue"
-            >
+            <TABannerDangerButton icon={<CloseOutlined />} data-cy="cant-find">
               Can&apos;t Find
             </TABannerDangerButton>
           </Popconfirm>
