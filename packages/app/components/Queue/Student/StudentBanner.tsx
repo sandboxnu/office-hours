@@ -170,7 +170,6 @@ export default function StudentBanner({
                         status: OpenQuestionStatus.PriorityQueued,
                       });
                     }}
-                    data-cy="rejoin-queue"
                   />
                 </Tooltip>
               )}

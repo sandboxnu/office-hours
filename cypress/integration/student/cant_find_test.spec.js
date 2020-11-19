@@ -80,7 +80,10 @@ describe("can't be found", () => {
         cy.get("body").should("contain", "Help Next");
         cy.get("button").contains("Help Next").click();
 
-        cy.get("[data-cy='cant-find']").first().click();
+        // Click Can't Find
+        cy.get("body").should("contain", "Can't Find");
+        cy.get("button").contains("Can't Find").click();
+
         cy.get("body").should("contain", "Yes");
         cy.get("button").contains("Yes").click();
       });
@@ -97,7 +100,8 @@ describe("can't be found", () => {
           "A TA tried to help you, but couldn't reach you. Are you still in the queue? If you are, make sure you have Teams open, and rejoin the queue."
         );
 
-        cy.get('[data-cy="leave-queue"]').should("be.visible").click();
+        //cy.get(".ant-modal").should("contain", "Leave Queue");
+        cy.get("button").contains("Leave Queue").click();
       })
     );
   });
