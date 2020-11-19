@@ -4,18 +4,29 @@ import {
   createQueue,
   createQuestion,
   loginUser,
+  createAndLoginStudent,
 } from "../../utils";
 
 describe("TA interacts with student question", () => {
   beforeEach(() => {
-    createAndLoginTA();
+    createAndLoginStudent();
     createQueue({
-      courseId: "ta.course.id",
+      courseId: "student.course.id",
+    });
+    createAndLoginTA({
+      courseId: "student.course.id",
+    });
+    checkInTA({
+      courseId: "student.course.id",
     });
     createQuestion({
       queueId: "queue.id",
+      studentId: "student.user.id",
+      data: {
+        text: "Why do I have ligma?",
+      },
     });
-    checkInTA();
+    loginUser("ta");
 
     // Visit the queue page
     cy.get("@queue").then((queue) => {
@@ -76,7 +87,7 @@ describe("TA interacts with student question", () => {
 
           cy.get("body").should("contain", "Rejoin Queue");
           cy.percySnapshot("Student Queue Page - Rejoin Queue Modal");
-          cy.get("[data-cy='re-join-queue']").click();
+          cy.get("button").contains("Rejoin Queue").click();
 
           // Check that the student was sucessfully but back into the queue
           cy.get("body").should("contain", "You are 1st in queue");

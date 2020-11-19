@@ -162,7 +162,7 @@ export default function StudentBanner({
           buttons={
             <>
               <LeaveQueueButton leaveQueue={leaveQueue} />
-              <Tooltip title="Re-join Queue">
+              <Tooltip title="Rejoin Queue">
                 <BannerButton
                   icon={<UndoOutlined />}
                   onClick={async () => {
