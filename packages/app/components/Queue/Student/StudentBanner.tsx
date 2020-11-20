@@ -6,7 +6,7 @@ import {
 } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import { OpenQuestionStatus } from "@koh/common";
-import { Col, Popconfirm, Tooltip } from "antd";
+import { Button, Col, Popconfirm, Tooltip } from "antd";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { useDraftQuestion } from "../../../hooks/useDraftQuestion";
@@ -163,7 +163,12 @@ export default function StudentBanner({
             <>
               <LeaveQueueButton leaveQueue={leaveQueue} />
               <Tooltip title="Rejoin Queue">
-                <BannerButton
+                <Button
+                  shape="circle"
+                  style={{
+                    marginLeft: "16px",
+                    border: 0,
+                  }}
                   icon={<UndoOutlined />}
                   onClick={async () => {
                     await API.questions.update(studentQuestion.id, {
@@ -172,6 +177,7 @@ export default function StudentBanner({
                   }}
                   type="primary"
                   data-cy="re-join-queue"
+                  size="large"
                 />
               </Tooltip>
             </>
