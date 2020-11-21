@@ -3,18 +3,30 @@ import {
   checkInTA,
   createQueue,
   createQuestion,
+  loginUser,
+  createAndLoginStudent,
 } from "../../utils";
 
 describe("TA interacts with student question", () => {
   beforeEach(() => {
-    createAndLoginTA();
+    createAndLoginStudent();
     createQueue({
-      courseId: "ta.course.id",
+      courseId: "student.course.id",
+    });
+    createAndLoginTA({
+      courseId: "student.course.id",
+    });
+    checkInTA({
+      courseId: "student.course.id",
     });
     createQuestion({
       queueId: "queue.id",
+      studentId: "student.user.id",
+      data: {
+        text: "Why do I have ligma?",
+      },
     });
-    checkInTA();
+    loginUser("ta");
 
     // Visit the queue page
     cy.get("@queue").then((queue) => {
@@ -29,8 +41,7 @@ describe("TA interacts with student question", () => {
     // Click help
     cy.get("[data-cy='help-student']").click();
 
-    // Click Finish Helping
-    cy.contains("button", "Finish Helping").click();
+    cy.get("[data-cy='finish-helping-button']").should("be.visible").click();
 
     cy.contains("There are no questions in the queue");
   });
@@ -53,5 +64,68 @@ describe("TA interacts with student question", () => {
     cy.get("span").contains("Yes").click();
 
     cy.contains("There are no questions in the queue");
+  });
+
+  describe("Remove from Queue", () => {
+    it("TA removes student question from the queue and student rejoins", function () {
+      // Click on the student's question
+      cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
+      cy.get("[data-cy='remove-from-queue']").first().click();
+
+      cy.get("body").should("contain", "Yes");
+      cy.get("button").contains("Yes").click();
+
+      // Login the student
+      loginUser("student");
+
+      cy.visit(`course/${this.queue.courseId}/queue/${this.queue.id}`).then(
+        () => {
+          cy.get("body").should(
+            "contain",
+            "You've been removed from the queue by a TA. If you have any questions, please reach out to the TA. If you'd like to join back into the queue with your previous question, click Rejoin Queue, otherwise click Leave Queue."
+          );
+
+          cy.get("body").should("contain", "Rejoin Queue");
+          cy.percySnapshot("Student Queue Page - Rejoin Queue Modal");
+          cy.get("button").contains("Rejoin Queue").click();
+
+          // Check that the student was sucessfully but back into the queue
+          cy.get("body").should("contain", "You are 1st in queue");
+        }
+      );
+    });
+
+    it("TA removes student question from the queue and student leaves", function () {
+      // TA navigates to the queue page
+      cy.visit(`/course/${this.queue.courseId}/queue/${this.queue.id}`);
+      // Click on the student's question
+      cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
+      // Click Remove from queue from the sidebar
+      cy.get("[data-cy='remove-from-queue']").click();
+
+      cy.get("body").should("contain", "Yes");
+      cy.get("button").contains("Yes").click();
+
+      // Login the student
+      loginUser("student");
+
+      cy.visit(`course/${this.queue.courseId}/queue/${this.queue.id}`).then(
+        () => {
+          cy.get("body").should(
+            "contain",
+            "You've been removed from the queue by a TA. If you have any questions, please reach out to the TA. If you'd like to join back into the queue with your previous question, click Rejoin Queue, otherwise click Leave Queue."
+          );
+
+          cy.percySnapshot("Student Queue Page - Leave Queue Modal");
+          cy.get("button").contains("Leave Queue").click();
+
+          // Check to see that the student sucessfully left the queue
+          cy.get("body").should(
+            "contain",
+            "There are no questions in the queue"
+          );
+        }
+      );
+    });
   });
 });
