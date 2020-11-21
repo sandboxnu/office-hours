@@ -27,6 +27,7 @@ const Title = styled.div`
 const ButtonContainer = styled.div`
   display: flex;
   flex-flow: row wrap;
+  margin-right: 10px;
 `;
 
 const ContentContainer = styled.div`
@@ -41,6 +42,10 @@ interface BannerProps {
   titleColor?: string;
   contentColor?: string;
   buttons?: ReactNode;
+}
+
+interface CircleButtonProps {
+  [x: string]: any;
 }
 /**
  * Presentation-only component
@@ -59,12 +64,15 @@ export default function Banner(props: BannerProps): ReactElement {
   );
 }
 
+export function CircleButton({ ...props }: CircleButtonProps): ReactElement {
+  return <Button size="large" shape="circle" {...props} />;
+}
+
 /**
  * Buttons to be used in the banner
  */
-export const BannerButton = styled(Button)`
+export const BannerButton = styled(CircleButton)`
   margin-left: 16px;
-  border-radius: 6px;
   border: 0;
   background: #fff;
 `;
@@ -79,9 +87,7 @@ export const BannerDangerButton = styled(BannerButton)`
   }
 `;
 
-export const TABannerButton = styled(Button)`
-  margin-left: 16px;
-  border-radius: 6px;
+export const FinishHelpingButton = styled(BannerButton)`
   border: 0;
   background: #66bb6a;
   color: #fff;
@@ -92,7 +98,7 @@ export const TABannerButton = styled(Button)`
   }
 `;
 
-export const TABannerDangerButton = styled(BannerButton)`
+export const CantFindButton = styled(BannerButton)`
   background: #fff;
   border: 1px solid #e26567;
   color: #e26567;

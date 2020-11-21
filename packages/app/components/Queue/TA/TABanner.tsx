@@ -6,14 +6,14 @@ import {
   Question,
   QuestionStatus,
 } from "@koh/common";
-import { Col, Popconfirm, Row } from "antd";
-import { ReactElement } from "react";
+import { Col, Popconfirm, Row, Tooltip } from "antd";
+import React, { ReactElement } from "react";
 import styled from "styled-components";
 import AvatarWithInitals from "../../common/AvatarWithInitials";
 import Banner, {
+  CantFindButton,
+  FinishHelpingButton,
   RequeueButton,
-  TABannerButton,
-  TABannerDangerButton,
 } from "../Banner";
 
 const Bold = styled.span`
@@ -87,9 +87,12 @@ export default function TABanner({
               );
             }}
           >
-            <RequeueButton icon={<UndoOutlined />}>
-              Requeue Student
-            </RequeueButton>
+            <Tooltip title="Requeue Student">
+              <RequeueButton
+                icon={<UndoOutlined />}
+                data-cy="requeue-student-button"
+              />
+            </Tooltip>
           </Popconfirm>
           <Popconfirm
             title="Are you sure you can't find this student?"
@@ -103,21 +106,23 @@ export default function TABanner({
               await alertStudent();
             }}
           >
-            <TABannerDangerButton
-              icon={<CloseOutlined />}
-              data-cy="remove-from-queue"
-            >
-              Can&apos;t Find
-            </TABannerDangerButton>
+            <Tooltip title="Can't Find">
+              <CantFindButton
+                shape="circle"
+                icon={<CloseOutlined />}
+                data-cy="cant-find-button"
+              />
+            </Tooltip>
           </Popconfirm>
-          <TABannerButton
-            icon={<CheckOutlined />}
-            onClick={() =>
-              updateQuestion(helpingQuestion, ClosedQuestionStatus.Resolved)
-            }
-          >
-            Finish Helping
-          </TABannerButton>
+          <Tooltip title="Finish Helping">
+            <FinishHelpingButton
+              icon={<CheckOutlined />}
+              onClick={() =>
+                updateQuestion(helpingQuestion, ClosedQuestionStatus.Resolved)
+              }
+              data-cy="finish-helping-button"
+            />
+          </Tooltip>
         </>
       }
     />
