@@ -23,9 +23,7 @@ export function getNotificationState(): NotificationStates {
 }
 
 // Tries to get notification permission and returns whether granted
-export async function requestNotificationPermission(): Promise<
-  NotificationStates
-> {
+export async function requestNotificationPermission(): Promise<NotificationStates> {
   let state = getNotificationState();
   if (state === NotificationStates.notAllowed) {
     await window.Notification.requestPermission();
