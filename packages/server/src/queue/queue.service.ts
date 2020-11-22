@@ -1,12 +1,14 @@
 import {
   ListQuestionsResponse,
   OpenQuestionStatus,
+  Question,
   Role,
   StatusInPriorityQueue,
   StatusInQueue,
   StatusSentToCreator,
 } from '@koh/common';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { classToClass, classToPlain } from 'class-transformer';
 import { pick } from 'lodash';
 import { QuestionModel } from 'question/question.entity';
 import { Connection, In } from 'typeorm';
@@ -86,7 +88,10 @@ export class QueueService {
           question.creator.id === userId
             ? question.creator
             : pick(question.creator, ['id']);
-        return QuestionModel.create({ ...question, creator });
+        // classToClass transformer will apply the @Excludes
+        return classToClass<Question>(
+          QuestionModel.create({ ...question, creator }),
+        );
       });
 
       newLQR.yourQuestion = await QuestionModel.findOne({
