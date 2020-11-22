@@ -269,6 +269,7 @@ export default function TAQueueList({
             visible={openPopup}
             updateQuestion={updateQuestionTA}
             isStaffCheckedIn={isStaffCheckedIn}
+            isHelping={isHelping}
           />
         )}
         <EditQueueModal
@@ -378,7 +379,7 @@ function QueueQuestions({
           key={question.id}
           rank={index + 1}
           question={question}
-          onOpen={(q) => !isHelping && onOpenCard(q)}
+          onOpen={(q) => onOpenCard(q)}
         />
       ))}
     </div>
