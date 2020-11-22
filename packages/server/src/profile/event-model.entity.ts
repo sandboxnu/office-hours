@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { UserCourseModel } from './user-course.entity';
 
-@Entity('user_course_model')
+@Entity('event_model')
 export class EventModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;

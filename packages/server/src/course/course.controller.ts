@@ -1,3 +1,4 @@
+import { EventType, GetCourseResponse, QueuePartial, Role } from '@koh/common';
 import {
   ClassSerializerInterceptor,
   Controller,
@@ -8,19 +9,20 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { GetCourseResponse, QueuePartial, Role } from '@koh/common';
 import async from 'async';
+import { EventModel } from 'profile/event-model.entity';
+import { UserCourseModel } from 'profile/user-course.entity';
 import { Connection, getRepository } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { Roles } from '../profile/roles.decorator';
 import { User } from '../profile/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { QueueCleanService } from '../queue/queue-clean/queue-clean.service';
+import { QueueSSEService } from '../queue/queue-sse.service';
 import { QueueModel } from '../queue/queue.entity';
 import { CourseRolesGuard } from './course-roles.guard';
 import { CourseModel } from './course.entity';
 import { OfficeHourModel } from './office-hour.entity';
-import { QueueSSEService } from '../queue/queue-sse.service';
 
 @Controller('courses')
 @UseGuards(JwtAuthGuard, CourseRolesGuard)
@@ -91,6 +93,13 @@ export class CourseController {
     queue.staffList.push(user);
     await queue.save();
 
+    const UCM = await UserCourseModel.findOne({ where: { user, courseId } });
+    await EventModel.create({
+      time: new Date(),
+      eventType: EventType.TA_CHECKED_IN,
+      user: UCM,
+    }).save();
+
     await this.queueSSEService.updateQueue(queue.id);
     return queue;
   }
@@ -115,6 +124,13 @@ export class CourseController {
       queue.allowQuestions = false;
     }
     await queue.save();
+
+    const UCM = await UserCourseModel.findOne({ where: { user, courseId } });
+    await EventModel.create({
+      time: new Date(),
+      eventType: EventType.TA_CHECKED_OUT,
+      user: UCM,
+    }).save();
     // Clean up queue if necessary
     setTimeout(async () => {
       await this.queueCleanService.cleanQueue(queue.id);
