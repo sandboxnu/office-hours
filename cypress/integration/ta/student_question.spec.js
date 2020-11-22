@@ -23,7 +23,7 @@ describe("TA interacts with student question", () => {
       queueId: "queue.id",
       studentId: "student.user.id",
       data: {
-        text: "Why do I have ligma?",
+        text: "How do I use the design recipe?",
       },
     });
     createQuestion({
@@ -98,7 +98,7 @@ describe("TA interacts with student question", () => {
   describe("Remove from Queue", () => {
     it("TA removes student question from the queue and student rejoins", function () {
       // Click on the student's question
-      cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
+      cy.get("[data-cy='ta-queue-card']").first().should("be.visible").click();
       cy.get("[data-cy='remove-from-queue']").first().click();
 
       cy.get("body").should("contain", "Yes");
@@ -119,7 +119,7 @@ describe("TA interacts with student question", () => {
           cy.get("button").contains("Rejoin Queue").click();
 
           // Check that the student was sucessfully but back into the queue
-          cy.get("body").should("contain", "You are 1st in queue");
+          cy.get("body").should("contain", "How do I use the design recipe?");
         }
       );
     });
@@ -128,7 +128,7 @@ describe("TA interacts with student question", () => {
       // TA navigates to the queue page
       cy.visit(`/course/${this.queue.courseId}/queue/${this.queue.id}`);
       // Click on the student's question
-      cy.get("[data-cy='ta-queue-card']").should("be.visible").click();
+      cy.get("[data-cy='ta-queue-card']").first().should("be.visible").click();
       // Click Remove from queue from the sidebar
       cy.get("[data-cy='remove-from-queue']").click();
 
@@ -150,8 +150,8 @@ describe("TA interacts with student question", () => {
 
           // Check to see that the student sucessfully left the queue
           cy.get("body").should(
-            "contain",
-            "There are no questions in the queue"
+            "not.contain",
+            "How do I use the design recipe?"
           );
         }
       );
