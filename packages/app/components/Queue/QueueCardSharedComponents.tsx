@@ -58,7 +58,20 @@ export function questionStatusToColor(status: QuestionStatus): string {
       return "red";
     case QuestionStatusKeys.Drafting:
       return "blue";
+    case QuestionStatusKeys.PriorityQueued:
+      return "green";
     default:
       return "purple";
+  }
+}
+
+export function questionStatusToText(status: QuestionStatus): string {
+  switch (status) {
+    case QuestionStatusKeys.CantFind:
+      return "Can't Find";
+    case QuestionStatusKeys.PriorityQueued:
+      return "Priority";
+    default:
+      return status;
   }
 }
