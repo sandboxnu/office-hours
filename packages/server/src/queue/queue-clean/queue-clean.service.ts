@@ -27,6 +27,20 @@ export class QueueCleanService {
     });
   }
 
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  private async checkoutAllStaff(): Promise<void> {
+    const queuesWithCheckedInStaff: QueueModel[] = await QueueModel.getRepository()
+      .createQueryBuilder('queue')
+      .leftJoinAndSelect('queue_model.staff_list', 'staff_list')
+      .where('ARRAY_LENGTH(staff_list) != 0')
+      .getMany();
+
+    queuesWithCheckedInStaff.forEach(async (queue) => {
+      queue.staffList = [];
+      await queue.save();
+    });
+  }
+
   public async cleanQueue(queueId: number): Promise<void> {
     const queue = await QueueModel.findOne(queueId, {
       relations: ['staffList'],
