@@ -12,6 +12,7 @@ export declare class QuestionModel extends BaseEntity {
     taHelped: UserModel;
     taHelpedId: number;
     createdAt: Date;
+    firstHelpedAt: Date;
     helpedAt: Date;
     closedAt: Date;
     questionType: QuestionType;
