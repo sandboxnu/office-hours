@@ -45,6 +45,7 @@ const GraphWithArrow = styled.div`
 
 const GraphContainer = styled.div`
   flex-grow: 1;
+  min-width: 0; // Allow it to shrink after resizing
 `;
 
 const GraphArrowButtons = styled.div`
@@ -176,7 +177,7 @@ export default function PopularTimes({ heatmap }: HeatmapProps): ReactElement {
         </GraphArrowButtons>
         <GraphContainer>
           <ParentSize>
-            {(parent) => (
+            {({ width }) => (
               <TimeGraph
                 values={heatmap
                   .slice(currentDayOfWeek * 24, (currentDayOfWeek + 1) * 24 - 1)
@@ -184,7 +185,7 @@ export default function PopularTimes({ heatmap }: HeatmapProps): ReactElement {
                 maxTime={Math.max(...heatmap)}
                 firstHour={firstHour}
                 lastHour={lastHour}
-                width={parent.width}
+                width={width}
                 height={220}
               />
             )}
