@@ -2,6 +2,7 @@ import {
   CreateQuestionParams,
   CreateQuestionResponse,
   DesktopNotifBody,
+  DesktopNotifPartial,
   GetCourseResponse,
   GetProfileResponse,
   GetQuestionResponse,
@@ -12,8 +13,7 @@ import {
   UpdateQuestionParams,
   UpdateQuestionResponse,
   UpdateQueueParams,
-  Question,
-  DesktopNotifPartial,
+  GetReleaseNotesResponse,
   TACheckoutResponse,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
@@ -76,7 +76,7 @@ class APIClient {
       this.req<ListQuestionsResponse>(
         "GET",
         `/api/v1/queues/${queueId}/questions`,
-        Question
+        ListQuestionsResponse
       ),
     create: async (params: CreateQuestionParams) =>
       this.req("POST", `/api/v1/questions`, CreateQuestionResponse, params),
@@ -90,7 +90,7 @@ class APIClient {
         params
       ),
     notify: async (questionId: number): Promise<void> =>
-      this.req("PATCH", `/api/v1/questions/${questionId}/notify`),
+      this.req("POST", `/api/v1/questions/${questionId}/notify`),
   };
   queues = {
     get: async (queueId: number): Promise<GetQueueResponse> =>
@@ -129,7 +129,11 @@ class APIClient {
   seeds = {
     delete: async () => this.req("GET", `/api/v1/seeds/delete`),
     create: async () => this.req("GET", `/api/v1/seeds/create`),
-    fillQueue: async () => this.req("GET", `/api/v1/seeds/fillQueue`),
+    fillQueue: async () => this.req("GET", `/api/v1/seeds/fill_queue`),
+  };
+  releaseNotes = {
+    get: async (): Promise<GetReleaseNotesResponse> =>
+      this.req("GET", `/api/v1/release_notes`),
   };
   constructor(baseURL = "") {
     this.axios = Axios.create({ baseURL: baseURL });

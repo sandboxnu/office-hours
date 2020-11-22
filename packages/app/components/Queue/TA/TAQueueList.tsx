@@ -1,3 +1,4 @@
+import { QuestionCircleOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import {
   OpenQuestionStatus,
@@ -5,24 +6,24 @@ import {
   QuestionStatus,
   QuestionStatusKeys,
 } from "@koh/common";
-import { Card, Col, Row, Space, Tooltip, notification } from "antd";
+import { Card, Col, notification, Row, Space, Tooltip } from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { useQueue } from "../../../hooks/useQueue";
-import { EditQueueModal } from "./EditQueueModal";
+import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
+import TACheckinButton from "../../Today/TACheckinButton";
 import {
   QueueInfoColumn,
   QueueInfoColumnButton,
   QueuePageContainer,
   VerticalDivider,
 } from "../QueueListSharedComponents";
+import { EditQueueModal } from "./EditQueueModal";
 import StudentPopupCard from "./StudentPopupCard";
 import TABanner from "./TABanner";
 import TAQueueCard from "./TAQueueCard";
-import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
-import TACheckinButton from "../../Today/TACheckinButton";
 
 const StatusText = styled.div`
   font-size: 14px;
@@ -71,6 +72,11 @@ const EditQueueButton = styled(QueueInfoColumnButton)`
   color: #212934;
 `;
 
+const PriorityQueueQuestionBubble = styled(QuestionCircleOutlined)`
+  fontsize: 20;
+  margin-left: 20px;
+`;
+
 interface TAQueueListProps {
   qid: number;
   courseId: number;
@@ -86,16 +92,10 @@ export default function TAQueueList({
 
   const { questions, questionsError, mutateQuestions } = useQuestions(qid);
 
-  const renderedQuestions = questions?.filter(
-    (question) =>
-      question.status !== OpenQuestionStatus.TADeleted &&
-      question.status !== OpenQuestionStatus.Helping
-  );
+  const renderedQuestions = questions?.queue;
 
-  const helpingQuestion: Question = questions?.find(
-    (question) =>
-      question.status === OpenQuestionStatus.Helping &&
-      question.taHelped?.id === user.id
+  const helpingQuestion = questions?.questionsGettingHelp?.find(
+    (question) => question.taHelped?.id === user.id
   );
   const isHelping = !!helpingQuestion;
 
@@ -104,7 +104,11 @@ export default function TAQueueList({
   const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
 
   // Close popup if currentQuestion no longer exists in the cache
-  if (currentQuestion && !questions.includes(currentQuestion)) {
+  if (
+    currentQuestion &&
+    !questions?.queue?.includes(currentQuestion) &&
+    !questions?.priorityQueue?.includes(currentQuestion)
+  ) {
     setCurrentQuestion(null);
     setOpenPopup(false);
   }
@@ -139,6 +143,7 @@ export default function TAQueueList({
             "This happens when another TA clicks help at the exact same time",
           type: "error",
           duration: 3,
+          className: "hide-in-percy",
           style: {
             width: 450,
           },
@@ -151,11 +156,13 @@ export default function TAQueueList({
 
   const isStaffCheckedIn = queue?.staffList.some((e) => e.id === user?.id);
 
-  const helpNext = async () => {
-    const nextQuestion = questions.find(
+  const nextQuestion =
+    questions?.priorityQueue[0] || // gets the first item of priority queue if it exists
+    questions?.queue?.find(
       (question) => question.status === QuestionStatusKeys.Queued
     );
 
+  const helpNext = async () => {
     await updateQuestionTA(nextQuestion, OpenQuestionStatus.Helping);
     window.open(
       `https://teams.microsoft.com/l/chat/0/0?users=${nextQuestion.creator.email}`
@@ -183,13 +190,7 @@ export default function TAQueueList({
                 >
                   <HelpNextButton
                     onClick={helpNext}
-                    disabled={
-                      !isStaffCheckedIn ||
-                      !questions.find(
-                        (q) => q.status === QuestionStatusKeys.Queued
-                      ) ||
-                      isHelping
-                    }
+                    disabled={!isStaffCheckedIn || !nextQuestion || isHelping}
                     data-cy="help-next"
                   >
                     Help Next
@@ -214,10 +215,27 @@ export default function TAQueueList({
                 updateQuestion={updateQuestionTA}
               />
             )}
+            {!!questions.priorityQueue.length && (
+              <QueueQuestions
+                questions={questions.priorityQueue}
+                isHelping={isHelping}
+                onOpenCard={onOpenCard}
+                title={
+                  //TODO
+                  <>
+                    Priority Queue
+                    <Tooltip title="Students in the priority queue were at the top of the queue before for some reason (e.g. they were at the top but AFK, or a TA helped them previously, and then hit 'requeue student.' You should communicate with your fellow staff members to prioritize these students first.">
+                      <PriorityQueueQuestionBubble />
+                    </Tooltip>
+                  </>
+                }
+              />
+            )}
             <QueueQuestions
               questions={renderedQuestions}
               isHelping={isHelping}
               onOpenCard={onOpenCard}
+              title={<div>Queue</div>}
             />
           </Space>
         </QueuePageContainer>
@@ -282,8 +300,14 @@ interface QueueProps {
   questions: Question[];
   isHelping: boolean;
   onOpenCard: (q: Question) => void;
+  title: ReactElement;
 }
-function QueueQuestions({ questions, isHelping, onOpenCard }: QueueProps) {
+function QueueQuestions({
+  questions,
+  isHelping,
+  onOpenCard,
+  title,
+}: QueueProps) {
   const { phoneNotifsEnabled, desktopNotifsEnabled } = useProfile();
   return (
     <div data-cy="queueQuestions">
@@ -296,7 +320,9 @@ function QueueQuestions({ questions, isHelping, onOpenCard }: QueueProps) {
         </>
       ) : (
         <>
-          <QueueHeader>Queue</QueueHeader>
+          <>
+            <QueueHeader>{title}</QueueHeader>
+          </>
           <TAHeaderCard bordered={false}>
             <CenterRow justify="space-between">
               <Col xs={2} lg={1}>

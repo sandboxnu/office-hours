@@ -9,21 +9,28 @@ Object {
 `;
 
 exports[`Queue Integration GET /queues/:id/questions returns questions in the queue 1`] = `
-Array [
-  Object {
-    "closedAt": null,
-    "createdAt": "2020-03-01T05:00:00.000Z",
-    "creator": Object {
+Object {
+  "priorityQueue": Array [],
+  "questionsGettingHelp": Array [],
+  "queue": Array [
+    Object {
+      "closedAt": null,
+      "createdAt": "2020-03-01T05:00:00.000Z",
+      "creator": Object {
+        "id": 1,
+      },
+      "creatorId": 1,
+      "helpedAt": null,
       "id": 1,
+      "isOnline": null,
+      "location": null,
+      "questionType": "Other",
+      "queueId": 2,
+      "status": "Queued",
+      "taHelped": null,
+      "taHelpedId": null,
+      "text": "in queue",
     },
-    "helpedAt": null,
-    "id": 1,
-    "isOnline": null,
-    "location": null,
-    "questionType": "Other",
-    "status": "Queued",
-    "taHelped": null,
-    "text": "in queue",
-  },
-]
+  ],
+}
 `;

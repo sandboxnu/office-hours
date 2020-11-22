@@ -39,7 +39,7 @@ describe('Queue Integration', () => {
         id: 2,
         notes: null,
         queueSize: 1,
-        room: 'WVH 101',
+        room: 'Online',
         staffList: expect.any(Array),
         isOpen: true,
         startTime: expect.any(String),
@@ -113,7 +113,7 @@ describe('Queue Integration', () => {
         .get(`/queues/${queue.id}/questions`)
         .expect(200);
       expect(res.body).toMatchSnapshot();
-      expect(res.body[0].creator).not.toHaveProperty('name');
+      expect(res.body.queue[0].creator).not.toHaveProperty('name');
     });
 
     it('student can see their own questions private data', async () => {
@@ -142,7 +142,7 @@ describe('Queue Integration', () => {
       const res = await supertest({ userId: userCourse.user.id })
         .get(`/queues/${queue.id}/questions`)
         .expect(200);
-      expect(res.body[0].creator).toHaveProperty('name');
+      expect(res.body.queue[0].creator).toHaveProperty('name');
     });
 
     it('returns all creator data for ta', async () => {
@@ -169,7 +169,7 @@ describe('Queue Integration', () => {
       const res = await supertest({ userId: ta.user.id })
         .get(`/queues/${queue.id}/questions`)
         .expect(200);
-      expect(res.body[0].creator).toHaveProperty('name');
+      expect(res.body.queue[0].creator).toHaveProperty('name');
     });
 
     it('returns 404 when a user is not a member of the course', async () => {

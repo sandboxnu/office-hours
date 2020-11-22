@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { Role } from '@koh/common';
+import { Role, CreateQuestionParams } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { Connection } from 'typeorm';
 import {
@@ -168,7 +168,7 @@ export class SeedController {
     return 'Data successfully seeded';
   }
 
-  @Get('fillQueue')
+  @Get('fill_queue')
   async fillQueue(): Promise<string> {
     const queue = await QueueModel.findOne();
 
@@ -206,42 +206,45 @@ export class SeedController {
   async createQueue(
     @Body() body: { courseId: number; allowQuestions: boolean },
   ): Promise<QueueModel> {
-    let queue: QueueModel;
     const now = new Date();
     const officeHours = await OfficeHourFactory.create({
       startTime: now,
       endTime: new Date(now.valueOf() + 4500000),
     });
+    const options = {
+      officeHours: [officeHours],
+      allowQuestions: body.allowQuestions ?? false,
+    };
     if (body.courseId) {
       const course = await CourseModel.findOneOrFail(body.courseId);
-      queue = await QueueFactory.create({
-        course: course,
-        officeHours: [officeHours],
-        allowQuestions: body.allowQuestions ?? false,
-      });
-    } else {
-      queue = await QueueFactory.create({
-        officeHours: [officeHours],
-        allowQuestions: body.allowQuestions ?? false,
-      });
+      options['course'] = course;
     }
+    const queue: QueueModel = await QueueFactory.create(options);
     return queue;
   }
 
   @Post('createQuestion')
   async createQuestion(
-    @Body() body: { queueId: number },
+    @Body()
+    body: {
+      queueId: number;
+      studentId: number;
+      data: CreateQuestionParams;
+    },
   ): Promise<QuestionModel> {
-    let question: QuestionModel;
+    const options = {};
     if (body.queueId) {
       const queue = await QueueModel.findOneOrFail(body.queueId);
-      question = await QuestionFactory.create({
-        queue: queue,
-        createdAt: new Date(),
-      });
-    } else {
-      question = await QuestionFactory.create();
+      options['queue'] = queue;
     }
+    if (body.studentId) {
+      const student = await UserModel.findOneOrFail(body.studentId);
+      options['creator'] = student;
+    }
+    const question: QuestionModel = await QuestionFactory.create({
+      ...options,
+      ...body.data,
+    });
     return question;
   }
 }

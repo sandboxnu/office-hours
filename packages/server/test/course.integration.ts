@@ -12,7 +12,6 @@ import {
   QuestionFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
-import { TACheckoutResponse } from '@koh/common';
 
 describe('Course Integration', () => {
   const supertest = setupIntegrationTest(CourseModule);

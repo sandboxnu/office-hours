@@ -1,28 +1,17 @@
+import { createAndLoginStudent, createQueue } from "../../utils";
+
 describe("Student can create a question", () => {
   beforeEach(() => {
-    // Set the state
-    cy.request("POST", "/api/v1/seeds/createUser", {
-      role: "student",
-    })
-      .then((res) => res.body)
-      .as("student");
-    cy.get("@student").then((student) => {
-      cy.request("POST", "/api/v1/seeds/createQueue", {
-        courseId: student.course.id,
-        allowQuestions: true,
-      })
-        .then((res) => res.body)
-        .as("queue");
-
-      // Login the student
-      cy.visit(`/api/v1/login/dev?userId=${student.user.id}`);
+    createAndLoginStudent();
+    createQueue({
+      courseId: "student.course.id",
     });
   });
-  it("Create online question", () => {
+
+  it("Create online question", function () {
     // Visit the queue page
-    cy.get("@queue").then((queue) =>
-      cy.visit(`/course/${queue.courseId}/queue/${queue.id}`).then(() => {
-        
+    cy.visit(`/course/${this.queue.courseId}/queue/${this.queue.id}`).then(
+      () => {
         // Click "Join Queue"
         cy.get("body").should("contain", "Join Queue");
         cy.percySnapshot("Student Queue Page - Empty Student Queue");
@@ -55,13 +44,14 @@ describe("Student can create a question", () => {
         cy.get("[data-cy='banner']").contains(
           "How do I use the design recipe?"
         );
-      })
+      }
     );
   });
-  it("Can't finish question before both fields are filled", () => {
+
+  it("Can't finish question before both fields are filled", function () {
     // Visit the queue page
-    cy.get("@queue").then((queue) =>
-      cy.visit(`/course/${queue.courseId}/queue/${queue.id}`).then(() => {
+    cy.visit(`/course/${this.queue.courseId}/queue/${this.queue.id}`).then(
+      () => {
         // Click "Join Queue"
         cy.get("body").should("contain", "Join Queue");
         cy.get("button").contains("Join Queue").click();
@@ -83,7 +73,7 @@ describe("Student can create a question", () => {
 
         // Click Submit
         cy.get("[data-cy='finishQuestion']").click();
-      })
+      }
     );
   });
 });
