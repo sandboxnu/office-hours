@@ -6,6 +6,12 @@ const nodeExternals = require('webpack-node-externals');
 module.exports = function (options) {
   return {
     ...options,
+    cache: {
+      type: 'filesystem',
+      buildDependencies: {
+        config: [__filename],
+      },
+    },
     externals: [
       nodeExternals({
         allowlist: ['@koh/common'],
