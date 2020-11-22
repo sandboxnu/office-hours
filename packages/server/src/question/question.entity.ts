@@ -54,7 +54,7 @@ export class QuestionModel extends BaseEntity {
   @Column()
   createdAt: Date;
 
-  // When the quesiton was first helped (doesn't overwrite)
+  // When the question was first helped (doesn't overwrite)
   @Column({ nullable: true })
   @Exclude()
   firstHelpedAt: Date;
