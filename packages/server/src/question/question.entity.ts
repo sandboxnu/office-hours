@@ -54,9 +54,16 @@ export class QuestionModel extends BaseEntity {
   @Column()
   createdAt: Date;
 
+  // When the question was first helped (doesn't overwrite)
+  @Column({ nullable: true })
+  @Exclude()
+  firstHelpedAt: Date;
+
+  // When the question was last helped (getting help again on priority queue overwrites)
   @Column({ nullable: true })
   helpedAt: Date;
 
+  // When the question leaves the queue
   @Column({ nullable: true })
   closedAt: Date;
 
