@@ -769,12 +769,7 @@ describe('IcalService', () => {
         const course = await CourseFactory.create({ id: 123 });
 
         const parsedICS = mkCal(VEVENT_ROOM + VEVENT_NOROOM);
-        // const endData = service.parseIcal(parsedICS, course.id);
         mockedICal.fromURL.mockReturnValue(Promise.resolve(parsedICS));
-        // const parseIcalMock = jest.spyOn(service, 'parseIcal');
-        // parseIcalMock.mockImplementation(
-        //   (icalData: CalendarResponse, courseId: number) => endData,
-        // );
 
         await service.updateCalendarForCourse(course);
         const queue = await QueueModel.findOne({
