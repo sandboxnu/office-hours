@@ -1,15 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { IcalService } from './ical.service';
 import * as iCal from 'node-ical';
+const { parseICS } = jest.requireActual('node-ical');
+import { mocked } from 'ts-jest/utils';
 import { TestTypeOrmModule } from '../../test/util/testUtils';
 import { CourseFactory } from '../../test/util/factories';
 import { QueueModel } from '../queue/queue.entity';
-import { CalendarResponse } from 'node-ical';
 import { Connection } from 'typeorm';
 import { CourseModel } from './course.entity';
 
 const mkCal = (events: string) =>
-  iCal.parseICS(`BEGIN:VCALENDAR
+  parseICS(`BEGIN:VCALENDAR
 PRODID:-//Google Inc//Google Calendar 70.9054//EN
 VERSION:2.0
 CALSCALE:GREGORIAN
@@ -38,6 +39,9 @@ END:STANDARD
 END:VTIMEZONE
 ${events}
 END:VCALENDAR`);
+
+jest.mock('node-ical');
+const mockedICal = mocked(iCal, true);
 
 const VEVENT_NOROOM = `
 BEGIN:VEVENT
@@ -765,11 +769,12 @@ describe('IcalService', () => {
         const course = await CourseFactory.create({ id: 123 });
 
         const parsedICS = mkCal(VEVENT_ROOM + VEVENT_NOROOM);
-        const endData = service.parseIcal(parsedICS, course.id);
-        const parseIcalMock = jest.spyOn(service, 'parseIcal');
-        parseIcalMock.mockImplementation(
-          (icalData: CalendarResponse, courseId: number) => endData,
-        );
+        // const endData = service.parseIcal(parsedICS, course.id);
+        mockedICal.fromURL.mockReturnValue(Promise.resolve(parsedICS));
+        // const parseIcalMock = jest.spyOn(service, 'parseIcal');
+        // parseIcalMock.mockImplementation(
+        //   (icalData: CalendarResponse, courseId: number) => endData,
+        // );
 
         await service.updateCalendarForCourse(course);
         const queue = await QueueModel.findOne({
