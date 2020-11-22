@@ -23,8 +23,8 @@ const LEFT_MARGIN = 45;
 // The distance in pixels from the end of the bottom axis to the right side of the component
 const RIGHT_MARGIN = 10;
 // The distance in pixels from the top of the component to the top of the y axis
-const TOP_MARGIN = 20;
-const BOTTOM_MARGIN = 20;
+const TOP_MARGIN = 10;
+const BOTTOM_MARGIN = 10;
 //padding in between each bar as a percent of the bar width
 const BAR_PADDING = 0.2;
 // the padding to the left of the left axis in pixels

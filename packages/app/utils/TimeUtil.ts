@@ -7,14 +7,15 @@ export function getWaitTime(question: Question): string {
 }
 
 export function formatWaitTime(minutes: number): string {
-  if (!minutes) {
+  const m = Math.floor(minutes);
+  if (!m) {
     return "0 min";
-  } else if (minutes % 60 == 0) {
-    return `${Math.floor(minutes / 60)}hr`;
-  } else if (minutes >= 60) {
-    return `${Math.floor(minutes / 60)}hr ${Math.floor(minutes) % 60}min`;
+  } else if (m % 60 == 0) {
+    return `${Math.floor(m / 60)}hr`;
+  } else if (m >= 60) {
+    return `${Math.floor(m / 60)}hr ${Math.floor(m) % 60}min`;
   } else {
-    return `${Math.floor(minutes)} min`;
+    return `${Math.floor(m)} min`;
   }
 }
 

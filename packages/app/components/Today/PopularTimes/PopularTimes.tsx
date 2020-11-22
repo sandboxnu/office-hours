@@ -6,6 +6,7 @@ import {
   RightOutlined,
 } from "@ant-design/icons";
 import { Heatmap } from "@koh/common";
+import { ParentSize } from "@visx/responsive";
 import { Dropdown, Menu } from "antd";
 import { chunk, uniq, range, mean, zip } from "lodash";
 import React, { ReactElement, useState } from "react";
@@ -42,8 +43,12 @@ const GraphWithArrow = styled.div`
   margin-bottom: 20px;
 `;
 
+const GraphContainer = styled.div`
+  flex-grow: 1;
+`;
+
 const GraphArrowButtons = styled.div`
-  padding: 20px 10px;
+  padding: 20px 5px;
   font-size: 1.5em;
   cursor: pointer;
 `;
@@ -169,16 +174,22 @@ export default function PopularTimes({ heatmap }: HeatmapProps): ReactElement {
         >
           <LeftOutlined />
         </GraphArrowButtons>
-        <TimeGraph
-          values={heatmap
-            .slice(currentDayOfWeek * 24, (currentDayOfWeek + 1) * 24 - 1)
-            .map((i) => (i < 0 ? 0 : Math.floor(i)))}
-          maxTime={Math.max(...heatmap)}
-          firstHour={firstHour}
-          lastHour={lastHour}
-          width={500}
-          height={200}
-        />
+        <GraphContainer>
+          <ParentSize>
+            {(parent) => (
+              <TimeGraph
+                values={heatmap
+                  .slice(currentDayOfWeek * 24, (currentDayOfWeek + 1) * 24 - 1)
+                  .map((i) => (i < 0 ? 0 : Math.floor(i)))}
+                maxTime={Math.max(...heatmap)}
+                firstHour={firstHour}
+                lastHour={lastHour}
+                width={parent.width}
+                height={220}
+              />
+            )}
+          </ParentSize>
+        </GraphContainer>
         <GraphArrowButtons
           onClick={() => setCurrentDayOfWeek((currentDayOfWeek + 1) % 7)}
         >
