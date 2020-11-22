@@ -35,6 +35,12 @@ const ColWithRightMargin = styled(Col)`
   margin-right: 32px;
 `;
 
+const PriorityQueuedBanner = styled.span`
+  display: flex;
+  flex-direction: column;
+  margin: 12px 0;
+`;
+
 interface StudentBannerProps {
   queueId: number;
   editQuestion: () => void;
@@ -198,10 +204,16 @@ export default function StudentBanner({
           titleColor="#3684C6"
           contentColor="#ABD4F3"
           title={
-            <span>
+            <PriorityQueuedBanner>
               You are now in a priority queue, you will be helped soon. <br />
-              You were last helped by {studentQuestion.taHelped.name}.
-            </span>
+              <span style={{ fontSize: 16 }}>
+                You were last helped by{" "}
+                <span style={{ fontWeight: "bold" }}>
+                  {studentQuestion.taHelped.name}
+                </span>
+                .
+              </span>
+            </PriorityQueuedBanner>
           }
           buttons={
             <>
