@@ -56,7 +56,7 @@ export const UserCourseFactory = new Factory(UserCourseModel)
   .attr('role', Role.STUDENT);
 
 export const QueueFactory = new Factory(QueueModel)
-  .attr('room', `WVH 101`)
+  .attr('room', 'Online')
   .assocOne('course', CourseFactory)
   .attr('allowQuestions', false)
   .assocMany('officeHours', OfficeHourFactory);

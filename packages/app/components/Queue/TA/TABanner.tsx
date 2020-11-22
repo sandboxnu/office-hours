@@ -1,17 +1,20 @@
-import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import { CheckOutlined, CloseOutlined, UndoOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import {
   ClosedQuestionStatus,
-  OpenQuestionStatus,
+  LimboQuestionStatus,
   Question,
   QuestionStatus,
 } from "@koh/common";
-import { Col, Popconfirm, Row } from "antd";
-import { ReactElement } from "react";
+import { Col, Popconfirm, Row, Tooltip } from "antd";
+import React, { ReactElement } from "react";
 import styled from "styled-components";
-import getInitialsFromName from "../../../utils/NameUtils";
 import AvatarWithInitals from "../../common/AvatarWithInitials";
-import Banner, { TABannerButton, TABannerDangerButton } from "../Banner";
+import Banner, {
+  CantFindButton,
+  FinishHelpingButton,
+  RequeueButton,
+} from "../Banner";
 
 const Bold = styled.span`
   font-weight: bold;
@@ -74,32 +77,52 @@ export default function TABanner({
       buttons={
         <>
           <Popconfirm
-            title="Are you sure you want to delete this question from the queue?"
+            title="Are you sure you want to send this student back to the queue?"
             okText="Yes"
             cancelText="No"
             onConfirm={async () => {
               await updateQuestion(
                 helpingQuestion,
-                OpenQuestionStatus.TADeleted
+                LimboQuestionStatus.ReQueueing
+              );
+            }}
+          >
+            <Tooltip title="Requeue Student">
+              <RequeueButton
+                icon={<UndoOutlined />}
+                data-cy="requeue-student-button"
+              />
+            </Tooltip>
+          </Popconfirm>
+          <Popconfirm
+            title="Are you sure you can't find this student?"
+            okText="Yes"
+            cancelText="No"
+            onConfirm={async () => {
+              await updateQuestion(
+                helpingQuestion,
+                LimboQuestionStatus.CantFind
               );
               await alertStudent();
             }}
           >
-            <TABannerDangerButton
-              icon={<CloseOutlined />}
-              data-cy="remove-from-queue"
-            >
-              Remove from Queue
-            </TABannerDangerButton>
+            <Tooltip title="Can't Find">
+              <CantFindButton
+                shape="circle"
+                icon={<CloseOutlined />}
+                data-cy="cant-find-button"
+              />
+            </Tooltip>
           </Popconfirm>
-          <TABannerButton
-            icon={<CheckOutlined />}
-            onClick={() =>
-              updateQuestion(helpingQuestion, ClosedQuestionStatus.Resolved)
-            }
-          >
-            Finish Helping
-          </TABannerButton>
+          <Tooltip title="Finish Helping">
+            <FinishHelpingButton
+              icon={<CheckOutlined />}
+              onClick={() =>
+                updateQuestion(helpingQuestion, ClosedQuestionStatus.Resolved)
+              }
+              data-cy="finish-helping-button"
+            />
+          </Tooltip>
         </>
       }
     />

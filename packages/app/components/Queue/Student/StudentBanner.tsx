@@ -2,9 +2,12 @@ import {
   DeleteRowOutlined,
   EditOutlined,
   TeamOutlined,
+  UndoOutlined,
 } from "@ant-design/icons";
-import { Col, Popconfirm } from "antd";
-import { ReactElement } from "react";
+import { API } from "@koh/api-client";
+import { OpenQuestionStatus } from "@koh/common";
+import { Button, Col, Popconfirm, Tooltip } from "antd";
+import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { useDraftQuestion } from "../../../hooks/useDraftQuestion";
 import { useStudentQuestion } from "../../../hooks/useStudentQuestion";
@@ -28,6 +31,10 @@ const Bullets = styled.ul`
   color: #000;
 `;
 
+const ColWithRightMargin = styled(Col)`
+  margin-right: 32px;
+`;
+
 interface StudentBannerProps {
   queueId: number;
   editQuestion: () => void;
@@ -38,11 +45,7 @@ export default function StudentBanner({
   editQuestion,
   leaveQueue,
 }: StudentBannerProps): ReactElement {
-  const {
-    studentQuestion,
-    studentQuestionIndex,
-    mutateStudentQuestion,
-  } = useStudentQuestion(queueId);
+  const { studentQuestion, studentQuestionIndex } = useStudentQuestion(queueId);
 
   const { draftQuestion } = useDraftQuestion();
 
@@ -56,18 +59,21 @@ export default function StudentBanner({
           content="Your spot in queue has been temporarily reserved. Please finish describing your question to receive help and finish joining the queue."
           buttons={
             <>
-              <BannerButton icon={<DeleteRowOutlined />} onClick={leaveQueue}>
-                Delete Draft
-              </BannerButton>
-              <BannerButton
-                data-cy="edit-question"
-                icon={<EditOutlined />}
-                onClick={async () => {
-                  editQuestion();
-                }}
-              >
-                Finish Draft
-              </BannerButton>
+              <Tooltip title="Delete Draft">
+                <BannerButton
+                  icon={<DeleteRowOutlined />}
+                  onClick={leaveQueue}
+                />
+              </Tooltip>
+              <Tooltip title="Finish Draft">
+                <BannerButton
+                  data-cy="edit-question"
+                  icon={<EditOutlined />}
+                  onClick={async () => {
+                    editQuestion();
+                  }}
+                />
+              </Tooltip>
             </>
           }
         />
@@ -87,21 +93,21 @@ export default function StudentBanner({
           buttons={
             <>
               <LeaveQueueButton leaveQueue={leaveQueue} />
-              <BannerButton
-                data-cy="edit-question"
-                icon={<EditOutlined />}
-                onClick={editQuestion}
-              >
-                Edit Question
-              </BannerButton>
+              <Tooltip title="Edit Question">
+                <BannerButton
+                  data-cy="edit-question"
+                  icon={<EditOutlined />}
+                  onClick={editQuestion}
+                />
+              </Tooltip>
             </>
           }
           content={
             <QuestionDetails>
-              <Col flex="1 1" style={{ marginRight: "32px" }}>
+              <ColWithRightMargin flex="1 1">
                 <InfoHeader>question</InfoHeader>
                 <div>{studentQuestion.text}</div>
-              </Col>
+              </ColWithRightMargin>
               <Col flex="0 0 89px">
                 <InfoHeader>type</InfoHeader>
                 <div>{studentQuestion.questionType}</div>
@@ -125,16 +131,16 @@ export default function StudentBanner({
             <>
               <LeaveQueueButton leaveQueue={leaveQueue} />
               {studentQuestion.isOnline && (
-                <BannerButton
-                  icon={<TeamOutlined />}
-                  onClick={() => {
-                    window.open(
-                      `https://teams.microsoft.com/l/chat/0/0?users=${studentQuestion.taHelped.email}`
-                    );
-                  }}
-                >
-                  Open Teams DM
-                </BannerButton>
+                <Tooltip title="Open Teams DM">
+                  <BannerButton
+                    icon={<TeamOutlined />}
+                    onClick={() => {
+                      window.open(
+                        `https://teams.microsoft.com/l/chat/0/0?users=${studentQuestion.taHelped.email}`
+                      );
+                    }}
+                  />
+                </Tooltip>
               )}
             </>
           }
@@ -144,6 +150,82 @@ export default function StudentBanner({
               <li>Be respectful of the TA’s time</li>
               <li>Come prepared with your question!</li>
             </Bullets>
+          }
+        />
+      );
+    case "ReQueueing":
+      return (
+        <Banner
+          titleColor="#66BB6A"
+          contentColor="#82C985"
+          title={<span>Are you ready to re-join the queue?</span>}
+          buttons={
+            <>
+              <LeaveQueueButton leaveQueue={leaveQueue} />
+              <Tooltip title="Rejoin Queue">
+                <Button
+                  shape="circle"
+                  style={{
+                    marginLeft: "16px",
+                    border: 0,
+                  }}
+                  icon={<UndoOutlined />}
+                  onClick={async () => {
+                    await API.questions.update(studentQuestion.id, {
+                      status: OpenQuestionStatus.PriorityQueued,
+                    });
+                  }}
+                  type="primary"
+                  data-cy="re-join-queue"
+                  size="large"
+                />
+              </Tooltip>
+            </>
+          }
+          content={
+            <Bullets>
+              <li>Have you finished doing what the TA has told you?</li>
+              <li>
+                Once you hit requeue, you will be placed at the top of the queue
+              </li>
+            </Bullets>
+          }
+        />
+      );
+    case "PriorityQueued":
+      return (
+        <Banner
+          titleColor="#3684C6"
+          contentColor="#ABD4F3"
+          title={
+            <span>
+              You are now in a priority queue, you will be helped soon. <br />
+              You were last helped by {studentQuestion.taHelped.name}.
+            </span>
+          }
+          buttons={
+            <>
+              <LeaveQueueButton leaveQueue={leaveQueue} />
+              <Tooltip title="Edit Question">
+                <BannerButton
+                  data-cy="edit-question"
+                  icon={<EditOutlined />}
+                  onClick={editQuestion}
+                />
+              </Tooltip>
+            </>
+          }
+          content={
+            <QuestionDetails>
+              <ColWithRightMargin flex="1 1">
+                <InfoHeader>question</InfoHeader>
+                <div>{studentQuestion.text}</div>
+              </ColWithRightMargin>
+              <Col flex="0 0 89px">
+                <InfoHeader>type</InfoHeader>
+                <div>{studentQuestion.questionType}</div>
+              </Col>
+            </QuestionDetails>
           }
         />
       );
@@ -160,9 +242,12 @@ function LeaveQueueButton({ leaveQueue }: { leaveQueue: () => void }) {
       cancelText="No"
       onConfirm={leaveQueue}
     >
-      <BannerDangerButton data-cy="leave-queue" icon={<DeleteRowOutlined />}>
-        Leave Queue
-      </BannerDangerButton>
+      <Tooltip title="Leave Queue">
+        <BannerDangerButton
+          data-cy="leave-queue"
+          icon={<DeleteRowOutlined />}
+        />
+      </Tooltip>
     </Popconfirm>
   );
 }

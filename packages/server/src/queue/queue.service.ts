@@ -1,9 +1,16 @@
+import {
+  ListQuestionsResponse,
+  OpenQuestionStatus,
+  Role,
+  StatusInPriorityQueue,
+  StatusInQueue,
+  StatusSentToCreator,
+} from '@koh/common';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Connection } from 'typeorm';
-import { QueueModel } from './queue.entity';
-import { ListQuestionsResponse, Role } from '@koh/common';
-import { QuestionModel } from 'question/question.entity';
 import { pick } from 'lodash';
+import { QuestionModel } from 'question/question.entity';
+import { Connection, In } from 'typeorm';
+import { QueueModel } from './queue.entity';
 
 /**
  * Get data in service of the queue controller and SSE
@@ -34,26 +41,64 @@ export class QueueService {
     if (queueSize === 0) {
       throw new NotFoundException();
     }
-    return QuestionModel.openInQueue(queueId)
-      .leftJoinAndSelect('question.creator', 'creator')
-      .leftJoinAndSelect('question.taHelped', 'taHelped')
-      .getMany();
+
+    const questionsFromDb = await QuestionModel.find({
+      relations: ['creator', 'taHelped'],
+      where: {
+        queueId,
+        status: In([
+          ...StatusInPriorityQueue,
+          ...StatusInQueue,
+          OpenQuestionStatus.Helping,
+        ]),
+      },
+    });
+
+    const questions = new ListQuestionsResponse();
+
+    questions.queue = questionsFromDb.filter((question) =>
+      StatusInQueue.includes(question.status as OpenQuestionStatus),
+    );
+
+    questions.questionsGettingHelp = questionsFromDb.filter(
+      (question) => question.status === OpenQuestionStatus.Helping,
+    );
+
+    questions.priorityQueue = questionsFromDb.filter((question) =>
+      StatusInPriorityQueue.includes(question.status as OpenQuestionStatus),
+    );
+
+    return questions;
   }
 
   /** Hide sensitive data to other students */
-  anonymizeQuestions(
+  async personalizeQuestions(
     questions: ListQuestionsResponse,
     userId: number,
     role: Role,
-  ): ListQuestionsResponse {
+  ): Promise<ListQuestionsResponse> {
     if (role === Role.STUDENT) {
-      return questions.map((question) => {
+      const newLQR = new ListQuestionsResponse();
+      Object.assign(newLQR, questions);
+
+      newLQR.queue = questions.queue.map((question) => {
         const creator =
           question.creator.id === userId
             ? question.creator
             : pick(question.creator, ['id']);
         return QuestionModel.create({ ...question, creator });
       });
+
+      newLQR.yourQuestion = await QuestionModel.findOne({
+        relations: ['creator', 'taHelped'],
+        where: {
+          creatorId: userId,
+          status: In(StatusSentToCreator),
+        },
+      });
+      newLQR.priorityQueue = [];
+
+      return newLQR;
     }
     return questions;
   }
