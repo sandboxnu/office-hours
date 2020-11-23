@@ -16,7 +16,7 @@ import ReleaseNotes from "../../../components/Today/ReleaseNotes";
 import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useCourse } from "../../../hooks/useCourse";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
-import { chunk, mean, range, sum, zip } from "lodash";
+import { chunk, mean } from "lodash";
 import moment from "moment";
 
 const Container = styled.div`
@@ -32,10 +32,6 @@ const Title = styled.div`
   color: #212934;
 `;
 
-function rotateCalendar(arr: number[], count: number) {
-  return arr.concat(arr.splice(0, new Date().getMonth()));
-}
-
 function arrayRotate(arr, count) {
   const adjustedCount = (arr.length + count) % arr.length;
   return arr
@@ -44,14 +40,10 @@ function arrayRotate(arr, count) {
 }
 
 const collapseHeatmap = (heatmap: Heatmap): Heatmap =>
-  chunk(heatmap, 4).map(
-    (hours) => {
-      const filteredOfficeHours = hours.filter((v) => v !== -1);
-      return filteredOfficeHours.length > 0 ? mean(filteredOfficeHours) : -1;
-    }
-    // TODO:
-    // - Parametrize this by a constant
-  );
+  chunk(heatmap, 4).map((hours) => {
+    const filteredOfficeHours = hours.filter((v) => v !== -1);
+    return filteredOfficeHours.length > 0 ? mean(filteredOfficeHours) : -1;
+  });
 
 export default function Today(): ReactElement {
   const router = useRouter();
@@ -112,8 +104,8 @@ export default function Today(): ReactElement {
                 heatmap={collapseHeatmap(
                   arrayRotate(
                     course.heatmap,
-                    -1 * Math.floor(moment().utcOffset() / 15)
-                  ) // 150 / 15 = 10
+                    -Math.floor(moment().utcOffset() / 15)
+                  )
                 )}
               />
             )}

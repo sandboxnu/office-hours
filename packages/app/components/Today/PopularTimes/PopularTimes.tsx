@@ -8,17 +8,12 @@ import {
 import { Heatmap } from "@koh/common";
 import { ParentSize } from "@visx/responsive";
 import { Dropdown, Menu } from "antd";
-import { chunk, uniq, range, mean, zip } from "lodash";
+import { chunk, uniq, range, mean } from "lodash";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { formatWaitTime } from "../../../utils/TimeUtil";
 import { formatDateHour } from "./FormatDateHour";
 import TimeGraph from "./TimeGraph";
-
-// TODO:
-// - Fix Responsiveness
-// - 13PM? Including an extra tick at the end of the graph might make things a little funky
-// - No data? What do we render?
 
 const TitleRow = styled.div`
   display: flex;
