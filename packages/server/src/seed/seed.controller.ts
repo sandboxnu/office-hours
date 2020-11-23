@@ -204,12 +204,18 @@ export class SeedController {
 
   @Post('createQueue')
   async createQueue(
-    @Body() body: { courseId: number; allowQuestions: boolean },
+    @Body()
+    body: {
+      courseId: number;
+      allowQuestions: boolean;
+      // closes in n milliseconds from now
+      closesIn?: number;
+    },
   ): Promise<QueueModel> {
     const now = new Date();
     const officeHours = await OfficeHourFactory.create({
       startTime: now,
-      endTime: new Date(now.valueOf() + 4500000),
+      endTime: new Date(now.valueOf() + (body?.closesIn || 4500000)),
     });
     const options = {
       officeHours: [officeHours],

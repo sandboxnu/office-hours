@@ -117,6 +117,7 @@ export default function TACheckinButton({
               await API.queues.clean(queueIdToClean);
               closeModal();
             }}
+            data-cy="clear-queue-btn"
           >
             Clear Queue
           </Button>,
