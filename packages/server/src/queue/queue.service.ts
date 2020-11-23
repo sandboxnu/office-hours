@@ -44,17 +44,14 @@ export class QueueService {
       throw new NotFoundException();
     }
 
-    const questionsFromDb = await QuestionModel.find({
-      relations: ['creator', 'taHelped'],
-      where: {
-        queueId,
-        status: In([
-          ...StatusInPriorityQueue,
-          ...StatusInQueue,
-          OpenQuestionStatus.Helping,
-        ]),
-      },
-    });
+    const questionsFromDb = await QuestionModel.inQueueWithStatus(queueId, [
+      ...StatusInPriorityQueue,
+      ...StatusInQueue,
+      OpenQuestionStatus.Helping,
+    ])
+      .leftJoinAndSelect('question.creator', 'creator')
+      .leftJoinAndSelect('question.taHelped', 'taHelped')
+      .getMany();
 
     const questions = new ListQuestionsResponse();
 
@@ -75,6 +72,7 @@ export class QueueService {
 
   /** Hide sensitive data to other students */
   async personalizeQuestions(
+    queueId: number,
     questions: ListQuestionsResponse,
     userId: number,
     role: Role,
@@ -98,6 +96,7 @@ export class QueueService {
         relations: ['creator', 'taHelped'],
         where: {
           creatorId: userId,
+          queueId: queueId,
           status: In(StatusSentToCreator),
         },
       });

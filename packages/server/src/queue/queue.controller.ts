@@ -52,6 +52,7 @@ export class QueueController {
   ): Promise<ListQuestionsResponse> {
     const questions = await this.queueService.getQuestions(queueId);
     return await this.queueService.personalizeQuestions(
+      queueId,
       questions,
       userId,
       role,
