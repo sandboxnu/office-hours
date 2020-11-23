@@ -1,14 +1,13 @@
+import { Role } from '@koh/common';
 import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
   BaseEntity,
-  ManyToOne,
+  Column,
+  Entity,
   JoinColumn,
-  OneToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { CourseModel } from '../course/course.entity';
-import { Role } from '@koh/common';
 import { UserModel } from './user.entity';
 
 @Entity('user_course_model')

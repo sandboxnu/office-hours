@@ -5,12 +5,13 @@ import {
   Entity,
   ManyToMany,
   OneToMany,
-  PrimaryGeneratedColumn,
   OneToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { DesktopNotifModel } from '../notification/desktop-notif.entity';
 import { PhoneNotifModel } from '../notification/phone-notif.entity';
 import { QueueModel } from '../queue/queue.entity';
+import { EventModel } from './event-model.entity';
 import { UserCourseModel } from './user-course.entity';
 
 @Entity('user_model')
@@ -50,4 +51,8 @@ export class UserModel extends BaseEntity {
   @Exclude()
   @ManyToMany((type) => QueueModel, (queue) => queue.staffList)
   queues: QueueModel[];
+
+  @Exclude()
+  @OneToMany((type) => EventModel, (event) => event.user)
+  events: EventModel[];
 }
