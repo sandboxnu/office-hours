@@ -96,14 +96,6 @@ export enum Role {
   PROFESSOR = "professor",
 }
 
-/**
- * Represents an Event in the EventModel table, used for advanced metrics.
- */
-export enum EventType {
-  TA_CHECKED_IN = "taCheckedIn",
-  TA_CHECKED_OUT = "taCheckedOut",
-}
-
 class OfficeHourPartial {
   id!: number;
   title!: string;
