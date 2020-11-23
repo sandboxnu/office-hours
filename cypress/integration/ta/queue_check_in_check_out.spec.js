@@ -118,7 +118,7 @@ describe("Checking out when office hours end soon", () => {
     cy.get("body").should("contain", "There are no questions in the queue");
   });
 
-  it.only("opens the clean queue page from the today page", function () {
+  it("opens the clean queue page from the today page", function () {
     cy.visit(`/course/${this.queue.courseId}/today`);
     // verify 1 student
     cy.get("div").should("contain", "1 in queue");
