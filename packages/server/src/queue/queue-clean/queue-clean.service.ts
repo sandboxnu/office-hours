@@ -47,6 +47,7 @@ export class QueueCleanService {
 
     openQuestions.forEach((q: QuestionModel) => {
       q.status = ClosedQuestionStatus.Stale;
+      q.closedAt = new Date();
     });
 
     await QuestionModel.save(openQuestions);
