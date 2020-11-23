@@ -75,6 +75,7 @@ export class QueueService {
 
   /** Hide sensitive data to other students */
   async personalizeQuestions(
+    queueId: number,
     questions: ListQuestionsResponse,
     userId: number,
     role: Role,
@@ -98,6 +99,7 @@ export class QueueService {
         relations: ['creator', 'taHelped'],
         where: {
           creatorId: userId,
+          queueId: queueId,
           status: In(StatusSentToCreator),
         },
       });
