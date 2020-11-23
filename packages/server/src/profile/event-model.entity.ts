@@ -1,5 +1,4 @@
 import { Exclude } from 'class-transformer';
-import { CourseModel } from 'course/course.entity';
 import {
   BaseEntity,
   Column,
@@ -8,6 +7,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { CourseModel } from '../course/course.entity';
 import { UserModel } from './user.entity';
 
 /**

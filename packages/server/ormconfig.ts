@@ -1,5 +1,4 @@
 import { config } from 'dotenv';
-import { EventModel } from 'profile/event-model.entity';
 import { AdminUserModel } from './src/admin/admin-user.entity';
 import { CourseModel } from './src/course/course.entity';
 import { OfficeHourModel } from './src/course/office-hour.entity';
@@ -7,6 +6,7 @@ import { SemesterModel } from './src/course/semester.entity';
 import { CourseSectionMappingModel } from './src/login/course-section-mapping.entity';
 import { DesktopNotifModel } from './src/notification/desktop-notif.entity';
 import { PhoneNotifModel } from './src/notification/phone-notif.entity';
+import { EventModel } from './src/profile/event-model.entity';
 import { UserCourseModel } from './src/profile/user-course.entity';
 import { UserModel } from './src/profile/user.entity';
 import { QuestionModel } from './src/question/question.entity';
