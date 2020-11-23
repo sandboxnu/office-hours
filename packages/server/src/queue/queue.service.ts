@@ -44,17 +44,14 @@ export class QueueService {
       throw new NotFoundException();
     }
 
-    const questionsFromDb = await QuestionModel.find({
-      relations: ['creator', 'taHelped'],
-      where: {
-        queueId,
-        status: In([
-          ...StatusInPriorityQueue,
-          ...StatusInQueue,
-          OpenQuestionStatus.Helping,
-        ]),
-      },
-    });
+    const questionsFromDb = await QuestionModel.inQueueWithStatus(queueId, [
+      ...StatusInPriorityQueue,
+      ...StatusInQueue,
+      OpenQuestionStatus.Helping,
+    ])
+      .leftJoinAndSelect('question.creator', 'creator')
+      .leftJoinAndSelect('question.taHelped', 'taHelped')
+      .getMany();
 
     const questions = new ListQuestionsResponse();
 
