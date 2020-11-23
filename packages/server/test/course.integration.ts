@@ -1,3 +1,4 @@
+import { TACheckoutResponse } from '@koh/common';
 import { CourseModule } from '../src/course/course.module';
 import { QueueModel } from '../src/queue/queue.entity';
 import {
