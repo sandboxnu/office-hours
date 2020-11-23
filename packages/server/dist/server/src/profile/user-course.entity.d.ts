@@ -1,6 +1,6 @@
+import { Role } from '@koh/common';
 import { BaseEntity } from 'typeorm';
 import { CourseModel } from '../course/course.entity';
-import { Role } from '@koh/common';
 import { UserModel } from './user.entity';
 export declare class UserCourseModel extends BaseEntity {
     id: number;
