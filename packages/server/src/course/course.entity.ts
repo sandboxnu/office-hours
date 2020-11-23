@@ -1,17 +1,18 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  BaseEntity,
-  OneToMany,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
-import { OfficeHourModel } from './office-hour.entity';
-import { QueueModel } from '../queue/queue.entity';
-import { UserCourseModel } from '../profile/user-course.entity';
-import { SemesterModel } from './semester.entity';
 import { Exclude } from 'class-transformer';
+import { EventModel } from 'profile/event-model.entity';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { UserCourseModel } from '../profile/user-course.entity';
+import { QueueModel } from '../queue/queue.entity';
+import { OfficeHourModel } from './office-hour.entity';
+import { SemesterModel } from './semester.entity';
 
 /**
  * Represents a course in the context of office hours.
@@ -61,4 +62,8 @@ export class CourseModel extends BaseEntity {
 
   @Column('boolean', { nullable: true })
   enabled: boolean; // Set to true if the given the course is using our app
+
+  @OneToMany((type) => EventModel, (event) => event.course)
+  @Exclude()
+  events: EventModel[];
 }

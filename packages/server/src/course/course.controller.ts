@@ -1,4 +1,4 @@
-import { EventType, GetCourseResponse, QueuePartial, Role } from '@koh/common';
+import { GetCourseResponse, QueuePartial, Role } from '@koh/common';
 import {
   ClassSerializerInterceptor,
   Controller,
@@ -10,8 +10,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import async from 'async';
-import { EventModel } from 'profile/event-model.entity';
-import { UserCourseModel } from 'profile/user-course.entity';
+import { EventModel, EventType } from 'profile/event-model.entity';
 import { Connection, getRepository } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { Roles } from '../profile/roles.decorator';
@@ -93,11 +92,11 @@ export class CourseController {
     queue.staffList.push(user);
     await queue.save();
 
-    const UCM = await UserCourseModel.findOne({ where: { user, courseId } });
     await EventModel.create({
       time: new Date(),
       eventType: EventType.TA_CHECKED_IN,
-      user: UCM,
+      user,
+      courseId,
     }).save();
 
     await this.queueSSEService.updateQueue(queue.id);
@@ -125,11 +124,11 @@ export class CourseController {
     }
     await queue.save();
 
-    const UCM = await UserCourseModel.findOne({ where: { user, courseId } });
     await EventModel.create({
       time: new Date(),
       eventType: EventType.TA_CHECKED_OUT,
-      user: UCM,
+      user,
+      courseId,
     }).save();
     // Clean up queue if necessary
     setTimeout(async () => {

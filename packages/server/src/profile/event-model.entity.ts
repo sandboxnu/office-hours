@@ -1,4 +1,5 @@
-import { EventType } from '@koh/common';
+import { Exclude } from 'class-transformer';
+import { CourseModel } from 'course/course.entity';
 import {
   BaseEntity,
   Column,
@@ -7,7 +8,15 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { UserCourseModel } from './user-course.entity';
+import { UserModel } from './user.entity';
+
+/**
+ * Represents an Event in the EventModel table, used for advanced metrics.
+ */
+export enum EventType {
+  TA_CHECKED_IN = 'taCheckedIn',
+  TA_CHECKED_OUT = 'taCheckedOut',
+}
 
 @Entity('event_model')
 export class EventModel extends BaseEntity {
@@ -20,10 +29,19 @@ export class EventModel extends BaseEntity {
   @Column({ type: 'enum', enum: EventType })
   eventType: EventType;
 
-  @ManyToOne((type) => UserCourseModel, (ucm) => ucm.events)
-  @JoinColumn({ name: 'userCourseId' })
-  user: UserCourseModel;
+  @ManyToOne((type) => UserModel, (user) => user.events)
+  @JoinColumn({ name: 'userId' })
+  user: UserModel;
 
   @Column({ nullable: true })
-  userCourseId: number;
+  @Exclude()
+  userId: number;
+
+  @ManyToOne((type) => CourseModel, (course) => course.events)
+  @JoinColumn({ name: 'courseId' })
+  course: CourseModel;
+
+  @Column({ nullable: true })
+  @Exclude()
+  courseId: number;
 }

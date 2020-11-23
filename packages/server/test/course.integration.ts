@@ -1,5 +1,5 @@
-import { EventType, OpenQuestionStatus } from '@koh/common';
-import { EventModel } from 'profile/event-model.entity';
+import { OpenQuestionStatus } from '@koh/common';
+import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { In } from 'typeorm';
 import { CourseModule } from '../src/course/course.module';
