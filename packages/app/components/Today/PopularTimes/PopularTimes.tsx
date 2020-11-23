@@ -120,11 +120,7 @@ const BUSY_TEXTS: string[][] = range(1, 8).map((len) => {
 //   7: ['the shortest', 'shorter than usual', 'shorter than usual',  'average', 'longer than usual', 'longer than usual', 'the longest'],
 // }
 
-function generateBusyText(
-  day: number,
-  heatmap: Heatmap,
-  dailySumWaitTimes: number[]
-): string {
+function generateBusyText(day: number, dailySumWaitTimes: number[]): string {
   const dayWaitTime = dailySumWaitTimes[day];
   const uniqSumWaitTimes = uniq(
     dailySumWaitTimes.filter((v) => v >= 0).sort((a, b) => a - b)
@@ -143,7 +139,7 @@ export default function PopularTimes({ heatmap }: HeatmapProps): ReactElement {
 
   //console.table(zip(range(heatmap.length).map(v=> v % 24), heatmap));
   return (
-    <div>
+    <div className="hide-in-percy">
       <TitleRow>
         <h2>Wait Times on</h2>
         <Dropdown
@@ -196,7 +192,7 @@ export default function PopularTimes({ heatmap }: HeatmapProps): ReactElement {
         <GraphNotes>
           <ClockCircleOutlined /> {DAYS_OF_WEEK[currentDayOfWeek]}s have{" "}
           <strong>
-            {generateBusyText(currentDayOfWeek, heatmap, dailyAvgWaitTimes)}
+            {generateBusyText(currentDayOfWeek, dailyAvgWaitTimes)}
           </strong>{" "}
           wait times.
         </GraphNotes>
