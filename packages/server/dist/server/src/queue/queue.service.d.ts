@@ -6,5 +6,5 @@ export declare class QueueService {
     constructor(connection: Connection);
     getQueue(queueId: number): Promise<QueueModel>;
     getQuestions(queueId: number): Promise<ListQuestionsResponse>;
-    personalizeQuestions(questions: ListQuestionsResponse, userId: number, role: Role): Promise<ListQuestionsResponse>;
+    personalizeQuestions(queueId: number, questions: ListQuestionsResponse, userId: number, role: Role): Promise<ListQuestionsResponse>;
 }

@@ -20,5 +20,6 @@ export declare class QuestionModel extends BaseEntity {
     location: string;
     isOnline: boolean;
     changeStatus(newStatus: QuestionStatus, role: Role): boolean;
-    static openInQueue(queueId: number): SelectQueryBuilder<QuestionModel>;
+    static inQueueWithStatus(queueId: number, statuses: QuestionStatus[]): SelectQueryBuilder<QuestionModel>;
+    static waitingInQueue(queueId: number): SelectQueryBuilder<QuestionModel>;
 }
