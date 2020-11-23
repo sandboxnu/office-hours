@@ -8,7 +8,7 @@ import {
 import { Heatmap } from "@koh/common";
 import { ParentSize } from "@visx/responsive";
 import { Dropdown, Menu } from "antd";
-import { chunk, uniq, range, mean } from "lodash";
+import { chunk, uniq, mean } from "lodash";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { formatWaitTime } from "../../../utils/TimeUtil";
@@ -93,32 +93,30 @@ const BUSY = {
 };
 
 // Mapping for text describing level of business, given the length of the unique wait times that week (to account for days without hours)
-const BUSY_TEXTS: string[][] = range(1, 8).map((len) => {
-  const arr = [];
-  if (len % 2 == 1) {
-    arr.push(BUSY.avg);
-  }
-  if (len > 1) {
-    arr.unshift(BUSY.shortest); // add to front
-    arr.push(BUSY.longest);
-  }
-  const usual_texts = Math.floor((len - 2) / 2);
-  for (let i = 0; i < usual_texts; i++) {
-    arr.splice(1, 0, BUSY.shorter);
-    arr.splice(arr.length - 1, 0, BUSY.longer);
-  }
-  return arr;
-});
-
-// {
-//   1: ['average'],
-//   2: ['the shortest', 'the longest'],
-//   3: ['the shortest', 'average', 'the longest'],
-//   4: ['the shortest', 'shorter than usual', 'longer than usual', 'the longest'],
-//   5: ['the shortest', 'shorter than usual', 'average', 'longer than usual', 'the longest'],
-//   6: ['the shortest', 'shorter than usual',  'shorter than usual', 'longer than usual', 'longer than usual', 'the longest'],
-//   7: ['the shortest', 'shorter than usual', 'shorter than usual',  'average', 'longer than usual', 'longer than usual', 'the longest'],
-// }
+const BUSY_TEXTS = {
+  1: [BUSY.avg],
+  2: [BUSY.shortest, BUSY.longest],
+  3: [BUSY.shortest, BUSY.avg, BUSY.longest],
+  4: [BUSY.shortest, BUSY.shorter, BUSY.longer, BUSY.longest],
+  5: [BUSY.shortest, BUSY.shorter, BUSY.avg, BUSY.longer, BUSY.longest],
+  6: [
+    BUSY.shortest,
+    BUSY.shorter,
+    BUSY.shorter,
+    BUSY.longer,
+    BUSY.longer,
+    BUSY.longest,
+  ],
+  7: [
+    BUSY.shortest,
+    BUSY.shorter,
+    BUSY.shorter,
+    BUSY.avg,
+    BUSY.longer,
+    BUSY.longer,
+    BUSY.longest,
+  ],
+};
 
 function generateBusyText(day: number, dailySumWaitTimes: number[]): string {
   const dayWaitTime = dailySumWaitTimes[day];
@@ -137,7 +135,6 @@ export default function PopularTimes({ heatmap }: HeatmapProps): ReactElement {
     return filteredOfficeHours.length > 0 ? mean(filteredOfficeHours) : -1;
   });
 
-  //console.table(zip(range(heatmap.length).map(v=> v % 24), heatmap));
   return (
     <div className="hide-in-percy">
       <TitleRow>

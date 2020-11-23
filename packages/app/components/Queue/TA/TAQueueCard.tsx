@@ -1,7 +1,7 @@
-import { RightOutlined } from "@ant-design/icons";
-import { OpenQuestionStatus, Question } from "@koh/common";
-import { Col } from "antd";
-import { ReactElement } from "react";
+import { QuestionCircleOutlined, RightOutlined } from "@ant-design/icons";
+import { LimboQuestionStatus, Question } from "@koh/common";
+import { Col, Tooltip } from "antd";
+import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { getWaitTime } from "../../../utils/TimeUtil";
 import AvatarWithInitals from "../../common/AvatarWithInitials";
@@ -16,6 +16,10 @@ import {
 
 const AvatarWithMargin = styled(AvatarWithInitals)`
   margin-right: 16px;
+`;
+
+const TAQueueCardQuestionBubble = styled(QuestionCircleOutlined)`
+  margin-left: 10px;
 `;
 
 interface TAQueueCardProps {
@@ -47,6 +51,11 @@ export default function TAQueueCard({
               name={question.creator.name}
             />
             <Text>{question.creator.name}</Text>
+            {question.taHelped ? (
+              <Tooltip title={"Last helped by: " + question.taHelped.name}>
+                <TAQueueCardQuestionBubble />
+              </Tooltip>
+            ) : null}
           </CenterRow>
         </Col>
         <Col xs={0} lg={2}>
@@ -60,7 +69,7 @@ export default function TAQueueCard({
         </Col>
         <Col span={2}>
           <StatusTag color={questionStatusToColor(question.status)}>
-            {question.status === OpenQuestionStatus.CantFind
+            {question.status === LimboQuestionStatus.CantFind
               ? "Can't Find"
               : question.status}
           </StatusTag>

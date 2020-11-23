@@ -1,6 +1,7 @@
 import { API } from "@koh/api-client";
 import {
   ClosedQuestionStatus,
+  LimboQuestionStatus,
   OpenQuestionStatus,
   Question,
   QuestionType,
@@ -76,29 +77,45 @@ export default function StudentQueueList({
 
     setIsJoining(false);
     await mutateQuestions();
-  }, [studentQuestion?.id, mutateQuestions]);
+  }, [mutateQuestions, studentQuestion?.id]);
 
   const rejoinQueue = useCallback(async () => {
     await API.questions.update(studentQuestion?.id, {
-      status: OpenQuestionStatus.Queued,
+      status: OpenQuestionStatus.PriorityQueued,
     });
     await mutateQuestions();
-  }, [studentQuestion?.id, mutateQuestions]);
+  }, [mutateQuestions, studentQuestion?.id]);
 
   const finishQuestion = useCallback(
     async (text: string, questionType: QuestionType) => {
       const updateStudent = {
         text,
         questionType,
-        status: OpenQuestionStatus.Queued,
+        status:
+          studentQuestion.status === OpenQuestionStatus.PriorityQueued
+            ? OpenQuestionStatus.PriorityQueued
+            : OpenQuestionStatus.Queued,
       };
-      await API.questions.update(studentQuestion?.id, updateStudent);
-      const newQuestions = questions?.map((q: Question) =>
-        q.id === studentQuestion?.id ? { ...q, updateStudent } : q
+
+      const updatedQuestionFromStudent = await API.questions.update(
+        studentQuestion?.id,
+        updateStudent
       );
-      mutateQuestions(newQuestions);
+
+      const newQuestionsInQueue = questions?.queue?.map((question: Question) =>
+        question.id === studentQuestion?.id
+          ? updatedQuestionFromStudent
+          : question
+      );
+
+      // questions are the old questions and newQuestionsInQueue are questions that've been added since.
+      mutateQuestions({
+        ...questions,
+        yourQuestion: updatedQuestionFromStudent,
+        queue: newQuestionsInQueue,
+      });
     },
-    [questions, studentQuestion?.id, mutateQuestions]
+    [studentQuestion?.id, questions, mutateQuestions]
   );
 
   const joinQueueAfterDeletion = useCallback(async () => {
@@ -154,8 +171,8 @@ export default function StudentQueueList({
           force: force,
           questionType: null,
         });
-        const newQuestions = [...questions, createdQuestion];
-        await mutateQuestions(newQuestions);
+        const newQuestionsInQueue = [...questions?.queue, createdQuestion];
+        await mutateQuestions({ ...questions, queue: newQuestionsInQueue });
         setPopupEditQuestion(true);
         return true;
       } catch (e) {
@@ -182,6 +199,7 @@ export default function StudentQueueList({
         notification.warn({
           style: { cursor: "pointer" },
           message: "Enable Notifications",
+          className: "hide-in-percy",
           description:
             "Turn on notifications for when it's almost your turn to get help.",
           placement: "bottomRight",
@@ -211,7 +229,7 @@ export default function StudentQueueList({
       <>
         <QueuePageContainer>
           <CantFindModal
-            visible={studentQuestion?.status === OpenQuestionStatus.CantFind}
+            visible={studentQuestion?.status === LimboQuestionStatus.CantFind}
             leaveQueue={leaveQueue}
             rejoinQueue={rejoinQueue}
           />
@@ -257,7 +275,7 @@ export default function StudentQueueList({
               />
             )}
             <QueueQuestions
-              questions={questions}
+              questions={questions?.queue}
               studentQuestion={studentQuestion}
             />
           </Space>
@@ -305,15 +323,9 @@ interface QueueProps {
   studentQuestion: Question;
 }
 function QueueQuestions({ questions, studentQuestion }: QueueProps) {
-  const renderedQuestions = questions?.filter(
-    (question) =>
-      question.status !== OpenQuestionStatus.TADeleted &&
-      question.status !== OpenQuestionStatus.Helping &&
-      question.status !== OpenQuestionStatus.CantFind
-  );
   return (
     <div data-cy="queueQuestions">
-      {renderedQuestions?.length === 0 ? (
+      {questions?.length === 0 ? (
         <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
       ) : (
         <>
@@ -333,7 +345,7 @@ function QueueQuestions({ questions, studentQuestion }: QueueProps) {
           </StudentHeaderCard>
         </>
       )}
-      {renderedQuestions?.map((question: Question, index: number) => {
+      {questions?.map((question: Question, index: number) => {
         return (
           <StudentQueueCard
             key={question.id}
