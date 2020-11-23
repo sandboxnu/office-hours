@@ -1,16 +1,13 @@
 import { Role } from '@koh/common';
-import { Exclude } from 'class-transformer';
 import {
   BaseEntity,
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { CourseModel } from '../course/course.entity';
-import { EventModel } from './event-model.entity';
 import { UserModel } from './user.entity';
 
 @Entity('user_course_model')
@@ -34,8 +31,4 @@ export class UserCourseModel extends BaseEntity {
 
   @Column({ type: 'enum', enum: Role, default: Role.STUDENT })
   role: Role;
-
-  @Exclude()
-  @OneToMany((type) => EventModel, (event) => event.user)
-  events: EventModel[];
 }
