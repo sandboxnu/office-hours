@@ -9,6 +9,7 @@ import {
   CenterRow,
   HorizontalTACard,
   questionStatusToColor,
+  questionStatusToText,
   Rank,
   StatusTag,
   Text,
@@ -69,9 +70,7 @@ export default function TAQueueCard({
         </Col>
         <Col span={2}>
           <StatusTag color={questionStatusToColor(question.status)}>
-            {question.status === LimboQuestionStatus.CantFind
-              ? "Can't Find"
-              : question.status}
+            {questionStatusToText(question.status)}
           </StatusTag>
         </Col>
         <Col>

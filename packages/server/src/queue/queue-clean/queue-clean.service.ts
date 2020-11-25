@@ -1,4 +1,9 @@
-import { ClosedQuestionStatus, OpenQuestionStatus } from '@koh/common';
+import {
+  ClosedQuestionStatus,
+  OpenQuestionStatus,
+  StatusInPriorityQueue,
+  StatusInQueue,
+} from '@koh/common';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Connection } from 'typeorm';
@@ -40,13 +45,17 @@ export class QueueCleanService {
   }
 
   private async unsafeClean(queueId: number): Promise<void> {
-    const questions = await QuestionModel.openInQueue(queueId).getMany();
+    const questions = await QuestionModel.inQueueWithStatus(
+      queueId,
+      Object.values(OpenQuestionStatus),
+    ).getMany();
     const openQuestions = questions.filter(
       (q) => q.status in OpenQuestionStatus,
     );
 
     openQuestions.forEach((q: QuestionModel) => {
       q.status = ClosedQuestionStatus.Stale;
+      q.closedAt = new Date();
     });
 
     await QuestionModel.save(openQuestions);

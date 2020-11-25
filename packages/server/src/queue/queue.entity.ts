@@ -83,11 +83,7 @@ export class QueueModel extends BaseEntity {
   queueSize: number;
 
   async addQueueSize(): Promise<void> {
-    this.queueSize = await QuestionModel.openInQueue(this.id)
-      .andWhere('question.status IN (:...openStatus)', {
-        openStatus: [OpenQuestionStatus.Drafting, OpenQuestionStatus.Queued],
-      })
-      .getCount();
+    this.queueSize = await QuestionModel.waitingInQueue(this.id).getCount();
   }
 
   public async addQueueTimes(): Promise<void> {

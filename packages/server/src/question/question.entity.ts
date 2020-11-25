@@ -1,9 +1,4 @@
-import {
-  OpenQuestionStatus,
-  QuestionStatus,
-  QuestionType,
-  Role,
-} from '@koh/common';
+import { QuestionStatus, QuestionType, Role, StatusInQueue } from '@koh/common';
 import { Exclude } from 'class-transformer';
 import {
   BaseEntity,
@@ -54,9 +49,16 @@ export class QuestionModel extends BaseEntity {
   @Column()
   createdAt: Date;
 
+  // When the question was first helped (doesn't overwrite)
+  @Column({ nullable: true })
+  @Exclude()
+  firstHelpedAt: Date;
+
+  // When the question was last helped (getting help again on priority queue overwrites)
   @Column({ nullable: true })
   helpedAt: Date;
 
+  // When the question leaves the queue
   @Column({ nullable: true })
   closedAt: Date;
 
@@ -89,12 +91,22 @@ export class QuestionModel extends BaseEntity {
   /**
    * Scopes
    */
-  static openInQueue(queueId: number): SelectQueryBuilder<QuestionModel> {
+  static inQueueWithStatus(
+    queueId: number,
+    statuses: QuestionStatus[],
+  ): SelectQueryBuilder<QuestionModel> {
     return this.createQueryBuilder('question')
       .where('question.queueId = :queueId', { queueId })
       .andWhere('question.status IN (:...statuses)', {
-        statuses: Object.values(OpenQuestionStatus),
+        statuses,
       })
       .orderBy('question.createdAt', 'ASC');
+  }
+
+  /**
+   * Questions that are open in the queue (not in priority queue)
+   */
+  static waitingInQueue(queueId: number): SelectQueryBuilder<QuestionModel> {
+    return QuestionModel.inQueueWithStatus(queueId, StatusInQueue);
   }
 }

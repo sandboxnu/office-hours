@@ -203,6 +203,11 @@ export class QuestionController {
       ) {
         question.taHelped = await UserModel.findOne(userId);
         question.helpedAt = new Date();
+
+        // Set firstHelpedAt if it hasn't already
+        if (!question.firstHelpedAt) {
+          question.firstHelpedAt = question.helpedAt;
+        }
         await this.notifService.notifyUser(
           question.creator.id,
           NotifMsgs.queue.TA_HIT_HELPED(question.taHelped.name),
