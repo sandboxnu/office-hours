@@ -10,7 +10,6 @@ import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../hooks/useProfile";
 import AvatarWithInitals from "../common/AvatarWithInitials";
-import { NotificationSettingsModal } from "./NotificationSettingsModal";
 
 const StyleablePopover = ({ className, ...props }: { className: string }) => (
   <Popover {...props} overlayClassName={className} />
@@ -27,16 +26,11 @@ const AvatarButton = styled.div`
 
 export default function Settings(): ReactElement {
   const profile = useProfile();
-  const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const loginPath = isProd() ? "/login" : "/dev";
 
   return (
     <>
-      <NotificationSettingsModal
-        visible={isNotifOpen}
-        onClose={() => setIsNotifOpen(false)}
-      />
       <NoPaddingPopover
         content={
           isPopoverOpen && (

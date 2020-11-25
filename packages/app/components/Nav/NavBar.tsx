@@ -1,14 +1,14 @@
-import styled from "styled-components";
-import React, { useState, ReactElement } from "react";
-import NavBarTabs, { NavBarTabsItem } from "./NavBarTabs";
-import { Drawer, Button, Menu, Dropdown } from "antd";
-import Link from "next/link";
-import Settings from ".//Settings";
-import { useRouter } from "next/router";
-import { useProfile } from "../../hooks/useProfile";
 import { DownOutlined } from "@ant-design/icons";
+import { Button, Drawer, Dropdown, Menu } from "antd";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import React, { ReactElement, useState } from "react";
+import styled from "styled-components";
 import { useCourse } from "../../hooks/useCourse";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { useProfile } from "../../hooks/useProfile";
+import Settings from ".//Settings";
+import NavBarTabs, { NavBarTabsItem } from "./NavBarTabs";
 
 const Nav = styled.nav`
   padding: 0px 0px;
