@@ -1,15 +1,16 @@
+import {
+  FileTextOutlined,
+  QuestionCircleOutlined,
+  SettingOutlined,
+} from "@ant-design/icons";
 import { isProd } from "@koh/common";
 import { Menu, Popover } from "antd";
+import Link from "next/link";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../hooks/useProfile";
 import AvatarWithInitals from "../common/AvatarWithInitials";
 import { NotificationSettingsModal } from "./NotificationSettingsModal";
-import {
-  SettingOutlined,
-  QuestionCircleOutlined,
-  FileTextOutlined,
-} from "@ant-design/icons";
 
 const StyleablePopover = ({ className, ...props }: { className: string }) => (
   <Popover {...props} overlayClassName={className} />
@@ -41,18 +42,14 @@ export default function Settings(): ReactElement {
           isPopoverOpen && (
             <Menu mode="inline">
               <Menu.ItemGroup title="Settings">
-                {/* Uncomment when we implement profile settings */}
-                {/* <Menu.Item icon={<UserOutlined />}>
-                Profile Settings
-              </Menu.Item> */}
                 <Menu.Item
-                  onClick={() => {
-                    setIsPopoverOpen(false);
-                    setIsNotifOpen(true);
-                  }}
-                  icon={<SettingOutlined />}
+                  icon={
+                    <SettingOutlined /> /* Food for thought, do we want to turn this into a profile outline or settings outline*/
+                  }
                 >
-                  Notification Settings
+                  <Link href={"/settings"} as={"/settings"}>
+                    <a>Settings</a>
+                  </Link>
                 </Menu.Item>
               </Menu.ItemGroup>
               <Menu.ItemGroup key="g1" title="External Pages">
