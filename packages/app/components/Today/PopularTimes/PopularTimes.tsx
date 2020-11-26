@@ -124,7 +124,7 @@ function generateBusyText(day: number, dailySumWaitTimes: number[]): string {
     dailySumWaitTimes.filter((v) => v >= 0).sort((a, b) => a - b)
   );
   const rank = uniqSumWaitTimes.indexOf(dayWaitTime);
-  return BUSY_TEXTS[uniqSumWaitTimes.length - 1][rank];
+  return BUSY_TEXTS[uniqSumWaitTimes.length][rank];
 }
 
 export default function PopularTimes({ heatmap }: HeatmapProps): ReactElement {
