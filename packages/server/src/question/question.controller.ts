@@ -206,7 +206,7 @@ export class QuestionController {
       if (!validTransition) {
         throw new UnauthorizedException(
           ERROR_MESSAGES.questionController.updateQuestion.fsmViolation(
-            'Teacher',
+            'TA',
             question.status,
             body.status,
           ),
