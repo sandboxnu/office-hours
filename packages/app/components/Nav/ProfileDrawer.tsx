@@ -24,7 +24,13 @@ const AvatarButton = styled.div`
   cursor: pointer;
 `;
 
-export default function Settings(): ReactElement {
+interface ProfileDrawerProps {
+  courseId: number;
+}
+
+export default function ProfileDrawer({
+  courseId,
+}: ProfileDrawerProps): ReactElement {
   const profile = useProfile();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const loginPath = isProd() ? "/login" : "/dev";
@@ -41,7 +47,9 @@ export default function Settings(): ReactElement {
                     <SettingOutlined /> /* Food for thought, do we want to turn this into a profile outline or settings outline*/
                   }
                 >
-                  <Link href={"/settings"} as={"/settings"}>
+                  <Link
+                    href={{ pathname: "/settings", query: { cid: courseId } }}
+                  >
                     <a>Settings</a>
                   </Link>
                 </Menu.Item>

@@ -20,17 +20,14 @@ export default function SettingsPage(): ReactElement {
 
   return (
     <Row>
-      <Col span={6} style={{ textAlign: "center" }}>
+      <Col span={4} style={{ textAlign: "center" }}>
         <AvatarWithInitals
           style={{ marginTop: "60px", marginBottom: "60px" }}
           name={profile?.name}
-          size={350}
-          fontSize={128}
+          size={250}
+          fontSize={96}
         />
-        <Menu
-          onClick={(e) => setCurrentSettings(Number(e.key))}
-          style={{ textAlign: "center" }}
-        >
+        <Menu onClick={(e) => setCurrentSettings(Number(e.key))}>
           <Menu.Item key={SettingsOptions.PROFILE} icon={<EditOutlined />}>
             Edit Profile
           </Menu.Item>
@@ -44,7 +41,7 @@ export default function SettingsPage(): ReactElement {
       </Col>
       <VerticalDivider />
       <Space direction="vertical" size={40} style={{ flexGrow: 1 }}>
-        <Col span={18}>
+        <Col span={20}>
           {currentSettings === SettingsOptions.PROFILE && <ProfileSettings />}
           {currentSettings === SettingsOptions.NOTIFICATIONS && (
             <NotificationsSettings />
