@@ -28,7 +28,6 @@ export default function NotificationsSettings(): ReactElement {
   const editProfile = async (updateProfile: UpdateProfileParams) => {
     const newProfile = { ...profile, ...updateProfile };
     mutate(newProfile, false);
-    console.log("ligma", newProfile, profile, updateProfile);
     await API.profile.patch(
       pick(newProfile, [
         "desktopNotifsEnabled",
@@ -37,13 +36,14 @@ export default function NotificationsSettings(): ReactElement {
       ])
     );
     mutate();
+    return newProfile;
   };
 
   const handleOk = async () => {
     const value = await form.validateFields();
     try {
-      await editProfile(value);
-      form.setFieldsValue(profile);
+      const newProfile = await editProfile(value);
+      form.setFieldsValue(newProfile);
     } catch (e) {
       if (
         e.response?.status === 400 &&

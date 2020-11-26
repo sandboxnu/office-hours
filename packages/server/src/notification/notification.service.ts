@@ -1,12 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import * as apm from 'elastic-apm-node';
 import { DeepPartial } from 'typeorm';
 import * as webPush from 'web-push';
 import { UserModel } from '../profile/user.entity';
 import { DesktopNotifModel } from './desktop-notif.entity';
 import { PhoneNotifModel } from './phone-notif.entity';
 import { TwilioService } from './twilio/twilio.service';
-import * as apm from 'elastic-apm-node';
 
 export const NotifMsgs = {
   phone: {
