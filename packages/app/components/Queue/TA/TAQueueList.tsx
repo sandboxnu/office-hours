@@ -12,7 +12,6 @@ import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { useQueue } from "../../../hooks/useQueue";
-import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
 import {
   QueueInfoColumn,
   QueueInfoColumnButton,
@@ -298,7 +297,6 @@ const NoQuestionsText = styled.div`
 `;
 
 function NotifReminderButton() {
-  const [isNotifOpen, setIsNotifOpen] = useState(false);
   const NotifRemindButton = styled(QueueInfoColumnButton)`
     margin-top: 16px;
     border-radius: 6px;
@@ -307,15 +305,9 @@ function NotifReminderButton() {
 
   return (
     <>
-      <NotifRemindButton onClick={(e) => setIsNotifOpen(true)}>
+      <NotifRemindButton href={"/settings"}>
         Sign Up for Notifications
       </NotifRemindButton>
-      {isNotifOpen && (
-        <NotificationSettingsModal
-          visible={isNotifOpen}
-          onClose={() => setIsNotifOpen(false)}
-        />
-      )}
     </>
   );
 }

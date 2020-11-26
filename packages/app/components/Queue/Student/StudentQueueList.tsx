@@ -15,7 +15,6 @@ import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { useQueue } from "../../../hooks/useQueue";
 import { useStudentQuestion } from "../../../hooks/useStudentQuestion";
-import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
 import {
   QueueInfoColumn,
   QueueInfoColumnButton,
@@ -294,10 +293,6 @@ export default function StudentQueueList({
           finishQuestion={finishQuestionAndClose}
           position={studentQuestionIndex + 1}
           cancel={closeEditModal}
-        />
-        <NotificationSettingsModal
-          visible={notifModalOpen}
-          onClose={() => setNotifModalOpen(false)}
         />
       </>
     );

@@ -19,11 +19,6 @@ const DeviceAddHeader = styled.div`
   justify-content: space-between;
 `;
 
-interface NotificationSettingsModalProps {
-  visible: boolean;
-  onClose: () => void;
-}
-
 export default function NotificationsSettings(): ReactElement {
   const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
     API.profile.index()
@@ -33,6 +28,7 @@ export default function NotificationsSettings(): ReactElement {
   const editProfile = async (updateProfile: UpdateProfileParams) => {
     const newProfile = { ...profile, ...updateProfile };
     mutate(newProfile, false);
+    console.log("ligma", newProfile, profile, updateProfile);
     await API.profile.patch(
       pick(newProfile, [
         "desktopNotifsEnabled",
@@ -69,16 +65,6 @@ export default function NotificationsSettings(): ReactElement {
             name="desktopNotifsEnabled"
             valuePropName="checked"
           >
-            <Tooltip title="How do notifications work?">
-              <QuestionCircleOutlined
-                style={{ float: "right", fontSize: "25px" }}
-                onClick={() =>
-                  window.open(
-                    "https://www.notion.so/593f9eb67eb04abbb8008c285ed5a8dd?v=b3d8ef6b3d2742f1985a6406e582601a"
-                  )
-                }
-              />
-            </Tooltip>
             <Switch />
           </Form.Item>
           <Form.Item shouldUpdate noStyle>
@@ -117,7 +103,16 @@ export default function NotificationsSettings(): ReactElement {
             }
           </Form.Item>
         </Form>
-
+        <Tooltip title="How do notifications work?">
+          <QuestionCircleOutlined
+            style={{ float: "right", fontSize: "25px" }}
+            onClick={() =>
+              window.open(
+                "https://www.notion.so/593f9eb67eb04abbb8008c285ed5a8dd?v=b3d8ef6b3d2742f1985a6406e582601a"
+              )
+            }
+          />
+        </Tooltip>
         <Button key="submit" type="primary" onClick={handleOk}>
           Ok
         </Button>
