@@ -260,6 +260,7 @@ export default function TAQueueList({
               isHelping={isHelping}
               onOpenCard={onOpenCard}
               title={<div>Queue</div>}
+              courseId={courseId}
             />
           </Space>
         </QueuePageContainer>

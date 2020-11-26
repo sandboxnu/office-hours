@@ -3,7 +3,9 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
 import NavBar from "../components/Nav/NavBar";
-import SettingsPage from "../components/Settings/SettingsPage";
+import SettingsPage, {
+  SettingsOptions,
+} from "../components/Settings/SettingsPage";
 
 export default function Settings(): ReactElement {
   const router = useRouter();
@@ -18,7 +20,7 @@ export default function Settings(): ReactElement {
       {/* TODO: think of something better, but current idea is to just have a back button that takes them back*/}
       <Container>
         <>
-          <SettingsPage defaultPage={defaultPage} />
+          <SettingsPage defaultPage={defaultPage as SettingsOptions} />
         </>
       </Container>
     </div>
