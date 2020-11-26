@@ -6,7 +6,7 @@ import {
   Question,
   QuestionStatus,
 } from "@koh/common";
-import { Col, Popconfirm, Row, Tooltip } from "antd";
+import { Col, Popconfirm, Row, Tooltip, message } from "antd";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
 import AvatarWithInitals from "../../common/AvatarWithInitials";
@@ -34,6 +34,10 @@ interface TABannerProps {
   helpingQuestion: Question;
   updateQuestion: (question: Question, status: QuestionStatus) => Promise<void>;
 }
+
+const PRORITY_QUEUED_MESSAGE_TEXT =
+  "This student has been temporarily removed from the queue. They must select to rejoin the queue and will then be placed in the Priority Queue.";
+
 export default function TABanner({
   helpingQuestion,
   updateQuestion,
@@ -81,6 +85,7 @@ export default function TABanner({
             okText="Yes"
             cancelText="No"
             onConfirm={async () => {
+              message.success(PRORITY_QUEUED_MESSAGE_TEXT, 2);
               await updateQuestion(
                 helpingQuestion,
                 LimboQuestionStatus.ReQueueing
@@ -99,6 +104,7 @@ export default function TABanner({
             okText="Yes"
             cancelText="No"
             onConfirm={async () => {
+              message.success(PRORITY_QUEUED_MESSAGE_TEXT, 2);
               await updateQuestion(
                 helpingQuestion,
                 LimboQuestionStatus.CantFind
