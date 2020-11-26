@@ -7,15 +7,21 @@ import { VerticalDivider } from "../Queue/QueueListSharedComponents";
 import NotificationsSettings from "./NotificationsSettings";
 import ProfileSettings from "./ProfileSettings";
 
-enum SettingsOptions {
-  PROFILE,
-  NOTIFICATIONS,
+export enum SettingsOptions {
+  PROFILE = "PROFILE",
+  NOTIFICATIONS = "NOTIFICATIONS",
 }
 
-export default function SettingsPage(): ReactElement {
+interface SettingsPageProps {
+  defaultPage: SettingsOptions;
+}
+
+export default function SettingsPage({
+  defaultPage,
+}: SettingsPageProps): ReactElement {
   const profile = useProfile();
   const [currentSettings, setCurrentSettings] = useState(
-    SettingsOptions.PROFILE
+    defaultPage || SettingsOptions.PROFILE
   );
 
   return (
@@ -27,7 +33,7 @@ export default function SettingsPage(): ReactElement {
           size={250}
           fontSize={96}
         />
-        <Menu onClick={(e) => setCurrentSettings(Number(e.key))}>
+        <Menu onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}>
           <Menu.Item key={SettingsOptions.PROFILE} icon={<EditOutlined />}>
             Edit Profile
           </Menu.Item>

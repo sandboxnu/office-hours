@@ -13,6 +13,7 @@ import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { useQueue } from "../../../hooks/useQueue";
+import { SettingsOptions } from "../../Settings/SettingsPage";
 import {
   QueueInfoColumn,
   QueueInfoColumnButton,
@@ -312,7 +313,12 @@ function NotifReminderButton({
 
   return (
     <>
-      <Link href={{ pathname: "/settings", query: { cid: courseId } }}>
+      <Link
+        href={{
+          pathname: "/settings",
+          query: { cid: courseId, defaultPage: SettingsOptions.NOTIFICATIONS },
+        }}
+      >
         <NotifRemindButton>Sign Up for Notifications</NotifRemindButton>
       </Link>
     </>
