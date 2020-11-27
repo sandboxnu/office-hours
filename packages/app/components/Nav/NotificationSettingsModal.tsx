@@ -1,3 +1,10 @@
+import { MinusCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { API } from "@koh/api-client";
+import {
+  DesktopNotifPartial,
+  ERROR_MESSAGES,
+  UpdateProfileParams,
+} from "@koh/common";
 import {
   Button,
   Form,
@@ -8,20 +15,17 @@ import {
   Switch,
   Tooltip,
 } from "antd";
-import useSWR from "swr";
-import { API } from "@koh/api-client";
-import { DesktopNotifPartial, UpdateProfileParams } from "@koh/common";
 import { pick } from "lodash";
 import { ReactElement, useEffect, useState } from "react";
+import styled from "styled-components";
+import useSWR from "swr";
 import {
-  requestNotificationPermission,
-  registerNotificationSubscription,
-  NotificationStates,
   getEndpoint,
   getNotificationState,
+  NotificationStates,
+  registerNotificationSubscription,
+  requestNotificationPermission,
 } from "../../utils/notification";
-import { MinusCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
-import styled from "styled-components";
 
 const DeviceAddHeader = styled.div`
   display: flex;
@@ -64,7 +68,8 @@ export function NotificationSettingsModal({
     } catch (e) {
       if (
         e.response?.status === 400 &&
-        e.response?.data?.message === "phone number invalid"
+        e.response?.data?.message ===
+          ERROR_MESSAGES.notificationService.registerPhone
       ) {
         form.setFields([
           { name: "phoneNumber", errors: ["Invalid phone number"] },

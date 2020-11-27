@@ -1,5 +1,6 @@
 import {
   ClosedQuestionStatus,
+  ERROR_MESSAGES,
   OpenQuestionStatus,
   QuestionStatusKeys,
   QuestionType,
@@ -12,7 +13,6 @@ import { QuestionModule } from '../src/question/question.module';
 import {
   ClosedOfficeHourFactory,
   CourseFactory,
-  OfficeHourFactory,
   QuestionFactory,
   QueueFactory,
   StudentCourseFactory,
@@ -185,7 +185,7 @@ describe('Question Integration', () => {
 
       expect(response.status).toBe(400);
       expect(response.body.message).toBe(
-        "You can't create more than one question at a time.",
+        ERROR_MESSAGES.questionController.createQuestion.oneQuestionAtATime,
       );
     });
     it('force a question when one is already open', async () => {

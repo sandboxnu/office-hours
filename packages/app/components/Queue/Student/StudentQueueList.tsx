@@ -1,6 +1,7 @@
 import { API } from "@koh/api-client";
 import {
   ClosedQuestionStatus,
+  ERROR_MESSAGES,
   LimboQuestionStatus,
   OpenQuestionStatus,
   Question,
@@ -180,7 +181,7 @@ export default function StudentQueueList({
       } catch (e) {
         if (
           e.response?.data?.message?.includes(
-            "You can't create more than one question at a time"
+            ERROR_MESSAGES.questionController.createQuestion.oneQuestionAtATime
           )
         ) {
           return false;
