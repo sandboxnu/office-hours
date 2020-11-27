@@ -32,6 +32,7 @@ export class QueueSSEService {
     if (questions) {
       this.sendToRoom(queueId, async ({ role, userId }) => ({
         questions: await this.queueService.personalizeQuestions(
+          queueId,
           questions,
           userId,
           role,

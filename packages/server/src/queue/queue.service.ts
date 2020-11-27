@@ -1,12 +1,14 @@
 import {
   ListQuestionsResponse,
   OpenQuestionStatus,
+  Question,
   Role,
   StatusInPriorityQueue,
   StatusInQueue,
   StatusSentToCreator,
 } from '@koh/common';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { classToClass, classToPlain } from 'class-transformer';
 import { pick } from 'lodash';
 import { QuestionModel } from 'question/question.entity';
 import { Connection, In } from 'typeorm';
@@ -42,17 +44,14 @@ export class QueueService {
       throw new NotFoundException();
     }
 
-    const questionsFromDb = await QuestionModel.find({
-      relations: ['creator', 'taHelped'],
-      where: {
-        queueId,
-        status: In([
-          ...StatusInPriorityQueue,
-          ...StatusInQueue,
-          OpenQuestionStatus.Helping,
-        ]),
-      },
-    });
+    const questionsFromDb = await QuestionModel.inQueueWithStatus(queueId, [
+      ...StatusInPriorityQueue,
+      ...StatusInQueue,
+      OpenQuestionStatus.Helping,
+    ])
+      .leftJoinAndSelect('question.creator', 'creator')
+      .leftJoinAndSelect('question.taHelped', 'taHelped')
+      .getMany();
 
     const questions = new ListQuestionsResponse();
 
@@ -73,6 +72,7 @@ export class QueueService {
 
   /** Hide sensitive data to other students */
   async personalizeQuestions(
+    queueId: number,
     questions: ListQuestionsResponse,
     userId: number,
     role: Role,
@@ -86,13 +86,17 @@ export class QueueService {
           question.creator.id === userId
             ? question.creator
             : pick(question.creator, ['id']);
-        return QuestionModel.create({ ...question, creator });
+        // classToClass transformer will apply the @Excludes
+        return classToClass<Question>(
+          QuestionModel.create({ ...question, creator }),
+        );
       });
 
       newLQR.yourQuestion = await QuestionModel.findOne({
         relations: ['creator', 'taHelped'],
         where: {
           creatorId: userId,
+          queueId: queueId,
           status: In(StatusSentToCreator),
         },
       });

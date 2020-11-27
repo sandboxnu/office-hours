@@ -1,6 +1,7 @@
 import { API } from "@koh/api-client";
 import {
   ClosedQuestionStatus,
+  ERROR_MESSAGES,
   LimboQuestionStatus,
   OpenQuestionStatus,
   Question,
@@ -70,21 +71,23 @@ export default function StudentQueueList({
   const [showJoinPopconfirm, setShowJoinPopconfirm] = useState(false);
   const { deleteDraftQuestion } = useDraftQuestion();
 
+  const studentQuestionId = studentQuestion?.id;
+  const studentQuestionStatus = studentQuestion?.status;
   const leaveQueue = useCallback(async () => {
-    await API.questions.update(studentQuestion?.id, {
+    await API.questions.update(studentQuestionId, {
       status: ClosedQuestionStatus.ConfirmedDeleted,
     });
 
     setIsJoining(false);
     await mutateQuestions();
-  }, [mutateQuestions, studentQuestion?.id]);
+  }, [mutateQuestions, studentQuestionId]);
 
   const rejoinQueue = useCallback(async () => {
-    await API.questions.update(studentQuestion?.id, {
+    await API.questions.update(studentQuestionId, {
       status: OpenQuestionStatus.PriorityQueued,
     });
     await mutateQuestions();
-  }, [mutateQuestions, studentQuestion?.id]);
+  }, [mutateQuestions, studentQuestionId]);
 
   const finishQuestion = useCallback(
     async (text: string, questionType: QuestionType) => {
@@ -92,18 +95,18 @@ export default function StudentQueueList({
         text,
         questionType,
         status:
-          studentQuestion.status === OpenQuestionStatus.PriorityQueued
+          studentQuestionStatus === OpenQuestionStatus.PriorityQueued
             ? OpenQuestionStatus.PriorityQueued
             : OpenQuestionStatus.Queued,
       };
 
       const updatedQuestionFromStudent = await API.questions.update(
-        studentQuestion?.id,
+        studentQuestionId,
         updateStudent
       );
 
       const newQuestionsInQueue = questions?.queue?.map((question: Question) =>
-        question.id === studentQuestion?.id
+        question.id === studentQuestionId
           ? updatedQuestionFromStudent
           : question
       );
@@ -115,7 +118,7 @@ export default function StudentQueueList({
         queue: newQuestionsInQueue,
       });
     },
-    [studentQuestion?.id, questions, mutateQuestions]
+    [studentQuestionStatus, studentQuestionId, questions, mutateQuestions]
   );
 
   const joinQueueAfterDeletion = useCallback(async () => {
@@ -178,7 +181,7 @@ export default function StudentQueueList({
       } catch (e) {
         if (
           e.response?.data?.message?.includes(
-            "You can't create more than one question at a time"
+            ERROR_MESSAGES.questionController.createQuestion.oneQuestionAtATime
           )
         ) {
           return false;

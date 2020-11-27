@@ -83,6 +83,7 @@ interface StudentPopupCardProps {
   visible: boolean;
   question: Question;
   isStaffCheckedIn: boolean;
+  isHelping: boolean;
 }
 
 const StudentPopupCard = ({
@@ -91,6 +92,7 @@ const StudentPopupCard = ({
   question,
   visible,
   isStaffCheckedIn,
+  isHelping,
 }: StudentPopupCardProps): ReactElement => {
   return (
     <Drawer
@@ -126,7 +128,11 @@ const StudentPopupCard = ({
             </Popconfirm>
           </Tooltip>
           <Tooltip
-            title={!isStaffCheckedIn && "You must check in to help students!"}
+            title={
+              !isStaffCheckedIn
+                ? "You must check in to help students!"
+                : isHelping && "You are already helping a student"
+            }
           >
             <Button
               block
@@ -139,7 +145,9 @@ const StudentPopupCard = ({
                   );
                 }
               }}
-              disabled={!isStaffCheckedIn || question.status === "Drafting"}
+              disabled={
+                !isStaffCheckedIn || question.status === "Drafting" || isHelping
+              }
               data-cy="help-student"
             >
               Help

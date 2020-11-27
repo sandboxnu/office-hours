@@ -1,6 +1,7 @@
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import {
+  ERROR_MESSAGES,
   OpenQuestionStatus,
   Question,
   QuestionStatus,
@@ -135,7 +136,7 @@ export default function TAQueueList({
       if (
         e.response?.status === 401 &&
         e.response?.data?.message ===
-          "Another TA is currently helping with this question"
+          ERROR_MESSAGES.questionController.updateQuestion.otherTAHelping
       ) {
         notification.open({
           message: "Another TA is currently helping the student",
@@ -247,6 +248,7 @@ export default function TAQueueList({
             visible={openPopup}
             updateQuestion={updateQuestionTA}
             isStaffCheckedIn={isStaffCheckedIn}
+            isHelping={isHelping}
           />
         )}
         <EditQueueModal
@@ -356,7 +358,7 @@ function QueueQuestions({
           key={question.id}
           rank={index + 1}
           question={question}
-          onOpen={(q) => !isHelping && onOpenCard(q)}
+          onOpen={(q) => onOpenCard(q)}
         />
       ))}
     </div>

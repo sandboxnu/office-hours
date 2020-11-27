@@ -16,6 +16,7 @@ import {
 } from '@koh/common';
 import async from 'async';
 import { Connection, getRepository, MoreThanOrEqual } from 'typeorm';
+import { EventModel, EventType } from 'profile/event-model.entity';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { Roles } from '../profile/roles.decorator';
 import { User } from '../profile/user.decorator';
@@ -27,6 +28,7 @@ import { CourseModel } from './course.entity';
 import { OfficeHourModel } from './office-hour.entity';
 import { QueueSSEService } from '../queue/queue-sse.service';
 import moment = require('moment');
+
 @Controller('courses')
 @UseGuards(JwtAuthGuard, CourseRolesGuard)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -96,6 +98,13 @@ export class CourseController {
     queue.staffList.push(user);
     await queue.save();
 
+    await EventModel.create({
+      time: new Date(),
+      eventType: EventType.TA_CHECKED_IN,
+      user,
+      courseId,
+    }).save();
+
     await this.queueSSEService.updateQueue(queue.id);
     return queue;
   }
@@ -119,6 +128,13 @@ export class CourseController {
       queue.allowQuestions = false;
     }
     await queue.save();
+
+    await EventModel.create({
+      time: new Date(),
+      eventType: EventType.TA_CHECKED_OUT,
+      user,
+      courseId,
+    }).save();
 
     const canClearQueue = await this.queueCleanService.shouldCleanQueue(queue);
     let nextOfficeHourTime = null;

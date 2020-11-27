@@ -46,12 +46,12 @@ export class QuestionSubscriber
       event.entity.status in ClosedQuestionStatus
     ) {
       // get 3rd in queue before and after this update
-      const previousThird = await QuestionModel.openInQueue(
+      const previousThird = await QuestionModel.waitingInQueue(
         event.entity.queueId,
       )
         .offset(2)
         .getOne();
-      const third = await QuestionModel.openInQueue(event.entity.queueId)
+      const third = await QuestionModel.waitingInQueue(event.entity.queueId)
         .setQueryRunner(event.queryRunner) // Run in same transaction as the update
         .offset(2)
         .getOne();
@@ -63,13 +63,9 @@ export class QuestionSubscriber
   }
 
   async afterInsert(event: InsertEvent<QuestionModel>): Promise<void> {
-    const numberOfQuestions = await QuestionModel.openInQueue(
+    const numberOfQuestions = await QuestionModel.waitingInQueue(
       event.entity.queueId,
-    )
-      .andWhere('question.status IN (:...openStatus)', {
-        openStatus: [OpenQuestionStatus.Drafting, OpenQuestionStatus.Queued],
-      })
-      .getCount();
+    ).getCount();
 
     if (numberOfQuestions === 0) {
       const staff = (
