@@ -2,6 +2,7 @@ import {
   ClosedQuestionStatus,
   CreateQuestionParams,
   CreateQuestionResponse,
+  ERROR_MESSAGES,
   GetQuestionResponse,
   LimboQuestionStatus,
   OpenQuestionStatus,
@@ -75,14 +76,20 @@ export class QuestionController {
     });
 
     if (!queue) {
-      throw new NotFoundException('Posted to an invalid queue');
+      throw new NotFoundException(
+        ERROR_MESSAGES.questionController.createQuestion.invalidQueue,
+      );
     }
 
     if (!queue.allowQuestions) {
-      throw new BadRequestException('Queue not allowing new questions');
+      throw new BadRequestException(
+        ERROR_MESSAGES.questionController.createQuestion.noNewQuestions,
+      );
     }
     if (!(await queue.checkIsOpen())) {
-      throw new BadRequestException('Queue is closed');
+      throw new BadRequestException(
+        ERROR_MESSAGES.questionController.createQuestion.closedQueue,
+      );
     }
 
     const previousUserQuestion = await QuestionModel.findOne({
@@ -98,7 +105,7 @@ export class QuestionController {
         await previousUserQuestion.save();
       } else {
         throw new BadRequestException(
-          "You can't create more than one question at a time.",
+          ERROR_MESSAGES.questionController.createQuestion.oneQuestionAtATime,
         );
       }
     }
@@ -138,7 +145,11 @@ export class QuestionController {
       // Fail if student tries an invalid status change
       if (body.status && !question.changeStatus(body.status, Role.STUDENT)) {
         throw new UnauthorizedException(
-          `Student cannot change status from ${question.status} to ${body.status}`,
+          ERROR_MESSAGES.questionController.updateQuestion.fsmViolation(
+            'Student',
+            question.status,
+            body.status,
+          ),
         );
       }
       question = Object.assign(question, body);
@@ -159,7 +170,7 @@ export class QuestionController {
     if (isTaOrProf) {
       if (Object.keys(body).length !== 1 || Object.keys(body)[0] !== 'status') {
         throw new UnauthorizedException(
-          'TA/Professors can only edit question status',
+          ERROR_MESSAGES.questionController.updateQuestion.taOnlyEditQuestionStatus,
         );
       }
       const oldStatus = question.status;
@@ -168,12 +179,12 @@ export class QuestionController {
       if (question.taHelped?.id !== userId) {
         if (oldStatus === OpenQuestionStatus.Helping) {
           throw new UnauthorizedException(
-            'Another TA is currently helping with this question',
+            ERROR_MESSAGES.questionController.updateQuestion.otherTAHelping,
           );
         }
         if (oldStatus === ClosedQuestionStatus.Resolved) {
           throw new UnauthorizedException(
-            'Another TA has already resolved this question',
+            ERROR_MESSAGES.questionController.updateQuestion.otherTAResolved,
           );
         }
       }
@@ -186,13 +197,19 @@ export class QuestionController {
           },
         })) === 1;
       if (isAlreadyHelpingOne && newStatus === OpenQuestionStatus.Helping) {
-        throw new BadRequestException('TA is already helping someone else');
+        throw new BadRequestException(
+          ERROR_MESSAGES.questionController.updateQuestion.taHelpingOther,
+        );
       }
 
       const validTransition = question.changeStatus(newStatus, Role.TA);
       if (!validTransition) {
         throw new UnauthorizedException(
-          `TA cannot change status from ${question.status} to ${body.status}`,
+          ERROR_MESSAGES.questionController.updateQuestion.fsmViolation(
+            'TA',
+            question.status,
+            body.status,
+          ),
         );
       }
 
@@ -217,7 +234,7 @@ export class QuestionController {
       return question;
     } else {
       throw new UnauthorizedException(
-        'Logged-in user does not have edit access',
+        ERROR_MESSAGES.questionController.updateQuestion.loginUserCantEdit,
       );
     }
   }

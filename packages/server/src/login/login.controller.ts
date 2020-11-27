@@ -1,8 +1,15 @@
 import {
+  ERROR_MESSAGES,
+  KhouryDataParams,
+  KhouryRedirectResponse,
+  KhouryStudentCourse,
+  KhouryTACourse,
+  Role,
+} from '@koh/common';
+import {
   Body,
   Controller,
   Get,
-  NotFoundException,
   Post,
   Query,
   Req,
@@ -12,13 +19,6 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import {
-  KhouryDataParams,
-  KhouryRedirectResponse,
-  KhouryStudentCourse,
-  KhouryTACourse,
-  Role,
-} from '@koh/common';
 import { Request, Response } from 'express';
 import * as httpSignature from 'http-signature';
 import { Connection } from 'typeorm';
@@ -50,7 +50,9 @@ export class LoginController {
         this.configService.get('KHOURY_PRIVATE_KEY'),
       );
       if (!verify) {
-        throw new UnauthorizedException('Invalid request signature');
+        throw new UnauthorizedException(
+          ERROR_MESSAGES.loginController.receiveDataFromKhoury,
+        );
       }
     }
 

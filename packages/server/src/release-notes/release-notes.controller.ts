@@ -1,13 +1,13 @@
+import { ERROR_MESSAGES, GetReleaseNotesResponse } from '@koh/common';
 import {
   Controller,
-  UseGuards,
   Get,
-  InternalServerErrorException,
   HttpService,
+  InternalServerErrorException,
+  UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'login/jwt-auth.guard';
 import { Connection } from 'typeorm';
-import { GetReleaseNotesResponse } from '@koh/common';
 
 @Controller('release_notes')
 @UseGuards(JwtAuthGuard)
@@ -36,7 +36,7 @@ export class ReleaseNotesController {
       response.lastUpdatedUnixTime = timeText.split('Unix ')[1] * 1000;
     } catch (e) {
       throw new InternalServerErrorException(
-        'Error Parsing release notes time: ' + e,
+        ERROR_MESSAGES.releaseNotesController.releaseNotesTime(e),
       );
     }
     // Remove the time block and page link block from page
