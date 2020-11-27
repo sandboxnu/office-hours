@@ -57,7 +57,7 @@ interface StudentQueueListProps {
   qid: number;
 }
 
-export default function StudentQueueList({
+export default function StudentQueue({
   qid,
 }: StudentQueueListProps): ReactElement {
   const { queue, mutateQueue } = useQueue(qid);

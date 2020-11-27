@@ -22,8 +22,8 @@ import {
 } from "../QueueListSharedComponents";
 import { EditQueueModal } from "./EditQueueModal";
 import StudentPopupCard from "./StudentPopupCard";
-import TABanner from "./TABanner";
-import TAQueueCard from "./TAQueueCard";
+import TABanner from "./old/TABanner";
+import TAQueueCard from "./old/TAQueueCard";
 
 const StatusText = styled.div`
   font-size: 14px;
@@ -91,7 +91,7 @@ interface TAQueueListProps {
   courseId: number;
 }
 
-export default function TAQueueList({
+export default function TAQueue({
   qid,
   courseId,
 }: TAQueueListProps): ReactElement {
