@@ -238,4 +238,48 @@ export interface GetReleaseNotesResponse {
     releaseNotes: unknown;
     lastUpdatedUnixTime: number;
 }
+export declare const ERROR_MESSAGES: {
+    questionController: {
+        createQuestion: {
+            invalidQueue: string;
+            noNewQuestions: string;
+            closedQueue: string;
+            oneQuestionAtATime: string;
+        };
+        updateQuestion: {
+            fsmViolation: (role: string, questionStatus: string, bodyStatus: string) => string;
+            taOnlyEditQuestionStatus: string;
+            otherTAHelping: string;
+            otherTAResolved: string;
+            taHelpingOther: string;
+            loginUserCantEdit: string;
+        };
+    };
+    loginController: {
+        receiveDataFromKhoury: string;
+    };
+    notificationController: {
+        messageNotFromTwilio: string;
+    };
+    notificationService: {
+        registerPhone: string;
+    };
+    questionRoleGuard: {
+        questionNotFound: string;
+        queueOfQuestionNotFound: string;
+        queueDoesNotExist: string;
+    };
+    queueRoleGuard: {
+        queueNotFound: string;
+    };
+    releaseNotesController: {
+        releaseNotesTime: (e: any) => string;
+    };
+    roleGuard: {
+        notLoggedIn: string;
+        noCourseIdFound: string;
+        notInCourse: string;
+        mustBeRoleToJoinCourse: (roles: string[]) => string;
+    };
+};
 export {};

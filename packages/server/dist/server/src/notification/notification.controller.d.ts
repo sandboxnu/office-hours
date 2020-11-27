@@ -1,5 +1,5 @@
-import { ConfigService } from '@nestjs/config';
 import { DesktopNotifBody, DesktopNotifPartial, TwilioBody } from '@koh/common';
+import { ConfigService } from '@nestjs/config';
 import { NotificationService } from './notification.service';
 export declare class NotificationController {
     private notifService;

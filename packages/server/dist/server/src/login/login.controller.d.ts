@@ -1,6 +1,6 @@
+import { KhouryDataParams, KhouryRedirectResponse } from '@koh/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { KhouryDataParams, KhouryRedirectResponse } from '@koh/common';
 import { Request, Response } from 'express';
 import { Connection } from 'typeorm';
 import { LoginCourseService } from './login-course.service';
