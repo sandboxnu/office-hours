@@ -41,45 +41,41 @@ export default function ProfileDrawer({
         content={
           isPopoverOpen && (
             <Menu mode="inline">
-              <Menu.ItemGroup title="Settings">
-                <Menu.Item
-                  icon={
-                    <SettingOutlined /> /* Food for thought, do we want to turn this into a profile outline or settings outline*/
-                  }
+              <Menu.Item
+                icon={
+                  <SettingOutlined /> /* Food for thought, do we want to turn this into a profile outline or settings outline*/
+                }
+              >
+                <Link
+                  href={{ pathname: "/settings", query: { cid: courseId } }}
                 >
-                  <Link
-                    href={{ pathname: "/settings", query: { cid: courseId } }}
-                  >
-                    <a>Settings</a>
-                  </Link>
-                </Menu.Item>
-              </Menu.ItemGroup>
-              <Menu.ItemGroup key="g1" title="External Pages">
-                <Menu.Item
-                  key="1"
-                  icon={<QuestionCircleOutlined />}
-                  onClick={() => {
-                    window.open(
-                      "https://www.notion.so/Office-Hours-Help-Guide-a89c73dd53204cc3970ac44d61917417"
-                    );
-                    setIsPopoverOpen(false);
-                  }}
-                >
-                  Help Guide
-                </Menu.Item>
-                <Menu.Item
-                  key="2"
-                  icon={<FileTextOutlined />}
-                  onClick={() => {
-                    window.open(
-                      "https://www.notion.so/Release-Notes-Archive-9a1a0eab073a463096fc3699bf48219c"
-                    );
-                    setIsPopoverOpen(false);
-                  }}
-                >
-                  Release Notes
-                </Menu.Item>
-              </Menu.ItemGroup>
+                  <a>Settings</a>
+                </Link>
+              </Menu.Item>
+              <Menu.Item
+                key="1"
+                icon={<QuestionCircleOutlined />}
+                onClick={() => {
+                  window.open(
+                    "https://www.notion.so/Office-Hours-Help-Guide-a89c73dd53204cc3970ac44d61917417"
+                  );
+                  setIsPopoverOpen(false);
+                }}
+              >
+                Help Guide
+              </Menu.Item>
+              <Menu.Item
+                key="2"
+                icon={<FileTextOutlined />}
+                onClick={() => {
+                  window.open(
+                    "https://www.notion.so/Release-Notes-Archive-9a1a0eab073a463096fc3699bf48219c"
+                  );
+                  setIsPopoverOpen(false);
+                }}
+              >
+                Release Notes
+              </Menu.Item>
               {/* 
               TODO: Add this back when we add logout endpoint
               <Menu.Item>
