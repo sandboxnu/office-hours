@@ -200,6 +200,7 @@ export default function TAQueueList({
                   <TACheckinButton
                     courseId={courseId}
                     room={queue?.room}
+                    disabled={isHelping}
                     state={isStaffCheckedIn ? "CheckedIn" : "CheckedOut"}
                     block
                   />

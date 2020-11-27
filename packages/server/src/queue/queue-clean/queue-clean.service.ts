@@ -3,13 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { OfficeHourModel } from 'course/office-hour.entity';
 import moment = require('moment');
-import {
-  Between,
-  Connection,
-  LessThanOrEqual,
-  MoreThan,
-  MoreThanOrEqual,
-} from 'typeorm';
+import { Connection, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { QuestionModel } from '../../question/question.entity';
 import { QueueModel } from '../queue.entity';
 

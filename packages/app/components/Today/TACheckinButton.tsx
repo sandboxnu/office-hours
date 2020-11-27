@@ -1,12 +1,10 @@
 import { API } from "@koh/api-client";
-import { TACheckoutResponse } from "@koh/common";
-import { Button, Modal, Space } from "antd";
+import { Button, Modal } from "antd";
 import moment from "moment";
 import { useRouter } from "next/router";
 import { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useCourse } from "../../hooks/useCourse";
-import { useQueue } from "../../hooks/useQueue";
 
 const CheckinButton = styled(Button)`
   background: #2a9187;
@@ -37,6 +35,7 @@ interface TACheckinButtonProps {
   courseId: number;
   room: string; // name of room to check into
   state: CheckInButtonState; // State of the button
+  disabled: boolean;
   block?: boolean;
 }
 const EMPTY_CHECKOUT_INFO = { canClearQueue: false, nextOfficeHourTime: null };
@@ -45,6 +44,7 @@ export default function TACheckinButton({
   courseId,
   room,
   state,
+  disabled = false,
   block = false,
 }: TACheckinButtonProps): ReactElement {
   const router = useRouter();
@@ -75,6 +75,7 @@ export default function TACheckinButton({
         <CheckOutButton
           type="default"
           size="large"
+          disabled={disabled}
           block={block}
           data-cy="check-out-button"
           onClick={async () => {
@@ -96,7 +97,7 @@ export default function TACheckinButton({
           size="large"
           block={block}
           onClick={() => checkInTA()}
-          disabled={!course}
+          disabled={disabled || !course}
           data-cy="check-in-button"
         >
           Check In

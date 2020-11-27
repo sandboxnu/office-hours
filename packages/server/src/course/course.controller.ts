@@ -15,7 +15,7 @@ import {
   TACheckoutResponse,
 } from '@koh/common';
 import async from 'async';
-import { Between, Connection, getRepository, MoreThanOrEqual } from 'typeorm';
+import { Connection, getRepository, MoreThanOrEqual } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { Roles } from '../profile/roles.decorator';
 import { User } from '../profile/user.decorator';
@@ -27,8 +27,6 @@ import { CourseModel } from './course.entity';
 import { OfficeHourModel } from './office-hour.entity';
 import { QueueSSEService } from '../queue/queue-sse.service';
 import moment = require('moment');
-import { QuestionModel } from 'question/question.entity';
-
 @Controller('courses')
 @UseGuards(JwtAuthGuard, CourseRolesGuard)
 @UseInterceptors(ClassSerializerInterceptor)
