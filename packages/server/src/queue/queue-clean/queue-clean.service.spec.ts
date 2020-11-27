@@ -1,6 +1,5 @@
 import { OpenQuestionStatus } from '@koh/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { OfficeHourModel } from 'course/office-hour.entity';
 import moment = require('moment');
 import { Connection } from 'typeorm';
 import {

@@ -1,9 +1,4 @@
-import {
-  ClosedQuestionStatus,
-  OpenQuestionStatus,
-  StatusInPriorityQueue,
-  StatusInQueue,
-} from '@koh/common';
+import { ClosedQuestionStatus, OpenQuestionStatus } from '@koh/common';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { OfficeHourModel } from 'course/office-hour.entity';
@@ -52,7 +47,10 @@ export class QueueCleanService {
     if (queue.staffList.length === 0) {
       // Last TA to checkout, so check if we might want to clear the queue
       const areAnyQuestionsOpen =
-        (await QuestionModel.openInQueue(queue.id).getCount()) > 0;
+        (await QuestionModel.inQueueWithStatus(
+          queue.id,
+          Object.values(OpenQuestionStatus),
+        ).getCount()) > 0;
       if (areAnyQuestionsOpen) {
         const soon = moment().add(15, 'minutes').toDate();
         const areOfficeHourSoon =
