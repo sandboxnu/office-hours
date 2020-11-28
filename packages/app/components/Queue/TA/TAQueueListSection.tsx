@@ -1,26 +1,29 @@
-import { DownOutlined } from "@ant-design/icons";
 import { Question } from "@koh/common";
-import { ReactElement } from "react";
+import { Collapse } from "antd";
+import React, { ReactElement } from "react";
 import styled from "styled-components";
 import TAQueueListItem from "./TAQueueListItem";
 
-const Container = styled.div``;
-
-const SectionHeaderRow = styled.div`
-  padding-left: 40px;
-  padding-right: 12px;
-  height: 55px;
-  border-bottom: 1px solid #cfd6de;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+const OverrideCollapse = styled.div`
+  & .ant-collapse-header {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    border-bottom: 1px solid #cfd6de;
+  }
+  // Prevent the not-allowed cursor which is hella agressive
+  & .ant-collapse-item-disabled > .ant-collapse-header {
+    cursor: initial !important;
+  }
+  & .ant-collapse-content-box {
+    padding: 0 !important;
+  }
 `;
+
 const Title = styled.div`
   font-size: 16px;
   color: #212934;
+  margin-left: 40px;
 `;
-
 /**
  * A single section of the list. ie. WaitingInLine
  */
@@ -41,19 +44,27 @@ export default function TAQueueListSection({
     return null;
   }
   return (
-    <Container>
-      <SectionHeaderRow>
-        <Title>{`${title} (${questions.length})`}</Title>
-        <DownOutlined />
-      </SectionHeaderRow>
-      {questions.map((q, i) => (
-        <TAQueueListItem
-          key={q.id}
-          question={q}
-          placeInLine={showNumbers && i}
-          onClick={() => onClickQuestion(q)}
-        />
-      ))}
-    </Container>
+    <OverrideCollapse>
+      <Collapse defaultActiveKey={[title]} ghost expandIconPosition="right">
+        <Collapse.Panel
+          style={{ padding: 0 }}
+          key={title}
+          header={<Title>{`${title} (${questions.length})`}</Title>}
+          showArrow={collapsible}
+          disabled={!collapsible}
+        >
+          <div>
+            {questions.map((q, i) => (
+              <TAQueueListItem
+                key={q.id}
+                question={q}
+                placeInLine={showNumbers && i}
+                onClick={() => onClickQuestion(q)}
+              />
+            ))}
+          </div>
+        </Collapse.Panel>
+      </Collapse>
+    </OverrideCollapse>
   );
 }
