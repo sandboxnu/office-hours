@@ -1,7 +1,7 @@
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import { Question, QuestionStatusKeys } from "@koh/common";
-import { Card, Col, Row, Tooltip } from "antd";
+import { Button, Card, Col, Row, Tooltip } from "antd";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
@@ -90,12 +90,21 @@ const PriorityQueueQuestionBubble = styled(QuestionCircleOutlined)`
   margin-left: 20px;
 `;
 
+const EmptyQueueInfo = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+`;
+
 interface TAQueueProps {
   qid: number;
   courseId: number;
 }
 
 export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
+  const user = useProfile();
   const { queue, mutateQueue } = useQueue(qid);
 
   const { questions, mutateQuestions } = useQuestions(qid);
@@ -200,7 +209,21 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
               title={<div>Queue</div>}
             />
           </Space> */}
-          <TAQueueListDetail queueId={qid} />
+          {user &&
+            questions &&
+            (isHelping ||
+            questions.priorityQueue.length + questions.queue.length > 0 ? (
+              <TAQueueListDetail queueId={qid} />
+            ) : (
+              <EmptyQueueInfo>
+                <NoQuestionsText>
+                  There are no questions in the queue
+                </NoQuestionsText>
+                {!isHelping &&
+                  !user.phoneNotifsEnabled &&
+                  !user.desktopNotifsEnabled && <NotifReminderButton />}
+              </EmptyQueueInfo>
+            ))}
         </Container>
         <EditQueueModal
           queueId={qid}
@@ -227,14 +250,14 @@ const NoQuestionsText = styled.div`
   color: #212934;
 `;
 
+const NotifRemindButton = styled(Button)`
+  margin-top: 16px;
+  border-radius: 6px;
+  background: #fff;
+`;
+
 function NotifReminderButton() {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
-  const NotifRemindButton = styled(QueueInfoColumnButton)`
-    margin-top: 16px;
-    border-radius: 6px;
-    background: #fff;
-  `;
-
   return (
     <>
       <NotifRemindButton onClick={(e) => setIsNotifOpen(true)}>
