@@ -1,6 +1,10 @@
 import { MinusCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
-import { DesktopNotifPartial, UpdateProfileParams } from "@koh/common";
+import {
+  DesktopNotifPartial,
+  ERROR_MESSAGES,
+  UpdateProfileParams,
+} from "@koh/common";
 import { Button, Form, Input, List, message, Switch, Tooltip } from "antd";
 import { pick } from "lodash";
 import React, { ReactElement, useEffect, useState } from "react";
@@ -47,7 +51,8 @@ export default function NotificationsSettings(): ReactElement {
     } catch (e) {
       if (
         e.response?.status === 400 &&
-        e.response?.data?.message === "phone number invalid"
+        e.response?.data?.message ===
+          ERROR_MESSAGES.notificationService.registerPhone
       ) {
         form.setFields([
           { name: "phoneNumber", errors: ["Invalid phone number"] },

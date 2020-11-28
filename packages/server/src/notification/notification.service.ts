@@ -1,3 +1,4 @@
+import { ERROR_MESSAGES } from '@koh/common';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as apm from 'elastic-apm-node';
@@ -69,7 +70,9 @@ export class NotificationService {
   async registerPhone(phoneNumber: string, user: UserModel): Promise<void> {
     const fullNumber = await this.twilioService.getFullPhoneNumber(phoneNumber);
     if (!fullNumber) {
-      throw new BadRequestException('phone number invalid');
+      throw new BadRequestException(
+        ERROR_MESSAGES.notificationService.registerPhone,
+      );
     }
 
     let phoneNotifModel = await PhoneNotifModel.findOne({
