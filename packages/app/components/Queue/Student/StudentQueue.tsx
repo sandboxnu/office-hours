@@ -20,7 +20,6 @@ import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
 import {
   QueueInfoColumn,
   QueueInfoColumnButton,
-  QueuePageContainer,
   VerticalDivider,
 } from "../QueueListSharedComponents";
 import QuestionForm from "./QuestionForm";
@@ -28,6 +27,25 @@ import StudentBanner from "./StudentBanner";
 import CantFindModal from "./StudentCantFindModal";
 import StudentQueueCard from "./StudentQueueCard";
 import StudentRemovedFromQueueModal from "./StudentRemovedFromQueueModal";
+
+const Container = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin: 10px 24px 0 24px;
+  @media (min-width: 768px) {
+    flex-direction: row;
+    margin: 0;
+    height: 100%;
+  }
+`;
+
+const QueueListContainer = styled.div`
+  flex-grow: 1;
+  @media (min-width: 767px) {
+    margin: 32px 64px 0 32px;
+  }
+`;
 
 const JoinButton = styled(QueueInfoColumnButton)`
   background-color: #3684c6;
@@ -230,7 +248,7 @@ export default function StudentQueue({
     }
     return (
       <>
-        <QueuePageContainer>
+        <Container>
           <CantFindModal
             visible={studentQuestion?.status === LimboQuestionStatus.CantFind}
             leaveQueue={leaveQueue}
@@ -269,7 +287,7 @@ export default function StudentQueue({
             }
           />
           <VerticalDivider />
-          <Space direction="vertical" size={40} style={{ flexGrow: 1 }}>
+          <QueueListContainer>
             {studentQuestion && (
               <StudentBanner
                 queueId={qid}
@@ -277,12 +295,13 @@ export default function StudentQueue({
                 leaveQueue={leaveQueue}
               />
             )}
+            <div style={{ marginTop: "40px" }} />
             <QueueQuestions
               questions={questions?.queue}
               studentQuestion={studentQuestion}
             />
-          </Space>
-        </QueuePageContainer>
+          </QueueListContainer>
+        </Container>
 
         <QuestionForm
           visible={

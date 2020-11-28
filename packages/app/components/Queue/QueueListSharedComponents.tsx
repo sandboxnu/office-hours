@@ -14,18 +14,9 @@ import { TAStatuses } from "./TAStatuses";
 import { Button, Tooltip, Badge } from "antd";
 import { ButtonProps } from "antd/lib/button";
 
-export const QueuePageContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  @media (min-width: 767px) {
-    flex-direction: row;
-  }
-`;
-
 export const VerticalDivider = styled.div`
   @media (min-width: 767px) {
     border-right: 1px solid #cfd6de;
-    margin: 0 32px;
   }
 `;
 
@@ -52,6 +43,7 @@ const InfoColumnContainer = styled.div`
   flex-shrink: 0;
   padding-bottom: 30px;
   @media (min-width: 767px) {
+    margin: 32px 32px 0 64px;
     width: 300px;
   }
 `;

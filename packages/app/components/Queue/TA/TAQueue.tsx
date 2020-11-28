@@ -1,14 +1,8 @@
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
-import {
-  ERROR_MESSAGES,
-  OpenQuestionStatus,
-  Question,
-  QuestionStatus,
-  QuestionStatusKeys,
-} from "@koh/common";
-import { Card, Col, notification, Row, Space, Tooltip } from "antd";
-import React, { ReactElement, useCallback, useState } from "react";
+import { Question, QuestionStatusKeys } from "@koh/common";
+import { Card, Col, Row, Tooltip } from "antd";
+import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
@@ -17,13 +11,21 @@ import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
 import {
   QueueInfoColumn,
   QueueInfoColumnButton,
-  QueuePageContainer,
   VerticalDivider,
 } from "../QueueListSharedComponents";
 import { EditQueueModal } from "./EditQueueModal";
-import StudentPopupCard from "./StudentPopupCard";
-import TABanner from "./old/TABanner";
 import TAQueueCard from "./old/TAQueueCard";
+import onHelpQuestion from "./onHelpQuestion";
+import TAQueueListDetail from "./TAQueueListDetail";
+
+const Container = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
+`;
 
 const StatusText = styled.div`
   font-size: 14px;
@@ -99,69 +101,13 @@ export default function TAQueue({
 
   const { queue, mutateQueue } = useQueue(qid);
 
-  const { questions, questionsError, mutateQuestions } = useQuestions(qid);
-
-  const renderedQuestions = questions?.queue;
-
+  const { questions, mutateQuestions } = useQuestions(qid);
   const helpingQuestion = questions?.questionsGettingHelp?.find(
     (question) => question.taHelped?.id === user.id
   );
   const isHelping = !!helpingQuestion;
 
-  const [openPopup, setOpenPopup] = useState<boolean>(false);
   const [queueSettingsModal, setQueueSettingsModal] = useState(false);
-  const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
-
-  // Close popup if currentQuestion no longer exists in the cache
-  if (
-    currentQuestion &&
-    !questions?.queue?.includes(currentQuestion) &&
-    !questions?.priorityQueue?.includes(currentQuestion)
-  ) {
-    setCurrentQuestion(null);
-    setOpenPopup(false);
-  }
-
-  const onOpenCard = useCallback((question: Question): void => {
-    setCurrentQuestion(question);
-    setOpenPopup(true);
-  }, []);
-
-  const onCloseClick = useCallback((): void => {
-    setCurrentQuestion(null);
-    setOpenPopup(false);
-  }, []);
-
-  const updateQuestionTA = async (
-    question: Question,
-    status: QuestionStatus
-  ) => {
-    try {
-      await API.questions.update(question.id, {
-        status: status,
-      });
-    } catch (e) {
-      if (
-        e.response?.status === 401 &&
-        e.response?.data?.message ===
-          ERROR_MESSAGES.questionController.updateQuestion.otherTAHelping
-      ) {
-        notification.open({
-          message: "Another TA is currently helping the student",
-          description:
-            "This happens when another TA clicks help at the exact same time",
-          type: "error",
-          duration: 3,
-          className: "hide-in-percy",
-          style: {
-            width: 450,
-          },
-        });
-      }
-    }
-    mutateQuestions();
-    setOpenPopup(false);
-  };
 
   const isStaffCheckedIn = queue?.staffList.some((e) => e.id === user?.id);
 
@@ -172,16 +118,17 @@ export default function TAQueue({
     );
 
   const helpNext = async () => {
-    await updateQuestionTA(nextQuestion, OpenQuestionStatus.Helping);
+    await onHelpQuestion(nextQuestion.id);
+    mutateQuestions();
     window.open(
       `https://teams.microsoft.com/l/chat/0/0?users=${nextQuestion.creator.email}`
     );
   };
 
-  if (queue && questions) {
+  if (queue) {
     return (
       <>
-        <QueuePageContainer>
+        <Container>
           <QueueInfoColumn
             queueId={qid}
             buttons={
@@ -232,7 +179,7 @@ export default function TAQueue({
             }
           />
           <VerticalDivider />
-          <Space direction="vertical" size={40} style={{ flexGrow: 1 }}>
+          {/* <Space direction="vertical" size={40} style={{ flexGrow: 1 }}>
             {isHelping && (
               <TABanner
                 helpingQuestion={helpingQuestion}
@@ -261,18 +208,9 @@ export default function TAQueue({
               onOpenCard={onOpenCard}
               title={<div>Queue</div>}
             />
-          </Space>
-        </QueuePageContainer>
-        {currentQuestion && (
-          <StudentPopupCard
-            onClose={onCloseClick}
-            question={currentQuestion}
-            visible={openPopup}
-            updateQuestion={updateQuestionTA}
-            isStaffCheckedIn={isStaffCheckedIn}
-            isHelping={isHelping}
-          />
-        )}
+          </Space> */}
+          <TAQueueListDetail queueId={qid} />
+        </Container>
         <EditQueueModal
           queueId={qid}
           visible={queueSettingsModal}

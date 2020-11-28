@@ -3,8 +3,8 @@ import { LimboQuestionStatus, Question } from "@koh/common";
 import { Col, Tooltip } from "antd";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
-import { getWaitTime } from "../../../utils/TimeUtil";
-import AvatarWithInitals from "../../common/AvatarWithInitials";
+import { getWaitTime } from "../../../../utils/TimeUtil";
+import AvatarWithInitals from "../../../common/AvatarWithInitials";
 import {
   CenterRow,
   HorizontalTACard,
@@ -13,7 +13,7 @@ import {
   Rank,
   StatusTag,
   Text,
-} from "../QueueCardSharedComponents";
+} from "../../QueueCardSharedComponents";
 
 const AvatarWithMargin = styled(AvatarWithInitals)`
   margin-right: 16px;

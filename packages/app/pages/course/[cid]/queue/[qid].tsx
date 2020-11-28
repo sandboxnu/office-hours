@@ -4,18 +4,16 @@ import { useRouter } from "next/router";
 import { ReactElement } from "react";
 import styled from "styled-components";
 import NavBar from "../../../../components/Nav/NavBar";
-import StudentQueueList from "../../../../components/Queue/Student/StudentQueueList";
-import TAQueueList from "../../../../components/Queue/TA/TAQueueList";
+import StudentQueue from "../../../../components/Queue/Student/StudentQueue";
+import TAQueue from "../../../../components/Queue/TA/TAQueue";
 import { useQueue } from "../../../../hooks/useQueue";
 import { useRoleInCourse } from "../../../../hooks/useRoleInCourse";
 
 const Container = styled.div`
-  margin: 32px 64px;
-  @media (max-width: 768px) {
-    margin: 32px 24px;
-  }
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 `;
-
 export default function Queue(): ReactElement {
   const router = useRouter();
   const { cid, qid } = router.query;
@@ -23,20 +21,16 @@ export default function Queue(): ReactElement {
   const { queue } = useQueue(Number(qid));
 
   return (
-    <div>
+    <Container>
       <Head>
         <title>{queue?.room} Queue | Khoury Office Hours</title>
       </Head>
       <NavBar courseId={Number(cid)} />
-      <Container>
-        <>
-          {Role.STUDENT === role ? (
-            <StudentQueueList qid={Number(qid)} />
-          ) : (
-            <TAQueueList qid={Number(qid)} courseId={Number(cid)} />
-          )}
-        </>
-      </Container>
-    </div>
+      {Role.STUDENT === role ? (
+        <StudentQueue qid={Number(qid)} />
+      ) : (
+        <TAQueue qid={Number(qid)} courseId={Number(cid)} />
+      )}
+    </Container>
   );
 }

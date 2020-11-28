@@ -9,12 +9,12 @@ import {
 import { Col, Popconfirm, Row, Tooltip, message } from "antd";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
-import AvatarWithInitals from "../../common/AvatarWithInitials";
+import AvatarWithInitals from "../../../common/AvatarWithInitials";
 import Banner, {
   CantFindButton,
   FinishHelpingButton,
   RequeueButton,
-} from "../Banner";
+} from "../../Banner";
 
 const Bold = styled.span`
   font-weight: bold;
