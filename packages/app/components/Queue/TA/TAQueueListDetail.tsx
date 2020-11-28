@@ -1,4 +1,3 @@
-import { Question } from "@koh/common";
 import { Skeleton } from "antd";
 import React, { useState, useCallback, ReactElement } from "react";
 import styled from "styled-components";
@@ -43,16 +42,21 @@ export default function TAQueueListDetail({
   queueId: number;
 }): ReactElement {
   const user = useProfile();
-  const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
+  const [selectedQuestionId, setSelectedQuestionId] = useState<number>(null);
   const { questions, questionsError, mutateQuestions } = useQuestions(queueId);
-  const { helpingQuestions } = useTAInQueueInfo(queueId);
 
+  const helpingQuestions = questions?.questionsGettingHelp?.filter(
+    (q) => q.taHelped.id === user.id
+  );
   const allQuestionsList = questions
     ? [...helpingQuestions, ...questions.queue, ...questions.priorityQueue]
     : [];
+  const selectedQuestion = allQuestionsList.find(
+    (q) => q.id === selectedQuestionId
+  );
   // set currentQuestion to null if it no longer exists in the queue
-  if (currentQuestion && !allQuestionsList.includes(currentQuestion)) {
-    setCurrentQuestion(null);
+  if (selectedQuestionId && !selectedQuestion) {
+    setSelectedQuestionId(null);
   }
 
   if (!questions) {
@@ -64,28 +68,28 @@ export default function TAQueueListDetail({
         <TAQueueListSection
           title="Currently Helping"
           questions={helpingQuestions}
-          onClickQuestion={setCurrentQuestion}
-          currentQuestion={currentQuestion}
+          onClickQuestion={setSelectedQuestionId}
+          selectedQuestionId={selectedQuestionId}
         />
         <TAQueueListSection
           title="Priority Queue"
           questions={questions.priorityQueue}
-          onClickQuestion={setCurrentQuestion}
-          currentQuestion={currentQuestion}
+          onClickQuestion={setSelectedQuestionId}
+          selectedQuestionId={selectedQuestionId}
           collapsible
         />
         <TAQueueListSection
           title="Waiting In Line"
           questions={questions.queue}
-          onClickQuestion={setCurrentQuestion}
-          currentQuestion={currentQuestion}
+          onClickQuestion={setSelectedQuestionId}
+          selectedQuestionId={selectedQuestionId}
           collapsible
           showNumbers
         />
       </List>
       <Detail>
-        {currentQuestion && (
-          <TAQueueDetail queueId={queueId} question={currentQuestion} />
+        {selectedQuestion && (
+          <TAQueueDetail queueId={queueId} question={selectedQuestion} />
         )}
       </Detail>
     </Container>

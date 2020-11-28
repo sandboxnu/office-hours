@@ -31,14 +31,14 @@ export default function TAQueueListSection({
   title,
   questions,
   onClickQuestion,
-  currentQuestion,
+  selectedQuestionId,
   showNumbers = false,
   collapsible = false,
 }: {
   title: string;
   questions: Question[];
-  onClickQuestion: (question: Question) => void;
-  currentQuestion?: Question;
+  onClickQuestion: (questionId: number) => void;
+  selectedQuestionId?: number;
   showNumbers?: boolean;
   collapsible?: boolean;
 }): ReactElement {
@@ -61,8 +61,8 @@ export default function TAQueueListSection({
                 key={q.id}
                 question={q}
                 index={showNumbers && i + 1}
-                selected={currentQuestion?.id === q.id}
-                onClick={() => onClickQuestion(q)}
+                selected={selectedQuestionId === q.id}
+                onClick={() => onClickQuestion(q.id)}
               />
             ))}
           </div>

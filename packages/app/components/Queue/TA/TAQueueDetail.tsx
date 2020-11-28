@@ -1,7 +1,6 @@
 import { OpenQuestionStatus, Question } from "@koh/common";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
-import { useQuestions } from "../../../hooks/useQuestions";
 import TAQueueDetailButtons from "./TAQueueDetailButtons";
 
 const Container = styled.div``;
