@@ -43,7 +43,7 @@ const Container = styled.div`
 const QueueListContainer = styled.div`
   flex-grow: 1;
   @media (min-width: 767px) {
-    margin: 32px 64px 0 32px;
+    margin: 32px 0 0 32px;
   }
 `;
 
