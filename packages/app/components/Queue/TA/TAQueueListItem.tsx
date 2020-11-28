@@ -54,6 +54,13 @@ export default function TAQueueListItem({
   onClick: () => void;
 }): ReactElement {
   const isDrafting = question.status === OpenQuestionStatus.Drafting;
+
+  const metaInfo: [ReactElement, string][] = [
+    [<HourglassOutlined key="0" />, getWaitTime(question)],
+  ];
+  if (!isDrafting) {
+    metaInfo.push([<QuestionOutlined key="1" />, question.questionType]);
+  }
   return (
     <Container onClick={onClick} selected={selected}>
       <NumberAndAvatarContainer>
@@ -65,12 +72,7 @@ export default function TAQueueListItem({
         <QuestionText>
           {isDrafting ? <i>Still Drafting...</i> : truncate(question.text, 100)}
         </QuestionText>
-        <QuestionMetaRow
-          info={[
-            [<HourglassOutlined key="0" />, getWaitTime(question)],
-            [<QuestionOutlined key="1" />, question.questionType],
-          ]}
-        />
+        <QuestionMetaRow info={metaInfo} />
       </QuestionInfoContainer>
     </Container>
   );

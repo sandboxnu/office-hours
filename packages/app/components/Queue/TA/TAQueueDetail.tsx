@@ -36,6 +36,13 @@ const QuestionTypePill = styled.span`
   border-radius: 4px;
 `;
 
+const StillDrafting = styled.div`
+  margin: 12px 30px;
+  width: 100%;
+  text-align: center;
+  font-size: 16px;
+`;
+
 /**
  *  Details about the stuent's question
  */
@@ -57,10 +64,16 @@ export default function TAQueueDetail({
           <TAQueueDetailButtons queueId={queueId} question={question} />
         </div>
       </Header>
-      <QuestionTextBox>
-        <QuestionText>{question.text}</QuestionText>
-        <QuestionTypePill>{question.questionType}</QuestionTypePill>
-      </QuestionTextBox>
+      {question.status === OpenQuestionStatus.Drafting ? (
+        <StillDrafting>
+          {question.creator.name} is drafting their question...
+        </StillDrafting>
+      ) : (
+        <QuestionTextBox>
+          <QuestionText>{question.text}</QuestionText>
+          <QuestionTypePill>{question.questionType}</QuestionTypePill>
+        </QuestionTextBox>
+      )}
     </Container>
   );
 }
