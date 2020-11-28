@@ -56,10 +56,10 @@ export default function TAQueueListItem({
   const isDrafting = question.status === OpenQuestionStatus.Drafting;
 
   const metaInfo: [ReactElement, string][] = [
-    [<HourglassOutlined key="0" />, getWaitTime(question)],
+    [<HourglassOutlined key="h" />, getWaitTime(question)],
   ];
   if (!isDrafting) {
-    metaInfo.push([<QuestionOutlined key="1" />, question.questionType]);
+    metaInfo.push([<QuestionOutlined key="q" />, question.questionType]);
   }
   return (
     <Container onClick={onClick} selected={selected}>
@@ -101,14 +101,15 @@ function QuestionMetaRow({
 }): ReactElement {
   return (
     <RowContainer>
-      {info.map(([icon, text], i) => (
-        <>
-          {i > 0 && <Divider key={text}>|</Divider>}
-          {icon}
-          <Spacer />
-          {text}
-        </>
-      ))}
+      {info
+        .map(([icon, text], i) => [
+          i > 0 && <Divider key={text}>|</Divider>,
+          icon,
+          <Spacer key={text + "space"} />,
+          text,
+        ])
+        .flat()
+        .filter((e) => !!e)}
     </RowContainer>
   );
 }
