@@ -19,7 +19,12 @@ const Container = styled.div<{ selected: boolean }>`
   padding-top: 16px;
   padding-bottom: 12px;
   border-bottom: 1px solid #cfd6de;
-  ${({ selected }) => selected && "background: #EFF8FF"}
+  background: ${({ selected }) => (selected ? "#EFF8FF" : "white")};
+
+  cursor: pointer;
+  &:hover {
+    background: ${({ selected }) => (selected ? "#EFF8FF" : "#ECF0F3")};
+  }
 `;
 const NumberAndAvatarContainer = styled.div`
   flex-basis: 50px;
