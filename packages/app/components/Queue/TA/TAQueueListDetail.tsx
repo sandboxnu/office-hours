@@ -1,9 +1,10 @@
 import { QuestionCircleOutlined } from "@ant-design/icons";
-import { Skeleton, Tooltip } from "antd";
+import { Button, Skeleton, Tooltip } from "antd";
 import React, { useState, ReactElement } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
+import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
 import TAQueueDetail from "./TAQueueDetail";
 import TAQueueListSection from "./TAQueueListSection";
 
@@ -66,6 +67,17 @@ export default function TAQueueListDetail({
   if (!questions) {
     return <Skeleton />;
   }
+
+  if (allQuestionsList.length === 0) {
+    return (
+      <EmptyQueueInfo>
+        <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
+        {!user.phoneNotifsEnabled && !user.desktopNotifsEnabled && (
+          <NotifReminderButton />
+        )}
+      </EmptyQueueInfo>
+    );
+  }
   return (
     <Container>
       <List>
@@ -104,5 +116,42 @@ export default function TAQueueListDetail({
         )}
       </Detail>
     </Container>
+  );
+}
+
+const EmptyQueueInfo = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+`;
+
+const NoQuestionsText = styled.div`
+  font-weight: 500;
+  font-size: 24px;
+  color: #212934;
+`;
+
+const NotifRemindButton = styled(Button)`
+  margin-top: 16px;
+  border-radius: 6px;
+  background: #fff;
+`;
+
+function NotifReminderButton() {
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  return (
+    <>
+      <NotifRemindButton onClick={(e) => setIsNotifOpen(true)}>
+        Sign Up for Notifications
+      </NotifRemindButton>
+      {isNotifOpen && (
+        <NotificationSettingsModal
+          visible={isNotifOpen}
+          onClose={() => setIsNotifOpen(false)}
+        />
+      )}
+    </>
   );
 }

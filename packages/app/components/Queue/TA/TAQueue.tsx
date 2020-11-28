@@ -1,13 +1,12 @@
 import { API } from "@koh/api-client";
 import { QuestionStatusKeys } from "@koh/common";
-import { Button, Tooltip } from "antd";
+import { Tooltip } from "antd";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { useQueue } from "../../../hooks/useQueue";
 import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
-import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
 import {
   QueueInfoColumn,
   QueueInfoColumnButton,
@@ -48,14 +47,6 @@ const HelpNextButton = styled(QueueInfoColumnButton)`
 
 const EditQueueButton = styled(QueueInfoColumnButton)`
   color: #212934;
-`;
-
-const EmptyQueueInfo = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 30px;
 `;
 
 interface TAQueueProps {
@@ -139,21 +130,7 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
             }
           />
           <VerticalDivider />
-          {user &&
-            questions &&
-            (isHelping ||
-            questions.priorityQueue.length + questions.queue.length > 0 ? (
-              <TAQueueListDetail queueId={qid} />
-            ) : (
-              <EmptyQueueInfo>
-                <NoQuestionsText>
-                  There are no questions in the queue
-                </NoQuestionsText>
-                {!isHelping &&
-                  !user.phoneNotifsEnabled &&
-                  !user.desktopNotifsEnabled && <NotifReminderButton />}
-              </EmptyQueueInfo>
-            ))}
+          {user && questions && <TAQueueListDetail queueId={qid} />}
         </Container>
         <EditQueueModal
           queueId={qid}
@@ -165,33 +142,4 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
   } else {
     return <div />;
   }
-}
-
-const NoQuestionsText = styled.div`
-  font-weight: 500;
-  font-size: 24px;
-  color: #212934;
-`;
-
-const NotifRemindButton = styled(Button)`
-  margin-top: 16px;
-  border-radius: 6px;
-  background: #fff;
-`;
-
-function NotifReminderButton() {
-  const [isNotifOpen, setIsNotifOpen] = useState(false);
-  return (
-    <>
-      <NotifRemindButton onClick={(e) => setIsNotifOpen(true)}>
-        Sign Up for Notifications
-      </NotifRemindButton>
-      {isNotifOpen && (
-        <NotificationSettingsModal
-          visible={isNotifOpen}
-          onClose={() => setIsNotifOpen(false)}
-        />
-      )}
-    </>
-  );
 }
