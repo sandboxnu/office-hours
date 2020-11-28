@@ -69,6 +69,8 @@ export class LoginController {
     // Q: Do we need this if it's not going to change?
     user = Object.assign(user, {
       email: body.email,
+      firstName: body.first_name,
+      lastName: body.last_name,
       name: body.first_name + ' ' + body.last_name,
       photoURL: '',
     });

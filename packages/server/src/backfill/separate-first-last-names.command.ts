@@ -13,24 +13,16 @@ export class BackfillSeparateFirstLastNames {
     const users = await UserModel.find();
     users.forEach((user) => {
       try {
-        return {
-          ...user,
-          name: '',
-          firstName: user.name.split[0],
-          lastName: user.name.split[1],
-        };
+        user.firstName = user.name.split(' ')[0];
+        user.lastName = user.name.split(' ').slice(1).join(' ');
       } catch (e) {
-        return {
-          ...user,
-          name: '',
-          firstName: user.name,
-          lastName: '',
-        };
+        user.firstName = user.name;
       }
     });
 
     await UserModel.save(users);
+    const count = UserModel.count();
 
-    console.log(`Updated user names`);
+    console.log(`Updated names for ${count} users`);
   }
 }
