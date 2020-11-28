@@ -58,7 +58,7 @@ export default function TAQueueListSection({
               <TAQueueListItem
                 key={q.id}
                 question={q}
-                placeInLine={showNumbers && i}
+                placeInLine={showNumbers && i + 1}
                 onClick={() => onClickQuestion(q)}
               />
             ))}
