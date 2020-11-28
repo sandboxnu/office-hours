@@ -4,6 +4,7 @@ import React, { useState, useCallback, ReactElement } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
+import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
 import TAQueueDetail from "./TAQueueDetail";
 import TAQueueListSection from "./TAQueueListSection";
 
@@ -44,13 +45,10 @@ export default function TAQueueListDetail({
   const user = useProfile();
   const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
   const { questions, questionsError, mutateQuestions } = useQuestions(queueId);
+  const { helpingQuestions } = useTAInQueueInfo(queueId);
 
   const allQuestionsList = questions
-    ? [
-        ...questions.questionsGettingHelp,
-        ...questions.queue,
-        ...questions.priorityQueue,
-      ]
+    ? [...helpingQuestions, ...questions.queue, ...questions.priorityQueue]
     : [];
   // set currentQuestion to null if it no longer exists in the queue
   if (currentQuestion && !allQuestionsList.includes(currentQuestion)) {
@@ -65,9 +63,7 @@ export default function TAQueueListDetail({
       <List>
         <TAQueueListSection
           title="Currently Helping"
-          questions={questions.questionsGettingHelp.filter(
-            (q) => q.taHelped.id === user.id
-          )}
+          questions={helpingQuestions}
           onClickQuestion={setCurrentQuestion}
           currentQuestion={currentQuestion}
         />

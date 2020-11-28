@@ -8,7 +8,7 @@ import { useQueue } from "./useQueue";
  * TODO: The server could probably return this data more directly, instead of us having to run find and some on arrays
  */
 interface TAInQueueInfo {
-  helpingQuestion: Question;
+  helpingQuestions: Question[];
   isHelping: boolean;
   isCheckedIn: boolean;
 }
@@ -18,12 +18,12 @@ export function useTAInQueueInfo(queueId: number): TAInQueueInfo {
   const { queue, mutateQueue } = useQueue(queueId);
 
   const { questions, mutateQuestions } = useQuestions(queueId);
-  const helpingQuestion = questions?.questionsGettingHelp?.find(
+  const helpingQuestions = questions?.questionsGettingHelp?.filter(
     (question) => question.taHelped?.id === user.id
   );
-  const isHelping = !!helpingQuestion;
+  const isHelping = helpingQuestions?.length > 0;
 
   const isCheckedIn = queue?.staffList.some((e) => e.id === user?.id);
 
-  return { helpingQuestion, isHelping, isCheckedIn };
+  return { helpingQuestions, isHelping, isCheckedIn };
 }

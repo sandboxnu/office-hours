@@ -1,5 +1,5 @@
 import { HourglassOutlined, QuestionOutlined } from "@ant-design/icons";
-import { Question } from "@koh/common";
+import { OpenQuestionStatus, Question } from "@koh/common";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { getWaitTime } from "../../../utils/TimeUtil";
@@ -53,6 +53,7 @@ export default function TAQueueListItem({
   question: Question;
   onClick: () => void;
 }): ReactElement {
+  const isDrafting = question.status === OpenQuestionStatus.Drafting;
   return (
     <Container onClick={onClick} selected={selected}>
       <NumberAndAvatarContainer>
@@ -61,7 +62,9 @@ export default function TAQueueListItem({
       </NumberAndAvatarContainer>
       <QuestionInfoContainer>
         <Name>{question.creator.name}</Name>
-        <QuestionText>{truncate(question.text, 100)}</QuestionText>
+        <QuestionText>
+          {isDrafting ? <i>Still Drafting...</i> : truncate(question.text, 100)}
+        </QuestionText>
         <QuestionMetaRow
           info={[
             [<HourglassOutlined key="0" />, getWaitTime(question)],
