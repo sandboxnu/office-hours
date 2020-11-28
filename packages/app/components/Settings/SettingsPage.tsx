@@ -1,6 +1,6 @@
 import { BellOutlined, EditOutlined } from "@ant-design/icons";
 import { Col, Menu, Row, Space } from "antd";
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { useProfile } from "../../hooks/useProfile";
 import AvatarWithInitals from "../common/AvatarWithInitials";
 import { VerticalDivider } from "../Queue/QueueListSharedComponents";
@@ -23,6 +23,10 @@ export default function SettingsPage({
   const [currentSettings, setCurrentSettings] = useState(
     defaultPage || SettingsOptions.PROFILE
   );
+  const [avatarSize, setAvatarSize] = useState(0);
+  useEffect(() => {
+    setAvatarSize(window.innerWidth / 10);
+  }, []);
 
   return (
     <Row>
@@ -30,8 +34,8 @@ export default function SettingsPage({
         <AvatarWithInitals
           style={{ marginTop: "60px", marginBottom: "60px" }}
           name={profile?.name}
-          size={250}
-          fontSize={96}
+          size={avatarSize}
+          fontSize={avatarSize * (3 / 7)}
         />
         <Menu onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}>
           <Menu.Item key={SettingsOptions.PROFILE} icon={<EditOutlined />}>
