@@ -29,6 +29,7 @@ const List = styled.div`
 
 const Detail = styled.div`
   border-left: 1px solid #cfd6de;
+  border-right: 1px solid #cfd6de;
   flex: 1;
 `;
 
