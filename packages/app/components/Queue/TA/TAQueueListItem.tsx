@@ -67,7 +67,11 @@ export default function TAQueueListItem({
     metaInfo.push([<QuestionOutlined key="q" />, question.questionType]);
   }
   return (
-    <Container onClick={onClick} selected={selected}>
+    <Container
+      onClick={onClick}
+      selected={selected}
+      data-cy={`queue-list-item-${question.id}`}
+    >
       <NumberAndAvatarContainer>
         <PlaceInLine>{index}</PlaceInLine>
         <AvatarWithInitals size={40} name={question.creator.name} />
