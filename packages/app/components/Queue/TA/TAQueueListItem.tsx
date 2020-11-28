@@ -5,13 +5,14 @@ import styled from "styled-components";
 import { getWaitTime } from "../../../utils/TimeUtil";
 import AvatarWithInitals from "../../common/AvatarWithInitials";
 
-const Container = styled.div`
+const Container = styled.div<{ selected: boolean }>`
   display: flex;
   align-items: flex-start;
 
   padding-top: 16px;
   padding-bottom: 12px;
   border-bottom: 1px solid #cfd6de;
+  ${({ selected }) => selected && "background: #EFF8FF"}
 `;
 const NumberAndAvatarContainer = styled.div`
   flex-basis: 50px;
@@ -36,18 +37,20 @@ const QuestionText = styled.div`
 `;
 
 export default function TAQueueListItem({
-  placeInLine,
+  index,
+  selected,
   question,
   onClick,
 }: {
-  placeInLine: number | false;
+  index: number | false;
+  selected: boolean;
   question: Question;
   onClick: () => void;
 }): ReactElement {
   return (
-    <Container onClick={onClick}>
+    <Container onClick={onClick} selected={selected}>
       <NumberAndAvatarContainer>
-        <PlaceInLine>{placeInLine}</PlaceInLine>
+        <PlaceInLine>{index}</PlaceInLine>
         <AvatarWithInitals size={40} name={question.creator.name} />
       </NumberAndAvatarContainer>
       <QuestionInfoContainer>

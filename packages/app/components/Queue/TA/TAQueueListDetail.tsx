@@ -42,12 +42,13 @@ export default function TAQueueListDetail({
     setCurrentQuestion(question);
   }, []);
 
+  const allQuestionsList = [
+    ...questions?.questionsGettingHelp,
+    ...questions?.queue,
+    ...questions?.priorityQueue,
+  ];
   // set currentQuestion to null if it no longer exists in the queue
-  if (
-    currentQuestion &&
-    !questions?.queue?.includes(currentQuestion) &&
-    !questions?.priorityQueue?.includes(currentQuestion)
-  ) {
+  if (currentQuestion && !allQuestionsList.includes(currentQuestion)) {
     setCurrentQuestion(null);
   }
 
@@ -63,17 +64,20 @@ export default function TAQueueListDetail({
             (q) => q.taHelped.id === user.id
           )}
           onClickQuestion={setCurrentQuestion}
+          currentQuestion={currentQuestion}
         />
         <TAQueueListSection
           title="Priority Queue"
           questions={questions.priorityQueue}
           onClickQuestion={setCurrentQuestion}
+          currentQuestion={currentQuestion}
           collapsible
         />
         <TAQueueListSection
           title="Waiting In Line"
           questions={questions.queue}
           onClickQuestion={setCurrentQuestion}
+          currentQuestion={currentQuestion}
           collapsible
           showNumbers
         />
