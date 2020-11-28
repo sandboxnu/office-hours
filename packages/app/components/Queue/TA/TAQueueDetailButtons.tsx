@@ -112,26 +112,32 @@ export default function TAQueueDetailButtons({
         </Popconfirm>
         <Tooltip
           title={
-            !isCheckedIn
-              ? "You must check in to help students!"
-              : isHelping && "You are already helping a student"
+            isCheckedIn
+              ? isHelping
+                ? "You are already helping a student"
+                : "Help Student"
+              : "You must check in to help students!"
           }
         >
-          <BannerPrimaryButton
-            icon={<PhoneOutlined />}
-            onClick={() => {
-              changeStatus(OpenQuestionStatus.Helping);
-              if (question.isOnline) {
-                window.open(
-                  `https://teams.microsoft.com/l/chat/0/0?users=${question.creator.email}`
-                );
+          <span>
+            {/* This span is a workaround for tooltip-on-disabled-button 
+            https://github.com/ant-design/ant-design/issues/9581#issuecomment-599668648 */}
+            <BannerPrimaryButton
+              icon={<PhoneOutlined />}
+              onClick={() => {
+                changeStatus(OpenQuestionStatus.Helping);
+                if (question.isOnline) {
+                  window.open(
+                    `https://teams.microsoft.com/l/chat/0/0?users=${question.creator.email}`
+                  );
+                }
+              }}
+              disabled={
+                !isCheckedIn || question.status === "Drafting" || isHelping
               }
-            }}
-            disabled={
-              !isCheckedIn || question.status === "Drafting" || isHelping
-            }
-            data-cy="help-student"
-          />
+              data-cy="help-student"
+            />
+          </span>
         </Tooltip>
       </>
     );

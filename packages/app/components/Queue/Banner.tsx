@@ -78,6 +78,7 @@ export const BannerButton = styled(CircleButton)`
 `;
 
 export const BannerPrimaryButton = styled(BannerButton)`
+  ${({ disabled }) => disabled && "pointer-events: none"};
   background: #3684c6;
   color: #fff;
   &:hover,
