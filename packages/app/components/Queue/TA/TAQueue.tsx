@@ -1,7 +1,7 @@
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
-import { Question, QuestionStatusKeys } from "@koh/common";
-import { Button, Card, Col, Row, Tooltip } from "antd";
+import { QuestionStatusKeys } from "@koh/common";
+import { Button, Tooltip } from "antd";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
@@ -15,7 +15,6 @@ import {
   VerticalDivider,
 } from "../QueueListSharedComponents";
 import { EditQueueModal } from "./EditQueueModal";
-import TAQueueCard from "./old/TAQueueCard";
 import onHelpQuestion from "./onHelpQuestion";
 import TAQueueListDetail from "./TAQueueListDetail";
 
@@ -27,39 +26,6 @@ const Container = styled.div`
     flex-direction: row;
     margin: 0 64px;
   }
-`;
-
-const StatusText = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 22px;
-  color: #8895a6;
-  font-variant: small-caps;
-  width: 96px;
-  float: right;
-  margin-right: 0;
-`;
-
-const TAHeaderCard = styled(Card)`
-  height: 64px;
-  background: inherit;
-`;
-
-const HeaderText = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 22px;
-  color: #8895a6;
-  font-variant: small-caps;
-`;
-
-const CenterRow = styled(Row)`
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const Placeholder = styled.div`
-  width: 14px;
 `;
 
 const CheckOutButton = styled(QueueInfoColumnButton)`
@@ -86,7 +52,7 @@ const EditQueueButton = styled(QueueInfoColumnButton)`
 `;
 
 const PriorityQueueQuestionBubble = styled(QuestionCircleOutlined)`
-  fontsize: 20;
+  font-size: 20;
   margin-left: 20px;
 `;
 
@@ -179,36 +145,6 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
             }
           />
           <VerticalDivider />
-          {/* <Space direction="vertical" size={40} style={{ flexGrow: 1 }}>
-            {isHelping && (
-              <TABanner
-                helpingQuestion={helpingQuestion}
-                updateQuestion={updateQuestionTA}
-              />
-            )}
-            {!!questions.priorityQueue.length && (
-              <QueueQuestions
-                questions={questions.priorityQueue}
-                isHelping={isHelping}
-                onOpenCard={onOpenCard}
-                title={
-                  //TODO
-                  <>
-                    Priority Queue
-                    <Tooltip title="Students in the priority queue were at the top of the queue before for some reason (e.g. they were at the top but AFK, or a TA helped them previously, and then hit 'requeue student.' You should communicate with your fellow staff members to prioritize these students first.">
-                      <PriorityQueueQuestionBubble />
-                    </Tooltip>
-                  </>
-                }
-              />
-            )}
-            <QueueQuestions
-              questions={renderedQuestions}
-              isHelping={isHelping}
-              onOpenCard={onOpenCard}
-              title={<div>Queue</div>}
-            />
-          </Space> */}
           {user &&
             questions &&
             (isHelping ||
@@ -237,13 +173,6 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
   }
 }
 
-const QueueHeader = styled.h2`
-  font-weight: 500;
-  font-size: 24px;
-  color: #212934;
-  margin-bottom: 0;
-`;
-
 const NoQuestionsText = styled.div`
   font-weight: 500;
   font-size: 24px;
@@ -270,71 +199,5 @@ function NotifReminderButton() {
         />
       )}
     </>
-  );
-}
-
-interface QueueProps {
-  questions: Question[];
-  isHelping: boolean;
-  onOpenCard: (q: Question) => void;
-  title: ReactElement;
-}
-function QueueQuestions({
-  questions,
-  isHelping,
-  onOpenCard,
-  title,
-}: QueueProps) {
-  const { phoneNotifsEnabled, desktopNotifsEnabled } = useProfile();
-  return (
-    <div data-cy="queueQuestions">
-      {questions.length === 0 ? (
-        <>
-          <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
-          {!isHelping && !phoneNotifsEnabled && !desktopNotifsEnabled && (
-            <NotifReminderButton />
-          )}
-        </>
-      ) : (
-        <>
-          <>
-            <QueueHeader>{title}</QueueHeader>
-          </>
-          <TAHeaderCard bordered={false}>
-            <CenterRow justify="space-between">
-              <Col xs={2} lg={1}>
-                <HeaderText>#</HeaderText>
-              </Col>
-              <Col xs={14} sm={11} lg={5}>
-                <HeaderText>name</HeaderText>
-              </Col>
-              <Col xs={0} lg={2}>
-                <HeaderText>type</HeaderText>
-              </Col>
-              <Col xs={0} lg={7}>
-                <HeaderText>question</HeaderText>
-              </Col>
-              <Col xs={0} lg={2}>
-                <HeaderText>wait</HeaderText>
-              </Col>
-              <Col span={2}>
-                <StatusText>status</StatusText>
-              </Col>
-              <Col>
-                <Placeholder />
-              </Col>
-            </CenterRow>
-          </TAHeaderCard>
-        </>
-      )}
-      {questions.map((question: Question, index: number) => (
-        <TAQueueCard
-          key={question.id}
-          rank={index + 1}
-          question={question}
-          onOpen={(q) => onOpenCard(q)}
-        />
-      ))}
-    </div>
   );
 }
