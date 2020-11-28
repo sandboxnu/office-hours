@@ -1,9 +1,10 @@
 import { Question } from "@koh/common";
 import { Skeleton } from "antd";
-import { useState, useCallback, ReactElement } from "react";
+import React, { useState, useCallback, ReactElement } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
+import TAQueueDetail from "./TAQueueDetail";
 import TAQueueListSection from "./TAQueueListSection";
 
 // The min screen width at which the list and detail become side-by-side
@@ -26,6 +27,11 @@ const List = styled.div`
   }
 `;
 
+const Detail = styled.div`
+  border-left: 1px solid #cfd6de;
+  flex: 1;
+`;
+
 /**
  * List and detail panel of the TA queue
  */
@@ -37,10 +43,6 @@ export default function TAQueueListDetail({
   const user = useProfile();
   const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
   const { questions, questionsError, mutateQuestions } = useQuestions(queueId);
-
-  const onOpenCard = useCallback((question: Question): void => {
-    setCurrentQuestion(question);
-  }, []);
 
   const allQuestionsList = [
     ...questions?.questionsGettingHelp,
@@ -82,6 +84,11 @@ export default function TAQueueListDetail({
           showNumbers
         />
       </List>
+      <Detail>
+        {currentQuestion && (
+          <TAQueueDetail queueId={queueId} question={currentQuestion} />
+        )}
+      </Detail>
     </Container>
   );
 }

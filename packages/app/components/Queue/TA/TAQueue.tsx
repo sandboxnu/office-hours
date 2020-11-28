@@ -7,6 +7,7 @@ import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { useQueue } from "../../../hooks/useQueue";
+import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
 import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
 import {
   QueueInfoColumn,
@@ -24,6 +25,7 @@ const Container = styled.div`
   flex-direction: column;
   @media (min-width: 768px) {
     flex-direction: row;
+    margin: 0 64px;
   }
 `;
 
@@ -88,28 +90,19 @@ const PriorityQueueQuestionBubble = styled(QuestionCircleOutlined)`
   margin-left: 20px;
 `;
 
-interface TAQueueListProps {
+interface TAQueueProps {
   qid: number;
   courseId: number;
 }
 
-export default function TAQueue({
-  qid,
-  courseId,
-}: TAQueueListProps): ReactElement {
-  const user = useProfile();
-
+export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
   const { queue, mutateQueue } = useQueue(qid);
 
   const { questions, mutateQuestions } = useQuestions(qid);
-  const helpingQuestion = questions?.questionsGettingHelp?.find(
-    (question) => question.taHelped?.id === user.id
-  );
-  const isHelping = !!helpingQuestion;
+
+  const { isCheckedIn, isHelping } = useTAInQueueInfo(qid);
 
   const [queueSettingsModal, setQueueSettingsModal] = useState(false);
-
-  const isStaffCheckedIn = queue?.staffList.some((e) => e.id === user?.id);
 
   const nextQuestion =
     questions?.priorityQueue[0] || // gets the first item of priority queue if it exists
@@ -140,19 +133,17 @@ export default function TAQueue({
                   Edit Queue Details
                 </EditQueueButton>
                 <Tooltip
-                  title={
-                    !isStaffCheckedIn && "You must check in to help students!"
-                  }
+                  title={!isCheckedIn && "You must check in to help students!"}
                 >
                   <HelpNextButton
                     onClick={helpNext}
-                    disabled={!isStaffCheckedIn || !nextQuestion || isHelping}
+                    disabled={!isCheckedIn || !nextQuestion || isHelping}
                     data-cy="help-next"
                   >
                     Help Next
                   </HelpNextButton>
                 </Tooltip>
-                {isStaffCheckedIn ? (
+                {isCheckedIn ? (
                   <CheckOutButton
                     danger
                     disabled={isHelping}

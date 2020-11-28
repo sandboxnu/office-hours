@@ -43,7 +43,7 @@ const InfoColumnContainer = styled.div`
   flex-shrink: 0;
   padding-bottom: 30px;
   @media (min-width: 767px) {
-    margin: 32px 32px 0 64px;
+    margin: 32px 32px 0 0;
     width: 300px;
   }
 `;

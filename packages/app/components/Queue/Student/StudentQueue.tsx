@@ -35,7 +35,7 @@ const Container = styled.div`
   margin: 10px 24px 0 24px;
   @media (min-width: 768px) {
     flex-direction: row;
-    margin: 0;
+    margin: 0 64px; // Matches navbar. TODO: Should probably make this min-width based instead of padding
     height: 100%;
   }
 `;
@@ -71,13 +71,11 @@ const CenterRow = styled(Row)`
   align-items: center;
 `;
 
-interface StudentQueueListProps {
+interface StudentQueueProps {
   qid: number;
 }
 
-export default function StudentQueue({
-  qid,
-}: StudentQueueListProps): ReactElement {
+export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
   const { queue, mutateQueue } = useQueue(qid);
   const { questions, questionsError, mutateQuestions } = useQuestions(qid);
   const { studentQuestion, studentQuestionIndex } = useStudentQuestion(qid);
