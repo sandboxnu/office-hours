@@ -1,16 +1,7 @@
-import { UndoOutlined, CloseOutlined, CheckOutlined } from "@ant-design/icons";
-import { API } from "@koh/api-client";
-import {
-  ClosedQuestionStatus,
-  LimboQuestionStatus,
-  Question,
-  QuestionStatus,
-} from "@koh/common";
-import { message, Popconfirm, Tooltip } from "antd";
-import React, { useCallback } from "react";
+import { OpenQuestionStatus, Question } from "@koh/common";
+import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { useQuestions } from "../../../hooks/useQuestions";
-import { RequeueButton, CantFindButton, FinishHelpingButton } from "../Banner";
 import TAQueueDetailButtons from "./TAQueueDetailButtons";
 
 const Container = styled.div``;
@@ -28,6 +19,23 @@ const Email = styled.div`
   color: #8895a6;
 `;
 
+const QuestionTextBox = styled.div`
+  margin: 12px;
+  padding: 16px;
+  background: #ecf0f3;
+`;
+const QuestionText = styled.div`
+  font-size: 18px;
+  color: #595959;
+  margin-bottom: 20px;
+`;
+const QuestionTypePill = styled.span`
+  color: #264359;
+  background: #abd4f3;
+  padding: 3px 8px;
+  border-radius: 4px;
+`;
+
 /**
  *  Details about the stuent's question
  */
@@ -37,8 +45,7 @@ export default function TAQueueDetail({
 }: {
   queueId: number;
   question: Question;
-}) {
-  const { mutateQuestions } = useQuestions(queueId);
+}): ReactElement {
   return (
     <Container>
       <Header>
@@ -50,6 +57,10 @@ export default function TAQueueDetail({
           <TAQueueDetailButtons queueId={queueId} question={question} />
         </div>
       </Header>
+      <QuestionTextBox>
+        <QuestionText>{question.text}</QuestionText>
+        <QuestionTypePill>{question.questionType}</QuestionTypePill>
+      </QuestionTextBox>
     </Container>
   );
 }

@@ -44,11 +44,13 @@ export default function TAQueueListDetail({
   const [currentQuestion, setCurrentQuestion] = useState<Question>(null);
   const { questions, questionsError, mutateQuestions } = useQuestions(queueId);
 
-  const allQuestionsList = [
-    ...questions?.questionsGettingHelp,
-    ...questions?.queue,
-    ...questions?.priorityQueue,
-  ];
+  const allQuestionsList = questions
+    ? [
+        ...questions.questionsGettingHelp,
+        ...questions.queue,
+        ...questions.priorityQueue,
+      ]
+    : [];
   // set currentQuestion to null if it no longer exists in the queue
   if (currentQuestion && !allQuestionsList.includes(currentQuestion)) {
     setCurrentQuestion(null);

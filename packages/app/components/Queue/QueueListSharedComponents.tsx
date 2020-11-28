@@ -11,7 +11,7 @@ import styled from "styled-components";
 import { useQueue } from "../../hooks/useQueue";
 import { formatQueueTime } from "../../utils/TimeUtil";
 import { TAStatuses } from "./TAStatuses";
-import { Button, Tooltip, Badge } from "antd";
+import { Button, Tooltip } from "antd";
 import { ButtonProps } from "antd/lib/button";
 
 export const VerticalDivider = styled.div`

@@ -5,6 +5,13 @@ import styled from "styled-components";
 import { getWaitTime } from "../../../utils/TimeUtil";
 import AvatarWithInitals from "../../common/AvatarWithInitials";
 
+function truncate(string: string, length: number) {
+  if (string.length > length) {
+    return string.substring(0, length - 3) + "...";
+  }
+  return string;
+}
+
 const Container = styled.div<{ selected: boolean }>`
   display: flex;
   align-items: flex-start;
@@ -31,7 +38,6 @@ const QuestionInfoContainer = styled.div``;
 const Name = styled.div`
   color: #212934;
 `;
-//TODO: elipsis if long
 const QuestionText = styled.div`
   color: #595959;
 `;
@@ -55,7 +61,7 @@ export default function TAQueueListItem({
       </NumberAndAvatarContainer>
       <QuestionInfoContainer>
         <Name>{question.creator.name}</Name>
-        <QuestionText>{question.text}</QuestionText>
+        <QuestionText>{truncate(question.text, 100)}</QuestionText>
         <QuestionMetaRow
           info={[
             [<HourglassOutlined key="0" />, getWaitTime(question)],
