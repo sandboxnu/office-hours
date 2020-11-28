@@ -8,8 +8,17 @@ const Container = styled.div``;
 
 const SectionHeaderRow = styled.div`
   padding-left: 40px;
+  padding-right: 12px;
+  height: 55px;
+  border-bottom: 1px solid #cfd6de;
+
   display: flex;
   justify-content: space-between;
+  align-items: center;
+`;
+const Title = styled.div`
+  font-size: 16px;
+  color: #212934;
 `;
 
 /**
@@ -34,7 +43,7 @@ export default function TAQueueListSection({
   return (
     <Container>
       <SectionHeaderRow>
-        <div>{`${title} (${questions.length})`}</div>
+        <Title>{`${title} (${questions.length})`}</Title>
         <DownOutlined />
       </SectionHeaderRow>
       {questions.map((q, i) => (

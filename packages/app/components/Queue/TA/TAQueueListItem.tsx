@@ -23,6 +23,7 @@ const PlaceInLine = styled.span`
   width: 40px;
   text-align: center;
   font-size: 18px;
+  color: #212934;
 `;
 const QuestionInfoContainer = styled.div``;
 
