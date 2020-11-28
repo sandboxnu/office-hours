@@ -1,6 +1,6 @@
 import { ClosedQuestionStatus, Heatmap, timeDiffInMins } from '@koh/common';
 import { Injectable } from '@nestjs/common';
-import { inRange, mean, range, sample, uniq } from 'lodash';
+import { inRange, mean, range } from 'lodash';
 import moment = require('moment');
 import { Command } from 'nestjs-command';
 import { QuestionModel } from 'question/question.entity';
@@ -44,7 +44,6 @@ export class HeatmapService {
       return false;
     }
 
-    console.log('heamtap on questions ', questions.length);
     const tz = 'America/New_York';
     const heatmap = this._generateHeatMapWithReplay(
       // Ignore questions that cross midnight (usually a fluke)
@@ -205,7 +204,8 @@ export class HeatmapService {
       ...Array((24 * 7 * 60) / bucketSize),
     ];
     for (const [start, end] of hourTimestamps) {
-      for (const i of range(dateToBucket(start), dateToBucket(end))) {
+      //prevents an office hour from [N, M] to register in multiple buckets
+      for (const i of range(dateToBucket(start), dateToBucket(end - 1) + 1)) {
         wereHoursDuringBucket[i] = true;
       }
     }

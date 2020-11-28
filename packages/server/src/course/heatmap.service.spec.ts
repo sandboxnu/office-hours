@@ -1,6 +1,5 @@
 import { ClosedQuestionStatus, Heatmap } from '@koh/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import moment = require('moment');
 import { QuestionModel } from 'question/question.entity';
 import { Connection } from 'typeorm';
 import { TestTypeOrmModule } from '../../test/util/testUtils';
@@ -487,6 +486,27 @@ describe('HeatmapService', () => {
       expect(heatmap).toEqual(expected);
     });
 
-    it('works when the bucketsize and sample interval are different', () => {});
+    it('works when the bucketsize and sample interval are different', () => {
+      const heatmap = service._generateHeatMapWithReplay(
+        questionsFromDates([OCT4('03:01', '03:11'), OCT8('05:12', '05:22')]),
+        officehoursFromDates([OCT4('03:00', '04:00'), OCT8('05:00', '06:00')]),
+        'America/New_York',
+        24 * 60,
+        1,
+      );
+      /**
+       *   Timepoint | Wait time   | Question in front of you
+       *   -----------------------------------------------------
+       *     Sun     | 0 minutes  |
+       *
+       *     Mon     | 0 mintues  |
+       *
+       *
+       *   We don't bucket for 2AM at all.
+       **/
+
+      console.log('heatmap', heatmap);
+      expect(heatmap).toEqual([0, -1, -1, -1, 0, -1, -1]);
+    });
   });
 });

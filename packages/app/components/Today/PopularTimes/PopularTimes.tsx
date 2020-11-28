@@ -8,7 +8,7 @@ import {
 import { Heatmap } from "@koh/common";
 import { ParentSize } from "@visx/responsive";
 import { Dropdown, Menu } from "antd";
-import { chunk, uniq, mean } from "lodash";
+import { chunk, uniq, mean, sortBy } from "lodash";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { formatWaitTime } from "../../../utils/TimeUtil";
@@ -19,10 +19,6 @@ const TitleRow = styled.div`
   display: flex;
   align-items: baseline;
 `;
-
-interface HeatmapProps {
-  heatmap: Heatmap;
-}
 
 const WeekdayDropdown = styled.h2`
   display: flex;
@@ -48,6 +44,16 @@ const GraphArrowButtons = styled.div`
   font-size: 1.5em;
   cursor: pointer;
 `;
+
+const GraphNotes = styled.h4`
+  font-size: 14px;
+  color: #111;
+  padding-left: 40px;
+`;
+
+interface HeatmapProps {
+  heatmap: Heatmap;
+}
 
 const DAYS_OF_WEEK = [
   "Sunday",
@@ -77,12 +83,6 @@ function findWeekMinAndMax(days: Heatmap) {
   }
   return [minHourInWeek, maxHourInWeek];
 }
-
-const GraphNotes = styled.h4`
-  font-size: 14px;
-  color: #111;
-  padding-left: 40px;
-`;
 
 const BUSY = {
   shortest: "the shortest",
@@ -121,7 +121,7 @@ const BUSY_TEXTS = {
 function generateBusyText(day: number, dailySumWaitTimes: number[]): string {
   const dayWaitTime = dailySumWaitTimes[day];
   const uniqSumWaitTimes = uniq(
-    dailySumWaitTimes.filter((v) => v >= 0).sort((a, b) => a - b)
+    sortBy(dailySumWaitTimes.filter((v) => v >= 0))
   );
   const rank = uniqSumWaitTimes.indexOf(dayWaitTime);
   return BUSY_TEXTS[uniqSumWaitTimes.length][rank];
