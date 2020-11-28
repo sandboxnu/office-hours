@@ -26,6 +26,12 @@ export class UserModel extends BaseEntity {
   name: string;
 
   @Column('text')
+  firstName: string;
+
+  @Column('text')
+  lastName: string;
+
+  @Column('text')
   photoURL: string;
 
   @OneToMany((type) => UserCourseModel, (ucm) => ucm.user)
