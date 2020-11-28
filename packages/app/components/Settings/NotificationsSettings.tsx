@@ -79,7 +79,6 @@ export default function NotificationsSettings(): ReactElement {
               )
             }
           </Form.Item>
-          {/* <Divider orientation="left">SMS</Divider> */}
           <Form.Item
             style={{ marginTop: "30px" }}
             label="Enable SMS notifications"
