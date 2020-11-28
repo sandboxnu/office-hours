@@ -1,6 +1,6 @@
 import { Question } from "@koh/common";
 import { Collapse } from "antd";
-import React, { ReactElement } from "react";
+import React, { ReactElement, ReactNode } from "react";
 import styled from "styled-components";
 import TAQueueListItem from "./TAQueueListItem";
 
@@ -35,7 +35,7 @@ export default function TAQueueListSection({
   showNumbers = false,
   collapsible = false,
 }: {
-  title: string;
+  title: ReactNode;
   questions: Question[];
   onClickQuestion: (questionId: number) => void;
   selectedQuestionId?: number;
@@ -47,11 +47,16 @@ export default function TAQueueListSection({
   }
   return (
     <OverrideCollapse>
-      <Collapse defaultActiveKey={[title]} ghost expandIconPosition="right">
+      <Collapse defaultActiveKey={[1]} ghost expandIconPosition="right">
         <Collapse.Panel
           style={{ padding: 0 }}
-          key={title}
-          header={<Title>{`${title} (${questions.length})`}</Title>}
+          key={1}
+          header={
+            <Title>
+              {title}
+              <span>{` (${questions.length})`}</span>
+            </Title>
+          }
           showArrow={collapsible}
           disabled={!collapsible}
         >

@@ -1,9 +1,9 @@
-import { Skeleton } from "antd";
-import React, { useState, useCallback, ReactElement } from "react";
+import { QuestionCircleOutlined } from "@ant-design/icons";
+import { Skeleton, Tooltip } from "antd";
+import React, { useState, ReactElement } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
-import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
 import TAQueueDetail from "./TAQueueDetail";
 import TAQueueListSection from "./TAQueueListSection";
 
@@ -25,6 +25,10 @@ const List = styled.div`
   @media (min-width: ${SPLIT_DETAIL_BKPT}px) {
     width: 350px;
   }
+`;
+
+const PriorityQueueQuestionBubble = styled(QuestionCircleOutlined)`
+  margin-right: 8px;
 `;
 
 const Detail = styled.div`
@@ -66,13 +70,20 @@ export default function TAQueueListDetail({
     <Container>
       <List>
         <TAQueueListSection
-          title="Currently Helping"
+          title={"Currently Helping"}
           questions={helpingQuestions}
           onClickQuestion={setSelectedQuestionId}
           selectedQuestionId={selectedQuestionId}
         />
         <TAQueueListSection
-          title="Priority Queue"
+          title={
+            <span>
+              <Tooltip title="Students in the priority queue were at the top of the queue before for some reason (e.g. they were at the top but AFK, or a TA helped them previously, and then hit 'requeue student.' You should communicate with your fellow staff members to prioritize these students first.">
+                <PriorityQueueQuestionBubble />
+              </Tooltip>
+              Priority Queue
+            </span>
+          }
           questions={questions.priorityQueue}
           onClickQuestion={setSelectedQuestionId}
           selectedQuestionId={selectedQuestionId}

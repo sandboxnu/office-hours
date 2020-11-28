@@ -1,4 +1,3 @@
-import { QuestionCircleOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import { QuestionStatusKeys } from "@koh/common";
 import { Button, Tooltip } from "antd";
@@ -49,11 +48,6 @@ const HelpNextButton = styled(QueueInfoColumnButton)`
 
 const EditQueueButton = styled(QueueInfoColumnButton)`
   color: #212934;
-`;
-
-const PriorityQueueQuestionBubble = styled(QuestionCircleOutlined)`
-  font-size: 20;
-  margin-left: 20px;
 `;
 
 const EmptyQueueInfo = styled.div`

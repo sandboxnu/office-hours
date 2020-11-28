@@ -91,6 +91,17 @@ export default function TAQueueDetailButtons({
       </>
     );
   } else {
+    const [canHelp, helpTooltip] = ((): [boolean, string] => {
+      if (!isCheckedIn) {
+        return [false, "You must check in to help students!"];
+      } else if (isHelping) {
+        return [false, "You are already helping a student"];
+      } else if (question.status === OpenQuestionStatus.Drafting) {
+        return [false, "Student is drafting"];
+      } else {
+        return [true, "Help Student"];
+      }
+    })();
     return (
       <>
         <Popconfirm
@@ -110,15 +121,7 @@ export default function TAQueueDetailButtons({
             />
           </Tooltip>
         </Popconfirm>
-        <Tooltip
-          title={
-            isCheckedIn
-              ? isHelping
-                ? "You are already helping a student"
-                : "Help Student"
-              : "You must check in to help students!"
-          }
-        >
+        <Tooltip title={helpTooltip}>
           <span>
             {/* This span is a workaround for tooltip-on-disabled-button 
             https://github.com/ant-design/ant-design/issues/9581#issuecomment-599668648 */}
@@ -132,9 +135,7 @@ export default function TAQueueDetailButtons({
                   );
                 }
               }}
-              disabled={
-                !isCheckedIn || question.status === "Drafting" || isHelping
-              }
+              disabled={!canHelp}
               data-cy="help-student"
             />
           </span>

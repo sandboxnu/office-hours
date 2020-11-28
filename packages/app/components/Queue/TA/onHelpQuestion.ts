@@ -6,7 +6,9 @@ import { notification } from "antd";
  * Method to help student and
  * pop open notification if another TA helped at same time (race condition)
  */
-export default async function onHelpQuestion(questionId: number) {
+export default async function onHelpQuestion(
+  questionId: number
+): Promise<void> {
   try {
     await API.questions.update(questionId, {
       status: OpenQuestionStatus.Helping,
