@@ -25,25 +25,19 @@ export default function ProfileSettings(): ReactElement {
     form.setFieldsValue(newProfile);
   };
 
-  return (
-    profile && (
-      <div style={{ paddingTop: "50px" }}>
-        <Form form={form} initialValues={profile}>
-          <Form.Item
-            label="First Name"
-            name="firstName"
-            data-cy="firstNameInput"
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item label="Last Name" name="lastName" data-cy="lastNameInput">
-            <Input />
-          </Form.Item>
-        </Form>
-        <Button key="submit" type="primary" onClick={handleOk}>
-          Ok
-        </Button>
-      </div>
-    )
-  );
+  return profile ? (
+    <div style={{ paddingTop: "50px" }}>
+      <Form form={form} initialValues={profile}>
+        <Form.Item label="First Name" name="firstName" data-cy="firstNameInput">
+          <Input />
+        </Form.Item>
+        <Form.Item label="Last Name" name="lastName" data-cy="lastNameInput">
+          <Input />
+        </Form.Item>
+      </Form>
+      <Button key="submit" type="primary" onClick={handleOk}>
+        Ok
+      </Button>
+    </div>
+  ) : null;
 }

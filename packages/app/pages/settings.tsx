@@ -18,9 +18,7 @@ export default function Settings(): ReactElement {
       </Head>
       <NavBar courseId={Number(courseId)} />
       <Container>
-        <>
-          <SettingsPage defaultPage={defaultPage as SettingsOptions} />
-        </>
+        <SettingsPage defaultPage={defaultPage as SettingsOptions} />
       </Container>
     </div>
   );
