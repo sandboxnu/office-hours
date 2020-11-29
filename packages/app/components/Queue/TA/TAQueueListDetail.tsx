@@ -102,34 +102,40 @@ export default function TAQueueListDetail({
   }
   const list = (
     <List>
-      <TAQueueListSection
-        title={"Currently Helping"}
-        questions={helpingQuestions}
-        onClickQuestion={setSelectedQuestionId}
-        selectedQuestionId={selectedQuestionId}
-      />
-      <TAQueueListSection
-        title={
-          <span>
-            <Tooltip title="Students in the priority queue were at the top of the queue before for some reason (e.g. they were at the top but AFK, or a TA helped them previously, and then hit 'requeue student.' You should communicate with your fellow staff members to prioritize these students first.">
-              <PriorityQueueQuestionBubble />
-            </Tooltip>
-            Priority Queue
-          </span>
-        }
-        questions={questions.priorityQueue}
-        onClickQuestion={setSelectedQuestionId}
-        selectedQuestionId={selectedQuestionId}
-        collapsible
-      />
-      <TAQueueListSection
-        title="Waiting In Line"
-        questions={questions.queue}
-        onClickQuestion={setSelectedQuestionId}
-        selectedQuestionId={selectedQuestionId}
-        collapsible
-        showNumbers
-      />
+      <div data-cy="list-helping">
+        <TAQueueListSection
+          title={"Currently Helping"}
+          questions={helpingQuestions}
+          onClickQuestion={setSelectedQuestionId}
+          selectedQuestionId={selectedQuestionId}
+        />
+      </div>
+      <div data-cy="list-priority">
+        <TAQueueListSection
+          title={
+            <span>
+              <Tooltip title="Students in the priority queue were at the top of the queue before for some reason (e.g. they were at the top but AFK, or a TA helped them previously, and then hit 'requeue student.' You should communicate with your fellow staff members to prioritize these students first.">
+                <PriorityQueueQuestionBubble />
+              </Tooltip>
+              Priority Queue
+            </span>
+          }
+          questions={questions.priorityQueue}
+          onClickQuestion={setSelectedQuestionId}
+          selectedQuestionId={selectedQuestionId}
+          collapsible
+        />
+      </div>
+      <div data-cy="list-queue">
+        <TAQueueListSection
+          title="Waiting In Line"
+          questions={questions.queue}
+          onClickQuestion={setSelectedQuestionId}
+          selectedQuestionId={selectedQuestionId}
+          collapsible
+          showNumbers
+        />
+      </div>
     </List>
   );
   const detail = (

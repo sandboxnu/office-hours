@@ -38,7 +38,9 @@ describe("Student Priority Queue", () => {
       cy.get("body").should("contain", "Help Next");
       cy.get("button").contains("Help Next").click();
 
-      cy.get(`[data-cy="queue-list-item-${this.question.id}"]`)
+      cy.get(
+        `[data-cy="list-helping"] [data-cy="queue-list-item-${this.question.id}"]`
+      )
         .should("be.visible")
         .click();
       cy.get('[data-cy="cant-find-button"]').should("be.visible").click();
@@ -69,7 +71,9 @@ describe("Student Priority Queue", () => {
     it("Can't find student and student rejoins the queue", function () {
       cy.get("body").should("contain", "Help Next");
       cy.get("button").contains("Help Next").click();
-      cy.get(`[data-cy="queue-list-item-${this.question.id}"]`)
+      cy.get(
+        `[data-cy="list-helping"] [data-cy="queue-list-item-${this.question.id}"]`
+      )
         .should("be.visible")
         .click();
       cy.get('[data-cy="cant-find-button"]').should("be.visible").click();
@@ -101,7 +105,9 @@ describe("Student Priority Queue", () => {
       cy.get("body").should("contain", "Help Next");
       cy.get("button").contains("Help Next").click();
 
-      cy.get(`[data-cy="queue-list-item-${this.question.id}"]`)
+      cy.get(
+        `[data-cy="list-helping"] [data-cy="queue-list-item-${this.question.id}"]`
+      )
         .should("be.visible")
         .click();
       cy.get('[data-cy="requeue-student-button"]').should("be.visible").click();
@@ -134,7 +140,9 @@ describe("Student Priority Queue", () => {
       cy.get("body").should("contain", "Help Next");
       cy.get("button").contains("Help Next").click();
 
-      cy.get(`[data-cy="queue-list-item-${this.question.id}"]`)
+      cy.get(
+        `[data-cy="list-helping"] [data-cy="queue-list-item-${this.question.id}"]`
+      )
         .should("be.visible")
         .click();
       cy.get('[data-cy="requeue-student-button"]').should("be.visible").click();
@@ -166,7 +174,9 @@ describe("Student Priority Queue", () => {
       cy.get("body").should("contain", "Help Next");
       cy.get("button").contains("Help Next").click();
 
-      cy.get(`[data-cy="queue-list-item-${this.question.id}"]`)
+      cy.get(
+        `[data-cy="list-helping"] [data-cy="queue-list-item-${this.question.id}"]`
+      )
         .should("be.visible")
         .click();
       cy.get('[data-cy="cant-find-button"]').should("be.visible").click();
