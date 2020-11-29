@@ -1,6 +1,7 @@
 import { BellOutlined, EditOutlined } from "@ant-design/icons";
+import { useWindowSize } from "@react-hook/window-size";
 import { Col, Menu, Row, Space } from "antd";
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useState } from "react";
 import { useProfile } from "../../hooks/useProfile";
 import AvatarWithInitals from "../common/AvatarWithInitials";
 import { VerticalDivider } from "../Queue/QueueListSharedComponents";
@@ -23,10 +24,9 @@ export default function SettingsPage({
   const [currentSettings, setCurrentSettings] = useState(
     defaultPage || SettingsOptions.PROFILE
   );
-  const [avatarSize, setAvatarSize] = useState(0);
-  useEffect(() => {
-    setAvatarSize(window.innerWidth / 10);
-  }, []);
+
+  const [width, height] = useWindowSize();
+  const avatarSize = width / 10;
 
   return (
     <Row>
