@@ -13,14 +13,14 @@ import {
 } from "../QueueListSharedComponents";
 import { EditQueueModal } from "./EditQueueModal";
 import onHelpQuestion from "./onHelpQuestion";
-import { COMPACT_BKPT, SPLIT_DETAIL_BKPT } from "./TAQueueBreakpoints";
+import { COMPACT_BKPT } from "./TAQueueBreakpoints";
 import TAQueueListDetail from "./TAQueueListDetail";
 
 const Container = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  @media (min-width: 768px) {
+  @media (min-width: 650px) {
     flex-direction: row;
   }
 `;
@@ -49,9 +49,7 @@ const EditQueueButton = styled(QueueInfoColumnButton)`
 `;
 
 const MiddleSpacer = styled.div`
-  @media (min-width: ${SPLIT_DETAIL_BKPT}px) {
-    margin-left: 20px;
-  }
+  margin-left: 20px;
   @media (min-width: ${COMPACT_BKPT}px) {
     margin-left: 32px;
   }

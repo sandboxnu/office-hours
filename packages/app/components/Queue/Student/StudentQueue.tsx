@@ -32,7 +32,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: 10px;
-  @media (min-width: 768px) {
+  @media (min-width: 650px) {
     margin-top: 0;
     flex-direction: row;
     height: 100%;
@@ -41,8 +41,8 @@ const Container = styled.div`
 
 const QueueListContainer = styled.div`
   flex-grow: 1;
-  @media (min-width: 767px) {
-    margin: 32px 0 0 32px;
+  @media (min-width: 650px) {
+    margin-top: 32px;
   }
 `;
 
@@ -52,8 +52,11 @@ const JoinButton = styled(QueueInfoColumnButton)`
 `;
 
 const VerticalDivider = styled.div`
-  @media (min-width: 767px) {
+  @media (min-width: 650px) {
     border-right: 1px solid #cfd6de;
+    margin: 0 16px;
+  }
+  @media (min-width: 1000px) {
     margin: 0 32px;
   }
 `;

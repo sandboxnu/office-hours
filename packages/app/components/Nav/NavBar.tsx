@@ -33,7 +33,7 @@ const LogoContainer = styled.div`
   z-index: 1;
   display: flex;
   align-items: center;
-  margin-right: 48px;
+  margin-right: 20px;
 `;
 
 const Logo = styled.div`
@@ -52,13 +52,13 @@ const MenuCon = styled.div`
 `;
 
 const LeftMenu = styled.div`
-  @media (max-width: 767px) {
+  @media (max-width: 650px) {
     display: none;
   }
 `;
 
 const RightMenu = styled.div`
-  @media (max-width: 767px) {
+  @media (max-width: 650px) {
     display: none;
   }
 `;
@@ -70,7 +70,7 @@ const BarsMenu = styled(Button)`
   display: none;
   background: none;
 
-  @media (max-width: 767px) {
+  @media (max-width: 650px) {
     display: inline-block;
   }
 `;

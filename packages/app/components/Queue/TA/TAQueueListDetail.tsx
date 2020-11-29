@@ -1,4 +1,5 @@
-import { QuestionCircleOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { useWindowWidth } from "@react-hook/window-size";
 import { Button, Skeleton, Tooltip } from "antd";
 import React, { useState, ReactElement } from "react";
 import styled from "styled-components";
@@ -13,9 +14,13 @@ const Container = styled.div`
   flex: 1;
 
   background: white;
-  border-left: 1px solid #cfd6de;
+  border: 1px solid #cfd6de;
+  margin-bottom: 30px;
 
   @media (min-width: ${SPLIT_DETAIL_BKPT}px) {
+    border: none;
+    border-left: 1px solid #cfd6de;
+    margin-bottom: 0px;
     display: flex;
     flex-direction: row;
     height: calc(
@@ -45,6 +50,15 @@ const Detail = styled.div`
   overflow: scroll;
 `;
 
+const BackToQueue = styled.div`
+  height: 40px;
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  color: #1890ff;
+  cursor: pointer;
+`;
+
 /**
  * List and detail panel of the TA queue
  */
@@ -56,6 +70,7 @@ export default function TAQueueListDetail({
   const user = useProfile();
   const [selectedQuestionId, setSelectedQuestionId] = useState<number>(null);
   const { questions, questionsError, mutateQuestions } = useQuestions(queueId);
+  const isSideBySide = useWindowWidth() >= SPLIT_DETAIL_BKPT;
 
   const helpingQuestions = questions?.questionsGettingHelp?.filter(
     (q) => q.taHelped.id === user.id
@@ -85,45 +100,68 @@ export default function TAQueueListDetail({
       </EmptyQueueInfo>
     );
   }
-  return (
-    <Container>
-      <List>
-        <TAQueueListSection
-          title={"Currently Helping"}
-          questions={helpingQuestions}
-          onClickQuestion={setSelectedQuestionId}
-          selectedQuestionId={selectedQuestionId}
-        />
-        <TAQueueListSection
-          title={
-            <span>
-              <Tooltip title="Students in the priority queue were at the top of the queue before for some reason (e.g. they were at the top but AFK, or a TA helped them previously, and then hit 'requeue student.' You should communicate with your fellow staff members to prioritize these students first.">
-                <PriorityQueueQuestionBubble />
-              </Tooltip>
-              Priority Queue
-            </span>
-          }
-          questions={questions.priorityQueue}
-          onClickQuestion={setSelectedQuestionId}
-          selectedQuestionId={selectedQuestionId}
-          collapsible
-        />
-        <TAQueueListSection
-          title="Waiting In Line"
-          questions={questions.queue}
-          onClickQuestion={setSelectedQuestionId}
-          selectedQuestionId={selectedQuestionId}
-          collapsible
-          showNumbers
-        />
-      </List>
-      <Detail>
-        {selectedQuestion && (
-          <TAQueueDetail queueId={queueId} question={selectedQuestion} />
-        )}
-      </Detail>
-    </Container>
+  const list = (
+    <List>
+      <TAQueueListSection
+        title={"Currently Helping"}
+        questions={helpingQuestions}
+        onClickQuestion={setSelectedQuestionId}
+        selectedQuestionId={selectedQuestionId}
+      />
+      <TAQueueListSection
+        title={
+          <span>
+            <Tooltip title="Students in the priority queue were at the top of the queue before for some reason (e.g. they were at the top but AFK, or a TA helped them previously, and then hit 'requeue student.' You should communicate with your fellow staff members to prioritize these students first.">
+              <PriorityQueueQuestionBubble />
+            </Tooltip>
+            Priority Queue
+          </span>
+        }
+        questions={questions.priorityQueue}
+        onClickQuestion={setSelectedQuestionId}
+        selectedQuestionId={selectedQuestionId}
+        collapsible
+      />
+      <TAQueueListSection
+        title="Waiting In Line"
+        questions={questions.queue}
+        onClickQuestion={setSelectedQuestionId}
+        selectedQuestionId={selectedQuestionId}
+        collapsible
+        showNumbers
+      />
+    </List>
   );
+  const detail = (
+    <Detail>
+      {selectedQuestion && (
+        <TAQueueDetail queueId={queueId} question={selectedQuestion} />
+      )}
+    </Detail>
+  );
+
+  if (isSideBySide) {
+    return (
+      <Container>
+        {list}
+        {detail}
+      </Container>
+    );
+  } else if (selectedQuestionId) {
+    return (
+      <Container>
+        <BackToQueue onClick={() => setSelectedQuestionId(null)}>
+          <span>
+            <ArrowLeftOutlined />
+            {" Back To Queue"}
+          </span>
+        </BackToQueue>
+        {detail}
+      </Container>
+    );
+  } else {
+    return <Container>{list}</Container>;
+  }
 }
 
 const EmptyQueueInfo = styled.div`

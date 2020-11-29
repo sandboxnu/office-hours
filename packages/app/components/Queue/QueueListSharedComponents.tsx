@@ -35,7 +35,7 @@ export const NotesText = styled.div`
 const InfoColumnContainer = styled.div`
   flex-shrink: 0;
   padding-bottom: 30px;
-  @media (min-width: 767px) {
+  @media (min-width: 650px) {
     margin-top: 32px;
     width: 270px;
   }
