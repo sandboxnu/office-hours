@@ -17,6 +17,7 @@ export class BackfillSeparateFirstLastNames {
         user.lastName = user.name.split(' ').slice(1).join(' ');
       } catch (e) {
         user.firstName = user.name;
+        console.log(`Updating name failed for ${user.name}`);
       }
     });
 
