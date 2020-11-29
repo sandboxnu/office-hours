@@ -25,6 +25,12 @@ export class UserModel extends BaseEntity {
   @Column('text')
   name: string;
 
+  @Column('text', { nullable: true })
+  firstName: string;
+
+  @Column('text', { nullable: true })
+  lastName: string;
+
   @Column('text')
   photoURL: string;
 
