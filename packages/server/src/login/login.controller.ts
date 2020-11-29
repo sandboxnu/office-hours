@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  NotFoundException,
   Post,
   Query,
   Req,
@@ -19,6 +18,7 @@ import {
   KhouryTACourse,
   Role,
 } from '@koh/common';
+import { apm } from '@elastic/apm-rum';
 import { Request, Response } from 'express';
 import * as httpSignature from 'http-signature';
 import { Connection } from 'typeorm';
@@ -45,12 +45,25 @@ export class LoginController {
     if (process.env.NODE_ENV === 'production') {
       // Check that request has come from Khoury
       const parsedRequest = httpSignature.parseRequest(req);
-      const verify = httpSignature.verifyHMAC(
+      const verifySignature = httpSignature.verifyHMAC(
         parsedRequest,
         this.configService.get('KHOURY_PRIVATE_KEY'),
       );
-      if (!verify) {
+      if (!verifySignature) {
+        apm.captureError('Invalid request signature');
         throw new UnauthorizedException('Invalid request signature');
+      }
+      // This checks if the request is coming from one of the khoury servers
+      const verityIP = this.configService
+        .get('KHOURY_SERVER_IP')
+        .includes(req.ip);
+      if (!verityIP) {
+        apm.captureError(
+          'The IP of the request does not seem to be coming from the Khoury server',
+        );
+        throw new UnauthorizedException(
+          'The IP of the request does not seem to be coming from the Khoury server',
+        );
       }
     }
 
