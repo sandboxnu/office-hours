@@ -2,9 +2,9 @@ import { BellOutlined, EditOutlined } from "@ant-design/icons";
 import { useWindowWidth } from "@react-hook/window-size";
 import { Col, Menu, Row, Space } from "antd";
 import React, { ReactElement, useState } from "react";
+import styled from "styled-components";
 import { useProfile } from "../../hooks/useProfile";
 import AvatarWithInitals from "../common/AvatarWithInitials";
-import { VerticalDivider } from "../Queue/QueueListSharedComponents";
 import NotificationsSettings from "./NotificationsSettings";
 import ProfileSettings from "./ProfileSettings";
 
@@ -16,6 +16,13 @@ export enum SettingsOptions {
 interface SettingsPageProps {
   defaultPage: SettingsOptions;
 }
+
+const VerticalDivider = styled.div`
+  @media (min-width: 767px) {
+    border-right: 1px solid #cfd6de;
+    margin-right: 32px;
+  }
+`;
 
 export default function SettingsPage({
   defaultPage,
