@@ -1,9 +1,9 @@
-import { Command } from 'nestjs-command';
 import { Injectable } from '@nestjs/common';
+import { Command } from 'nestjs-command';
 import { PhoneNotifModel } from 'notification/phone-notif.entity';
-import { IsNull } from 'typeorm';
 import { TwilioService } from 'notification/twilio/twilio.service';
 import { UserModel } from 'profile/user.entity';
+import { IsNull } from 'typeorm';
 
 @Injectable()
 export class BackfillPhoneNotifs {
