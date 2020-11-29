@@ -1,6 +1,7 @@
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import {
+  ERROR_MESSAGES,
   OpenQuestionStatus,
   Question,
   QuestionStatus,
@@ -143,7 +144,7 @@ export default function TAQueueList({
       if (
         e.response?.status === 401 &&
         e.response?.data?.message ===
-          "Another TA is currently helping with this question"
+          ERROR_MESSAGES.questionController.updateQuestion.otherTAHelping
       ) {
         notification.open({
           message: "Another TA is currently helping the student",

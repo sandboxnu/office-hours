@@ -33,6 +33,8 @@ const makeRequest = (request, identifier, { ...params }) => {
 export const loginUser = (identifier) => {
   cy.get(`@${identifier}`).then((userCourse) => {
     cy.visit(`/api/v1/login/dev?userId=${userCourse.user.id}`);
+    // wait for the defaultCourseRedirect
+    cy.url().should("include", "today");
   });
 };
 
