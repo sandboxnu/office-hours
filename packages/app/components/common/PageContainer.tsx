@@ -12,7 +12,7 @@ export const StandardPageContainer = styled.div`
   width: 100%;
   padding: 0 16px;
   @media (min-width: 750px) {
-    padding: 0 24px;
+    padding: 0 20px;
   }
   @media (min-width: 1000px) {
     padding: 0 32px;

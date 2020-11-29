@@ -5,16 +5,15 @@ import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
+import { COMPACT_BKPT, SPLIT_DETAIL_BKPT } from "./TAQueueBreakpoints";
 import TAQueueDetail from "./TAQueueDetail";
 import TAQueueListSection from "./TAQueueListSection";
-
-// The min screen width at which the list and detail become side-by-side
-const SPLIT_DETAIL_BKPT = 767;
 
 const Container = styled.div`
   flex: 1;
 
   background: white;
+  border-left: 1px solid #cfd6de;
 
   @media (min-width: ${SPLIT_DETAIL_BKPT}px) {
     display: flex;
@@ -27,8 +26,11 @@ const Container = styled.div`
 
 const List = styled.div`
   @media (min-width: ${SPLIT_DETAIL_BKPT}px) {
-    width: 320px;
+    width: 230px;
     overflow: scroll;
+  }
+  @media (min-width: ${COMPACT_BKPT}px) {
+    width: 320px;
   }
 `;
 

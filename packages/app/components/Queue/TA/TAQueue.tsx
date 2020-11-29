@@ -10,10 +10,10 @@ import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
 import {
   QueueInfoColumn,
   QueueInfoColumnButton,
-  VerticalDivider,
 } from "../QueueListSharedComponents";
 import { EditQueueModal } from "./EditQueueModal";
 import onHelpQuestion from "./onHelpQuestion";
+import { COMPACT_BKPT, SPLIT_DETAIL_BKPT } from "./TAQueueBreakpoints";
 import TAQueueListDetail from "./TAQueueListDetail";
 
 const Container = styled.div`
@@ -46,6 +46,15 @@ const HelpNextButton = styled(QueueInfoColumnButton)`
 
 const EditQueueButton = styled(QueueInfoColumnButton)`
   color: #212934;
+`;
+
+const MiddleSpacer = styled.div`
+  @media (min-width: ${SPLIT_DETAIL_BKPT}px) {
+    margin-left: 20px;
+  }
+  @media (min-width: ${COMPACT_BKPT}px) {
+    margin-left: 32px;
+  }
 `;
 
 interface TAQueueProps {
@@ -128,7 +137,7 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
               </>
             }
           />
-          <VerticalDivider />
+          <MiddleSpacer />
           {user && questions && <TAQueueListDetail queueId={qid} />}
         </Container>
         <EditQueueModal

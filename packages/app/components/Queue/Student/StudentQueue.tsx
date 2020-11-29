@@ -7,7 +7,7 @@ import {
   Question,
   QuestionType,
 } from "@koh/common";
-import { Card, Col, notification, Popconfirm, Row, Space } from "antd";
+import { Card, Col, notification, Popconfirm, Row } from "antd";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { mutate } from "swr";
@@ -20,7 +20,6 @@ import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
 import {
   QueueInfoColumn,
   QueueInfoColumnButton,
-  VerticalDivider,
 } from "../QueueListSharedComponents";
 import QuestionForm from "./QuestionForm";
 import StudentBanner from "./StudentBanner";
@@ -50,6 +49,13 @@ const QueueListContainer = styled.div`
 const JoinButton = styled(QueueInfoColumnButton)`
   background-color: #3684c6;
   color: white;
+`;
+
+const VerticalDivider = styled.div`
+  @media (min-width: 767px) {
+    border-right: 1px solid #cfd6de;
+    margin: 0 32px;
+  }
 `;
 
 const StudentHeaderCard = styled(Card)`

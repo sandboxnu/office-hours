@@ -4,6 +4,7 @@ import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { getWaitTime } from "../../../utils/TimeUtil";
 import AvatarWithInitals from "../../common/AvatarWithInitials";
+import { COMPACT_BKPT } from "./TAQueueBreakpoints";
 
 function truncate(string: string, length: number) {
   if (string.length > length) {
@@ -27,10 +28,8 @@ const Container = styled.div<{ selected: boolean }>`
   }
 `;
 const NumberAndAvatarContainer = styled.div`
-  flex-basis: 50px;
   display: flex;
   align-items: center;
-  margin-right: 12px;
 `;
 const PlaceInLine = styled.span`
   width: 40px;
@@ -38,12 +37,20 @@ const PlaceInLine = styled.span`
   font-size: 18px;
   color: #212934;
 `;
+const AvatarContainer = styled.div`
+  display: none;
+  @media (min-width: ${COMPACT_BKPT}px) {
+    margin-right: 12px;
+    display: block;
+  }
+`;
 const QuestionInfoContainer = styled.div``;
 
 const Name = styled.div`
   color: #212934;
 `;
 const QuestionText = styled.div`
+  padding-right: 8px;
   color: #595959;
 `;
 
@@ -74,12 +81,14 @@ export default function TAQueueListItem({
     >
       <NumberAndAvatarContainer>
         <PlaceInLine>{index}</PlaceInLine>
-        <AvatarWithInitals size={40} name={question.creator.name} />
+        <AvatarContainer>
+          <AvatarWithInitals size={40} name={question.creator.name} />
+        </AvatarContainer>
       </NumberAndAvatarContainer>
       <QuestionInfoContainer>
         <Name>{question.creator.name}</Name>
         <QuestionText>
-          {isDrafting ? <i>Still Drafting...</i> : truncate(question.text, 100)}
+          {isDrafting ? <i>Still Drafting...</i> : truncate(question.text, 80)}
         </QuestionText>
         <QuestionMetaRow info={metaInfo} />
       </QuestionInfoContainer>

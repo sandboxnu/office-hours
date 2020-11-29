@@ -3,7 +3,6 @@ import {
   NotificationOutlined,
   StopOutlined,
   CloudSyncOutlined,
-  DislikeOutlined,
   FrownOutlined,
 } from "@ant-design/icons";
 import React, { ReactElement, ReactNode } from "react";
@@ -13,12 +12,6 @@ import { formatQueueTime } from "../../utils/TimeUtil";
 import { TAStatuses } from "./TAStatuses";
 import { Button, Tooltip } from "antd";
 import { ButtonProps } from "antd/lib/button";
-
-export const VerticalDivider = styled.div`
-  @media (min-width: 767px) {
-    border-right: 1px solid #cfd6de;
-  }
-`;
 
 export const Container = styled.div`
   display: flex;
@@ -43,7 +36,7 @@ const InfoColumnContainer = styled.div`
   flex-shrink: 0;
   padding-bottom: 30px;
   @media (min-width: 767px) {
-    margin: 32px 32px 0 0;
+    margin-top: 32px;
     width: 270px;
   }
 `;
