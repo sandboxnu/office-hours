@@ -8,6 +8,8 @@ export declare class UserModel extends BaseEntity {
     id: number;
     email: string;
     name: string;
+    firstName: string;
+    lastName: string;
     photoURL: string;
     courses: UserCourseModel[];
     desktopNotifsEnabled: boolean;
