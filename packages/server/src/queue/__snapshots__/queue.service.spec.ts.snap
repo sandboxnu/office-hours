@@ -10,7 +10,9 @@ ListQuestionsResponse {
       "createdAt": 2020-11-02T12:00:00.000Z,
       "creator": UserModel {
         "email": "user@neu.edu",
+        "firstName": null,
         "id": 1,
+        "lastName": null,
         "name": "User",
         "photoURL": "https://pics/user",
       },
@@ -45,7 +47,9 @@ ListQuestionsResponse {
     "creator": UserModel {
       "desktopNotifsEnabled": false,
       "email": "user@neu.edu",
+      "firstName": null,
       "id": 1,
+      "lastName": null,
       "name": "User",
       "phoneNotifsEnabled": false,
       "photoURL": "https://pics/user",
