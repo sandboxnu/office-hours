@@ -49,6 +49,8 @@ export class ProfileController {
       'id',
       'email',
       'name',
+      'firstName',
+      'lastName',
       'photoURL',
       'desktopNotifsEnabled',
       'phoneNotifsEnabled',
@@ -68,6 +70,7 @@ export class ProfileController {
     user: UserModel,
   ): Promise<GetProfileResponse> {
     user = Object.assign(user, userPatch);
+    user.name = user.firstName + ' ' + user.lastName;
     if (
       user.phoneNotifsEnabled &&
       userPatch.phoneNumber !== user.phoneNotif?.phoneNumber

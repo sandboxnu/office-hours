@@ -34,6 +34,8 @@ export const isProd = (): boolean =>
 export class User {
   id!: number;
   email!: string;
+  firstName?: string;
+  lastName?: string;
   name!: string;
   photoURL!: string;
   courses!: UserCourse[];

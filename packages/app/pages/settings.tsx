@@ -17,7 +17,6 @@ export default function Settings(): ReactElement {
         <title>Settings | Khoury Office Hours</title>
       </Head>
       <NavBar courseId={Number(courseId)} />
-      {/* TODO: think of something better, but current idea is to just have a back button that takes them back*/}
       <Container>
         <>
           <SettingsPage defaultPage={defaultPage as SettingsOptions} />

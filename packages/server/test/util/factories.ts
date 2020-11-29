@@ -3,15 +3,16 @@ import { Factory } from 'typeorm-factory';
 import { CourseModel } from '../../src/course/course.entity';
 import { OfficeHourModel } from '../../src/course/office-hour.entity';
 import { SemesterModel } from '../../src/course/semester.entity';
+import { CourseSectionMappingModel } from '../../src/login/course-section-mapping.entity';
 import { UserCourseModel } from '../../src/profile/user-course.entity';
 import { UserModel } from '../../src/profile/user.entity';
 import { QuestionModel } from '../../src/question/question.entity';
 import { QueueModel } from '../../src/queue/queue.entity';
-import { CourseSectionMappingModel } from '../../src/login/course-section-mapping.entity';
 
 export const UserFactory = new Factory(UserModel)
   .attr('email', `user@neu.edu`)
   .attr('name', `User`)
+  .attr('firstName', 'User')
   .attr('photoURL', `https://pics/user`);
 
 export const StudentCourseFactory = new Factory(UserCourseModel).attr(
