@@ -1,5 +1,5 @@
 import { BellOutlined, EditOutlined } from "@ant-design/icons";
-import { useWindowSize } from "@react-hook/window-size";
+import { useWindowWidth } from "@react-hook/window-size";
 import { Col, Menu, Row, Space } from "antd";
 import React, { ReactElement, useState } from "react";
 import { useProfile } from "../../hooks/useProfile";
@@ -25,18 +25,19 @@ export default function SettingsPage({
     defaultPage || SettingsOptions.PROFILE
   );
 
-  const [width, height] = useWindowSize();
-  const avatarSize = width / 10;
+  const avatarSize = useWindowWidth() / 10;
 
   return (
     <Row>
       <Col span={4} style={{ textAlign: "center" }}>
-        <AvatarWithInitals
-          style={{ marginTop: "60px", marginBottom: "60px" }}
-          name={profile?.name}
-          size={avatarSize}
-          fontSize={avatarSize * (3 / 7)}
-        />
+        {avatarSize ? (
+          <AvatarWithInitals
+            style={{ marginTop: "60px", marginBottom: "60px" }}
+            name={profile?.name}
+            size={avatarSize}
+            fontSize={avatarSize * (3 / 7)}
+          />
+        ) : null}
         <Menu onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}>
           <Menu.Item key={SettingsOptions.PROFILE} icon={<EditOutlined />}>
             Edit Profile
