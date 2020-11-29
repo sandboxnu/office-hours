@@ -44,7 +44,7 @@ const InfoColumnContainer = styled.div`
   padding-bottom: 30px;
   @media (min-width: 767px) {
     margin: 32px 32px 0 0;
-    width: 300px;
+    width: 270px;
   }
 `;
 

@@ -1,8 +1,9 @@
 import { Role } from "@koh/common";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { ReactElement } from "react";
+import React, { ReactElement } from "react";
 import styled from "styled-components";
+import { StandardPageContainer } from "../../../../components/common/PageContainer";
 import NavBar from "../../../../components/Nav/NavBar";
 import StudentQueue from "../../../../components/Queue/Student/StudentQueue";
 import TAQueue from "../../../../components/Queue/TA/TAQueue";
@@ -21,16 +22,18 @@ export default function Queue(): ReactElement {
   const { queue } = useQueue(Number(qid));
 
   return (
-    <Container>
-      <Head>
-        <title>{queue?.room} Queue | Khoury Office Hours</title>
-      </Head>
-      <NavBar courseId={Number(cid)} />
-      {Role.STUDENT === role ? (
-        <StudentQueue qid={Number(qid)} />
-      ) : (
-        <TAQueue qid={Number(qid)} courseId={Number(cid)} />
-      )}
-    </Container>
+    <StandardPageContainer>
+      <Container>
+        <Head>
+          <title>{queue?.room} Queue | Khoury Office Hours</title>
+        </Head>
+        <NavBar courseId={Number(cid)} />
+        {Role.STUDENT === role ? (
+          <StudentQueue qid={Number(qid)} />
+        ) : (
+          <TAQueue qid={Number(qid)} courseId={Number(cid)} />
+        )}
+      </Container>
+    </StandardPageContainer>
   );
 }

@@ -32,10 +32,10 @@ const Container = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin: 10px 24px 0 24px;
+  margin-top: 10px;
   @media (min-width: 768px) {
+    margin-top: 0;
     flex-direction: row;
-    margin: 0 64px; // Matches navbar. TODO: Should probably make this min-width based instead of padding
     height: 100%;
   }
 `;
@@ -293,7 +293,6 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
                 leaveQueue={leaveQueue}
               />
             )}
-            <div style={{ marginTop: "40px" }} />
             <QueueQuestions
               questions={questions?.queue}
               studentQuestion={studentQuestion}
