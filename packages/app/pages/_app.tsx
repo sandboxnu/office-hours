@@ -24,6 +24,8 @@ const Layout = styled.div`
 
 const Content = styled.div`
   flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
 `;
 
 function MyApp({ Component, pageProps }: AppProps): ReactElement {
