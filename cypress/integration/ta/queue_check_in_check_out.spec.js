@@ -162,7 +162,8 @@ describe("Checking in and out when there arent scheduled office hours", () => {
 
     // Click "Check out"
     cy.get("[data-cy='check-out-button']").click();
-    cy.get("button").should("contain", "Check In");
+    // click "clear queue" button in modal
+    cy.get("[data-cy='clear-queue-btn']").click();
 
     // No TAs should be checked in, and there should not be any student in the queue
     cy.get("[data-cy='ta-status-card']").should("not.visible");
