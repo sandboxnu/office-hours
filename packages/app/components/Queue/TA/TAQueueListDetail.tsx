@@ -1,11 +1,12 @@
 import { ArrowLeftOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { useWindowWidth } from "@react-hook/window-size";
 import { Button, Skeleton, Tooltip } from "antd";
+import Link from "next/link";
 import React, { useState, ReactElement } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
-import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
+import { SettingsOptions } from "../../Settings/SettingsPage";
 import { COMPACT_BKPT, SPLIT_DETAIL_BKPT } from "./TAQueueBreakpoints";
 import TAQueueDetail from "./TAQueueDetail";
 import TAQueueListSection from "./TAQueueListSection";
@@ -64,8 +65,10 @@ const BackToQueue = styled.div`
  */
 export default function TAQueueListDetail({
   queueId,
+  courseId,
 }: {
   queueId: number;
+  courseId: number;
 }): ReactElement {
   const user = useProfile();
   const [selectedQuestionId, setSelectedQuestionId] = useState<number>(null);
@@ -95,7 +98,7 @@ export default function TAQueueListDetail({
       <EmptyQueueInfo>
         <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
         {!user.phoneNotifsEnabled && !user.desktopNotifsEnabled && (
-          <NotifReminderButton />
+          <NotifReminderButton courseId={courseId} />
         )}
       </EmptyQueueInfo>
     );
@@ -190,19 +193,17 @@ const NotifRemindButton = styled(Button)`
   background: #fff;
 `;
 
-function NotifReminderButton() {
-  const [isNotifOpen, setIsNotifOpen] = useState(false);
+function NotifReminderButton({ courseId }: { courseId: number }) {
   return (
     <>
-      <NotifRemindButton onClick={(e) => setIsNotifOpen(true)}>
-        Sign Up for Notifications
-      </NotifRemindButton>
-      {isNotifOpen && (
-        <NotificationSettingsModal
-          visible={isNotifOpen}
-          onClose={() => setIsNotifOpen(false)}
-        />
-      )}
+      <Link
+        href={{
+          pathname: "/settings",
+          query: { cid: courseId, defaultPage: SettingsOptions.NOTIFICATIONS },
+        }}
+      >
+        <NotifRemindButton>Sign Up for Notifications</NotifRemindButton>
+      </Link>
     </>
   );
 }

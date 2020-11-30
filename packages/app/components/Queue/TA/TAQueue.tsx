@@ -136,7 +136,9 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
             }
           />
           <MiddleSpacer />
-          {user && questions && <TAQueueListDetail queueId={qid} />}
+          {user && questions && (
+            <TAQueueListDetail queueId={qid} courseId={courseId} />
+          )}
         </Container>
         <EditQueueModal
           queueId={qid}
