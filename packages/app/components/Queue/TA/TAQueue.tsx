@@ -7,6 +7,7 @@ import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { useQueue } from "../../../hooks/useQueue";
 import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
+import TACheckinButton from "../../Today/TACheckinButton";
 import {
   QueueInfoColumn,
   QueueInfoColumnButton,
@@ -23,15 +24,6 @@ const Container = styled.div`
   @media (min-width: 650px) {
     flex-direction: row;
   }
-`;
-
-const CheckOutButton = styled(QueueInfoColumnButton)`
-  color: #da3236;
-`;
-
-const CheckInButton = styled(QueueInfoColumnButton)`
-  color: white;
-  background: #2a9187;
 `;
 
 const HelpNextButton = styled(QueueInfoColumnButton)`
@@ -109,29 +101,15 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
                     Help Next
                   </HelpNextButton>
                 </Tooltip>
-                {isCheckedIn ? (
-                  <CheckOutButton
-                    danger
+                <div style={{ marginBottom: "12px" }}>
+                  <TACheckinButton
+                    courseId={courseId}
+                    room={queue?.room}
                     disabled={isHelping}
-                    data-cy="check-out-button"
-                    onClick={async () => {
-                      await API.taStatus.checkOut(courseId, queue?.room);
-                      mutateQueue();
-                    }}
-                  >
-                    Check Out
-                  </CheckOutButton>
-                ) : (
-                  <CheckInButton
-                    onClick={async () => {
-                      await API.taStatus.checkIn(courseId, queue?.room);
-                      mutateQueue();
-                    }}
-                    data-cy="check-in-button"
-                  >
-                    Check In
-                  </CheckInButton>
-                )}
+                    state={isCheckedIn ? "CheckedIn" : "CheckedOut"}
+                    block
+                  />
+                </div>
               </>
             }
           />

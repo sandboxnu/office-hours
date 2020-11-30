@@ -97,6 +97,47 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
   });
 });
 
+describe("Checking out when office hours end soon", () => {
+  beforeEach(() => {
+    createAndLoginTA();
+    createQueue({
+      courseId: "ta.course.id",
+      closesIn: 5 * 60 * 1000,
+    });
+    checkInTA();
+    createQuestion({ queueId: "queue.id" });
+  });
+
+  it("opens the clean queue page from the queue page", function () {
+    // Visit the queue page
+    cy.visit(`/course/${this.queue.courseId}/queue/${this.queue.id}`);
+    // verify there's 1 student in queue
+    cy.get("[data-cy='ta-queue-card']").should("have.length", "1");
+    // Click "Check out"
+    cy.get("[data-cy='check-out-button']").click();
+
+    // click "clear queue" button in modal
+    cy.get("[data-cy='clear-queue-btn']").click();
+
+    // Verify queue is now empty
+    cy.get("body").should("contain", "There are no questions in the queue");
+  });
+
+  it("opens the clean queue page from the today page", function () {
+    cy.visit(`/course/${this.queue.courseId}/today`);
+    // verify 1 student
+    cy.get("div").should("contain", "1 in queue");
+    // close "Welcome to Khoury" modal
+    cy.get(".ant-modal-close-x").click();
+
+    // Click "Check out"
+    cy.get("[data-cy='check-out-button']").click();
+
+    // click "clear queue" button in modal
+    cy.get("[data-cy='clear-queue-btn']").click();
+  });
+});
+
 describe("Checking in and out when there arent scheduled office hours", () => {
   beforeEach(() => {
     createAndLoginTA();
@@ -128,7 +169,8 @@ describe("Checking in and out when there arent scheduled office hours", () => {
 
     // Click "Check out"
     cy.get("[data-cy='check-out-button']").click();
-    cy.get("button").should("contain", "Check In");
+    // click "clear queue" button in modal
+    cy.get("[data-cy='clear-queue-btn']").click();
 
     // No TAs should be checked in, and there should not be any student in the queue
     cy.get("[data-cy='ta-status-card']").should("not.visible");

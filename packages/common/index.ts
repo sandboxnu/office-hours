@@ -458,6 +458,15 @@ export type QueueNotePayloadType = {
   notes: string;
 };
 
+export class TACheckoutResponse {
+  // The ID of the queue we checked out of
+  queueId!: number;
+  canClearQueue!: boolean;
+
+  @Type(() => Date)
+  nextOfficeHourTime?: Date;
+}
+
 export class UpdateQueueParams {
   @IsString()
   @IsOptional()

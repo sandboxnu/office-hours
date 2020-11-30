@@ -44,7 +44,7 @@ export const CourseFactory = new Factory(CourseModel)
   .attr('icalURL', 'http://hi.com')
   .attr('enabled', true)
   .assocOne('semester', SemesterFactory)
-  .assocMany('officeHours', OfficeHourFactory);
+  .assocMany('officeHours', OfficeHourFactory, 0);
 
 export const CourseSectionFactory = new Factory(CourseSectionMappingModel)
   .attr('genericCourseName', 'CS 2500')
@@ -60,7 +60,8 @@ export const QueueFactory = new Factory(QueueModel)
   .attr('room', 'Online')
   .assocOne('course', CourseFactory)
   .attr('allowQuestions', false)
-  .assocMany('officeHours', OfficeHourFactory);
+  .assocMany('officeHours', OfficeHourFactory)
+  .assocMany('staffList', UserFactory, 0);
 
 // WARNING: DO NOT USE CREATORID. AS YOU SEE HERE, WE ONLY ACCEPT CREATOR
 //TODO: make it accept creatorId as well
