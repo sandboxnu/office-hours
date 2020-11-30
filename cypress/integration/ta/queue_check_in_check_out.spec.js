@@ -112,7 +112,10 @@ describe("Checking out when office hours end soon", () => {
     // Visit the queue page
     cy.visit(`/course/${this.queue.courseId}/queue/${this.queue.id}`);
     // verify there's 1 student in queue
-    cy.get("[data-cy='ta-queue-card']").should("have.length", "1");
+    cy.get("[data-cy='list-queue'] [data-cy^='queue-list-item']").should(
+      "have.length",
+      "1"
+    );
     // Click "Check out"
     cy.get("[data-cy='check-out-button']").click();
 
@@ -138,28 +141,33 @@ describe("Checking out when office hours end soon", () => {
   });
 });
 
-describe("Checking in and out when there arent scheduled office hours", () => {
+describe("Checking in and out when there arent scheduled office hours", function () {
   beforeEach(() => {
     createAndLoginTA();
   });
 
   it("checking in a TA when there is not scheduled office hours", function () {
     // check into the queue
-    cy.request({
-      method: "POST",
-      url: `/api/v1/courses/${this.ta.courseId}/ta_location/Online`,
-    })
-      .then((res) => res.body)
-      .as("queue")
-      .then((queue) => {
-        // add a question to the queue
-        createQuestion({
-          queueId: "queue.id",
+    cy.get("@ta").then((ta) => {
+      cy.request({
+        method: "POST",
+        url: `/api/v1/courses/${ta.courseId}/ta_location/Online`,
+      })
+        .then((res) => res.body)
+        .as("queue")
+        .then((queue) => {
+          // add a question to the queue
+          createQuestion({
+            queueId: "queue.id",
+            identifier: "question",
+          });
+          // Navigate to the queue page
+          cy.visit(`/course/${ta.courseId}/queue/${queue.id}`);
         });
-        // Navigate to the queue page
-        cy.visit(`/course/${this.ta.courseId}/queue/${queue.id}`);
-      });
+    });
+  });
 
+  it("checking in a TA when there is not scheduled office hours", function () {
     // The ta should show as checked in
     cy.get("[data-cy='ta-status-card']").should("be.visible");
     // 1 student should be in the queue
