@@ -20,7 +20,6 @@ describe("TA interacts with student question", () => {
       courseId: "student.course.id",
     });
     createQuestion({
-      identifier: "question1",
       queueId: "queue.id",
       studentId: "student.user.id",
       data: {
@@ -29,8 +28,9 @@ describe("TA interacts with student question", () => {
     });
     createQuestion({
       queueId: "queue.id",
+      identifier: "question1",
     });
-    checkInTA();
+    loginUser("ta");
 
     // Visit the queue page
     cy.get("@queue").then((queue) => {
