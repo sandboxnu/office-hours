@@ -18,9 +18,13 @@ export function TAStatuses({ queueId }: StatusRowProps): ReactElement {
   const {
     queue: { staffList },
   } = useQueue(queueId);
+  if (!questions) {
+    return null;
+  }
+
   const taToQuestion: Record<number, Question> = {};
   const taIds = staffList.map((t) => t.id);
-  const helpingQuestions = questions?.questionsGettingHelp;
+  const helpingQuestions = questions.questionsGettingHelp;
   for (const question of helpingQuestions) {
     if (taIds.includes(question.taHelped?.id)) {
       taToQuestion[question.taHelped.id] = question;

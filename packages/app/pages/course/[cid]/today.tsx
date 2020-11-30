@@ -16,12 +16,10 @@ import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useCourse } from "../../../hooks/useCourse";
 import { useProfile } from "../../../hooks/useProfile";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
+import { StandardPageContainer } from "../../../components/common/PageContainer";
 
 const Container = styled.div`
-  margin: 32px 64px;
-  @media (max-width: 768px) {
-    margin: 32px 24px;
-  }
+  margin-top: 32px;
 `;
 
 const Title = styled.div`
@@ -59,7 +57,7 @@ export default function Today(): ReactElement {
   );
 
   return (
-    <div>
+    <StandardPageContainer>
       <Head>
         <title>{course?.name} | Khoury Office Hours</title>
       </Head>
@@ -100,6 +98,6 @@ export default function Today(): ReactElement {
           </Col>
         </Row>
       </Container>
-    </div>
+    </StandardPageContainer>
   );
 }
