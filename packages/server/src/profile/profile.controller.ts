@@ -1,15 +1,15 @@
-import { Controller, Get, UseGuards, Patch, Body } from '@nestjs/common';
-import { Connection } from 'typeorm';
-import { UserModel } from './user.entity';
-import { pick } from 'lodash';
 import {
   DesktopNotifPartial,
   GetProfileResponse,
   UpdateProfileParams,
 } from '@koh/common';
+import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
+import { pick } from 'lodash';
+import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
-import { User } from './user.decorator';
 import { NotificationService } from '../notification/notification.service';
+import { User } from './user.decorator';
+import { UserModel } from './user.entity';
 
 @Controller('profile')
 @UseGuards(JwtAuthGuard)
