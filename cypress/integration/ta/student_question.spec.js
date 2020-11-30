@@ -95,10 +95,6 @@ describe("TA interacts with student question", () => {
       "have.length",
       1
     );
-    // check question is helping
-    cy.get(
-      `[data-cy='list-helping'] [data-cy='queue-list-item-${this.question1.id}']`
-    );
   });
 
   it("removes another student from the queue while helping", function () {

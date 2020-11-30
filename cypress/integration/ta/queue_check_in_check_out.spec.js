@@ -47,7 +47,7 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
     // Other TA should still be checked in, and there should still be 1 student in the queue
     cy.get("[data-cy='ta-status-card']").should("have.length", "1");
     cy.get(
-      "[data-cy='list-queue'] [data-cy='queue-list-item-${this.question.id}']"
+      `[data-cy='list-queue'] [data-cy='queue-list-item-${this.question.id}']`
     ).should("have.length", "1");
     cy.percySnapshot("TA Queue Page - One TA Checked out One TA Checked In");
   });
@@ -123,7 +123,7 @@ describe("Checking in and out when there arent scheduled office hours", () => {
     cy.get("[data-cy='ta-status-card']").should("be.visible");
     // 1 student should be in the queue
     cy.get(
-      "[data-cy='list-queue'] [data-cy='queue-list-item-${this.question.id}']"
+      `[data-cy='list-queue'] [data-cy='queue-list-item-${this.question.id}']`
     ).should("have.length", "1");
 
     // Click "Check out"
