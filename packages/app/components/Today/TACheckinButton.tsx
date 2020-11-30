@@ -35,7 +35,7 @@ interface TACheckinButtonProps {
   courseId: number;
   room: string; // name of room to check into
   state: CheckInButtonState; // State of the button
-  disabled: boolean;
+  disabled?: boolean;
   block?: boolean;
 }
 const EMPTY_CHECKOUT_INFO = { canClearQueue: false, nextOfficeHourTime: null };
