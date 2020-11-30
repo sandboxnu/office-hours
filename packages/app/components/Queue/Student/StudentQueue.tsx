@@ -8,6 +8,7 @@ import {
   QuestionType,
 } from "@koh/common";
 import { Card, Col, notification, Popconfirm, Row } from "antd";
+import { Router } from "next/router";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { mutate } from "swr";
@@ -16,7 +17,6 @@ import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { useQueue } from "../../../hooks/useQueue";
 import { useStudentQuestion } from "../../../hooks/useStudentQuestion";
-import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
 import {
   QueueInfoColumn,
   QueueInfoColumnButton,
@@ -92,7 +92,6 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
     "isFirstQuestion",
     true
   );
-  const [notifModalOpen, setNotifModalOpen] = useState(false);
   const [showJoinPopconfirm, setShowJoinPopconfirm] = useState(false);
   const { deleteDraftQuestion } = useDraftQuestion();
 
@@ -219,7 +218,7 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
   );
 
   const finishQuestionAndClose = useCallback(
-    (text: string, qt: QuestionType) => {
+    (text: string, qt: QuestionType, router: Router, cid: number) => {
       deleteDraftQuestion();
       finishQuestion(text, qt);
       closeEditModal();
@@ -234,8 +233,8 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
           duration: 0,
           onClick: () => {
             notification.destroy();
-            setNotifModalOpen(true);
             setIsFirstQuestion(false);
+            router.push(`/settings?cid=${cid}`);
           },
         });
       }
@@ -320,10 +319,6 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
           finishQuestion={finishQuestionAndClose}
           position={studentQuestionIndex + 1}
           cancel={closeEditModal}
-        />
-        <NotificationSettingsModal
-          visible={notifModalOpen}
-          onClose={() => setNotifModalOpen(false)}
         />
       </>
     );
