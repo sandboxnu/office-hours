@@ -1,12 +1,9 @@
-import {
-  ClosedQuestionStatus,
-  OpenQuestionStatus,
-  StatusInPriorityQueue,
-  StatusInQueue,
-} from '@koh/common';
+import { ClosedQuestionStatus, OpenQuestionStatus } from '@koh/common';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { Connection } from 'typeorm';
+import { OfficeHourModel } from 'course/office-hour.entity';
+import moment = require('moment');
+import { Connection, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { QuestionModel } from '../../question/question.entity';
 import { QueueModel } from '../queue.entity';
 
@@ -27,21 +24,48 @@ export class QueueCleanService {
       })
       .getMany();
 
-    queuesWithOpenQuestions.forEach((queue) => {
-      this.cleanQueue(queue.id);
-    });
+    await Promise.all(
+      queuesWithOpenQuestions.map((queue) => this.cleanQueue(queue.id)),
+    );
   }
 
-  public async cleanQueue(queueId: number): Promise<void> {
+  public async cleanQueue(queueId: number, force?: boolean): Promise<void> {
     const queue = await QueueModel.findOne(queueId, {
       relations: ['staffList'],
     });
 
-    if (!(await queue.checkIsOpen())) {
+    if (force || !(await queue.checkIsOpen())) {
       queue.notes = '';
       await queue.save();
       await this.unsafeClean(queue.id);
     }
+  }
+
+  // Should we consider cleaning the queue?
+  //  Checks if there are no staff, open questions and that there aren't any office hours soon
+  public async shouldCleanQueue(queue: QueueModel): Promise<boolean> {
+    if (queue.staffList.length === 0) {
+      // Last TA to checkout, so check if we might want to clear the queue
+      const areAnyQuestionsOpen =
+        (await QuestionModel.inQueueWithStatus(
+          queue.id,
+          Object.values(OpenQuestionStatus),
+        ).getCount()) > 0;
+      if (areAnyQuestionsOpen) {
+        const soon = moment().add(15, 'minutes').toDate();
+        const areOfficeHourSoon =
+          (await OfficeHourModel.count({
+            where: {
+              startTime: LessThanOrEqual(soon),
+              endTime: MoreThanOrEqual(soon),
+            },
+          })) > 0;
+        if (!areOfficeHourSoon) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   private async unsafeClean(queueId: number): Promise<void> {
