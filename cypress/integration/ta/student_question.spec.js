@@ -20,6 +20,7 @@ describe("TA interacts with student question", () => {
       courseId: "student.course.id",
     });
     createQuestion({
+      identifier: "question1",
       queueId: "queue.id",
       studentId: "student.user.id",
       data: {
