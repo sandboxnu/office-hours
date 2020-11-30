@@ -18,6 +18,7 @@ export declare class SeedController {
     createQueue(body: {
         courseId: number;
         allowQuestions: boolean;
+        closesIn?: number;
     }): Promise<QueueModel>;
     createQuestion(body: {
         queueId: number;

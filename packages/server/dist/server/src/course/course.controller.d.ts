@@ -1,4 +1,4 @@
-import { GetCourseResponse, QueuePartial } from '@koh/common';
+import { GetCourseResponse, QueuePartial, TACheckoutResponse } from '@koh/common';
 import { Connection } from 'typeorm';
 import { UserModel } from '../profile/user.entity';
 import { QueueCleanService } from '../queue/queue-clean/queue-clean.service';
@@ -10,5 +10,5 @@ export declare class CourseController {
     constructor(connection: Connection, queueCleanService: QueueCleanService, queueSSEService: QueueSSEService);
     get(id: number): Promise<GetCourseResponse>;
     checkIn(courseId: number, room: string, user: UserModel): Promise<QueuePartial>;
-    checkOut(courseId: number, room: string, user: UserModel): Promise<void>;
+    checkOut(courseId: number, room: string, user: UserModel): Promise<TACheckoutResponse>;
 }

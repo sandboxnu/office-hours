@@ -209,6 +209,11 @@ export declare type TAUpdateStatusResponse = QueuePartial;
 export declare type QueueNotePayloadType = {
     notes: string;
 };
+export declare class TACheckoutResponse {
+    queueId: number;
+    canClearQueue: boolean;
+    nextOfficeHourTime?: Date;
+}
 export declare class UpdateQueueParams {
     notes?: string;
     allowQuestions?: boolean;
