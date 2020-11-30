@@ -1,7 +1,7 @@
 import { OpenQuestionStatus, Question, QuestionType } from "@koh/common";
 import { Alert, Button, Input, Modal, Radio } from "antd";
 import { RadioChangeEvent } from "antd/lib/radio";
-import { useRouter } from "next/router";
+import { NextRouter, useRouter } from "next/router";
 import { default as React, ReactElement, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
@@ -42,7 +42,7 @@ interface QuestionFormProps {
   finishQuestion: (
     text: string,
     questionType: QuestionType,
-    router: Router,
+    router: NextRouter,
     courseId: number
   ) => void;
   position: number;
@@ -109,7 +109,7 @@ export default function QuestionForm({
   // on button submit click, conditionally choose to go back to the queue
   const onClickSubmit = () => {
     if (questionTypeInput && questionText && questionText !== "") {
-      finishQuestion(questionText, questionTypeInput, router, courseId);
+      finishQuestion(questionText, questionTypeInput, router, Number(courseId));
     }
   };
 
