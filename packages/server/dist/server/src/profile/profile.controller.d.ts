@@ -1,7 +1,7 @@
-import { Connection } from 'typeorm';
-import { UserModel } from './user.entity';
 import { GetProfileResponse, UpdateProfileParams } from '@koh/common';
+import { Connection } from 'typeorm';
 import { NotificationService } from '../notification/notification.service';
+import { UserModel } from './user.entity';
 export declare class ProfileController {
     private connection;
     private notifService;
