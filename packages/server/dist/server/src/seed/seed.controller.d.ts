@@ -1,4 +1,4 @@
-import { Role, CreateQuestionParams } from '@koh/common';
+import { CreateQuestionParams, Role } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { Connection } from 'typeorm';
 import { QuestionModel } from '../question/question.entity';

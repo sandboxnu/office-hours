@@ -4,6 +4,8 @@ export declare const isProd: () => boolean;
 export declare class User {
     id: number;
     email: string;
+    firstName?: string;
+    lastName?: string;
     name: string;
     photoURL: string;
     courses: UserCourse[];
@@ -162,6 +164,8 @@ export declare class UpdateProfileParams {
     desktopNotifsEnabled?: boolean;
     phoneNotifsEnabled?: boolean;
     phoneNumber?: string;
+    firstName?: string;
+    lastName?: string;
 }
 export declare class GetCourseResponse {
     id: number;
