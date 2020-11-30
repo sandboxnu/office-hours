@@ -1,7 +1,7 @@
+import { OpenQuestionStatus } from '@koh/common';
 import { QuestionModel } from 'question/question.entity';
 import { QueueModule } from '../src/queue/queue.module';
 import {
-  ClosedOfficeHourFactory,
   CourseFactory,
   QuestionFactory,
   QueueFactory,
@@ -11,6 +11,7 @@ import {
   UserFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
+
 async function delay(ms) {
   // return await for better async stack trace support in case of errors.
   return await new Promise((resolve) => setTimeout(resolve, ms));
@@ -222,14 +223,24 @@ describe('Queue Integration', () => {
         user: await UserFactory.create(),
       });
 
-      expect(await QuestionModel.openInQueue(queue.id).getCount()).toEqual(1);
+      expect(
+        await QuestionModel.inQueueWithStatus(
+          queue.id,
+          Object.values(OpenQuestionStatus),
+        ).getCount(),
+      ).toEqual(1);
 
       await supertest({ userId: tcf.userId })
         .post(`/queues/${queue.id}/clean`)
         .expect(201);
 
       await delay(100);
-      expect(await QuestionModel.openInQueue(queue.id).getCount()).toEqual(0);
+      expect(
+        await QuestionModel.inQueueWithStatus(
+          queue.id,
+          Object.values(OpenQuestionStatus),
+        ).getCount(),
+      ).toEqual(0);
     });
 
     it('does not allow students access', async () => {
@@ -245,7 +256,12 @@ describe('Queue Integration', () => {
 
       await delay(100);
       /// questions should still be there
-      expect(await QuestionModel.openInQueue(queue.id).getCount()).toEqual(1);
+      expect(
+        await QuestionModel.inQueueWithStatus(
+          queue.id,
+          Object.values(OpenQuestionStatus),
+        ).getCount(),
+      ).toEqual(1);
     });
   });
 });
