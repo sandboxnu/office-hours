@@ -1,9 +1,10 @@
 import { BellOutlined, EditOutlined } from "@ant-design/icons";
+import { useWindowWidth } from "@react-hook/window-size";
 import { Col, Menu, Row, Space } from "antd";
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useState } from "react";
+import styled from "styled-components";
 import { useProfile } from "../../hooks/useProfile";
 import AvatarWithInitals from "../common/AvatarWithInitials";
-import { VerticalDivider } from "../Queue/QueueListSharedComponents";
 import NotificationsSettings from "./NotificationsSettings";
 import ProfileSettings from "./ProfileSettings";
 
@@ -16,6 +17,13 @@ interface SettingsPageProps {
   defaultPage: SettingsOptions;
 }
 
+const VerticalDivider = styled.div`
+  @media (min-width: 767px) {
+    border-right: 1px solid #cfd6de;
+    margin-right: 32px;
+  }
+`;
+
 export default function SettingsPage({
   defaultPage,
 }: SettingsPageProps): ReactElement {
@@ -23,20 +31,20 @@ export default function SettingsPage({
   const [currentSettings, setCurrentSettings] = useState(
     defaultPage || SettingsOptions.PROFILE
   );
-  const [avatarSize, setAvatarSize] = useState(0);
-  useEffect(() => {
-    setAvatarSize(window.innerWidth / 10);
-  }, []);
+
+  const avatarSize = useWindowWidth() / 10;
 
   return (
     <Row>
       <Col span={4} style={{ textAlign: "center" }}>
-        <AvatarWithInitals
-          style={{ marginTop: "60px", marginBottom: "60px" }}
-          name={profile?.name}
-          size={avatarSize}
-          fontSize={avatarSize * (3 / 7)}
-        />
+        {avatarSize ? (
+          <AvatarWithInitals
+            style={{ marginTop: "60px", marginBottom: "60px" }}
+            name={profile?.name}
+            size={avatarSize}
+            fontSize={avatarSize * (3 / 7)}
+          />
+        ) : null}
         <Menu onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}>
           <Menu.Item key={SettingsOptions.PROFILE} icon={<EditOutlined />}>
             Edit Profile

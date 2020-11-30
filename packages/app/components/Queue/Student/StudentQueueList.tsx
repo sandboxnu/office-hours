@@ -8,6 +8,7 @@ import {
   QuestionType,
 } from "@koh/common";
 import { Card, Col, notification, Popconfirm, Row, Space } from "antd";
+import { Router } from "next/router";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { mutate } from "swr";
@@ -66,7 +67,6 @@ export default function StudentQueueList({
     "isFirstQuestion",
     true
   );
-  const [notifModalOpen, setNotifModalOpen] = useState(false);
   const [showJoinPopconfirm, setShowJoinPopconfirm] = useState(false);
   const { deleteDraftQuestion } = useDraftQuestion();
 
@@ -193,7 +193,7 @@ export default function StudentQueueList({
   );
 
   const finishQuestionAndClose = useCallback(
-    (text: string, qt: QuestionType) => {
+    (text: string, qt: QuestionType, router: Router, cid: number) => {
       deleteDraftQuestion();
       finishQuestion(text, qt);
       closeEditModal();
@@ -208,8 +208,8 @@ export default function StudentQueueList({
           duration: 0,
           onClick: () => {
             notification.destroy();
-            setNotifModalOpen(true);
             setIsFirstQuestion(false);
+            router.push(`/settings?cid=${cid}`);
           },
         });
       }
