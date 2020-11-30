@@ -5,18 +5,9 @@ import {
   ERROR_MESSAGES,
   UpdateProfileParams,
 } from "@koh/common";
-import {
-  Button,
-  Form,
-  Input,
-  List,
-  message,
-  Modal,
-  Switch,
-  Tooltip,
-} from "antd";
+import { Button, Form, Input, List, message, Switch, Tooltip } from "antd";
 import { pick } from "lodash";
-import { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import styled from "styled-components";
 import useSWR from "swr";
 import {
@@ -32,15 +23,7 @@ const DeviceAddHeader = styled.div`
   justify-content: space-between;
 `;
 
-interface NotificationSettingsModalProps {
-  visible: boolean;
-  onClose: () => void;
-}
-
-export function NotificationSettingsModal({
-  visible,
-  onClose,
-}: NotificationSettingsModalProps): ReactElement {
+export default function NotificationsSettings(): ReactElement {
   const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
     API.profile.index()
   );
@@ -57,14 +40,14 @@ export function NotificationSettingsModal({
       ])
     );
     mutate();
+    return newProfile;
   };
 
   const handleOk = async () => {
     const value = await form.validateFields();
     try {
-      await editProfile(value);
-      form.setFieldsValue(profile);
-      onClose();
+      const newProfile = await editProfile(value);
+      form.setFieldsValue(newProfile);
     } catch (e) {
       if (
         e.response?.status === 400 &&
@@ -78,34 +61,9 @@ export function NotificationSettingsModal({
     }
   };
 
-  const handleCancel = () => onClose();
-
   return (
-    <Modal
-      title="Notification Settings"
-      visible={visible}
-      onOk={handleOk}
-      onCancel={handleCancel}
-      footer={
-        <>
-          <QuestionCircleOutlined
-            style={{ float: "left", fontSize: "25px" }}
-            onClick={() =>
-              window.open(
-                "https://www.notion.so/593f9eb67eb04abbb8008c285ed5a8dd?v=b3d8ef6b3d2742f1985a6406e582601a"
-              )
-            }
-          />
-          <Button key="back" onClick={handleCancel}>
-            Cancel
-          </Button>
-          <Button key="submit" type="primary" onClick={handleOk}>
-            Ok
-          </Button>
-        </>
-      }
-    >
-      {profile && (
+    profile && (
+      <div style={{ paddingTop: "50px" }}>
         <Form form={form} initialValues={profile}>
           <Form.Item
             label="Enable notifications on all devices"
@@ -121,7 +79,6 @@ export function NotificationSettingsModal({
               )
             }
           </Form.Item>
-          {/* <Divider orientation="left">SMS</Divider> */}
           <Form.Item
             style={{ marginTop: "30px" }}
             label="Enable SMS notifications"
@@ -150,8 +107,21 @@ export function NotificationSettingsModal({
             }
           </Form.Item>
         </Form>
-      )}
-    </Modal>
+        <Tooltip title="How do notifications work?">
+          <QuestionCircleOutlined
+            style={{ float: "right", fontSize: "25px" }}
+            onClick={() =>
+              window.open(
+                "https://www.notion.so/593f9eb67eb04abbb8008c285ed5a8dd?v=b3d8ef6b3d2742f1985a6406e582601a"
+              )
+            }
+          />
+        </Tooltip>
+        <Button key="submit" type="primary" onClick={handleOk}>
+          Ok
+        </Button>
+      </div>
+    )
   );
 }
 

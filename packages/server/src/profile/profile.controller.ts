@@ -1,15 +1,15 @@
-import { Controller, Get, UseGuards, Patch, Body } from '@nestjs/common';
-import { Connection } from 'typeorm';
-import { UserModel } from './user.entity';
-import { pick } from 'lodash';
 import {
   DesktopNotifPartial,
   GetProfileResponse,
   UpdateProfileParams,
 } from '@koh/common';
+import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
+import { pick } from 'lodash';
+import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
-import { User } from './user.decorator';
 import { NotificationService } from '../notification/notification.service';
+import { User } from './user.decorator';
+import { UserModel } from './user.entity';
 
 @Controller('profile')
 @UseGuards(JwtAuthGuard)
@@ -49,6 +49,8 @@ export class ProfileController {
       'id',
       'email',
       'name',
+      'firstName',
+      'lastName',
       'photoURL',
       'desktopNotifsEnabled',
       'phoneNotifsEnabled',
@@ -68,6 +70,7 @@ export class ProfileController {
     user: UserModel,
   ): Promise<GetProfileResponse> {
     user = Object.assign(user, userPatch);
+    user.name = user.firstName + ' ' + user.lastName;
     if (
       user.phoneNotifsEnabled &&
       userPatch.phoneNumber !== user.phoneNotif?.phoneNumber

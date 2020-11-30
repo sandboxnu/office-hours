@@ -1,14 +1,14 @@
-import styled from "styled-components";
-import React, { useState, ReactElement } from "react";
-import NavBarTabs, { NavBarTabsItem } from "./NavBarTabs";
-import { Drawer, Button, Menu, Dropdown } from "antd";
-import Link from "next/link";
-import Settings from ".//Settings";
-import { useRouter } from "next/router";
-import { useProfile } from "../../hooks/useProfile";
 import { DownOutlined } from "@ant-design/icons";
+import { Button, Drawer, Dropdown, Menu } from "antd";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import React, { ReactElement, useState } from "react";
+import styled from "styled-components";
 import { useCourse } from "../../hooks/useCourse";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { useProfile } from "../../hooks/useProfile";
+import NavBarTabs, { NavBarTabsItem } from "./NavBarTabs";
+import ProfileDrawer from "./ProfileDrawer";
 
 const Nav = styled.nav`
   padding: 0px 0px;
@@ -111,12 +111,17 @@ interface NavBarProps {
 }
 
 export default function NavBar({ courseId }: NavBarProps): ReactElement {
+  const profile = useProfile();
+  if (!courseId) {
+    courseId = profile?.courses[0].course.id;
+  }
+
   const [defaultCourse, setDefaultCourse] = useLocalStorage(
     "defaultCourse",
     null
   );
   const [visible, setVisible] = useState<boolean>(false);
-  const profile = useProfile();
+
   const { pathname } = useRouter();
 
   const { course } = useCourse(courseId);
@@ -199,7 +204,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
           <NavBarTabs horizontal currentHref={pathname} tabs={tabs} />
         </LeftMenu>
         <RightMenu>
-          <Settings />
+          <ProfileDrawer courseId={courseId} />
         </RightMenu>
       </MenuCon>
       <BarsMenu type="primary" onClick={showDrawer}>
@@ -214,7 +219,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
         bodyStyle={{ padding: "12px" }}
       >
         <NavBarTabs currentHref={pathname} tabs={tabs} />
-        <Settings />
+        <ProfileDrawer courseId={courseId} />
       </Drawer>
     </Nav>
   );

@@ -14,6 +14,7 @@
     "@elastic/apm-rum": "^5.4.0",
     "@koh/api-client": "0.1.0",
     "@koh/common": "0.1.0",
+    "@react-hook/window-size": "^3.0.7",
     "antd": "^4.2.4",
     "axios": "^0.19.2",
     "class-transformer": "^0.3.1",

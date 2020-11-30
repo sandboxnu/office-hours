@@ -8,13 +8,14 @@ import {
   QuestionStatusKeys,
 } from "@koh/common";
 import { Card, Col, notification, Row, Space, Tooltip } from "antd";
+import Link from "next/link";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { useQueue } from "../../../hooks/useQueue";
-import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
 import TACheckinButton from "../../Today/TACheckinButton";
+import { SettingsOptions } from "../../Settings/SettingsPage";
 import {
   QueueInfoColumn,
   QueueInfoColumnButton,
@@ -223,7 +224,6 @@ export default function TAQueueList({
                 isHelping={isHelping}
                 onOpenCard={onOpenCard}
                 title={
-                  //TODO
                   <>
                     Priority Queue
                     <Tooltip title="Students in the priority queue were at the top of the queue before for some reason (e.g. they were at the top but AFK, or a TA helped them previously, and then hit 'requeue student.' You should communicate with your fellow staff members to prioritize these students first.">
@@ -231,6 +231,7 @@ export default function TAQueueList({
                     </Tooltip>
                   </>
                 }
+                courseId={courseId}
               />
             )}
             <QueueQuestions
@@ -238,6 +239,7 @@ export default function TAQueueList({
               isHelping={isHelping}
               onOpenCard={onOpenCard}
               title={<div>Queue</div>}
+              courseId={courseId}
             />
           </Space>
         </QueuePageContainer>
@@ -276,8 +278,13 @@ const NoQuestionsText = styled.div`
   color: #212934;
 `;
 
-function NotifReminderButton() {
-  const [isNotifOpen, setIsNotifOpen] = useState(false);
+interface NotifReminderButtonProps {
+  courseId: number;
+}
+
+function NotifReminderButton({
+  courseId,
+}: NotifReminderButtonProps): ReactElement {
   const NotifRemindButton = styled(QueueInfoColumnButton)`
     margin-top: 16px;
     border-radius: 6px;
@@ -286,15 +293,14 @@ function NotifReminderButton() {
 
   return (
     <>
-      <NotifRemindButton onClick={(e) => setIsNotifOpen(true)}>
-        Sign Up for Notifications
-      </NotifRemindButton>
-      {isNotifOpen && (
-        <NotificationSettingsModal
-          visible={isNotifOpen}
-          onClose={() => setIsNotifOpen(false)}
-        />
-      )}
+      <Link
+        href={{
+          pathname: "/settings",
+          query: { cid: courseId, defaultPage: SettingsOptions.NOTIFICATIONS },
+        }}
+      >
+        <NotifRemindButton>Sign Up for Notifications</NotifRemindButton>
+      </Link>
     </>
   );
 }
@@ -304,12 +310,14 @@ interface QueueProps {
   isHelping: boolean;
   onOpenCard: (q: Question) => void;
   title: ReactElement;
+  courseId: number;
 }
 function QueueQuestions({
   questions,
   isHelping,
   onOpenCard,
   title,
+  courseId,
 }: QueueProps) {
   const { phoneNotifsEnabled, desktopNotifsEnabled } = useProfile();
   return (
@@ -318,7 +326,7 @@ function QueueQuestions({
         <>
           <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
           {!isHelping && !phoneNotifsEnabled && !desktopNotifsEnabled && (
-            <NotifReminderButton />
+            <NotifReminderButton courseId={courseId} />
           )}
         </>
       ) : (
