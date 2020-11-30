@@ -14,6 +14,7 @@ import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { useQueue } from "../../../hooks/useQueue";
+import TACheckinButton from "../../Today/TACheckinButton";
 import { SettingsOptions } from "../../Settings/SettingsPage";
 import {
   QueueInfoColumn,
@@ -57,15 +58,6 @@ const CenterRow = styled(Row)`
 
 const Placeholder = styled.div`
   width: 14px;
-`;
-
-const CheckOutButton = styled(QueueInfoColumnButton)`
-  color: #da3236;
-`;
-
-const CheckInButton = styled(QueueInfoColumnButton)`
-  color: white;
-  background: #2a9187;
 `;
 
 const HelpNextButton = styled(QueueInfoColumnButton)`
@@ -206,29 +198,15 @@ export default function TAQueueList({
                     Help Next
                   </HelpNextButton>
                 </Tooltip>
-                {isStaffCheckedIn ? (
-                  <CheckOutButton
-                    danger
+                <div style={{ marginBottom: "12px" }}>
+                  <TACheckinButton
+                    courseId={courseId}
+                    room={queue?.room}
                     disabled={isHelping}
-                    data-cy="check-out-button"
-                    onClick={async () => {
-                      await API.taStatus.checkOut(courseId, queue?.room);
-                      mutateQueue();
-                    }}
-                  >
-                    Check Out
-                  </CheckOutButton>
-                ) : (
-                  <CheckInButton
-                    onClick={async () => {
-                      await API.taStatus.checkIn(courseId, queue?.room);
-                      mutateQueue();
-                    }}
-                    data-cy="check-in-button"
-                  >
-                    Check In
-                  </CheckInButton>
-                )}
+                    state={isStaffCheckedIn ? "CheckedIn" : "CheckedOut"}
+                    block
+                  />
+                </div>
               </>
             }
           />
