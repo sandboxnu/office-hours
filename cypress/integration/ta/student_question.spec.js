@@ -20,6 +20,7 @@ describe("TA interacts with student question", () => {
       courseId: "student.course.id",
     });
     createQuestion({
+      identifier: "question1",
       queueId: "queue.id",
       studentId: "student.user.id",
       data: {
@@ -37,15 +38,14 @@ describe("TA interacts with student question", () => {
     });
   });
 
-  it("clicks the help button then finish helping", () => {
+  it("clicks the help button then finish helping", function () {
     // See that there are originally two questions in the queue
     cy.get("[data-cy='list-queue'] [data-cy^='queue-list-item']").should(
       "have.length",
       2
     );
     // Click on the student's question
-    cy.get("[data-cy='list-queue'] [data-cy^='queue-list-item']")
-      .first()
+    cy.get(`[data-cy='queue-list-item-${this.question1.id}']`)
       .should("be.visible")
       .click();
     // Click help
@@ -57,6 +57,10 @@ describe("TA interacts with student question", () => {
     cy.get("[data-cy='list-queue'] [data-cy^='queue-list-item']").should(
       "have.length",
       1
+    );
+    // check question is helping
+    cy.get(
+      `[data-cy='list-helping'] [data-cy='queue-list-item-${this.question1.id}']`
     );
   });
 
@@ -77,8 +81,7 @@ describe("TA interacts with student question", () => {
     );
 
     // Click on the student's question
-    cy.get("[data-cy='list-queue'] [data-cy^='queue-list-item']")
-      .first()
+    cy.get(`[data-cy='queue-list-item-${this.question1.id}']`)
       .should("be.visible")
       .click();
     // Click Remove from Queue
@@ -91,12 +94,15 @@ describe("TA interacts with student question", () => {
       "have.length",
       1
     );
+    // check question is helping
+    cy.get(
+      `[data-cy='list-helping'] [data-cy='queue-list-item-${this.question1.id}']`
+    );
   });
 
   it("removes another student from the queue while helping", function () {
     // Click on the student's question
-    cy.get("[data-cy='list-queue'] [data-cy^='queue-list-item']")
-      .first()
+    cy.get(`[data-cy='queue-list-item-${this.question1.id}']`)
       .should("be.visible")
       .click();
     // Click help
@@ -113,10 +119,10 @@ describe("TA interacts with student question", () => {
     // Click yes on the modal
     cy.get("span").contains("Yes").click();
 
-    // Check that the ta is still helping the student
-    cy.get("body").should("contain", "Helping");
-    // And that there are no more questions in the queue
-    cy.get("body").should("contain", "There are no questions in the queue");
+    // check question is helping
+    cy.get(
+      `[data-cy='list-helping'] [data-cy='queue-list-item-${this.question1.id}']`
+    );
   });
 
   describe("Remove from Queue", () => {
