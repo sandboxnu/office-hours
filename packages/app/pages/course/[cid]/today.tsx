@@ -14,13 +14,12 @@ import TACheckinButton from "../../../components/Today/TACheckinButton";
 import ReleaseNotes from "../../../components/Today/ReleaseNotes";
 import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useCourse } from "../../../hooks/useCourse";
+import { useProfile } from "../../../hooks/useProfile";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
+import { StandardPageContainer } from "../../../components/common/PageContainer";
 
 const Container = styled.div`
-  margin: 32px 64px;
-  @media (max-width: 768px) {
-    margin: 32px 24px;
-  }
+  margin-top: 32px;
 `;
 
 const Title = styled.div`
@@ -32,6 +31,7 @@ const Title = styled.div`
 export default function Today(): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
+  const profile = useProfile();
   const role = useRoleInCourse(Number(cid));
 
   const { course, mutateCourse } = useCourse(Number(cid));
@@ -52,8 +52,12 @@ export default function Today(): ReactElement {
     mutateCourse();
   };
 
+  const queueCheckedIn = course?.queues.find((queue) =>
+    queue.staffList.find((staff) => staff.id === profile.id)
+  );
+
   return (
-    <div>
+    <StandardPageContainer>
       <Head>
         <title>{course?.name} | Khoury Office Hours</title>
       </Head>
@@ -65,7 +69,13 @@ export default function Today(): ReactElement {
           <Col md={12} xs={24}>
             <Row justify="space-between">
               <Title>Current Office Hours</Title>
-              {role === Role.TA && <TACheckinButton courseId={Number(cid)} />}
+              {role === Role.TA && (
+                <TACheckinButton
+                  courseId={Number(cid)}
+                  room="Online"
+                  state={queueCheckedIn ? "CheckedIn" : "CheckedOut"}
+                />
+              )}
             </Row>
             {course?.queues?.length === 0 ? (
               <h1 style={{ paddingTop: "100px" }}>
@@ -88,6 +98,6 @@ export default function Today(): ReactElement {
           </Col>
         </Row>
       </Container>
-    </div>
+    </StandardPageContainer>
   );
 }

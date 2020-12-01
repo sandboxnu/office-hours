@@ -34,6 +34,8 @@ export const isProd = (): boolean =>
 export class User {
   id!: number;
   email!: string;
+  firstName?: string;
+  lastName?: string;
   name!: string;
   photoURL!: string;
   courses!: UserCourse[];
@@ -359,6 +361,14 @@ export class UpdateProfileParams {
   @IsString()
   @IsNotEmpty()
   phoneNumber?: string;
+
+  @IsString()
+  @IsOptional()
+  firstName?: string;
+
+  @IsString()
+  @IsOptional()
+  lastName?: string;
 }
 
 export class GetCourseResponse {
@@ -447,6 +457,15 @@ export type TAUpdateStatusResponse = QueuePartial;
 export type QueueNotePayloadType = {
   notes: string;
 };
+
+export class TACheckoutResponse {
+  // The ID of the queue we checked out of
+  queueId!: number;
+  canClearQueue!: boolean;
+
+  @Type(() => Date)
+  nextOfficeHourTime?: Date;
+}
 
 export class UpdateQueueParams {
   @IsString()

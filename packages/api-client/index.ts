@@ -14,6 +14,7 @@ import {
   UpdateQuestionResponse,
   UpdateQueueParams,
   GetReleaseNotesResponse,
+  TACheckoutResponse,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -64,7 +65,10 @@ class APIClient {
       room: string
     ): Promise<TAUpdateStatusResponse> =>
       this.req("POST", `/api/v1/courses/${courseId}/ta_location/${room}`),
-    checkOut: async (courseId: number, room: string): Promise<void> =>
+    checkOut: async (
+      courseId: number,
+      room: string
+    ): Promise<TACheckoutResponse> =>
       this.req("DELETE", `/api/v1/courses/${courseId}/ta_location/${room}`),
   };
   questions = {
@@ -98,6 +102,8 @@ class APIClient {
         UpdateQuestionResponse,
         params
       ),
+    clean: async (queueId: number): Promise<void> =>
+      this.req("POST", `/api/v1/queues/${queueId}/clean`),
   };
   notif = {
     desktop: {
