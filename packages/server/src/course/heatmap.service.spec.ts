@@ -494,18 +494,6 @@ describe('HeatmapService', () => {
         24 * 60,
         1,
       );
-      /**
-       *   Timepoint | Wait time   | Question in front of you
-       *   -----------------------------------------------------
-       *     Sun     | 0 minutes  |
-       *
-       *     Mon     | 0 mintues  |
-       *
-       *
-       *   We don't bucket for 2AM at all.
-       **/
-
-      console.log('heatmap', heatmap);
       expect(heatmap).toEqual([0, -1, -1, -1, 0, -1, -1]);
     });
   });
