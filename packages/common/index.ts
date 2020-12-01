@@ -40,6 +40,8 @@ export function timeDiffInMins(a: Date, b: Date): number {
 export class User {
   id!: number;
   email!: string;
+  firstName?: string;
+  lastName?: string;
   name!: string;
   photoURL!: string;
   courses!: UserCourse[];
@@ -373,6 +375,14 @@ export class UpdateProfileParams {
   @IsString()
   @IsNotEmpty()
   phoneNumber?: string;
+
+  @IsString()
+  @IsOptional()
+  firstName?: string;
+
+  @IsString()
+  @IsOptional()
+  lastName?: string;
 }
 
 export class GetCourseResponse {
@@ -464,6 +474,15 @@ export type QueueNotePayloadType = {
   notes: string;
 };
 
+export class TACheckoutResponse {
+  // The ID of the queue we checked out of
+  queueId!: number;
+  canClearQueue!: boolean;
+
+  @Type(() => Date)
+  nextOfficeHourTime?: Date;
+}
+
 export class UpdateQueueParams {
   @IsString()
   @IsOptional()
@@ -504,3 +523,55 @@ export interface GetReleaseNotesResponse {
   releaseNotes: unknown;
   lastUpdatedUnixTime: number;
 }
+
+export const ERROR_MESSAGES = {
+  questionController: {
+    createQuestion: {
+      invalidQueue: "Posted to an invalid queue",
+      noNewQuestions: "Queue not allowing new questions",
+      closedQueue: "Queue is closed",
+      oneQuestionAtATime: "You can't create more than one question at a time.",
+    },
+    updateQuestion: {
+      fsmViolation: (
+        role: string,
+        questionStatus: string,
+        bodyStatus: string
+      ): string =>
+        `${role} cannot change status from ${questionStatus} to ${bodyStatus}`,
+      taOnlyEditQuestionStatus: "TA/Professors can only edit question status",
+      otherTAHelping: "Another TA is currently helping with this question",
+      otherTAResolved: "Another TA has already resolved this question",
+      taHelpingOther: "TA is already helping someone else",
+      loginUserCantEdit: "Logged-in user does not have edit access",
+    },
+  },
+  loginController: {
+    receiveDataFromKhoury: "Invalid request signature",
+  },
+  notificationController: {
+    messageNotFromTwilio: "Message not from Twilio",
+  },
+  notificationService: {
+    registerPhone: "phone number invalid",
+  },
+  questionRoleGuard: {
+    questionNotFound: "Question not found",
+    queueOfQuestionNotFound: "Cannot find queue of question",
+    queueDoesNotExist: "This queue does not exist!",
+  },
+  queueRoleGuard: {
+    queueNotFound: "Queue not found",
+  },
+  releaseNotesController: {
+    releaseNotesTime: (e: any): string =>
+      "Error Parsing release notes time: " + e,
+  },
+  roleGuard: {
+    notLoggedIn: "Must be logged in",
+    noCourseIdFound: "No courseid found",
+    notInCourse: "Not In This Course",
+    mustBeRoleToJoinCourse: (roles: string[]): string =>
+      `You must have one of roles [${roles.join(", ")}] to access this course`,
+  },
+};

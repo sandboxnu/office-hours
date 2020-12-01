@@ -9,7 +9,7 @@ const HorizontalMenu = styled(Menu)<MenuProps>`
 `;
 
 const MenuItem = styled(Menu.Item)`
-  @media (min-width: 767px) {
+  @media (min-width: 650px) {
     padding: 10px 50px;
     font-size: 16px;
     color: #262626;

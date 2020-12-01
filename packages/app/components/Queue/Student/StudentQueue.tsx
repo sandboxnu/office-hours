@@ -1,12 +1,14 @@
 import { API } from "@koh/api-client";
 import {
   ClosedQuestionStatus,
+  ERROR_MESSAGES,
   LimboQuestionStatus,
   OpenQuestionStatus,
   Question,
   QuestionType,
 } from "@koh/common";
-import { Card, Col, notification, Popconfirm, Row, Space } from "antd";
+import { Card, Col, notification, Popconfirm, Row } from "antd";
+import { Router } from "next/router";
 import React, { ReactElement, useCallback, useState } from "react";
 import styled from "styled-components";
 import { mutate } from "swr";
@@ -15,12 +17,9 @@ import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { useQueue } from "../../../hooks/useQueue";
 import { useStudentQuestion } from "../../../hooks/useStudentQuestion";
-import { NotificationSettingsModal } from "../../Nav/NotificationSettingsModal";
 import {
   QueueInfoColumn,
   QueueInfoColumnButton,
-  QueuePageContainer,
-  VerticalDivider,
 } from "../QueueListSharedComponents";
 import QuestionForm from "./QuestionForm";
 import StudentBanner from "./StudentBanner";
@@ -28,9 +27,38 @@ import CantFindModal from "./StudentCantFindModal";
 import StudentQueueCard from "./StudentQueueCard";
 import StudentRemovedFromQueueModal from "./StudentRemovedFromQueueModal";
 
+const Container = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  @media (min-width: 650px) {
+    margin-top: 0;
+    flex-direction: row;
+    height: 100%;
+  }
+`;
+
+const QueueListContainer = styled.div`
+  flex-grow: 1;
+  @media (min-width: 650px) {
+    margin-top: 32px;
+  }
+`;
+
 const JoinButton = styled(QueueInfoColumnButton)`
   background-color: #3684c6;
   color: white;
+`;
+
+const VerticalDivider = styled.div`
+  @media (min-width: 650px) {
+    border-right: 1px solid #cfd6de;
+    margin: 0 16px;
+  }
+  @media (min-width: 1000px) {
+    margin: 0 32px;
+  }
 `;
 
 const StudentHeaderCard = styled(Card)`
@@ -52,13 +80,11 @@ const CenterRow = styled(Row)`
   align-items: center;
 `;
 
-interface StudentQueueListProps {
+interface StudentQueueProps {
   qid: number;
 }
 
-export default function StudentQueueList({
-  qid,
-}: StudentQueueListProps): ReactElement {
+export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
   const { queue, mutateQueue } = useQueue(qid);
   const { questions, questionsError, mutateQuestions } = useQuestions(qid);
   const { studentQuestion, studentQuestionIndex } = useStudentQuestion(qid);
@@ -66,7 +92,6 @@ export default function StudentQueueList({
     "isFirstQuestion",
     true
   );
-  const [notifModalOpen, setNotifModalOpen] = useState(false);
   const [showJoinPopconfirm, setShowJoinPopconfirm] = useState(false);
   const { deleteDraftQuestion } = useDraftQuestion();
 
@@ -180,7 +205,7 @@ export default function StudentQueueList({
       } catch (e) {
         if (
           e.response?.data?.message?.includes(
-            "You can't create more than one question at a time"
+            ERROR_MESSAGES.questionController.createQuestion.oneQuestionAtATime
           )
         ) {
           return false;
@@ -193,7 +218,7 @@ export default function StudentQueueList({
   );
 
   const finishQuestionAndClose = useCallback(
-    (text: string, qt: QuestionType) => {
+    (text: string, qt: QuestionType, router: Router, cid: number) => {
       deleteDraftQuestion();
       finishQuestion(text, qt);
       closeEditModal();
@@ -208,8 +233,8 @@ export default function StudentQueueList({
           duration: 0,
           onClick: () => {
             notification.destroy();
-            setNotifModalOpen(true);
             setIsFirstQuestion(false);
+            router.push(`/settings?cid=${cid}`);
           },
         });
       }
@@ -229,7 +254,7 @@ export default function StudentQueueList({
     }
     return (
       <>
-        <QueuePageContainer>
+        <Container>
           <CantFindModal
             visible={studentQuestion?.status === LimboQuestionStatus.CantFind}
             leaveQueue={leaveQueue}
@@ -268,7 +293,7 @@ export default function StudentQueueList({
             }
           />
           <VerticalDivider />
-          <Space direction="vertical" size={40} style={{ flexGrow: 1 }}>
+          <QueueListContainer>
             {studentQuestion && (
               <StudentBanner
                 queueId={qid}
@@ -280,8 +305,8 @@ export default function StudentQueueList({
               questions={questions?.queue}
               studentQuestion={studentQuestion}
             />
-          </Space>
-        </QueuePageContainer>
+          </QueueListContainer>
+        </Container>
 
         <QuestionForm
           visible={
@@ -294,10 +319,6 @@ export default function StudentQueueList({
           finishQuestion={finishQuestionAndClose}
           position={studentQuestionIndex + 1}
           cancel={closeEditModal}
-        />
-        <NotificationSettingsModal
-          visible={notifModalOpen}
-          onClose={() => setNotifModalOpen(false)}
         />
       </>
     );

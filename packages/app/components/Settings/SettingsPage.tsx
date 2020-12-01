@@ -1,0 +1,71 @@
+import { BellOutlined, EditOutlined } from "@ant-design/icons";
+import { useWindowWidth } from "@react-hook/window-size";
+import { Col, Menu, Row, Space } from "antd";
+import React, { ReactElement, useState } from "react";
+import styled from "styled-components";
+import { useProfile } from "../../hooks/useProfile";
+import AvatarWithInitals from "../common/AvatarWithInitials";
+import NotificationsSettings from "./NotificationsSettings";
+import ProfileSettings from "./ProfileSettings";
+
+export enum SettingsOptions {
+  PROFILE = "PROFILE",
+  NOTIFICATIONS = "NOTIFICATIONS",
+}
+
+interface SettingsPageProps {
+  defaultPage: SettingsOptions;
+}
+
+const VerticalDivider = styled.div`
+  @media (min-width: 767px) {
+    border-right: 1px solid #cfd6de;
+    margin-right: 32px;
+  }
+`;
+
+export default function SettingsPage({
+  defaultPage,
+}: SettingsPageProps): ReactElement {
+  const profile = useProfile();
+  const [currentSettings, setCurrentSettings] = useState(
+    defaultPage || SettingsOptions.PROFILE
+  );
+
+  const avatarSize = useWindowWidth() / 10;
+
+  return (
+    <Row>
+      <Col span={4} style={{ textAlign: "center" }}>
+        {avatarSize ? (
+          <AvatarWithInitals
+            style={{ marginTop: "60px", marginBottom: "60px" }}
+            name={profile?.name}
+            size={avatarSize}
+            fontSize={avatarSize * (3 / 7)}
+          />
+        ) : null}
+        <Menu onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}>
+          <Menu.Item key={SettingsOptions.PROFILE} icon={<EditOutlined />}>
+            Edit Profile
+          </Menu.Item>
+          <Menu.Item
+            key={SettingsOptions.NOTIFICATIONS}
+            icon={<BellOutlined />}
+          >
+            Notifications Settings
+          </Menu.Item>
+        </Menu>
+      </Col>
+      <VerticalDivider />
+      <Space direction="vertical" size={40} style={{ flexGrow: 1 }}>
+        <Col span={20}>
+          {currentSettings === SettingsOptions.PROFILE && <ProfileSettings />}
+          {currentSettings === SettingsOptions.NOTIFICATIONS && (
+            <NotificationsSettings />
+          )}
+        </Col>
+      </Space>
+    </Row>
+  );
+}

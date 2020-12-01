@@ -22,6 +22,7 @@ describe("TA Priority Queue", () => {
     createQuestion({
       queueId: "queue.id",
       studentId: "student.user.id",
+      identifier: "question",
       data: {
         text: "How do I use the design recipe?",
       },
@@ -34,9 +35,19 @@ describe("TA Priority Queue", () => {
 
   describe("Can't Find", () => {
     it("Can't find student and student leaves the queue", function () {
+      cy.get(
+        `[data-cy="list-queue"] [data-cy="queue-list-item-${this.question.id}"]`
+      )
+        .should("be.visible")
+        .click();
       cy.get("body").should("contain", "Help Next");
       cy.get("button").contains("Help Next").click();
 
+      cy.get(
+        `[data-cy="list-helping"] [data-cy="queue-list-item-${this.question.id}"]`
+      )
+        .should("be.visible")
+        .click();
       cy.get('[data-cy="cant-find-button"]').should("be.visible").click();
 
       cy.get("body").should("contain", "Yes");
@@ -68,6 +79,11 @@ describe("TA Priority Queue", () => {
       cy.get("body").should("contain", "Help Next");
       cy.get("button").contains("Help Next").click();
 
+      cy.get(
+        `[data-cy="list-helping"] [data-cy="queue-list-item-${this.question.id}"]`
+      )
+        .should("be.visible")
+        .click();
       cy.get('[data-cy="cant-find-button"]').should("be.visible").click();
 
       cy.get("body").should("contain", "Yes");
@@ -100,6 +116,10 @@ describe("TA Priority Queue", () => {
       cy.get("body").should("contain", "Priority Queue");
       cy.get("body").should("contain", "How do I use the design recipe?");
 
+      cy.get(
+        `[data-cy="list-priority"] [data-cy="queue-list-item-${this.question.id}"]`
+      ).should("be.visible");
+
       cy.percySnapshot("TA Queue Page - Priority Queue");
 
       cy.get("body").should("contain", "Help Next");
@@ -112,6 +132,11 @@ describe("TA Priority Queue", () => {
       cy.get("body").should("contain", "Help Next");
       cy.get("button").contains("Help Next").click();
 
+      cy.get(
+        `[data-cy="list-helping"] [data-cy="queue-list-item-${this.question.id}"]`
+      )
+        .should("be.visible")
+        .click();
       cy.get('[data-cy="requeue-student-button"]').should("be.visible").click();
 
       cy.get("body").should("contain", "Yes");
@@ -144,6 +169,11 @@ describe("TA Priority Queue", () => {
       cy.get("body").should("contain", "Help Next");
       cy.get("button").contains("Help Next").click();
 
+      cy.get(
+        `[data-cy="list-helping"] [data-cy="queue-list-item-${this.question.id}"]`
+      )
+        .should("be.visible")
+        .click();
       cy.get('[data-cy="requeue-student-button"]').should("be.visible").click();
 
       cy.get("body").should("contain", "Yes");

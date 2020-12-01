@@ -1,14 +1,15 @@
+import { CreateQuestionParams, Role } from '@koh/common';
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { Role, CreateQuestionParams } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
+import { UserModel } from 'profile/user.entity';
 import { Connection } from 'typeorm';
 import {
+  CourseFactory,
   OfficeHourFactory,
   QuestionFactory,
   QueueFactory,
-  UserCourseFactory,
   SemesterFactory,
-  CourseFactory,
+  UserCourseFactory,
   UserFactory,
 } from '../../test/util/factories';
 import { CourseModel } from '../course/course.entity';
@@ -17,7 +18,6 @@ import { NonProductionGuard } from '../non-production.guard';
 import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { SeedService } from './seed.service';
-import { UserModel } from 'profile/user.entity';
 
 @Controller('seeds')
 @UseGuards(NonProductionGuard)
@@ -94,6 +94,8 @@ export class SeedController {
       const user1 = await UserFactory.create({
         email: 'liu.sta@northeastern.edu',
         name: 'Stanley Liu',
+        firstName: 'Stanley',
+        lastName: 'Liu',
         photoURL:
           'https://ca.slack-edge.com/TE565NU79-UR20CG36E-cf0f375252bd-512',
       });
@@ -106,6 +108,8 @@ export class SeedController {
       const user2 = await UserFactory.create({
         email: 'takayama.a@northeastern.edu',
         name: 'Alex Takayama',
+        firstName: 'Alex',
+        lastName: 'Takayama',
         photoURL:
           'https://ca.slack-edge.com/TE565NU79-UJL97443D-50121339686b-512',
       });
@@ -118,6 +122,8 @@ export class SeedController {
       const user3 = await UserFactory.create({
         email: 'stenzel.w@northeastern.edu',
         name: 'Will Stenzel',
+        firstName: 'Will',
+        lastName: 'Stenzel',
         photoURL:
           'https://ca.slack-edge.com/TE565NU79-URF256KRT-d10098e879da-512',
       });
@@ -130,6 +136,8 @@ export class SeedController {
       const user4 = await UserFactory.create({
         email: 'chu.daj@northeastern.edu',
         name: 'Da-Jin Chu',
+        firstName: 'Da-Jin',
+        lastName: 'Chu',
         photoURL:
           'https://ca.slack-edge.com/TE565NU79-UE56Y5UT1-85db59a474f4-512',
       });
@@ -204,12 +212,18 @@ export class SeedController {
 
   @Post('createQueue')
   async createQueue(
-    @Body() body: { courseId: number; allowQuestions: boolean },
+    @Body()
+    body: {
+      courseId: number;
+      allowQuestions: boolean;
+      // closes in n milliseconds from now
+      closesIn?: number;
+    },
   ): Promise<QueueModel> {
     const now = new Date();
     const officeHours = await OfficeHourFactory.create({
       startTime: now,
-      endTime: new Date(now.valueOf() + 4500000),
+      endTime: new Date(now.valueOf() + (body?.closesIn || 4500000)),
     });
     const options = {
       officeHours: [officeHours],

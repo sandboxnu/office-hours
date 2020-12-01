@@ -33,6 +33,8 @@ const makeRequest = (request, identifier, { ...params }) => {
 export const loginUser = (identifier) => {
   cy.get(`@${identifier}`).then((userCourse) => {
     cy.visit(`/api/v1/login/dev?userId=${userCourse.user.id}`);
+    // wait for the defaultCourseRedirect
+    cy.url().should("include", "today");
   });
 };
 
@@ -103,18 +105,21 @@ export const createAndLoginStudent = ({
  * @param {number} courseId - the course that this queue will be added to (defaults to null).
  * @param {number} room - the room where this queue will occur (defaults to "Online").
  * @param {booelan} allowQuestions - whether or not you want to allow questions in the queue (defaults to true).
+ * @param {number} closesIn - how many milliseconds until the queue closes
  * @param {string} identifier - the id that cypress will alias this queue to (defaults to "queue").
  */
 export const createQueue = ({
   courseId = null,
   room = "Online",
   allowQuestions = true,
+  closesIn = 4500000,
   identifier = "queue",
 }) => {
   const req = ({ id }) =>
     cy.request("POST", "/api/v1/seeds/createQueue", {
       courseId: id,
       room,
+      closesIn,
       allowQuestions,
     });
   getId(courseId).then((id) => {

@@ -1,4 +1,10 @@
 import {
+  DesktopNotifBody,
+  DesktopNotifPartial,
+  ERROR_MESSAGES,
+  TwilioBody,
+} from '@koh/common';
+import {
   Body,
   Controller,
   Delete,
@@ -12,12 +18,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DesktopNotifBody, DesktopNotifPartial, TwilioBody } from '@koh/common';
 import * as twilio from 'twilio';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
-import { NotificationService } from './notification.service';
 import { UserId } from '../profile/user.decorator';
 import { DesktopNotifModel } from './desktop-notif.entity';
+import { NotificationService } from './notification.service';
 
 @Controller('notifications')
 export class NotificationController {
@@ -88,7 +93,9 @@ export class NotificationController {
     );
 
     if (!isValidated) {
-      throw new UnauthorizedException('Message not from Twilio');
+      throw new UnauthorizedException(
+        ERROR_MESSAGES.notificationController.messageNotFromTwilio,
+      );
     }
 
     const messageToUser = await this.notifService.verifyPhone(

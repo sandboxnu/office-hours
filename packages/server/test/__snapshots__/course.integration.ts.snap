@@ -27,7 +27,9 @@ Object {
   "staffList": Array [
     Object {
       "email": "user@neu.edu",
+      "firstName": "User",
       "id": 1,
+      "lastName": null,
       "name": "User",
       "photoURL": "https://pics/user",
     },

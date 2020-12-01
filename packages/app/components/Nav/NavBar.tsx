@@ -1,36 +1,39 @@
-import styled from "styled-components";
-import React, { useState, ReactElement } from "react";
-import NavBarTabs, { NavBarTabsItem } from "./NavBarTabs";
-import { Drawer, Button, Menu, Dropdown } from "antd";
-import Link from "next/link";
-import Settings from ".//Settings";
-import { useRouter } from "next/router";
-import { useProfile } from "../../hooks/useProfile";
 import { DownOutlined } from "@ant-design/icons";
+import { Button, Drawer, Dropdown, Menu } from "antd";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import React, { ReactElement, useState } from "react";
+import styled from "styled-components";
 import { useCourse } from "../../hooks/useCourse";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { useProfile } from "../../hooks/useProfile";
+import NavBarTabs, { NavBarTabsItem } from "./NavBarTabs";
+import ProfileDrawer from "./ProfileDrawer";
 
 const Nav = styled.nav`
   padding: 0px 0px;
+  display: flex;
+  align-items: center;
+  height: 67px;
+  z-index: 1;
+`;
+
+// A hack to get the white stripe edge to edge, even when Nav is narrower.
+const NavBG = styled.nav`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 67px;
   background: #fff;
   border-bottom: solid 1px #e8e8e8;
-  display: flex;
-  height: 67px;
-
-  @media (max-width: 767px) {
-    padding: 0px 16px;
-    height: 50px;
-  }
 `;
 
 const LogoContainer = styled.div`
+  z-index: 1;
   display: flex;
   align-items: center;
-  margin-left: 64px;
-  margin-right: 48px;
-  @media (max-width: 767px) {
-    margin-left: -20px;
-  }
+  margin-right: 20px;
 `;
 
 const Logo = styled.div`
@@ -38,10 +41,6 @@ const Logo = styled.div`
   font-weight: 500;
   color: #262626;
   text-transform: capitalize;
-
-  @media (max-width: 767px) {
-    padding: 10px 20px;
-  }
 `;
 
 const MenuCon = styled.div`
@@ -53,14 +52,13 @@ const MenuCon = styled.div`
 `;
 
 const LeftMenu = styled.div`
-  @media (max-width: 767px) {
+  @media (max-width: 650px) {
     display: none;
   }
 `;
 
 const RightMenu = styled.div`
-  margin-right: 64px;
-  @media (max-width: 767px) {
+  @media (max-width: 650px) {
     display: none;
   }
 `;
@@ -72,7 +70,7 @@ const BarsMenu = styled(Button)`
   display: none;
   background: none;
 
-  @media (max-width: 767px) {
+  @media (max-width: 650px) {
     display: inline-block;
   }
 `;
@@ -111,12 +109,17 @@ interface NavBarProps {
 }
 
 export default function NavBar({ courseId }: NavBarProps): ReactElement {
+  const profile = useProfile();
+  if (!courseId) {
+    courseId = profile?.courses[0].course.id;
+  }
+
   const [defaultCourse, setDefaultCourse] = useLocalStorage(
     "defaultCourse",
     null
   );
   const [visible, setVisible] = useState<boolean>(false);
-  const profile = useProfile();
+
   const { pathname } = useRouter();
 
   const { course } = useCourse(courseId);
@@ -167,55 +170,58 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
   }
 
   return (
-    <Nav>
-      <LogoContainer>
-        {profile?.courses.length > 1 ? (
-          <Dropdown
-            overlay={courseSelector}
-            trigger={["click"]}
-            placement="bottomLeft"
-          >
-            <a>
-              <Logo>
-                <span>{course?.name}</span>
-                <DownOutlined
-                  style={{
-                    fontSize: "16px",
-                    verticalAlign: "-0.125em",
-                    marginLeft: "5px",
-                  }}
-                />
-              </Logo>
-            </a>
-          </Dropdown>
-        ) : (
-          <Logo>
-            <span>{course?.name}</span>
-          </Logo>
-        )}
-      </LogoContainer>
-      <MenuCon>
-        <LeftMenu>
-          <NavBarTabs horizontal currentHref={pathname} tabs={tabs} />
-        </LeftMenu>
-        <RightMenu>
-          <Settings />
-        </RightMenu>
-      </MenuCon>
-      <BarsMenu type="primary" onClick={showDrawer}>
-        <BarsButton />
-      </BarsMenu>
-      <Drawer
-        title="Course"
-        placement="right"
-        visible={visible}
-        closable={false}
-        onClose={onClose}
-        bodyStyle={{ padding: "12px" }}
-      >
-        <NavBarTabs currentHref={pathname} tabs={tabs} />
-        <Settings />
-      </Drawer>
-    </Nav>
+    <>
+      <NavBG />
+      <Nav>
+        <LogoContainer>
+          {profile?.courses.length > 1 ? (
+            <Dropdown
+              overlay={courseSelector}
+              trigger={["click"]}
+              placement="bottomLeft"
+            >
+              <a>
+                <Logo>
+                  <span>{course?.name}</span>
+                  <DownOutlined
+                    style={{
+                      fontSize: "16px",
+                      verticalAlign: "-0.125em",
+                      marginLeft: "5px",
+                    }}
+                  />
+                </Logo>
+              </a>
+            </Dropdown>
+          ) : (
+            <Logo>
+              <span>{course?.name}</span>
+            </Logo>
+          )}
+        </LogoContainer>
+        <MenuCon>
+          <LeftMenu>
+            <NavBarTabs horizontal currentHref={pathname} tabs={tabs} />
+          </LeftMenu>
+          <RightMenu>
+            <ProfileDrawer courseId={courseId} />
+          </RightMenu>
+        </MenuCon>
+        <BarsMenu type="primary" onClick={showDrawer}>
+          <BarsButton />
+        </BarsMenu>
+        <Drawer
+          title="Course"
+          placement="right"
+          visible={visible}
+          closable={false}
+          onClose={onClose}
+          bodyStyle={{ padding: "12px" }}
+        >
+          <NavBarTabs currentHref={pathname} tabs={tabs} />
+          <ProfileDrawer courseId={courseId} />
+        </Drawer>
+      </Nav>
+    </>
   );
 }
