@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TestTypeOrmModule } from '../../test/util/testUtils';
 import { Connection } from 'typeorm';
 import { InsightsService } from './insights.service';
-import { UserCourseFactory } from '../../test/util/factories';
+import { UserCourseFactory, QuestionFactory } from '../../test/util/factories';
 
 describe('InsightsService', () => {
   let service: InsightsService;
@@ -22,9 +22,25 @@ describe('InsightsService', () => {
     await conn.close();
   });
 
+  // it('generateInsightsFor', async () => {
+  //     await UserCourseFactory.createList(4);
+  //     await QuestionFactory.createList(2);
+  //     const res = await service.generateInsightsFor({
+  //         insights: [
+  //             this.allInsights.totalStudents,
+  //             this.allInsights.totalQuestionsAsked,
+  //         ]
+  //     });
+  //     expect(res).toEqual([4, 2])
+  //     });
+
   it('getTotalStudents', async () => {
-    await UserCourseFactory.create();
-    await UserCourseFactory.create();
-    expect(service.getTotalStudents()).toEqual(2);
+    await UserCourseFactory.createList(6);
+    expect(await service.getTotalStudents()).toEqual(6);
+  });
+
+  it('getTotalQuestionsAsked', async () => {
+    await QuestionFactory.createList(22);
+    expect(await service.getTotalQuestionsAsked()).toEqual(22);
   });
 });

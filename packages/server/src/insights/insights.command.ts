@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { InsightsService } from './insights.service';
 import { Role, allInsights, insightObject } from '@koh/common';
+import { QuestionFactory } from '../../test/util/factories';
 
 @Injectable()
 export class InsightsCommand {
@@ -21,12 +22,15 @@ export class InsightsCommand {
       output: this.insightsService.getTotalStudents,
     },
     totalQuestionsAsked: {
+      name: 'Total Questions Asked',
       output: this.insightsService.getTotalQuestionsAsked,
     },
     totalWaitTime: {
+      name: 'Total Wait Time',
       output: this.insightsService.getTotalWaitTime,
     },
     avgWaitTime: {
+      name: 'Average Wait Time',
       output: this.insightsService.getAvgWaitTime,
     },
   };
@@ -36,13 +40,9 @@ export class InsightsCommand {
     describe: 'aggregates semesterly analytics for a course',
     autoExit: true,
   })
-
-  // Returns an object with a mapping of specific questions and answers related to data insights.
-  // "what was the total number of students who used the app? -> totalStudents
-  // "How many questions were asked over the entire semester?" -> totalQuestionsAsked
-  // "What was the total amount of time spent waiting in minutes?" -> totalWaitTime
   private async generateSemesterInsights(): Promise<any> {
-    this.insightsService.generateInsightsFor({
+    await QuestionFactory.createList(10);
+    await this.insightsService.generateInsightsFor({
       insights: [
         this.allInsights.totalStudents,
         this.allInsights.totalQuestionsAsked,

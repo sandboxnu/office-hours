@@ -11,8 +11,8 @@ export class InsightsService {
     await Promise.all(
       insights.map(async (insight) => {
         const output = await insight.output();
-        console.log(insight.name);
-        console.log(output);
+        console.log('Name: ', insight.name);
+        console.log('Output: ', output);
         console.log();
         return output;
       }),

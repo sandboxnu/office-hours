@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
-import { DataInsights } from './commands';
+import { InsightsCommand } from './insights.command';
+import { InsightsService } from './insights.service';
 
 @Module({
-  providers: [DataInsights],
+  providers: [InsightsCommand, InsightsService],
 })
 export class InsightsModule {}
