@@ -2,6 +2,7 @@ import { Container } from "next/app";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
+import { StandardPageContainer } from "../components/common/PageContainer";
 import NavBar from "../components/Nav/NavBar";
 import SettingsPage, {
   SettingsOptions,
@@ -12,7 +13,7 @@ export default function Settings(): ReactElement {
   const courseId = router.query["cid"];
   const defaultPage = router.query["defaultPage"];
   return (
-    <div>
+    <StandardPageContainer>
       <Head>
         <title>Settings | Khoury Office Hours</title>
       </Head>
@@ -20,6 +21,6 @@ export default function Settings(): ReactElement {
       <Container>
         <SettingsPage defaultPage={defaultPage as SettingsOptions} />
       </Container>
-    </div>
+    </StandardPageContainer>
   );
 }
