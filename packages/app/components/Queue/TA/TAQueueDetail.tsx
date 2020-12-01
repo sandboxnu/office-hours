@@ -37,7 +37,6 @@ const QuestionTypePill = styled.span`
 
 const StillDrafting = styled.div`
   margin: 12px 30px;
-  width: 100%;
   text-align: center;
   font-size: 16px;
 `;
