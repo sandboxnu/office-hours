@@ -28,11 +28,11 @@ export class QueueCleanService {
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  private async checkoutAllStaff(): Promise<void> {
+  public async checkoutAllStaff(): Promise<void> {
     const queuesWithCheckedInStaff: QueueModel[] = await QueueModel.getRepository()
       .createQueryBuilder('queue')
-      .leftJoinAndSelect('queue_model.staff_list', 'staff_list')
-      .where('ARRAY_LENGTH(staff_list) != 0')
+      .select('queue_model.id', 'id')
+      .innerJoin('queue_model.staffList', 'staffList')
       .getMany();
 
     queuesWithCheckedInStaff.forEach(async (queue) => {

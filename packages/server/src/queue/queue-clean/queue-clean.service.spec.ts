@@ -60,9 +60,24 @@ describe('QueueService', () => {
       expect(updatedQuestion.status).toEqual('Stale');
     });
 
+    it.only('checkout all staff from all queues', async () => {
+      const ta = await UserFactory.create();
+      const ta2 = await UserFactory.create();
+      const ta3 = await UserFactory.create();
+      const queue = await QueueFactory.create({ staffList: [ta] });
+      const queue2 = await QueueFactory.create({ staffList: [ta2, ta3] });
+
+      await service.checkoutAllStaff();
+      expect(queue.staffList.length).toEqual(0);
+      expect(queue2.staffList.length).toEqual(0);
+    });
+
     it('cleaning the queue removes the queue notes', async () => {
       const ofs = await ClosedOfficeHourFactory.create();
-      const queue = await QueueFactory.create({ officeHours: [ofs], notes: "This note is no longer relevant" });
+      const queue = await QueueFactory.create({
+        officeHours: [ofs],
+        notes: 'This note is no longer relevant',
+      });
       const question = await QuestionFactory.create({
         status: OpenQuestionStatus.Queued,
         queue: queue,
