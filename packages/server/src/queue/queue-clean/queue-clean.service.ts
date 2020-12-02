@@ -26,13 +26,18 @@ export class QueueCleanService {
       this.cleanQueue(queue.id);
     });
   }
+  /*
+  
 
+SELECT DISTINCT "queueModelId" FROM queue_model 
+INNER JOIN queue_model_staff_list_user_model 
+ON queue_model.id = queue_model_staff_list_user_model."queueModelId";
+  */
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   public async checkoutAllStaff(): Promise<void> {
     const queuesWithCheckedInStaff: QueueModel[] = await QueueModel.getRepository()
       .createQueryBuilder('queue')
-      .select('queue_model.id', 'id')
-      .innerJoin('queue_model.staffList', 'staffList')
+      .innerJoinAndSelect('queue_model.staff_list', 'staff_list')
       .getMany();
 
     queuesWithCheckedInStaff.forEach(async (queue) => {
