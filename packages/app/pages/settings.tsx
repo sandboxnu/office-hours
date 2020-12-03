@@ -14,11 +14,12 @@ export default function Settings(): ReactElement {
   const defaultPage = router.query["defaultPage"];
   return (
     <StandardPageContainer>
-      <Head>
-        <title>Settings | Khoury Office Hours</title>
-      </Head>
-      <NavBar courseId={Number(courseId)} />
       <Container>
+        <Head>
+          <title>Settings | Khoury Office Hours</title>
+        </Head>
+        <NavBar courseId={Number(courseId)} />
+
         <SettingsPage defaultPage={defaultPage as SettingsOptions} />
       </Container>
     </StandardPageContainer>
