@@ -295,11 +295,14 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
           <VerticalDivider />
           <QueueListContainer>
             {studentQuestion && (
-              <StudentBanner
-                queueId={qid}
-                editQuestion={openEditModal}
-                leaveQueue={leaveQueue}
-              />
+              <>
+                <StudentBanner
+                  queueId={qid}
+                  editQuestion={openEditModal}
+                  leaveQueue={leaveQueue}
+                />
+                <div style={{ marginTop: "40px" }} />
+              </>
             )}
             <QueueQuestions
               questions={questions?.queue}

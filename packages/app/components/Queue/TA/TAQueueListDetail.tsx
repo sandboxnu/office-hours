@@ -48,7 +48,9 @@ const Detail = styled.div`
   border-left: 1px solid #cfd6de;
   border-right: 1px solid #cfd6de;
   flex: 1;
-  overflow: scroll;
+  @media (min-width: ${SPLIT_DETAIL_BKPT}px) {
+    overflow: scroll;
+  }
 `;
 
 const BackToQueue = styled.div`
