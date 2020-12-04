@@ -559,22 +559,3 @@ export const ERROR_MESSAGES = {
       `You must have one of roles [${roles.join(", ")}] to access this course`,
   },
 };
-
-// ---------------------
-//     Data Insights
-// ---------------------
-
-export interface allInsights {
-  totalStudents: insightObject;
-  totalQuestionsAsked: insightObject;
-  totalWaitTime: insightObject;
-  avgWaitTime: insightObject;
-}
-
-export interface insightObject {
-  name: string;
-  description: string;
-  roles: Role[];
-  component: string; // In the future we can make this an enum
-  output: (insightFilters: any) => any;
-}
