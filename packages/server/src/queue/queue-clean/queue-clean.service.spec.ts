@@ -1,4 +1,4 @@
-import { OpenQuestionStatus } from '@koh/common';
+import { OpenQuestionStatus, LimboQuestionStatus } from '@koh/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import moment = require('moment');
 import { Connection } from 'typeorm';
@@ -92,6 +92,19 @@ describe('QueueService', () => {
       const queue = await QueueFactory.create({ officeHours: [ofs] });
       const question = await QuestionFactory.create({
         status: OpenQuestionStatus.Queued,
+        queue: queue,
+      });
+
+      await service.cleanQueue(queue.id);
+      await question.reload();
+      expect(question.status).toEqual('Stale');
+    });
+
+    it('if no staff are present all questions with limbo status are marked as stale', async () => {
+      const ofs = await ClosedOfficeHourFactory.create();
+      const queue = await QueueFactory.create({ officeHours: [ofs] });
+      const question = await QuestionFactory.create({
+        status: LimboQuestionStatus.TADeleted,
         queue: queue,
       });
 
