@@ -26,6 +26,7 @@ const QUESTION_STATES: Record<QuestionStatus, AllowableTransitions> = {
       ClosedQuestionStatus.StudentCancelled,
       ClosedQuestionStatus.ConfirmedDeleted,
     ],
+    ta: [ClosedQuestionStatus.DeletedDraft],
   },
   [OpenQuestionStatus.Queued]: QUEUE_TRANSITIONS,
   [OpenQuestionStatus.PriorityQueued]: QUEUE_TRANSITIONS,
