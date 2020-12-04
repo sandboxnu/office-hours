@@ -43,4 +43,14 @@ describe('InsightsService', () => {
     await QuestionFactory.createList(22);
     expect(await service.getTotalQuestionsAsked()).toEqual(22);
   });
+
+  it('getTotalStudents', async () => {
+    await UserCourseFactory.createList(6);
+    expect(await service.getTotalStudents()).toEqual(6);
+  });
+
+  it('getTotalQuestionsAsked', async () => {
+    await QuestionFactory.createList(22);
+    expect(await service.getTotalQuestionsAsked()).toEqual(22);
+  });
 });
