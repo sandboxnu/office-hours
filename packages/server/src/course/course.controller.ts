@@ -25,6 +25,7 @@ import { QueueCleanService } from '../queue/queue-clean/queue-clean.service';
 import { QueueModel } from '../queue/queue.entity';
 import { CourseRolesGuard } from './course-roles.guard';
 import { CourseModel } from './course.entity';
+import { HeatmapService } from './heatmap.service';
 import { OfficeHourModel } from './office-hour.entity';
 import { QueueSSEService } from '../queue/queue-sse.service';
 import moment = require('moment');
@@ -37,6 +38,7 @@ export class CourseController {
     private connection: Connection,
     private queueCleanService: QueueCleanService,
     private queueSSEService: QueueSSEService,
+    private heatmapService: HeatmapService,
   ) {}
 
   @Get(':id')
@@ -53,6 +55,7 @@ export class CourseController {
       .select(['id', 'title', `"startTime"`, `"endTime"`])
       .where('oh.courseId = :courseId', { courseId: course.id })
       .getRawMany();
+    course.heatmap = await this.heatmapService.getHeatmapFor(id);
 
     course.queues = await async.filter(
       course.queues,

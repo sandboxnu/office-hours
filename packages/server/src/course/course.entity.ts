@@ -1,3 +1,4 @@
+import { Heatmap } from '@koh/common';
 import { Exclude } from 'class-transformer';
 import {
   BaseEntity,
@@ -62,6 +63,9 @@ export class CourseModel extends BaseEntity {
 
   @Column('boolean', { nullable: true })
   enabled: boolean; // Set to true if the given the course is using our app
+
+  // The heatmap is false when there havent been any questions asked yet or there havent been any office hours
+  heatmap: Heatmap | false;
 
   @OneToMany((type) => EventModel, (event) => event.course)
   @Exclude()
