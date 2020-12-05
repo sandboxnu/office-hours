@@ -1,0 +1,1 @@
+{"ast":null,"code":"export function formatDateHour(hours) {\n  const ampm = hours >= 12 ? \"PM\" : \"AM\";\n  hours = hours % 12;\n  hours = hours ? hours : 12; // the hour '0' should be '12'\n\n  return hours + ampm;\n}","map":null,"metadata":{},"sourceType":"module"}

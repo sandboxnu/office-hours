@@ -1,3 +1,4 @@
+import { Heatmap } from '@koh/common';
 import { BaseEntity } from 'typeorm';
 import { EventModel } from '../profile/event-model.entity';
 import { UserCourseModel } from '../profile/user-course.entity';
@@ -14,5 +15,6 @@ export declare class CourseModel extends BaseEntity {
     semester: SemesterModel;
     semesterId: number;
     enabled: boolean;
+    heatmap: Heatmap | false;
     events: EventModel[];
 }

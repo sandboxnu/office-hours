@@ -1,6 +1,7 @@
 import "reflect-metadata";
 export declare const PROD_URL = "https://khouryofficehours.com";
 export declare const isProd: () => boolean;
+export declare function timeDiffInMins(a: Date, b: Date): number;
 export declare class User {
     id: number;
     email: string;
@@ -66,6 +67,7 @@ export declare class QueuePartial {
     endTime?: Date;
     allowQuestions: boolean;
 }
+export declare type Heatmap = Array<number>;
 export declare class Question {
     id: number;
     creator: UserPartial;
@@ -172,6 +174,7 @@ export declare class GetCourseResponse {
     name: string;
     officeHours: Array<OfficeHourPartial>;
     queues: QueuePartial[];
+    heatmap: Heatmap | false;
 }
 export declare class GetQueueResponse extends QueuePartial {
 }
