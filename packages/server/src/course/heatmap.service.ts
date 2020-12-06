@@ -9,8 +9,8 @@ import { OfficeHourModel } from './office-hour.entity';
 
 function arrayRotate(arr, count) {
   count -= arr.length * Math.floor(count / arr.length);
-  arr.push.apply(arr, arr.splice(0, count));
-  return arr;
+  const spliced = arr.splice(0, count);
+  return [...arr, ...spliced];
 }
 
 @Injectable()
@@ -45,7 +45,7 @@ export class HeatmapService {
     }
 
     const tz = 'America/New_York';
-    const heatmap = this._generateHeatMapWithReplay(
+    let heatmap = this._generateHeatMapWithReplay(
       // Ignore questions that cross midnight (usually a fluke)
       questions.filter((q) => q.helpedAt.getDate() === q.createdAt.getDate()),
       officeHours,
@@ -53,7 +53,7 @@ export class HeatmapService {
       BUCKET_SIZE_IN_MINS,
       SAMPLES_PER_BUCKET,
     );
-    arrayRotate(
+    heatmap = arrayRotate(
       heatmap,
       -moment.tz.zone(tz).utcOffset(Date.now()) / BUCKET_SIZE_IN_MINS,
     );
