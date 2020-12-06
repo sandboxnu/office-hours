@@ -56,9 +56,7 @@ export default function ProfileDrawer({
                 key="1"
                 icon={<QuestionCircleOutlined />}
                 onClick={() => {
-                  window.open(
-                    "https://www.notion.so/Office-Hours-Help-Guide-a89c73dd53204cc3970ac44d61917417"
-                  );
+                  window.open("https://info.khouryofficehours.com/help");
                   setIsPopoverOpen(false);
                 }}
               >
@@ -69,7 +67,7 @@ export default function ProfileDrawer({
                 icon={<FileTextOutlined />}
                 onClick={() => {
                   window.open(
-                    "https://www.notion.so/Release-Notes-Archive-9a1a0eab073a463096fc3699bf48219c"
+                    "https://info.khouryofficehours.com/release-notes-archive"
                   );
                   setIsPopoverOpen(false);
                 }}
