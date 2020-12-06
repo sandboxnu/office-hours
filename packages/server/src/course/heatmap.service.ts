@@ -9,8 +9,8 @@ import { OfficeHourModel } from './office-hour.entity';
 
 function arrayRotate(arr, count) {
   count -= arr.length * Math.floor(count / arr.length);
-  const spliced = arr.splice(0, count);
-  return [...arr, ...spliced];
+  arr.push.apply(arr, arr.splice(0, count));
+  return arr;
 }
 
 @Injectable()
