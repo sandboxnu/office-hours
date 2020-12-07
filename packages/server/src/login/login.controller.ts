@@ -55,10 +55,10 @@ export class LoginController {
         throw new UnauthorizedException('Invalid request signature');
       }
       // This checks if the request is coming from one of the khoury servers
-      const verityIP = this.configService
+      const verifyIP = this.configService
         .get('KHOURY_SERVER_IP')
         .includes(req.ip);
-      if (!verityIP) {
+      if (!verifyIP) {
         apm.captureError(
           'The IP of the request does not seem to be coming from the Khoury server',
         );
