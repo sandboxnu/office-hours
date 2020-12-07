@@ -2,7 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TestTypeOrmModule } from '../../test/util/testUtils';
 import { Connection } from 'typeorm';
 import { InsightsService } from './insights.service';
-import { UserCourseFactory, QuestionFactory } from '../../test/util/factories';
+import {
+  UserCourseFactory,
+  QuestionFactory,
+  CourseFactory,
+  QueueFactory,
+} from '../../test/util/factories';
+import { totalUsers, totalQuestionsAsked, averageWaitTime } from './insights';
 
 describe('InsightsService', () => {
   let service: InsightsService;
@@ -22,35 +28,54 @@ describe('InsightsService', () => {
     await conn.close();
   });
 
-  // it('generateInsightsFor', async () => {
-  //     await UserCourseFactory.createList(4);
-  //     await QuestionFactory.createList(2);
-  //     const res = await service.generateInsightsFor({
-  //         insights: [
-  //             this.allInsights.totalStudents,
-  //             this.allInsights.totalQuestionsAsked,
-  //         ]
-  //     });
-  //     expect(res).toEqual([4, 2])
-  //     });
+  describe('generateInsightsFor', () => {
+    it('totalStudents', async () => {
+      const course = await CourseFactory.create();
+      await UserCourseFactory.createList(4, { course });
+      await UserCourseFactory.create();
 
-  it('getTotalStudents', async () => {
-    await UserCourseFactory.createList(6);
-    expect(await service.getTotalStudents()).toEqual(6);
-  });
+      const res = await service.generateInsightsFor({
+        insights: [totalUsers],
+        filters: [
+          {
+            type: 'courseId',
+            conditional: `"courseId" = ${course.id}`,
+          },
+        ],
+      });
+      expect(res.totalStudents.output).toEqual(4);
+    });
 
-  it('getTotalQuestionsAsked', async () => {
-    await QuestionFactory.createList(22);
-    expect(await service.getTotalQuestionsAsked()).toEqual(22);
-  });
+    it('totalQuestionsAsked', async () => {
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ course });
+      await QuestionFactory.createList(8, { queue });
 
-  it('getTotalStudents', async () => {
-    await UserCourseFactory.createList(6);
-    expect(await service.getTotalStudents()).toEqual(6);
-  });
+      const res = await service.generateInsightsFor({
+        insights: [totalQuestionsAsked],
+        filters: [
+          {
+            type: 'courseId',
+            conditional: `"courseId" = ${course.id}`,
+          },
+        ],
+      });
+      expect(res.totalQuestionsAsked.output).toEqual(8);
+    });
 
-  it('getTotalQuestionsAsked', async () => {
-    await QuestionFactory.createList(22);
-    expect(await service.getTotalQuestionsAsked()).toEqual(22);
+    it('averageWaitTime', async () => {
+      await QuestionFactory.create({
+        createdAt: new Date(),
+        helpedAt: new Date(Date.now() + 32 * 60 * 1000),
+      });
+
+      const res = await service.generateInsightsFor({
+        insights: [averageWaitTime],
+        filters: [],
+      });
+      expect(res.averageWaitTime.output).toEqual({
+        averageWaitTime: { minutes: 32 },
+      });
+    });
   });
 });

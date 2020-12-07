@@ -1,40 +1,134 @@
 import { Role } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
-import { QueryBuilder } from 'typeorm';
-
-// Types
+import { SelectQueryBuilder } from 'typeorm';
+import { QuestionModel } from 'question/question.entity';
 
 export interface InsightInterface<Model> {
   name: string;
+  displayName: string;
   description: string;
   roles: Role[];
   component: string; // In the future we can make this an enum
   model: new () => Model; // One of the modals have
-  compute: (queryBuilder: QueryBuilder<Model>, insightFilters: any) => any;
+  possibleFilters: string[];
   addFilters: (
-    queryBuilder: QueryBuilder<Model>,
+    queryBuilder: SelectQueryBuilder<Model>,
     filters: any,
-  ) => QueryBuilder<Model>;
+  ) => SelectQueryBuilder<Model>;
+  compute: (
+    queryBuilder: SelectQueryBuilder<Model>,
+    insightFilters: any,
+  ) => any;
+  output?: any;
 }
 
 class TotalUsers implements InsightInterface<UserCourseModel> {
-  name = 'Total Students';
+  name = 'totalStudents';
+  displayName = 'Total Students';
   description = 'Gets the total number of students';
   roles = [Role.PROFESSOR];
   component: 'SimpleDisplayComponent';
   model = UserCourseModel;
   possibleFilters = ['courseId', 'role'];
 
-  async compute(queryBuilder: QueryBuilder<UserCourseModel>, filters) {
+  async compute(queryBuilder: SelectQueryBuilder<UserCourseModel>, filters) {
     return await this.addFilters(
       queryBuilder.where("role = 'student'"),
       filters,
     ).getCount();
   }
 
-  addFilters(queryBuilder, filters): QueryBuilder<UserCourseModel> {
-    // TODO iterate through the filters, updating the querybuilder
+  addFilters(queryBuilder, filters): SelectQueryBuilder<UserCourseModel> {
+    filters.forEach((filter) => {
+      if (!this.possibleFilters.includes(filter.type)) {
+        throw new Error(
+          `${filter} is not a possbile filter for "${this.name}"`,
+        );
+      }
+      switch (filter.type) {
+        case 'courseId':
+          queryBuilder.andWhere(filter.conditional);
+      }
+    });
+    return queryBuilder;
+  }
+}
+
+class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
+  name = 'totalQuestionsAsked';
+  displayName = 'Total Questions Asked';
+  description = 'Gets the total number questions asked';
+  roles = [Role.PROFESSOR];
+  component: 'SimpleDisplayComponent';
+  model = QuestionModel;
+  possibleFilters = ['courseId', 'startDate', 'endDate'];
+
+  async compute(queryBuilder: SelectQueryBuilder<QuestionModel>, filters) {
+    return await this.addFilters(
+      queryBuilder.where('TRUE'),
+      filters,
+    ).getCount();
+  }
+
+  addFilters(queryBuilder, filters): SelectQueryBuilder<QuestionModel> {
+    filters.forEach((filter) => {
+      if (!this.possibleFilters.includes(filter.type)) {
+        throw new Error(
+          `${filter} is not a possbile filter for "${this.name}"`,
+        );
+      }
+      switch (filter.type) {
+        case 'courseId':
+          queryBuilder
+            .innerJoinAndSelect('QuestionModel.queue', 'queue')
+            .andWhere(`queue.${filter.conditional}`);
+      }
+    });
+    return queryBuilder;
+  }
+}
+
+class AverageWaitTime implements InsightInterface<QuestionModel> {
+  name = 'averageWaitTime';
+  displayName = 'Average Wait Time';
+  description = 'Gets the average wait time';
+  roles = [Role.PROFESSOR];
+  component: 'SimpleDisplayComponent';
+  model = QuestionModel;
+  possibleFilters = ['courseId', 'startDate', 'endDate'];
+
+  async compute(queryBuilder: SelectQueryBuilder<QuestionModel>, filters) {
+    return await this.addFilters(
+      queryBuilder
+        .select(
+          'AVG(QuestionModel.helpedAt - QuestionModel.createdAt)',
+          'averageWaitTime',
+        )
+        .where('QuestionModel.helpedAt IS NOT NULL'),
+      filters,
+    ).getRawOne();
+  }
+
+  addFilters(queryBuilder, filters): SelectQueryBuilder<QuestionModel> {
+    filters.forEach((filter) => {
+      if (!this.possibleFilters.includes(filter.type)) {
+        throw new Error(
+          `${filter} is not a possbile filter for "${this.name}"`,
+        );
+      }
+      switch (filter.type) {
+        case 'courseId':
+          queryBuilder
+            .innerJoinAndSelect('QuestionModel.queue', 'queue')
+            .andWhere(`queue.${filter.conditional}`);
+      }
+    });
+    return queryBuilder;
   }
 }
 
 export const totalUsers = new TotalUsers();
+
+export const totalQuestionsAsked = new TotalQuestionsAsked();
+
+export const averageWaitTime = new AverageWaitTime();
