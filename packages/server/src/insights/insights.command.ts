@@ -32,9 +32,19 @@ export class InsightsCommand {
     courseId: number,
   ): Promise<any> {
     await QuestionFactory.createList(10);
-    await this.insightsService.generateInsightsFor({
+    const insights = await this.insightsService.generateInsightsFor({
       insights: [totalUsers],
-      filters: [`"courseId" = ${courseId}`],
+      filters: [
+        {
+          type: 'courseId',
+          conditional: `"courseId" = ${courseId}`,
+        },
+      ],
     });
+    for (const insight of Object.values(insights)) {
+      console.log('Name:   ', insight['displayName']);
+      console.log('Output: ', insight['output']);
+      console.log('-');
+    }
   }
 }
