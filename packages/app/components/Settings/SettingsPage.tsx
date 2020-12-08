@@ -45,7 +45,11 @@ export default function SettingsPage({
             fontSize={avatarSize * (3 / 7)}
           />
         ) : null}
-        <Menu onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}>
+        <Menu
+          defaultSelectedKeys={[currentSettings]}
+          onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}
+          style={{ background: "#f8f9fb" }}
+        >
           <Menu.Item key={SettingsOptions.PROFILE} icon={<EditOutlined />}>
             Edit Profile
           </Menu.Item>

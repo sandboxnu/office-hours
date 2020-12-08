@@ -16,6 +16,12 @@ export const isProd = (): boolean =>
   process.env.DOMAIN === PROD_URL ||
   (typeof window !== "undefined" && window?.location?.origin === PROD_URL);
 
+// TODO: Clean this up, move it somwhere else, use moment???
+// a - b, in minutes
+export function timeDiffInMins(a: Date, b: Date): number {
+  return (a.getTime() - b.getTime()) / (1000 * 60);
+}
+
 /////////////////////////
 // API Base Data Types //
 /////////////////////////
@@ -157,6 +163,14 @@ export class QueuePartial {
 
   allowQuestions!: boolean;
 }
+
+// Represents a list of office hours wait times of each hour of the week.
+// The first element of the array is the wait time for the first hour of Sunday, UTC.
+//   Users of the heatmap should rotate it according to their timezone.
+// INVARIANT: Must have 24*7 elements
+//
+// Wait time = -1 represents no office hours data at that time.
+export type Heatmap = Array<number>;
 
 /**
  * A Question is created when a student wants help from a TA.
@@ -380,6 +394,8 @@ export class GetCourseResponse {
 
   @Type(() => QueuePartial)
   queues!: QueuePartial[];
+
+  heatmap!: Heatmap | false;
 }
 
 export class GetQueueResponse extends QueuePartial {}

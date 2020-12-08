@@ -230,6 +230,9 @@ export class QuestionController {
           NotifMsgs.queue.TA_HIT_HELPED(question.taHelped.name),
         );
       }
+      if (newStatus in ClosedQuestionStatus) {
+        question.closedAt = new Date();
+      }
       await question.save();
       return question;
     } else {
