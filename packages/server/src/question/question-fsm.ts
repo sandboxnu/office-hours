@@ -60,6 +60,7 @@ const QUESTION_STATES: Record<QuestionStatus, AllowableTransitions> = {
   [ClosedQuestionStatus.ConfirmedDeleted]: {},
   [ClosedQuestionStatus.StudentCancelled]: {},
   [ClosedQuestionStatus.Stale]: {},
+  [ClosedQuestionStatus.DeletedDraft]: {},
 };
 
 export function canChangeQuestionStatus(
