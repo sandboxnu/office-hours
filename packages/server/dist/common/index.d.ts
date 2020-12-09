@@ -102,6 +102,7 @@ export declare enum LimboQuestionStatus {
 }
 export declare enum ClosedQuestionStatus {
     Resolved = "Resolved",
+    DeletedDraft = "DeletedDraft",
     ConfirmedDeleted = "ConfirmedDeleted",
     StudentCancelled = "StudentCancelled",
     Stale = "Stale"
@@ -115,6 +116,7 @@ export declare const QuestionStatusKeys: {
     ReQueueing: LimboQuestionStatus.ReQueueing;
     TADeleted: LimboQuestionStatus.TADeleted;
     Resolved: ClosedQuestionStatus.Resolved;
+    DeletedDraft: ClosedQuestionStatus.DeletedDraft;
     ConfirmedDeleted: ClosedQuestionStatus.ConfirmedDeleted;
     StudentCancelled: ClosedQuestionStatus.StudentCancelled;
     Stale: ClosedQuestionStatus.Stale;
