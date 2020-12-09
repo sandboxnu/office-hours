@@ -238,6 +238,7 @@ export enum LimboQuestionStatus {
 
 export enum ClosedQuestionStatus {
   Resolved = "Resolved",
+  DeletedDraft = "DeletedDraft",
   ConfirmedDeleted = "ConfirmedDeleted",
   StudentCancelled = "StudentCancelled",
   Stale = "Stale",

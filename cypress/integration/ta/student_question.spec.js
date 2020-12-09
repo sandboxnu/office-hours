@@ -189,5 +189,24 @@ describe("TA interacts with student question", () => {
         }
       );
     });
+
+    it("TA removes a question that is in Drafting status", function () {
+      createQuestion({
+        identifier: "draftingQuestion",
+        queueId: "queue.id",
+        data: {
+          status: "Drafting",
+          text: "",
+        },
+      });
+
+      cy.get("body").contains("Still Drafting").click();
+
+      cy.get("[data-cy='remove-from-queue']").click();
+      cy.get("body").should("contain", "Yes");
+      cy.get("button").contains("Yes").click();
+
+      cy.get("body").should("not.contain", "Still Drafting");
+    });
   });
 });
