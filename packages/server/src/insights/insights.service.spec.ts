@@ -49,7 +49,13 @@ describe('InsightsService', () => {
     it('totalQuestionsAsked', async () => {
       const course = await CourseFactory.create();
       const queue = await QueueFactory.create({ course });
-      await QuestionFactory.createList(8, { queue });
+      // questions in the past
+      await QuestionFactory.createList(6, {
+        queue,
+        createdAt: new Date(Date.now() - 30 * 60 * 1000),
+      });
+      // question right now
+      await QuestionFactory.create({ queue });
 
       const res = await service.generateInsightsFor({
         insights: [totalQuestionsAsked],
@@ -58,23 +64,33 @@ describe('InsightsService', () => {
             type: 'courseId',
             conditional: `"courseId" = ${course.id}`,
           },
+          {
+            type: 'timeframe',
+            start: new Date(Date.now() - 36 * 60 * 1000),
+            end: new Date(Date.now() - 6 * 60 * 1000),
+          },
         ],
       });
-      expect(res.totalQuestionsAsked.output).toEqual(8);
+      expect(res.totalQuestionsAsked.output).toEqual(6);
     });
 
     it('averageWaitTime', async () => {
-      await QuestionFactory.create({
-        createdAt: new Date(),
-        helpedAt: new Date(Date.now() + 32 * 60 * 1000),
+      const question = await QuestionFactory.create({
+        createdAt: new Date(Date.now() - 30 * 60 * 1000),
+        helpedAt: new Date(Date.now() - 25 * 60 * 1000),
       });
 
       const res = await service.generateInsightsFor({
         insights: [averageWaitTime],
-        filters: [],
+        filters: [
+          {
+            type: 'courseId',
+            conditional: `"courseId" = ${question.queue.courseId}`,
+          },
+        ],
       });
       expect(res.averageWaitTime.output).toEqual({
-        averageWaitTime: { minutes: 32 },
+        avgWaitTimeInMinutes: 5,
       });
     });
   });

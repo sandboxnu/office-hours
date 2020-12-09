@@ -61,7 +61,7 @@ class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
   roles = [Role.PROFESSOR];
   component: 'SimpleDisplayComponent';
   model = QuestionModel;
-  possibleFilters = ['courseId', 'startDate', 'endDate'];
+  possibleFilters = ['courseId', 'timeframe'];
 
   async compute(queryBuilder: SelectQueryBuilder<QuestionModel>, filters) {
     return await this.addFilters(
@@ -82,6 +82,13 @@ class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
           queryBuilder
             .innerJoinAndSelect('QuestionModel.queue', 'queue')
             .andWhere(`queue.${filter.conditional}`);
+          break;
+        case 'timeframe':
+          queryBuilder.andWhere(
+            'QuestionModel.createdAt BETWEEN :start AND :end',
+            { start: filter.start, end: filter.end },
+          );
+          break;
       }
     });
     return queryBuilder;
@@ -95,14 +102,14 @@ class AverageWaitTime implements InsightInterface<QuestionModel> {
   roles = [Role.PROFESSOR];
   component: 'SimpleDisplayComponent';
   model = QuestionModel;
-  possibleFilters = ['courseId', 'startDate', 'endDate'];
+  possibleFilters = ['courseId', 'timeframe'];
 
   async compute(queryBuilder: SelectQueryBuilder<QuestionModel>, filters) {
     return await this.addFilters(
       queryBuilder
         .select(
-          'AVG(QuestionModel.helpedAt - QuestionModel.createdAt)',
-          'averageWaitTime',
+          'EXTRACT(EPOCH FROM AVG(QuestionModel.helpedAt - QuestionModel.createdAt)::INTERVAL)/60',
+          'avgWaitTimeInMinutes',
         )
         .where('QuestionModel.helpedAt IS NOT NULL'),
       filters,
@@ -119,7 +126,7 @@ class AverageWaitTime implements InsightInterface<QuestionModel> {
       switch (filter.type) {
         case 'courseId':
           queryBuilder
-            .innerJoinAndSelect('QuestionModel.queue', 'queue')
+            .innerJoin('QuestionModel.queue', 'queue')
             .andWhere(`queue.${filter.conditional}`);
       }
     });
