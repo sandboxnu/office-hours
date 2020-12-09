@@ -109,7 +109,11 @@ export default function TAQueueDetailButtons({
           okText="Yes"
           cancelText="No"
           onConfirm={async () => {
-            await changeStatus(LimboQuestionStatus.TADeleted);
+            await changeStatus(
+              question.status === OpenQuestionStatus.Drafting
+                ? ClosedQuestionStatus.DeletedDraft
+                : LimboQuestionStatus.TADeleted
+            );
             await API.questions.notify(question.id);
           }}
         >
