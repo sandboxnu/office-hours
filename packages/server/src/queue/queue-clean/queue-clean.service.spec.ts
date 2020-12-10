@@ -66,7 +66,6 @@ describe('QueueService', () => {
       const ta3 = await UserFactory.create();
       const queue = await QueueFactory.create({ staffList: [ta] });
       const queue2 = await QueueFactory.create({ staffList: [ta2, ta3] });
-
       await service.checkoutAllStaff();
       expect(queue.staffList.length).toEqual(0);
       expect(queue2.staffList.length).toEqual(0);

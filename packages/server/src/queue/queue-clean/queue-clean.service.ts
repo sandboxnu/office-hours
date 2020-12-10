@@ -4,6 +4,9 @@ import { Connection } from 'typeorm';
 import { QueueModel } from '../queue.entity';
 import { OpenQuestionStatus, ClosedQuestionStatus } from '@koh/common';
 import { QuestionModel } from '../../question/question.entity';
+import { UserModel } from 'profile/user.entity';
+import { CourseModel } from 'course/course.entity';
+import { CourseModule } from 'course/course.module';
 
 /**
  * Clean the queue and mark stale
@@ -26,19 +29,12 @@ export class QueueCleanService {
       this.cleanQueue(queue.id);
     });
   }
-  /*
-  
 
-SELECT DISTINCT "queueModelId" FROM queue_model 
-INNER JOIN queue_model_staff_list_user_model 
-ON queue_model.id = queue_model_staff_list_user_model."queueModelId";
-  */
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   public async checkoutAllStaff(): Promise<void> {
-    const queuesWithCheckedInStaff: QueueModel[] = await QueueModel.getRepository()
-      .createQueryBuilder('queue')
-      .innerJoinAndSelect('queue_model.staff_list', 'staff_list')
-      .getMany();
+    const queuesWithCheckedInStaff: QueueModel[] = await QueueModel.getRepository().find(
+      { relations: ['staffList'] },
+    );
 
     queuesWithCheckedInStaff.forEach(async (queue) => {
       queue.staffList = [];
