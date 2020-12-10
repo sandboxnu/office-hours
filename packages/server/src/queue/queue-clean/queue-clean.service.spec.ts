@@ -66,9 +66,18 @@ describe('QueueService', () => {
       const ta3 = await UserFactory.create();
       const queue = await QueueFactory.create({ staffList: [ta] });
       const queue2 = await QueueFactory.create({ staffList: [ta2, ta3] });
+
       await service.checkoutAllStaff();
-      expect(queue.staffList.length).toEqual(0);
-      expect(queue2.staffList.length).toEqual(0);
+
+      const updatedQueue1 = await QueueModel.findOne(queue.id, {
+        relations: ['staffList'],
+      });
+      const updatedQueue2 = await QueueModel.findOne(queue2.id, {
+        relations: ['staffList'],
+      });
+
+      expect(updatedQueue1.staffList.length).toEqual(0);
+      expect(updatedQueue2.staffList.length).toEqual(0);
     });
 
     it('cleaning the queue removes the queue notes', async () => {

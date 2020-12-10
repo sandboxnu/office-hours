@@ -38,8 +38,8 @@ export class QueueCleanService {
 
     queuesWithCheckedInStaff.forEach(async (queue) => {
       queue.staffList = [];
-      await queue.save();
     });
+    await QueueModel.save(queuesWithCheckedInStaff);
   }
 
   public async cleanQueue(queueId: number): Promise<void> {
