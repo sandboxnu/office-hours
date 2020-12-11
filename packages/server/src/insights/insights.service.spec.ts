@@ -8,7 +8,13 @@ import {
   CourseFactory,
   QueueFactory,
 } from '../../test/util/factories';
-import { totalUsers, totalQuestionsAsked, averageWaitTime } from './insights';
+import {
+  totalUsers,
+  totalQuestionsAsked,
+  averageWaitTime,
+  questionTypeBreakdown,
+} from './insights';
+import { QuestionStatusKeys } from '@koh/common';
 
 describe('InsightsService', () => {
   let service: InsightsService;
@@ -93,5 +99,36 @@ describe('InsightsService', () => {
         avgWaitTimeInMinutes: 5,
       });
     });
+  });
+
+  it.only('questionTypeBreakdown', async () => {
+    const course = await CourseFactory.create();
+    const queue = await QueueFactory.create({ course });
+    for (let i = 0; i < 8; i++) {
+      await QuestionFactory.create({ status: QuestionStatusKeys.Stale, queue });
+    }
+    for (let i = 0; i < 20; i++) {
+      await QuestionFactory.create({
+        status: QuestionStatusKeys.Resolved,
+        queue,
+      });
+    }
+    for (let i = 0; i < 22; i++) {
+      await QuestionFactory.create({
+        status: QuestionStatusKeys.ConfirmedDeleted,
+        queue,
+      });
+    }
+    const res = await service.generateInsightsFor({
+      insights: [questionTypeBreakdown],
+      filters: [
+        {
+          type: 'courseId',
+          conditional: `"courseId" = ${course.id}`,
+        },
+      ],
+    });
+    console.log(res.questionTypeBreakdown.output);
+    // expect(res.totalStudents.output).toEqual();
   });
 });

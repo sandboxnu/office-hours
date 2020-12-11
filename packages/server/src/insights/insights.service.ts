@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { UserCourseModel } from 'profile/user-course.entity';
-import { QuestionModel } from 'question/question.entity';
 import { InsightInterface } from './insights';
 
 // interface generateInsightsForParams {

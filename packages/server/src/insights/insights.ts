@@ -1,4 +1,4 @@
-import { Role } from '@koh/common';
+import { QuestionType, Role } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { SelectQueryBuilder } from 'typeorm';
 import { QuestionModel } from 'question/question.entity';
@@ -95,6 +95,47 @@ class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
   }
 }
 
+class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
+  name = 'questionTypeBreakdown';
+  displayName = 'Question Type Breakdown';
+  description =
+    'Returns a table of each question type and how many questions were asked';
+  roles = [Role.PROFESSOR];
+  component: 'SimpleDisplayComponent';
+  model = QuestionModel;
+  possibleFilters = ['courseId', 'timeframe'];
+
+  async compute(queryBuilder: SelectQueryBuilder<QuestionModel>, filters) {
+    return await this.addFilters(
+      queryBuilder
+        .select('question_model."questionType"', 'questions')
+        .addSelect('COUNT()', 'totalQuestions'),
+      filters,
+    )
+      .groupBy('QuestionModel."status"')
+      .orderBy('COUNT(*)', 'DESC')
+      .printSql()
+      .getRawMany();
+  }
+
+  addFilters(queryBuilder, filters): SelectQueryBuilder<QuestionModel> {
+    filters.forEach((filter) => {
+      if (!this.possibleFilters.includes(filter.type)) {
+        throw new Error(
+          `${filter} is not a possbile filter for "${this.name}"`,
+        );
+      }
+      switch (filter.type) {
+        case 'courseId':
+          queryBuilder
+            .innerJoin('QuestionModel.queue', 'queue')
+            .andWhere(`queue.${filter.conditional}`);
+      }
+    });
+    return queryBuilder;
+  }
+}
+
 class AverageWaitTime implements InsightInterface<QuestionModel> {
   name = 'averageWaitTime';
   displayName = 'Average Wait Time';
@@ -139,3 +180,5 @@ export const totalUsers = new TotalUsers();
 export const totalQuestionsAsked = new TotalQuestionsAsked();
 
 export const averageWaitTime = new AverageWaitTime();
+
+export const questionTypeBreakdown = new QuestionTypeBreakdown();

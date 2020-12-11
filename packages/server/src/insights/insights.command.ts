@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { InsightsService } from './insights.service';
 import { QuestionFactory } from '../../test/util/factories';
-import { totalUsers } from './insights';
+import { questionTypeBreakdown, totalUsers } from './insights';
 
 /**
  * Initial Product: Create a system to aggregate certain data within a certain time period for one course
@@ -33,7 +33,7 @@ export class InsightsCommand {
   ): Promise<any> {
     await QuestionFactory.createList(10);
     const insights = await this.insightsService.generateInsightsFor({
-      insights: [totalUsers],
+      insights: [totalUsers, questionTypeBreakdown],
       filters: [
         {
           type: 'courseId',
