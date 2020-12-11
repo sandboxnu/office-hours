@@ -524,6 +524,25 @@ export interface GetReleaseNotesResponse {
   lastUpdatedUnixTime: number;
 }
 
+export class Insight {
+  @IsString()
+  name!: string;
+
+  @IsString()
+  displayName!: string;
+
+  @IsString()
+  description!: string; 
+
+  @IsString()
+  component!: string; 
+
+  // TODO: Is it possible to add a type for this?
+  output!: any;
+}
+
+export type GetInsightsResponse = Insight[];
+
 export const ERROR_MESSAGES = {
   questionController: {
     createQuestion: {
