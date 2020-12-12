@@ -1,6 +1,6 @@
-import { QuestionType, Role } from '@koh/common';
+import { Role } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
-import { createQueryBuilder, SelectQueryBuilder } from 'typeorm';
+import { SelectQueryBuilder } from 'typeorm';
 import { QuestionModel } from 'question/question.entity';
 
 export interface InsightInterface<Model> {
@@ -180,5 +180,5 @@ export const INSIGHTS = {
   totalUsers: new TotalUsers(),
   totalQuestionsAsked: new TotalQuestionsAsked(),
   averageWaitTime: new AverageWaitTime(),
-  questionTypeBreakdown: new QuestionTypeBreakdown()
-}
+  questionTypeBreakdown: new QuestionTypeBreakdown(),
+};
