@@ -9,6 +9,7 @@ import {
   QueueFactory,
 } from '../../test/util/factories';
 import { INSIGHTS } from './insights';
+import { QuestionType } from '@koh/common';
 
 describe('InsightsService', () => {
   let service: InsightsService;
@@ -98,21 +99,18 @@ describe('InsightsService', () => {
   it.only('questionTypeBreakdown', async () => {
     const course = await CourseFactory.create();
     const queue = await QueueFactory.create({ course });
-    for (let i = 0; i < 8; i++) {
-      await QuestionFactory.create({ status: QuestionStatusKeys.Stale, queue });
-    }
-    for (let i = 0; i < 20; i++) {
-      await QuestionFactory.create({
-        status: QuestionStatusKeys.Resolved,
-        queue,
-      });
-    }
-    for (let i = 0; i < 22; i++) {
-      await QuestionFactory.create({
-        status: QuestionStatusKeys.ConfirmedDeleted,
-        queue,
-      });
-    }
+    await QuestionFactory.createList(8, {
+      questionType: QuestionType.Bug,
+      queue,
+    });
+    await QuestionFactory.createList(20, {
+      questionType: QuestionType.Clarification,
+      queue,
+    });
+    await QuestionFactory.createList(10, {
+      questionType: QuestionType.Testing,
+      queue,
+    });
     const res = await service.generateInsightsFor({
       insights: [INSIGHTS.questionTypeBreakdown],
       filters: [
@@ -122,7 +120,14 @@ describe('InsightsService', () => {
         },
       ],
     });
-    console.log(res.questionTypeBreakdown.output);
-    // expect(res.totalStudents.output).toEqual();
+
+    expect(res.questionTypeBreakdown.output).toEqual([
+      { questionType: 'Bug', totalQuestions: '8' },
+      { questionType: 'Clarification', totalQuestions: '20' },
+      { questionType: 'Concept', totalQuestions: '0' },
+      { questionType: 'Other', totalQuestions: '0' },
+      { questionType: 'Setup', totalQuestions: '0' },
+      { questionType: 'Testing', totalQuestions: '10' },
+    ]);
   });
 });

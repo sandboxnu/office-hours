@@ -1,10 +1,16 @@
-import { InsightsService } from "./insights.service";
-import { Controller, UseGuards, UseInterceptors, ClassSerializerInterceptor, Get } from "@nestjs/common";
-import { JwtAuthGuard } from "login/jwt-auth.guard";
-import { Connection } from "typeorm";
-import { Roles } from "profile/roles.decorator";
-import { Role, GetInsightsResponse, ListInsightsResponse } from "@koh/common";
-import { INSIGHTS } from "./insights";
+import { InsightsService } from './insights.service';
+import {
+  Controller,
+  UseGuards,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+  Get,
+} from '@nestjs/common';
+import { JwtAuthGuard } from 'login/jwt-auth.guard';
+import { Connection } from 'typeorm';
+import { Roles } from 'profile/roles.decorator';
+import { Role, GetInsightsResponse } from '@koh/common';
+import { INSIGHTS } from './insights';
 
 @Controller('insights')
 @UseGuards(JwtAuthGuard)
