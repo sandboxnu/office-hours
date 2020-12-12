@@ -1,4 +1,4 @@
-import { QuestionType, Role } from '@koh/common';
+import { Role } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { SelectQueryBuilder } from 'typeorm';
 import { QuestionModel } from 'question/question.entity';
