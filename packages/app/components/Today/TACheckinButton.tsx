@@ -1,9 +1,10 @@
-import { API } from "@template/api-client";
-import { Button, Input, Modal, Radio } from "antd";
+import { API } from "@koh/api-client";
+import { Button, Modal } from "antd";
+import moment from "moment";
 import { useRouter } from "next/router";
 import { ReactElement, useState } from "react";
 import styled from "styled-components";
-import useSWR from "swr";
+import { useCourse } from "../../hooks/useCourse";
 
 const CheckinButton = styled(Button)`
   background: #2a9187;
@@ -13,81 +14,128 @@ const CheckinButton = styled(Button)`
   font-size: 14px;
 `;
 
+const CheckOutButton = styled(Button)`
+  color: #da3236;
+  font-weight: 500;
+  font-size: 14px;
+  border-radius: 6px;
+`;
+
+const CheckoutModalButtonRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+type CheckInButtonState =
+  | "CheckedIn"
+  | "CheckedOut"
+  | "CheckedIntoOtherQueueAlready";
+
+interface TACheckinButtonProps {
+  courseId: number;
+  room: string; // name of room to check into
+  state: CheckInButtonState; // State of the button
+  disabled?: boolean;
+  block?: boolean;
+}
+const EMPTY_CHECKOUT_INFO = { canClearQueue: false, nextOfficeHourTime: null };
+
 export default function TACheckinButton({
   courseId,
-}: {
-  courseId: number;
-}): ReactElement {
+  room,
+  state,
+  disabled = false,
+  block = false,
+}: TACheckinButtonProps): ReactElement {
   const router = useRouter();
 
-  const [viewCheckinModal, setViewCheckinModal] = useState(false);
-  const [value, setValue] = useState(0);
-  const [customRoom, setCustomRoom] = useState("");
-
-  const canSubmitCustomRoom = !(value === -1 && !customRoom);
-
-  const { data } = useSWR(courseId && `api/v1/courses/${courseId}`, async () =>
-    API.course.get(Number(courseId))
-  );
-
-  const radioStyle = {
-    display: "block",
-    height: "30px",
-    lineHeight: "30px",
-  };
+  const { course, mutateCourse } = useCourse(courseId);
+  const [queueIdToClean, setQueueIdToClean] = useState(-1);
 
   async function checkInTA() {
-    if (canSubmitCustomRoom) {
-      const redirectID = await API.taStatus.checkIn(
-        courseId,
-        value === -1 ? customRoom : data?.queues[value].room
-      );
+    // to see old check in in person functionality look at commit b4768bbfb0f36444c80961703bdbba01ff4a5596
+    //trying to limit changes to the frontend, all queues will have the room online
+    const redirectID = await API.taStatus.checkIn(courseId, room);
 
-      router.push(
-        "/course/[cid]/queue/[qid]",
-        `/course/${courseId}/queue/${redirectID.id}`
-      );
-    }
+    router.push(
+      "/course/[cid]/queue/[qid]",
+      `/course/${courseId}/queue/${redirectID.id}`
+    );
   }
+
+  const [checkoutModalInfo, setCheckoutModalInfo] = useState<{
+    canClearQueue: boolean;
+    nextOfficeHourTime?: Date;
+  }>(EMPTY_CHECKOUT_INFO);
+  const closeModal = () => setCheckoutModalInfo(EMPTY_CHECKOUT_INFO);
 
   return (
     <>
-      <CheckinButton
-        type="default"
-        size="large"
-        onClick={() => setViewCheckinModal(true)}
-        disabled={!data}
-        data-cy="check-in-button"
-      >
-        Check In
-      </CheckinButton>
+      {state === "CheckedIn" && (
+        <CheckOutButton
+          type="default"
+          size="large"
+          disabled={disabled}
+          block={block}
+          data-cy="check-out-button"
+          onClick={async () => {
+            const { queueId, ...modalInfo } = await API.taStatus.checkOut(
+              courseId,
+              room
+            );
+            setQueueIdToClean(queueId);
+            setCheckoutModalInfo(modalInfo);
+            mutateCourse();
+          }}
+        >
+          Check Out
+        </CheckOutButton>
+      )}
+      {state === "CheckedOut" && (
+        <CheckinButton
+          type="default"
+          size="large"
+          block={block}
+          onClick={() => checkInTA()}
+          disabled={disabled || !course}
+          data-cy="check-in-button"
+        >
+          Check In
+        </CheckinButton>
+      )}
       <Modal
-        title="Check in to your office hours"
-        visible={viewCheckinModal}
-        onOk={checkInTA}
-        onCancel={() => setViewCheckinModal(false)}
-        okText="Check In"
-        okButtonProps={{ disabled: !canSubmitCustomRoom }}
+        visible={checkoutModalInfo.canClearQueue}
+        title="Let's clean up..."
+        onCancel={closeModal}
+        footer={[
+          <Button key="keep" onClick={closeModal}>
+            Leave Students In Queue
+          </Button>,
+          <Button
+            key="clear"
+            type="primary"
+            onClick={async () => {
+              await API.queues.clean(queueIdToClean);
+              closeModal();
+            }}
+            data-cy="clear-queue-btn"
+          >
+            Clear Queue
+          </Button>,
+        ]}
       >
-        <h3>Which room are you in?</h3>
-        <Radio.Group value={value} onChange={(e) => setValue(e.target.value)}>
-          {data?.queues.map((q, i) => (
-            <Radio key={q.id} style={radioStyle} value={i}>
-              {q.room}
-            </Radio>
-          ))}
-          <Radio style={radioStyle} value={-1}>
-            Other...
-            {value === -1 ? (
-              <Input
-                onChange={(v) => setCustomRoom(v.target.value)}
-                value={customRoom}
-                style={{ width: 100, marginLeft: 10 }}
-                onPressEnter={checkInTA}
-              />
-            ) : null}
-          </Radio>
-        </Radio.Group>
+        You are the last TA to leave.{" "}
+        {checkoutModalInfo.nextOfficeHourTime ? (
+          <>
+            There will not be any office hours for{" "}
+            <strong>
+              {moment(checkoutModalInfo.nextOfficeHourTime).fromNow(true)}
+            </strong>
+          </>
+        ) : (
+          <strong>There are no later office hours scheduled</strong>
+        )}
+        . Do you want to clear the remaining students out of the queue?
       </Modal>
     </>
   );

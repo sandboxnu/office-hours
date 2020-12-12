@@ -1,8 +1,7 @@
-import { API } from "@template/api-client";
-import { Question } from "@template/common";
+import { Question } from "@koh/common";
 import { responseInterface } from "swr";
-import { useQuestions } from "./useQuestions";
 import { useProfile } from "./useProfile";
+import { useQuestions } from "./useQuestions";
 
 type queueResponse = responseInterface<Question, any>;
 
@@ -10,7 +9,7 @@ interface UseStudentQuestionReturn {
   studentQuestion?: queueResponse["data"];
   studentQuestionIndex?: number;
   studentQuestionError: queueResponse["error"];
-  mutateStudentQuestion: (q: Question) => void;
+  // mutateStudentQuestion: (q: Question) => void;
 }
 
 /**
@@ -18,16 +17,17 @@ interface UseStudentQuestionReturn {
  */
 export function useStudentQuestion(qid: number): UseStudentQuestionReturn {
   const profile = useProfile();
-  const { questions, questionsError, mutateQuestion } = useQuestions(qid);
+  const { questions, questionsError } = useQuestions(qid);
+
+  const studentQuestion = profile && questions && questions?.yourQuestion;
 
   const studentQuestionIndex =
-    profile &&
-    questions &&
-    questions.findIndex((q) => q.creator.id === profile.id);
+    studentQuestion &&
+    questions.queue.findIndex((question) => studentQuestion.id === question.id);
+
   return {
-    studentQuestion: questions?.[studentQuestionIndex],
+    studentQuestion,
     studentQuestionIndex,
     studentQuestionError: questionsError,
-    mutateStudentQuestion: mutateQuestion,
   };
 }

@@ -1,9 +1,10 @@
+import { ERROR_MESSAGES } from '@koh/common';
 import {
-  Injectable,
   CanActivate,
   ExecutionContext,
-  UnauthorizedException,
+  Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { UserModel } from '../profile/user.entity';
@@ -29,11 +30,11 @@ export abstract class RolesGuard implements CanActivate {
     const { courseId, user } = await this.setupData(request);
 
     if (!user) {
-      throw new UnauthorizedException('Must be logged in');
+      throw new UnauthorizedException(ERROR_MESSAGES.roleGuard.notLoggedIn);
     }
 
     if (!courseId) {
-      throw new NotFoundException();
+      throw new NotFoundException(ERROR_MESSAGES.roleGuard.noCourseIdFound);
     }
 
     return this.matchRoles(roles, user, courseId);
@@ -45,8 +46,7 @@ export abstract class RolesGuard implements CanActivate {
     });
 
     if (!userCourse) {
-      // If the user isn't in this course, we shouldn't leak that the course event exists
-      throw new NotFoundException();
+      throw new NotFoundException(ERROR_MESSAGES.roleGuard.notInCourse);
     }
 
     const remaining = roles.filter((role) => {
@@ -55,9 +55,7 @@ export abstract class RolesGuard implements CanActivate {
 
     if (remaining.length <= 0) {
       throw new UnauthorizedException(
-        `You must have one of roles [${roles.join(
-          ', ',
-        )}] to access this course`,
+        ERROR_MESSAGES.roleGuard.mustBeRoleToJoinCourse(roles),
       );
     }
 

@@ -1,11 +1,9 @@
 import React, { ReactElement } from "react";
-import { API } from "@template/api-client";
-import Link from "next/link";
+import { API } from "@koh/api-client";
 import styled from "styled-components";
 import { Button, Divider } from "antd";
-import { GetStaticProps } from "next";
-import { PROD_URL } from "@template/common";
 import DefaultErrorPage from "next/error";
+import { isProd } from "@koh/common";
 
 const Container = styled.div`
   width: auto;
@@ -45,17 +43,8 @@ const PageHeader = styled.div`
   margin-top: 40px;
 `;
 
-export const getStaticProps: GetStaticProps = async () => {
-  const hidePage = PROD_URL === process.env.DOMAIN;
-  return { props: { hidePage } };
-};
-
-interface DevPanelProps {
-  hidePage: boolean;
-}
-
-export default function DevPanel({ hidePage }: DevPanelProps): ReactElement {
-  if (hidePage) {
+export default function DevPanel(): ReactElement {
+  if (isProd()) {
     return <DefaultErrorPage statusCode={404} />;
   }
   return (
@@ -76,7 +65,7 @@ export default function DevPanel({ hidePage }: DevPanelProps): ReactElement {
             Login as <b> Student 1</b>
           </Button>
         </a>
-        <a href="/api/v1/login/dev?userId=3">
+        <a href="/api/v1/login/dev?userId=2">
           <Button
             style={{ marginRight: "15px" }}
             type="default"
@@ -85,7 +74,7 @@ export default function DevPanel({ hidePage }: DevPanelProps): ReactElement {
             Login as <b> Student 2</b>
           </Button>
         </a>
-        <a href="/api/v1/login/dev?userId=2">
+        <a href="/api/v1/login/dev?userId=3">
           <Button
             style={{ marginRight: "15px" }}
             type="default"
@@ -94,7 +83,7 @@ export default function DevPanel({ hidePage }: DevPanelProps): ReactElement {
             Login as <b> TA</b>
           </Button>
         </a>
-        <a href="/api/v1/login/dev?userId=5">
+        <a href="/api/v1/login/dev?userId=4">
           <Button type="default" htmlType="submit">
             Login as <b> TA 2</b>
           </Button>

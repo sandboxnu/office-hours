@@ -1,24 +1,28 @@
-import { API } from "@template/api-client";
-import { QueuePartial, Role } from "@template/common";
-import { Col, Result, Row } from "antd";
+import { API } from "@koh/api-client";
+import { Heatmap, QueuePartial, Role } from "@koh/common";
+import { Col, Row } from "antd";
+import Head from "next/head";
 import { useRouter } from "next/router";
-import { ReactElement } from "react";
+import React, { ReactElement } from "react";
 import styled from "styled-components";
-import useSWR, { mutate } from "swr";
 import NavBar from "../../../components/Nav/NavBar";
+import SchedulePanel from "../../../components/Schedule/SchedulePanel";
+import PopularTimes from "../../../components/Today/PopularTimes/PopularTimes";
 import OpenQueueCard, {
   OpenQueueCardSkeleton,
 } from "../../../components/Today/OpenQueueCard";
 import TACheckinButton from "../../../components/Today/TACheckinButton";
+import ReleaseNotes from "../../../components/Today/ReleaseNotes";
 import WelcomeStudents from "../../../components/Today/WelcomeStudents";
+import { useCourse } from "../../../hooks/useCourse";
+import { useProfile } from "../../../hooks/useProfile";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
-import Schedule from "./schedule";
+import { chunk, mean } from "lodash";
+import moment from "moment";
+import { StandardPageContainer } from "../../../components/common/PageContainer";
 
 const Container = styled.div`
-  margin: 32px 64px;
-  @media (max-width: 768px) {
-    margin: 32px 24px;
-  }
+  margin-top: 32px;
 `;
 
 const Title = styled.div`
@@ -27,40 +31,53 @@ const Title = styled.div`
   color: #212934;
 `;
 
+function arrayRotate(arr, count) {
+  const adjustedCount = (arr.length + count) % arr.length;
+  return arr
+    .slice(adjustedCount, arr.length)
+    .concat(arr.slice(0, adjustedCount));
+}
+
+const collapseHeatmap = (heatmap: Heatmap): Heatmap =>
+  chunk(heatmap, 4).map((hours) => {
+    const filteredOfficeHours = hours.filter((v) => v !== -1);
+    return filteredOfficeHours.length > 0 ? mean(filteredOfficeHours) : -1;
+  });
+
 export default function Today(): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
+  const profile = useProfile();
   const role = useRoleInCourse(Number(cid));
 
-  const { data, error } = useSWR(cid && `api/v1/courses/${cid}`, async () =>
-    API.course.get(Number(cid))
-  );
+  const { course, mutateCourse } = useCourse(Number(cid));
 
   const updateQueueNotes = async (
     queue: QueuePartial,
     notes: string
   ): Promise<void> => {
     const newQueues =
-      data && data.queues.map((q) => (q.id === queue.id ? { ...q, notes } : q));
+      course &&
+      course.queues.map((q) => (q.id === queue.id ? { ...q, notes } : q));
 
-    mutate(`api/v1/courses/${cid}`, { ...data, queues: newQueues }, false);
+    mutateCourse({ ...course, queues: newQueues }, false);
     await API.queues.update(queue.id, {
       notes,
       allowQuestions: queue.allowQuestions,
     });
-    mutate(`api/v1/courses/${cid}`);
+    mutateCourse();
   };
 
-  if (error) {
-    return (
-      <Result
-        status="500"
-        title="Something went wrong, please ask chinese man"
-      />
-    );
-  }
+  const queueCheckedIn = course?.queues.find((queue) =>
+    queue.staffList.find((staff) => staff.id === profile.id)
+  );
+
   return (
-    <div>
+    <StandardPageContainer>
+      <Head>
+        <title>{course?.name} | Khoury Office Hours</title>
+      </Head>
+      <ReleaseNotes />
       <WelcomeStudents />
       <NavBar courseId={Number(cid)} />
       <Container>
@@ -68,23 +85,46 @@ export default function Today(): ReactElement {
           <Col md={12} xs={24}>
             <Row justify="space-between">
               <Title>Current Office Hours</Title>
-              {role === Role.TA && <TACheckinButton courseId={Number(cid)} />}
+              {role === Role.TA && (
+                <TACheckinButton
+                  courseId={Number(cid)}
+                  room="Online"
+                  state={queueCheckedIn ? "CheckedIn" : "CheckedOut"}
+                />
+              )}
             </Row>
-            {data?.queues?.map((q) => (
-              <OpenQueueCard
-                key={q.id}
-                queue={q}
-                isTA={role === Role.TA}
-                updateQueueNotes={updateQueueNotes}
+            {course?.queues?.length === 0 ? (
+              <h1 style={{ paddingTop: "100px" }}>
+                There are currently no scheduled office hours
+              </h1>
+            ) : (
+              course?.queues?.map((q) => (
+                <OpenQueueCard
+                  key={q.id}
+                  queue={q}
+                  isTA={role === Role.TA}
+                  updateQueueNotes={updateQueueNotes}
+                />
+              ))
+            )}
+            {!course && <OpenQueueCardSkeleton />}
+            {/*This only works with UTC offsets in the form N:00, to help with other offsets, the size of the array might have to change to a size of 24*7*4 (for every 15 min interval) */}
+            {course && course.heatmap && (
+              <PopularTimes
+                heatmap={collapseHeatmap(
+                  arrayRotate(
+                    course.heatmap,
+                    -Math.floor(moment().utcOffset() / 15)
+                  )
+                )}
               />
-            ))}
-            {!data && <OpenQueueCardSkeleton />}
+            )}
           </Col>
           <Col md={12} sm={24}>
-            <Schedule today={true} />
+            <SchedulePanel courseId={Number(cid)} defaultView="day" />
           </Col>
         </Row>
       </Container>
-    </div>
+    </StandardPageContainer>
   );
 }

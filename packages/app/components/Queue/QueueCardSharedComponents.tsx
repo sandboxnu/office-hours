@@ -1,4 +1,4 @@
-import { QuestionStatus, QuestionStatusKeys } from "@template/common";
+import { QuestionStatus, QuestionStatusKeys } from "@koh/common";
 import { Avatar, Card, Row, Tag } from "antd";
 import styled from "styled-components";
 
@@ -53,11 +53,25 @@ export function questionStatusToColor(status: QuestionStatus): string {
   switch (status) {
     case QuestionStatusKeys.Helping:
       return "gold";
-    case QuestionStatusKeys.NoShow:
+    case QuestionStatusKeys.CantFind:
+    case QuestionStatusKeys.TADeleted:
       return "red";
     case QuestionStatusKeys.Drafting:
       return "blue";
+    case QuestionStatusKeys.PriorityQueued:
+      return "green";
     default:
       return "purple";
+  }
+}
+
+export function questionStatusToText(status: QuestionStatus): string {
+  switch (status) {
+    case QuestionStatusKeys.CantFind:
+      return "Can't Find";
+    case QuestionStatusKeys.PriorityQueued:
+      return "Priority";
+    default:
+      return status;
   }
 }

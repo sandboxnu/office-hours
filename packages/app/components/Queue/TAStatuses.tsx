@@ -1,10 +1,12 @@
+import { Question } from "@koh/common";
+import { Badge, Col, Row } from "antd";
 import { ReactElement } from "react";
-import { Avatar, Row, Col, Badge } from "antd";
-import { Question } from "@template/common";
-import { RenderEvery } from "../RenderEvery";
 import styled from "styled-components";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
+import { formatWaitTime } from "../../utils/TimeUtil";
+import AvatarWithInitals from "../common/AvatarWithInitials";
+import { RenderEvery } from "../RenderEvery";
 
 interface StatusRowProps {
   queueId: number;
@@ -17,9 +19,14 @@ export function TAStatuses({ queueId }: StatusRowProps): ReactElement {
   const {
     queue: { staffList },
   } = useQueue(queueId);
+  if (!questions) {
+    return null;
+  }
+
   const taToQuestion: Record<number, Question> = {};
   const taIds = staffList.map((t) => t.id);
-  for (const question of questions) {
+  const helpingQuestions = questions.questionsGettingHelp;
+  for (const question of helpingQuestions) {
     if (taIds.includes(question.taHelped?.id)) {
       taToQuestion[question.taHelped.id] = question;
     }
@@ -48,7 +55,7 @@ const StyledCard = styled.div`
   display: flex;
   margin-bottom: 16px;
 `;
-const AvatarNoShrink = styled(Avatar)`
+const AvatarNoShrink = styled(AvatarWithInitals)`
   flex-shrink: 0;
 `;
 const CardContent = styled.div`
@@ -78,10 +85,14 @@ function StatusCard({
   studentName,
   helpedAt,
 }: StatusCardProps): ReactElement {
-  const isBusy = !!studentName;
+  const isBusy = !!helpedAt;
   return (
-    <StyledCard>
-      <AvatarNoShrink size={48} src={taPhotoURL} />
+    <StyledCard data-cy="ta-status-card">
+      {
+        //TODO: bring back photo URL && get rid of RegeX
+        // src={taPhotoURL}
+      }
+      <AvatarNoShrink size={48} fontSize={20} name={taName} />
       <CardContent>
         <Row justify="space-between">
           <TAName>{taName}</TAName>
@@ -114,9 +125,9 @@ function HelpingFor({ studentName, helpedAt }: HelpingForProps): ReactElement {
     <RenderEvery
       render={() => (
         <span>
-          Helping <BlueSpan>{studentName}</BlueSpan> for{" "}
+          Helping <BlueSpan>{studentName ?? "a student"}</BlueSpan> for{" "}
           <BlueSpan>
-            {Math.round((Date.now() - helpedAt.getTime()) / 60000) + " min"}
+            {formatWaitTime((Date.now() - helpedAt.getTime()) / 60000)}
           </BlueSpan>
         </span>
       )}

@@ -1,5 +1,5 @@
 {
-  "name": "@template/common",
+  "name": "@koh/common",
   "version": "0.1.0",
   "main": "dist/index.js",
   "private": true,
@@ -7,8 +7,9 @@
     "tsc": "tsc"
   },
   "dependencies": {
+    "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
     "reflect-metadata": "^0.1.13",
-    "typescript": "^3.8.3"
+    "typescript": "^4.0.0"
   }
 }

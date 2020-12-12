@@ -1,9 +1,15 @@
+import {
+  ClosedQuestionStatus,
+  OpenQuestionStatus,
+  LimboQuestionStatus,
+} from '@koh/common';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { Connection } from 'typeorm';
-import { QueueModel } from '../queue.entity';
-import { OpenQuestionStatus, ClosedQuestionStatus } from '@template/common';
+import { OfficeHourModel } from 'course/office-hour.entity';
+import moment = require('moment');
+import { Connection, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { QuestionModel } from '../../question/question.entity';
+import { QueueModel } from '../queue.entity';
 
 /**
  * Clean the queue and mark stale
@@ -22,30 +28,61 @@ export class QueueCleanService {
       })
       .getMany();
 
-    queuesWithOpenQuestions.forEach((queue) => {
-      this.cleanQueue(queue.id);
-    });
+    await Promise.all(
+      queuesWithOpenQuestions.map((queue) => this.cleanQueue(queue.id)),
+    );
   }
 
-  public async cleanQueue(queueId: number): Promise<void> {
+  public async cleanQueue(queueId: number, force?: boolean): Promise<void> {
     const queue = await QueueModel.findOne(queueId, {
-      relations: ['staffList', 'questions', 'officeHours'],
+      relations: ['staffList'],
     });
 
-    if (!(await queue.checkIsOpen())) {
-      await this.unsafeClean(queue);
+    if (force || !(await queue.checkIsOpen())) {
+      queue.notes = '';
+      await queue.save();
+      await this.unsafeClean(queue.id);
     }
   }
 
-  private async unsafeClean(queue: QueueModel): Promise<void> {
-    const openQuestions = queue.questions.filter(
-      (q) => q.status in OpenQuestionStatus,
-    );
+  // Should we consider cleaning the queue?
+  //  Checks if there are no staff, open questions and that there aren't any office hours soon
+  public async shouldCleanQueue(queue: QueueModel): Promise<boolean> {
+    if (queue.staffList.length === 0) {
+      // Last TA to checkout, so check if we might want to clear the queue
+      const areAnyQuestionsOpen =
+        (await QuestionModel.inQueueWithStatus(
+          queue.id,
+          Object.values(OpenQuestionStatus),
+        ).getCount()) > 0;
+      if (areAnyQuestionsOpen) {
+        const soon = moment().add(15, 'minutes').toDate();
+        const areOfficeHourSoon =
+          (await OfficeHourModel.count({
+            where: {
+              startTime: LessThanOrEqual(soon),
+              endTime: MoreThanOrEqual(soon),
+            },
+          })) > 0;
+        if (!areOfficeHourSoon) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 
-    openQuestions.forEach((q: QuestionModel) => {
+  private async unsafeClean(queueId: number): Promise<void> {
+    const questions = await QuestionModel.inQueueWithStatus(queueId, [
+      ...Object.values(OpenQuestionStatus),
+      ...Object.values(LimboQuestionStatus),
+    ]).getMany();
+
+    questions.forEach((q: QuestionModel) => {
       q.status = ClosedQuestionStatus.Stale;
+      q.closedAt = new Date();
     });
 
-    await QuestionModel.save(openQuestions);
+    await QuestionModel.save(questions);
   }
 }

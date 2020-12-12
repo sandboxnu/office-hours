@@ -9,9 +9,15 @@ import {
   UseInterceptors,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { GetCourseResponse, QueuePartial, Role } from '@template/common';
+import {
+  GetCourseResponse,
+  QueuePartial,
+  Role,
+  TACheckoutResponse,
+} from '@koh/common';
 import async from 'async';
-import { Connection, getRepository } from 'typeorm';
+import { Connection, getRepository, MoreThanOrEqual } from 'typeorm';
+import { EventModel, EventType } from 'profile/event-model.entity';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { Roles } from '../profile/roles.decorator';
 import { User } from '../profile/user.decorator';
@@ -20,7 +26,10 @@ import { QueueCleanService } from '../queue/queue-clean/queue-clean.service';
 import { QueueModel } from '../queue/queue.entity';
 import { CourseRolesGuard } from './course-roles.guard';
 import { CourseModel } from './course.entity';
+import { HeatmapService } from './heatmap.service';
 import { OfficeHourModel } from './office-hour.entity';
+import { QueueSSEService } from '../queue/queue-sse.service';
+import moment = require('moment');
 
 @Controller('courses')
 @UseGuards(JwtAuthGuard, CourseRolesGuard)
@@ -29,6 +38,8 @@ export class CourseController {
   constructor(
     private connection: Connection,
     private queueCleanService: QueueCleanService,
+    private queueSSEService: QueueSSEService,
+    private heatmapService: HeatmapService,
   ) {}
 
   @Get(':id')
@@ -46,12 +57,16 @@ export class CourseController {
       .select(['id', 'title', `"startTime"`, `"endTime"`])
       .where('oh.courseId = :courseId', { courseId: course.id })
       .getRawMany();
+    course.heatmap = await this.heatmapService.getHeatmapFor(id);
 
     course.queues = await async.filter(
       course.queues,
       async (q) => await q.checkIsOpen(),
     );
-    await async.each(course.queues, async (q) => await q.addQueueTimes());
+    await async.each(course.queues, async (q) => {
+      await q.addQueueTimes();
+      await q.addQueueSize();
+    });
 
     return course;
   }
@@ -87,6 +102,15 @@ export class CourseController {
 
     queue.staffList.push(user);
     await queue.save();
+
+    await EventModel.create({
+      time: new Date(),
+      eventType: EventType.TA_CHECKED_IN,
+      user,
+      courseId,
+    }).save();
+
+    await this.queueSSEService.updateQueue(queue.id);
     return queue;
   }
 
@@ -96,7 +120,7 @@ export class CourseController {
     @Param('id') courseId: number,
     @Param('room') room: string,
     @User() user: UserModel,
-  ): Promise<void> {
+  ): Promise<TACheckoutResponse> {
     const queue = await QueueModel.findOne(
       {
         room,
@@ -104,14 +128,34 @@ export class CourseController {
       },
       { relations: ['staffList'] },
     );
-
     queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
     if (queue.staffList.length === 0) {
       queue.allowQuestions = false;
     }
     await queue.save();
 
-    // Clean up queue if necessary
-    await this.queueCleanService.cleanQueue(queue.id);
+    await EventModel.create({
+      time: new Date(),
+      eventType: EventType.TA_CHECKED_OUT,
+      user,
+      courseId,
+    }).save();
+
+    const canClearQueue = await this.queueCleanService.shouldCleanQueue(queue);
+    let nextOfficeHourTime = null;
+
+    // find out how long until next office hour
+    if (canClearQueue) {
+      const soon = moment().add(15, 'minutes').toDate();
+      const nextOfficeHour = await OfficeHourModel.findOne({
+        where: { startTime: MoreThanOrEqual(soon) },
+        order: {
+          startTime: 'ASC',
+        },
+      });
+      nextOfficeHourTime = nextOfficeHour?.startTime;
+    }
+    await this.queueSSEService.updateQueue(queue.id);
+    return { queueId: queue.id, canClearQueue, nextOfficeHourTime };
   }
 }

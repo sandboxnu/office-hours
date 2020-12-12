@@ -11,7 +11,7 @@
 
 - [Next.js](https://nextjs.org/docs/getting-started) lets us do server-side and client-side React rendering, as well as write backend API endpoints. It also gives us developer ergonomics like hot reload in dev.
 
-- [hapi.js](https://hapi.dev) runs our backend http api. It is similar to express, but with integrated support for authentication, validation, and testing.
+- [nestjs](https://nestjs.com/) runs our backend http api. It gives us controllers and services and helps neaten the code
 
 - [Socket.io](https://socket.io/docs/) manages websocket communication on server and client
 
@@ -72,3 +72,11 @@ Install packages from `cd` into the project you , then run `yarn add <PACKAGE>`
 ## Style
 
 [Prettier](https://prettier.io/), a highly opinionated code formatter, runs right before you commit to git. So don't worry about formatting your code! Prettier will clean it all up. You can also get the Prettier extension in most IDEs, or run `yarn pretty-quick` if you want to.
+
+# Production
+
+If you have prod ssh access, deploy master to prod with `yarn deploy production`.
+
+On the VM, source code is at `/var/www/source`. From there you can run `yarn cli` commands etc. Make an admin account with `yarn cli create:admin <name>` and give a password. Please auto-generate a random password.
+
+If you need to hotfix something, you can edit the files on prod and run `yarn build && yarn prod:start` to build and restart the server. Try to avoid doing this.

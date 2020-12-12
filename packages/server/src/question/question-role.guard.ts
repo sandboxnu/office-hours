@@ -1,12 +1,13 @@
+import { ERROR_MESSAGES } from '@koh/common';
 import {
+  BadRequestException,
   Injectable,
-  UnauthorizedException,
   NotFoundException,
 } from '@nestjs/common';
-import { UserModel } from '../profile/user.entity';
-import { QuestionModel } from './question.entity';
-import { QueueModel } from '../queue/queue.entity';
 import { RolesGuard } from '../guards/role.guard';
+import { UserModel } from '../profile/user.entity';
+import { QueueModel } from '../queue/queue.entity';
+import { QuestionModel } from './question.entity';
 
 @Injectable()
 export class QuestionRolesGuard extends RolesGuard {
@@ -14,19 +15,32 @@ export class QuestionRolesGuard extends RolesGuard {
   async setupData(
     request: any,
   ): Promise<{ courseId: number; user: UserModel }> {
-    let queueId = request.params.queueId;
+    let queueId;
 
-    //specific case when we are posting a new question to the queue
-    if (request.params.questionId && queueId) {
+    if (request.params.questionId) {
       const question = await QuestionModel.findOne(request.params.questionId);
+      if (!question) {
+        throw new NotFoundException(
+          ERROR_MESSAGES.questionRoleGuard.questionNotFound,
+        );
+      }
       queueId = question.queueId;
+    } else if (request.body.queueId) {
+      // If you are creating a new question
+      queueId = request.body.queueId;
+    } else {
+      throw new BadRequestException(
+        ERROR_MESSAGES.questionRoleGuard.queueOfQuestionNotFound,
+      );
     }
 
     const queue = await QueueModel.findOne(queueId);
 
     // You cannot interact with a question in a nonexistent queue
     if (!queue) {
-      throw new NotFoundException('This queue does not exist!');
+      throw new NotFoundException(
+        ERROR_MESSAGES.questionRoleGuard.queueDoesNotExist,
+      );
     }
     const courseId = queue.courseId;
     const user = await UserModel.findOne(request.user.userId, {

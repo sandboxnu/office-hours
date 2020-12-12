@@ -1,3 +1,4 @@
+import { Type } from "class-transformer";
 import {
   IsBoolean,
   IsDefined,
@@ -11,6 +12,15 @@ import {
 import "reflect-metadata";
 
 export const PROD_URL = "https://khouryofficehours.com";
+export const isProd = (): boolean =>
+  process.env.DOMAIN === PROD_URL ||
+  (typeof window !== "undefined" && window?.location?.origin === PROD_URL);
+
+// TODO: Clean this up, move it somwhere else, use moment???
+// a - b, in minutes
+export function timeDiffInMins(a: Date, b: Date): number {
+  return (a.getTime() - b.getTime()) / (1000 * 60);
+}
 
 /////////////////////////
 // API Base Data Types //
@@ -25,17 +35,32 @@ export const PROD_URL = "https://khouryofficehours.com";
  * @param name - The full name of this user: First Last.
  * @param photoURL - The URL string of this user photo. This is pulled from the admin site
  * @param courses - The list of courses that the user is accociated with (as either a 'student', 'ta' or 'professor')
+ * @param desktopNotifs - list of endpoints so that frontend can figure out if device is enabled
  */
-export type User = {
-  id: number;
-  email: string;
-  name: string;
-  photoURL: string;
-  courses: UserCourse[];
-  desktopNotifsEnabled: boolean;
-  phoneNotifsEnabled: boolean;
-  phoneNumber: string;
-};
+export class User {
+  id!: number;
+  email!: string;
+  firstName?: string;
+  lastName?: string;
+  name!: string;
+  photoURL!: string;
+  courses!: UserCourse[];
+  desktopNotifsEnabled!: boolean;
+
+  @Type(() => DesktopNotifPartial)
+  desktopNotifs!: DesktopNotifPartial[];
+
+  phoneNotifsEnabled!: boolean;
+  phoneNumber!: string;
+}
+
+export class DesktopNotifPartial {
+  id!: number;
+  endpoint!: string;
+  name?: string;
+  @Type(() => Date)
+  createdAt!: Date;
+}
 
 /**
  * Contains the partial user info needed by the frontend when nested in a response
@@ -43,28 +68,12 @@ export type User = {
  * @param name - The full name of this user: First Last.
  * @param photoURL - The URL string of this user photo. This is pulled from the admin site
  */
-export type UserPartial = {
-  id: number;
+export class UserPartial {
+  id!: number;
   email?: string;
   name?: string;
   photoURL?: string;
-};
-
-/**
- * Represents a course in the context of office hours.
- * @param id - The id number of this Course.
- * @param name - The subject and course number of this course. Ex: "CS 2500"
- * @param semester - The semester of this course.
- * @param officeHours - The list of office hours associated with the course.
- * @param queues - The queue id associated with this office hour.
- */
-export type Course = {
-  id: number;
-  name: string;
-  semester: Semester;
-  officeHours: OfficeHourBlock[];
-  queues: Queue[];
-};
+}
 
 /**
  * Represents a partial course data needed on the front end when nested in a response.
@@ -95,22 +104,15 @@ export enum Role {
   PROFESSOR = "professor",
 }
 
-/**
- * Represents an Office Hour block as assigned on the course calendar.
- * @param id - The id number of this office hour.
- * @param title - The title of the event as it show in the google calender.
- * @param course - The course this office hour supports.
- * @param room - The room string where this office hour is taking place.
- * @param startTime - The date string for the start time of this office hour block. Ex: "2019-09-21T12:00:00-04:00"
- * @param endTime - The date string for the end time of this office hour block.
- */
-interface OfficeHourBlock {
-  id: number;
-  title: string;
-  course: CoursePartial;
-  room: string; // if not in person set to string "online"
-  startTime: string;
-  endTime: string;
+class OfficeHourPartial {
+  id!: number;
+  title!: string;
+
+  @Type(() => Date)
+  startTime!: Date;
+
+  @Type(() => Date)
+  endTime!: Date;
 }
 
 /**
@@ -142,17 +144,33 @@ export interface Queue {
  * @param startTime - The scheduled start time of this queue based on the parsed ical.
  * @param endTime - The scheduled end time of this queue.
  */
-export interface QueuePartial {
-  id: number;
-  room: string;
-  staffList: UserPartial[];
-  queueSize: number;
+export class QueuePartial {
+  id!: number;
+  room!: string;
+
+  @Type(() => UserPartial)
+  staffList!: UserPartial[];
+
+  queueSize!: number;
   notes?: string;
-  isOpen: boolean;
+  isOpen!: boolean;
+
+  @Type(() => Date)
   startTime?: Date;
+
+  @Type(() => Date)
   endTime?: Date;
-  allowQuestions: boolean;
+
+  allowQuestions!: boolean;
 }
+
+// Represents a list of office hours wait times of each hour of the week.
+// The first element of the array is the wait time for the first hour of Sunday, UTC.
+//   Users of the heatmap should rotate it according to their timezone.
+// INVARIANT: Must have 24*7 elements
+//
+// Wait time = -1 represents no office hours data at that time.
+export type Heatmap = Array<number>;
 
 /**
  * A Question is created when a student wants help from a TA.
@@ -168,19 +186,29 @@ export interface QueuePartial {
  * @param location - The location of the particular student, to help TA's find them
  * @param isOnline - Wether or not the question will helped online or in-person
  */
-export type Question = {
-  id: number;
-  creator: UserPartial;
+export class Question {
+  id!: number;
+
+  @Type(() => UserPartial)
+  creator!: UserPartial;
   text?: string;
+
+  @Type(() => UserPartial)
   taHelped?: UserPartial;
-  createdAt: Date; // TODO: remove this field, frontend doesn't need it
+
+  @Type(() => Date)
+  createdAt!: Date;
+
+  @Type(() => Date)
   helpedAt?: Date;
+
+  @Type(() => Date)
   closedAt?: Date;
   questionType?: QuestionType;
-  status: QuestionStatus;
+  status!: QuestionStatus;
   location?: string;
   isOnline?: boolean;
-};
+}
 
 // Question Types
 export enum QuestionType {
@@ -196,15 +224,41 @@ export enum OpenQuestionStatus {
   Drafting = "Drafting",
   Queued = "Queued",
   Helping = "Helping",
+  PriorityQueued = "PriorityQueued",
+}
+
+/**
+ * Limbo statuses are awaiting some confirmation from the student
+ */
+export enum LimboQuestionStatus {
+  CantFind = "CantFind", // represents when a student can't be found by a TA
+  ReQueueing = "ReQueueing", // represents when a TA wants to get back to a student later and give them the option to be put into the priority queue
+  TADeleted = "TADeleted", // When a TA deletes a question for a multitude of reasons
 }
 
 export enum ClosedQuestionStatus {
   Resolved = "Resolved",
-  Deferred = "Deferred",
-  NoShow = "NoShow",
-  Deleted = "Deleted",
+  DeletedDraft = "DeletedDraft",
+  ConfirmedDeleted = "ConfirmedDeleted",
+  StudentCancelled = "StudentCancelled",
   Stale = "Stale",
 }
+
+export const StatusInQueue = [
+  OpenQuestionStatus.Drafting,
+  OpenQuestionStatus.Queued,
+];
+
+export const StatusInPriorityQueue = [OpenQuestionStatus.PriorityQueued];
+
+export const StatusSentToCreator = [
+  ...StatusInPriorityQueue,
+  ...StatusInQueue,
+  OpenQuestionStatus.Helping,
+  LimboQuestionStatus.ReQueueing,
+  LimboQuestionStatus.CantFind,
+  LimboQuestionStatus.TADeleted,
+];
 
 // Ticket Status - Represents a given status of as student's ticket
 export type QuestionStatus = keyof typeof QuestionStatusKeys;
@@ -212,6 +266,7 @@ export type QuestionStatus = keyof typeof QuestionStatusKeys;
 export const QuestionStatusKeys = {
   ...OpenQuestionStatus,
   ...ClosedQuestionStatus,
+  ...LimboQuestionStatus,
 };
 
 /**
@@ -236,6 +291,7 @@ export type DesktopNotifBody = {
     p256dh: string;
     auth: string;
   };
+  name?: string;
 };
 
 export type PhoneNotifBody = {
@@ -247,12 +303,9 @@ export type PhoneNotifBody = {
 // API route Params and Responses
 
 // Office Hours Response Types
-export type GetProfileResponse = User;
+export class GetProfileResponse extends User {}
 
 export class KhouryDataParams {
-  @IsString()
-  username!: string;
-
   @IsString()
   email!: string;
 
@@ -265,31 +318,45 @@ export class KhouryDataParams {
   @IsInt()
   campus!: string;
 
-  @IsInt()
-  nuid!: number;
-
   @IsOptional()
   @IsString()
   photo_url!: string;
 
   @IsOptional()
   @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
-  courses!: KouryAdminCourse[];
+  courses!: KhouryStudentCourse[];
 
   @IsOptional()
   @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
-  ta_courses!: KouryAdminCourse[];
+  ta_courses!: KhouryTACourse[];
 }
 
-class KouryAdminCourse {
-  @IsString()
-  course_name!: string;
+export class KhouryStudentCourse {
+  @IsInt()
+  crn!: number;
 
   @IsString()
-  semester!: number;
+  course!: string;
 
   @IsBoolean()
-  withdraw!: boolean;
+  accelerated!: boolean;
+
+  @IsInt()
+  section!: number;
+
+  @IsString()
+  semester!: string;
+
+  @IsString()
+  title!: string;
+}
+
+export class KhouryTACourse {
+  @IsString()
+  course!: string;
+
+  @IsString()
+  semester!: string;
 }
 
 export interface KhouryRedirectResponse {
@@ -309,36 +376,56 @@ export class UpdateProfileParams {
   @IsString()
   @IsNotEmpty()
   phoneNumber?: string;
+
+  @IsString()
+  @IsOptional()
+  firstName?: string;
+
+  @IsString()
+  @IsOptional()
+  lastName?: string;
 }
 
-// export type GetCourseResponse = Course;
+export class GetCourseResponse {
+  id!: number;
+  name!: string;
 
-export interface GetCourseResponse {
-  id: number;
-  name: string;
-  officeHours: Array<{
-    id: number;
-    title: string;
-    startTime: Date;
-    endTime: Date;
-  }>;
-  queues: QueuePartial[];
+  @Type(() => OfficeHourPartial)
+  officeHours!: Array<OfficeHourPartial>;
+
+  @Type(() => QueuePartial)
+  queues!: QueuePartial[];
+
+  heatmap!: Heatmap | false;
 }
 
-export type GetQueueResponse = QueuePartial;
+export class GetQueueResponse extends QueuePartial {}
 
-export type GetCourseQueuesResponse = QueuePartial[];
+export class GetCourseQueuesResponse extends Array<QueuePartial> {}
 
-export type ListQuestionsResponse = Question[];
+export class ListQuestionsResponse {
+  @Type(() => Question)
+  yourQuestion?: Question;
 
-export type GetQuestionResponse = Question;
+  @Type(() => Question)
+  questionsGettingHelp!: Array<Question>;
+
+  @Type(() => Question)
+  queue!: Array<Question>;
+
+  @Type(() => Question)
+  priorityQueue!: Array<Question>;
+}
+
+export class GetQuestionResponse extends Question {}
 
 export class CreateQuestionParams {
   @IsString()
   text!: string;
 
   @IsEnum(QuestionType)
-  questionType!: QuestionType;
+  @IsOptional()
+  questionType?: QuestionType;
 
   @IsInt()
   queueId!: number;
@@ -354,7 +441,7 @@ export class CreateQuestionParams {
   @IsBoolean()
   force!: boolean;
 }
-export type CreateQuestionResponse = Question;
+export class CreateQuestionResponse extends Question {}
 
 export class UpdateQuestionParams {
   @IsString()
@@ -381,12 +468,21 @@ export class UpdateQuestionParams {
   @IsOptional()
   location?: string;
 }
-export type UpdateQuestionResponse = Question;
+export class UpdateQuestionResponse extends Question {}
 
 export type TAUpdateStatusResponse = QueuePartial;
 export type QueueNotePayloadType = {
   notes: string;
 };
+
+export class TACheckoutResponse {
+  // The ID of the queue we checked out of
+  queueId!: number;
+  canClearQueue!: boolean;
+
+  @Type(() => Date)
+  nextOfficeHourTime?: Date;
+}
 
 export class UpdateQueueParams {
   @IsString()
@@ -395,6 +491,11 @@ export class UpdateQueueParams {
 
   @IsBoolean()
   allowQuestions?: boolean;
+}
+
+export class SSEQueueResponse {
+  queue?: GetQueueResponse;
+  questions?: ListQuestionsResponse;
 }
 
 export interface TwilioBody {
@@ -418,3 +519,60 @@ export interface TwilioBody {
   From: string;
   ApiVersion: string;
 }
+
+export interface GetReleaseNotesResponse {
+  releaseNotes: unknown;
+  lastUpdatedUnixTime: number;
+}
+
+export const ERROR_MESSAGES = {
+  questionController: {
+    createQuestion: {
+      invalidQueue: "Posted to an invalid queue",
+      noNewQuestions: "Queue not allowing new questions",
+      closedQueue: "Queue is closed",
+      oneQuestionAtATime: "You can't create more than one question at a time.",
+    },
+    updateQuestion: {
+      fsmViolation: (
+        role: string,
+        questionStatus: string,
+        bodyStatus: string
+      ): string =>
+        `${role} cannot change status from ${questionStatus} to ${bodyStatus}`,
+      taOnlyEditQuestionStatus: "TA/Professors can only edit question status",
+      otherTAHelping: "Another TA is currently helping with this question",
+      otherTAResolved: "Another TA has already resolved this question",
+      taHelpingOther: "TA is already helping someone else",
+      loginUserCantEdit: "Logged-in user does not have edit access",
+    },
+  },
+  loginController: {
+    receiveDataFromKhoury: "Invalid request signature",
+  },
+  notificationController: {
+    messageNotFromTwilio: "Message not from Twilio",
+  },
+  notificationService: {
+    registerPhone: "phone number invalid",
+  },
+  questionRoleGuard: {
+    questionNotFound: "Question not found",
+    queueOfQuestionNotFound: "Cannot find queue of question",
+    queueDoesNotExist: "This queue does not exist!",
+  },
+  queueRoleGuard: {
+    queueNotFound: "Queue not found",
+  },
+  releaseNotesController: {
+    releaseNotesTime: (e: any): string =>
+      "Error Parsing release notes time: " + e,
+  },
+  roleGuard: {
+    notLoggedIn: "Must be logged in",
+    noCourseIdFound: "No courseid found",
+    notInCourse: "Not In This Course",
+    mustBeRoleToJoinCourse: (roles: string[]): string =>
+      `You must have one of roles [${roles.join(", ")}] to access this course`,
+  },
+};

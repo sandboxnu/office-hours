@@ -1,76 +1,33 @@
-import {
-  Calendar,
-  momentLocalizer,
-  CalendarProps,
-  Event,
-} from "react-big-calendar";
-import moment from "moment";
-import useSWR from "swr";
-import { API } from "@template/api-client";
-import { Result } from "antd";
 import styled from "styled-components";
-import { useProfile } from "../../../hooks/useProfile";
 import { useRouter } from "next/router";
+import React, { ReactElement } from "react";
+import { useCourse } from "../../../hooks/useCourse";
+import { useProfile } from "../../../hooks/useProfile";
+import Head from "next/head";
 import NavBar from "../../../components/Nav/NavBar";
-import { ReactElement } from "react";
+import SchedulePanel from "../../../components/Schedule/SchedulePanel";
+import { StandardPageContainer } from "../../../components/common/PageContainer";
 
-const Container = styled.div`
-  margin: 32px 64px;
-  @media (max-width: 768px) {
-    margin: 32px 24px;
-  }
+const ScheduleContainer = styled.div`
+  margin-top: 32px;
 `;
 
-const ScheduleCalendar = styled(Calendar)<CalendarProps>`
-  height: 70vh;
-`;
-
-type ScheduleProps = {
-  today?: boolean;
-};
-
-export default function Schedule({ today }: ScheduleProps): ReactElement {
+export default function Schedule(): ReactElement {
+  useProfile(); // Check logged in so we can redirect to login page
   const router = useRouter();
   const { cid } = router.query;
 
-  const { data, error } = useSWR(cid && `api/v1/courses/${cid}`, async () =>
-    API.course.get(Number(cid))
-  );
-
-  if (error)
-    return (
-      <Result
-        status="500"
-        title="Something went wrong, please ask chinese man"
-      />
-    );
-
-  const myEvents: Event[] =
-    data?.officeHours.map((e) => ({
-      start: e.startTime,
-      end: e.endTime,
-      title: e.title,
-    })) ?? [];
+  const { course } = useCourse(Number(cid));
 
   return (
-    <div>
-      {!today && <NavBar courseId={Number(cid)} />}
-      {!today && (
-        <Container>
-          <ScheduleCalendar
-            localizer={momentLocalizer(moment)}
-            events={myEvents}
-            defaultView={"week"}
-          />
-        </Container>
-      )}
-      {today && (
-        <ScheduleCalendar
-          localizer={momentLocalizer(moment)}
-          events={myEvents}
-          defaultView={"day"}
-        />
-      )}
-    </div>
+    <StandardPageContainer>
+      <Head>
+        <title>{course?.name} Schedule | Khoury Office Hours</title>
+      </Head>
+      <NavBar courseId={Number(cid)} />
+      <ScheduleContainer>
+        <SchedulePanel courseId={Number(cid)} />
+      </ScheduleContainer>
+    </StandardPageContainer>
   );
 }

@@ -1,11 +1,12 @@
 import { StopOutlined } from "@ant-design/icons";
-import { Avatar, Button, Card, Col, Input, Row, Skeleton, Tooltip } from "antd";
+import { Button, Card, Input, Row, Skeleton, Tooltip } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { QueuePartial } from "../../../common/index";
 import { formatQueueTime } from "../../utils/TimeUtil";
+import AvatarWithInitals from "../common/AvatarWithInitials";
 
 type OpenQueueCard = {
   queue: QueuePartial;
@@ -26,6 +27,18 @@ const HeaderDiv = styled.div`
   color: #212934;
 `;
 
+const QueueInfoRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+const RightQueueInfoRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
 const QuestionNumberSpan = styled.span`
   font-size: 24px;
 `;
@@ -44,7 +57,7 @@ const HeaderText = styled.div`
   margin-bottom: 8px;
 `;
 
-const AvatarWithMargin = styled(Avatar)`
+const AvatarWithMargin = styled(AvatarWithInitals)`
   margin-right: 25px;
 `;
 
@@ -102,29 +115,29 @@ const OpenQueueCard = ({
   return (
     <PaddedCard
       headStyle={{ background: "#F3F5F7" }}
+      className={"open-queue-card"}
       title={
         staffList.map((staffMember) => staffMember.name).join(", ") ||
         "No Staff Checked In!"
       }
       extra={queue.startTime && queue.endTime && formatQueueTime(queue)}
     >
-      <Row>
-        <Col span={20}>
-          <HeaderDiv>{queue.room}</HeaderDiv>
-        </Col>
-        <Col style={{ fontSize: 24 }} span={1}>
+      <QueueInfoRow>
+        <HeaderDiv>{queue.room}</HeaderDiv>
+        <RightQueueInfoRow>
           {!queue.allowQuestions && (
             <Tooltip title="This queue is no longer accepting questions">
-              <StopOutlined style={{ color: "red" }} />
+              <StopOutlined
+                style={{ color: "red", fontSize: "24px", marginRight: "8px" }}
+              />
             </Tooltip>
           )}
-        </Col>
-        <Col span={3}>
           <QueueSizeColorDiv>
             <QuestionNumberSpan>{queue.queueSize}</QuestionNumberSpan> in queue
           </QueueSizeColorDiv>
-        </Col>
-      </Row>
+        </RightQueueInfoRow>
+      </QueueInfoRow>
+
       <br />
 
       {editingNotes ? (
@@ -154,13 +167,17 @@ const OpenQueueCard = ({
       }
 
       <Row justify="space-between" align="bottom">
+        {
+          // TODO: bring back photo URL && get rid of RegeX
+          // src={staffMember.photoURL}
+        }
         <div>
           {staffList.map((staffMember) => (
             <Tooltip key={staffMember.id} title={staffMember.name}>
               <AvatarWithMargin
                 size={96}
-                src={staffMember.photoURL}
-                shape="circle"
+                fontSize={40}
+                name={staffMember.name}
               />
             </Tooltip>
           ))}

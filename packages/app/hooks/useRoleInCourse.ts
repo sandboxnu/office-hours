@@ -1,4 +1,4 @@
-import { Role } from "@template/common";
+import { Role } from "@koh/common";
 import { useProfile } from "./useProfile";
 
 export function useRoleInCourse(courseId: number): Role {

@@ -1,6 +1,6 @@
-import { ReactNode, ReactElement } from "react";
+import { Button } from "antd";
+import { ReactElement, ReactNode } from "react";
 import styled from "styled-components";
-import { Button, Space } from "antd";
 
 const BannerContainer = styled.div`
   width: 100%;
@@ -27,6 +27,7 @@ const Title = styled.div`
 const ButtonContainer = styled.div`
   display: flex;
   flex-flow: row wrap;
+  margin-right: 10px;
 `;
 
 const ContentContainer = styled.div`
@@ -41,6 +42,10 @@ interface BannerProps {
   titleColor?: string;
   contentColor?: string;
   buttons?: ReactNode;
+}
+
+interface CircleButtonProps {
+  [x: string]: any;
 }
 /**
  * Presentation-only component
@@ -59,14 +64,28 @@ export default function Banner(props: BannerProps): ReactElement {
   );
 }
 
+export function CircleButton({ ...props }: CircleButtonProps): ReactElement {
+  return <Button size="large" shape="circle" {...props} />;
+}
+
 /**
  * Buttons to be used in the banner
  */
-export const BannerButton = styled(Button)`
+export const BannerButton = styled(CircleButton)`
   margin-left: 16px;
-  border-radius: 6px;
   border: 0;
   background: #fff;
+`;
+
+export const BannerPrimaryButton = styled(BannerButton)`
+  ${({ disabled }) => disabled && "pointer-events: none"};
+  background: #3684c6;
+  color: #fff;
+  &:hover,
+  &:focus {
+    background: #3c93dd;
+    color: #fff;
+  }
 `;
 
 export const BannerDangerButton = styled(BannerButton)`
@@ -76,5 +95,38 @@ export const BannerDangerButton = styled(BannerButton)`
   &:focus {
     background: #fc7f81;
     color: #fff;
+  }
+`;
+
+export const FinishHelpingButton = styled(BannerButton)`
+  border: 0;
+  background: #66bb6a;
+  color: #fff;
+  &:hover,
+  &:focus {
+    background: #82c985;
+    color: #fff;
+  }
+`;
+
+export const CantFindButton = styled(BannerButton)`
+  background: #fff;
+  border: 1px solid #e26567;
+  color: #e26567;
+  &:hover,
+  &:focus {
+    background: #fc7f81;
+    color: #fff;
+  }
+`;
+
+export const RequeueButton = styled(BannerButton)`
+  background: #ffffff;
+  border: 1px solid #f0f0f0;
+  color: #000000;
+  &:hover,
+  &:focus {
+    background: #f0f0f0;
+    color: #000000;
   }
 `;

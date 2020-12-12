@@ -7,7 +7,7 @@ import {
 import { setupIntegrationTest } from './util/testUtils';
 import { SeedModule } from '../../server/src/seed/seed.module';
 import { QuestionModel } from '../../server/src/question/question.entity';
-import { Role } from '@template/common';
+import { Role } from '@koh/common';
 
 describe('Seed Integration', () => {
   const supertest = setupIntegrationTest(SeedModule);
@@ -62,7 +62,6 @@ describe('Seed Integration', () => {
         name: 'User',
         phoneNotifsEnabled: false,
         photoURL: 'https://pics/user',
-        username: 'user',
       },
       userId: 1,
     });
@@ -84,7 +83,7 @@ describe('Seed Integration', () => {
           title: 'Alex & Stanley',
         },
       ],
-      room: 'WVH 101',
+      room: 'Online',
     });
   });
 

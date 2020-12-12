@@ -1,20 +1,28 @@
 import {
+  DesktopNotifBody,
+  DesktopNotifPartial,
+  ERROR_MESSAGES,
+  TwilioBody,
+} from '@koh/common';
+import {
   Body,
   Controller,
+  Delete,
   Get,
   Header,
   Headers,
+  NotFoundException,
   Param,
   Post,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DesktopNotifBody, TwilioBody } from '@template/common';
 import * as twilio from 'twilio';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
-import { NotificationService } from './notification.service';
 import { UserId } from '../profile/user.decorator';
+import { DesktopNotifModel } from './desktop-notif.entity';
+import { NotificationService } from './notification.service';
 
 @Controller('notifications')
 export class NotificationController {
@@ -29,30 +37,40 @@ export class NotificationController {
     return JSON.stringify(this.notifService.desktopPublicKey);
   }
 
-  @Post('desktop/register')
+  @Post('desktop/device')
   @UseGuards(JwtAuthGuard)
   async registerDesktopUser(
     @Body() body: DesktopNotifBody,
     @UserId() userId: number,
-  ): Promise<string> {
-    await this.notifService.registerDesktop({
+  ): Promise<DesktopNotifPartial> {
+    const device = await this.notifService.registerDesktop({
       endpoint: body.endpoint,
       expirationTime: body.expirationTime && new Date(body.expirationTime),
       p256dh: body.keys.p256dh,
       auth: body.keys.auth,
+      name: body.name,
       userId: userId,
     });
-    return 'registration success';
+    return {
+      id: device.id,
+      endpoint: device.endpoint,
+      createdAt: device.createdAt,
+      name: device.name,
+    };
   }
 
-  @Post('phone/register')
+  @Delete('desktop/device/:deviceId')
   @UseGuards(JwtAuthGuard)
-  async registerPhoneUser(
-    @Body() body: { phoneNumber: string },
+  async deleteDesktopUser(
+    @Param('deviceId') deviceId: number,
     @UserId() userId: number,
-  ): Promise<string> {
-    await this.notifService.registerPhone(body.phoneNumber, userId);
-    return `registration success for ${body.phoneNumber}`;
+  ): Promise<void> {
+    const dn = await DesktopNotifModel.find({ id: deviceId, userId });
+    if (dn.length > 0) {
+      await DesktopNotifModel.remove(dn);
+    } else {
+      throw new NotFoundException();
+    }
   }
 
   // Webhook from twilio
@@ -61,7 +79,7 @@ export class NotificationController {
   async verifyPhoneUser(
     @Body() body: TwilioBody,
     @Headers('x-twilio-signature') twilioSignature: string,
-  ): Promise<void> {
+  ): Promise<string> {
     const message = body.Body.trim().toUpperCase();
     const senderNumber = body.From;
 
@@ -70,19 +88,21 @@ export class NotificationController {
     const isValidated = twilio.validateRequest(
       twilioAuthToken,
       twilioSignature.trim(),
-      'https://28a88b3af262.ngrok.io/api/v1/notifications/phone/verify',
+      `${this.configService.get('DOMAIN')}/api/v1/notifications/phone/verify`,
       body,
     );
 
     if (!isValidated) {
-      throw new UnauthorizedException('Message not from Twilio');
+      throw new UnauthorizedException(
+        ERROR_MESSAGES.notificationController.messageNotFromTwilio,
+      );
     }
 
     const messageToUser = await this.notifService.verifyPhone(
       senderNumber,
       message,
     );
-    const MessagingResponse = require('twilio').twiml.MessagingResponse;
+    const MessagingResponse = twilio.twiml.MessagingResponse;
     const twiml = new MessagingResponse();
     twiml.message(messageToUser);
 

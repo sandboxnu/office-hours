@@ -1,9 +1,22 @@
-import { Question, QueuePartial } from "@template/common";
+import { Question, QueuePartial } from "@koh/common";
 
 export function getWaitTime(question: Question): string {
   const now = new Date();
   const difference = now.getTime() - question.createdAt.getTime();
-  return `${Math.round(difference / 60000)} min`;
+  return formatWaitTime(difference / 60000);
+}
+
+export function formatWaitTime(minutes: number): string {
+  const m = Math.floor(minutes);
+  if (!m) {
+    return "0 min";
+  } else if (m % 60 == 0) {
+    return `${Math.floor(m / 60)}hr`;
+  } else if (m >= 60) {
+    return `${Math.floor(m / 60)}hr ${Math.floor(m) % 60}min`;
+  } else {
+    return `${Math.floor(m)} min`;
+  }
 }
 
 export function formatQueueTime(queue: QueuePartial): string {

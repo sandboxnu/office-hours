@@ -1,10 +1,12 @@
-import { ClosedQuestionStatus } from '@template/common';
-import { QueueSSEService } from 'queue/queue-sse.service';
+import { ClosedQuestionStatus, OpenQuestionStatus } from '@koh/common';
+import { QueueSSEService } from '../queue/queue-sse.service';
+import { QueueModel } from '../queue/queue.entity';
 import {
   Connection,
   EntitySubscriberInterface,
   EventSubscriber,
   InsertEvent,
+  RemoveEvent,
   UpdateEvent,
 } from 'typeorm';
 import {
@@ -44,12 +46,12 @@ export class QuestionSubscriber
       event.entity.status in ClosedQuestionStatus
     ) {
       // get 3rd in queue before and after this update
-      const previousThird = await QuestionModel.openInQueue(
+      const previousThird = await QuestionModel.waitingInQueue(
         event.entity.queueId,
       )
         .offset(2)
         .getOne();
-      const third = await QuestionModel.openInQueue(event.entity.queueId)
+      const third = await QuestionModel.waitingInQueue(event.entity.queueId)
         .setQueryRunner(event.queryRunner) // Run in same transaction as the update
         .offset(2)
         .getOne();
@@ -61,7 +63,34 @@ export class QuestionSubscriber
   }
 
   async afterInsert(event: InsertEvent<QuestionModel>): Promise<void> {
+    const numberOfQuestions = await QuestionModel.waitingInQueue(
+      event.entity.queueId,
+    ).getCount();
+
+    if (numberOfQuestions === 0) {
+      const staff = (
+        await QueueModel.findOne(event.entity.queueId, {
+          relations: ['staffList'],
+        })
+      ).staffList;
+
+      staff.forEach((staff) => {
+        this.notifService.notifyUser(
+          staff.id,
+          NotifMsgs.ta.STUDENT_JOINED_EMPTY_QUEUE,
+        );
+      });
+    }
+
     // Send all listening clients an update
     await this.queueSSEService.updateQuestions(event.entity.queueId);
+  }
+
+  async beforeRemove(event: RemoveEvent<QuestionModel>): Promise<void> {
+    // due to cascades entity is not guaranteed to be loaded
+    if (event.entity) {
+      // Send all listening clients an update
+      await this.queueSSEService.updateQuestions(event.entity.queueId);
+    }
   }
 }

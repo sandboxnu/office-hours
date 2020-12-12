@@ -10,12 +10,16 @@ export default function WelcomeStudents(): ReactElement {
       visible={firstTime}
       footer={null}
       onCancel={() => setFirstTime(false)}
+      width={625}
     >
       <div>
-        Welcome to the Khoury Office Hours app! This project was started by
-        students in Sandbox at the beginning of the summer and is still in
-        development. We appreciate your patience with any &quot;rough
-        edges.&quot;
+        <h1> Welcome to the Khoury Office Hours app! 🎉</h1>
+        This project was started by students in{" "}
+        <a href="https://www.sandboxnu.com/">Sandbox</a> at the beginning of the
+        summer and is still in development.
+        <br />
+        <br />
+        We appreciate your patience with any &quot;rough edges.&quot; 😅
       </div>
     </Modal>
   );

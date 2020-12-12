@@ -1,5 +1,10 @@
 import { Button } from "antd";
 import styled from "styled-components";
+import { ReactElement } from "react";
+import { useDefaultCourseRedirect } from "../hooks/useDefaultCourseRedirect";
+import { User } from "@koh/common";
+import Router from "next/router";
+import { useProfile } from "../hooks/useProfile";
 
 const Container = styled.div`
   height: 80vh;
@@ -12,15 +17,20 @@ const ContentContainer = styled.div`
   text-align: center;
 `;
 
-export default function Login() {
+export default function Login(): ReactElement {
+  const profile: User = useProfile();
+  const didRedirect = useDefaultCourseRedirect();
+  if (profile && !didRedirect) {
+    Router.push("/nocourses");
+  }
+
   return (
     <Container>
       <ContentContainer>
         <h1>You are currently not logged in</h1>
         <p>Click the button below to login via Khoury Admin</p>
-        {/* TODO: Update link with specific page in Khoury admin once it's created */}
-        <Button href="https://admin.khoury.northeastern.edu/">
-          Login with Khoury
+        <Button href="https://admin.khoury.northeastern.edu/teaching/officehourslogin/">
+          Log in via Khoury Admin
         </Button>
       </ContentContainer>
     </Container>

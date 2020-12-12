@@ -1,20 +1,15 @@
-import { User } from "@template/common";
+import { User } from "@koh/common";
 import Router from "next/router";
+import { ReactElement } from "react";
+import { useDefaultCourseRedirect } from "../hooks/useDefaultCourseRedirect";
 import { useProfile } from "../hooks/useProfile";
 
-export default function Home() {
+export default function Home(): ReactElement {
   const profile: User = useProfile();
-
-  if (profile) {
-    if (profile.courses.length > 0) {
-      Router.push(
-        "/course/[cid]/today",
-        "/course/" + profile.courses[0].course.id + "/today"
-      );
-    } else {
-      Router.push("/nocourses");
-    }
+  const didRedirect = useDefaultCourseRedirect();
+  if (profile && !didRedirect) {
+    Router.push("/nocourses");
   }
 
-  return "";
+  return <div />;
 }
