@@ -1,6 +1,6 @@
 import { QuestionType, Role } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
-import { SelectQueryBuilder } from 'typeorm';
+import { createQueryBuilder, SelectQueryBuilder } from 'typeorm';
 import { QuestionModel } from 'question/question.entity';
 
 export interface InsightInterface<Model> {
@@ -99,22 +99,22 @@ class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
   name = 'questionTypeBreakdown';
   displayName = 'Question Type Breakdown';
   description =
-    'Returns a table of each question type and how many questions were asked';
+    'Returns a table of each question type and how many questions of that type were asked';
   roles = [Role.PROFESSOR];
   component: 'SimpleDisplayComponent';
   model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
 
   async compute(queryBuilder: SelectQueryBuilder<QuestionModel>, filters) {
+    // TODO: refactor to use createQueryBuilder() to incorporate .from(...) clause rather than pass the repository in
     return await this.addFilters(
       queryBuilder
-        .select('question_model."questionType"', 'questions')
-        .addSelect('COUNT()', 'totalQuestions'),
+        .select('"QuestionModel"."questionType"', 'questions')
+        .addSelect('COUNT(*)', 'totalQuestions'),
       filters,
     )
-      .groupBy('QuestionModel."status"')
+      .groupBy('"QuestionModel"."questionType"')
       .orderBy('COUNT(*)', 'DESC')
-      .printSql()
       .getRawMany();
   }
 
@@ -130,6 +130,7 @@ class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
           queryBuilder
             .innerJoin('QuestionModel.queue', 'queue')
             .andWhere(`queue.${filter.conditional}`);
+          break;
       }
     });
     return queryBuilder;
