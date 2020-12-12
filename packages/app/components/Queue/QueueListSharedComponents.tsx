@@ -65,6 +65,10 @@ const QueuePropertyRow = styled.div`
 const QueuePropertyText = styled.div`
   margin-left: 12px;
   font-size: 16px;
+
+  // To break text in flexbox
+  min-width: 0;
+  overflow-wrap: break-word;
 `;
 
 const StaffH2 = styled.h2`
