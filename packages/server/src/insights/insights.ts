@@ -27,7 +27,7 @@ class TotalUsers implements InsightInterface<UserCourseModel> {
   displayName = 'Total Students';
   description = 'Gets the total number of students';
   roles = [Role.PROFESSOR];
-  component: 'SimpleDisplayComponent';
+  component = 'SimpleDisplay';
   model = UserCourseModel;
   possibleFilters = ['courseId', 'role'];
 
@@ -59,7 +59,7 @@ class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
   displayName = 'Total Questions Asked';
   description = 'Gets the total number questions asked';
   roles = [Role.PROFESSOR];
-  component: 'SimpleDisplayComponent';
+  component = 'SimpleDisplay';
   model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
 
@@ -101,7 +101,7 @@ class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
   description =
     'Returns a table of each question type and how many questions of that type were asked';
   roles = [Role.PROFESSOR];
-  component: 'SimpleDisplayComponent';
+  component = 'SimpleChart';
   model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
 
@@ -142,7 +142,7 @@ class AverageWaitTime implements InsightInterface<QuestionModel> {
   displayName = 'Average Wait Time';
   description = 'Gets the average wait time';
   roles = [Role.PROFESSOR];
-  component: 'SimpleDisplayComponent';
+  component = 'SimpleDisplay';
   model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
 
@@ -176,10 +176,9 @@ class AverageWaitTime implements InsightInterface<QuestionModel> {
   }
 }
 
-export const totalUsers = new TotalUsers();
-
-export const totalQuestionsAsked = new TotalQuestionsAsked();
-
-export const averageWaitTime = new AverageWaitTime();
-
-export const questionTypeBreakdown = new QuestionTypeBreakdown();
+export const INSIGHTS = {
+  totalUsers: new TotalUsers(),
+  totalQuestionsAsked: new TotalQuestionsAsked(),
+  averageWaitTime: new AverageWaitTime(),
+  questionTypeBreakdown: new QuestionTypeBreakdown()
+}

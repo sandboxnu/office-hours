@@ -3,7 +3,7 @@ import { StandardPageContainer } from "../components/common/PageContainer";
 import { API } from "@koh/api-client";
 import useSWR from "swr";
 import SimpleDisplayComponent from "../components/Insights/components/SimpleDisplayComponent";
-import SimpleChart from "../components/Insights/components/SimpleChart";
+import SimpleChartComponent from "../components/Insights/components/SimpleChartComponent";
 
 export default function Insights(): ReactElement {
   const { data: insights, error, mutate } = useSWR(
@@ -13,15 +13,13 @@ export default function Insights(): ReactElement {
 
   const insightsComponents = {
     SimpleDisplay: SimpleDisplayComponent,
-    SimpleChart: SimpleChart,
+    SimpleChart: SimpleChartComponent,
   };
-  /**
-   * [{"week1": 1200}, {"week2": 1000}, {"week3": 800}]
-   */
+
   return (
     <>
       <StandardPageContainer>
-        {insights?.map((insight) => {
+        {insights && Object.values(insights)?.map((insight) => {
           const InsightComponent = insightsComponents[insight.component];
           return <InsightComponent key={insight.name} insight={insight} />;
         })}

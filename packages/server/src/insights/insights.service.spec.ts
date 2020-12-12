@@ -8,13 +8,7 @@ import {
   CourseFactory,
   QueueFactory,
 } from '../../test/util/factories';
-import {
-  totalUsers,
-  totalQuestionsAsked,
-  averageWaitTime,
-  questionTypeBreakdown,
-} from './insights';
-import { QuestionStatusKeys } from '@koh/common';
+import { INSIGHTS } from './insights';
 
 describe('InsightsService', () => {
   let service: InsightsService;
@@ -41,7 +35,7 @@ describe('InsightsService', () => {
       await UserCourseFactory.create();
 
       const res = await service.generateInsightsFor({
-        insights: [totalUsers],
+        insights: [INSIGHTS.totalUsers],
         filters: [
           {
             type: 'courseId',
@@ -64,7 +58,7 @@ describe('InsightsService', () => {
       await QuestionFactory.create({ queue });
 
       const res = await service.generateInsightsFor({
-        insights: [totalQuestionsAsked],
+        insights: [INSIGHTS.totalQuestionsAsked],
         filters: [
           {
             type: 'courseId',
@@ -87,7 +81,7 @@ describe('InsightsService', () => {
       });
 
       const res = await service.generateInsightsFor({
-        insights: [averageWaitTime],
+        insights: [INSIGHTS.averageWaitTime],
         filters: [
           {
             type: 'courseId',
@@ -120,7 +114,7 @@ describe('InsightsService', () => {
       });
     }
     const res = await service.generateInsightsFor({
-      insights: [questionTypeBreakdown],
+      insights: [INSIGHTS.questionTypeBreakdown],
       filters: [
         {
           type: 'courseId',

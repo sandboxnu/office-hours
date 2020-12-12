@@ -7,7 +7,8 @@ interface SimpleChartTypes {
   insight: Insight;
 }
 
-function SimpleChart({ insight }: SimpleChartTypes): ReactElement {
+function SimpleChartComponent({ insight }: SimpleChartTypes): ReactElement {
+  console.log("simple chart output", insight.output)
   return (
     <VictoryChart
       // domainPadding will add space to each side of VictoryBar to
@@ -17,8 +18,7 @@ function SimpleChart({ insight }: SimpleChartTypes): ReactElement {
       <VictoryAxis
         // tickValues specifies both the number of ticks and where
         // they are placed on the axis
-        tickValues={[1, 2, 3, 4]}
-        tickFormat={insight.output.tickFormat}
+        tickValues={["Bug", "Concept", "Testing"]}
       />
       <VictoryAxis
         dependentAxis
