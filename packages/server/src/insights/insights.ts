@@ -2,6 +2,7 @@ import { QuestionType, Role } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { SelectQueryBuilder } from 'typeorm';
 import { QuestionModel } from 'question/question.entity';
+import { types } from '@babel/core';
 
 export interface InsightInterface<Model> {
   name: string;
@@ -113,6 +114,7 @@ class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
       filters,
     )
       .groupBy('"QuestionModel"."questionType"')
+      .having('"QuestionModel"."questionType" IS NOT NULL')
       .getRawMany();
 
     const typesFromInfo = info.map((obj) => obj['questionType']);
@@ -122,8 +124,17 @@ class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
         info.push({ questionType: v, totalQuestions: '0' });
       }
     });
-
-    return info.sort((a, b) => a.questionType.localeCompare(b.questionType));
+    const insightObj = {
+      data: info.sort((a, b) =>
+        a.questionType === b.questionType
+          ? 0
+          : a.questionType > b.questionType
+          ? 1
+          : -1,
+      ),
+      xAxisLabels: Object.values(QuestionType).sort(),
+    };
+    return insightObj;
   }
 
   addFilters(queryBuilder, filters): SelectQueryBuilder<QuestionModel> {

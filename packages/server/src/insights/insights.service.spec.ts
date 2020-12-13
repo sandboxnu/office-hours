@@ -96,7 +96,7 @@ describe('InsightsService', () => {
     });
   });
 
-  it.only('questionTypeBreakdown', async () => {
+  it('questionTypeBreakdown', async () => {
     const course = await CourseFactory.create();
     const queue = await QueueFactory.create({ course });
     await QuestionFactory.createList(8, {
@@ -121,7 +121,7 @@ describe('InsightsService', () => {
       ],
     });
 
-    expect(res.questionTypeBreakdown.output).toEqual([
+    expect(res.questionTypeBreakdown.output.data).toEqual([
       { questionType: 'Bug', totalQuestions: '8' },
       { questionType: 'Clarification', totalQuestions: '20' },
       { questionType: 'Concept', totalQuestions: '0' },

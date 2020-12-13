@@ -1,4 +1,5 @@
 import { Insight } from "@koh/common";
+import { max, range } from "lodash";
 import React, { ReactElement } from "react";
 import ReactDOM from "react-dom";
 import { VictoryBar, VictoryChart, VictoryAxis } from "victory";
@@ -8,7 +9,15 @@ interface SimpleChartTypes {
 }
 
 function SimpleChartComponent({ insight }: SimpleChartTypes): ReactElement {
-  console.log("simple chart output", insight.output)
+  console.log("simple chart output", insight.output);
+  const yAxisName = Object.keys(insight.output.data[0])[1];
+  const xAxisName = Object.keys(insight.output.data[0])[0];
+  const yAxisValues = insight.output.data.map((obj) =>
+    parseInt(obj[yAxisName])
+  );
+
+  console.log("INSIGHT DATA", insight.output.data);
+
   return (
     <VictoryChart
       // domainPadding will add space to each side of VictoryBar to
@@ -18,16 +27,23 @@ function SimpleChartComponent({ insight }: SimpleChartTypes): ReactElement {
       <VictoryAxis
         // tickValues specifies both the number of ticks and where
         // they are placed on the axis
-        tickValues={["Bug", "Concept", "Testing"]}
+
+        //range(min, max, step).
+        tickValues={insight.output.xAxisLabels}
       />
       <VictoryAxis
         dependentAxis
         // tickFormat specifies how ticks should be displayed
-        tickFormat={(x) => `$${x / 1000}k`}
+        tickValues={range(0, max(yAxisValues), 50)}
       />
-      <VictoryBar data={insight.output.data} x="quarter" y="earnings" />
+      <VictoryBar
+        data={insight.output.data}
+        x={xAxisName}
+        y={yAxisName}
+        range={{ y: [0, max(yAxisValues)] }}
+      />
     </VictoryChart>
   );
 }
 
-export default SimpleChart;
+export default SimpleChartComponent;
