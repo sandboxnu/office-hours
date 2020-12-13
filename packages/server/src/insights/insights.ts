@@ -1,7 +1,8 @@
 import { QuestionType, Role } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
-import { createQueryBuilder, SelectQueryBuilder } from 'typeorm';
+import { SelectQueryBuilder } from 'typeorm';
 import { QuestionModel } from 'question/question.entity';
+import { types } from '@babel/core';
 
 export interface InsightInterface<Model> {
   name: string;
@@ -106,16 +107,34 @@ class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
   possibleFilters = ['courseId', 'timeframe'];
 
   async compute(queryBuilder: SelectQueryBuilder<QuestionModel>, filters) {
-    // TODO: refactor to use createQueryBuilder() to incorporate .from(...) clause rather than pass the repository in
-    return await this.addFilters(
+    const info = await this.addFilters(
       queryBuilder
-        .select('"QuestionModel"."questionType"', 'questions')
+        .select('"QuestionModel"."questionType"', 'questionType')
         .addSelect('COUNT(*)', 'totalQuestions'),
       filters,
     )
       .groupBy('"QuestionModel"."questionType"')
-      .orderBy('COUNT(*)', 'DESC')
+      .having('"QuestionModel"."questionType" IS NOT NULL')
       .getRawMany();
+
+    const typesFromInfo = info.map((obj) => obj['questionType']);
+
+    Object.values(QuestionType).forEach((v) => {
+      if (!typesFromInfo.includes(v)) {
+        info.push({ questionType: v, totalQuestions: '0' });
+      }
+    });
+    const insightObj = {
+      data: info.sort((a, b) =>
+        a.questionType === b.questionType
+          ? 0
+          : a.questionType > b.questionType
+          ? 1
+          : -1,
+      ),
+      xAxisLabels: Object.values(QuestionType).sort(),
+    };
+    return insightObj;
   }
 
   addFilters(queryBuilder, filters): SelectQueryBuilder<QuestionModel> {
@@ -129,10 +148,12 @@ class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
         case 'courseId':
           queryBuilder
             .innerJoin('QuestionModel.queue', 'queue')
+            .andWhere('"QuestionModel"."questionType" IS NOT NULL')
             .andWhere(`queue.${filter.conditional}`);
           break;
       }
     });
+
     return queryBuilder;
   }
 }
@@ -180,5 +201,5 @@ export const INSIGHTS = {
   totalUsers: new TotalUsers(),
   totalQuestionsAsked: new TotalQuestionsAsked(),
   averageWaitTime: new AverageWaitTime(),
-  questionTypeBreakdown: new QuestionTypeBreakdown()
-}
+  questionTypeBreakdown: new QuestionTypeBreakdown(),
+};
