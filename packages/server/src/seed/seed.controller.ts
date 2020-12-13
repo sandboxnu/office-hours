@@ -146,6 +146,20 @@ export class SeedController {
         role: Role.TA,
         course: course,
       });
+      // Professor
+      const professor = await UserFactory.create({
+        email: 'mislove.a@northeastern.edu',
+        name: 'Alan Mislove',
+        firstName: 'Alan',
+        lastName: 'Mislove',
+        photoURL: '',
+        insights: ["totalQuestionsAsked"]
+      });
+      await UserCourseFactory.create({
+        user: professor,
+        role: Role.PROFESSOR,
+        course: course,
+      });
     }
 
     const queue = await QueueFactory.create({
