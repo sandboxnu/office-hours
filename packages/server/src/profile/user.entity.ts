@@ -61,4 +61,8 @@ export class UserModel extends BaseEntity {
   @Exclude()
   @OneToMany((type) => EventModel, (event) => event.user)
   events: EventModel[];
+
+  @Exclude()
+  @Column({ type: "simple-array", nullable: true })
+  insights: string[];
 }

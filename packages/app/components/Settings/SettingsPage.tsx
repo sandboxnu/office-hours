@@ -1,4 +1,4 @@
-import { BellOutlined, EditOutlined } from "@ant-design/icons";
+import { BellOutlined, EditOutlined, BarChartOutlined } from "@ant-design/icons";
 import { useWindowWidth } from "@react-hook/window-size";
 import { Col, Menu, Row, Space } from "antd";
 import React, { ReactElement, useState } from "react";
@@ -7,10 +7,12 @@ import { useProfile } from "../../hooks/useProfile";
 import AvatarWithInitals from "../common/AvatarWithInitials";
 import NotificationsSettings from "./NotificationsSettings";
 import ProfileSettings from "./ProfileSettings";
+import InsightsSettings from "./InsightsSettings";
 
 export enum SettingsOptions {
   PROFILE = "PROFILE",
   NOTIFICATIONS = "NOTIFICATIONS",
+  INSIGHTS = "INSIGHTS",
 }
 
 interface SettingsPageProps {
@@ -59,6 +61,15 @@ export default function SettingsPage({
           >
             Notifications Settings
           </Menu.Item>
+          {/* If role == professor or if has insights */}
+          { true ? 
+          <Menu.Item
+            key={SettingsOptions.INSIGHTS}
+            icon={<BarChartOutlined />}
+          >
+            Insights Settings
+          </Menu.Item>
+          : null}
         </Menu>
       </Col>
       <VerticalDivider />
@@ -67,7 +78,8 @@ export default function SettingsPage({
           {currentSettings === SettingsOptions.PROFILE && <ProfileSettings />}
           {currentSettings === SettingsOptions.NOTIFICATIONS && (
             <NotificationsSettings />
-          )}
+            )}
+          {currentSettings === SettingsOptions.INSIGHTS && <InsightsSettings />}
         </Col>
       </Space>
     </Row>

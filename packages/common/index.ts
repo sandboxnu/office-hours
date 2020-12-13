@@ -46,12 +46,11 @@ export class User {
   photoURL!: string;
   courses!: UserCourse[];
   desktopNotifsEnabled!: boolean;
-
   @Type(() => DesktopNotifPartial)
   desktopNotifs!: DesktopNotifPartial[];
-
   phoneNotifsEnabled!: boolean;
   phoneNumber!: string;
+  insights!: string[];
 }
 
 export class DesktopNotifPartial {
@@ -542,6 +541,8 @@ export class Insight {
 }
 
 export type GetInsightsResponse = Insight[];
+
+export type ListInsightsResponse = string[];
 
 export const ERROR_MESSAGES = {
   questionController: {

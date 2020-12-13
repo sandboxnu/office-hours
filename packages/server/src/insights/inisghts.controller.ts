@@ -26,5 +26,9 @@ export class InsightsController {
     });
   }
 
-  // TODO: Add update endpoint so users can show/hide or reorder thier insights
+  @Get('list')
+  @Roles(Role.PROFESSOR)
+  async getAllInsights(): Promise<ListInsightsResponse> {
+    return Object.keys(INSIGHTS)
+  }
 }
