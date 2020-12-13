@@ -15,10 +15,7 @@ export async function bootstrap(hot: any): Promise<void> {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
   setupAPM(app);
-  addGlobalsToApp(app);
-  app.setGlobalPrefix('api/v1');
   app.useGlobalInterceptors(new ApmInterceptor());
-
   if (isProd()) {
     console.log(`Running production at ${process.env.DOMAIN}.`);
   } else {
@@ -26,6 +23,9 @@ export async function bootstrap(hot: any): Promise<void> {
       `Running non-production at ${process.env.DOMAIN}. THIS MSG SHOULD NOT APPEAR ON PROD VM`,
     );
   }
+
+  addGlobalsToApp(app);
+  app.setGlobalPrefix('api/v1');
   app.use(morgan('dev'));
   await app.listen(3002);
 
