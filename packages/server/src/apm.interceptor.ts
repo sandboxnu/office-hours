@@ -44,10 +44,9 @@ export class ApmInterceptor implements NestInterceptor {
           Constants.PATH_METADATA,
           context.getClass(),
         );
-        const handlerPath: string = this.reflector.get<string>(
-          Constants.PATH_METADATA,
-          context.getHandler(),
-        );
+        const handlerPath: string = this.reflector
+          .get<string>(Constants.PATH_METADATA, context.getHandler())
+          .replace(/^\//, '');
         const method = context.switchToHttp().getRequest().method;
         transaction.name = `${method} /api/v1/${classPath}/${handlerPath}`;
       }
