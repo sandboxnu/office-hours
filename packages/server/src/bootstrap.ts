@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/node';
 import * as Tracing from '@sentry/tracing';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { ValidationPipe, INestApplication } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import * as morgan from 'morgan';
@@ -15,7 +15,7 @@ export async function bootstrap(hot: any): Promise<void> {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
   setupAPM(app);
-  app.useGlobalInterceptors(new ApmInterceptor());
+  app.useGlobalInterceptors(new ApmInterceptor(new Reflector()));
   if (isProd()) {
     console.log(`Running production at ${process.env.DOMAIN}.`);
   } else {
@@ -45,6 +45,10 @@ function setupAPM(app: INestApplication): void {
       new Sentry.Integrations.Http({ tracing: true }),
       new Tracing.Integrations.Express({ app }),
     ],
+    environment: isProd()
+      ? 'production'
+      : process.env.DOMAIN &&
+        new URL(process.env.DOMAIN).hostname.replace(/\./g, '-'),
   });
   app.use(Sentry.Handlers.requestHandler());
   app.use(Sentry.Handlers.tracingHandler());
