@@ -48,16 +48,18 @@ jobs:
         uses: getsentry/action-release@v1
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: ${{ sandboxnu }}
+          SENTRY_ORG: sandboxnu
         with:
+          version: ${{ steps.pre-version.outputs.version }}
           environment: production
           projects: khoury-office-hours khoury-office-hours-frontend
       - name: Create Sentry release (staging)
         uses: getsentry/action-release@v1
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: ${{ sandboxnu }}
+          SENTRY_ORG: sandboxnu
         with:
+          version: ${{ steps.pre-version.outputs.version }}
           environment: staging
           projects: khoury-office-hours khoury-office-hours-frontend
       - name: Upload Sourcemaps to Elastic APM
