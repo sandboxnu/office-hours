@@ -2,6 +2,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
+const SentryPlugin = require('@sentry/webpack-plugin');
 
 module.exports = function (options) {
   return {
@@ -32,6 +33,15 @@ module.exports = function (options) {
         banner: 'require("source-map-support").install();',
         raw: true,
         entryOnly: false,
+      }),
+      // SERVICE_VERSION is the git hash, passed during build time.
+      new SentryPlugin({
+        release: process.env.SERVICE_VERSION,
+        include: './dist',
+      }),
+      // Encode it as a global at build time so we can pass it to Sentry at run time
+      new webpack.EnvironmentPlugin({
+        SERVICE_VERSION: process.env.SERVICE_VERSION,
       }),
     ],
   };

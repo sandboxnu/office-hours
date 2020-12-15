@@ -45,6 +45,8 @@ function setupAPM(app: INestApplication): void {
       new Sentry.Integrations.Http({ tracing: true }),
       new Tracing.Integrations.Express({ app }),
     ],
+    // Service Version is the git hash, added by Webpack at build time.
+    release: process.env.SERVICE_VERSION,
     environment: isProd()
       ? 'production'
       : process.env.DOMAIN &&
