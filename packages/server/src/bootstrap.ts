@@ -7,7 +7,7 @@ import * as cookieParser from 'cookie-parser';
 import * as morgan from 'morgan';
 import { AppModule } from './app.module';
 import { StripUndefinedPipe } from './stripUndefined.pipe';
-import { isProd } from '@koh/common';
+import { getEnv, isProd } from '@koh/common';
 import { ApmInterceptor } from './apm.interceptor';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -52,10 +52,7 @@ function setupAPM(app: INestApplication): void {
     ],
     // Service Version is the git hash, added by Webpack at build time.
     release: process.env.SERVICE_VERSION,
-    environment: isProd()
-      ? 'production'
-      : process.env.DOMAIN &&
-        new URL(process.env.DOMAIN).hostname.replace(/\./g, '-'),
+    environment: getEnv(),
   });
   app.use(Sentry.Handlers.requestHandler());
   app.use(Sentry.Handlers.tracingHandler());

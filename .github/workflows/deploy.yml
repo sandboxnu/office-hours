@@ -43,6 +43,23 @@ jobs:
           ref: "dist"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ## Associate release with git commits, so Sentry can guess which commits caused errors
+      - name: Create Sentry release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ sandboxnu }}
+        with:
+          environment: production
+          projects: khoury-office-hours khoury-office-hours-frontend
+      - name: Create Sentry release (staging)
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ sandboxnu }}
+        with:
+          environment: staging
+          projects: khoury-office-hours khoury-office-hours-frontend
       - name: Upload Sourcemaps to Elastic APM
         run: yarn ts-node packages/app/scripts/uploadSourceMapToAPM.js
         env:

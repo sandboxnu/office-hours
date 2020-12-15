@@ -34,7 +34,7 @@ module.exports = function (options) {
         release: process.env.SERVICE_VERSION,
         include: './dist',
       }),
-      // Encode it as a global at build time so we can pass it to Sentry at run time
+      // Write the build-time value of SERVICE_VERSION so it can be read at runtime
       new webpack.EnvironmentPlugin({
         SERVICE_VERSION: process.env.SERVICE_VERSION,
       }),
