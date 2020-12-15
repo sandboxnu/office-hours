@@ -49,6 +49,7 @@
     "passport-jwt": "^4.0.0",
     "pg": "^8.2.1",
     "readline-sync": "^1.4.10",
+    "redis": "^3.0.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rrule": "^2.6.6",
