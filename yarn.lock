@@ -2184,6 +2184,16 @@
     "@sentry/utils" "5.29.0"
     tslib "^1.9.3"
 
+"@sentry/integrations@^5.29.0":
+  version "5.29.0"
+  resolved "https://registry.yarnpkg.com/@sentry/integrations/-/integrations-5.29.0.tgz#65523b3e01c4ae6ebacf5f0a882811661bb3db0b"
+  integrity sha512-SGqpi1Qd1a7gGL6aYrJnKqU/DNJcHvnhD3qOgow23ivEpaJv1BtQSKxv17IbO/CIFn3A0o1a18wY6xef9isKEQ==
+  dependencies:
+    "@sentry/types" "5.29.0"
+    "@sentry/utils" "5.29.0"
+    localforage "1.8.1"
+    tslib "^1.9.3"
+
 "@sentry/minimal@5.29.0":
   version "5.29.0"
   resolved "https://registry.yarnpkg.com/@sentry/minimal/-/minimal-5.29.0.tgz#bd8b52f388abcec2234dbbc6d6721ff65aa30e35"
@@ -7801,6 +7811,11 @@ image-size@^0.8.2:
   dependencies:
     queue "6.0.1"
 
+immediate@~3.0.5:
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/immediate/-/immediate-3.0.6.tgz#9db1dbd0faf8de6fbe0f5dd5e56bb606280de69b"
+  integrity sha1-nbHb0Pr43m++D13V5Wu2BigN5ps=
+
 import-fresh@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/import-fresh/-/import-fresh-2.0.0.tgz#d81355c15612d386c61f9ddd3922d4304822a546"
@@ -9089,6 +9104,13 @@ levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
+lie@3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/lie/-/lie-3.1.1.tgz#9a436b2cc7746ca59de7a41fa469b3efb76bd87e"
+  integrity sha1-mkNrLMd0bKWd56QfpGmz77dr2H4=
+  dependencies:
+    immediate "~3.0.5"
+
 lines-and-columns@^1.1.6:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.1.6.tgz#1c00c743b433cd0a4e80758f7b64a57440d9ff00"
@@ -9188,6 +9210,13 @@ loader-utils@^1.0.2, loader-utils@^1.1.0, loader-utils@^1.2.3:
     big.js "^5.2.2"
     emojis-list "^3.0.0"
     json5 "^1.0.1"
+
+localforage@1.8.1:
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/localforage/-/localforage-1.8.1.tgz#f6c0a24b41ab33b10e4dc84342dd696f6f3e3433"
+  integrity sha512-azSSJJfc7h4bVpi0PGi+SmLQKJl2/8NErI+LhJsrORNikMZnhaQ7rv9fHj+ofwgSHrKRlsDCL/639a6nECIKuQ==
+  dependencies:
+    lie "3.1.1"
 
 locate-path@^2.0.0:
   version "2.0.0"
@@ -13393,7 +13422,7 @@ source-map-support@0.5.16:
     buffer-from "^1.0.0"
     source-map "^0.6.0"
 
-source-map-support@^0.5.17, source-map-support@^0.5.19, source-map-support@^0.5.6, source-map-support@~0.5.12:
+source-map-support@^0.5.17, source-map-support@^0.5.6, source-map-support@~0.5.12:
   version "0.5.19"
   resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.19.tgz#a98b62f86dcaf4f67399648c085291ab9e8fed61"
   integrity sha512-Wonm7zOCIJzBGQdB+thsPar0kYuCIzYvxZwlBa87yi/Mdjv7Tip2cyVbLj5o0cFPN4EVkuTwb3GDDyUx2DGnGw==

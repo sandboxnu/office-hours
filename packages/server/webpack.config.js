@@ -27,13 +27,8 @@ module.exports = function (options) {
         },
       ],
     },
-    devtool: 'inline-source-map',
+    devtool: 'source-map',
     plugins: [
-      new webpack.BannerPlugin({
-        banner: 'require("source-map-support").install();',
-        raw: true,
-        entryOnly: false,
-      }),
       // SERVICE_VERSION is the git hash, passed during build time.
       new SentryPlugin({
         release: process.env.SERVICE_VERSION,

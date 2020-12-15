@@ -47,6 +47,7 @@ function setupAPM(app: INestApplication): void {
       new Tracing.Integrations.Express({
         app: app.getHttpAdapter().getInstance(),
       }),
+      new RewriteFrames(),
     ],
     // Service Version is the git hash, added by Webpack at build time.
     release: process.env.SERVICE_VERSION,
