@@ -8,6 +8,7 @@ import { AppModule } from './app.module';
 import { StripUndefinedPipe } from './stripUndefined.pipe';
 import { isProd } from '@koh/common';
 import { ApmInterceptor } from './apm.interceptor';
+import { Router } from 'express';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export async function bootstrap(hot: any): Promise<void> {
@@ -43,7 +44,9 @@ function setupAPM(app: INestApplication): void {
     integrations: [
       // enable HTTP calls tracing
       new Sentry.Integrations.Http({ tracing: true }),
-      new Tracing.Integrations.Express({ app }),
+      new Tracing.Integrations.Express({
+        app: app.getHttpAdapter().getInstance(),
+      }),
     ],
     // Service Version is the git hash, added by Webpack at build time.
     release: process.env.SERVICE_VERSION,
