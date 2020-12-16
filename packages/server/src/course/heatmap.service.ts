@@ -1,11 +1,12 @@
 import { ClosedQuestionStatus, Heatmap, timeDiffInMins } from '@koh/common';
-import { Injectable } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { inRange, mean, range } from 'lodash';
 import moment = require('moment');
 import { Command } from 'nestjs-command';
 import { QuestionModel } from 'question/question.entity';
 import { MoreThan } from 'typeorm';
 import { OfficeHourModel } from './office-hour.entity';
+import {Cache} from 'cache-manager';
 
 function arrayRotate(arr, count) {
   count -= arr.length * Math.floor(count / arr.length);
@@ -15,7 +16,17 @@ function arrayRotate(arr, count) {
 
 @Injectable()
 export class HeatmapService {
-  async getHeatmapFor(courseId: number): Promise<Heatmap | false> {
+  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
+
+  
+  async getCachedHeatmapFor(courseId: number): Promise<Heatmap | false> {
+    //One week 
+    const cacheLengthInSeconds = 604800;
+    return this.cacheManager.wrap(`heatmap/${courseId}`, () => this._getHeatmapFor(courseId), {ttl: cacheLengthInSeconds});
+  }
+
+  // Do not use this externally plz
+  async _getHeatmapFor(courseId: number): Promise<Heatmap | false> {
     // The number of minutes to average across
     const BUCKET_SIZE_IN_MINS = 15;
     // Number of samples to gather per bucket
@@ -228,6 +239,6 @@ export class HeatmapService {
     autoExit: true,
   })
   async create(): Promise<void> {
-    const h = await this.getHeatmapFor(4);
+    const h = await this._getHeatmapFor(4);
   }
 }
