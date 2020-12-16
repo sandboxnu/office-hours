@@ -165,4 +165,18 @@ export class LoginController {
       .cookie('auth_token', authToken, { httpOnly: true, secure: isSecure })
       .redirect(302, '/');
   }
+
+  @Get('/logout')
+  async logout(@Res() res: Response): Promise<void> {
+    const isSecure = this.configService
+      .get<string>('DOMAIN')
+      .startsWith('https://');
+    res
+      .cookie('auth_token', '', {
+        httpOnly: true,
+        secure: isSecure,
+        expires: new Date(Date.now() - 86400000),
+      })
+      .redirect(302, '/');
+  }
 }
