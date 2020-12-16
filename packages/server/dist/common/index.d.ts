@@ -104,7 +104,6 @@ export declare enum ClosedQuestionStatus {
     Resolved = "Resolved",
     DeletedDraft = "DeletedDraft",
     ConfirmedDeleted = "ConfirmedDeleted",
-    StudentCancelled = "StudentCancelled",
     Stale = "Stale"
 }
 export declare const StatusInQueue: OpenQuestionStatus[];
@@ -118,7 +117,6 @@ export declare const QuestionStatusKeys: {
     Resolved: ClosedQuestionStatus.Resolved;
     DeletedDraft: ClosedQuestionStatus.DeletedDraft;
     ConfirmedDeleted: ClosedQuestionStatus.ConfirmedDeleted;
-    StudentCancelled: ClosedQuestionStatus.StudentCancelled;
     Stale: ClosedQuestionStatus.Stale;
     Drafting: OpenQuestionStatus.Drafting;
     Queued: OpenQuestionStatus.Queued;
