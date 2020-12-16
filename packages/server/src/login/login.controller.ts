@@ -172,11 +172,7 @@ export class LoginController {
       .get<string>('DOMAIN')
       .startsWith('https://');
     res
-      .cookie('auth_token', '', {
-        httpOnly: true,
-        secure: isSecure,
-        expires: new Date(Date.now() - 86400000),
-      })
+      .clearCookie('auth_token', { httpOnly: true, secure: isSecure })
       .redirect(302, '/');
   }
 }
