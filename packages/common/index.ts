@@ -240,7 +240,6 @@ export enum ClosedQuestionStatus {
   Resolved = "Resolved",
   DeletedDraft = "DeletedDraft",
   ConfirmedDeleted = "ConfirmedDeleted",
-  StudentCancelled = "StudentCancelled",
   Stale = "Stale",
 }
 

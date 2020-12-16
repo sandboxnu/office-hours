@@ -101,7 +101,7 @@ export class QuestionController {
 
     if (!!previousUserQuestion) {
       if (force) {
-        previousUserQuestion.status = ClosedQuestionStatus.StudentCancelled;
+        previousUserQuestion.status = ClosedQuestionStatus.ConfirmedDeleted;
         await previousUserQuestion.save();
       } else {
         throw new BadRequestException(
