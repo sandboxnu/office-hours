@@ -1,6 +1,5 @@
 import { ClosedQuestionStatus, Heatmap, timeDiffInMins } from '@koh/common';
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
-import { CourseAdmin } from 'admin/admin-entities';
 import { inRange, mean, range } from 'lodash';
 import moment = require('moment');
 import { Command, Positional } from 'nestjs-command';
@@ -250,6 +249,6 @@ export class HeatmapService {
     })
     courseId: number,
   ): Promise<void> {
-    console.log(await this.getHeatmapFor(courseId));
+    console.log(await this._getHeatmapFor(courseId));
   }
 }
