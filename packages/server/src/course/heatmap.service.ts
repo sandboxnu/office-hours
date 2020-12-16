@@ -242,7 +242,6 @@ export class HeatmapService {
     describe: 'generate heatmap for a course',
     autoExit: true,
   })
-  
   async create(
     @Positional({
       name: 'courseId',
