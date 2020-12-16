@@ -165,7 +165,7 @@ describe("Checking in and out when there arent scheduled office hours", function
     });
   });
 
-  it.only("checking in a TA when there is not scheduled office hours", function () {
+  it("checking in a TA when there is not scheduled office hours", function () {
     // The ta should show as checked in
     cy.get("[data-cy='ta-status-card']").should("be.visible");
     // 1 student should be in the queue
