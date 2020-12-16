@@ -6,7 +6,7 @@ import { Command } from 'nestjs-command';
 import { QuestionModel } from 'question/question.entity';
 import { MoreThan } from 'typeorm';
 import { OfficeHourModel } from './office-hour.entity';
-import {Cache} from 'cache-manager';
+import { Cache } from 'cache-manager';
 
 function arrayRotate(arr, count) {
   count -= arr.length * Math.floor(count / arr.length);
@@ -18,11 +18,14 @@ function arrayRotate(arr, count) {
 export class HeatmapService {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
-  
   async getCachedHeatmapFor(courseId: number): Promise<Heatmap | false> {
-    //One week 
+    //One week
     const cacheLengthInSeconds = 604800;
-    return this.cacheManager.wrap(`heatmap/${courseId}`, () => this._getHeatmapFor(courseId), {ttl: cacheLengthInSeconds});
+    return this.cacheManager.wrap(
+      `heatmap/${courseId}`,
+      () => this._getHeatmapFor(courseId),
+      { ttl: cacheLengthInSeconds },
+    );
   }
 
   // Do not use this externally plz
