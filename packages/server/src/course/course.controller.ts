@@ -55,7 +55,7 @@ export class CourseController {
       .select(['id', 'title', `"startTime"`, `"endTime"`])
       .where('oh.courseId = :courseId', { courseId: course.id })
       .getRawMany();
-    course.heatmap = await this.heatmapService.getHeatmapFor(id);
+    course.heatmap = await this.heatmapService.getCachedHeatmapFor(id);
 
     course.queues = await async.filter(
       course.queues,
