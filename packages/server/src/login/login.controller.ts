@@ -173,6 +173,6 @@ export class LoginController {
       .startsWith('https://');
     res
       .clearCookie('auth_token', { httpOnly: true, secure: isSecure })
-      .redirect(302, '/');
+      .redirect(302, '/login');
   }
 }
