@@ -1,4 +1,5 @@
 import { ClosedQuestionStatus, Heatmap } from '@koh/common';
+import { CacheModule } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { QuestionModel } from 'question/question.entity';
 import { Connection } from 'typeorm';
@@ -12,7 +13,7 @@ describe('HeatmapService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TestTypeOrmModule],
+      imports: [TestTypeOrmModule, CacheModule.register()],
       providers: [HeatmapService],
     }).compile();
 
