@@ -13,19 +13,12 @@ interface AllowableTransitions {
 
 const QUEUE_TRANSITIONS: AllowableTransitions = {
   ta: [OpenQuestionStatus.Helping, LimboQuestionStatus.TADeleted],
-  student: [
-    ClosedQuestionStatus.StudentCancelled,
-    ClosedQuestionStatus.ConfirmedDeleted,
-  ],
+  student: [ClosedQuestionStatus.ConfirmedDeleted],
 };
 
 const QUESTION_STATES: Record<QuestionStatus, AllowableTransitions> = {
   [OpenQuestionStatus.Drafting]: {
-    student: [
-      OpenQuestionStatus.Queued,
-      ClosedQuestionStatus.StudentCancelled,
-      ClosedQuestionStatus.ConfirmedDeleted,
-    ],
+    student: [OpenQuestionStatus.Queued, ClosedQuestionStatus.ConfirmedDeleted],
     ta: [ClosedQuestionStatus.DeletedDraft],
   },
   [OpenQuestionStatus.Queued]: QUEUE_TRANSITIONS,
@@ -42,14 +35,12 @@ const QUESTION_STATES: Record<QuestionStatus, AllowableTransitions> = {
   [LimboQuestionStatus.CantFind]: {
     student: [
       OpenQuestionStatus.PriorityQueued,
-      ClosedQuestionStatus.StudentCancelled,
       ClosedQuestionStatus.ConfirmedDeleted,
     ],
   },
   [LimboQuestionStatus.ReQueueing]: {
     student: [
       OpenQuestionStatus.PriorityQueued,
-      ClosedQuestionStatus.StudentCancelled,
       ClosedQuestionStatus.ConfirmedDeleted,
     ],
   },
@@ -58,7 +49,6 @@ const QUESTION_STATES: Record<QuestionStatus, AllowableTransitions> = {
   },
   [ClosedQuestionStatus.Resolved]: {},
   [ClosedQuestionStatus.ConfirmedDeleted]: {},
-  [ClosedQuestionStatus.StudentCancelled]: {},
   [ClosedQuestionStatus.Stale]: {},
   [ClosedQuestionStatus.DeletedDraft]: {},
 };
