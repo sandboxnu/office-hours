@@ -16,11 +16,41 @@ export function Footer(): ReactElement {
   return (
     <FullWidth>
       <div>
-        Made by students @ <a href="https://sandboxnu.com">Sandbox</a>. Source
-        on <a href="https://github.com/sandboxnu/office-hours">GitHub.</a>
+        Made by students @{" "}
+        <a
+          onClick={() => {
+            window.open("https://sandboxnu.com");
+          }}
+        >
+          Sandbox
+        </a>
+        . Source on{" "}
+        <a
+          onClick={() => {
+            window.open("https://github.com/sandboxnu/office-hours");
+          }}
+        >
+          GitHub.
+        </a>
       </div>
       <div>
-        <a href="https://forms.monday.com/forms/06be3745a411353ad295249d43835d38">
+        <a
+          onClick={() => {
+            window.open(
+              "https://github.com/sandboxnu/office-hours/discussions"
+            );
+          }}
+        >
+          Give us feedback
+        </a>
+        <span> or </span>
+        <a
+          onClick={() => {
+            window.open(
+              "https://forms.monday.com/forms/06be3745a411353ad295249d43835d38"
+            );
+          }}
+        >
           File a bug report
         </a>
       </div>

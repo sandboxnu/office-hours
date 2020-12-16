@@ -1,8 +1,9 @@
 import { ClosedQuestionStatus, Heatmap, timeDiffInMins } from '@koh/common';
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
+import { CourseAdmin } from 'admin/admin-entities';
 import { inRange, mean, range } from 'lodash';
 import moment = require('moment');
-import { Command } from 'nestjs-command';
+import { Command, Positional } from 'nestjs-command';
 import { QuestionModel } from 'question/question.entity';
 import { MoreThan } from 'typeorm';
 import { OfficeHourModel } from './office-hour.entity';
@@ -107,7 +108,7 @@ export class HeatmapService {
 
     look at question Q1 and the next question Q2
     for all sample timepoints between Q1.createdAt and Q2.createdAt:
-       - sample = Q1.closedAt - timepoint (if negative, then it's 0)
+       - sample = Q1.helpedAt - timepoint (if negative, then it's 0)
     */
 
     const hourTimestamps: [number, number][] = hours.map((hours) => [
@@ -237,11 +238,19 @@ export class HeatmapService {
   }
 
   @Command({
-    command: 'heatmap:generate',
+    command: 'heatmap:generate <courseId>',
     describe: 'generate heatmap for a course',
     autoExit: true,
   })
-  async create(): Promise<void> {
-    const h = await this._getHeatmapFor(4);
+  
+  async create(
+    @Positional({
+      name: 'courseId',
+      describe: 'which course the heatmap will be generated for',
+      type: 'number',
+    })
+    courseId: number,
+  ): Promise<void> {
+    console.log(await this.getHeatmapFor(courseId));
   }
 }
