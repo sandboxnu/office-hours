@@ -169,7 +169,8 @@ export class LoginController {
 
   // Set cookie and redirect to proper page
   private async enter(res: Response, userId: number) {
-    const authToken = await this.jwtService.signAsync({ userId });
+    // Expires in a day
+    const authToken = await this.jwtService.signAsync({ userId, expiresIn: 60 * 60 * 24 * 30 });
     const isSecure = this.configService
       .get<string>('DOMAIN')
       .startsWith('https://');
