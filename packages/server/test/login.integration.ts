@@ -184,7 +184,7 @@ describe('Login Integration', () => {
   describe('GET /logout', () => {
     it('makes sure logout endpoint is destroying cookies like a mob boss', async () => {
       const res = await supertest().get(`/logout`).expect(302);
-      expect(res.header['location']).toBe('/');
+      expect(res.header['location']).toBe('/login');
       expect(res.get('Set-Cookie')[0]).toContain('auth_token=;');
     });
   });
