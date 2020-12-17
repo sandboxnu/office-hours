@@ -1,14 +1,14 @@
-import { setupIntegrationTest } from './util/testUtils';
-import { LoginModule } from '../src/login/login.module';
-import { TestingModuleBuilder } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
+import { TestingModuleBuilder } from '@nestjs/testing';
+import { LoginModule } from '../src/login/login.module';
 import { UserModel } from '../src/profile/user.entity';
 import {
-  UserFactory,
-  UserCourseFactory,
   CourseFactory,
   CourseSectionFactory,
+  UserCourseFactory,
+  UserFactory,
 } from './util/factories';
+import { setupIntegrationTest } from './util/testUtils';
 
 const mockJWT = {
   signAsync: async (payload, options?) => JSON.stringify(payload),
@@ -178,6 +178,14 @@ describe('Login Integration', () => {
 
       // Expect the ta to have been all three courses accosiated with the given generic courses (CS 2500)
       expect(ta.courses).toHaveLength(3);
+    });
+  });
+
+  describe('GET /logout', () => {
+    it('makes sure logout endpoint is destroying cookies like a mob boss', async () => {
+      const res = await supertest().get(`/logout`).expect(302);
+      expect(res.header['location']).toBe('/login');
+      expect(res.get('Set-Cookie')[0]).toContain('auth_token=;');
     });
   });
 });

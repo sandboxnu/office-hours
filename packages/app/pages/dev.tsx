@@ -1,9 +1,9 @@
-import React, { ReactElement } from "react";
 import { API } from "@koh/api-client";
-import styled from "styled-components";
+import { isProd } from "@koh/common";
 import { Button, Divider } from "antd";
 import DefaultErrorPage from "next/error";
-import { isProd } from "@koh/common";
+import React, { ReactElement } from "react";
+import styled from "styled-components";
 
 const Container = styled.div`
   width: auto;
@@ -27,14 +27,6 @@ const SeedingContainer = styled.div`
   text-align: center;
 
   padding-top: 20px;
-`;
-
-const InputBoxContainer = styled.div`
-  margin: auto;
-  width: 500px;
-  height: 64px;
-  left: 570px;
-  top: 261px;
 `;
 
 const PageHeader = styled.div`
