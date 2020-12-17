@@ -1,10 +1,4 @@
-import {
-  KhouryDataParams,
-  KhouryRedirectResponse,
-  KhouryStudentCourse,
-  KhouryTACourse,
-  Role,
-} from '@koh/common';
+import { KhouryDataParams, KhouryRedirectResponse } from '@koh/common';
 import {
   Body,
   Controller,
@@ -22,10 +16,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
 import * as httpSignature from 'http-signature';
 import { Connection } from 'typeorm';
-import { CourseModel } from '../../src/course/course.entity';
 import { NonProductionGuard } from '../../src/non-production.guard';
-import { UserModel } from '../../src/profile/user.entity';
-import { CourseSectionMappingModel } from './course-section-mapping.entity';
 import { LoginCourseService } from './login-course.service';
 
 @Controller()
