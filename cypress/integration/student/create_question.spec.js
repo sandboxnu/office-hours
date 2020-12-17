@@ -8,7 +8,7 @@ describe("Student can create a question", () => {
     });
   });
 
-  it("Create online question", function () {
+  it("Create online question & ensures questions can't be submitted until fields are filled out", function () {
     // Visit the queue page
     cy.visit(`/course/${this.queue.courseId}/queue/${this.queue.id}`).then(
       () => {
@@ -17,14 +17,18 @@ describe("Student can create a question", () => {
         cy.percySnapshot("Student Queue Page - Empty Student Queue");
         cy.get("button").contains("Join Queue").click();
 
-        // Fill out the question form
+        cy.get("[data-cy=finishQuestion]").should("be.disabled");
+
         cy.get("body").should("contain", "Concept");
         cy.get("label").contains("Concept").click({
           force: true,
         });
+        cy.get("[data-cy=finishQuestion]").should("be.disabled");
+
         cy.get("[data-cy='questionText']").type(
           "How do I use the design recipe?"
         );
+        cy.get("[data-cy=finishQuestion]").should("not.be.disabled");
 
         cy.percySnapshot("Student Queue Page - Student Question Form");
 
@@ -33,6 +37,7 @@ describe("Student can create a question", () => {
 
         cy.get(".ant-modal-content").should("not.visible");
         cy.percySnapshot("Student Queue Page - Non Empty Student Queue");
+
         // See that the question shows in the queue list
         cy.get("[data-cy='queueQuestions']").contains(
           "How do I use the design recipe?"
@@ -44,35 +49,6 @@ describe("Student can create a question", () => {
         cy.get("[data-cy='banner']").contains(
           "How do I use the design recipe?"
         );
-      }
-    );
-  });
-
-  it("Can't finish question before both fields are filled", function () {
-    // Visit the queue page
-    cy.visit(`/course/${this.queue.courseId}/queue/${this.queue.id}`).then(
-      () => {
-        // Click "Join Queue"
-        cy.get("body").should("contain", "Join Queue");
-        cy.get("button").contains("Join Queue").click();
-
-        // Check that you can't finish the question without pushing the buttons
-        cy.get("[data-cy=finishQuestion]").should("be.disabled");
-
-        cy.get("[data-cy='questionText']").type(
-          "How many woks does Gordon Ramsay use to make fried rice?"
-        );
-        cy.get("[data-cy=finishQuestion]").should("be.disabled");
-
-        // Fill out the question form
-        cy.get("body").should("contain", "Bug");
-        cy.get("label").contains("Bug").click({
-          force: true,
-        });
-        cy.get("[data-cy=finishQuestion]").should("not.be.disabled");
-
-        // Click Submit
-        cy.get("[data-cy='finishQuestion']").click();
       }
     );
   });

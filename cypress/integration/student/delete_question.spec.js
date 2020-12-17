@@ -17,15 +17,11 @@ describe("Student can delete their question", () => {
   });
 
   it("from the queue page", function () {
-    // Visit the queue page
     cy.visit(`/course/${this.queue.courseId}/queue/${this.queue.id}`);
 
     cy.get('[data-cy="leave-queue"]').should("be.visible").click();
-
-    // Click Yes on the Pop confirm
     cy.get("span").contains("Yes").click();
 
-    // Check that the question is no longer on the page
     cy.get("body").should("contain", "There are no questions in the queue");
   });
 });
