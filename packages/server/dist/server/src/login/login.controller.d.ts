@@ -14,4 +14,5 @@ export declare class LoginController {
     enterFromKhoury(res: Response, token: string): Promise<void>;
     enterFromDev(res: Response, userId: number): Promise<void>;
     private enter;
+    logout(res: Response): Promise<void>;
 }
