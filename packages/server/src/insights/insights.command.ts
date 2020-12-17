@@ -31,8 +31,7 @@ export class InsightsCommand {
     })
     courseId: number,
   ): Promise<any> {
-    await QuestionFactory.createList(10);
-    const insights = await this.insightsService.generateInsightsFor({
+    const insights = await this.insightsService.generateAllInsights({
       insights: [INSIGHTS.totalUsers, INSIGHTS.questionTypeBreakdown],
       filters: [
         {

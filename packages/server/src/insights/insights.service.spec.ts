@@ -7,9 +7,11 @@ import {
   QuestionFactory,
   CourseFactory,
   QueueFactory,
+  UserFactory,
 } from '../../test/util/factories';
 import { INSIGHTS } from './insights';
 import { QuestionType } from '@koh/common';
+import { UserModel } from 'profile/user.entity';
 
 describe('InsightsService', () => {
   let service: InsightsService;
@@ -29,14 +31,14 @@ describe('InsightsService', () => {
     await conn.close();
   });
 
-  describe('generateInsightsFor', () => {
+  describe('generateInsight', () => {
     it('totalStudents', async () => {
       const course = await CourseFactory.create();
       await UserCourseFactory.createList(4, { course });
       await UserCourseFactory.create();
 
-      const res = await service.generateInsightsFor({
-        insights: [INSIGHTS.totalUsers],
+      const res = await service.generateInsight({
+        insight: INSIGHTS.totalUsers,
         filters: [
           {
             type: 'courseId',
@@ -58,8 +60,8 @@ describe('InsightsService', () => {
       // question right now
       await QuestionFactory.create({ queue });
 
-      const res = await service.generateInsightsFor({
-        insights: [INSIGHTS.totalQuestionsAsked],
+      const res = await service.generateInsight({
+        insight: INSIGHTS.totalQuestionsAsked,
         filters: [
           {
             type: 'courseId',
@@ -81,8 +83,8 @@ describe('InsightsService', () => {
         helpedAt: new Date(Date.now() - 25 * 60 * 1000),
       });
 
-      const res = await service.generateInsightsFor({
-        insights: [INSIGHTS.averageWaitTime],
+      const res = await service.generateInsight({
+        insight: INSIGHTS.averageWaitTime,
         filters: [
           {
             type: 'courseId',
@@ -111,8 +113,8 @@ describe('InsightsService', () => {
       questionType: QuestionType.Testing,
       queue,
     });
-    const res = await service.generateInsightsFor({
-      insights: [INSIGHTS.questionTypeBreakdown],
+    const res = await service.generateInsight({
+      insight: INSIGHTS.questionTypeBreakdown,
       filters: [
         {
           type: 'courseId',
@@ -129,5 +131,54 @@ describe('InsightsService', () => {
       { questionType: 'Setup', totalQuestions: '0' },
       { questionType: 'Testing', totalQuestions: '10' },
     ]);
+  });
+
+  describe('generateAllInsights', () => {
+    it('multiple insights', async () => {
+      const course = await CourseFactory.create();
+      await UserCourseFactory.createList(4, { course });
+      await UserCourseFactory.create();
+      const queue = await QueueFactory.create({ course });
+      await QuestionFactory.createList(18, { queue });
+
+      const res = await service.generateAllInsights({
+        insights: [INSIGHTS.totalUsers, INSIGHTS.totalQuestionsAsked],
+        filters: [
+          {
+            type: 'courseId',
+            conditional: `"courseId" = ${course.id}`,
+          },
+        ],
+      });
+      expect(res.totalStudents.output).toEqual(4);
+      expect(res.totalQuestionsAsked.output).toEqual(18);
+    });
+  });
+
+  describe('toggleInsightOn', () => {
+    it('works correctly', async () => {
+      const userFactory = await UserFactory.create();
+      const user = await UserModel.findOne(userFactory.id);
+      expect(user.insights).toBeNull();
+      await service.toggleInsightOn(user, 'questionTypeBreakdown');
+      await user.reload();
+      expect(user.insights).toStrictEqual(['questionTypeBreakdown']);
+    });
+  });
+
+  describe('toggleInsightOff', () => {
+    it('works correctly', async () => {
+      const userFactory = await UserFactory.create({
+        insights: ['averageWaitTime', 'questionTypeBreakdown'],
+      });
+      const user = await UserModel.findOne(userFactory.id);
+      expect(user.insights).toStrictEqual([
+        'averageWaitTime',
+        'questionTypeBreakdown',
+      ]);
+      await service.toggleInsightOff(user, 'questionTypeBreakdown');
+      await user.reload();
+      expect(user.insights).toStrictEqual(['averageWaitTime']);
+    });
   });
 });
