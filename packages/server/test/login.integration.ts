@@ -86,45 +86,78 @@ describe('Login Integration', () => {
       });
     });
 
-    it('handles student courses and sections correctly', async () => {
-      // This is needed since only courses already in the db will be added as UserCourses
-      const course = await CourseFactory.create({
-        name: 'CS 2510 Accelerated',
+    describe('with course mapping', () => {
+      let course;
+      beforeEach(async () => {
+        // Make course mapping so usercourse can be added
+        course = await CourseFactory.create({
+          name: 'CS 2510 Accelerated',
+        });
+        await CourseSectionFactory.create({
+          genericCourseName: 'CS 2510',
+          section: 1,
+          course: course,
+        });
       });
-      await CourseSectionFactory.create({
-        genericCourseName: 'CS 2510',
-        section: 1,
-        course: course,
+      it('overwrites courses but not names of existing users', async () => {
+        let user = await UserFactory.create();
+
+        const res = await supertest()
+          .post('/khoury_login')
+          .send({
+            email: user.email,
+            campus: 1,
+            first_name: 'Will',
+            last_name: 'Stenzel',
+            photo_url: 'sdf',
+            courses: [
+              {
+                course: 'CS 2510',
+                crn: 12345,
+                accelerated: false,
+                section: 1,
+                semester: '000',
+                title: 'Fundamentals of Computer Science II',
+              },
+            ],
+            ta_courses: [],
+          });
+        user = await UserModel.findOne(user, { relations: ['courses'] });
+
+        expect(user.courses).toHaveLength(1);
+        expect(user.firstName).not.toEqual('Will');
       });
 
-      const res = await supertest()
-        .post('/khoury_login')
-        .send({
-          email: 'stenzel.w@northeastern.edu',
-          campus: 1,
-          first_name: 'Will',
-          last_name: 'Stenzel',
-          photo_url: 'sdf',
-          courses: [
-            {
-              course: 'CS 2510',
-              crn: 12345,
-              accelerated: false,
-              section: 1,
-              semester: '000',
-              title: 'Fundamentals of Computer Science II',
-            },
-          ],
-          ta_courses: [],
+      it('handles student courses and sections correctly', async () => {
+        const res = await supertest()
+          .post('/khoury_login')
+          .send({
+            email: 'stenzel.w@northeastern.edu',
+            campus: 1,
+            first_name: 'Will',
+            last_name: 'Stenzel',
+            photo_url: 'sdf',
+            courses: [
+              {
+                course: 'CS 2510',
+                crn: 12345,
+                accelerated: false,
+                section: 1,
+                semester: '000',
+                title: 'Fundamentals of Computer Science II',
+              },
+            ],
+            ta_courses: [],
+          });
+
+        const student = await UserModel.findOne({
+          where: { email: 'stenzel.w@northeastern.edu' },
+          relations: ['courses'],
         });
 
-      const student = await UserModel.findOne({
-        where: { email: 'stenzel.w@northeastern.edu' },
-        relations: ['courses'],
+        expect(student.courses).toHaveLength(1);
+        expect(student.courses[0].id).toBe(course.id);
       });
-
-      expect(student.courses).toHaveLength(1);
-      expect(student.courses[0].id).toBe(course.id);
     });
 
     it('handles TA courses correctly', async () => {

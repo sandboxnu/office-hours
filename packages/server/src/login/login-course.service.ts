@@ -15,7 +15,7 @@ import { UserModel } from 'profile/user.entity';
 export class LoginCourseService {
   constructor(private connection: Connection) {}
 
-  public async addUserFromKhoury(info: KhouryDataParams) {
+  public async addUserFromKhoury(info: KhouryDataParams): Promise<UserModel> {
     let user: UserModel;
     user = await UserModel.findOne({
       where: { email: info.email },
@@ -71,6 +71,7 @@ export class LoginCourseService {
     );
     user.courses = userCourses;
     await user.save();
+    console.log(user);
     return user;
   }
 
