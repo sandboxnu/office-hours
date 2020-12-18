@@ -11,9 +11,11 @@ module.exports = {
     },
     {
       name: "server",
-      script: "npm",
-      args: "run prod:start",
       cwd: "./packages/server",
+      script: "dist/main.js",
+      node_args: "--max-old-space-size=8192",
+      instances: 2,
+      exec_mode: "cluster",
       env: {
         NODE_ENV: "production",
       },
