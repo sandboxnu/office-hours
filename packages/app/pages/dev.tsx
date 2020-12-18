@@ -35,6 +35,10 @@ const PageHeader = styled.div`
   margin-top: 40px;
 `;
 
+const DevPageButton = styled(Button)`
+  margin-right: 15px;
+`;
+
 export default function DevPanel(): ReactElement {
   if (isProd()) {
     return <DefaultErrorPage statusCode={404} />;
@@ -49,35 +53,28 @@ export default function DevPanel(): ReactElement {
           <h3>Login</h3>
         </Divider>
         <a href="/api/v1/login/dev?userId=1">
-          <Button
-            style={{ marginRight: "15px" }}
-            type="default"
-            htmlType="submit"
-          >
+          <DevPageButton type="default" htmlType="submit">
             Login as <b> Student 1</b>
-          </Button>
+          </DevPageButton>
         </a>
         <a href="/api/v1/login/dev?userId=2">
-          <Button
-            style={{ marginRight: "15px" }}
-            type="default"
-            htmlType="submit"
-          >
+          <DevPageButton type="default" htmlType="submit">
             Login as <b> Student 2</b>
-          </Button>
+          </DevPageButton>
         </a>
         <a href="/api/v1/login/dev?userId=3">
-          <Button
-            style={{ marginRight: "15px" }}
-            type="default"
-            htmlType="submit"
-          >
+          <DevPageButton type="default" htmlType="submit">
             Login as <b> TA</b>
-          </Button>
+          </DevPageButton>
         </a>
         <a href="/api/v1/login/dev?userId=4">
-          <Button type="default" htmlType="submit">
+          <DevPageButton type="default" htmlType="submit">
             Login as <b> TA 2</b>
+          </DevPageButton>
+        </a>
+        <a href="/api/v1/login/dev?userId=5">
+          <Button type="default" htmlType="submit">
+            Login as <b> Professor </b>
           </Button>
         </a>
       </LoginContainer>

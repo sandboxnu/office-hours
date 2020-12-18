@@ -1,25 +1,25 @@
 import { API } from "@koh/api-client";
 import { Heatmap, QueuePartial, Role } from "@koh/common";
 import { Col, Row } from "antd";
+import { chunk, mean } from "lodash";
+import moment from "moment";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
+import { StandardPageContainer } from "../../../components/common/PageContainer";
 import NavBar from "../../../components/Nav/NavBar";
 import SchedulePanel from "../../../components/Schedule/SchedulePanel";
-import PopularTimes from "../../../components/Today/PopularTimes/PopularTimes";
 import OpenQueueCard, {
   OpenQueueCardSkeleton,
 } from "../../../components/Today/OpenQueueCard";
-import TACheckinButton from "../../../components/Today/TACheckinButton";
+import PopularTimes from "../../../components/Today/PopularTimes/PopularTimes";
 import ReleaseNotes from "../../../components/Today/ReleaseNotes";
+import TACheckinButton from "../../../components/Today/TACheckinButton";
 import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useCourse } from "../../../hooks/useCourse";
 import { useProfile } from "../../../hooks/useProfile";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
-import { chunk, mean } from "lodash";
-import moment from "moment";
-import { StandardPageContainer } from "../../../components/common/PageContainer";
 
 const Container = styled.div`
   margin-top: 32px;
@@ -93,6 +93,11 @@ export default function Today(): ReactElement {
                 />
               )}
             </Row>
+            {role === Role.PROFESSOR && (
+              <Row>
+                <div>You are a professor for this course</div>
+              </Row>
+            )}
             {course?.queues?.length === 0 ? (
               <h1 style={{ paddingTop: "100px" }}>
                 There are currently no scheduled office hours
