@@ -72,6 +72,7 @@ describe('Login Integration', () => {
         photo_url: 'sdf',
         courses: [],
         ta_courses: [],
+        professor: 0,
       });
 
       // Expect that the new user has been created
@@ -116,6 +117,7 @@ describe('Login Integration', () => {
             },
           ],
           ta_courses: [],
+          professor: 0,
         });
 
       const student = await UserModel.findOne({
@@ -168,6 +170,7 @@ describe('Login Integration', () => {
               semester: '000',
             },
           ],
+          professor: 0,
         })
         .expect(201);
 
