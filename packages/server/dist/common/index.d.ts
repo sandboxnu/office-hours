@@ -143,6 +143,7 @@ export declare class KhouryDataParams {
     first_name: string;
     last_name: string;
     campus: string;
+    professor: string;
     photo_url: string;
     courses: KhouryStudentCourse[];
     ta_courses: KhouryTACourse[];
