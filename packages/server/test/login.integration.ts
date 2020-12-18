@@ -1,5 +1,7 @@
+import { Role } from '@koh/common';
 import { JwtService } from '@nestjs/jwt';
 import { TestingModuleBuilder } from '@nestjs/testing';
+import { UserCourseModel } from 'profile/user-course.entity';
 import { LoginModule } from '../src/login/login.module';
 import { UserModel } from '../src/profile/user.entity';
 import {
@@ -129,7 +131,7 @@ describe('Login Integration', () => {
       expect(student.courses[0].id).toBe(course.id);
     });
 
-    it('handles TA courses correctly', async () => {
+    const setupTAAndProfessorCourses = async () => {
       const regularFundies = await CourseFactory.create({
         name: 'CS 2500 Regular',
       });
@@ -154,6 +156,10 @@ describe('Login Integration', () => {
         section: 2,
         course: onlineFundies,
       });
+    };
+
+    it('handles TA courses correctly', async () => {
+      await setupTAAndProfessorCourses();
 
       const res = await supertest()
         .post('/khoury_login')
@@ -181,6 +187,42 @@ describe('Login Integration', () => {
 
       // Expect the ta to have been all three courses accosiated with the given generic courses (CS 2500)
       expect(ta.courses).toHaveLength(3);
+    });
+
+    it('handles professor courses correctly', async () => {
+      await setupTAAndProfessorCourses();
+
+      const res = await supertest()
+        .post('/khoury_login')
+        .send({
+          email: 'stenzel.w@northeastern.edu',
+          campus: 1,
+          first_name: 'Will',
+          last_name: 'Stenzel',
+          photo_url: 'sdf',
+          courses: [],
+          ta_courses: [
+            {
+              course: 'CS 2500',
+              semester: '000',
+            },
+          ],
+          professor: 1,
+        })
+        .expect(201);
+
+      const professor = await UserModel.findOne({
+        where: { email: 'stenzel.w@northeastern.edu' },
+        relations: ['courses'],
+      });
+
+      const ucms = await UserCourseModel.find({
+        where: { user: professor },
+      });
+
+      // Expect the professor to have been all three courses accosiated with the given generic courses (CS 2500)
+      expect(professor.courses).toHaveLength(3);
+      expect(ucms.every((ucm) => ucm.role === Role.PROFESSOR));
     });
   });
 
