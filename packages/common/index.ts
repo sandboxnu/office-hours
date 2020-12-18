@@ -317,6 +317,9 @@ export class KhouryDataParams {
   @IsInt()
   campus!: string;
 
+  @IsInt()
+  professor!: string;
+
   @IsOptional()
   @IsString()
   photo_url!: string;

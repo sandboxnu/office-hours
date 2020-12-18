@@ -1,5 +1,5 @@
+import { apm } from '@elastic/apm-rum';
 import {
-  ERROR_MESSAGES,
   KhouryDataParams,
   KhouryRedirectResponse,
   KhouryStudentCourse,
@@ -17,7 +17,6 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { apm } from '@elastic/apm-rum';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
@@ -118,7 +117,7 @@ export class LoginController {
           const taCourse = await this.loginCourseService.courseToUserCourse(
             user.id,
             courseMapping.courseId,
-            Role.TA,
+            body.professor === '1' ? Role.PROFESSOR : Role.TA,
           );
           userCourses.push(taCourse);
         }
