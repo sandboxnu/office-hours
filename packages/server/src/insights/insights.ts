@@ -27,7 +27,7 @@ export interface InsightInterface<Model> {
   output?: Promise<PossibleOutputTypes>;
 }
 
-class TotalUsers implements InsightInterface<UserCourseModel> {
+class TotalStudents implements InsightInterface<UserCourseModel> {
   name = 'totalStudents';
   displayName = 'Total Students';
   description = 'Gets the total number of students';
@@ -213,7 +213,7 @@ class AverageWaitTime implements InsightInterface<QuestionModel> {
 }
 
 export const INSIGHTS = {
-  totalUsers: new TotalUsers(),
+  totalStudents: new TotalStudents(),
   totalQuestionsAsked: new TotalQuestionsAsked(),
   averageWaitTime: new AverageWaitTime(),
   questionTypeBreakdown: new QuestionTypeBreakdown(),
