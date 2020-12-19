@@ -39,8 +39,7 @@
     "react-dom": "16.13.1",
     "react-notion": "^0.8.1",
     "styled-components": "^5.1.0",
-    "swr": "^0.2.2",
-    "victory": "^35.4.3"
+    "swr": "^0.2.2"
   },
   "devDependencies": {
     "@babel/plugin-proposal-decorators": "^7.10.5",
