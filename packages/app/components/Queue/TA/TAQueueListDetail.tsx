@@ -24,7 +24,7 @@ const Container = styled.div`
     margin-bottom: 0px;
     display: flex;
     flex-direction: row;
-    height: calc(
+    min-height: calc(
       100vh - 46px - 67px
     ); // - (height of footer) - (height of navbar)
   }
@@ -33,7 +33,7 @@ const Container = styled.div`
 const List = styled.div`
   @media (min-width: ${SPLIT_DETAIL_BKPT}px) {
     width: 230px;
-    overflow: scroll;
+    overflow-y: scroll;
   }
   @media (min-width: ${COMPACT_BKPT}px) {
     width: 320px;
@@ -49,7 +49,7 @@ const Detail = styled.div`
   border-right: 1px solid #cfd6de;
   flex: 1;
   @media (min-width: ${SPLIT_DETAIL_BKPT}px) {
-    overflow: scroll;
+    overflow-y: scroll;
   }
 `;
 
