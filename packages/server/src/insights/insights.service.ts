@@ -19,22 +19,36 @@ export class InsightsService {
 
     const output = await insight.compute(queryBuilder, filters);
     return output;
-  };
+  }
 
   async generateInsight({ insight, filters }): Promise<any> {
-    const output = await this.generateOutput({insight, filters})
-    const insightName = insight.name;
-    return { [insightName] : {output, ...insight}}
-  };
+    const output = await this.generateOutput({ insight, filters });
+    return { output, ...insight };
+  }
 
   async generateAllInsights({ insights, filters }): Promise<any> {
     const insightsWithOutput = {};
     await Promise.all(
       insights.map(async (insight) => {
-        const output = await this.generateOutput({ insight, filters })
-        insightsWithOutput[insight.name] = { output, ...insight}
-      })
+        const output = await this.generateOutput({ insight, filters });
+        insightsWithOutput[insight.name] = { output, ...insight };
+      }),
     );
     return insightsWithOutput;
+  }
+
+  async toggleInsightOn(user: UserModel, insightName: string): Promise<any> {
+    if (user.insights === null) {
+      user.insights = [];
+    }
+    user.insights = [insightName, ...user.insights];
+    await user.save();
+    return user.insights;
+  }
+
+  async toggleInsightOff(user: UserModel, insightName: string): Promise<any> {
+    user.insights = user.insights?.filter((insight) => insight !== insightName);
+    await user.save();
+    return user.insights;
   }
 }
