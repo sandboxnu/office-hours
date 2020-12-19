@@ -1,5 +1,5 @@
+import { apm } from '@elastic/apm-rum';
 import {
-  ERROR_MESSAGES,
   KhouryDataParams,
   KhouryRedirectResponse,
   KhouryStudentCourse,
@@ -45,13 +45,24 @@ export class LoginController {
     if (process.env.NODE_ENV === 'production') {
       // Check that request has come from Khoury
       const parsedRequest = httpSignature.parseRequest(req);
-      const verify = httpSignature.verifyHMAC(
+      const verifySignature = httpSignature.verifyHMAC(
         parsedRequest,
         this.configService.get('KHOURY_PRIVATE_KEY'),
       );
-      if (!verify) {
+      if (!verifySignature) {
+        apm.captureError('Invalid request signature');
+        throw new UnauthorizedException('Invalid request signature');
+      }
+      // This checks if the request is coming from one of the khoury servers
+      const verifyIP = this.configService
+        .get('KHOURY_SERVER_IP')
+        .includes(req.ip);
+      if (!verifyIP) {
+        apm.captureError(
+          'The IP of the request does not seem to be coming from the Khoury server',
+        );
         throw new UnauthorizedException(
-          ERROR_MESSAGES.loginController.receiveDataFromKhoury,
+          'The IP of the request does not seem to be coming from the Khoury server',
         );
       }
     }
@@ -106,7 +117,7 @@ export class LoginController {
           const taCourse = await this.loginCourseService.courseToUserCourse(
             user.id,
             courseMapping.courseId,
-            Role.TA,
+            body.professor === '1' ? Role.PROFESSOR : Role.TA,
           );
           userCourses.push(taCourse);
         }
@@ -164,5 +175,15 @@ export class LoginController {
     res
       .cookie('auth_token', authToken, { httpOnly: true, secure: isSecure })
       .redirect(302, '/');
+  }
+
+  @Get('/logout')
+  async logout(@Res() res: Response): Promise<void> {
+    const isSecure = this.configService
+      .get<string>('DOMAIN')
+      .startsWith('https://');
+    res
+      .clearCookie('auth_token', { httpOnly: true, secure: isSecure })
+      .redirect(302, '/login');
   }
 }

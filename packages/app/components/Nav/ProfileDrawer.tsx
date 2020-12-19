@@ -1,5 +1,6 @@
 import {
   FileTextOutlined,
+  LogoutOutlined,
   QuestionCircleOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
@@ -41,11 +42,7 @@ export default function ProfileDrawer({
         content={
           isPopoverOpen && (
             <Menu mode="inline">
-              <Menu.Item
-                icon={
-                  <SettingOutlined /> /* Food for thought, do we want to turn this into a profile outline or settings outline*/
-                }
-              >
+              <Menu.Item icon={<SettingOutlined />}>
                 <Link
                   href={{ pathname: "/settings", query: { cid: courseId } }}
                 >
@@ -76,13 +73,11 @@ export default function ProfileDrawer({
               >
                 Release Notes
               </Menu.Item>
-              {/* 
-              TODO: Add this back when we add logout endpoint
-              <Menu.Item>
-                <Link href={loginPath} as={loginPath}>
+              <Menu.Item key="3" icon={<LogoutOutlined />}>
+                <Link href={"/api/v1/logout"}>
                   <a>Logout</a>
                 </Link>
-              </Menu.Item> */}
+              </Menu.Item>
             </Menu>
           )
         }

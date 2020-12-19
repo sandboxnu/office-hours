@@ -166,6 +166,10 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
 
   const [popupEditQuestion, setPopupEditQuestion] = useState(false);
 
+  if (popupEditQuestion && !studentQuestion) {
+    setPopupEditQuestion(false);
+  }
+
   const [isJoining, setIsJoining] = useState(
     questions &&
       studentQuestion &&

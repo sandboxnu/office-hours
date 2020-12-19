@@ -29,7 +29,7 @@ describe("TA interacts with student question", () => {
     });
     createQuestion({
       queueId: "queue.id",
-      identifier: "question1",
+      identifier: "question2",
     });
     loginUser("ta");
 
@@ -125,8 +125,9 @@ describe("TA interacts with student question", () => {
   describe("Remove from Queue", () => {
     it("TA removes student question from the queue and student rejoins", function () {
       // Click on the student's question
-      cy.get("[data-cy='list-queue'] [data-cy^='queue-list-item']")
-        .first()
+      cy.get(
+        `[data-cy='list-queue'] [data-cy^='queue-list-item-${this.question1.id}']`
+      )
         .should("be.visible")
         .click();
       cy.get("[data-cy='remove-from-queue']").first().click();
@@ -158,8 +159,9 @@ describe("TA interacts with student question", () => {
       // TA navigates to the queue page
       cy.visit(`/course/${this.queue.courseId}/queue/${this.queue.id}`);
       // Click on the student's question
-      cy.get("[data-cy='list-queue'] [data-cy^='queue-list-item']")
-        .first()
+      cy.get(
+        `[data-cy='list-queue'] [data-cy^='queue-list-item-${this.question1.id}']`
+      )
         .should("be.visible")
         .click();
       // Click Remove from queue from the sidebar
@@ -188,6 +190,25 @@ describe("TA interacts with student question", () => {
           );
         }
       );
+    });
+
+    it("TA removes a question that is in Drafting status", function () {
+      createQuestion({
+        identifier: "draftingQuestion",
+        queueId: "queue.id",
+        data: {
+          status: "Drafting",
+          text: "",
+        },
+      });
+
+      cy.get("body").contains("Still Drafting").click();
+
+      cy.get("[data-cy='remove-from-queue']").click();
+      cy.get("body").should("contain", "Yes");
+      cy.get("button").contains("Yes").click();
+
+      cy.get("body").should("not.contain", "Still Drafting");
     });
   });
 });

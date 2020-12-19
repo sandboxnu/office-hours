@@ -390,7 +390,7 @@ describe('Question Integration', () => {
       const res = await supertest({ userId: ta.id })
         .patch(`/questions/${q.id}`)
         .send({
-          status: ClosedQuestionStatus.StudentCancelled,
+          status: ClosedQuestionStatus.ConfirmedDeleted,
         })
         .expect(401);
       expect(res.body?.message).toContain('TA cannot change status from ');
