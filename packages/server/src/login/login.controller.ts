@@ -103,7 +103,7 @@ export class LoginController {
 
   // Set cookie and redirect to proper page
   private async enter(res: Response, userId: number) {
-    // Expires in a day
+    // Expires in 30 days
     const authToken = await this.jwtService.signAsync({
       userId,
       expiresIn: 60 * 60 * 24 * 30,
