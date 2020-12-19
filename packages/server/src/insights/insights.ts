@@ -1,8 +1,12 @@
-import { QuestionType, Role } from '@koh/common';
+import {
+  QuestionType,
+  Role,
+  PossibleOutputTypes,
+  SimpleDisplayOutputType,
+} from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { SelectQueryBuilder } from 'typeorm';
 import { QuestionModel } from 'question/question.entity';
-import { types } from '@babel/core';
 
 export interface InsightInterface<Model> {
   name: string;
@@ -19,8 +23,8 @@ export interface InsightInterface<Model> {
   compute: (
     queryBuilder: SelectQueryBuilder<Model>,
     insightFilters: any,
-  ) => any;
-  output?: any;
+  ) => Promise<PossibleOutputTypes>;
+  output?: Promise<PossibleOutputTypes>;
 }
 
 class TotalUsers implements InsightInterface<UserCourseModel> {
@@ -32,7 +36,10 @@ class TotalUsers implements InsightInterface<UserCourseModel> {
   model = UserCourseModel;
   possibleFilters = ['courseId', 'role'];
 
-  async compute(queryBuilder: SelectQueryBuilder<UserCourseModel>, filters) {
+  async compute(
+    queryBuilder: SelectQueryBuilder<UserCourseModel>,
+    filters,
+  ): Promise<SimpleDisplayOutputType> {
     return await this.addFilters(
       queryBuilder.where("role = 'student'"),
       filters,
@@ -64,7 +71,10 @@ class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
   model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
 
-  async compute(queryBuilder: SelectQueryBuilder<QuestionModel>, filters) {
+  async compute(
+    queryBuilder: SelectQueryBuilder<QuestionModel>,
+    filters,
+  ): Promise<SimpleDisplayOutputType> {
     return await this.addFilters(
       queryBuilder.where('TRUE'),
       filters,
@@ -96,6 +106,7 @@ class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
   }
 }
 
+// WIP
 class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
   name = 'questionTypeBreakdown';
   displayName = 'Question Type Breakdown';
@@ -106,7 +117,7 @@ class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
   model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
 
-  async compute(queryBuilder: SelectQueryBuilder<QuestionModel>, filters) {
+  async compute(queryBuilder: SelectQueryBuilder<QuestionModel>, filters): any {
     const info = await this.addFilters(
       queryBuilder
         .select('"QuestionModel"."questionType"', 'questionType')
@@ -167,7 +178,10 @@ class AverageWaitTime implements InsightInterface<QuestionModel> {
   model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
 
-  async compute(queryBuilder: SelectQueryBuilder<QuestionModel>, filters) {
+  async compute(
+    queryBuilder: SelectQueryBuilder<QuestionModel>,
+    filters,
+  ): Promise<SimpleDisplayOutputType> {
     return await this.addFilters(
       queryBuilder
         .select(

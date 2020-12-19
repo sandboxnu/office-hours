@@ -523,26 +523,31 @@ export interface GetReleaseNotesResponse {
   lastUpdatedUnixTime: number;
 }
 
-export class Insight {
-  @IsString()
-  name!: string;
-
-  @IsString()
-  displayName!: string;
-
-  @IsString()
-  description!: string; 
-
-  @IsString()
-  component!: string; 
-
-  // TODO: Is it possible to add a type for this?
-  output!: any;
-}
-
-export type GetInsightsResponse = Insight[];
+export type GetInsightResponse = Insight;
 
 export type ListInsightsResponse = string[];
+
+export class Insight {
+  name!: string;
+  displayName!: string;
+  description!: string;
+  component!: string;
+  output!: PossibleOutputTypes;
+}
+
+export type PossibleOutputTypes =
+  | SimpleDisplayOutputType
+  | SimpleChartOutputType;
+
+export type SimpleDisplayOutputType = number;
+
+export type SimpleChartOutputType = {
+  data: any[];
+  xAxisName?: string;
+  yAxisName?: string;
+  xAxisLabels?: string[];
+  yAxisLabels?: string[];
+};
 
 export const ERROR_MESSAGES = {
   questionController: {
@@ -586,6 +591,9 @@ export const ERROR_MESSAGES = {
   releaseNotesController: {
     releaseNotesTime: (e: any): string =>
       "Error Parsing release notes time: " + e,
+  },
+  insightsController: {
+    insightUnathorized: "User is not authorized to view this insight",
   },
   roleGuard: {
     notLoggedIn: "Must be logged in",
