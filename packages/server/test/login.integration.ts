@@ -124,7 +124,9 @@ describe('Login Integration', () => {
               },
             ],
             ta_courses: [],
-          });
+            professor: 0,
+          })
+          .expect(201);
         user = await UserModel.findOne(user, { relations: ['courses'] });
 
         expect(user.courses).toHaveLength(1);
@@ -151,8 +153,9 @@ describe('Login Integration', () => {
               },
             ],
             ta_courses: [],
-            professor: '0',
-          });
+            professor: 0,
+          })
+          .expect(201);
 
         const student = await UserModel.findOne({
           where: { email: 'stenzel.w@northeastern.edu' },
