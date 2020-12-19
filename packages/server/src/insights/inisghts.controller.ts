@@ -10,14 +10,13 @@ import {
   Body,
   Param,
   Query,
-  BadRequestException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'login/jwt-auth.guard';
 import { Connection } from 'typeorm';
 import { Roles } from 'profile/roles.decorator';
 import {
   Role,
-  GetInsightsResponse,
+  GetInsightResponse,
   ListInsightsResponse,
   ERROR_MESSAGES,
 } from '@koh/common';
@@ -42,7 +41,7 @@ export class InsightsController {
     @Param('insightName') insightName: string,
     @Query() filters: any,
     @CourseRole() role: Role,
-  ): Promise<GetInsightsResponse> {
+  ): Promise<GetInsightResponse> {
     // // TODO: Check that the current role is allowed to see the given insight
     // if (INSIGHTS[insightName].Roles.includes(role)) {
     //   throw new BadRequestException(

@@ -143,7 +143,8 @@ class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
           ? 1
           : -1,
       ),
-      xAxisLabels: Object.values(QuestionType).sort(),
+      xAxisName: 'questionType',
+      yAxisName: 'totalQuestions',
     };
     return insightObj;
   }
