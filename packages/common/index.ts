@@ -236,8 +236,8 @@ export enum LimboQuestionStatus {
 
 export enum ClosedQuestionStatus {
   Resolved = "Resolved",
+  DeletedDraft = "DeletedDraft",
   ConfirmedDeleted = "ConfirmedDeleted",
-  StudentCancelled = "StudentCancelled",
   Stale = "Stale",
 }
 
@@ -314,6 +314,9 @@ export class KhouryDataParams {
 
   @IsInt()
   campus!: string;
+
+  @IsInt()
+  professor!: string;
 
   @IsOptional()
   @IsString()
