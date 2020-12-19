@@ -7,11 +7,9 @@ import {
   QuestionFactory,
   CourseFactory,
   QueueFactory,
-  UserFactory,
 } from '../../test/util/factories';
 import { INSIGHTS } from './insights';
 import { QuestionType } from '@koh/common';
-import { UserModel } from 'profile/user.entity';
 
 describe('InsightsService', () => {
   let service: InsightsService;
@@ -46,7 +44,7 @@ describe('InsightsService', () => {
           },
         ],
       });
-      expect(res.totalStudents.output).toEqual(4);
+      expect(res.output).toEqual(4);
     });
 
     it('totalQuestionsAsked', async () => {
@@ -74,7 +72,7 @@ describe('InsightsService', () => {
           },
         ],
       });
-      expect(res.totalQuestionsAsked.output).toEqual(6);
+      expect(res.output).toEqual(6);
     });
 
     it('averageWaitTime', async () => {
@@ -92,7 +90,7 @@ describe('InsightsService', () => {
           },
         ],
       });
-      expect(res.averageWaitTime.output).toEqual({
+      expect(res.output).toEqual({
         avgWaitTimeInMinutes: 5,
       });
     });
@@ -123,7 +121,7 @@ describe('InsightsService', () => {
       ],
     });
 
-    expect(res.questionTypeBreakdown.output.data).toEqual([
+    expect(res.output.data).toEqual([
       { questionType: 'Bug', totalQuestions: '8' },
       { questionType: 'Clarification', totalQuestions: '20' },
       { questionType: 'Concept', totalQuestions: '0' },
