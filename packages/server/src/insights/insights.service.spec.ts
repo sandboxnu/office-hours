@@ -38,7 +38,7 @@ describe('InsightsService', () => {
       await UserCourseFactory.create();
 
       const res = await service.generateInsight({
-        insight: INSIGHTS.totalUsers,
+        insight: INSIGHTS.totalStudents,
         filters: [
           {
             type: 'courseId',
@@ -142,7 +142,7 @@ describe('InsightsService', () => {
       await QuestionFactory.createList(18, { queue });
 
       const res = await service.generateAllInsights({
-        insights: [INSIGHTS.totalUsers, INSIGHTS.totalQuestionsAsked],
+        insights: [INSIGHTS.totalStudents, INSIGHTS.totalQuestionsAsked],
         filters: [
           {
             type: 'courseId',

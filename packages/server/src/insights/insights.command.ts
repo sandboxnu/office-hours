@@ -2,7 +2,6 @@ import { Command, Positional } from 'nestjs-command';
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { InsightsService } from './insights.service';
-import { QuestionFactory } from '../../test/util/factories';
 import { INSIGHTS } from './insights';
 
 /**
@@ -32,7 +31,7 @@ export class InsightsCommand {
     courseId: number,
   ): Promise<any> {
     const insights = await this.insightsService.generateAllInsights({
-      insights: [INSIGHTS.totalUsers, INSIGHTS.questionTypeBreakdown],
+      insights: [INSIGHTS.totalStudents, INSIGHTS.questionTypeBreakdown],
       filters: [
         {
           type: 'courseId',

@@ -15,6 +15,8 @@ export default function Insights(): ReactElement {
   return (
     <>
       <StandardPageContainer>
+        <h1 style={{ margin: "20px" }}>Insights Dashboard</h1>
+        <divider />
         <div style={{ display: "flex", direction: "ltr" }}>
           {insights?.map((insightName: string) => {
             return (
@@ -35,12 +37,9 @@ function RenderInsight({ insightName }: RenderInsightProps): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
 
-  const {
-    data: insight,
-    error,
-    mutate,
-  } = useSWR(`api/v1/insights/${cid}/${insightName}`, async () =>
-    API.insights.get(Number(cid), insightName)
+  const { data: insight, error, mutate } = useSWR(
+    cid && `api/v1/insights/${cid}/${insightName}`,
+    async () => API.insights.get(Number(cid), insightName)
   );
 
   if (!insight) {

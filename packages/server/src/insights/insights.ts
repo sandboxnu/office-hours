@@ -3,6 +3,7 @@ import {
   Role,
   PossibleOutputTypes,
   SimpleDisplayOutputType,
+  SimpleChartOutputType,
 } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { SelectQueryBuilder } from 'typeorm';
@@ -117,7 +118,10 @@ class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
   model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
 
-  async compute(queryBuilder: SelectQueryBuilder<QuestionModel>, filters): any {
+  async compute(
+    queryBuilder: SelectQueryBuilder<QuestionModel>,
+    filters,
+  ): Promise<SimpleChartOutputType> {
     const info = await this.addFilters(
       queryBuilder
         .select('"QuestionModel"."questionType"', 'questionType')

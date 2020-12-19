@@ -13,7 +13,6 @@ import { Connection } from 'typeorm';
 import { Roles } from 'profile/roles.decorator';
 import { Role, GetInsightResponse, ERROR_MESSAGES } from '@koh/common';
 import { INSIGHTS } from './insights';
-import { CourseRole } from './course-role.decorator';
 
 @Controller('insights')
 @UseGuards(JwtAuthGuard)
@@ -30,7 +29,6 @@ export class InsightsController {
     @Param('courseId') courseId: number,
     @Param('insightName') insightName: string,
     @Query() filters: any,
-    @CourseRole() role: Role,
   ): Promise<GetInsightResponse> {
     // // TODO: Check that the current role is allowed to see the given insight
     // if (INSIGHTS[insightName].Roles.includes(role)) {
