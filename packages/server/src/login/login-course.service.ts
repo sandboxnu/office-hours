@@ -63,7 +63,7 @@ export class LoginCourseService {
           const taCourse = await this.courseToUserCourse(
             user.id,
             courseMapping.courseId,
-            Role.TA,
+            info.professor === '1' ? Role.PROFESSOR : Role.TA,
           );
           userCourses.push(taCourse);
         }
@@ -71,7 +71,6 @@ export class LoginCourseService {
     );
     user.courses = userCourses;
     await user.save();
-    console.log(user);
     return user;
   }
 

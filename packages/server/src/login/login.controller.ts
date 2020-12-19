@@ -1,4 +1,5 @@
 import { KhouryDataParams, KhouryRedirectResponse } from '@koh/common';
+import { apm } from '@elastic/apm-rum';
 import {
   Body,
   Controller,
@@ -10,7 +11,6 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { apm } from '@elastic/apm-rum';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
@@ -114,5 +114,15 @@ export class LoginController {
     res
       .cookie('auth_token', authToken, { httpOnly: true, secure: isSecure })
       .redirect(302, '/');
+  }
+
+  @Get('/logout')
+  async logout(@Res() res: Response): Promise<void> {
+    const isSecure = this.configService
+      .get<string>('DOMAIN')
+      .startsWith('https://');
+    res
+      .clearCookie('auth_token', { httpOnly: true, secure: isSecure })
+      .redirect(302, '/login');
   }
 }

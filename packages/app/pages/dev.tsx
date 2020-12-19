@@ -1,9 +1,9 @@
-import React, { ReactElement } from "react";
 import { API } from "@koh/api-client";
-import styled from "styled-components";
+import { isProd } from "@koh/common";
 import { Button, Divider } from "antd";
 import DefaultErrorPage from "next/error";
-import { isProd } from "@koh/common";
+import React, { ReactElement } from "react";
+import styled from "styled-components";
 
 const Container = styled.div`
   width: auto;
@@ -29,18 +29,14 @@ const SeedingContainer = styled.div`
   padding-top: 20px;
 `;
 
-const InputBoxContainer = styled.div`
-  margin: auto;
-  width: 500px;
-  height: 64px;
-  left: 570px;
-  top: 261px;
-`;
-
 const PageHeader = styled.div`
   display: flex;
   justify-content: center;
   margin-top: 40px;
+`;
+
+const DevPageButton = styled(Button)`
+  margin-right: 15px;
 `;
 
 export default function DevPanel(): ReactElement {
@@ -57,35 +53,28 @@ export default function DevPanel(): ReactElement {
           <h3>Login</h3>
         </Divider>
         <a href="/api/v1/login/dev?userId=1">
-          <Button
-            style={{ marginRight: "15px" }}
-            type="default"
-            htmlType="submit"
-          >
+          <DevPageButton type="default" htmlType="submit">
             Login as <b> Student 1</b>
-          </Button>
+          </DevPageButton>
         </a>
         <a href="/api/v1/login/dev?userId=2">
-          <Button
-            style={{ marginRight: "15px" }}
-            type="default"
-            htmlType="submit"
-          >
+          <DevPageButton type="default" htmlType="submit">
             Login as <b> Student 2</b>
-          </Button>
+          </DevPageButton>
         </a>
         <a href="/api/v1/login/dev?userId=3">
-          <Button
-            style={{ marginRight: "15px" }}
-            type="default"
-            htmlType="submit"
-          >
+          <DevPageButton type="default" htmlType="submit">
             Login as <b> TA</b>
-          </Button>
+          </DevPageButton>
         </a>
         <a href="/api/v1/login/dev?userId=4">
-          <Button type="default" htmlType="submit">
+          <DevPageButton type="default" htmlType="submit">
             Login as <b> TA 2</b>
+          </DevPageButton>
+        </a>
+        <a href="/api/v1/login/dev?userId=5">
+          <Button type="default" htmlType="submit">
+            Login as <b> Professor </b>
           </Button>
         </a>
       </LoginContainer>
