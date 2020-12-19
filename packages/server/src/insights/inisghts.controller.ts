@@ -9,7 +9,7 @@ import {
 import { JwtAuthGuard } from 'login/jwt-auth.guard';
 import { Connection } from 'typeorm';
 import { Roles } from 'profile/roles.decorator';
-import { Role, GetInsightsResponse } from '@koh/common';
+import { Role, GetInsightsResponse, ListInsightsResponse } from '@koh/common';
 import { INSIGHTS } from './insights';
 
 @Controller('insights')
@@ -26,7 +26,7 @@ export class InsightsController {
   async get(): Promise<GetInsightsResponse> {
     // TODO: In the future this should take params for filtering
     // Return all the insights that a specific user has acess to
-    return await this.insightsService.generateInsightsFor({
+    return await this.insightsService.generateAllInsights({
       insights: [INSIGHTS.totalUsers, INSIGHTS.questionTypeBreakdown],
       filters: [],
     });
@@ -35,6 +35,6 @@ export class InsightsController {
   @Get('list')
   @Roles(Role.PROFESSOR)
   async getAllInsights(): Promise<ListInsightsResponse> {
-    return Object.keys(INSIGHTS)
+    return Object.keys(INSIGHTS);
   }
 }
