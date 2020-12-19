@@ -1,19 +1,21 @@
-import { Bar } from "@ant-design/charts";
-import { Insight, SimpleChartOutputType } from "@koh/common";
+// import { Bar } from "@ant-design/charts";
+import { SimpleChartOutputType } from "@koh/common";
 import React, { ReactElement } from "react";
 
 interface SimpleChartTypes {
-  insight: Insight;
+  output: SimpleChartOutputType;
 }
 
-function SimpleChartComponent({ insight }: SimpleChartTypes): ReactElement {
+function SimpleChartComponent({ output }: SimpleChartTypes): ReactElement {
   const config = {
-    data: (insight.output as SimpleChartOutputType).data,
-    xField: (insight.output as SimpleChartOutputType).xAxisName,
-    yField: (insight.output as SimpleChartOutputType).yAxisName,
-    seriesField: (insight.output as SimpleChartOutputType).xAxisName,
+    data: output.data,
+    xField: output.xAxisName,
+    yField: output.yAxisName,
+    seriesField: output.xAxisName,
   };
-  return <Bar {...config} />;
+  // TODO: Figure out why this is erroring
+  // return <Bar {...config} />;
+  return null;
 }
 
 export default SimpleChartComponent;

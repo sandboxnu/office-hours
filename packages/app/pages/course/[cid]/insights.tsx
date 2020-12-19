@@ -12,12 +12,19 @@ import SimpleChartComponent from "../../../components/Insights/components/Simple
 export default function Insights(): ReactElement {
   const profile = useProfile();
 
+  // TODO: In the future this will come from the users specific insights that want to see
+  const insights = ["totalQuestionsAsked", "totalStudents"];
+
   return (
     <>
       <StandardPageContainer>
-        {profile?.insights && profile.insights?.map((insightName) => {
-          return <RenderInsight key={insightName} insightName={insightName} />;
-        })}
+        <div style={{ display: "flex", direction: "ltr" }}>
+          {insights?.map((insightName: string) => {
+            return (
+              <RenderInsight key={insightName} insightName={insightName} />
+            );
+          })}
+        </div>
       </StandardPageContainer>
     </>
   );
@@ -30,7 +37,7 @@ interface RenderInsightProps {
 function RenderInsight({ insightName }: RenderInsightProps): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
-  
+
   const {
     data: insight,
     error,
@@ -54,9 +61,9 @@ function RenderInsight({ insightName }: RenderInsightProps): ReactElement {
       InsightComponent = SimpleChartComponent;
       break;
     default:
-      // Return an error component
-      // Log error
-  };
+    // Return an error component
+    // Log error
+  }
 
   return (
     <Card
@@ -67,7 +74,7 @@ function RenderInsight({ insightName }: RenderInsightProps): ReactElement {
           <InfoCircleOutlined />
         </Tooltip>
       }
-      style={{ width: '300px', margin: '10px' }}
+      style={{ width: "200px", margin: "10px" }}
     >
       <InsightComponent key={insight.name} {...insight} />
     </Card>

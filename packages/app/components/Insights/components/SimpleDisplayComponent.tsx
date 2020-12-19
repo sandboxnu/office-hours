@@ -1,15 +1,18 @@
 import { ReactElement } from "react";
-import { Insight } from "@koh/common";
+import { SimpleDisplayOutputType } from "@koh/common";
 
 interface SimpleDisplayComponentProps {
-    insight: Insight;
+  name: string;
+  output: SimpleDisplayOutputType;
 }
 
-export default function SimpleDisplayComponent({ insight }: SimpleDisplayComponentProps): ReactElement {
-    return (
-        <>
-            <b>Title: {insight?.name ?? "...loading"}</b>
-            <p>Data: {insight?.output?? "...loading"}</p>
-        </>
-    )
+export default function SimpleDisplayComponent({
+  name,
+  output,
+}: SimpleDisplayComponentProps): ReactElement {
+  return (
+    <>
+      <h1>{output ?? "...loading"}</h1>
+    </>
+  );
 }
