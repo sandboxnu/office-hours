@@ -4,14 +4,11 @@ import useSWR from "swr";
 import { Tooltip, Card } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
-import { useProfile } from "../../../hooks/useProfile";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
 import SimpleDisplayComponent from "../../../components/Insights/components/SimpleDisplayComponent";
 import SimpleChartComponent from "../../../components/Insights/components/SimpleChartComponent";
 
 export default function Insights(): ReactElement {
-  const profile = useProfile();
-
   // TODO: In the future this will come from the users specific insights that want to see
   const insights = ["totalQuestionsAsked", "totalStudents"];
 

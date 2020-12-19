@@ -16,7 +16,6 @@ import {
   GetReleaseNotesResponse,
   TACheckoutResponse,
   GetInsightResponse,
-  ListInsightsResponse,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -143,12 +142,6 @@ class APIClient {
       insightName: string
     ): Promise<GetInsightResponse> =>
       this.req("GET", `/api/v1/insights/${courseId}/${insightName}`),
-    list: async (): Promise<ListInsightsResponse> =>
-      this.req("GET", `/api/v1/insights/list`),
-    toggleOn: async (insightName: string): Promise<ListInsightsResponse> =>
-      this.req("PATCH", `/api/v1/insights`, undefined, { insightName }),
-    toggleOff: async (insightName: string): Promise<ListInsightsResponse> =>
-      this.req("DELETE", `/api/v1/insights`, undefined, { insightName }),
   };
   constructor(baseURL = "") {
     this.axios = Axios.create({ baseURL: baseURL });

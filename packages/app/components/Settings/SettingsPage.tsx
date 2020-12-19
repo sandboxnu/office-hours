@@ -1,25 +1,16 @@
-import {
-  BellOutlined,
-  EditOutlined,
-  BarChartOutlined,
-} from "@ant-design/icons";
+import { BellOutlined, EditOutlined } from "@ant-design/icons";
 import { useWindowWidth } from "@react-hook/window-size";
-import { useRouter } from "next/router";
 import { Col, Menu, Row, Space } from "antd";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
-import { Role } from "@koh/common";
 import { useProfile } from "../../hooks/useProfile";
 import AvatarWithInitals from "../common/AvatarWithInitials";
 import NotificationsSettings from "./NotificationsSettings";
 import ProfileSettings from "./ProfileSettings";
-import InsightsSettings from "./InsightsSettings";
-import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 
 export enum SettingsOptions {
   PROFILE = "PROFILE",
   NOTIFICATIONS = "NOTIFICATIONS",
-  INSIGHTS = "INSIGHTS",
 }
 
 interface SettingsPageProps {
@@ -37,8 +28,6 @@ export default function SettingsPage({
   defaultPage,
 }: SettingsPageProps): ReactElement {
   const profile = useProfile();
-  const router = useRouter();
-  const role = useRoleInCourse(Number(router.query.cid));
   const [currentSettings, setCurrentSettings] = useState(
     defaultPage || SettingsOptions.PROFILE
   );
@@ -70,15 +59,6 @@ export default function SettingsPage({
           >
             Notifications Settings
           </Menu.Item>
-          {/* If role == professor or if has insights */}
-          {role === Role.PROFESSOR ? (
-            <Menu.Item
-              key={SettingsOptions.INSIGHTS}
-              icon={<BarChartOutlined />}
-            >
-              Insights Settings
-            </Menu.Item>
-          ) : null}
         </Menu>
       </Col>
       <VerticalDivider />
@@ -88,7 +68,6 @@ export default function SettingsPage({
           {currentSettings === SettingsOptions.NOTIFICATIONS && (
             <NotificationsSettings />
           )}
-          {currentSettings === SettingsOptions.INSIGHTS && <InsightsSettings />}
         </Col>
       </Space>
     </Row>

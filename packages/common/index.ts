@@ -50,7 +50,6 @@ export class User {
   desktopNotifs!: DesktopNotifPartial[];
   phoneNotifsEnabled!: boolean;
   phoneNumber!: string;
-  insights!: string[];
 }
 
 export class DesktopNotifPartial {
@@ -524,8 +523,6 @@ export interface GetReleaseNotesResponse {
 }
 
 export type GetInsightResponse = Insight;
-
-export type ListInsightsResponse = string[];
 
 export class Insight {
   name!: string;

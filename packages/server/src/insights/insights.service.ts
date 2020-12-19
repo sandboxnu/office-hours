@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { InsightInterface } from './insights';
-import { UserModel } from 'profile/user.entity';
 
 // interface generateAllInsightsParams {
 //   insights: InsightInterface<any>[];
@@ -35,20 +34,5 @@ export class InsightsService {
       }),
     );
     return insightsWithOutput;
-  }
-
-  async toggleInsightOn(user: UserModel, insightName: string): Promise<any> {
-    if (user.insights === null) {
-      user.insights = [];
-    }
-    user.insights = [insightName, ...user.insights];
-    await user.save();
-    return user.insights;
-  }
-
-  async toggleInsightOff(user: UserModel, insightName: string): Promise<any> {
-    user.insights = user.insights?.filter((insight) => insight !== insightName);
-    await user.save();
-    return user.insights;
   }
 }

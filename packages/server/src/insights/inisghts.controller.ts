@@ -5,24 +5,14 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   Get,
-  Patch,
-  Delete,
-  Body,
   Param,
   Query,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'login/jwt-auth.guard';
 import { Connection } from 'typeorm';
 import { Roles } from 'profile/roles.decorator';
-import {
-  Role,
-  GetInsightResponse,
-  ListInsightsResponse,
-  ERROR_MESSAGES,
-} from '@koh/common';
+import { Role, GetInsightResponse, ERROR_MESSAGES } from '@koh/common';
 import { INSIGHTS } from './insights';
-import { UserModel } from 'profile/user.entity';
-import { User } from '../profile/user.decorator';
 import { CourseRole } from './course-role.decorator';
 
 @Controller('insights')
@@ -60,37 +50,5 @@ export class InsightsController {
     });
 
     return insight;
-  }
-
-  @Get('list')
-  @Roles(Role.PROFESSOR)
-  async getAllInsights(): Promise<ListInsightsResponse> {
-    return Object.keys(INSIGHTS);
-  }
-
-  @Patch('')
-  @Roles(Role.PROFESSOR)
-  async toggleInsightOn(
-    @Body() body: { insightName: string },
-    @User() user: UserModel,
-  ): Promise<ListInsightsResponse> {
-    const updatedInsights = await this.insightsService.toggleInsightOn(
-      user,
-      body.insightName,
-    );
-    return updatedInsights;
-  }
-
-  @Delete('')
-  @Roles(Role.PROFESSOR)
-  async toggleInsightOff(
-    @Body() body: { insightName: string },
-    @User() user: UserModel,
-  ): Promise<ListInsightsResponse> {
-    const updatedInsights = await this.insightsService.toggleInsightOff(
-      user,
-      body.insightName,
-    );
-    return updatedInsights;
   }
 }
