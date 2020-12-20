@@ -40,7 +40,7 @@ import { RedisModule } from 'nestjs-redis';
     SSEModule,
     BackfillModule,
     ReleaseNotesModule,
-    RedisModule.register([{ name: 'pub' }, { name: 'sub' }, {name: 'db'}]),
+    RedisModule.register([{ name: 'pub' }, { name: 'sub' }, { name: 'db' }]),
   ],
 })
 export class AppModule {}
