@@ -29,6 +29,10 @@ describe('InsightsService', () => {
     await conn.close();
   });
 
+  beforeEach(async () => {
+    await conn.synchronize(true);
+  });
+
   describe('generateInsight', () => {
     it('totalStudents', async () => {
       const course = await CourseFactory.create();
