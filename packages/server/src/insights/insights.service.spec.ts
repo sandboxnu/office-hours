@@ -94,9 +94,7 @@ describe('InsightsService', () => {
           },
         ],
       });
-      expect(res.output).toEqual({
-        avgWaitTimeInMinutes: 5,
-      });
+      expect(res.output.avgWaitTimeInMinutes).toBeCloseTo(5);
     });
   });
 
