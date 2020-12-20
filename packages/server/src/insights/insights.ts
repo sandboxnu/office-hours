@@ -32,10 +32,9 @@ function addFilters(
   possibleFilters,
 ): SelectQueryBuilder<QuestionModel> {
   for (const filter of filters) {
-    if (!possibleFilters.includes(filter.type)) {
-      continue;
+    if (possibleFilters.includes(filter.type)) {
+      FILTER_MAP[modelName][filter.type](queryBuilder, filter);
     }
-    FILTER_MAP[modelName][filter.type](queryBuilder, filter);
   }
   return queryBuilder;
 }
