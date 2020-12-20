@@ -15,6 +15,7 @@ import { SSEModule } from './sse/sse.module';
 import * as typeormConfig from '../ormconfig';
 import { BackfillModule } from 'backfill/backfill.module';
 import { ReleaseNotesModule } from 'release-notes/release-notes.module';
+import { RedisModule } from 'nestjs-redis';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ReleaseNotesModule } from 'release-notes/release-notes.module';
     SSEModule,
     BackfillModule,
     ReleaseNotesModule,
+    RedisModule.register([{ name: 'pub' }, { name: 'sub' }, {name: 'db'}]),
   ],
 })
 export class AppModule {}
