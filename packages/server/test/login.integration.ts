@@ -212,6 +212,7 @@ describe('Login Integration', () => {
               semester: '000',
             },
           ],
+          professor: 0,
         })
         .expect(201);
 
