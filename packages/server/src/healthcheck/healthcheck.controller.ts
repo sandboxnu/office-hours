@@ -5,6 +5,6 @@ import { Get } from '@nestjs/common/decorators';
 export class HealthcheckController {
   @Get('/')
   health(): string {
-    return 'healthy 2.0';
+    return 'healthy';
   }
 }
