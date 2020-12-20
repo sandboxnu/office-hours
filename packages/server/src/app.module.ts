@@ -15,6 +15,7 @@ import { SSEModule } from './sse/sse.module';
 import * as typeormConfig from '../ormconfig';
 import { BackfillModule } from 'backfill/backfill.module';
 import { ReleaseNotesModule } from 'release-notes/release-notes.module';
+import { HealthcheckModule } from './healthcheck/healthcheck.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ReleaseNotesModule } from 'release-notes/release-notes.module';
     SSEModule,
     BackfillModule,
     ReleaseNotesModule,
+    HealthcheckModule,
   ],
 })
 export class AppModule {}
