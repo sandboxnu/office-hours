@@ -17,16 +17,52 @@ export interface InsightInterface<Model> {
   component: string; // In the future we can make this an enum
   model: new () => Model; // One of the modals have
   possibleFilters: string[];
-  addFilters: (
-    queryBuilder: SelectQueryBuilder<Model>,
-    filters: any,
-  ) => SelectQueryBuilder<Model>;
   compute: (
     queryBuilder: SelectQueryBuilder<Model>,
     insightFilters: any,
   ) => Promise<PossibleOutputTypes>;
   output?: Promise<PossibleOutputTypes>;
 }
+
+function addFilters(
+  queryBuilder,
+  modelName,
+  filters,
+  possibleFilters,
+): SelectQueryBuilder<QuestionModel> {
+  for (const filter of filters) {
+    if (!possibleFilters.includes(filter.type)) {
+      continue;
+    }
+    FILTER_MAP[modelName][filter.type](queryBuilder, filter);
+  }
+  return queryBuilder;
+}
+
+const FILTER_MAP = {
+  QuestionModel: {
+    courseId: (queryBuilder, filter) => {
+      queryBuilder
+        .innerJoin('QuestionModel.queue', 'queue')
+        .andWhere('queue."courseId" = :courseId', {
+          courseId: filter.courseId,
+        });
+    },
+    timeframe: (queryBuilder, filter) => {
+      queryBuilder.andWhere('QuestionModel.createdAt BETWEEN :start AND :end', {
+        start: filter.start,
+        end: filter.end,
+      });
+    },
+  },
+  UserCourseModel: {
+    courseId: (queryBuilder, filter) => {
+      queryBuilder.andWhere('"courseId" = :courseId', {
+        courseId: filter.courseId,
+      });
+    },
+  },
+};
 
 class TotalStudents implements InsightInterface<UserCourseModel> {
   name = 'totalStudents';
@@ -41,25 +77,12 @@ class TotalStudents implements InsightInterface<UserCourseModel> {
     queryBuilder: SelectQueryBuilder<UserCourseModel>,
     filters,
   ): Promise<SimpleDisplayOutputType> {
-    return await this.addFilters(
+    return await addFilters(
       queryBuilder.where("role = 'student'"),
+      this.model.name,
       filters,
+      this.possibleFilters,
     ).getCount();
-  }
-
-  addFilters(queryBuilder, filters): SelectQueryBuilder<UserCourseModel> {
-    filters.forEach((filter) => {
-      if (!this.possibleFilters.includes(filter.type)) {
-        throw new Error(
-          `${filter} is not a possbile filter for "${this.name}"`,
-        );
-      }
-      switch (filter.type) {
-        case 'courseId':
-          queryBuilder.andWhere(filter.conditional);
-      }
-    });
-    return queryBuilder;
   }
 }
 
@@ -76,34 +99,12 @@ class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
     queryBuilder: SelectQueryBuilder<QuestionModel>,
     filters,
   ): Promise<SimpleDisplayOutputType> {
-    return await this.addFilters(
+    return await addFilters(
       queryBuilder.where('TRUE'),
+      this.model.name,
       filters,
+      this.possibleFilters,
     ).getCount();
-  }
-
-  addFilters(queryBuilder, filters): SelectQueryBuilder<QuestionModel> {
-    filters.forEach((filter) => {
-      if (!this.possibleFilters.includes(filter.type)) {
-        throw new Error(
-          `${filter} is not a possbile filter for "${this.name}"`,
-        );
-      }
-      switch (filter.type) {
-        case 'courseId':
-          queryBuilder
-            .innerJoinAndSelect('QuestionModel.queue', 'queue')
-            .andWhere(`queue.${filter.conditional}`);
-          break;
-        case 'timeframe':
-          queryBuilder.andWhere(
-            'QuestionModel.createdAt BETWEEN :start AND :end',
-            { start: filter.start, end: filter.end },
-          );
-          break;
-      }
-    });
-    return queryBuilder;
   }
 }
 
@@ -122,11 +123,14 @@ class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
     queryBuilder: SelectQueryBuilder<QuestionModel>,
     filters,
   ): Promise<SimpleChartOutputType> {
-    const info = await this.addFilters(
+    const info = await addFilters(
       queryBuilder
         .select('"QuestionModel"."questionType"', 'questionType')
-        .addSelect('COUNT(*)', 'totalQuestions'),
+        .addSelect('COUNT(*)', 'totalQuestions')
+        .andWhere('"QuestionModel"."questionType" IS NOT NULL'),
+      this.model.name,
       filters,
+      this.possibleFilters,
     )
       .groupBy('"QuestionModel"."questionType"')
       .having('"QuestionModel"."questionType" IS NOT NULL')
@@ -152,26 +156,6 @@ class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
     };
     return insightObj;
   }
-
-  addFilters(queryBuilder, filters): SelectQueryBuilder<QuestionModel> {
-    filters.forEach((filter) => {
-      if (!this.possibleFilters.includes(filter.type)) {
-        throw new Error(
-          `${filter} is not a possbile filter for "${this.name}"`,
-        );
-      }
-      switch (filter.type) {
-        case 'courseId':
-          queryBuilder
-            .innerJoin('QuestionModel.queue', 'queue')
-            .andWhere('"QuestionModel"."questionType" IS NOT NULL')
-            .andWhere(`queue.${filter.conditional}`);
-          break;
-      }
-    });
-
-    return queryBuilder;
-  }
 }
 
 class AverageWaitTime implements InsightInterface<QuestionModel> {
@@ -187,32 +171,17 @@ class AverageWaitTime implements InsightInterface<QuestionModel> {
     queryBuilder: SelectQueryBuilder<QuestionModel>,
     filters,
   ): Promise<SimpleDisplayOutputType> {
-    return await this.addFilters(
+    return await addFilters(
       queryBuilder
         .select(
           'EXTRACT(EPOCH FROM AVG(QuestionModel.helpedAt - QuestionModel.createdAt)::INTERVAL)/60',
           'avgWaitTimeInMinutes',
         )
         .where('QuestionModel.helpedAt IS NOT NULL'),
+      this.model.name,
       filters,
+      this.possibleFilters,
     ).getRawOne();
-  }
-
-  addFilters(queryBuilder, filters): SelectQueryBuilder<QuestionModel> {
-    filters.forEach((filter) => {
-      if (!this.possibleFilters.includes(filter.type)) {
-        throw new Error(
-          `${filter} is not a possbile filter for "${this.name}"`,
-        );
-      }
-      switch (filter.type) {
-        case 'courseId':
-          queryBuilder
-            .innerJoin('QuestionModel.queue', 'queue')
-            .andWhere(`queue.${filter.conditional}`);
-      }
-    });
-    return queryBuilder;
   }
 }
 

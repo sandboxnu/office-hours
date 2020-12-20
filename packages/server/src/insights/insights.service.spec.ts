@@ -44,7 +44,7 @@ describe('InsightsService', () => {
         filters: [
           {
             type: 'courseId',
-            conditional: `"courseId" = ${course.id}`,
+            courseId: course.id,
           },
         ],
       });
@@ -67,7 +67,7 @@ describe('InsightsService', () => {
         filters: [
           {
             type: 'courseId',
-            conditional: `"courseId" = ${course.id}`,
+            courseId: course.id,
           },
           {
             type: 'timeframe',
@@ -90,7 +90,7 @@ describe('InsightsService', () => {
         filters: [
           {
             type: 'courseId',
-            conditional: `"courseId" = ${question.queue.courseId}`,
+            courseId: question.queue.courseId,
           },
         ],
       });
@@ -120,7 +120,7 @@ describe('InsightsService', () => {
       filters: [
         {
           type: 'courseId',
-          conditional: `"courseId" = ${course.id}`,
+          courseId: course.id,
         },
       ],
     });
@@ -148,7 +148,7 @@ describe('InsightsService', () => {
         filters: [
           {
             type: 'courseId',
-            conditional: `"courseId" = ${course.id}`,
+            courseId: course.id,
           },
         ],
       });
