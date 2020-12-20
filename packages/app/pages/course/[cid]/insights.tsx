@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
 import SimpleDisplayComponent from "../../../components/Insights/components/SimpleDisplayComponent";
 import SimpleChartComponent from "../../../components/Insights/components/SimpleChartComponent";
+import { InsightDisplay } from "@koh/common";
 
 export default function Insights(): ReactElement {
   // TODO: In the future this will come from the users specific insights that want to see
@@ -16,7 +17,6 @@ export default function Insights(): ReactElement {
     <>
       <StandardPageContainer>
         <h1 style={{ margin: "20px" }}>Insights Dashboard</h1>
-        <divider />
         <div style={{ display: "flex", direction: "ltr" }}>
           {insights?.map((insightName: string) => {
             return (
@@ -50,15 +50,15 @@ function RenderInsight({ insightName }: RenderInsightProps): ReactElement {
   // Determine which insight component to render
   let InsightComponent;
   switch (insight.component) {
-    case "SimpleDisplay":
+    case InsightDisplay.SimpleDisplay:
       InsightComponent = SimpleDisplayComponent;
       break;
-    case "SimpleChart":
+    case InsightDisplay.SimpleChart:
       InsightComponent = SimpleChartComponent;
       break;
     default:
-    // Return an error component
-    // Log error
+      // Line below will show error if switch is not exhaustive of all enum values
+      componentDoesNotExist(insight.component);
   }
 
   return (
@@ -75,4 +75,8 @@ function RenderInsight({ insightName }: RenderInsightProps): ReactElement {
       <InsightComponent key={insight.name} {...insight} />
     </Card>
   );
+}
+
+function componentDoesNotExist(componentName: never): never {
+  throw new Error(`Component ${componentName} was unable to be rendered`);
 }

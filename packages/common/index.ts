@@ -531,8 +531,13 @@ export class Insight {
   name!: string;
   displayName!: string;
   description!: string;
-  component!: string;
+  component!: InsightDisplay;
   output!: PossibleOutputTypes;
+}
+
+export enum InsightDisplay {
+  SimpleDisplay = "SimpleDisplay",
+  SimpleChart = "SimpleChart",
 }
 
 export type PossibleOutputTypes =

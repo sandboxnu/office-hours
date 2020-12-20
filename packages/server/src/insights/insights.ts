@@ -4,6 +4,7 @@ import {
   PossibleOutputTypes,
   SimpleDisplayOutputType,
   SimpleChartOutputType,
+  InsightDisplay,
 } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { SelectQueryBuilder } from 'typeorm';
@@ -14,7 +15,7 @@ export interface InsightInterface<Model> {
   displayName: string;
   description: string;
   roles: Role[];
-  component: string; // In the future we can make this an enum
+  component: InsightDisplay;
   model: new () => Model; // One of the modals have
   possibleFilters: string[];
   compute: (
@@ -69,7 +70,7 @@ class TotalStudents implements InsightInterface<UserCourseModel> {
   displayName = 'Total Students';
   description = 'Gets the total number of students';
   roles = [Role.PROFESSOR];
-  component = 'SimpleDisplay';
+  component = InsightDisplay.SimpleDisplay;
   model = UserCourseModel;
   possibleFilters = ['courseId', 'role'];
 
@@ -91,7 +92,7 @@ class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
   displayName = 'Total Questions Asked';
   description = 'Gets the total number questions asked';
   roles = [Role.PROFESSOR];
-  component = 'SimpleDisplay';
+  component = InsightDisplay.SimpleDisplay;
   model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
 
@@ -115,7 +116,7 @@ class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
   description =
     'Returns a table of each question type and how many questions of that type were asked';
   roles = [Role.PROFESSOR];
-  component = 'SimpleChart';
+  component = InsightDisplay.SimpleChart;
   model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
 
@@ -163,7 +164,7 @@ class AverageWaitTime implements InsightInterface<QuestionModel> {
   displayName = 'Average Wait Time';
   description = 'Gets the average wait time';
   roles = [Role.PROFESSOR];
-  component = 'SimpleDisplay';
+  component = InsightDisplay.SimpleDisplay;
   model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
 
