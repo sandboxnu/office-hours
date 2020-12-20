@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { Connection } from 'typeorm';
 import {
   KhouryDataParams,
   KhouryStudentCourse,
   KhouryTACourse,
   Role,
 } from '@koh/common';
-import { UserCourseModel } from 'profile/user-course.entity';
+import { Injectable } from '@nestjs/common';
 import { CourseModel } from 'course/course.entity';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
+import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
+import { Connection } from 'typeorm';
 
 @Injectable()
 export class LoginCourseService {
