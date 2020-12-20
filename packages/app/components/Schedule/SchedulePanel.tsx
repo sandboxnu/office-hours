@@ -1,13 +1,15 @@
+import { API } from "@koh/api-client";
+import { Button } from "antd";
+import moment from "moment";
+import React, { ReactElement } from "react";
 import {
   Calendar,
-  momentLocalizer,
   CalendarProps,
   Event,
+  momentLocalizer,
   View,
 } from "react-big-calendar";
-import moment from "moment";
 import styled from "styled-components";
-import { ReactElement } from "react";
 import { useCourse } from "../../hooks/useCourse";
 
 const ScheduleCalendar = styled(Calendar)<CalendarProps>`
@@ -43,6 +45,12 @@ export default function SchedulePanel({
           new Date(today.getFullYear(), today.getMonth(), today.getDate(), 8)
         }
       />
+      <Button
+        type="primary"
+        onClick={() => API.course.updateCalendar(courseId)}
+      >
+        Update Calendar
+      </Button>
     </div>
   );
 }
