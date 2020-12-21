@@ -122,7 +122,7 @@ export function QueueInfoColumn({
       <QueuePropertyRow>
         {isQueueLive ? <CloudSyncOutlined /> : <FrownOutlined />}
         <QueuePropertyText>
-          {isQueueLive ? "Queue up to date" : "Queue out of date"}
+          {isQueueLive ? "Queue up to date" : "Queue may not be up to date"}
         </QueuePropertyText>
       </QueuePropertyRow>
       {buttons}

@@ -88,6 +88,9 @@ export class SSEService<T> implements OnModuleDestroy {
       },
     };
 
+    // Ack so frontend knows we're connected
+    client.res.write('\n');
+
     // Remove dead connections!
     client.res.socket.on('end', async () => {
       await this.directConnnections[clientId].cleanup();
