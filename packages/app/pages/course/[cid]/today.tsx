@@ -68,7 +68,6 @@ export default function Today(): ReactElement {
     mutateCourse();
   };
 
-  console.log(course, profile);
   const queueCheckedIn = course?.queues.find((queue) =>
     queue.staffList.find((staff) => staff.id === profile?.id)
   );
