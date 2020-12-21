@@ -13,6 +13,7 @@ import {
 import styled from "styled-components";
 import { useCourse } from "../../hooks/useCourse";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
+import UpdateCalendarButton from "./UpdateCalendarButton";
 
 const ScheduleCalendar = styled(Calendar)<CalendarProps>`
   height: 70vh;
@@ -23,25 +24,10 @@ type ScheduleProps = {
   defaultView?: View;
 };
 
-enum CalendarUpdateStatus {
-  BEFORE,
-  UPDATING,
-  AFTER,
-}
-
 export default function SchedulePanel({
   courseId,
   defaultView = "week",
 }: ScheduleProps): ReactElement {
-  const [updating, setUpdating] = useState(false);
-  const [updated, setUpdated] = useState(CalendarUpdateStatus.BEFORE);
-
-  const updateCalendar = async () => {
-    setUpdated(CalendarUpdateStatus.UPDATING);
-    await API.course.updateCalendar(courseId);
-    setUpdated(CalendarUpdateStatus.AFTER);
-  };
-
   const { course } = useCourse(courseId);
   const role = useRoleInCourse(courseId);
 
@@ -51,29 +37,6 @@ export default function SchedulePanel({
       end: e.endTime,
       title: e.title,
     })) ?? [];
-
-  const renderButton = () => {
-    switch (updated) {
-      case CalendarUpdateStatus.BEFORE:
-        return (
-          <Button type="primary" onClick={updateCalendar}>
-            Update Calendar
-          </Button>
-        );
-      case CalendarUpdateStatus.UPDATING:
-        return (
-          <Button type="primary" loading>
-            Updating Calendar...
-          </Button>
-        );
-      case CalendarUpdateStatus.AFTER:
-        return (
-          <Button type="primary" disabled>
-            Calendar Updated!
-          </Button>
-        );
-    }
-  };
 
   const today: Date = new Date();
   return (
@@ -86,7 +49,7 @@ export default function SchedulePanel({
           new Date(today.getFullYear(), today.getMonth(), today.getDate(), 8)
         }
       />
-      {role == Role.PROFESSOR && renderButton()}
+      {role == Role.PROFESSOR && <UpdateCalendarButton courseId={courseId} />}
     </div>
   );
 }
