@@ -40,6 +40,7 @@ import { RedisModule } from 'nestjs-redis';
     SSEModule,
     BackfillModule,
     ReleaseNotesModule,
+    // Only use 'pub' for publishing events, 'sub' for subscribing, and 'db' for writing to key/value store
     RedisModule.register([{ name: 'pub' }, { name: 'sub' }, { name: 'db' }]),
   ],
 })
