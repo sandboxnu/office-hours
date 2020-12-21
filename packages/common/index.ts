@@ -318,6 +318,7 @@ export class KhouryDataParams {
   campus!: string;
 
   @IsInt()
+  @IsOptional()
   professor!: string;
 
   @IsOptional()
