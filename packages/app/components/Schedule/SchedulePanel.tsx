@@ -1,3 +1,4 @@
+import { Role } from "@koh/common";
 import moment from "moment";
 import React, { ReactElement } from "react";
 import {
@@ -9,6 +10,7 @@ import {
 } from "react-big-calendar";
 import styled from "styled-components";
 import { useCourse } from "../../hooks/useCourse";
+import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import UpdateCalendarButton from "./UpdateCalendarButton";
 
 const ScheduleCalendar = styled(Calendar)<CalendarProps>`
@@ -25,6 +27,7 @@ export default function SchedulePanel({
   defaultView = "week",
 }: ScheduleProps): ReactElement {
   const { course } = useCourse(courseId);
+  const role = useRoleInCourse(courseId);
 
   const myEvents: Event[] =
     course?.officeHours.map((e) => ({
@@ -44,7 +47,7 @@ export default function SchedulePanel({
           new Date(today.getFullYear(), today.getMonth(), today.getDate(), 8)
         }
       />
-      <UpdateCalendarButton courseId={courseId} />
+      {role === Role.PROFESSOR && <UpdateCalendarButton courseId={courseId} />}
     </div>
   );
 }
