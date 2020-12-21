@@ -1,3 +1,4 @@
+import { Type } from "class-transformer";
 import {
   IsBoolean,
   IsDefined,
@@ -8,10 +9,18 @@ import {
   IsString,
   ValidateIf,
 } from "class-validator";
-import { Type } from "class-transformer";
 import "reflect-metadata";
 
 export const PROD_URL = "https://khouryofficehours.com";
+export const isProd = (): boolean =>
+  process.env.DOMAIN === PROD_URL ||
+  (typeof window !== "undefined" && window?.location?.origin === PROD_URL);
+
+// TODO: Clean this up, move it somwhere else, use moment???
+// a - b, in minutes
+export function timeDiffInMins(a: Date, b: Date): number {
+  return (a.getTime() - b.getTime()) / (1000 * 60);
+}
 
 /////////////////////////
 // API Base Data Types //
@@ -26,17 +35,32 @@ export const PROD_URL = "https://khouryofficehours.com";
  * @param name - The full name of this user: First Last.
  * @param photoURL - The URL string of this user photo. This is pulled from the admin site
  * @param courses - The list of courses that the user is accociated with (as either a 'student', 'ta' or 'professor')
+ * @param desktopNotifs - list of endpoints so that frontend can figure out if device is enabled
  */
-export type User = {
-  id: number;
-  email: string;
-  name: string;
-  photoURL: string;
-  courses: UserCourse[];
-  desktopNotifsEnabled: boolean;
-  phoneNotifsEnabled: boolean;
-  phoneNumber: string;
-};
+export class User {
+  id!: number;
+  email!: string;
+  firstName?: string;
+  lastName?: string;
+  name!: string;
+  photoURL!: string;
+  courses!: UserCourse[];
+  desktopNotifsEnabled!: boolean;
+
+  @Type(() => DesktopNotifPartial)
+  desktopNotifs!: DesktopNotifPartial[];
+
+  phoneNotifsEnabled!: boolean;
+  phoneNumber!: string;
+}
+
+export class DesktopNotifPartial {
+  id!: number;
+  endpoint!: string;
+  name?: string;
+  @Type(() => Date)
+  createdAt!: Date;
+}
 
 /**
  * Contains the partial user info needed by the frontend when nested in a response
@@ -140,6 +164,14 @@ export class QueuePartial {
   allowQuestions!: boolean;
 }
 
+// Represents a list of office hours wait times of each hour of the week.
+// The first element of the array is the wait time for the first hour of Sunday, UTC.
+//   Users of the heatmap should rotate it according to their timezone.
+// INVARIANT: Must have 24*7 elements
+//
+// Wait time = -1 represents no office hours data at that time.
+export type Heatmap = Array<number>;
+
 /**
  * A Question is created when a student wants help from a TA.
  * @param id - The unique id number for a student question.
@@ -192,16 +224,40 @@ export enum OpenQuestionStatus {
   Drafting = "Drafting",
   Queued = "Queued",
   Helping = "Helping",
-  CantFind = "CantFind",
-  TADeleted = "TADeleted",
+  PriorityQueued = "PriorityQueued",
+}
+
+/**
+ * Limbo statuses are awaiting some confirmation from the student
+ */
+export enum LimboQuestionStatus {
+  CantFind = "CantFind", // represents when a student can't be found by a TA
+  ReQueueing = "ReQueueing", // represents when a TA wants to get back to a student later and give them the option to be put into the priority queue
+  TADeleted = "TADeleted", // When a TA deletes a question for a multitude of reasons
 }
 
 export enum ClosedQuestionStatus {
   Resolved = "Resolved",
-  Deferred = "Deferred",
+  DeletedDraft = "DeletedDraft",
   ConfirmedDeleted = "ConfirmedDeleted",
   Stale = "Stale",
 }
+
+export const StatusInQueue = [
+  OpenQuestionStatus.Drafting,
+  OpenQuestionStatus.Queued,
+];
+
+export const StatusInPriorityQueue = [OpenQuestionStatus.PriorityQueued];
+
+export const StatusSentToCreator = [
+  ...StatusInPriorityQueue,
+  ...StatusInQueue,
+  OpenQuestionStatus.Helping,
+  LimboQuestionStatus.ReQueueing,
+  LimboQuestionStatus.CantFind,
+  LimboQuestionStatus.TADeleted,
+];
 
 // Ticket Status - Represents a given status of as student's ticket
 export type QuestionStatus = keyof typeof QuestionStatusKeys;
@@ -209,6 +265,7 @@ export type QuestionStatus = keyof typeof QuestionStatusKeys;
 export const QuestionStatusKeys = {
   ...OpenQuestionStatus,
   ...ClosedQuestionStatus,
+  ...LimboQuestionStatus,
 };
 
 /**
@@ -233,6 +290,7 @@ export type DesktopNotifBody = {
     p256dh: string;
     auth: string;
   };
+  name?: string;
 };
 
 export type PhoneNotifBody = {
@@ -244,7 +302,7 @@ export type PhoneNotifBody = {
 // API route Params and Responses
 
 // Office Hours Response Types
-export type GetProfileResponse = User;
+export class GetProfileResponse extends User {}
 
 export class KhouryDataParams {
   @IsString()
@@ -258,6 +316,9 @@ export class KhouryDataParams {
 
   @IsInt()
   campus!: string;
+
+  @IsInt()
+  professor!: string;
 
   @IsOptional()
   @IsString()
@@ -317,6 +378,14 @@ export class UpdateProfileParams {
   @IsString()
   @IsNotEmpty()
   phoneNumber?: string;
+
+  @IsString()
+  @IsOptional()
+  firstName?: string;
+
+  @IsString()
+  @IsOptional()
+  lastName?: string;
 }
 
 export class GetCourseResponse {
@@ -328,13 +397,27 @@ export class GetCourseResponse {
 
   @Type(() => QueuePartial)
   queues!: QueuePartial[];
+
+  heatmap!: Heatmap | false;
 }
 
 export class GetQueueResponse extends QueuePartial {}
 
 export class GetCourseQueuesResponse extends Array<QueuePartial> {}
 
-export class ListQuestionsResponse extends Array<Question> {}
+export class ListQuestionsResponse {
+  @Type(() => Question)
+  yourQuestion?: Question;
+
+  @Type(() => Question)
+  questionsGettingHelp!: Array<Question>;
+
+  @Type(() => Question)
+  queue!: Array<Question>;
+
+  @Type(() => Question)
+  priorityQueue!: Array<Question>;
+}
 
 export class GetQuestionResponse extends Question {}
 
@@ -343,7 +426,8 @@ export class CreateQuestionParams {
   text!: string;
 
   @IsEnum(QuestionType)
-  questionType!: QuestionType;
+  @IsOptional()
+  questionType?: QuestionType;
 
   @IsInt()
   queueId!: number;
@@ -393,6 +477,15 @@ export type QueueNotePayloadType = {
   notes: string;
 };
 
+export class TACheckoutResponse {
+  // The ID of the queue we checked out of
+  queueId!: number;
+  canClearQueue!: boolean;
+
+  @Type(() => Date)
+  nextOfficeHourTime?: Date;
+}
+
 export class UpdateQueueParams {
   @IsString()
   @IsOptional()
@@ -428,3 +521,60 @@ export interface TwilioBody {
   From: string;
   ApiVersion: string;
 }
+
+export interface GetReleaseNotesResponse {
+  releaseNotes: unknown;
+  lastUpdatedUnixTime: number;
+}
+
+export const ERROR_MESSAGES = {
+  questionController: {
+    createQuestion: {
+      invalidQueue: "Posted to an invalid queue",
+      noNewQuestions: "Queue not allowing new questions",
+      closedQueue: "Queue is closed",
+      oneQuestionAtATime: "You can't create more than one question at a time.",
+    },
+    updateQuestion: {
+      fsmViolation: (
+        role: string,
+        questionStatus: string,
+        bodyStatus: string
+      ): string =>
+        `${role} cannot change status from ${questionStatus} to ${bodyStatus}`,
+      taOnlyEditQuestionStatus: "TA/Professors can only edit question status",
+      otherTAHelping: "Another TA is currently helping with this question",
+      otherTAResolved: "Another TA has already resolved this question",
+      taHelpingOther: "TA is already helping someone else",
+      loginUserCantEdit: "Logged-in user does not have edit access",
+    },
+  },
+  loginController: {
+    receiveDataFromKhoury: "Invalid request signature",
+  },
+  notificationController: {
+    messageNotFromTwilio: "Message not from Twilio",
+  },
+  notificationService: {
+    registerPhone: "phone number invalid",
+  },
+  questionRoleGuard: {
+    questionNotFound: "Question not found",
+    queueOfQuestionNotFound: "Cannot find queue of question",
+    queueDoesNotExist: "This queue does not exist!",
+  },
+  queueRoleGuard: {
+    queueNotFound: "Queue not found",
+  },
+  releaseNotesController: {
+    releaseNotesTime: (e: any): string =>
+      "Error Parsing release notes time: " + e,
+  },
+  roleGuard: {
+    notLoggedIn: "Must be logged in",
+    noCourseIdFound: "No courseid found",
+    notInCourse: "Not In This Course",
+    mustBeRoleToJoinCourse: (roles: string[]): string =>
+      `You must have one of roles [${roles.join(", ")}] to access this course`,
+  },
+};

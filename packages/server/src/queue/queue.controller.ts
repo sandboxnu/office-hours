@@ -1,4 +1,10 @@
 import {
+  GetQueueResponse,
+  ListQuestionsResponse,
+  Role,
+  UpdateQueueParams,
+} from '@koh/common';
+import {
   Body,
   ClassSerializerInterceptor,
   Controller,
@@ -6,16 +12,11 @@ import {
   NotFoundException,
   Param,
   Patch,
+  Post,
   Res,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import {
-  GetQueueResponse,
-  ListQuestionsResponse,
-  Role,
-  UpdateQueueParams,
-} from '@koh/common';
 import { Response } from 'express';
 import { UserId } from 'profile/user.decorator';
 import { Connection } from 'typeorm';
@@ -26,6 +27,7 @@ import { QueueRolesGuard } from './queue-role.guard';
 import { QueueSSEService } from './queue-sse.service';
 import { QueueModel } from './queue.entity';
 import { QueueService } from './queue.service';
+import { QueueCleanService } from './queue-clean/queue-clean.service';
 
 @Controller('queues')
 @UseGuards(JwtAuthGuard, QueueRolesGuard)
@@ -34,6 +36,7 @@ export class QueueController {
   constructor(
     private connection: Connection,
     private queueSSEService: QueueSSEService,
+    private queueCleanService: QueueCleanService,
     private queueService: QueueService,
   ) {}
 
@@ -51,7 +54,12 @@ export class QueueController {
     @UserId() userId: number,
   ): Promise<ListQuestionsResponse> {
     const questions = await this.queueService.getQuestions(queueId);
-    return this.queueService.anonymizeQuestions(questions, userId, role);
+    return await this.queueService.personalizeQuestions(
+      queueId,
+      questions,
+      userId,
+      role,
+    );
   }
 
   @Patch(':queueId')
@@ -69,6 +77,16 @@ export class QueueController {
     queue.allowQuestions = body.allowQuestions;
     await queue.save();
     return queue;
+  }
+
+  @Post(':queueId/clean')
+  @Roles(Role.TA, Role.PROFESSOR)
+  async cleanQueue(@Param('queueId') queueId: number): Promise<void> {
+    // Clean up queue if necessary
+    setTimeout(async () => {
+      await this.queueCleanService.cleanQueue(queueId, true);
+      await this.queueSSEService.updateQueue(queueId);
+    });
   }
 
   // Endpoint to send frontend receive server-sent events when queue changes

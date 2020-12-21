@@ -1,6 +1,7 @@
-import { Question, QuestionType, OpenQuestionStatus } from "@koh/common";
-import { Modal, Alert, Button, Input, Radio } from "antd";
+import { OpenQuestionStatus, Question, QuestionType } from "@koh/common";
+import { Alert, Button, Input, Modal, Radio } from "antd";
 import { RadioChangeEvent } from "antd/lib/radio";
+import { NextRouter, useRouter } from "next/router";
 import { default as React, ReactElement, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
@@ -38,7 +39,12 @@ interface QuestionFormProps {
   visible: boolean;
   question: Question;
   leaveQueue: () => void;
-  finishQuestion: (text: string, questionType: QuestionType) => void;
+  finishQuestion: (
+    text: string,
+    questionType: QuestionType,
+    router: NextRouter,
+    courseId: number
+  ) => void;
   position: number;
   cancel: () => void;
 }
@@ -55,6 +61,8 @@ export default function QuestionForm({
     "draftQuestion",
     null
   );
+  const router = useRouter();
+  const courseId = router.query["cid"];
 
   const drafting = question?.status === OpenQuestionStatus.Drafting;
   const [questionTypeInput, setQuestionTypeInput] = useState<QuestionType>(
@@ -65,11 +73,11 @@ export default function QuestionForm({
   );
 
   useEffect(() => {
-    if (question) {
+    if (question && !visible) {
       setQuestionText(question.text);
       setQuestionTypeInput(question.questionType);
     }
-  }, [question]);
+  }, [question, visible]);
 
   // on question type change, update the question type state
   const onCategoryChange = (e: RadioChangeEvent) => {
@@ -101,7 +109,7 @@ export default function QuestionForm({
   // on button submit click, conditionally choose to go back to the queue
   const onClickSubmit = () => {
     if (questionTypeInput && questionText && questionText !== "") {
-      finishQuestion(questionText, questionTypeInput);
+      finishQuestion(questionText, questionTypeInput, router, Number(courseId));
     }
   };
 

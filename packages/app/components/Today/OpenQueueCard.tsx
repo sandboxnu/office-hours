@@ -95,6 +95,10 @@ const NotesInput = styled(Input)`
   border: 1px solid #b8c4ce;
 `;
 
+const Notes = styled.div`
+  overflow-wrap: break-word;
+`;
+
 const OpenQueueCard = ({
   queue,
   isTA,
@@ -115,6 +119,7 @@ const OpenQueueCard = ({
   return (
     <PaddedCard
       headStyle={{ background: "#F3F5F7" }}
+      className={"open-queue-card"}
       title={
         staffList.map((staffMember) => staffMember.name).join(", ") ||
         "No Staff Checked In!"
@@ -151,10 +156,10 @@ const OpenQueueCard = ({
         </div>
       ) : (
         queue.notes && (
-          <React.Fragment>
+          <div>
             <HeaderText style={{ marginBottom: 0 }}>staff notes</HeaderText>
-            <div>{queue.notes}</div>
-          </React.Fragment>
+            <Notes>{queue.notes}</Notes>
+          </div>
         )
       )}
       <br />

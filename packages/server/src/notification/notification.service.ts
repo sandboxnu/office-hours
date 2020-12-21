@@ -1,12 +1,13 @@
+import { ERROR_MESSAGES } from '@koh/common';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Connection, DeepPartial } from 'typeorm';
+import * as apm from 'elastic-apm-node';
+import { DeepPartial } from 'typeorm';
 import * as webPush from 'web-push';
 import { UserModel } from '../profile/user.entity';
 import { DesktopNotifModel } from './desktop-notif.entity';
 import { PhoneNotifModel } from './phone-notif.entity';
 import { TwilioService } from './twilio/twilio.service';
-import * as apm from 'elastic-apm-node';
 
 export const NotifMsgs = {
   phone: {
@@ -41,7 +42,6 @@ export class NotificationService {
   desktopPublicKey: string;
 
   constructor(
-    private connection: Connection,
     private configService: ConfigService,
     private twilioService: TwilioService,
   ) {
@@ -53,20 +53,26 @@ export class NotificationService {
     this.desktopPublicKey = this.configService.get('PUBLICKEY');
   }
 
-  async registerDesktop(info: DeepPartial<DesktopNotifModel>): Promise<void> {
+  async registerDesktop(
+    info: DeepPartial<DesktopNotifModel>,
+  ): Promise<DesktopNotifModel> {
     // create if not exist
-    if (
-      (await DesktopNotifModel.count({
-        where: { userId: info.userId, endpoint: info.endpoint },
-      })) === 0
-    ) {
-      await DesktopNotifModel.create(info).save();
+    let dn = await DesktopNotifModel.findOne({
+      where: { userId: info.userId, endpoint: info.endpoint },
+    });
+    if (!dn) {
+      dn = await DesktopNotifModel.create(info).save();
+      await dn.reload();
     }
+    return dn;
   }
 
   async registerPhone(phoneNumber: string, user: UserModel): Promise<void> {
-    if (!this.twilioService.isPhoneNumberReal) {
-      throw new BadRequestException('phone number invalid');
+    const fullNumber = await this.twilioService.getFullPhoneNumber(phoneNumber);
+    if (!fullNumber) {
+      throw new BadRequestException(
+        ERROR_MESSAGES.notificationService.registerPhone,
+      );
     }
 
     let phoneNotifModel = await PhoneNotifModel.findOne({
@@ -75,21 +81,21 @@ export class NotificationService {
 
     if (phoneNotifModel) {
       // Phone number has not changed
-      if (phoneNotifModel.phoneNumber === phoneNumber) {
+      if (phoneNotifModel.phoneNumber === fullNumber) {
         return;
       } else {
         // Need to just change it
-        phoneNotifModel.phoneNumber = phoneNumber;
+        phoneNotifModel.phoneNumber = fullNumber;
         phoneNotifModel.verified = false;
         await phoneNotifModel.save();
       }
     } else {
       phoneNotifModel = await PhoneNotifModel.create({
-        phoneNumber,
+        phoneNumber: fullNumber,
         userId: user.id,
         verified: false,
       }).save();
-      
+
       // MUTATE so if user.save() is called later it doesn't dis-associate
       user.phoneNotif = phoneNotifModel;
     }
@@ -162,8 +168,10 @@ export class NotificationService {
     });
 
     if (!phoneNotif) {
-      apm.setCustomContext({phoneNumber})
-      apm.captureError(new Error('Could not find phone number during verification'));
+      apm.setCustomContext({ phoneNumber });
+      apm.captureError(
+        new Error('Could not find phone number during verification'),
+      );
       return NotifMsgs.phone.COULD_NOT_FIND_NUMBER;
     } else if (message !== 'YES' && message !== 'NO' && message !== 'STOP') {
       return NotifMsgs.phone.WRONG_MESSAGE;

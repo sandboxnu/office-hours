@@ -13,7 +13,7 @@
     "typeorm": "yarn workspace @koh/server typeorm",
     "dev": "concurrently -n \"server,app,proxy\" \"yarn workspace @koh/server dev\" \"yarn workspace @koh/app dev\" \"yarn dev:proxy\"",
     "dev:proxy": "node infrastructure/dev/devProxy.js",
-    "dev:db:up": "docker-compose -f infrastructure/dev/docker-compose.yml up -d",
+    "dev:db:up": "docker-compose -p officehours -f infrastructure/dev/docker-compose.yml up -d",
     "dev:db:down": "docker-compose -f infrastructure/dev/docker-compose.yml down",
     "dev:db:reset": "yarn workspace @koh/server run dev:db:reset",
     "migration:generate": "yarn workspace @koh/server run migration:generate",
@@ -35,18 +35,20 @@
     "@babel/plugin-proposal-decorators": "^7.8.3",
     "@babel/preset-env": "^7.9.6",
     "@babel/preset-typescript": "^7.9.0",
+    "@percy/cypress": "^2.3.2",
     "@typescript-eslint/eslint-plugin": "4.0.1",
     "@typescript-eslint/parser": "4.0.1",
+    "concurrently": "^5.2.0",
+    "cypress": "5.5.0",
     "eslint": "^7.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-import": "^2.20.1",
-    "concurrently": "^5.2.0",
     "express": "^4.17.1",
     "http-proxy-cli": "^2.1.0",
     "http-proxy-middleware": "^1.0.3",
     "husky": "^4.2.5",
-    "prettier": "^2.0.5",
-    "pretty-quick": "^2.0.1"
+    "prettier": "^2.1.2",
+    "pretty-quick": "^3.1.0"
   },
   "husky": {
     "hooks": {

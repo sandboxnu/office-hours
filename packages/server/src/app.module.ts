@@ -13,6 +13,8 @@ import { AdminModule } from './admin/admin.module';
 import { CommandModule } from 'nestjs-command';
 import { SSEModule } from './sse/sse.module';
 import * as typeormConfig from '../ormconfig';
+import { BackfillModule } from 'backfill/backfill.module';
+import { ReleaseNotesModule } from 'release-notes/release-notes.module';
 
 @Module({
   imports: [
@@ -35,6 +37,8 @@ import * as typeormConfig from '../ormconfig';
     AdminModule,
     CommandModule,
     SSEModule,
+    BackfillModule,
+    ReleaseNotesModule,
   ],
 })
 export class AppModule {}

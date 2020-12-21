@@ -4,6 +4,7 @@ import { ReactElement } from "react";
 import styled from "styled-components";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
+import { formatWaitTime } from "../../utils/TimeUtil";
 import AvatarWithInitals from "../common/AvatarWithInitials";
 import { RenderEvery } from "../RenderEvery";
 
@@ -18,9 +19,13 @@ export function TAStatuses({ queueId }: StatusRowProps): ReactElement {
   const {
     queue: { staffList },
   } = useQueue(queueId);
+  if (!questions) {
+    return null;
+  }
+
   const taToQuestion: Record<number, Question> = {};
   const taIds = staffList.map((t) => t.id);
-  const helpingQuestions = questions.filter((q) => q.status === "Helping");
+  const helpingQuestions = questions.questionsGettingHelp;
   for (const question of helpingQuestions) {
     if (taIds.includes(question.taHelped?.id)) {
       taToQuestion[question.taHelped.id] = question;
@@ -82,7 +87,7 @@ function StatusCard({
 }: StatusCardProps): ReactElement {
   const isBusy = !!helpedAt;
   return (
-    <StyledCard>
+    <StyledCard data-cy="ta-status-card">
       {
         //TODO: bring back photo URL && get rid of RegeX
         // src={taPhotoURL}
@@ -122,7 +127,7 @@ function HelpingFor({ studentName, helpedAt }: HelpingForProps): ReactElement {
         <span>
           Helping <BlueSpan>{studentName ?? "a student"}</BlueSpan> for{" "}
           <BlueSpan>
-            {Math.round((Date.now() - helpedAt.getTime()) / 60000) + " min"}
+            {formatWaitTime((Date.now() - helpedAt.getTime()) / 60000)}
           </BlueSpan>
         </span>
       )}

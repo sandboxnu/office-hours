@@ -12,7 +12,7 @@ if (process.env.NODE_ENV === "production" && typeof window !== "undefined") {
   initApm({
     serviceName: `${window.location.hostname.replace(/\./g, "-")}-frontend`,
     serverUrl: process.env.NEXT_PUBLIC_APM_SERVER,
-    serviceVersion: process.env.NEXT_PUBLIC_SERVICE_VERSION
+    serviceVersion: process.env.NEXT_PUBLIC_SERVICE_VERSION,
   });
 }
 
@@ -24,6 +24,8 @@ const Layout = styled.div`
 
 const Content = styled.div`
   flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
 `;
 
 function MyApp({ Component, pageProps }: AppProps): ReactElement {

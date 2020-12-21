@@ -1,25 +1,20 @@
+import { TACheckoutResponse } from '@koh/common';
+import { EventModel, EventType } from 'profile/event-model.entity';
+import { UserCourseModel } from 'profile/user-course.entity';
 import { CourseModule } from '../src/course/course.module';
 import { QueueModel } from '../src/queue/queue.entity';
 import {
+  ClosedOfficeHourFactory,
   CourseFactory,
   OfficeHourFactory,
-  ClosedOfficeHourFactory,
+  QuestionFactory,
   QueueFactory,
   StudentCourseFactory,
   TACourseFactory,
-  UserFactory,
   UserCourseFactory,
-  QuestionFactory,
+  UserFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
-import { QuestionModel } from '../src/question/question.entity';
-import { OpenQuestionStatus } from '@koh/common';
-import { In } from 'typeorm';
-
-async function delay(ms) {
-  // return await for better async stack trace support in case of errors.
-  return await new Promise(resolve => setTimeout(resolve, ms));
-}
 
 describe('Course Integration', () => {
   const supertest = setupIntegrationTest(CourseModule);
@@ -95,9 +90,7 @@ describe('Course Integration', () => {
         ],
       });
 
-      await supertest({ userId: 1 })
-        .get(`/courses/${course.id}`)
-        .expect(401);
+      await supertest({ userId: 1 }).get(`/courses/${course.id}`).expect(401);
     });
   });
 
@@ -116,6 +109,10 @@ describe('Course Integration', () => {
         .expect(201);
 
       expect(response.body).toMatchSnapshot();
+
+      const events = await EventModel.find();
+      expect(events.length).toBe(1);
+      expect(events[0].eventType).toBe(EventType.TA_CHECKED_IN);
     });
 
     it("Doesn't allow student to check in", async () => {
@@ -129,6 +126,9 @@ describe('Course Integration', () => {
       await supertest({ userId: student.id })
         .post(`/courses/${queue.course.id}/ta_location/${queue.room}`)
         .expect(401);
+
+      const events = await EventModel.find();
+      expect(events.length).toBe(0);
     });
 
     it('checks TA into a new queue', async () => {
@@ -146,11 +146,15 @@ describe('Course Integration', () => {
         room: 'The Alamo',
         staffList: [{ id: ta.id }],
       });
+
+      const events = await EventModel.find();
+      expect(events.length).toBe(1);
+      expect(events[0].eventType).toBe(EventType.TA_CHECKED_IN);
     });
   });
 
   describe('DELETE, /courses/:id/ta_location/:room', () => {
-    it('tests TA is deleted from queue if exists', async () => {
+    it('tests TA is checked out from queue if exists', async () => {
       const ta = await UserFactory.create();
       const queue = await QueueFactory.create({
         room: 'The Alamo',
@@ -175,6 +179,10 @@ describe('Course Integration', () => {
       ).toMatchObject({
         staffList: [],
       });
+
+      const events = await EventModel.find();
+      expect(events.length).toBe(1);
+      expect(events[0].eventType).toBe(EventType.TA_CHECKED_OUT);
     });
 
     it('tests student cant checkout from queue', async () => {
@@ -192,7 +200,7 @@ describe('Course Integration', () => {
         .expect(401);
     });
 
-    it('tests queue is cleaned when TA checks out', async () => {
+    it('returns canClearQueue true when TA checks out', async () => {
       const ofs = await ClosedOfficeHourFactory.create();
       const ta = await UserFactory.create();
       const queue = await QueueFactory.create({
@@ -206,20 +214,13 @@ describe('Course Integration', () => {
       });
       await QuestionFactory.create({ queue: queue });
 
-      const getOpenQuestions = async () =>
-        await QuestionModel.find({
-          where: { status: In(Object.values(OpenQuestionStatus)) },
-        });
+      const checkoutResult: TACheckoutResponse = (
+        await supertest({ userId: ta.id })
+          .delete(`/courses/${tcf.courseId}/ta_location/The Alamo`)
+          .expect(200)
+      ).body;
 
-      expect((await getOpenQuestions()).length).toEqual(1);
-
-      await supertest({ userId: ta.id })
-        .delete(`/courses/${tcf.courseId}/ta_location/The Alamo`)
-        .expect(200);
-
-      // TODO: Super jank wait for setTimeout. Use jest timer? Or once we have Queues, just verify a job was added
-      await delay(200);
-      expect((await getOpenQuestions()).length).toEqual(0);
+      expect(checkoutResult.canClearQueue).toBeTruthy();
     });
 
     it('tests nothing happens if ta not in queue', async () => {
@@ -239,6 +240,15 @@ describe('Course Integration', () => {
       ).toMatchObject({
         staffList: [],
       });
+
+      const UCM = UserCourseModel.findOne({
+        where: { userId: ta.id, courseId: queue.courseId },
+      });
+      const events = await EventModel.find({
+        where: { user: UCM },
+      });
+
+      expect(events.length).toBe(0);
     });
   });
 });

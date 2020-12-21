@@ -1,0 +1,71 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`QueueService personalizeQuestions hides details of other students 1`] = `
+ListQuestionsResponse {
+  "priorityQueue": Array [],
+  "questionsGettingHelp": Array [],
+  "queue": Array [
+    QuestionModel {
+      "closedAt": null,
+      "createdAt": 2020-11-02T12:00:00.000Z,
+      "creator": UserModel {
+        "email": "user@neu.edu",
+        "firstName": "User",
+        "id": 1,
+        "lastName": null,
+        "name": "User",
+        "photoURL": "https://pics/user",
+      },
+      "helpedAt": null,
+      "id": 1,
+      "isOnline": null,
+      "location": null,
+      "questionType": "Other",
+      "status": "Queued",
+      "taHelped": null,
+      "text": "help us",
+    },
+    QuestionModel {
+      "closedAt": null,
+      "createdAt": 2020-11-02T12:00:00.000Z,
+      "creator": UserModel {
+        "id": 2,
+      },
+      "helpedAt": null,
+      "id": 2,
+      "isOnline": null,
+      "location": null,
+      "questionType": "Other",
+      "status": "Queued",
+      "taHelped": null,
+      "text": "help someone else",
+    },
+  ],
+  "yourQuestion": QuestionModel {
+    "closedAt": null,
+    "createdAt": 2020-11-02T12:00:00.000Z,
+    "creator": UserModel {
+      "desktopNotifsEnabled": false,
+      "email": "user@neu.edu",
+      "firstName": "User",
+      "id": 1,
+      "lastName": null,
+      "name": "User",
+      "phoneNotifsEnabled": false,
+      "photoURL": "https://pics/user",
+    },
+    "creatorId": 1,
+    "firstHelpedAt": null,
+    "helpedAt": null,
+    "id": 1,
+    "isOnline": null,
+    "location": null,
+    "questionType": "Other",
+    "queueId": 1,
+    "status": "Queued",
+    "taHelped": null,
+    "taHelpedId": null,
+    "text": "help us",
+  },
+}
+`;

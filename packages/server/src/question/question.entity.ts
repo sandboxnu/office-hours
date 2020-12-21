@@ -1,8 +1,4 @@
-import {
-  OpenQuestionStatus,
-  QuestionStatus,
-  QuestionType,
-} from '@koh/common';
+import { QuestionStatus, QuestionType, Role, StatusInQueue } from '@koh/common';
 import { Exclude } from 'class-transformer';
 import {
   BaseEntity,
@@ -15,6 +11,7 @@ import {
 } from 'typeorm';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
+import { canChangeQuestionStatus } from './question-fsm';
 
 @Entity('question_model')
 export class QuestionModel extends BaseEntity {
@@ -52,13 +49,20 @@ export class QuestionModel extends BaseEntity {
   @Column()
   createdAt: Date;
 
+  // When the question was first helped (doesn't overwrite)
+  @Column({ nullable: true })
+  @Exclude()
+  firstHelpedAt: Date;
+
+  // When the question was last helped (getting help again on priority queue overwrites)
   @Column({ nullable: true })
   helpedAt: Date;
 
+  // When the question leaves the queue
   @Column({ nullable: true })
   closedAt: Date;
 
-  @Column('text')
+  @Column('text', { nullable: true })
   questionType: QuestionType;
 
   @Column('text')
@@ -71,14 +75,38 @@ export class QuestionModel extends BaseEntity {
   isOnline: boolean;
 
   /**
+   * change the status of the question as the given role
+   *
+   * @returns whether status change succeeded
+   */
+  public changeStatus(newStatus: QuestionStatus, role: Role): boolean {
+    if (canChangeQuestionStatus(this.status, newStatus, role)) {
+      this.status = newStatus;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
    * Scopes
    */
-  static openInQueue(queueId: number): SelectQueryBuilder<QuestionModel> {
+  static inQueueWithStatus(
+    queueId: number,
+    statuses: QuestionStatus[],
+  ): SelectQueryBuilder<QuestionModel> {
     return this.createQueryBuilder('question')
       .where('question.queueId = :queueId', { queueId })
       .andWhere('question.status IN (:...statuses)', {
-        statuses: Object.values(OpenQuestionStatus),
+        statuses,
       })
       .orderBy('question.createdAt', 'ASC');
+  }
+
+  /**
+   * Questions that are open in the queue (not in priority queue)
+   */
+  static waitingInQueue(queueId: number): SelectQueryBuilder<QuestionModel> {
+    return QuestionModel.inQueueWithStatus(queueId, StatusInQueue);
   }
 }

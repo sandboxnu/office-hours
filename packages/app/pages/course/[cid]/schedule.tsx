@@ -6,12 +6,10 @@ import { useProfile } from "../../../hooks/useProfile";
 import Head from "next/head";
 import NavBar from "../../../components/Nav/NavBar";
 import SchedulePanel from "../../../components/Schedule/SchedulePanel";
+import { StandardPageContainer } from "../../../components/common/PageContainer";
 
-const Container = styled.div`
-  margin: 32px 64px;
-  @media (max-width: 768px) {
-    margin: 32px 24px;
-  }
+const ScheduleContainer = styled.div`
+  margin-top: 32px;
 `;
 
 export default function Schedule(): ReactElement {
@@ -22,14 +20,14 @@ export default function Schedule(): ReactElement {
   const { course } = useCourse(Number(cid));
 
   return (
-    <div>
+    <StandardPageContainer>
       <Head>
         <title>{course?.name} Schedule | Khoury Office Hours</title>
       </Head>
       <NavBar courseId={Number(cid)} />
-      <Container>
+      <ScheduleContainer>
         <SchedulePanel courseId={Number(cid)} />
-      </Container>
-    </div>
+      </ScheduleContainer>
+    </StandardPageContainer>
   );
 }

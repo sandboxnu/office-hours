@@ -2,18 +2,19 @@ import {
   CreateQuestionParams,
   CreateQuestionResponse,
   DesktopNotifBody,
+  DesktopNotifPartial,
   GetCourseResponse,
   GetProfileResponse,
   GetQuestionResponse,
   GetQueueResponse,
   ListQuestionsResponse,
-  PhoneNotifBody,
   TAUpdateStatusResponse,
   UpdateProfileParams,
   UpdateQuestionParams,
   UpdateQuestionResponse,
   UpdateQueueParams,
-  Question,
+  GetReleaseNotesResponse,
+  TACheckoutResponse,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -50,7 +51,7 @@ class APIClient {
 
   profile = {
     index: async (): Promise<GetProfileResponse> =>
-      this.req("GET", `/api/v1/profile`),
+      this.req("GET", `/api/v1/profile`, GetProfileResponse),
     patch: async (body: UpdateProfileParams): Promise<GetProfileResponse> =>
       this.req("PATCH", `/api/v1/profile`, undefined, body),
   };
@@ -64,7 +65,10 @@ class APIClient {
       room: string
     ): Promise<TAUpdateStatusResponse> =>
       this.req("POST", `/api/v1/courses/${courseId}/ta_location/${room}`),
-    checkOut: async (courseId: number, room: string): Promise<void> =>
+    checkOut: async (
+      courseId: number,
+      room: string
+    ): Promise<TACheckoutResponse> =>
       this.req("DELETE", `/api/v1/courses/${courseId}/ta_location/${room}`),
   };
   questions = {
@@ -72,7 +76,7 @@ class APIClient {
       this.req<ListQuestionsResponse>(
         "GET",
         `/api/v1/queues/${queueId}/questions`,
-        Question
+        ListQuestionsResponse
       ),
     create: async (params: CreateQuestionParams) =>
       this.req("POST", `/api/v1/questions`, CreateQuestionResponse, params),
@@ -86,7 +90,7 @@ class APIClient {
         params
       ),
     notify: async (questionId: number): Promise<void> =>
-      this.req("PATCH", `/api/v1/questions/${questionId}/notify`),
+      this.req("POST", `/api/v1/questions/${questionId}/notify`),
   };
   queues = {
     get: async (queueId: number): Promise<GetQueueResponse> =>
@@ -98,24 +102,38 @@ class APIClient {
         UpdateQuestionResponse,
         params
       ),
+    clean: async (queueId: number): Promise<void> =>
+      this.req("POST", `/api/v1/queues/${queueId}/clean`),
   };
   notif = {
     desktop: {
       credentials: async (): Promise<string> =>
         this.req("GET", "/api/v1/notifications/desktop/credentials"),
-      register: async (payload: DesktopNotifBody): Promise<string> =>
+      register: async (
+        payload: DesktopNotifBody
+      ): Promise<DesktopNotifPartial> =>
         this.req(
           "POST",
-          `/api/v1/notifications/desktop/register`,
-          undefined,
+          `/api/v1/notifications/desktop/device`,
+          DesktopNotifPartial,
           payload
+        ),
+      unregister: async (deviceId: number): Promise<string> =>
+        this.req(
+          "DELETE",
+          `/api/v1/notifications/desktop/device/${deviceId}`,
+          undefined
         ),
     },
   };
   seeds = {
     delete: async () => this.req("GET", `/api/v1/seeds/delete`),
     create: async () => this.req("GET", `/api/v1/seeds/create`),
-    fillQueue: async () => this.req("GET", `/api/v1/seeds/fillQueue`),
+    fillQueue: async () => this.req("GET", `/api/v1/seeds/fill_queue`),
+  };
+  releaseNotes = {
+    get: async (): Promise<GetReleaseNotesResponse> =>
+      this.req("GET", `/api/v1/release_notes`),
   };
   constructor(baseURL = "") {
     this.axios = Axios.create({ baseURL: baseURL });

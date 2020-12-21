@@ -1,14 +1,15 @@
+import { CreateQuestionParams, Role } from '@koh/common';
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { Role } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
+import { UserModel } from 'profile/user.entity';
 import { Connection } from 'typeorm';
 import {
+  CourseFactory,
   OfficeHourFactory,
   QuestionFactory,
   QueueFactory,
-  UserCourseFactory,
   SemesterFactory,
-  CourseFactory,
+  UserCourseFactory,
   UserFactory,
 } from '../../test/util/factories';
 import { CourseModel } from '../course/course.entity';
@@ -17,7 +18,6 @@ import { NonProductionGuard } from '../non-production.guard';
 import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { SeedService } from './seed.service';
-import { UserModel } from 'profile/user.entity';
 
 @Controller('seeds')
 @UseGuards(NonProductionGuard)
@@ -94,6 +94,8 @@ export class SeedController {
       const user1 = await UserFactory.create({
         email: 'liu.sta@northeastern.edu',
         name: 'Stanley Liu',
+        firstName: 'Stanley',
+        lastName: 'Liu',
         photoURL:
           'https://ca.slack-edge.com/TE565NU79-UR20CG36E-cf0f375252bd-512',
       });
@@ -106,6 +108,8 @@ export class SeedController {
       const user2 = await UserFactory.create({
         email: 'takayama.a@northeastern.edu',
         name: 'Alex Takayama',
+        firstName: 'Alex',
+        lastName: 'Takayama',
         photoURL:
           'https://ca.slack-edge.com/TE565NU79-UJL97443D-50121339686b-512',
       });
@@ -118,6 +122,8 @@ export class SeedController {
       const user3 = await UserFactory.create({
         email: 'stenzel.w@northeastern.edu',
         name: 'Will Stenzel',
+        firstName: 'Will',
+        lastName: 'Stenzel',
         photoURL:
           'https://ca.slack-edge.com/TE565NU79-URF256KRT-d10098e879da-512',
       });
@@ -130,12 +136,28 @@ export class SeedController {
       const user4 = await UserFactory.create({
         email: 'chu.daj@northeastern.edu',
         name: 'Da-Jin Chu',
+        firstName: 'Da-Jin',
+        lastName: 'Chu',
         photoURL:
           'https://ca.slack-edge.com/TE565NU79-UE56Y5UT1-85db59a474f4-512',
       });
       await UserCourseFactory.create({
         user: user4,
         role: Role.TA,
+        course: course,
+      });
+      // Professor (Snarky!!)
+      const user5 = await UserFactory.create({
+        email: 'li.edwa@northeastern.edu',
+        name: 'Eddy Li',
+        firstName: 'Eddy',
+        lastName: 'Li',
+        photoURL:
+          'https://ca.slack-edge.com/TE565NU79-UR6P32JBT-a6c89822c544-512',
+      });
+      await UserCourseFactory.create({
+        user: user5,
+        role: Role.PROFESSOR,
         course: course,
       });
     }
@@ -168,7 +190,7 @@ export class SeedController {
     return 'Data successfully seeded';
   }
 
-  @Get('fillQueue')
+  @Get('fill_queue')
   async fillQueue(): Promise<string> {
     const queue = await QueueModel.findOne();
 
@@ -204,44 +226,53 @@ export class SeedController {
 
   @Post('createQueue')
   async createQueue(
-    @Body() body: { courseId: number; allowQuestions: boolean },
+    @Body()
+    body: {
+      courseId: number;
+      allowQuestions: boolean;
+      // closes in n milliseconds from now
+      closesIn?: number;
+    },
   ): Promise<QueueModel> {
-    let queue: QueueModel;
     const now = new Date();
     const officeHours = await OfficeHourFactory.create({
       startTime: now,
-      endTime: new Date(now.valueOf() + 4500000),
+      endTime: new Date(now.valueOf() + (body?.closesIn || 4500000)),
     });
+    const options = {
+      officeHours: [officeHours],
+      allowQuestions: body.allowQuestions ?? false,
+    };
     if (body.courseId) {
       const course = await CourseModel.findOneOrFail(body.courseId);
-      queue = await QueueFactory.create({
-        course: course,
-        officeHours: [officeHours],
-        allowQuestions: body.allowQuestions ?? false,
-      });
-    } else {
-      queue = await QueueFactory.create({
-        officeHours: [officeHours],
-        allowQuestions: body.allowQuestions ?? false,
-      });
+      options['course'] = course;
     }
+    const queue: QueueModel = await QueueFactory.create(options);
     return queue;
   }
 
   @Post('createQuestion')
   async createQuestion(
-    @Body() body: { queueId: number },
+    @Body()
+    body: {
+      queueId: number;
+      studentId: number;
+      data: CreateQuestionParams;
+    },
   ): Promise<QuestionModel> {
-    let question: QuestionModel;
+    const options = {};
     if (body.queueId) {
       const queue = await QueueModel.findOneOrFail(body.queueId);
-      question = await QuestionFactory.create({
-        queue: queue,
-        createdAt: new Date(),
-      });
-    } else {
-      question = await QuestionFactory.create();
+      options['queue'] = queue;
     }
+    if (body.studentId) {
+      const student = await UserModel.findOneOrFail(body.studentId);
+      options['creator'] = student;
+    }
+    const question: QuestionModel = await QuestionFactory.create({
+      ...options,
+      ...body.data,
+    });
     return question;
   }
 }

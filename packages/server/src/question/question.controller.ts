@@ -2,7 +2,9 @@ import {
   ClosedQuestionStatus,
   CreateQuestionParams,
   CreateQuestionResponse,
+  ERROR_MESSAGES,
   GetQuestionResponse,
+  LimboQuestionStatus,
   OpenQuestionStatus,
   QuestionStatusKeys,
   Role,
@@ -15,7 +17,6 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
-  MethodNotAllowedException,
   NotFoundException,
   Param,
   Patch,
@@ -75,32 +76,19 @@ export class QuestionController {
     });
 
     if (!queue) {
-      throw new NotFoundException('Posted to an invalid queue');
-    }
-
-    if (!queue.allowQuestions) {
-      throw new MethodNotAllowedException();
-    }
-
-    // TODO: think of a neat way to make this abstracted
-    const isUserInCourse =
-      (await UserCourseModel.count({
-        where: {
-          role: Role.STUDENT,
-          courseId: queue.courseId,
-          userId: user.id,
-        },
-      })) === 1;
-
-    if (!isUserInCourse) {
-      throw new UnauthorizedException(
-        "Can't post question to course you're not in!",
+      throw new NotFoundException(
+        ERROR_MESSAGES.questionController.createQuestion.invalidQueue,
       );
     }
 
+    if (!queue.allowQuestions) {
+      throw new BadRequestException(
+        ERROR_MESSAGES.questionController.createQuestion.noNewQuestions,
+      );
+    }
     if (!(await queue.checkIsOpen())) {
       throw new BadRequestException(
-        "You can't post a question to a closed queue",
+        ERROR_MESSAGES.questionController.createQuestion.closedQueue,
       );
     }
 
@@ -113,11 +101,11 @@ export class QuestionController {
 
     if (!!previousUserQuestion) {
       if (force) {
-        previousUserQuestion.status = ClosedQuestionStatus.Resolved;
+        previousUserQuestion.status = ClosedQuestionStatus.ConfirmedDeleted;
         await previousUserQuestion.save();
       } else {
         throw new BadRequestException(
-          "You can't create more than one question at a time.",
+          ERROR_MESSAGES.questionController.createQuestion.oneQuestionAtATime,
         );
       }
     }
@@ -137,13 +125,12 @@ export class QuestionController {
 
   @Patch(':questionId')
   @Roles(Role.STUDENT, Role.TA, Role.PROFESSOR)
+  // TODO: Use queueRole decorator, but we need to fix its performance first
   async updateQuestion(
     @Param('questionId') questionId: number,
     @Body() body: UpdateQuestionParams,
     @UserId() userId: number,
   ): Promise<UpdateQuestionResponse> {
-    // TODO: Check that the question_id belongs to the user or a TA that is currently helping with the given queue_id
-    // TODO: Use user type to dertermine wether or not we should include the text in the response
     let question = await QuestionModel.findOne({
       where: { id: questionId },
       relations: ['creator', 'queue', 'taHelped'],
@@ -155,15 +142,14 @@ export class QuestionController {
     const isCreator = userId === question.creatorId;
 
     if (isCreator) {
-      // Creator can always edit
-      if (body.status === OpenQuestionStatus.Helping) {
+      // Fail if student tries an invalid status change
+      if (body.status && !question.changeStatus(body.status, Role.STUDENT)) {
         throw new UnauthorizedException(
-          'Students cannot mark question as helping',
-        );
-      }
-      if (body.status === ClosedQuestionStatus.Resolved) {
-        throw new UnauthorizedException(
-          'Students cannot mark question as resolved',
+          ERROR_MESSAGES.questionController.updateQuestion.fsmViolation(
+            'Student',
+            question.status,
+            body.status,
+          ),
         );
       }
       question = Object.assign(question, body);
@@ -184,19 +170,21 @@ export class QuestionController {
     if (isTaOrProf) {
       if (Object.keys(body).length !== 1 || Object.keys(body)[0] !== 'status') {
         throw new UnauthorizedException(
-          'TA/Professors can only edit question status',
+          ERROR_MESSAGES.questionController.updateQuestion.taOnlyEditQuestionStatus,
         );
       }
+      const oldStatus = question.status;
+      const newStatus = body.status;
       // If the taHelped is already set, make sure the same ta updates the status
       if (question.taHelped?.id !== userId) {
-        if (question.status === OpenQuestionStatus.Helping) {
+        if (oldStatus === OpenQuestionStatus.Helping) {
           throw new UnauthorizedException(
-            'Another TA is currently helping with this question',
+            ERROR_MESSAGES.questionController.updateQuestion.otherTAHelping,
           );
         }
-        if (question.status === ClosedQuestionStatus.Resolved) {
+        if (oldStatus === ClosedQuestionStatus.Resolved) {
           throw new UnauthorizedException(
-            'Another TA has already resolved this question',
+            ERROR_MESSAGES.questionController.updateQuestion.otherTAResolved,
           );
         }
       }
@@ -208,28 +196,48 @@ export class QuestionController {
             status: OpenQuestionStatus.Helping,
           },
         })) === 1;
-      if (isAlreadyHelpingOne && body.status === OpenQuestionStatus.Helping) {
-        return null;
+      if (isAlreadyHelpingOne && newStatus === OpenQuestionStatus.Helping) {
+        throw new BadRequestException(
+          ERROR_MESSAGES.questionController.updateQuestion.taHelpingOther,
+        );
+      }
+
+      const validTransition = question.changeStatus(newStatus, Role.TA);
+      if (!validTransition) {
+        throw new UnauthorizedException(
+          ERROR_MESSAGES.questionController.updateQuestion.fsmViolation(
+            'TA',
+            question.status,
+            body.status,
+          ),
+        );
       }
 
       // Set TA as taHelped when the TA starts helping the student
       if (
-        question.status !== OpenQuestionStatus.Helping &&
-        body.status === OpenQuestionStatus.Helping
+        oldStatus !== OpenQuestionStatus.Helping &&
+        newStatus === OpenQuestionStatus.Helping
       ) {
         question.taHelped = await UserModel.findOne(userId);
         question.helpedAt = new Date();
+
+        // Set firstHelpedAt if it hasn't already
+        if (!question.firstHelpedAt) {
+          question.firstHelpedAt = question.helpedAt;
+        }
         await this.notifService.notifyUser(
           question.creator.id,
           NotifMsgs.queue.TA_HIT_HELPED(question.taHelped.name),
         );
       }
-      question = Object.assign(question, body);
+      if (newStatus in ClosedQuestionStatus) {
+        question.closedAt = new Date();
+      }
       await question.save();
       return question;
     } else {
       throw new UnauthorizedException(
-        'Logged-in user does not have edit access',
+        ERROR_MESSAGES.questionController.updateQuestion.loginUserCantEdit,
       );
     }
   }
@@ -241,12 +249,12 @@ export class QuestionController {
       relations: ['queue'],
     });
 
-    if (question.status === OpenQuestionStatus.CantFind) {
+    if (question.status === LimboQuestionStatus.CantFind) {
       await this.notifService.notifyUser(
         question.creatorId,
         NotifMsgs.queue.ALERT_BUTTON,
       );
-    } else if (question.status === OpenQuestionStatus.TADeleted) {
+    } else if (question.status === LimboQuestionStatus.TADeleted) {
       await this.notifService.notifyUser(
         question.creatorId,
         NotifMsgs.queue.REMOVED,

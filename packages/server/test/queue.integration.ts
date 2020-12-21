@@ -1,13 +1,21 @@
+import { OpenQuestionStatus } from '@koh/common';
+import { QuestionModel } from 'question/question.entity';
 import { QueueModule } from '../src/queue/queue.module';
 import {
   CourseFactory,
   QuestionFactory,
   QueueFactory,
+  StudentCourseFactory,
   TACourseFactory,
   UserCourseFactory,
   UserFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
+
+async function delay(ms) {
+  // return await for better async stack trace support in case of errors.
+  return await new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 describe('Queue Integration', () => {
   const supertest = setupIntegrationTest(QueueModule);
@@ -32,7 +40,7 @@ describe('Queue Integration', () => {
         id: 2,
         notes: null,
         queueSize: 1,
-        room: 'WVH 101',
+        room: 'Online',
         staffList: expect.any(Array),
         isOpen: true,
         startTime: expect.any(String),
@@ -106,7 +114,7 @@ describe('Queue Integration', () => {
         .get(`/queues/${queue.id}/questions`)
         .expect(200);
       expect(res.body).toMatchSnapshot();
-      expect(res.body[0].creator).not.toHaveProperty('name');
+      expect(res.body.queue[0].creator).not.toHaveProperty('name');
     });
 
     it('student can see their own questions private data', async () => {
@@ -135,7 +143,7 @@ describe('Queue Integration', () => {
       const res = await supertest({ userId: userCourse.user.id })
         .get(`/queues/${queue.id}/questions`)
         .expect(200);
-      expect(res.body[0].creator).toHaveProperty('name');
+      expect(res.body.queue[0].creator).toHaveProperty('name');
     });
 
     it('returns all creator data for ta', async () => {
@@ -162,7 +170,7 @@ describe('Queue Integration', () => {
       const res = await supertest({ userId: ta.user.id })
         .get(`/queues/${queue.id}/questions`)
         .expect(200);
-      expect(res.body[0].creator).toHaveProperty('name');
+      expect(res.body.queue[0].creator).toHaveProperty('name');
     });
 
     it('returns 404 when a user is not a member of the course', async () => {
@@ -195,6 +203,65 @@ describe('Queue Integration', () => {
       await supertest({ userId: user.id })
         .get(`/queues/8291390/questions`)
         .expect(404);
+    });
+  });
+
+  describe('POST /queues/:id/clean', () => {
+    // Create a queue that is closed and has a question ready to be cleaned
+    const cleanableQueue = async () => {
+      const queue = await QueueFactory.create({
+        room: 'The Alamo',
+        officeHours: [],
+      });
+      await QuestionFactory.create({ queue: queue });
+      return queue;
+    };
+    it('cleans the queue', async () => {
+      const queue = await cleanableQueue();
+      const tcf = await TACourseFactory.create({
+        course: queue.course,
+        user: await UserFactory.create(),
+      });
+
+      expect(
+        await QuestionModel.inQueueWithStatus(
+          queue.id,
+          Object.values(OpenQuestionStatus),
+        ).getCount(),
+      ).toEqual(1);
+
+      await supertest({ userId: tcf.userId })
+        .post(`/queues/${queue.id}/clean`)
+        .expect(201);
+
+      await delay(100);
+      expect(
+        await QuestionModel.inQueueWithStatus(
+          queue.id,
+          Object.values(OpenQuestionStatus),
+        ).getCount(),
+      ).toEqual(0);
+    });
+
+    it('does not allow students access', async () => {
+      const queue = await cleanableQueue();
+      const scf = await StudentCourseFactory.create({
+        course: queue.course,
+        user: await UserFactory.create(),
+      });
+
+      await supertest({ userId: scf.userId })
+        .post(`/queues/${queue.id}/clean`)
+        .expect(401);
+
+      await delay(100);
+      /// questions should still be there
+      expect(
+        await QuestionModel.inQueueWithStatus(
+          queue.id,
+          Object.values(OpenQuestionStatus),
+        ).getCount(),
+      ).toEqual(1);
     });
   });
 });

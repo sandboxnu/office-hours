@@ -1,11 +1,15 @@
-import { Controller, Get, UseGuards, Patch, Body } from '@nestjs/common';
-import { Connection } from 'typeorm';
-import { UserModel } from './user.entity';
+import {
+  DesktopNotifPartial,
+  GetProfileResponse,
+  UpdateProfileParams,
+} from '@koh/common';
+import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
 import { pick } from 'lodash';
-import { GetProfileResponse, UpdateProfileParams } from '@koh/common';
+import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
-import { User } from './user.decorator';
 import { NotificationService } from '../notification/notification.service';
+import { User } from './user.decorator';
+import { UserModel } from './user.entity';
 
 @Controller('profile')
 @UseGuards(JwtAuthGuard)
@@ -17,7 +21,8 @@ export class ProfileController {
 
   @Get()
   async get(
-    @User(['courses', 'courses.course', 'phoneNotif']) user: UserModel,
+    @User(['courses', 'courses.course', 'phoneNotif', 'desktopNotifs'])
+    user: UserModel,
   ): Promise<GetProfileResponse> {
     const courses = user.courses
       .filter((userCourse) => userCourse.course.enabled)
@@ -31,10 +36,21 @@ export class ProfileController {
         };
       });
 
+    const desktopNotifs: DesktopNotifPartial[] = user.desktopNotifs.map(
+      (d) => ({
+        endpoint: d.endpoint,
+        id: d.id,
+        createdAt: d.createdAt,
+        name: d.name,
+      }),
+    );
+
     const userResponse = pick(user, [
       'id',
       'email',
       'name',
+      'firstName',
+      'lastName',
       'photoURL',
       'desktopNotifsEnabled',
       'phoneNotifsEnabled',
@@ -43,15 +59,18 @@ export class ProfileController {
       ...userResponse,
       courses,
       phoneNumber: user.phoneNotif?.phoneNumber,
+      desktopNotifs,
     };
   }
 
   @Patch()
   async patch(
     @Body() userPatch: UpdateProfileParams,
-    @User(['courses', 'courses.course', 'phoneNotif']) user: UserModel,
+    @User(['courses', 'courses.course', 'phoneNotif', 'desktopNotifs'])
+    user: UserModel,
   ): Promise<GetProfileResponse> {
     user = Object.assign(user, userPatch);
+    user.name = user.firstName + ' ' + user.lastName;
     if (
       user.phoneNotifsEnabled &&
       userPatch.phoneNumber !== user.phoneNotif?.phoneNumber
@@ -60,28 +79,6 @@ export class ProfileController {
     }
     await user.save();
 
-    const courses = user.courses.map((userCourse) => {
-      return {
-        course: {
-          id: userCourse.courseId,
-          name: userCourse.course.name,
-        },
-        role: userCourse.role,
-      };
-    });
-
-    const userResponse = pick(user, [
-      'id',
-      'email',
-      'name',
-      'photoURL',
-      'desktopNotifsEnabled',
-      'phoneNotifsEnabled',
-    ]);
-    return {
-      ...userResponse,
-      courses,
-      phoneNumber: user.phoneNotif?.phoneNumber,
-    };
+    return this.get(user);
   }
 }
