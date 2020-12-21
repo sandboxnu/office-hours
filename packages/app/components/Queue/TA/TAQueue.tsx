@@ -14,7 +14,6 @@ import {
 } from "../QueueListSharedComponents";
 import { EditQueueModal } from "./EditQueueModal";
 import onHelpQuestion from "./onHelpQuestion";
-import { COMPACT_BKPT } from "./TAQueueBreakpoints";
 import TAQueueListDetail from "./TAQueueListDetail";
 
 const Container = styled.div`
@@ -42,9 +41,6 @@ const EditQueueButton = styled(QueueInfoColumnButton)`
 
 const MiddleSpacer = styled.div`
   margin-left: 20px;
-  @media (min-width: ${COMPACT_BKPT}px) {
-    margin-left: 32px;
-  }
 `;
 
 interface TAQueueProps {
