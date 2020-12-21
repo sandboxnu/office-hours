@@ -1,10 +1,10 @@
 import { HourglassOutlined, QuestionOutlined } from "@ant-design/icons";
 import { OpenQuestionStatus, Question } from "@koh/common";
+import { Badge } from "antd";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { getWaitTime } from "../../../utils/TimeUtil";
 import AvatarWithInitals from "../../common/AvatarWithInitials";
-import { COMPACT_BKPT } from "./TAQueueBreakpoints";
 
 function truncate(string: string, length: number) {
   if (string.length > length) {
@@ -27,22 +27,9 @@ const Container = styled.div<{ selected: boolean }>`
     background: ${({ selected }) => (selected ? "#EFF8FF" : "#ECF0F3")};
   }
 `;
-const NumberAndAvatarContainer = styled.div`
-  display: flex;
-  align-items: center;
-`;
-const PlaceInLine = styled.span`
-  width: 40px;
-  text-align: center;
-  font-size: 18px;
-  color: #212934;
-`;
 const AvatarContainer = styled.div`
-  display: none;
-  @media (min-width: ${COMPACT_BKPT}px) {
-    margin-right: 12px;
-    display: block;
-  }
+  margin: 10px 12px 0 25px;
+  display: block;
 `;
 const QuestionInfoContainer = styled.div``;
 
@@ -79,12 +66,15 @@ export default function TAQueueListItem({
       selected={selected}
       data-cy={`queue-list-item-${question.id}`}
     >
-      <NumberAndAvatarContainer>
-        <PlaceInLine>{index}</PlaceInLine>
-        <AvatarContainer>
+      <AvatarContainer>
+        <Badge
+          count={`#${index}`}
+          style={{ backgroundColor: "#3684c6" }}
+          offset={[-40, 0]}
+        >
           <AvatarWithInitals size={40} name={question.creator.name} />
-        </AvatarContainer>
-      </NumberAndAvatarContainer>
+        </Badge>
+      </AvatarContainer>
       <QuestionInfoContainer>
         <Name>{question.creator.name}</Name>
         <QuestionText>

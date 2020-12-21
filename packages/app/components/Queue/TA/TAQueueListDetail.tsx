@@ -7,7 +7,7 @@ import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { SettingsOptions } from "../../Settings/SettingsPage";
-import { COMPACT_BKPT, SPLIT_DETAIL_BKPT } from "./TAQueueBreakpoints";
+import { SPLIT_DETAIL_BKPT } from "./TAQueueBreakpoints";
 import TAQueueDetail from "./TAQueueDetail";
 import TAQueueListSection from "./TAQueueListSection";
 
@@ -32,11 +32,8 @@ const Container = styled.div`
 
 const List = styled.div`
   @media (min-width: ${SPLIT_DETAIL_BKPT}px) {
-    width: 230px;
-    overflow-y: scroll;
-  }
-  @media (min-width: ${COMPACT_BKPT}px) {
     width: 320px;
+    overflow-y: scroll;
   }
 `;
 
