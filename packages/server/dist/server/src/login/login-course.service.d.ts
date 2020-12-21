@@ -1,8 +1,8 @@
-import { Connection } from 'typeorm';
 import { KhouryDataParams, Role } from '@koh/common';
-import { UserCourseModel } from 'profile/user-course.entity';
 import { CourseModel } from 'course/course.entity';
+import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
+import { Connection } from 'typeorm';
 export declare class LoginCourseService {
     private connection;
     constructor(connection: Connection);
