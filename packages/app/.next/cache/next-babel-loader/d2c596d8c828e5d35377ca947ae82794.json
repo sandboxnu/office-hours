@@ -1,0 +1,1 @@
+{"ast":null,"code":"/**\n * Just breakpoint constants\n */\n// The min screen width at which the list and detail become side-by-side\nexport const SPLIT_DETAIL_BKPT = 900;","map":null,"metadata":{},"sourceType":"module"}
