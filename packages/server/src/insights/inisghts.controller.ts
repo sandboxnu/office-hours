@@ -42,7 +42,7 @@ export class InsightsController {
       filters: [
         {
           type: 'courseId',
-          conditional: `"courseId" = ${courseId}`,
+          courseId,
         },
       ],
     });
