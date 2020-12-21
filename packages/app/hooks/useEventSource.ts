@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ReconnectingEventSource from "reconnecting-eventsource";
 
 interface ListenerAndCount {
   listener: (d: any) => void;
@@ -33,7 +34,7 @@ export const useEventSource = (
         source = EVENTSOURCES[url];
       } else {
         source = {
-          eventSource: new EventSource(url),
+          eventSource: new ReconnectingEventSource(url),
           listeners: {},
           isLiveSetters: new Set(),
         };
