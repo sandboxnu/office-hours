@@ -9,6 +9,7 @@ import {
   Get,
   Patch,
   Post,
+  Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -98,7 +99,20 @@ export class ProfileController {
       dest: 'uploads/',
     }),
   )
-  async upoloadImage(@UploadedFile() file): Promise<void> {
+  async uploadImage(
+    @UploadedFile() file,
+    @User() user: UserModel,
+  ): Promise<void> {
+    user.photoURL = file.filename;
+    await user.save();
+
     console.log(file);
+    const test = await UserModel.findOne(user.id);
+    console.log(test);
+  }
+
+  @Get('/get_picture')
+  async getImage(@User() user: UserModel, @Res() res): Promise<void> {
+    res.sendFile(user.photoURL, { root: 'uploads' });
   }
 }

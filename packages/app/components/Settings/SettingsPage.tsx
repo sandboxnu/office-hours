@@ -62,7 +62,7 @@ export default function SettingsPage({
             {profile?.photoURL ? (
               <Avatar
                 icon={<UserOutlined />}
-                src={profile?.photoURL}
+                src={"/api/v1/profile/get_picture"}
                 size={avatarSize}
                 style={{ marginTop: "60px", marginBottom: "60px" }}
               />
