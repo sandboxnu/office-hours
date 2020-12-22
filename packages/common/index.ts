@@ -46,10 +46,8 @@ export class User {
   photoURL!: string;
   courses!: UserCourse[];
   desktopNotifsEnabled!: boolean;
-
   @Type(() => DesktopNotifPartial)
   desktopNotifs!: DesktopNotifPartial[];
-
   phoneNotifsEnabled!: boolean;
   phoneNumber!: string;
 }
@@ -527,6 +525,35 @@ export interface GetReleaseNotesResponse {
   lastUpdatedUnixTime: number;
 }
 
+export type GetInsightResponse = Insight;
+
+export class Insight {
+  name!: string;
+  displayName!: string;
+  description!: string;
+  component!: InsightDisplay;
+  output!: PossibleOutputTypes;
+}
+
+export enum InsightDisplay {
+  SimpleDisplay = "SimpleDisplay",
+  SimpleChart = "SimpleChart",
+}
+
+export type PossibleOutputTypes =
+  | SimpleDisplayOutputType
+  | SimpleChartOutputType;
+
+export type SimpleDisplayOutputType = number;
+
+export type SimpleChartOutputType = {
+  data: any[];
+  xAxisName?: string;
+  yAxisName?: string;
+  xAxisLabels?: string[];
+  yAxisLabels?: string[];
+};
+
 export const ERROR_MESSAGES = {
   questionController: {
     createQuestion: {
@@ -569,6 +596,10 @@ export const ERROR_MESSAGES = {
   releaseNotesController: {
     releaseNotesTime: (e: any): string =>
       "Error Parsing release notes time: " + e,
+  },
+  insightsController: {
+    insightUnathorized: "User is not authorized to view this insight",
+    insightNameNotFound: "The insight requested was not found",
   },
   roleGuard: {
     notLoggedIn: "Must be logged in",

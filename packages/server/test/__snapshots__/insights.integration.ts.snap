@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Insights Integration GET /insights/:courseId/:insightName returns the correct insights data 1`] = `
+Object {
+  "component": "SimpleDisplay",
+  "description": "Gets the total number questions asked",
+  "displayName": "Total Questions Asked",
+  "name": "totalQuestionsAsked",
+  "output": 6,
+  "possibleFilters": Array [
+    "courseId",
+    "timeframe",
+  ],
+  "roles": Array [
+    "professor",
+  ],
+}
+`;
