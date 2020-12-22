@@ -7,12 +7,14 @@ import {
   Get,
   Param,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'login/jwt-auth.guard';
 import { Connection } from 'typeorm';
-import { Roles } from 'profile/roles.decorator';
-import { Role, GetInsightResponse, ERROR_MESSAGES } from '@koh/common';
+import { GetInsightResponse, ERROR_MESSAGES } from '@koh/common';
+import { User } from '../profile/user.decorator';
 import { INSIGHTS } from './insights';
+import { UserModel } from 'profile/user.entity';
 
 @Controller('insights')
 @UseGuards(JwtAuthGuard)
@@ -24,18 +26,20 @@ export class InsightsController {
   ) {}
 
   @Get(':courseId/:insightName')
-  @Roles(Role.PROFESSOR)
   async get(
     @Param('courseId') courseId: number,
     @Param('insightName') insightName: string,
+    @User(['courses']) user: UserModel,
     @Query() filters: any,
   ): Promise<GetInsightResponse> {
-    // // TODO: Check that the current role is allowed to see the given insight
-    // if (INSIGHTS[insightName].Roles.includes(role)) {
-    //   throw new BadRequestException(
-    //     ERROR_MESSAGES.insightsController.insightUnathorized
-    //   )
-    // }
+    // Check that the current user's role has access to the given insight
+    const role = user.courses.find((course) => course.courseId === courseId)
+      .role;
+    if (!INSIGHTS[insightName].roles.includes(role)) {
+      throw new BadRequestException(
+        ERROR_MESSAGES.insightsController.insightUnathorized,
+      );
+    }
 
     const insight = await this.insightsService.generateInsight({
       insight: INSIGHTS[insightName],
