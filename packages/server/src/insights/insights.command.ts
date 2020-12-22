@@ -2,7 +2,7 @@ import { Command, Positional } from 'nestjs-command';
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { InsightsService } from './insights.service';
-import { INSIGHTS } from './insights';
+import { INSIGHTS_MAP } from './insights';
 
 /**
  * Initial Product: Create a system to aggregate certain data within a certain time period for one course
@@ -31,7 +31,10 @@ export class InsightsCommand {
     courseId: number,
   ): Promise<any> {
     const insights = await this.insightsService.generateAllInsights({
-      insights: [INSIGHTS.totalStudents, INSIGHTS.questionTypeBreakdown],
+      insights: [
+        INSIGHTS_MAP.TotalStudents,
+        INSIGHTS_MAP.QuestionTypeBreakdown,
+      ],
       filters: [
         {
           type: 'courseId',

@@ -11,7 +11,7 @@ import { InsightDisplay } from "@koh/common";
 
 export default function Insights(): ReactElement {
   // TODO: In the future this will come from the users specific insights that want to see
-  const insights = ["totalQuestionsAsked", "totalStudents"];
+  const insights = ["TotalQuestionsAsked", "TotalStudents"];
 
   return (
     <>

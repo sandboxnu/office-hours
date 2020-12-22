@@ -8,6 +8,7 @@ import {
 import { setupIntegrationTest } from './util/testUtils';
 import { InsightsModule } from '../src/insights/insights.module';
 import { Role } from '@koh/common';
+import { TotalQuestionsAsked } from 'insights/insights';
 
 describe('Insights Integration', () => {
   const supertest = setupIntegrationTest(InsightsModule);
@@ -25,7 +26,7 @@ describe('Insights Integration', () => {
       });
 
       const res = await supertest({ userId: user.id })
-        .get(`/insights/${course.id}/totalQuestionsAsked`)
+        .get(`/insights/${course.id}/${TotalQuestionsAsked.name}`)
         .expect(200);
       expect(res.body).toMatchSnapshot();
     });
@@ -34,11 +35,20 @@ describe('Insights Integration', () => {
       const ucf = await UserCourseFactory.create({ role: Role.STUDENT });
 
       const res = await supertest({ userId: ucf.userId })
-        .get(`/insights/${ucf.courseId}/totalQuestionsAsked`)
+        .get(`/insights/${ucf.courseId}/${TotalQuestionsAsked.name}`)
         .expect(400);
       expect(res.body.message).toEqual(
         'User is not authorized to view this insight',
       );
+    });
+
+    it('returns an error when the insight name is not found', async () => {
+      const ucf = await UserCourseFactory.create({ role: Role.STUDENT });
+
+      const res = await supertest({ userId: ucf.userId })
+        .get(`/insights/${ucf.courseId}/AlamoInsight`)
+        .expect(400);
+      expect(res.body.message).toEqual('The insight requested was not found');
     });
   });
 });

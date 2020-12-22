@@ -64,7 +64,7 @@ const FILTER_MAP = {
   },
 };
 
-class TotalStudents implements InsightInterface<UserCourseModel> {
+export class TotalStudents implements InsightInterface<UserCourseModel> {
   name = 'totalStudents';
   displayName = 'Total Students';
   description = 'Gets the total number of students';
@@ -86,7 +86,7 @@ class TotalStudents implements InsightInterface<UserCourseModel> {
   }
 }
 
-class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
+export class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
   name = 'totalQuestionsAsked';
   displayName = 'Total Questions Asked';
   description = 'Gets the total number questions asked';
@@ -109,7 +109,7 @@ class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
 }
 
 // WIP
-class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
+export class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
   name = 'questionTypeBreakdown';
   displayName = 'Question Type Breakdown';
   description =
@@ -158,7 +158,7 @@ class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
   }
 }
 
-class AverageWaitTime implements InsightInterface<QuestionModel> {
+export class AverageWaitTime implements InsightInterface<QuestionModel> {
   name = 'averageWaitTime';
   displayName = 'Average Wait Time';
   description = 'Gets the average wait time';
@@ -185,9 +185,9 @@ class AverageWaitTime implements InsightInterface<QuestionModel> {
   }
 }
 
-export const INSIGHTS = {
-  totalStudents: new TotalStudents(),
-  totalQuestionsAsked: new TotalQuestionsAsked(),
-  averageWaitTime: new AverageWaitTime(),
-  questionTypeBreakdown: new QuestionTypeBreakdown(),
+export const INSIGHTS_MAP = {
+  [TotalStudents.name]: new TotalStudents(),
+  [TotalQuestionsAsked.name]: new TotalQuestionsAsked(),
+  [AverageWaitTime.name]: new AverageWaitTime(),
+  [QuestionTypeBreakdown.name]: new QuestionTypeBreakdown(),
 };

@@ -13,7 +13,7 @@ import { JwtAuthGuard } from 'login/jwt-auth.guard';
 import { Connection } from 'typeorm';
 import { GetInsightResponse, ERROR_MESSAGES } from '@koh/common';
 import { User } from '../profile/user.decorator';
-import { INSIGHTS } from './insights';
+import { INSIGHTS_MAP } from './insights';
 import { UserModel } from 'profile/user.entity';
 
 @Controller('insights')
@@ -32,17 +32,24 @@ export class InsightsController {
     @User(['courses']) user: UserModel,
     @Query() filters: any,
   ): Promise<GetInsightResponse> {
+    // Check that the insight name is valid
+    const insightNames = Object.keys(INSIGHTS_MAP);
+    if (!insightNames.includes(insightName)) {
+      throw new BadRequestException(
+        ERROR_MESSAGES.insightsController.insightNameNotFound,
+      );
+    }
     // Check that the current user's role has access to the given insight
     const role = user.courses.find((course) => course.courseId === courseId)
       .role;
-    if (!INSIGHTS[insightName].roles.includes(role)) {
+    if (!INSIGHTS_MAP[insightName].roles.includes(role)) {
       throw new BadRequestException(
         ERROR_MESSAGES.insightsController.insightUnathorized,
       );
     }
 
     const insight = await this.insightsService.generateInsight({
-      insight: INSIGHTS[insightName],
+      insight: INSIGHTS_MAP[insightName],
       filters: [
         {
           type: 'courseId',

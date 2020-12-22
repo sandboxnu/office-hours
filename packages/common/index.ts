@@ -599,6 +599,7 @@ export const ERROR_MESSAGES = {
   },
   insightsController: {
     insightUnathorized: "User is not authorized to view this insight",
+    insightNameNotFound: "The insight requested was not found",
   },
   roleGuard: {
     notLoggedIn: "Must be logged in",

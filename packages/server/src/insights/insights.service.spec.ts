@@ -8,7 +8,7 @@ import {
   CourseFactory,
   QueueFactory,
 } from '../../test/util/factories';
-import { INSIGHTS } from './insights';
+import { INSIGHTS_MAP } from './insights';
 import { QuestionType } from '@koh/common';
 
 describe('InsightsService', () => {
@@ -40,7 +40,7 @@ describe('InsightsService', () => {
       await UserCourseFactory.create();
 
       const res = await service.generateInsight({
-        insight: INSIGHTS.totalStudents,
+        insight: INSIGHTS_MAP.TotalStudents,
         filters: [
           {
             type: 'courseId',
@@ -63,7 +63,7 @@ describe('InsightsService', () => {
       await QuestionFactory.create({ queue });
 
       const res = await service.generateInsight({
-        insight: INSIGHTS.totalQuestionsAsked,
+        insight: INSIGHTS_MAP.TotalQuestionsAsked,
         filters: [
           {
             type: 'courseId',
@@ -86,7 +86,7 @@ describe('InsightsService', () => {
       });
 
       const res = await service.generateInsight({
-        insight: INSIGHTS.averageWaitTime,
+        insight: INSIGHTS_MAP.AverageWaitTime,
         filters: [
           {
             type: 'courseId',
@@ -114,7 +114,7 @@ describe('InsightsService', () => {
       queue,
     });
     const res = await service.generateInsight({
-      insight: INSIGHTS.questionTypeBreakdown,
+      insight: INSIGHTS_MAP.QuestionTypeBreakdown,
       filters: [
         {
           type: 'courseId',
@@ -142,7 +142,10 @@ describe('InsightsService', () => {
       await QuestionFactory.createList(18, { queue });
 
       const res = await service.generateAllInsights({
-        insights: [INSIGHTS.totalStudents, INSIGHTS.totalQuestionsAsked],
+        insights: [
+          INSIGHTS_MAP.TotalStudents,
+          INSIGHTS_MAP.TotalQuestionsAsked,
+        ],
         filters: [
           {
             type: 'courseId',
