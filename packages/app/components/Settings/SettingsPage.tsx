@@ -68,6 +68,8 @@ export default function SettingsPage({
     return isJpgOrPng && isLt1M;
   };
 
+  console.log(error);
+
   return (
     <Row>
       <Col span={4} style={{ textAlign: "center" }}>
@@ -75,7 +77,7 @@ export default function SettingsPage({
           <>
             {uploading && <Spin />}
             {!uploading &&
-              (profile?.photoURL ? (
+              (profile?.photoURL && error === undefined ? (
                 <Avatar
                   icon={<UserOutlined />}
                   src={"/api/v1/profile/get_picture/" + profile.photoURL}

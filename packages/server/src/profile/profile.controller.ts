@@ -23,6 +23,7 @@ import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { NotificationService } from '../notification/notification.service';
 import { User } from './user.decorator';
 import { UserModel } from './user.entity';
+const fs = require('fs');
 
 @Controller('profile')
 @UseGuards(JwtAuthGuard)
@@ -105,6 +106,10 @@ export class ProfileController {
     @UploadedFile() file,
     @User() user: UserModel,
   ): Promise<void> {
+    if (user.photoURL) {
+      fs.unlinkSync('uploads/' + user.photoURL);
+    }
+
     user.photoURL = file.filename;
     await user.save();
 
@@ -119,7 +124,7 @@ export class ProfileController {
     @User() user: UserModel,
     @Res() res,
   ): Promise<void> {
-    if (photoURL === user.photoURL) {
+    if (fs.existsSync('uploads/' + user.photoURL)) {
       res.sendFile(user.photoURL, { root: 'uploads' });
     } else {
       throw new NotFoundException('');
