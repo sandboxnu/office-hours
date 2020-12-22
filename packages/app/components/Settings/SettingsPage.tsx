@@ -1,6 +1,6 @@
-import { BellOutlined, EditOutlined } from "@ant-design/icons";
+import { BellOutlined, EditOutlined, UploadOutlined } from "@ant-design/icons";
 import { useWindowWidth } from "@react-hook/window-size";
-import { Col, Menu, Row, Space } from "antd";
+import { Button, Col, Menu, Row, Space, Upload } from "antd";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../hooks/useProfile";
@@ -38,28 +38,36 @@ export default function SettingsPage({
     <Row>
       <Col span={4} style={{ textAlign: "center" }}>
         {avatarSize ? (
-          <AvatarWithInitals
-            style={{ marginTop: "60px", marginBottom: "60px" }}
-            name={profile?.name}
-            size={avatarSize}
-            fontSize={avatarSize * (3 / 7)}
-          />
+          <>
+            <AvatarWithInitals
+              style={{ marginTop: "60px", marginBottom: "60px" }}
+              name={profile?.name}
+              size={avatarSize}
+              fontSize={avatarSize * (3 / 7)}
+            />
+
+            <Upload action={"/api/v1/profile/upload_picture"}>
+              <Button icon={<UploadOutlined />}>
+                Upload a Profile Picture
+              </Button>
+            </Upload>
+            <Menu
+              defaultSelectedKeys={[currentSettings]}
+              onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}
+              style={{ background: "#f8f9fb" }}
+            >
+              <Menu.Item key={SettingsOptions.PROFILE} icon={<EditOutlined />}>
+                Edit Profile
+              </Menu.Item>
+              <Menu.Item
+                key={SettingsOptions.NOTIFICATIONS}
+                icon={<BellOutlined />}
+              >
+                Notifications Settings
+              </Menu.Item>
+            </Menu>
+          </>
         ) : null}
-        <Menu
-          defaultSelectedKeys={[currentSettings]}
-          onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}
-          style={{ background: "#f8f9fb" }}
-        >
-          <Menu.Item key={SettingsOptions.PROFILE} icon={<EditOutlined />}>
-            Edit Profile
-          </Menu.Item>
-          <Menu.Item
-            key={SettingsOptions.NOTIFICATIONS}
-            icon={<BellOutlined />}
-          >
-            Notifications Settings
-          </Menu.Item>
-        </Menu>
       </Col>
       <VerticalDivider />
       <Space direction="vertical" size={40} style={{ flexGrow: 1 }}>

@@ -3,7 +3,17 @@ import {
   GetProfileResponse,
   UpdateProfileParams,
 } from '@koh/common';
-import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { pick } from 'lodash';
 import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
@@ -80,5 +90,11 @@ export class ProfileController {
     await user.save();
 
     return this.get(user);
+  }
+
+  @Post('/upload_picture')
+  @UseInterceptors(FileInterceptor('file'))
+  async upoloadImage(@UploadedFile() file): Promise<void> {
+    console.log(file);
   }
 }
