@@ -7,6 +7,8 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
+  Param,
   Patch,
   Post,
   Res,
@@ -111,8 +113,16 @@ export class ProfileController {
     console.log(test);
   }
 
-  @Get('/get_picture')
-  async getImage(@User() user: UserModel, @Res() res): Promise<void> {
-    res.sendFile(user.photoURL, { root: 'uploads' });
+  @Get('/get_picture/:photoURL')
+  async getImage(
+    @Param('photoURL') photoURL: string,
+    @User() user: UserModel,
+    @Res() res,
+  ): Promise<void> {
+    if (photoURL === user.photoURL) {
+      res.sendFile(user.photoURL, { root: 'uploads' });
+    } else {
+      throw new NotFoundException('');
+    }
   }
 }

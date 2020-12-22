@@ -4,11 +4,22 @@ import {
   UploadOutlined,
   UserOutlined,
 } from "@ant-design/icons";
+import { API } from "@koh/api-client";
 import { useWindowWidth } from "@react-hook/window-size";
-import { Avatar, Button, Col, Menu, message, Row, Space, Upload } from "antd";
+import {
+  Avatar,
+  Button,
+  Col,
+  Menu,
+  message,
+  Row,
+  Space,
+  Spin,
+  Upload,
+} from "antd";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
-import { useProfile } from "../../hooks/useProfile";
+import useSWR from "swr";
 import AvatarWithInitals from "../common/AvatarWithInitials";
 import NotificationsSettings from "./NotificationsSettings";
 import ProfileSettings from "./ProfileSettings";
@@ -32,7 +43,10 @@ const VerticalDivider = styled.div`
 export default function SettingsPage({
   defaultPage,
 }: SettingsPageProps): ReactElement {
-  const profile = useProfile();
+  const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
+    API.profile.index()
+  );
+
   const [currentSettings, setCurrentSettings] = useState(
     defaultPage || SettingsOptions.PROFILE
   );
@@ -59,26 +73,34 @@ export default function SettingsPage({
       <Col span={4} style={{ textAlign: "center" }}>
         {avatarSize ? (
           <>
-            {profile?.photoURL ? (
-              <Avatar
-                icon={<UserOutlined />}
-                src={"/api/v1/profile/get_picture"}
-                size={avatarSize}
-                style={{ marginTop: "60px", marginBottom: "60px" }}
-              />
-            ) : (
-              <AvatarWithInitals
-                style={{ marginTop: "60px", marginBottom: "60px" }}
-                name={profile?.name}
-                size={avatarSize}
-                fontSize={avatarSize * (3 / 7)}
-              />
-            )}
+            {uploading && <Spin />}
+            {!uploading &&
+              (profile?.photoURL ? (
+                <Avatar
+                  icon={<UserOutlined />}
+                  src={"/api/v1/profile/get_picture/" + profile.photoURL}
+                  size={avatarSize}
+                  style={{ marginTop: "60px", marginBottom: "60px" }}
+                />
+              ) : (
+                <AvatarWithInitals
+                  style={{ marginTop: "60px", marginBottom: "60px" }}
+                  name={profile?.name}
+                  size={avatarSize}
+                  fontSize={avatarSize * (3 / 7)}
+                />
+              ))}
 
             <Upload
               action={"/api/v1/profile/upload_picture"}
               beforeUpload={beforeUpload}
               showUploadList={false}
+              onChange={(info) => {
+                info.file.status === "uploading"
+                  ? setUploading(true)
+                  : setUploading(false);
+                mutate();
+              }}
             >
               <Button icon={<UploadOutlined />}>
                 Upload a Profile Picture
