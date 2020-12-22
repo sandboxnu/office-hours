@@ -1,17 +1,18 @@
-import React, { ReactElement } from "react";
-import { API } from "@koh/api-client";
-import useSWR from "swr";
-import { Tooltip, Card } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { useRouter } from "next/router";
-import { StandardPageContainer } from "../../../components/common/PageContainer";
-import SimpleDisplayComponent from "../../../components/Insights/components/SimpleDisplayComponent";
-import SimpleChartComponent from "../../../components/Insights/components/SimpleChartComponent";
+import { API } from "@koh/api-client";
 import { InsightDisplay } from "@koh/common";
+import { Card, Tooltip } from "antd";
+import { useRouter } from "next/router";
+import React, { ReactElement } from "react";
+import useSWR from "swr";
+import { StandardPageContainer } from "../../../components/common/PageContainer";
+import SimpleChartComponent from "../../../components/Insights/components/SimpleChartComponent";
+import SimpleDisplayComponent from "../../../components/Insights/components/SimpleDisplayComponent";
+import TACheckInTimesComponent from "../../../components/Insights/components/TACheckInTimesComponent";
 
 export default function Insights(): ReactElement {
   // TODO: In the future this will come from the users specific insights that want to see
-  const insights = ["totalQuestionsAsked", "totalStudents"];
+  const insights = ["totalQuestionsAsked", "totalStudents", "taCheckInTimes"];
 
   return (
     <>
@@ -55,6 +56,9 @@ function RenderInsight({ insightName }: RenderInsightProps): ReactElement {
       break;
     case InsightDisplay.SimpleChart:
       InsightComponent = SimpleChartComponent;
+      break;
+    case InsightDisplay.TACheckInTimes:
+      InsightComponent = TACheckInTimesComponent;
       break;
     default:
       // Line below will show error if switch is not exhaustive of all enum values

@@ -1,14 +1,20 @@
 import {
+  InsightDisplay,
+  PossibleOutputTypes,
   QuestionType,
   Role,
-  PossibleOutputTypes,
-  SimpleDisplayOutputType,
   SimpleChartOutputType,
-  InsightDisplay,
+  SimpleDisplayOutputType,
+  TACheckInTimesOutputType,
 } from '@koh/common';
+import { EventModel } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
-import { SelectQueryBuilder } from 'typeorm';
 import { QuestionModel } from 'question/question.entity';
+import { SelectQueryBuilder } from 'typeorm';
+
+enum InsightSize {
+  SMALL = 'small',
+}
 
 export interface InsightInterface<Model> {
   name: string;
@@ -18,6 +24,7 @@ export interface InsightInterface<Model> {
   component: InsightDisplay;
   model: new () => Model; // One of the modals have
   possibleFilters: string[];
+  size: InsightSize;
   compute: (
     queryBuilder: SelectQueryBuilder<Model>,
     insightFilters: any,
@@ -185,9 +192,27 @@ class AverageWaitTime implements InsightInterface<QuestionModel> {
   }
 }
 
+class TACheckInTimes implements InsightInterface<EventModel> {
+  name = 'taCheckInTimes';
+  displayName = 'TA Check In Times';
+  description = 'Get the times a TA checked in';
+  roles = [Role.PROFESSOR];
+  component = InsightDisplay.TACheckInTimes;
+  model = EventModel;
+  possibleFilters = ['courseId'];
+
+  async compute(
+    queryBuilder: SelectQueryBuilder<EventModel>,
+    filters,
+  ): Promise<TACheckInTimesOutputType> {
+    return {};
+  }
+}
+
 export const INSIGHTS = {
   totalStudents: new TotalStudents(),
   totalQuestionsAsked: new TotalQuestionsAsked(),
   averageWaitTime: new AverageWaitTime(),
   questionTypeBreakdown: new QuestionTypeBreakdown(),
+  taCheckInTimes: new TACheckInTimes(),
 };

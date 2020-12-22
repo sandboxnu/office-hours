@@ -538,11 +538,13 @@ export class Insight {
 export enum InsightDisplay {
   SimpleDisplay = "SimpleDisplay",
   SimpleChart = "SimpleChart",
+  TACheckInTimes = "TACheckInTimes",
 }
 
 export type PossibleOutputTypes =
   | SimpleDisplayOutputType
-  | SimpleChartOutputType;
+  | SimpleChartOutputType
+  | TACheckInTimesOutputType;
 
 export type SimpleDisplayOutputType = number;
 
@@ -552,6 +554,15 @@ export type SimpleChartOutputType = {
   yAxisName?: string;
   xAxisLabels?: string[];
   yAxisLabels?: string[];
+};
+
+export type TACheckInTimesOutputType = {
+  [taName: string]: TACheckInTimes[];
+};
+
+export type TACheckInTimes = {
+  taCheckIn: Date;
+  taCheckOut: Date;
 };
 
 export const ERROR_MESSAGES = {
