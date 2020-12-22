@@ -11,6 +11,7 @@ import { InsightInterface } from './insights';
 export class InsightsService {
   constructor(private connection: Connection) {}
 
+  // Generate the output data for an insight by calling its compute function
   async generateOutput({ insight, filters }): Promise<any> {
     const queryBuilder = await insight.model
       .getRepository()
@@ -20,11 +21,13 @@ export class InsightsService {
     return output;
   }
 
+  // Compute the output data for an insight and add it to the insight object
   async generateInsight({ insight, filters }): Promise<any> {
     const output = await this.generateOutput({ insight, filters });
     return { output, ...insight };
   }
 
+  // Generate a map of insights that where the output has been computed
   async generateAllInsights({ insights, filters }): Promise<any> {
     const insightsWithOutput = {};
     await Promise.all(
