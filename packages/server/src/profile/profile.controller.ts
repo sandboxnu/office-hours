@@ -93,7 +93,11 @@ export class ProfileController {
   }
 
   @Post('/upload_picture')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      dest: 'uploads/',
+    }),
+  )
   async upoloadImage(@UploadedFile() file): Promise<void> {
     console.log(file);
   }
