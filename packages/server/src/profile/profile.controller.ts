@@ -110,7 +110,12 @@ export class ProfileController {
   ): Promise<void> {
     if (user.photoURL) {
       fs.unlink(process.env.UPLOAD_LOCATION + '/' + user.photoURL, (err) => {
-        console.error('Oh shit: ', err);
+        console.error(
+          'Error deleting previous picture at: ',
+          user.photoURL,
+          err,
+          'the previous image was at an invalid location?',
+        );
       });
     }
 
@@ -127,7 +132,7 @@ export class ProfileController {
     if (fs.existsSync(process.env.UPLOAD_LOCATION + '/' + photoURL)) {
       res.sendFile(photoURL, { root: process.env.UPLOAD_LOCATION });
     } else {
-      throw new NotFoundException('');
+      throw new NotFoundException();
     }
   }
 }
