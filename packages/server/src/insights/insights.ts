@@ -11,7 +11,6 @@ import { SelectQueryBuilder } from 'typeorm';
 import { QuestionModel } from 'question/question.entity';
 
 export interface InsightInterface<Model> {
-  name: string;
   displayName: string;
   description: string;
   roles: Role[];
@@ -65,7 +64,6 @@ const FILTER_MAP = {
 };
 
 export class TotalStudents implements InsightInterface<UserCourseModel> {
-  name = 'totalStudents';
   displayName = 'Total Students';
   description = 'Gets the total number of students';
   roles = [Role.PROFESSOR];
@@ -87,7 +85,6 @@ export class TotalStudents implements InsightInterface<UserCourseModel> {
 }
 
 export class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
-  name = 'totalQuestionsAsked';
   displayName = 'Total Questions Asked';
   description = 'Gets the total number questions asked';
   roles = [Role.PROFESSOR];
@@ -110,7 +107,6 @@ export class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
 
 // WIP
 export class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
-  name = 'questionTypeBreakdown';
   displayName = 'Question Type Breakdown';
   description =
     'Returns a table of each question type and how many questions of that type were asked';
@@ -159,7 +155,6 @@ export class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
 }
 
 export class AverageWaitTime implements InsightInterface<QuestionModel> {
-  name = 'averageWaitTime';
   displayName = 'Average Wait Time';
   description = 'Gets the average wait time';
   roles = [Role.PROFESSOR];
