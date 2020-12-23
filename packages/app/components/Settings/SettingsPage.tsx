@@ -68,8 +68,6 @@ export default function SettingsPage({
     return isJpgOrPng && isLt1M;
   };
 
-  console.log(error);
-
   return (
     <Row>
       <Col span={4} style={{ textAlign: "center" }}>
@@ -82,18 +80,18 @@ export default function SettingsPage({
                   icon={<UserOutlined />}
                   src={"/api/v1/profile/get_picture/" + profile.photoURL}
                   size={avatarSize}
-                  style={{ marginTop: "60px", marginBottom: "60px" }}
+                  style={{ marginTop: "60px", marginBottom: "15px" }}
                 />
               ) : (
                 <AvatarWithInitals
-                  style={{ marginTop: "60px", marginBottom: "60px" }}
+                  style={{ marginTop: "60px", marginBottom: "15px" }}
                   name={profile?.name}
                   size={avatarSize}
                   fontSize={avatarSize * (3 / 7)}
                 />
               ))}
-
             <Upload
+              style={{ marginBottom: "60px" }}
               action={"/api/v1/profile/upload_picture"}
               beforeUpload={beforeUpload}
               showUploadList={false}

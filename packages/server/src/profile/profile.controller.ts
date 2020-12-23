@@ -17,13 +17,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
+import * as fs from 'fs';
 import { pick } from 'lodash';
 import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { NotificationService } from '../notification/notification.service';
 import { User } from './user.decorator';
 import { UserModel } from './user.entity';
-const fs = require('fs');
 
 @Controller('profile')
 @UseGuards(JwtAuthGuard)
@@ -107,22 +108,20 @@ export class ProfileController {
     @User() user: UserModel,
   ): Promise<void> {
     if (user.photoURL) {
-      fs.unlinkSync('uploads/' + user.photoURL);
+      fs.unlink('uploads/' + user.photoURL, (err) => {
+        throw err;
+      });
     }
 
     user.photoURL = file.filename;
     await user.save();
-
-    console.log(file);
-    const test = await UserModel.findOne(user.id);
-    console.log(test);
   }
 
   @Get('/get_picture/:photoURL')
   async getImage(
     @Param('photoURL') photoURL: string,
     @User() user: UserModel,
-    @Res() res,
+    @Res() res: Response,
   ): Promise<void> {
     if (fs.existsSync('uploads/' + user.photoURL)) {
       res.sendFile(user.photoURL, { root: 'uploads' });
