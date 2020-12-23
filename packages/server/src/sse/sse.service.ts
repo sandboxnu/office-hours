@@ -50,7 +50,7 @@ export class SSEService<T> implements OnModuleDestroy {
 
   async onModuleDestroy(): Promise<void> {
     // Cleanup all direct connections by removing them from the rooms in redis.
-    await each(Object.values(this.directConnnections), async conn => {
+    await each(Object.values(this.directConnnections), async (conn) => {
       await conn.cleanup();
     });
   }
@@ -104,7 +104,7 @@ export class SSEService<T> implements OnModuleDestroy {
     const redis = this.redisService.getClient('db');
     const roomInfo = await redis.smembers(room);
     if (room) {
-      const clients: RedisClientInfo<T>[] = roomInfo.map(s => JSON.parse(s));
+      const clients: RedisClientInfo<T>[] = roomInfo.map((s) => JSON.parse(s));
       console.log(`sending sse to ${clients.length} clients in ${room}`);
       console.time(`sending sse time: `);
       apm.startTransaction('sse');
