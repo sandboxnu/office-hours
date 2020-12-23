@@ -73,23 +73,37 @@ export default function SettingsPage({
       <Col span={4} style={{ textAlign: "center" }}>
         {avatarSize ? (
           <>
-            {uploading && <Spin />}
-            {!uploading &&
-              (profile?.photoURL && error === undefined ? (
-                <Avatar
-                  icon={<UserOutlined />}
-                  src={"/api/v1/profile/get_picture/" + profile.photoURL}
-                  size={avatarSize}
-                  style={{ marginTop: "60px", marginBottom: "15px" }}
-                />
-              ) : (
-                <AvatarWithInitals
-                  style={{ marginTop: "60px", marginBottom: "15px" }}
-                  name={profile?.name}
-                  size={avatarSize}
-                  fontSize={avatarSize * (3 / 7)}
-                />
-              ))}
+            {uploading ? (
+              <Spin
+                style={{
+                  marginTop: avatarSize / 2 + avatarSize / 9,
+                  marginBottom: avatarSize / 2 + avatarSize / 9,
+                  marginRight: avatarSize / 4,
+                  marginLeft: avatarSize / 4,
+                }}
+                size={"large"}
+              />
+            ) : profile?.photoURL && error === undefined ? (
+              <Avatar
+                icon={<UserOutlined />}
+                src={"/api/v1/profile/get_picture/" + profile.photoURL}
+                size={avatarSize}
+                style={{
+                  marginTop: avatarSize / 3,
+                  marginBottom: avatarSize / 12,
+                }}
+              />
+            ) : (
+              <AvatarWithInitals
+                style={{
+                  marginTop: avatarSize / 3,
+                  marginBottom: avatarSize / 12,
+                }}
+                name={profile?.name}
+                size={avatarSize}
+                fontSize={avatarSize * (3 / 7)}
+              />
+            )}
             <Upload
               style={{ marginBottom: "60px" }}
               action={"/api/v1/profile/upload_picture"}
@@ -102,7 +116,10 @@ export default function SettingsPage({
                 mutate();
               }}
             >
-              <Button icon={<UploadOutlined />}>
+              <Button
+                icon={<UploadOutlined />}
+                style={{ marginBottom: "60px" }}
+              >
                 Upload a Profile Picture
               </Button>
             </Upload>
