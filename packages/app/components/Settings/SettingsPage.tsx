@@ -13,8 +13,8 @@ import {
   Menu,
   message,
   Row,
+  Skeleton,
   Space,
-  Spin,
   Upload,
 } from "antd";
 import React, { ReactElement, useState } from "react";
@@ -74,14 +74,14 @@ export default function SettingsPage({
         {avatarSize ? (
           <>
             {uploading ? (
-              <Spin
+              <Skeleton.Avatar
+                active={true}
+                size={avatarSize}
+                shape="circle"
                 style={{
-                  marginTop: avatarSize / 2 + avatarSize / 9,
-                  marginBottom: avatarSize / 2 + avatarSize / 9,
-                  marginRight: avatarSize / 4,
-                  marginLeft: avatarSize / 4,
+                  marginTop: avatarSize / 6,
+                  marginBottom: avatarSize / 12,
                 }}
-                size={"large"}
               />
             ) : profile?.photoURL && error === undefined ? (
               <Avatar
@@ -89,14 +89,14 @@ export default function SettingsPage({
                 src={"/api/v1/profile/get_picture/" + profile.photoURL}
                 size={avatarSize}
                 style={{
-                  marginTop: avatarSize / 3,
+                  marginTop: avatarSize / 6,
                   marginBottom: avatarSize / 12,
                 }}
               />
             ) : (
               <AvatarWithInitals
                 style={{
-                  marginTop: avatarSize / 3,
+                  marginTop: avatarSize / 6,
                   marginBottom: avatarSize / 12,
                 }}
                 name={profile?.name}
