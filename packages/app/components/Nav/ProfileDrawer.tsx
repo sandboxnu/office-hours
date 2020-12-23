@@ -9,7 +9,7 @@ import { Menu, Popover } from "antd";
 import Link from "next/link";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
-import KOHAvatar from "../common/KOHAvatar";
+import SelfAvatar from "../common/SelfAvatar";
 
 const StyleablePopover = ({ className, ...props }: { className: string }) => (
   <Popover {...props} overlayClassName={className} />
@@ -83,7 +83,7 @@ export default function ProfileDrawer({
         onVisibleChange={setIsPopoverOpen}
       >
         <AvatarButton>
-          <KOHAvatar size={40} />
+          <SelfAvatar size={40} />
         </AvatarButton>
       </NoPaddingPopover>
     </>

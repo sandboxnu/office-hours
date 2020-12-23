@@ -100,7 +100,8 @@ export class ProfileController {
   @Post('/upload_picture')
   @UseInterceptors(
     FileInterceptor('file', {
-      dest: 'uploads/',
+      dest: process.env.UPLOAD_LOCATION + '/',
+      limits: {},
     }),
   )
   async uploadImage(
@@ -108,8 +109,8 @@ export class ProfileController {
     @User() user: UserModel,
   ): Promise<void> {
     if (user.photoURL) {
-      fs.unlink('uploads/' + user.photoURL, (err) => {
-        throw err;
+      fs.unlink(process.env.UPLOAD_LOCATION + '/' + user.photoURL, (err) => {
+        console.error('Oh shit: ', err);
       });
     }
 
@@ -123,8 +124,8 @@ export class ProfileController {
     @User() user: UserModel,
     @Res() res: Response,
   ): Promise<void> {
-    if (fs.existsSync('uploads/' + user.photoURL)) {
-      res.sendFile(user.photoURL, { root: 'uploads' });
+    if (fs.existsSync(process.env.UPLOAD_LOCATION + '/' + photoURL)) {
+      res.sendFile(photoURL, { root: process.env.UPLOAD_LOCATION });
     } else {
       throw new NotFoundException('');
     }
