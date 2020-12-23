@@ -68,7 +68,8 @@ export default function TAQueueListItem({
     >
       <AvatarContainer>
         <Badge
-          count={`#${index}`}
+          // 0 is not displayed, hide if no index
+          count={index ? `#${index}` : 0}
           style={{ backgroundColor: "#3684c6" }}
           offset={[-40, 0]}
         >
