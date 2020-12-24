@@ -19,6 +19,6 @@ Object {
   "lastName": null,
   "name": "User",
   "phoneNotifsEnabled": false,
-  "photoURL": "https://pics/user",
+  "photoURL": "",
 }
 `;
