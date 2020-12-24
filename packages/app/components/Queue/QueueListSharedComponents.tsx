@@ -5,13 +5,15 @@ import {
   CloudSyncOutlined,
   FrownOutlined,
 } from "@ant-design/icons";
-import React, { ReactElement, ReactNode } from "react";
+import React, { ReactElement, ReactNode, useState } from "react";
 import styled from "styled-components";
 import { useQueue } from "../../hooks/useQueue";
 import { formatQueueTime } from "../../utils/TimeUtil";
 import { TAStatuses } from "./TAStatuses";
 import { Button, Tooltip } from "antd";
 import { ButtonProps } from "antd/lib/button";
+import moment from "moment";
+import { RenderEvery } from "../RenderEvery";
 
 export const Container = styled.div`
   display: flex;
@@ -90,7 +92,7 @@ export function QueueInfoColumn({
   queueId,
   buttons,
 }: QueueInfoColumnProps): ReactElement {
-  const { queue, isQueueLive } = useQueue(queueId);
+  const { queue } = useQueue(queueId);
   return (
     <InfoColumnContainer>
       <QueueRoomGroup>
@@ -119,15 +121,39 @@ export function QueueInfoColumn({
           <QueuePropertyText>{queue.notes}</QueuePropertyText>
         </QueuePropertyRow>
       )}
-      <QueuePropertyRow>
-        {isQueueLive ? <CloudSyncOutlined /> : <FrownOutlined />}
-        <QueuePropertyText>
-          {isQueueLive ? "Queue up to date" : "Queue may not be up to date"}
-        </QueuePropertyText>
-      </QueuePropertyRow>
+      <QueueUpToDateInfo queueId={queueId} />
       {buttons}
       <StaffH2>Staff</StaffH2>
       <TAStatuses queueId={queueId} />
     </InfoColumnContainer>
+  );
+}
+
+function QueueUpToDateInfo({ queueId }: { queueId: number }): ReactElement {
+  const [lastUpdated, setLastUpdated] = useState(null);
+  const { isLive } = useQueue(queueId, setLastUpdated);
+  return (
+    <QueuePropertyRow>
+      {isLive || lastUpdated ? <CloudSyncOutlined /> : <FrownOutlined />}
+      <QueuePropertyText>
+        {isLive ? (
+          "Queue up to date"
+        ) : lastUpdated ? (
+          <RenderEvery
+            render={() => {
+              const secondsAgo = (Date.now() - lastUpdated.getTime()) / 1000;
+              return `Queue updated ${
+                secondsAgo < 60
+                  ? Math.ceil(secondsAgo) + "s"
+                  : moment(lastUpdated).fromNow(true)
+              } ago`;
+            }}
+            interval={1000}
+          />
+        ) : (
+          "Queue may be out of date"
+        )}
+      </QueuePropertyText>
+    </QueuePropertyRow>
   );
 }
