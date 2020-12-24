@@ -85,6 +85,7 @@ export class SSEService<T> implements OnModuleDestroy {
         // Remove from the redis room
         await redis.srem(room, clientInfo);
         await redisSub.unsubscribe(this.idToChannel(clientId));
+        client.res.end();
       },
     };
 
