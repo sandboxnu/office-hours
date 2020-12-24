@@ -4,6 +4,7 @@ import { Badge } from "antd";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { getWaitTime } from "../../../utils/TimeUtil";
+import AvatarWithInitials from "../../common/AvatarWithInitials";
 import { KOHAvatar } from "../../common/SelfAvatar";
 
 function truncate(string: string, length: number) {

@@ -34,11 +34,6 @@ export function KOHAvatar({
       size={size}
     />
   ) : (
-    <AvatarWithInitals
-      style={{ marginTop: "60px", marginBottom: "60px" }}
-      name={name}
-      size={size}
-      fontSize={(3 / 7) * size}
-    />
+    <AvatarWithInitals name={name} size={size} fontSize={(3 / 7) * size} />
   );
 }
