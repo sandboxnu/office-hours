@@ -1,26 +1,11 @@
-import {
-  BellOutlined,
-  EditOutlined,
-  UploadOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import { BellOutlined, EditOutlined, UploadOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import { useWindowWidth } from "@react-hook/window-size";
-import {
-  Avatar,
-  Button,
-  Col,
-  Menu,
-  message,
-  Row,
-  Skeleton,
-  Space,
-  Upload,
-} from "antd";
+import { Button, Col, Menu, message, Row, Skeleton, Space, Upload } from "antd";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import useSWR from "swr";
-import AvatarWithInitals from "../common/AvatarWithInitials";
+import SelfAvatar from "../common/SelfAvatar";
 import NotificationsSettings from "./NotificationsSettings";
 import ProfileSettings from "./ProfileSettings";
 
@@ -87,25 +72,13 @@ export default function SettingsPage({
                   marginBottom: avatarSize / 12,
                 }}
               />
-            ) : profile?.photoURL && error === undefined ? (
-              <Avatar
-                icon={<UserOutlined />}
-                src={"/api/v1/profile/get_picture/" + profile.photoURL}
-                size={avatarSize}
-                style={{
-                  marginTop: avatarSize / 6,
-                  marginBottom: avatarSize / 12,
-                }}
-              />
             ) : (
-              <AvatarWithInitals
+              <SelfAvatar
+                size={avatarSize}
                 style={{
                   marginTop: avatarSize / 6,
                   marginBottom: avatarSize / 12,
                 }}
-                name={profile?.name}
-                size={avatarSize}
-                fontSize={avatarSize * (3 / 7)}
               />
             )}
             <Upload
