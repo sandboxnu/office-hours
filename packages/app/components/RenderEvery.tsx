@@ -1,4 +1,10 @@
-import { useState, useEffect, useCallback, ReactElement, ReactNode } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  ReactElement,
+  ReactNode,
+} from "react";
 
 interface RenderEveryProps {
   render: () => ReactNode;
