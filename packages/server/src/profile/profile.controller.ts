@@ -19,7 +19,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import df from 'df';
+import * as checkDiskSpace from 'check-disk-space';
 import { Response } from 'express';
 import * as fs from 'fs';
 import { pick } from 'lodash';
@@ -45,8 +45,8 @@ export class ProfileController {
     user: UserModel,
   ): Promise<GetProfileResponse> {
     const courses = user.courses
-      .filter((userCourse) => userCourse.course.enabled)
-      .map((userCourse) => {
+      .filter(userCourse => userCourse.course.enabled)
+      .map(userCourse => {
         return {
           course: {
             id: userCourse.courseId,
@@ -56,14 +56,12 @@ export class ProfileController {
         };
       });
 
-    const desktopNotifs: DesktopNotifPartial[] = user.desktopNotifs.map(
-      (d) => ({
-        endpoint: d.endpoint,
-        id: d.id,
-        createdAt: d.createdAt,
-        name: d.name,
-      }),
-    );
+    const desktopNotifs: DesktopNotifPartial[] = user.desktopNotifs.map(d => ({
+      endpoint: d.endpoint,
+      id: d.id,
+      createdAt: d.createdAt,
+      name: d.name,
+    }));
 
     const userResponse = pick(user, [
       'id',
@@ -113,7 +111,7 @@ export class ProfileController {
     @User() user: UserModel,
   ): Promise<void> {
     if (user.photoURL) {
-      fs.unlink(process.env.UPLOAD_LOCATION + '/' + user.photoURL, (err) => {
+      fs.unlink(process.env.UPLOAD_LOCATION + '/' + user.photoURL, err => {
         console.error(
           'Error deleting previous picture at: ',
           user.photoURL,
@@ -123,9 +121,9 @@ export class ProfileController {
       });
     }
 
-    const spaceLeft = await df();
+    const spaceLeft = await checkDiskSpace('/');
 
-    if (spaceLeft.available < 1000000000) {
+    if (spaceLeft.free < 1000000000) {
       // if less than a gigabyte left
       throw new ServiceUnavailableException(
         ERROR_MESSAGES.profileController.noDiskSpace,
@@ -135,8 +133,12 @@ export class ProfileController {
     const fileName =
       user.id +
       '-' +
-      Math.random().toString(36).substring(2, 15) +
-      Math.random().toString(36).substring(2, 15);
+      Math.random()
+        .toString(36)
+        .substring(2, 15) +
+      Math.random()
+        .toString(36)
+        .substring(2, 15);
 
     await sharp(file.buffer)
       .resize(256)
