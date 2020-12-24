@@ -20,6 +20,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import * as fs from 'fs';
 import { pick } from 'lodash';
+import { memoryStorage } from 'multer';
 import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { NotificationService } from '../notification/notification.service';
@@ -100,14 +101,16 @@ export class ProfileController {
   @Post('/upload_picture')
   @UseInterceptors(
     FileInterceptor('file', {
-      dest: process.env.UPLOAD_LOCATION + '/',
-      limits: {},
+      storage: memoryStorage(),
     }),
   )
   async uploadImage(
     @UploadedFile() file,
     @User() user: UserModel,
   ): Promise<void> {
+    console.log('ligma', file.buffer);
+    return;
+
     if (user.photoURL) {
       fs.unlink(process.env.UPLOAD_LOCATION + '/' + user.photoURL, (err) => {
         console.error(
