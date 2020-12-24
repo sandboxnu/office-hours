@@ -68,6 +68,10 @@ export default function SettingsPage({
     return isJpgOrPng && isLt1M;
   };
 
+  if (error) {
+    message.error(error);
+  }
+
   return (
     <Row>
       <Col span={4} style={{ textAlign: "center" }}>

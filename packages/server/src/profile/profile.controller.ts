@@ -1,5 +1,6 @@
 import {
   DesktopNotifPartial,
+  ERROR_MESSAGES,
   GetProfileResponse,
   UpdateProfileParams,
 } from '@koh/common';
@@ -12,11 +13,13 @@ import {
   Patch,
   Post,
   Res,
+  ServiceUnavailableException,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import df from 'df';
 import { Response } from 'express';
 import * as fs from 'fs';
 import { pick } from 'lodash';
@@ -118,6 +121,15 @@ export class ProfileController {
           'the previous image was at an invalid location?',
         );
       });
+    }
+
+    const spaceLeft = await df();
+
+    if (spaceLeft.available < 1000000000) {
+      // if less than a gigabyte left
+      throw new ServiceUnavailableException(
+        ERROR_MESSAGES.profileController.noDiskSpace,
+      );
     }
 
     const fileName =

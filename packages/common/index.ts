@@ -578,4 +578,8 @@ export const ERROR_MESSAGES = {
     mustBeRoleToJoinCourse: (roles: string[]): string =>
       `You must have one of roles [${roles.join(", ")}] to access this course`,
   },
+  profileController: {
+    noDiskSpace:
+      "There is no disk space left to store an image. Please immediately contact your course staff and let them know. They will contact the Khoury Office Hours team as soon as possible.",
+  },
 };

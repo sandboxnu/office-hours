@@ -5758,6 +5758,11 @@ detect-newline@^3.0.0:
   resolved "https://registry.yarnpkg.com/detect-newline/-/detect-newline-3.1.0.tgz#576f5dfc63ae1a192ff192d8ad3af6308991b651"
   integrity sha512-TLz+x/vEXm/Y7P7wn1EJFNLxYpUD4TgMosxY6fAVJUnJMbupHBOncxyWUG9OpTaH9EBD7uFI5LfEgmMOc54DsA==
 
+df@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/df/-/df-1.1.1.tgz#65d97e87a6c0fe3ed9c914f3dcbe1205a0b9693a"
+  integrity sha1-Zdl+h6bA/j7ZyRTz3L4SBaC5aTo=
+
 dicer@0.2.5:
   version "0.2.5"
   resolved "https://registry.yarnpkg.com/dicer/-/dicer-0.2.5.tgz#5996c086bb33218c812c090bddc09cd12facb70f"
