@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback, ReactElement } from "react";
+import { useState, useEffect, useCallback, ReactElement, ReactNode } from "react";
 
 interface RenderEveryProps {
-  render: () => ReactElement;
+  render: () => ReactNode;
+  /** ms between rerenders */
   interval: number;
 }
 export function RenderEvery({
@@ -21,5 +22,5 @@ export function RenderEvery({
     };
   }, [forceUpdate, interval]);
 
-  return render();
+  return <>{render()}</>;
 }
