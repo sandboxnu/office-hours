@@ -21,6 +21,7 @@ import { Response } from 'express';
 import * as fs from 'fs';
 import { pick } from 'lodash';
 import { memoryStorage } from 'multer';
+import * as sharp from 'sharp';
 import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { NotificationService } from '../notification/notification.service';
@@ -105,12 +106,9 @@ export class ProfileController {
     }),
   )
   async uploadImage(
-    @UploadedFile() file,
+    @UploadedFile() file: Express.Multer.File,
     @User() user: UserModel,
   ): Promise<void> {
-    console.log('ligma', file.buffer);
-    return;
-
     if (user.photoURL) {
       fs.unlink(process.env.UPLOAD_LOCATION + '/' + user.photoURL, (err) => {
         console.error(
@@ -122,7 +120,17 @@ export class ProfileController {
       });
     }
 
-    user.photoURL = file.filename;
+    const fileName =
+      user.id +
+      '-' +
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15);
+
+    await sharp(file.buffer)
+      .resize(256)
+      .toFile(process.env.UPLOAD_LOCATION + '/' + fileName);
+
+    user.photoURL = fileName;
     await user.save();
   }
 
