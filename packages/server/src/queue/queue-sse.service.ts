@@ -23,7 +23,7 @@ export class QueueSSEService {
     res: Response,
     metadata: QueueClientMetadata,
   ): void {
-    this.sseService.subscribeClient(idToRoom(queueId), { res, metadata });
+    this.sseService.subscribeClient(idToRoom(queueId), res, metadata);
   }
 
   // Send event with new questions, but no more than once a second

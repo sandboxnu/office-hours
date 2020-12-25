@@ -69,7 +69,7 @@ export default function Today(): ReactElement {
   };
 
   const queueCheckedIn = course?.queues.find((queue) =>
-    queue.staffList.find((staff) => staff.id === profile.id)
+    queue.staffList.find((staff) => staff.id === profile?.id)
   );
 
   return (

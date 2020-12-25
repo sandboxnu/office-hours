@@ -4,18 +4,18 @@ import {
   DesktopNotifBody,
   DesktopNotifPartial,
   GetCourseResponse,
+  GetInsightResponse,
   GetProfileResponse,
   GetQuestionResponse,
   GetQueueResponse,
+  GetReleaseNotesResponse,
   ListQuestionsResponse,
+  TACheckoutResponse,
   TAUpdateStatusResponse,
   UpdateProfileParams,
   UpdateQuestionParams,
   UpdateQuestionResponse,
   UpdateQueueParams,
-  GetReleaseNotesResponse,
-  TACheckoutResponse,
-  GetInsightResponse,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -59,6 +59,8 @@ class APIClient {
   course = {
     get: async (courseId: number) =>
       this.req("GET", `/api/v1/courses/${courseId}`, GetCourseResponse),
+    updateCalendar: async (courseId: number) =>
+      this.req("POST", `/api/v1/courses/${courseId}/update_calendar`),
   };
   taStatus = {
     checkIn: async (

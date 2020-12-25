@@ -54,7 +54,7 @@ export default function ReleaseNotes(): ReactElement {
             <>
               <b>Want to see more? </b>
               <a
-                href="https://www.notion.so/Release-Notes-Archive-9a1a0eab073a463096fc3699bf48219c"
+                href="https://info.khouryofficehours.com/release-notes-archive"
                 target="_blank"
                 rel="noreferrer"
               >
