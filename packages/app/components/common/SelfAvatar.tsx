@@ -46,6 +46,11 @@ export function KOHAvatar({
       style={style}
     />
   ) : (
-    <AvatarWithInitals name={name} size={size} fontSize={(3 / 7) * size} />
+    <AvatarWithInitals
+      name={name}
+      size={size}
+      fontSize={(3 / 7) * size}
+      style={style}
+    />
   );
 }

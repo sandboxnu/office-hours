@@ -12,8 +12,7 @@ import { QueueModel } from '../../src/queue/queue.entity';
 export const UserFactory = new Factory(UserModel)
   .attr('email', `user@neu.edu`)
   .attr('name', `User`)
-  .attr('firstName', 'User')
-  .attr('photoURL', ``);
+  .attr('firstName', 'User');
 
 export const StudentCourseFactory = new Factory(UserCourseModel).attr(
   'role',
