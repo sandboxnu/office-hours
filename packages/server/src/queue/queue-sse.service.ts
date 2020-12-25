@@ -23,11 +23,11 @@ export class QueueSSEService {
     res: Response,
     metadata: QueueClientMetadata,
   ): void {
-    this.sseService.subscribeClient(idToRoom(queueId), { res, metadata });
+    this.sseService.subscribeClient(idToRoom(queueId), res, metadata);
   }
 
   // Send event with new questions, but no more than once a second
-  updateQuestions = this.throttleUpdate(async (queueId) => {
+  updateQuestions = this.throttleUpdate(async queueId => {
     const questions = await this.queueService.getQuestions(queueId);
     if (questions) {
       this.sendToRoom(queueId, async ({ role, userId }) => ({
@@ -41,7 +41,7 @@ export class QueueSSEService {
     }
   });
 
-  updateQueue = this.throttleUpdate(async (queueId) => {
+  updateQueue = this.throttleUpdate(async queueId => {
     const queue = await this.queueService.getQueue(queueId);
     if (queue) {
       await this.sendToRoom(queueId, async () => ({ queue }));

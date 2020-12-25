@@ -5,11 +5,9 @@ import * as apm from 'elastic-apm-node';
 import { Response } from 'express';
 import { RedisService } from 'nestjs-redis';
 
-export interface Client<T> {
-  metadata: T;
-  res: Response;
-}
-
+/**
+ * A connection to a particular frontend client
+ */
 interface Connection {
   res: Response;
   cleanup: () => Promise<void>;
@@ -63,7 +61,7 @@ export class SSEService<T> implements OnModuleDestroy {
   }
 
   /** Add a client to a room */
-  async subscribeClient(room: string, client: Client<T>): Promise<void> {
+  async subscribeClient(room: string, res: Response, metadata: T): Promise<void> {
     const redisSub = this.redisService.getClient('sub');
     const redis = this.redisService.getClient('db');
     // Keep track of responses so we can send sse through them
@@ -74,13 +72,13 @@ export class SSEService<T> implements OnModuleDestroy {
     // Add to room
     const clientInfo = JSON.stringify({
       clientId,
-      metadata: client.metadata,
+      metadata: metadata,
     } as RedisClientInfo<T>);
     await redis.sadd(room, clientInfo);
 
     // Keep track of response object in direct connections
     this.directConnnections[clientId] = {
-      res: client.res,
+      res,
       cleanup: async () => {
         // Remove from the redis room
         await redis.srem(room, clientInfo);
@@ -89,7 +87,7 @@ export class SSEService<T> implements OnModuleDestroy {
     };
 
     // Remove dead connections!
-    client.res.socket.on('end', async () => {
+    res.socket.on('end', async () => {
       await this.directConnnections[clientId].cleanup();
       delete this.directConnnections[clientId];
     });
