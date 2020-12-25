@@ -1,21 +1,23 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { BackfillModule } from 'backfill/backfill.module';
+import { HealthcheckModule } from 'healthcheck/healthcheck.module';
+import { InsightsModule } from 'insights/insights.module';
+import { CommandModule } from 'nestjs-command';
+import { RedisModule } from 'nestjs-redis';
+import { ReleaseNotesModule } from 'release-notes/release-notes.module';
+import * as typeormConfig from '../ormconfig';
+import { AdminModule } from './admin/admin.module';
 import { CourseModule } from './course/course.module';
-import { NotificationModule } from './notification/notification.module';
 import { LoginModule } from './login/login.module';
+import { NotificationModule } from './notification/notification.module';
 import { ProfileModule } from './profile/profile.module';
 import { QuestionModule } from './question/question.module';
 import { QueueModule } from './queue/queue.module';
 import { SeedModule } from './seed/seed.module';
-import { AdminModule } from './admin/admin.module';
-import { CommandModule } from 'nestjs-command';
 import { SSEModule } from './sse/sse.module';
-import * as typeormConfig from '../ormconfig';
-import { BackfillModule } from 'backfill/backfill.module';
-import { ReleaseNotesModule } from 'release-notes/release-notes.module';
-import { InsightsModule } from 'insights/insights.module';
 
 @Module({
   imports: [
@@ -41,6 +43,9 @@ import { InsightsModule } from 'insights/insights.module';
     BackfillModule,
     ReleaseNotesModule,
     InsightsModule,
+    // Only use 'pub' for publishing events, 'sub' for subscribing, and 'db' for writing to key/value store
+    RedisModule.register([{ name: 'pub' }, { name: 'sub' }, { name: 'db' }]),
+    HealthcheckModule,
   ],
 })
 export class AppModule {}

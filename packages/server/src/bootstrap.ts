@@ -12,6 +12,7 @@ export async function bootstrap(hot: any): Promise<void> {
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
+  app.enableShutdownHooks(); // So we can clean up SSE.
   addGlobalsToApp(app);
   app.setGlobalPrefix('api/v1');
   app.useGlobalInterceptors(new ApmInterceptor());
