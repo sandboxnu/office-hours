@@ -9,8 +9,7 @@ import { Menu, Popover } from "antd";
 import Link from "next/link";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
-import { useProfile } from "../../hooks/useProfile";
-import AvatarWithInitals from "../common/AvatarWithInitials";
+import SelfAvatar from "../common/SelfAvatar";
 
 const StyleablePopover = ({ className, ...props }: { className: string }) => (
   <Popover {...props} overlayClassName={className} />
@@ -32,7 +31,6 @@ interface ProfileDrawerProps {
 export default function ProfileDrawer({
   courseId,
 }: ProfileDrawerProps): ReactElement {
-  const profile = useProfile();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const loginPath = isProd() ? "/login" : "/dev";
 
@@ -85,13 +83,7 @@ export default function ProfileDrawer({
         onVisibleChange={setIsPopoverOpen}
       >
         <AvatarButton>
-          {
-            //TODO: bring back photo URL && get rid of RegeX
-            //icon={<UserOutlined />} src={profile?.photoURL}
-            profile && (
-              <AvatarWithInitals name={profile?.name} size={40} fontSize={16} />
-            )
-          }
+          <SelfAvatar size={40} />
         </AvatarButton>
       </NoPaddingPopover>
     </>

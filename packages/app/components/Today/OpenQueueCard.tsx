@@ -6,7 +6,7 @@ import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { QueuePartial } from "../../../common/index";
 import { formatQueueTime } from "../../utils/TimeUtil";
-import AvatarWithInitals from "../common/AvatarWithInitials";
+import { KOHAvatar } from "../common/SelfAvatar";
 
 type OpenQueueCard = {
   queue: QueuePartial;
@@ -57,7 +57,7 @@ const HeaderText = styled.div`
   margin-bottom: 8px;
 `;
 
-const AvatarWithMargin = styled(AvatarWithInitals)`
+const AvatarWithMargin = styled(KOHAvatar)`
   margin-right: 25px;
 `;
 
@@ -171,16 +171,12 @@ const OpenQueueCard = ({
       }
 
       <Row justify="space-between" align="bottom">
-        {
-          // TODO: bring back photo URL && get rid of RegeX
-          // src={staffMember.photoURL}
-        }
         <div>
           {staffList.map((staffMember) => (
             <Tooltip key={staffMember.id} title={staffMember.name}>
               <AvatarWithMargin
                 size={96}
-                fontSize={40}
+                photoURL={staffMember.photoURL}
                 name={staffMember.name}
               />
             </Tooltip>
