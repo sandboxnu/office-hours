@@ -61,7 +61,7 @@ describe('Seed Integration', () => {
         id: 1,
         name: 'User',
         phoneNotifsEnabled: false,
-        photoURL: '',
+        photoURL: null,
       },
       userId: 1,
     });

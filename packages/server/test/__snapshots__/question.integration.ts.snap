@@ -10,7 +10,7 @@ Object {
     "id": 1,
     "lastName": null,
     "name": "User",
-    "photoURL": "",
+    "photoURL": null,
   },
   "helpedAt": null,
   "id": 1,
