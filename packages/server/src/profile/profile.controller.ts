@@ -152,12 +152,22 @@ export class ProfileController {
     @Param('photoURL') photoURL: string,
     @Res() res: Response,
   ): Promise<void> {
-    fs.stat(path.join(process.env.UPLOAD_LOCATION, photoURL), (err, stats) => {
-      if (stats) {
-        res.sendFile(photoURL, { root: process.env.UPLOAD_LOCATION });
-      } else {
-        throw new NotFoundException();
-      }
-    });
+    fs.stat(
+      path.join(process.env.UPLOAD_LOCATION, photoURL),
+      async (err, stats) => {
+        if (stats) {
+          res.sendFile(photoURL, { root: process.env.UPLOAD_LOCATION });
+        } else {
+          const user = await UserModel.findOne({
+            where: {
+              photoURL,
+            },
+          });
+          user.photoURL = null;
+          await user.save();
+          throw new NotFoundException();
+        }
+      },
+    );
   }
 }
