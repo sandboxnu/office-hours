@@ -1,15 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { TestTypeOrmModule } from '../../test/util/testUtils';
-import { Connection } from 'typeorm';
-import { InsightsService } from './insights.service';
-import {
-  UserCourseFactory,
-  QuestionFactory,
-  CourseFactory,
-  QueueFactory,
-} from '../../test/util/factories';
-import { INSIGHTS_MAP } from './insights';
 import { QuestionType } from '@koh/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Connection } from 'typeorm';
+import {
+  CourseFactory,
+  QuestionFactory,
+  QueueFactory,
+  UserCourseFactory,
+} from '../../test/util/factories';
+import { TestTypeOrmModule } from '../../test/util/testUtils';
+import { INSIGHTS_MAP } from './insights';
+import { InsightsService } from './insights.service';
 
 describe('InsightsService', () => {
   let service: InsightsService;

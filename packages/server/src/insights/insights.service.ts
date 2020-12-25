@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { InsightInterface } from './insights';
 
 // interface generateAllInsightsParams {
 //   insights: InsightInterface<any>[];
@@ -36,6 +35,7 @@ export class InsightsService {
         insightsWithOutput[insight.name] = { output, ...insight };
       }),
     );
+
     return insightsWithOutput;
   }
 }
