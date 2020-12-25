@@ -61,7 +61,11 @@ export class SSEService<T> implements OnModuleDestroy {
   }
 
   /** Add a client to a room */
-  async subscribeClient(room: string, res: Response, metadata: T): Promise<void> {
+  async subscribeClient(
+    room: string,
+    res: Response,
+    metadata: T,
+  ): Promise<void> {
     const redisSub = this.redisService.getClient('sub');
     const redis = this.redisService.getClient('db');
     // Keep track of responses so we can send sse through them
