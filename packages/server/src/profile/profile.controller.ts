@@ -24,6 +24,7 @@ import { Response } from 'express';
 import * as fs from 'fs';
 import { pick } from 'lodash';
 import { memoryStorage } from 'multer';
+import * as path from 'path';
 import * as sharp from 'sharp';
 import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
@@ -123,7 +124,7 @@ export class ProfileController {
       });
     }
 
-    const spaceLeft = await checkDiskSpace('/');
+    const spaceLeft = await checkDiskSpace(path.parse(process.cwd()).root);
 
     if (spaceLeft.free < 1000000000) {
       // if less than a gigabyte left
@@ -140,7 +141,7 @@ export class ProfileController {
 
     await sharp(file.buffer)
       .resize(256)
-      .toFile(process.env.UPLOAD_LOCATION + '/' + fileName);
+      .toFile(path.join(process.env.UPLOAD_LOCATION, fileName));
 
     user.photoURL = fileName;
     await user.save();
@@ -149,13 +150,14 @@ export class ProfileController {
   @Get('/get_picture/:photoURL')
   async getImage(
     @Param('photoURL') photoURL: string,
-    @User() user: UserModel,
     @Res() res: Response,
   ): Promise<void> {
-    if (fs.existsSync(process.env.UPLOAD_LOCATION + '/' + photoURL)) {
-      res.sendFile(photoURL, { root: process.env.UPLOAD_LOCATION });
-    } else {
-      throw new NotFoundException();
-    }
+    fs.stat(path.join(process.env.UPLOAD_LOCATION, photoURL), (err, stats) => {
+      if (stats) {
+        res.sendFile(photoURL, { root: process.env.UPLOAD_LOCATION });
+      } else {
+        throw new NotFoundException();
+      }
+    });
   }
 }
