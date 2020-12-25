@@ -15,6 +15,7 @@ import { SSEModule } from './sse/sse.module';
 import * as typeormConfig from '../ormconfig';
 import { BackfillModule } from 'backfill/backfill.module';
 import { ReleaseNotesModule } from 'release-notes/release-notes.module';
+import { RedisModule } from 'nestjs-redis';
 import { HealthcheckModule } from './healthcheck/healthcheck.module';
 
 @Module({
@@ -40,6 +41,8 @@ import { HealthcheckModule } from './healthcheck/healthcheck.module';
     SSEModule,
     BackfillModule,
     ReleaseNotesModule,
+    // Only use 'pub' for publishing events, 'sub' for subscribing, and 'db' for writing to key/value store
+    RedisModule.register([{ name: 'pub' }, { name: 'sub' }, { name: 'db' }]),
     HealthcheckModule,
   ],
 })

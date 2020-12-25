@@ -45,6 +45,7 @@
     "morgan": "^1.10.0",
     "nestjs-admin": "^0.4.0",
     "nestjs-command": "^1.5.0",
+    "nestjs-redis": "^1.2.8",
     "node-ical": "^0.11.3",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
