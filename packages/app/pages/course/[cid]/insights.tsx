@@ -1,13 +1,14 @@
-import React, { ReactElement } from "react";
-import { API } from "@koh/api-client";
-import useSWR from "swr";
-import { Tooltip, Card } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { useRouter } from "next/router";
-import { StandardPageContainer } from "../../../components/common/PageContainer";
-import SimpleDisplayComponent from "../../../components/Insights/components/SimpleDisplayComponent";
-import SimpleChartComponent from "../../../components/Insights/components/SimpleChartComponent";
+import { API } from "@koh/api-client";
 import { InsightDisplay } from "@koh/common";
+import { Card, Tooltip } from "antd";
+import { CardSize } from "antd/lib/card";
+import { useRouter } from "next/router";
+import React, { ReactElement } from "react";
+import useSWR from "swr";
+import { StandardPageContainer } from "../../../components/common/PageContainer";
+import SimpleChartComponent from "../../../components/Insights/components/SimpleChartComponent";
+import SimpleDisplayComponent from "../../../components/Insights/components/SimpleDisplayComponent";
 
 export default function Insights(): ReactElement {
   // TODO: In the future this will come from the users specific insights that want to see
@@ -63,14 +64,14 @@ function RenderInsight({ insightName }: RenderInsightProps): ReactElement {
 
   return (
     <Card
-      size="small"
+      size={insight.size as CardSize}
       title={insight.displayName}
       extra={
         <Tooltip placement="topRight" title={insight.description}>
           <InfoCircleOutlined />
         </Tooltip>
       }
-      style={{ width: "200px", margin: "10px" }}
+      style={insight.style}
     >
       <InsightComponent key={insight.name} {...insight} />
     </Card>

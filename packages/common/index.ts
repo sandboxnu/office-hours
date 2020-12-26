@@ -534,6 +534,8 @@ export class Insight {
   description!: string;
   component!: InsightDisplay;
   output!: PossibleOutputTypes;
+  size!: string;
+  style?: Record<string, any>;
 }
 
 export enum InsightDisplay {
