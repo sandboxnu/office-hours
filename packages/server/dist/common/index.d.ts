@@ -294,5 +294,8 @@ export declare const ERROR_MESSAGES: {
         notInCourse: string;
         mustBeRoleToJoinCourse: (roles: string[]) => string;
     };
+    profileController: {
+        noDiskSpace: string;
+    };
 };
 export {};
