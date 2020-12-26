@@ -22,6 +22,7 @@ export interface InsightInterface<Model> {
     insightFilters: any,
   ) => Promise<PossibleOutputTypes>;
   output?: Promise<PossibleOutputTypes>;
+  name: string;
 }
 
 function addFilters(

@@ -112,7 +112,7 @@ export default function NotificationsSettings(): ReactElement {
             style={{ float: "right", fontSize: "25px" }}
             onClick={() =>
               window.open(
-                "https://www.notion.so/593f9eb67eb04abbb8008c285ed5a8dd?v=b3d8ef6b3d2742f1985a6406e582601a"
+                "https://info.khouryofficehours.com/593f9eb67eb04abbb8008c285ed5a8dd"
               )
             }
           />

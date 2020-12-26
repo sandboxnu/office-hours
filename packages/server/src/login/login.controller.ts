@@ -1,11 +1,5 @@
+import { KhouryDataParams, KhouryRedirectResponse } from '@koh/common';
 import { apm } from '@elastic/apm-rum';
-import {
-  KhouryDataParams,
-  KhouryRedirectResponse,
-  KhouryStudentCourse,
-  KhouryTACourse,
-  Role,
-} from '@koh/common';
 import {
   Body,
   Controller,
@@ -22,10 +16,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
 import * as httpSignature from 'http-signature';
 import { Connection } from 'typeorm';
-import { CourseModel } from '../../src/course/course.entity';
 import { NonProductionGuard } from '../../src/non-production.guard';
-import { UserModel } from '../../src/profile/user.entity';
-import { CourseSectionMappingModel } from './course-section-mapping.entity';
 import { LoginCourseService } from './login-course.service';
 
 @Controller()
@@ -67,68 +58,12 @@ export class LoginController {
       }
     }
 
-    let user: UserModel;
-    user = await UserModel.findOne({
-      where: { email: body.email },
-      relations: ['courses'],
-    });
+    const user = await this.loginCourseService.addUserFromKhoury(body);
 
-    if (!user) {
-      user = await UserModel.create({ courses: [] });
-    }
-
-    // Q: Do we need this if it's not going to change?
-    user = Object.assign(user, {
-      email: body.email,
-      firstName: body.first_name,
-      lastName: body.last_name,
-      name: body.first_name + ' ' + body.last_name,
-      photoURL: '',
-    });
-    await user.save();
-
-    const userCourses = [];
-    await Promise.all(
-      body.courses.map(async (c: KhouryStudentCourse) => {
-        const course: CourseModel = await this.loginCourseService.courseSectionToCourse(
-          c.course,
-          c.section,
-        );
-
-        if (course) {
-          const userCourse = await this.loginCourseService.courseToUserCourse(
-            user.id,
-            course.id,
-            Role.STUDENT,
-          );
-          userCourses.push(userCourse);
-        }
-      }),
-    );
-
-    await Promise.all(
-      body.ta_courses.map(async (c: KhouryTACourse) => {
-        // Query for all the courses which match the name of the generic course from Khoury
-        const courseMappings = await CourseSectionMappingModel.find({
-          where: { genericCourseName: c.course }, // TODO: Add semester support
-        });
-
-        for (const courseMapping of courseMappings) {
-          const taCourse = await this.loginCourseService.courseToUserCourse(
-            user.id,
-            courseMapping.courseId,
-            body.professor === '1' ? Role.PROFESSOR : Role.TA,
-          );
-          userCourses.push(taCourse);
-        }
-      }),
-    );
-    user.courses = userCourses;
-    await user.save();
-
+    // Create temporary login token to send user to.
     const token = await this.jwtService.signAsync(
       { userId: user.id },
-      { expiresIn: 5 * 60 },
+      { expiresIn: 60 },
     );
     return {
       redirect:
@@ -168,7 +103,11 @@ export class LoginController {
 
   // Set cookie and redirect to proper page
   private async enter(res: Response, userId: number) {
-    const authToken = await this.jwtService.signAsync({ userId });
+    // Expires in 30 days
+    const authToken = await this.jwtService.signAsync({
+      userId,
+      expiresIn: 60 * 60 * 24 * 30,
+    });
     const isSecure = this.configService
       .get<string>('DOMAIN')
       .startsWith('https://');

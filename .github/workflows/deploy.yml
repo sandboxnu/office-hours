@@ -24,8 +24,6 @@ jobs:
       - run: echo "::set-output name=version::$(git rev-parse origin/master)"
         id: pre-version
       - uses: bahmutov/npm-install@v1
-      - name: Delete old builds
-        run: rm -rf packages/app/.next
       - run: yarn build
         env:
           NEXT_PUBLIC_APM_SERVER: ${{ secrets.ELASTIC_APM_SERVER_URL}}
