@@ -1,10 +1,11 @@
-import { BellOutlined, EditOutlined } from "@ant-design/icons";
+import { BellOutlined, EditOutlined, UploadOutlined } from "@ant-design/icons";
+import { API } from "@koh/api-client";
 import { useWindowWidth } from "@react-hook/window-size";
-import { Col, Menu, Row, Space } from "antd";
+import { Button, Col, Menu, message, Row, Skeleton, Space, Upload } from "antd";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
-import { useProfile } from "../../hooks/useProfile";
-import AvatarWithInitals from "../common/AvatarWithInitials";
+import useSWR from "swr";
+import SelfAvatar from "../common/SelfAvatar";
 import NotificationsSettings from "./NotificationsSettings";
 import ProfileSettings from "./ProfileSettings";
 
@@ -27,23 +28,79 @@ const VerticalDivider = styled.div`
 export default function SettingsPage({
   defaultPage,
 }: SettingsPageProps): ReactElement {
-  const profile = useProfile();
+  const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
+    API.profile.index()
+  );
+
   const [currentSettings, setCurrentSettings] = useState(
     defaultPage || SettingsOptions.PROFILE
   );
+  const [uploading, setUploading] = useState(false);
 
   const avatarSize = useWindowWidth() / 10;
+
+  const beforeUpload = (file) => {
+    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+
+    if (!isJpgOrPng) {
+      message.error("You can only upload JPGs or PNGs!");
+    }
+
+    const isLt1M = file.size / 1024 / 1024 < 1;
+    if (!isLt1M) {
+      message.error("Image must smaller than 1MB!");
+    }
+    return isJpgOrPng && isLt1M;
+  };
+
+  if (error) {
+    message.error(error);
+  }
 
   return (
     <Row>
       <Col span={4} style={{ textAlign: "center" }}>
         {avatarSize ? (
-          <AvatarWithInitals
-            style={{ marginTop: "60px", marginBottom: "60px" }}
-            name={profile?.name}
-            size={avatarSize}
-            fontSize={avatarSize * (3 / 7)}
-          />
+          <>
+            {uploading ? (
+              <Skeleton.Avatar
+                active={true}
+                size={avatarSize}
+                shape="circle"
+                style={{
+                  marginTop: avatarSize / 6,
+                  marginBottom: avatarSize / 12,
+                }}
+              />
+            ) : (
+              <SelfAvatar
+                size={avatarSize}
+                style={{
+                  marginTop: avatarSize / 6,
+                  marginBottom: avatarSize / 12,
+                }}
+              />
+            )}
+            <Upload
+              style={{ marginBottom: "60px" }}
+              action={"/api/v1/profile/upload_picture"}
+              beforeUpload={beforeUpload}
+              showUploadList={false}
+              onChange={(info) => {
+                info.file.status === "uploading"
+                  ? setUploading(true)
+                  : setUploading(false);
+                mutate();
+              }}
+            >
+              <Button
+                icon={<UploadOutlined />}
+                style={{ marginBottom: "60px" }}
+              >
+                Upload a Profile Picture
+              </Button>
+            </Upload>
+          </>
         ) : null}
         <Menu
           defaultSelectedKeys={[currentSettings]}

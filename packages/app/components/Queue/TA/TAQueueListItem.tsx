@@ -4,7 +4,8 @@ import { Badge } from "antd";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { getWaitTime } from "../../../utils/TimeUtil";
-import AvatarWithInitals from "../../common/AvatarWithInitials";
+import AvatarWithInitials from "../../common/AvatarWithInitials";
+import { KOHAvatar } from "../../common/SelfAvatar";
 
 function truncate(string: string, length: number) {
   if (string.length > length) {
@@ -73,7 +74,11 @@ export default function TAQueueListItem({
           style={{ backgroundColor: "#3684c6" }}
           offset={[-40, 0]}
         >
-          <AvatarWithInitals size={40} name={question.creator.name} />
+          <KOHAvatar
+            size={40}
+            name={question.creator.name}
+            photoURL={question.creator.photoURL}
+          />
         </Badge>
       </AvatarContainer>
       <QuestionInfoContainer>
