@@ -1,14 +1,14 @@
 import {
-  InsightDisplay,
-  PossibleOutputTypes,
   QuestionType,
   Role,
-  SimpleChartOutputType,
+  PossibleOutputTypes,
   SimpleDisplayOutputType,
+  SimpleChartOutputType,
+  InsightDisplay,
 } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
-import { QuestionModel } from 'question/question.entity';
 import { SelectQueryBuilder } from 'typeorm';
+import { QuestionModel } from 'question/question.entity';
 
 export interface InsightInterface<Model> {
   displayName: string;
@@ -70,7 +70,6 @@ export class TotalStudents implements InsightInterface<UserCourseModel> {
   component = InsightDisplay.SimpleDisplay;
   model = UserCourseModel;
   possibleFilters = ['courseId', 'role'];
-  name = 'totalStudents';
 
   async compute(
     queryBuilder: SelectQueryBuilder<UserCourseModel>,
@@ -92,7 +91,6 @@ export class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
   component = InsightDisplay.SimpleDisplay;
   model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
-  name = 'totalQuestionsAsked';
 
   async compute(
     queryBuilder: SelectQueryBuilder<QuestionModel>,
@@ -116,7 +114,6 @@ export class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
   component = InsightDisplay.SimpleChart;
   model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
-  name = 'questionTypeBreakdown';
 
   async compute(
     queryBuilder: SelectQueryBuilder<QuestionModel>,
@@ -164,7 +161,6 @@ export class AverageWaitTime implements InsightInterface<QuestionModel> {
   component = InsightDisplay.SimpleDisplay;
   model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
-  name = 'averageWaitTime';
 
   async compute(
     queryBuilder: SelectQueryBuilder<QuestionModel>,
