@@ -1,10 +1,11 @@
 import { Question } from "@koh/common";
 import { Badge, Col, Row } from "antd";
-import { ReactElement } from "react";
+import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
 import { formatWaitTime } from "../../utils/TimeUtil";
+import { KOHAvatar } from "../common/SelfAvatar";
 import { RenderEvery } from "../RenderEvery";
 
 interface StatusRowProps {
