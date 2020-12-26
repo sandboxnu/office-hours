@@ -5,7 +5,6 @@ import styled from "styled-components";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
 import { formatWaitTime } from "../../utils/TimeUtil";
-import { KOHAvatar } from "../common/SelfAvatar";
 import { RenderEvery } from "../RenderEvery";
 
 interface StatusRowProps {
@@ -55,9 +54,7 @@ const StyledCard = styled.div`
   display: flex;
   margin-bottom: 16px;
 `;
-const AvatarNoShrink = styled(KOHAvatar)`
-  flex-shrink: 0;
-`;
+
 const CardContent = styled.div`
   margin-left: 16px;
 `;
@@ -88,7 +85,12 @@ function StatusCard({
   const isBusy = !!helpedAt;
   return (
     <StyledCard data-cy="ta-status-card">
-      <AvatarNoShrink size={48} name={taName} photoURL={taPhotoURL} />
+      <KOHAvatar
+        size={48}
+        name={taName}
+        photoURL={taPhotoURL}
+        style={{ flexShrink: 0 }}
+      />
       <CardContent>
         <Row justify="space-between">
           <TAName>{taName}</TAName>

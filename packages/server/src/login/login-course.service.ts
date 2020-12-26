@@ -29,7 +29,6 @@ export class LoginCourseService {
         firstName: info.first_name,
         lastName: info.last_name,
         name: info.first_name + ' ' + info.last_name,
-        photoURL: '',
       });
     }
 
