@@ -157,4 +157,31 @@ describe('InsightsService', () => {
       expect(res.TotalQuestionsAsked.output).toEqual(18);
     });
   });
+
+  describe('toggleInsightOn', () => {
+    it('works correctly', async () => {
+      const userFactory = await UserFactory.create();
+      const user = await UserModel.findOne(userFactory.id);
+      expect(user.insights).toBeNull();
+      await service.toggleInsightOn(user, 'questionTypeBreakdown');
+      await user.reload();
+      expect(user.insights).toStrictEqual(['questionTypeBreakdown']);
+    });
+  });
+
+  describe('toggleInsightOff', () => {
+    it('works correctly', async () => {
+      const userFactory = await UserFactory.create({
+        insights: ['averageWaitTime', 'questionTypeBreakdown'],
+      });
+      const user = await UserModel.findOne(userFactory.id);
+      expect(user.insights).toStrictEqual([
+        'averageWaitTime',
+        'questionTypeBreakdown',
+      ]);
+      await service.toggleInsightOff(user, 'questionTypeBreakdown');
+      await user.reload();
+      expect(user.insights).toStrictEqual(['averageWaitTime']);
+    });
+  });
 });
