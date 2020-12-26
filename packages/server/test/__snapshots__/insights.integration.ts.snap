@@ -5,7 +5,6 @@ Object {
   "component": "SimpleDisplay",
   "description": "Gets the total number questions asked",
   "displayName": "Total Questions Asked",
-  "name": "totalQuestionsAsked",
   "output": 6,
   "possibleFilters": Array [
     "courseId",

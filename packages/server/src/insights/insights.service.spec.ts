@@ -153,8 +153,8 @@ describe('InsightsService', () => {
           },
         ],
       });
-      expect(res.totalStudents.output).toEqual(4);
-      expect(res.totalQuestionsAsked.output).toEqual(18);
+      expect(res.TotalStudents.output).toEqual(4);
+      expect(res.TotalQuestionsAsked.output).toEqual(18);
     });
   });
 });
