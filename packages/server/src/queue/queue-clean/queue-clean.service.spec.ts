@@ -121,14 +121,6 @@ describe('QueueService', () => {
       expect(updatedQueue2.staffList.length).toEqual(0);
     });
 
-    it('cleaning the queue removes the queue notes', async () => {
-      const ofs = await ClosedOfficeHourFactory.create();
-      const queue = await QueueFactory.create({
-        officeHours: [ofs],
-        notes: 'This note is no longer relevant',
-      });
-    });
-
     it('if no staff are present all questions with limbo status are marked as stale', async () => {
       const ofs = await ClosedOfficeHourFactory.create();
       const queue = await QueueFactory.create({ officeHours: [ofs] });
