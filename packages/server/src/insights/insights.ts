@@ -1,14 +1,14 @@
 import {
+  InsightDisplay,
+  PossibleOutputTypes,
   QuestionType,
   Role,
-  PossibleOutputTypes,
-  SimpleDisplayOutputType,
   SimpleChartOutputType,
-  InsightDisplay,
+  SimpleDisplayOutputType,
 } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
-import { SelectQueryBuilder } from 'typeorm';
 import { QuestionModel } from 'question/question.entity';
+import { SelectQueryBuilder } from 'typeorm';
 
 export interface InsightInterface<Model> {
   displayName: string;
