@@ -33,7 +33,7 @@ export class InsightsService {
     await Promise.all(
       insights.map(async (insight) => {
         const output = await this.generateOutput({ insight, filters });
-        insightsWithOutput[insight.name] = { output, ...insight };
+        insightsWithOutput[insight.constructor.name] = { output, ...insight };
       }),
     );
     return insightsWithOutput;
