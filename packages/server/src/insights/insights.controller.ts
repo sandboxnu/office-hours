@@ -8,13 +8,22 @@ import {
   Param,
   Query,
   BadRequestException,
+  Body,
+  Delete,
+  Patch,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'login/jwt-auth.guard';
 import { Connection } from 'typeorm';
-import { GetInsightResponse, ERROR_MESSAGES } from '@koh/common';
+import {
+  GetInsightResponse,
+  ERROR_MESSAGES,
+  ListInsightsResponse,
+  Role,
+} from '@koh/common';
 import { User } from '../profile/user.decorator';
 import { INSIGHTS_MAP } from './insights';
 import { UserModel } from 'profile/user.entity';
+import { Roles } from 'profile/roles.decorator';
 
 @Controller('insights')
 @UseGuards(JwtAuthGuard)
@@ -59,5 +68,37 @@ export class InsightsController {
     });
 
     return insight;
+  }
+
+  @Get('list')
+  @Roles(Role.PROFESSOR)
+  async getAllInsights(): Promise<ListInsightsResponse> {
+    return Object.keys(INSIGHTS_MAP);
+  }
+
+  @Patch('')
+  @Roles(Role.PROFESSOR)
+  async toggleInsightOn(
+    @Body() body: { insightName: string },
+    @User() user: UserModel,
+  ): Promise<ListInsightsResponse> {
+    const updatedInsights = await this.insightsService.toggleInsightOn(
+      user,
+      body.insightName,
+    );
+    return updatedInsights;
+  }
+
+  @Delete('')
+  @Roles(Role.PROFESSOR)
+  async toggleInsightOff(
+    @Body() body: { insightName: string },
+    @User() user: UserModel,
+  ): Promise<ListInsightsResponse> {
+    const updatedInsights = await this.insightsService.toggleInsightOff(
+      user,
+      body.insightName,
+    );
+    return updatedInsights;
   }
 }
