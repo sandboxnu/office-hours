@@ -13,5 +13,10 @@ Object {
   "roles": Array [
     "professor",
   ],
+  "size": "small",
+  "style": Object {
+    "margin": "10px",
+    "width": "200px",
+  },
 }
 `;
