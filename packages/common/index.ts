@@ -529,7 +529,12 @@ export interface GetReleaseNotesResponse {
 
 export type GetInsightResponse = Insight;
 
-export type ListInsightsResponse = string[];
+export type ListInsightsResponse = InsightNames[];
+
+type InsightNames = {
+  name: string;
+  displayName: string;
+};
 
 export class Insight {
   name!: string;

@@ -17,18 +17,18 @@ export default function InsightsSettings(): ReactElement {
       <Form form={null} initialValues={null}>
         {insightsList?.map((insight) => (
           <Form.Item
-            key={insight}
-            label={insight}
-            initialValue={profile?.insights?.includes(insight)}
+            key={insight.name}
+            label={insight.displayName}
+            initialValue={profile?.insights?.includes(insight.name)}
             valuePropName="checked"
-            name={insight}
+            name={insight.name}
           >
             <Switch
               onChange={(checked) => {
                 if (checked) {
-                  API.insights.toggleOn(insight);
+                  API.insights.toggleOn(insight.name);
                 } else {
-                  API.insights.toggleOff(insight);
+                  API.insights.toggleOff(insight.name);
                 }
               }}
             />

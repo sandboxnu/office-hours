@@ -73,7 +73,10 @@ export class InsightsController {
   @Get('list')
   @Roles(Role.PROFESSOR)
   async getAllInsights(): Promise<ListInsightsResponse> {
-    return Object.keys(INSIGHTS_MAP);
+    return Object.entries(INSIGHTS_MAP).map(([insightName, insight]) => ({
+      name: insightName,
+      displayName: insight.displayName,
+    }));
   }
 
   @Patch('')
