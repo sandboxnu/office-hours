@@ -1,4 +1,5 @@
 import { DownOutlined } from "@ant-design/icons";
+import { Role } from "@koh/common";
 import { Button, Drawer, Dropdown, Menu } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -7,6 +8,7 @@ import styled from "styled-components";
 import { useCourse } from "../../hooks/useCourse";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useProfile } from "../../hooks/useProfile";
+import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import NavBarTabs, { NavBarTabsItem } from "./NavBarTabs";
 import ProfileDrawer from "./ProfileDrawer";
 
@@ -113,6 +115,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
   if (!courseId) {
     courseId = profile?.courses[0].course.id;
   }
+  const role = useRoleInCourse(courseId);
 
   const [defaultCourse, setDefaultCourse] = useLocalStorage(
     "defaultCourse",
@@ -166,6 +169,13 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
       href: "/course/[cid]/queue/[qid]",
       as: `/course/${courseId}/queue/${queueId}`,
       text: "Queue",
+    });
+  }
+  if (role === Role.PROFESSOR) {
+    tabs.push({
+      href: "/course/[cid]/insights",
+      as: `/course/${courseId}/insights`,
+      text: "Insights",
     });
   }
 
