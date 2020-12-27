@@ -9,6 +9,8 @@ import SimpleDisplayComponent from "../../../components/Insights/components/Simp
 import SimpleChartComponent from "../../../components/Insights/components/SimpleChartComponent";
 import { InsightDisplay } from "@koh/common";
 import NavBar from "../../../components/Nav/NavBar";
+import Link from "next/link";
+import { SettingsOptions } from "../../../components/Settings/SettingsPage";
 
 export default function Insights(): ReactElement {
   const router = useRouter();
@@ -26,7 +28,7 @@ export default function Insights(): ReactElement {
     <>
       <StandardPageContainer>
         <NavBar courseId={Number(cid)} />
-        <h1 style={{ margin: "20px" }}>Insights Dashboard</h1>
+        <h1 style={{ margin: "24px" }}>Insights Dashboard</h1>
         <div style={{ display: "flex", direction: "ltr" }}>
           {profile?.insights?.map((insightName: string) => {
             return (
@@ -38,6 +40,14 @@ export default function Insights(): ReactElement {
             );
           })}
         </div>
+        <Link
+          href={{
+            pathname: "/settings",
+            query: { cid, defaultPage: SettingsOptions.INSIGHTS },
+          }}
+        >
+          <a style={{ marginLeft: "24px" }}>View Insights Settings</a>
+        </Link>
       </StandardPageContainer>
     </>
   );
