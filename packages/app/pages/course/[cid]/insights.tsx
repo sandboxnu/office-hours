@@ -1,29 +1,40 @@
 import React, { ReactElement } from "react";
 import { API } from "@koh/api-client";
 import useSWR from "swr";
-import { Tooltip, Card } from "antd";
-import { InfoCircleOutlined } from "@ant-design/icons";
+import { Tooltip, Card, Space } from "antd";
+import { CloseSquareOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
-import { useProfile } from "../../../hooks/useProfile";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
 import SimpleDisplayComponent from "../../../components/Insights/components/SimpleDisplayComponent";
 import SimpleChartComponent from "../../../components/Insights/components/SimpleChartComponent";
 import { InsightDisplay } from "@koh/common";
+import NavBar from "../../../components/Nav/NavBar";
 
 export default function Insights(): ReactElement {
-  const profile = useProfile();
+  const router = useRouter();
+  const { cid } = router.query;
+  const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
+    API.profile.index()
+  );
 
-  // TODO: In the future this will come from the users specific insights that want to see
-  const insights = ["TotalQuestionsAsked", "TotalStudents"];
+  const toggleInsightOff = async (insightName) => {
+    await API.insights.toggleOff(insightName);
+    mutate();
+  };
 
   return (
     <>
       <StandardPageContainer>
+        <NavBar courseId={Number(cid)} />
         <h1 style={{ margin: "20px" }}>Insights Dashboard</h1>
         <div style={{ display: "flex", direction: "ltr" }}>
-          {insights?.map((insightName: string) => {
+          {profile?.insights?.map((insightName: string) => {
             return (
-              <RenderInsight key={insightName} insightName={insightName} />
+              <RenderInsight
+                key={insightName}
+                insightName={insightName}
+                toggleInsightOff={toggleInsightOff}
+              />
             );
           })}
         </div>
@@ -34,9 +45,13 @@ export default function Insights(): ReactElement {
 
 interface RenderInsightProps {
   insightName: string;
+  toggleInsightOff: (insightName: string) => void;
 }
 
-function RenderInsight({ insightName }: RenderInsightProps): ReactElement {
+function RenderInsight({
+  insightName,
+  toggleInsightOff,
+}: RenderInsightProps): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
 
@@ -69,9 +84,16 @@ function RenderInsight({ insightName }: RenderInsightProps): ReactElement {
       size="small"
       title={insight.displayName}
       extra={
-        <Tooltip placement="topRight" title={insight.description}>
-          <InfoCircleOutlined />
-        </Tooltip>
+        <Space>
+          <Tooltip placement="topRight" title="Hide">
+            <CloseSquareOutlined
+              onClick={() => toggleInsightOff(insightName)}
+            />
+          </Tooltip>
+          <Tooltip placement="topRight" title={insight.description}>
+            <InfoCircleOutlined />
+          </Tooltip>
+        </Space>
       }
       style={{ width: "200px", margin: "10px" }}
     >
