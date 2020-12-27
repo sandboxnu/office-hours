@@ -2,6 +2,7 @@ import React, { ReactElement } from "react";
 import { API } from "@koh/api-client";
 import useSWR from "swr";
 import { Tooltip, Card, Space } from "antd";
+import { CardSize } from "antd/lib/card";
 import { CloseSquareOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
