@@ -10,6 +10,8 @@ import moment = require('moment');
 import { Connection, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { QuestionModel } from '../../question/question.entity';
 import { QueueModel } from 'queue/queue.entity';
+import { EventModel, EventType } from 'profile/event-model.entity';
+import { UserModel } from 'profile/user.entity';
 
 /**
  * Clean the queue and mark stale
@@ -40,6 +42,14 @@ export class QueueCleanService {
     );
 
     queuesWithCheckedInStaff.forEach(async (queue) => {
+      queue.staffList.forEach(async (ta) => {
+        await EventModel.create({
+          time: new Date(),
+          eventType: EventType.TA_CHECKED_OUT_FORCED,
+          userId: ta.id,
+          courseId: queue.courseId,
+        }).save();
+      });
       queue.staffList = [];
     });
     await QueueModel.save(queuesWithCheckedInStaff);
