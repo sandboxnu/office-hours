@@ -128,7 +128,6 @@ export default function SettingsPage({
           >
             Notifications Settings
           </Menu.Item>
-          {/* If role == professor or if has insights */}
           {role === Role.PROFESSOR ? (
             <Menu.Item
               key={SettingsOptions.INSIGHTS}
