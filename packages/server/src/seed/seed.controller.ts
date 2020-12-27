@@ -154,6 +154,11 @@ export class SeedController {
         lastName: 'Li',
         photoURL:
           'https://ca.slack-edge.com/TE565NU79-UR6P32JBT-a6c89822c544-512',
+        insights: [
+          'QuestionTypeBreakdown',
+          'TotalQuestionsAsked',
+          'TotalStudents',
+        ],
       });
       await UserCourseFactory.create({
         user: user5,
