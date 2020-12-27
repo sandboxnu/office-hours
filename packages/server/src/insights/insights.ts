@@ -22,6 +22,8 @@ export interface InsightInterface<Model> {
     insightFilters: any,
   ) => Promise<PossibleOutputTypes>;
   output?: Promise<PossibleOutputTypes>;
+  size: 'default' | 'small';
+  style?: Record<string, any>;
 }
 
 function addFilters(
@@ -70,6 +72,8 @@ export class TotalStudents implements InsightInterface<UserCourseModel> {
   component = InsightDisplay.SimpleDisplay;
   model = UserCourseModel;
   possibleFilters = ['courseId', 'role'];
+  size = 'small' as const;
+  style = { width: '200px', margin: '10px' };
 
   async compute(
     queryBuilder: SelectQueryBuilder<UserCourseModel>,
@@ -91,6 +95,8 @@ export class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
   component = InsightDisplay.SimpleDisplay;
   model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
+  size = 'small' as const;
+  style = { width: '200px', margin: '10px' };
 
   async compute(
     queryBuilder: SelectQueryBuilder<QuestionModel>,
@@ -114,6 +120,8 @@ export class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
   component = InsightDisplay.SimpleChart;
   model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
+  size = 'default' as const;
+  style = { width: '200px', margin: '10px' };
 
   async compute(
     queryBuilder: SelectQueryBuilder<QuestionModel>,
@@ -161,6 +169,8 @@ export class AverageWaitTime implements InsightInterface<QuestionModel> {
   component = InsightDisplay.SimpleDisplay;
   model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
+  size = 'small' as const;
+  style = { width: '200px', margin: '10px' };
 
   async compute(
     queryBuilder: SelectQueryBuilder<QuestionModel>,

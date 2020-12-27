@@ -5,12 +5,12 @@ import { Tooltip, Card, Space } from "antd";
 import { CloseSquareOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
-import SimpleDisplayComponent from "../../../components/Insights/components/SimpleDisplayComponent";
-import SimpleChartComponent from "../../../components/Insights/components/SimpleChartComponent";
 import { InsightDisplay } from "@koh/common";
 import NavBar from "../../../components/Nav/NavBar";
 import Link from "next/link";
 import { SettingsOptions } from "../../../components/Settings/SettingsPage";
+import SimpleChartComponent from "../../../components/Insights/components/SimpleChartComponent";
+import SimpleDisplayComponent from "../../../components/Insights/components/SimpleDisplayComponent";
 
 export default function Insights(): ReactElement {
   const router = useRouter();
@@ -91,7 +91,7 @@ function RenderInsight({
 
   return (
     <Card
-      size="small"
+      size={insight.size as CardSize}
       title={insight.displayName}
       extra={
         <Space>
@@ -105,7 +105,7 @@ function RenderInsight({
           </Tooltip>
         </Space>
       }
-      style={{ width: "200px", margin: "10px" }}
+      style={insight.style}
     >
       <InsightComponent key={insight.name} {...insight} />
     </Card>
