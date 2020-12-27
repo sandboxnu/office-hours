@@ -7,9 +7,11 @@ import {
   QuestionFactory,
   CourseFactory,
   QueueFactory,
+  UserFactory,
 } from '../../test/util/factories';
 import { INSIGHTS_MAP } from './insights';
 import { QuestionType } from '@koh/common';
+import { UserModel } from 'profile/user.entity';
 
 describe('InsightsService', () => {
   let service: InsightsService;
