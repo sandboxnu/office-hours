@@ -128,14 +128,14 @@ export default function SettingsPage({
           >
             Notifications Settings
           </Menu.Item>
-          {role === Role.PROFESSOR ? (
+          {role === Role.PROFESSOR && (
             <Menu.Item
               key={SettingsOptions.INSIGHTS}
               icon={<BarChartOutlined />}
             >
               Insights Settings
             </Menu.Item>
-          ) : null}
+          )}
         </Menu>
       </Col>
       <VerticalDivider />
