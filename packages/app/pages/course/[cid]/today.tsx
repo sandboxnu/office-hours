@@ -92,6 +92,7 @@ export default function Today(): ReactElement {
                   state={queueCheckedIn ? "CheckedIn" : "CheckedOut"}
                 />
               )}
+              {role === Role.PROFESSOR && <ProfessorCheckinButton />}
             </Row>
             {role === Role.PROFESSOR && (
               <Row>
