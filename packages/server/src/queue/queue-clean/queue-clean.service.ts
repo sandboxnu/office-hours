@@ -41,8 +41,8 @@ export class QueueCleanService {
       { relations: ['staffList'] },
     );
 
-    queuesWithCheckedInStaff.forEach(async (queue) => {
-      queue.staffList.forEach(async (ta) => {
+    await queuesWithCheckedInStaff.forEach(async (queue) => {
+      await queue.staffList.forEach(async (ta) => {
         await EventModel.create({
           time: new Date(),
           eventType: EventType.TA_CHECKED_OUT_FORCED,

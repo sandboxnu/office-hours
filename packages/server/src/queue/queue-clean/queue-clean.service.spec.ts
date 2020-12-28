@@ -1,6 +1,8 @@
 import { OpenQuestionStatus, LimboQuestionStatus } from '@koh/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { CourseModel } from 'course/course.entity';
 import moment = require('moment');
+import { EventModel } from 'profile/event-model.entity';
 import { QueueModel } from 'queue/queue.entity';
 import { Connection } from 'typeorm';
 import {
@@ -116,9 +118,17 @@ describe('QueueService', () => {
       const updatedQueue2 = await QueueModel.findOne(queue2.id, {
         relations: ['staffList'],
       });
+      const checkoutEvents = (
+        await EventModel.createQueryBuilder().getMany()
+      ).map((em) => em.eventType);
 
       expect(updatedQueue1.staffList.length).toEqual(0);
       expect(updatedQueue2.staffList.length).toEqual(0);
+      expect(checkoutEvents).toEqual([
+        'taCheckedOutForced',
+        'taCheckedOutForced',
+        'taCheckedOutForced',
+      ]);
     });
 
     it('if no staff are present all questions with limbo status are marked as stale', async () => {
