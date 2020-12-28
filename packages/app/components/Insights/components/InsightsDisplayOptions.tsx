@@ -2,9 +2,17 @@ import { ReactElement } from "react";
 import { API } from "@koh/api-client";
 import useSWR from "swr";
 import { Form, Switch } from "antd";
-import { useProfile } from "../../hooks/useProfile";
+import { useProfile } from "../../../hooks/useProfile";
 
-export default function InsightsSettings(): ReactElement {
+interface InsightsDisplayOptionsProps {
+  toggleInsightOn: (insightName: string) => void;
+  toggleInsightOff: (insightName: string) => void;
+}
+
+export default function InsightsDisplayOptions({
+  toggleInsightOn,
+  toggleInsightOff,
+}: InsightsDisplayOptionsProps): ReactElement {
   const profile = useProfile();
   const { data: insightsList, error, mutate } = useSWR(
     `api/v1/insights`,
@@ -26,9 +34,9 @@ export default function InsightsSettings(): ReactElement {
             <Switch
               onChange={(checked) => {
                 if (checked) {
-                  API.insights.toggleOn(insight.name);
+                  toggleInsightOn(insight.name);
                 } else {
-                  API.insights.toggleOff(insight.name);
+                  toggleInsightOff(insight.name);
                 }
               }}
             />

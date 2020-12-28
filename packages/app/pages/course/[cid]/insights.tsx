@@ -1,17 +1,16 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useState } from "react";
 import { API } from "@koh/api-client";
 import useSWR from "swr";
-import { Tooltip, Card, Space } from "antd";
+import { Tooltip, Card, Space, Drawer, Button } from "antd";
 import { CardSize } from "antd/lib/card";
 import { CloseSquareOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
 import { InsightDisplay } from "@koh/common";
 import NavBar from "../../../components/Nav/NavBar";
-import Link from "next/link";
-import { SettingsOptions } from "../../../components/Settings/SettingsPage";
 import SimpleChartComponent from "../../../components/Insights/components/SimpleChartComponent";
 import SimpleDisplayComponent from "../../../components/Insights/components/SimpleDisplayComponent";
+import InsightsDisplayOptions from "../../../components/Insights/components/InsightsDisplayOptions";
 
 export default function Insights(): ReactElement {
   const router = useRouter();
@@ -19,6 +18,12 @@ export default function Insights(): ReactElement {
   const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
     API.profile.index()
   );
+  const [settingsVisible, setSettingsVisible] = useState(false);
+
+  const toggleInsightOn = async (insightName) => {
+    await API.insights.toggleOn(insightName);
+    mutate();
+  };
 
   const toggleInsightOff = async (insightName) => {
     await API.insights.toggleOff(insightName);
@@ -30,6 +35,19 @@ export default function Insights(): ReactElement {
       <StandardPageContainer>
         <NavBar courseId={Number(cid)} />
         <h1 style={{ margin: "24px" }}>Insights Dashboard</h1>
+        <Drawer
+          title="Display Options"
+          placement="left"
+          closable={true}
+          onClose={() => setSettingsVisible(false)}
+          visible={settingsVisible}
+          width={400}
+        >
+          <InsightsDisplayOptions
+            toggleInsightOn={toggleInsightOn}
+            toggleInsightOff={toggleInsightOff}
+          />
+        </Drawer>
         <div style={{ display: "flex", direction: "ltr" }}>
           {profile?.insights?.map((insightName: string) => {
             return (
@@ -41,14 +59,12 @@ export default function Insights(): ReactElement {
             );
           })}
         </div>
-        <Link
-          href={{
-            pathname: "/settings",
-            query: { cid, defaultPage: SettingsOptions.INSIGHTS },
-          }}
+        <Button
+          style={{ marginLeft: "24px", width: "256px" }}
+          onClick={() => setSettingsVisible(true)}
         >
-          <a style={{ marginLeft: "24px" }}>View Insights Settings</a>
-        </Link>
+          Open Insights Display Options
+        </Button>
       </StandardPageContainer>
     </>
   );

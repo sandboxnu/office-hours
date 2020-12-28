@@ -1,27 +1,17 @@
-import React, { ReactElement, useState } from "react";
+import { BellOutlined, EditOutlined, UploadOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
+import { useWindowWidth } from "@react-hook/window-size";
+import { Button, Col, Menu, message, Row, Skeleton, Space, Upload } from "antd";
+import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import useSWR from "swr";
 import SelfAvatar from "../common/SelfAvatar";
-import {
-  BellOutlined,
-  EditOutlined,
-  BarChartOutlined,
-  UploadOutlined,
-} from "@ant-design/icons";
-import { useWindowWidth } from "@react-hook/window-size";
-import { useRouter } from "next/router";
-import { Button, Col, Menu, message, Row, Skeleton, Space, Upload } from "antd";
-import { Role } from "@koh/common";
 import NotificationsSettings from "./NotificationsSettings";
 import ProfileSettings from "./ProfileSettings";
-import InsightsSettings from "./InsightsSettings";
-import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 
 export enum SettingsOptions {
   PROFILE = "PROFILE",
   NOTIFICATIONS = "NOTIFICATIONS",
-  INSIGHTS = "INSIGHTS",
 }
 
 interface SettingsPageProps {
@@ -42,8 +32,6 @@ export default function SettingsPage({
     API.profile.index()
   );
 
-  const router = useRouter();
-  const role = useRoleInCourse(Number(router.query.cid));
   const [currentSettings, setCurrentSettings] = useState(
     defaultPage || SettingsOptions.PROFILE
   );
@@ -128,14 +116,6 @@ export default function SettingsPage({
           >
             Notifications Settings
           </Menu.Item>
-          {role === Role.PROFESSOR && (
-            <Menu.Item
-              key={SettingsOptions.INSIGHTS}
-              icon={<BarChartOutlined />}
-            >
-              Insights Settings
-            </Menu.Item>
-          )}
         </Menu>
       </Col>
       <VerticalDivider />
@@ -145,7 +125,6 @@ export default function SettingsPage({
           {currentSettings === SettingsOptions.NOTIFICATIONS && (
             <NotificationsSettings />
           )}
-          {currentSettings === SettingsOptions.INSIGHTS && <InsightsSettings />}
         </Col>
       </Space>
     </Row>
