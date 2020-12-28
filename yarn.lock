@@ -12612,6 +12612,11 @@ rechoir@^0.6.2:
   dependencies:
     resolve "^1.1.6"
 
+reconnecting-eventsource@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/reconnecting-eventsource/-/reconnecting-eventsource-1.1.0.tgz#df55bde4c575babadeca3c730a2f204e8a1d42de"
+  integrity sha512-KJbQG1iZOC4IRBccT1mOodzKp5YM9gC1H4L6LgDmmXx+4U3pabhb+UF0UI0u+Lck1cvb4oyAuihaQqTbKnslqQ==
+
 redact-secrets@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/redact-secrets/-/redact-secrets-1.0.0.tgz#60f1db56924fe90a203ba8ccb39283cdbb0d907c"
