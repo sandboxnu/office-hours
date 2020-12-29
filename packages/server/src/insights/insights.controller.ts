@@ -24,6 +24,7 @@ import { User } from '../profile/user.decorator';
 import { INSIGHTS_MAP } from './insights';
 import { UserModel } from 'profile/user.entity';
 import { Roles } from 'profile/roles.decorator';
+import { CourseRole } from './course-role.decorator';
 
 @Controller('insights')
 @UseGuards(JwtAuthGuard)
@@ -38,7 +39,7 @@ export class InsightsController {
   async get(
     @Param('courseId') courseId: number,
     @Param('insightName') insightName: string,
-    @User(['courses']) user: UserModel,
+    @CourseRole() role: Role,
     @Query() filters: any,
   ): Promise<GetInsightResponse> {
     // Check that the insight name is valid
@@ -49,8 +50,6 @@ export class InsightsController {
       );
     }
     // Check that the current user's role has access to the given insight
-    const role = user.courses.find((course) => course.courseId === courseId)
-      .role;
     if (!INSIGHTS_MAP[insightName].roles.includes(role)) {
       throw new BadRequestException(
         ERROR_MESSAGES.insightsController.insightUnathorized,
