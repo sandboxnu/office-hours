@@ -31,6 +31,8 @@ module.exports = function (options) {
     plugins: [
       // SERVICE_VERSION is the git hash, passed during build time.
       new SentryPlugin({
+        org: 'sandboxnu',
+        project: 'khoury-office-hours',
         release: process.env.SERVICE_VERSION,
         include: './dist',
       }),
