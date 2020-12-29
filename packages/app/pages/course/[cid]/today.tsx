@@ -14,6 +14,7 @@ import OpenQueueCard, {
   OpenQueueCardSkeleton,
 } from "../../../components/Today/OpenQueueCard";
 import PopularTimes from "../../../components/Today/PopularTimes/PopularTimes";
+import ProfessorCheckinButton from "../../../components/Today/ProfessorCheckinButton";
 import ReleaseNotes from "../../../components/Today/ReleaseNotes";
 import TACheckinButton from "../../../components/Today/TACheckinButton";
 import WelcomeStudents from "../../../components/Today/WelcomeStudents";

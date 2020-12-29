@@ -58,7 +58,7 @@ export class QueueModel extends BaseEntity {
   officeHours: OfficeHourModel[];
 
   @Column({ default: false })
-  isProfessorOfficeHour: boolean;
+  isProfessorQueue: boolean;
 
   startTime: Date;
   endTime: Date;

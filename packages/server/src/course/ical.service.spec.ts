@@ -869,12 +869,12 @@ describe('IcalService', () => {
         const gamburgQueue = await QueueModel.findOne({
           courseId: course.id,
           room: "Professor Gamburg's Hours",
-          isProfessorOfficeHour: true,
+          isProfessorQueue: true,
         });
         const shortQueue = await QueueModel.findOne({
           courseId: course.id,
           room: "Prof Usyvatsky's Hours",
-          isProfessorOfficeHour: true,
+          isProfessorQueue: true,
         });
         expect(
           (await CourseModel.findOne(course.id, { relations: ['officeHours'] }))

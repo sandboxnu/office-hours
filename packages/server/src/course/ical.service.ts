@@ -183,7 +183,7 @@ export class IcalService {
     // TODO: make professor queues instead of this bullshit lmao
     const professorQueues = await QueueModel.find({
       where: {
-        isProfessorOfficeHour: true,
+        isProfessorQueue: true,
       },
     });
 
@@ -197,7 +197,7 @@ export class IcalService {
             staffList: [],
             questions: [],
             allowQuestions: false,
-            isProfessorOfficeHour: true,
+            isProfessorQueue: true,
           });
           await newProfQ.save();
           professorQueues.push(newProfQ);

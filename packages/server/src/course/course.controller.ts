@@ -16,6 +16,7 @@ import {
 } from '@nestjs/common';
 import async from 'async';
 import { EventModel, EventType } from 'profile/event-model.entity';
+import { UserCourseModel } from 'profile/user-course.entity';
 import { Connection, getRepository, MoreThanOrEqual } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { Roles } from '../profile/roles.decorator';
@@ -45,7 +46,10 @@ export class CourseController {
 
   @Get(':id')
   @Roles(Role.PROFESSOR, Role.STUDENT, Role.TA)
-  async get(@Param('id') id: number): Promise<GetCourseResponse> {
+  async get(
+    @Param('id') id: number,
+    @User() user: UserModel,
+  ): Promise<GetCourseResponse> {
     // TODO: for all course endpoint, check if they're a student or a TA
     const course = await CourseModel.findOne(id, {
       relations: ['queues', 'queues.staffList'],
@@ -59,10 +63,20 @@ export class CourseController {
       .getRawMany();
     course.heatmap = await this.heatmapService.getCachedHeatmapFor(id);
 
-    course.queues = await async.filter(
-      course.queues,
-      async (q) => await q.checkIsOpen(),
-    );
+    const userCourseModel = await UserCourseModel.findOne({
+      where: {
+        user,
+        courseId: id,
+      },
+    });
+
+    if (userCourseModel.role !== Role.PROFESSOR) {
+      course.queues = await async.filter(
+        course.queues,
+        async (q) => await q.checkIsOpen(),
+      );
+    }
+
     await async.each(course.queues, async (q) => {
       await q.addQueueTimes();
       await q.addQueueSize();
