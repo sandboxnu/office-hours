@@ -6,7 +6,7 @@ import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { QueuePartial } from "../../../common/index";
 import { formatQueueTime } from "../../utils/TimeUtil";
-import AvatarWithInitals from "../common/AvatarWithInitials";
+import { KOHAvatar } from "../common/SelfAvatar";
 
 type OpenQueueCard = {
   queue: QueuePartial;
@@ -57,10 +57,6 @@ const HeaderText = styled.div`
   margin-bottom: 8px;
 `;
 
-const AvatarWithMargin = styled(AvatarWithInitals)`
-  margin-right: 25px;
-`;
-
 const OpenQueueButton = styled(Button)`
   background-color: #3684c6;
   border-radius: 6px;
@@ -93,6 +89,10 @@ const ExtraText = styled.div`
 const NotesInput = styled(Input)`
   border-radius: 6px;
   border: 1px solid #b8c4ce;
+`;
+
+const Notes = styled.div`
+  overflow-wrap: break-word;
 `;
 
 const OpenQueueCard = ({
@@ -152,10 +152,10 @@ const OpenQueueCard = ({
         </div>
       ) : (
         queue.notes && (
-          <React.Fragment>
+          <div>
             <HeaderText style={{ marginBottom: 0 }}>staff notes</HeaderText>
-            <div>{queue.notes}</div>
-          </React.Fragment>
+            <Notes>{queue.notes}</Notes>
+          </div>
         )
       )}
       <br />
@@ -167,17 +167,14 @@ const OpenQueueCard = ({
       }
 
       <Row justify="space-between" align="bottom">
-        {
-          // TODO: bring back photo URL && get rid of RegeX
-          // src={staffMember.photoURL}
-        }
         <div>
           {staffList.map((staffMember) => (
             <Tooltip key={staffMember.id} title={staffMember.name}>
-              <AvatarWithMargin
+              <KOHAvatar
                 size={96}
-                fontSize={40}
+                photoURL={staffMember.photoURL}
                 name={staffMember.name}
+                style={{ marginRight: "25px" }}
               />
             </Tooltip>
           ))}

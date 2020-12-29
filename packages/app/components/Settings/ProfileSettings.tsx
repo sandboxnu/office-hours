@@ -28,10 +28,30 @@ export default function ProfileSettings(): ReactElement {
   return profile ? (
     <div style={{ paddingTop: "50px" }}>
       <Form form={form} initialValues={profile}>
-        <Form.Item label="First Name" name="firstName" data-cy="firstNameInput">
+        <Form.Item
+          label="First Name"
+          name="firstName"
+          data-cy="firstNameInput"
+          rules={[
+            {
+              required: true,
+              message: "Your name can't be empty!",
+            },
+          ]}
+        >
           <Input />
         </Form.Item>
-        <Form.Item label="Last Name" name="lastName" data-cy="lastNameInput">
+        <Form.Item
+          label="Last Name"
+          name="lastName"
+          data-cy="lastNameInput"
+          rules={[
+            {
+              required: true,
+              message: "Your name can't be empty!",
+            },
+          ]}
+        >
           <Input />
         </Form.Item>
       </Form>

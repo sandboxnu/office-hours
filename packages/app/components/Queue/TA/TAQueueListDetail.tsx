@@ -7,7 +7,7 @@ import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { SettingsOptions } from "../../Settings/SettingsPage";
-import { COMPACT_BKPT, SPLIT_DETAIL_BKPT } from "./TAQueueBreakpoints";
+import { SPLIT_DETAIL_BKPT } from "./TAQueueBreakpoints";
 import TAQueueDetail from "./TAQueueDetail";
 import TAQueueListSection from "./TAQueueListSection";
 
@@ -24,7 +24,7 @@ const Container = styled.div`
     margin-bottom: 0px;
     display: flex;
     flex-direction: row;
-    height: calc(
+    min-height: calc(
       100vh - 46px - 67px
     ); // - (height of footer) - (height of navbar)
   }
@@ -32,11 +32,8 @@ const Container = styled.div`
 
 const List = styled.div`
   @media (min-width: ${SPLIT_DETAIL_BKPT}px) {
-    width: 230px;
-    overflow: scroll;
-  }
-  @media (min-width: ${COMPACT_BKPT}px) {
     width: 320px;
+    overflow-y: scroll;
   }
 `;
 
@@ -49,7 +46,7 @@ const Detail = styled.div`
   border-right: 1px solid #cfd6de;
   flex: 1;
   @media (min-width: ${SPLIT_DETAIL_BKPT}px) {
-    overflow: scroll;
+    overflow-y: scroll;
   }
 `;
 

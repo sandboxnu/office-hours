@@ -10,6 +10,7 @@ import { addGlobalsToApp } from '../../src/bootstrap';
 import { TwilioService } from '../../src/notification/twilio/twilio.service';
 import { mocked } from 'ts-jest/utils';
 import { NotificationService } from 'notification/notification.service';
+import { RedisModule } from 'nestjs-redis';
 
 export interface SupertestOptions {
   userId?: number;
@@ -48,7 +49,17 @@ export function setupIntegrationTest(
 
   beforeAll(async () => {
     let testModuleBuilder = Test.createTestingModule({
-      imports: [module, LoginModule, TestTypeOrmModule, TestConfigModule],
+      imports: [
+        module,
+        LoginModule,
+        TestTypeOrmModule,
+        TestConfigModule,
+        RedisModule.register([
+          { name: 'pub' },
+          { name: 'sub' },
+          { name: 'db' },
+        ]),
+      ],
     })
       .overrideProvider(TwilioService)
       .useValue(mockTwilio);

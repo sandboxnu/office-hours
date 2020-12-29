@@ -1,11 +1,11 @@
 import { Question } from "@koh/common";
 import { Badge, Col, Row } from "antd";
-import { ReactElement } from "react";
+import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
 import { formatWaitTime } from "../../utils/TimeUtil";
-import AvatarWithInitals from "../common/AvatarWithInitials";
+import { KOHAvatar } from "../common/SelfAvatar";
 import { RenderEvery } from "../RenderEvery";
 
 interface StatusRowProps {
@@ -55,9 +55,7 @@ const StyledCard = styled.div`
   display: flex;
   margin-bottom: 16px;
 `;
-const AvatarNoShrink = styled(AvatarWithInitals)`
-  flex-shrink: 0;
-`;
+
 const CardContent = styled.div`
   margin-left: 16px;
 `;
@@ -88,11 +86,12 @@ function StatusCard({
   const isBusy = !!helpedAt;
   return (
     <StyledCard data-cy="ta-status-card">
-      {
-        //TODO: bring back photo URL && get rid of RegeX
-        // src={taPhotoURL}
-      }
-      <AvatarNoShrink size={48} fontSize={20} name={taName} />
+      <KOHAvatar
+        size={48}
+        name={taName}
+        photoURL={taPhotoURL}
+        style={{ flexShrink: 0 }}
+      />
       <CardContent>
         <Row justify="space-between">
           <TAName>{taName}</TAName>

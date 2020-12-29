@@ -146,6 +146,20 @@ export class SeedController {
         role: Role.TA,
         course: course,
       });
+      // Professor (Snarky!!)
+      const user5 = await UserFactory.create({
+        email: 'li.edwa@northeastern.edu',
+        name: 'Eddy Li',
+        firstName: 'Eddy',
+        lastName: 'Li',
+        photoURL:
+          'https://ca.slack-edge.com/TE565NU79-UR6P32JBT-a6c89822c544-512',
+      });
+      await UserCourseFactory.create({
+        user: user5,
+        role: Role.PROFESSOR,
+        course: course,
+      });
     }
 
     const queue = await QueueFactory.create({

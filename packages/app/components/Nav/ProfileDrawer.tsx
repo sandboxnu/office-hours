@@ -1,5 +1,6 @@
 import {
   FileTextOutlined,
+  LogoutOutlined,
   QuestionCircleOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
@@ -8,8 +9,7 @@ import { Menu, Popover } from "antd";
 import Link from "next/link";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
-import { useProfile } from "../../hooks/useProfile";
-import AvatarWithInitals from "../common/AvatarWithInitials";
+import SelfAvatar from "../common/SelfAvatar";
 
 const StyleablePopover = ({ className, ...props }: { className: string }) => (
   <Popover {...props} overlayClassName={className} />
@@ -31,7 +31,6 @@ interface ProfileDrawerProps {
 export default function ProfileDrawer({
   courseId,
 }: ProfileDrawerProps): ReactElement {
-  const profile = useProfile();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const loginPath = isProd() ? "/login" : "/dev";
 
@@ -41,11 +40,7 @@ export default function ProfileDrawer({
         content={
           isPopoverOpen && (
             <Menu mode="inline">
-              <Menu.Item
-                icon={
-                  <SettingOutlined /> /* Food for thought, do we want to turn this into a profile outline or settings outline*/
-                }
-              >
+              <Menu.Item icon={<SettingOutlined />}>
                 <Link
                   href={{ pathname: "/settings", query: { cid: courseId } }}
                 >
@@ -56,9 +51,7 @@ export default function ProfileDrawer({
                 key="1"
                 icon={<QuestionCircleOutlined />}
                 onClick={() => {
-                  window.open(
-                    "https://www.notion.so/Office-Hours-Help-Guide-a89c73dd53204cc3970ac44d61917417"
-                  );
+                  window.open("https://info.khouryofficehours.com/help");
                   setIsPopoverOpen(false);
                 }}
               >
@@ -69,20 +62,18 @@ export default function ProfileDrawer({
                 icon={<FileTextOutlined />}
                 onClick={() => {
                   window.open(
-                    "https://www.notion.so/Release-Notes-Archive-9a1a0eab073a463096fc3699bf48219c"
+                    "https://info.khouryofficehours.com/release-notes-archive"
                   );
                   setIsPopoverOpen(false);
                 }}
               >
                 Release Notes
               </Menu.Item>
-              {/* 
-              TODO: Add this back when we add logout endpoint
-              <Menu.Item>
-                <Link href={loginPath} as={loginPath}>
+              <Menu.Item key="3" icon={<LogoutOutlined />}>
+                <Link href={"/api/v1/logout"}>
                   <a>Logout</a>
                 </Link>
-              </Menu.Item> */}
+              </Menu.Item>
             </Menu>
           )
         }
@@ -92,13 +83,7 @@ export default function ProfileDrawer({
         onVisibleChange={setIsPopoverOpen}
       >
         <AvatarButton>
-          {
-            //TODO: bring back photo URL && get rid of RegeX
-            //icon={<UserOutlined />} src={profile?.photoURL}
-            profile && (
-              <AvatarWithInitals name={profile?.name} size={40} fontSize={16} />
-            )
-          }
+          <SelfAvatar size={40} />
         </AvatarButton>
       </NoPaddingPopover>
     </>

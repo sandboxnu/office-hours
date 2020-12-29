@@ -17,6 +17,10 @@ export async function bootstrap(hot: any): Promise<void> {
   });
   setupAPM(app);
   app.useGlobalInterceptors(new ApmInterceptor(new Reflector()));
+  app.enableShutdownHooks(); // So we can clean up SSE.
+  addGlobalsToApp(app);
+  app.setGlobalPrefix('api/v1');
+
   if (isProd()) {
     console.log(`Running production at ${process.env.DOMAIN}.`);
   } else {
