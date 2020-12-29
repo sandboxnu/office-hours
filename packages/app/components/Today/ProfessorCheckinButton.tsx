@@ -4,7 +4,8 @@ import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useCourse } from "../../hooks/useCourse";
-import { CheckinButton } from "./TACheckinButton";
+import { useProfile } from "../../hooks/useProfile";
+import TACheckinButton, { CheckinButton } from "./TACheckinButton";
 
 const ProfessorModalRadio = styled(Radio)`
   display: block;
@@ -13,11 +14,15 @@ const ProfessorModalRadio = styled(Radio)`
 `;
 
 export default function ProfessorCheckinButton(): ReactElement {
+  const profile = useProfile();
   const [modalVisible, setModalVisible] = useState(false);
   const [value, setValue] = useState(0);
   const router = useRouter();
   const { cid } = router.query;
-  const course = useCourse(Number(cid));
+  const { course } = useCourse(Number(cid));
+  const queueCheckedIn = course?.queues.find((queue) =>
+    queue.staffList.find((staff) => staff.id === profile?.id)
+  );
 
   return (
     <>
@@ -30,7 +35,7 @@ export default function ProfessorCheckinButton(): ReactElement {
           onOk={async () => {
             const redirectID = await API.taStatus.checkIn(
               Number(cid),
-              course.course?.queues[value].room
+              course?.queues[value].room
             );
 
             router.push(
@@ -41,7 +46,7 @@ export default function ProfessorCheckinButton(): ReactElement {
         >
           <h3>Which queue would you like to check into?</h3>
           <Radio.Group value={value} onChange={(e) => setValue(e.target.value)}>
-            {course.course.queues.map((q, i) => (
+            {course?.queues.map((q, i) => (
               <ProfessorModalRadio key={q.id} value={i}>
                 {q.room}
               </ProfessorModalRadio>
@@ -49,7 +54,7 @@ export default function ProfessorCheckinButton(): ReactElement {
           </Radio.Group>
         </Modal>
       )}
-      {
+      {!queueCheckedIn && (
         <CheckinButton
           type="default"
           size="large"
@@ -57,7 +62,14 @@ export default function ProfessorCheckinButton(): ReactElement {
         >
           Check In
         </CheckinButton>
-      }
+      )}
+      {queueCheckedIn && (
+        <TACheckinButton
+          courseId={Number(cid)}
+          room={queueCheckedIn.room}
+          state="CheckedIn"
+        />
+      )}
     </>
   );
 }
