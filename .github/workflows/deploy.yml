@@ -30,6 +30,7 @@ jobs:
         env:
           NEXT_PUBLIC_APM_SERVER: ${{ secrets.ELASTIC_APM_SERVER_URL}}
           NEXT_PUBLIC_SERVICE_VERSION: ${{ steps.pre-version.outputs.version }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       ## Ensure no new changes have been pushed in the time we spent building
       - run: git fetch && echo "::set-output name=version::$(git rev-parse origin/master)"
         id: post-version
