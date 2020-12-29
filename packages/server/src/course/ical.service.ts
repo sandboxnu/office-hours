@@ -8,7 +8,7 @@ import {
   VEvent,
 } from 'node-ical';
 import { RRule } from 'rrule';
-import { Connection, DeepPartial, Not } from 'typeorm';
+import { Connection, DeepPartial } from 'typeorm';
 import { findOneIana } from 'windows-iana/dist';
 import { QueueModel } from '../queue/queue.entity';
 import { CourseModel } from './course.entity';
@@ -89,7 +89,7 @@ export class IcalService {
   parseIcal(
     icalData: CalendarResponse,
     courseId: number,
-    testRegex: RegExp,
+    testRegex = /\b^(OH|Hours)\b/,
   ): CreateOfficeHour {
     const icalDataValues: Array<CalendarComponent> = Object.values(icalData);
 
@@ -183,8 +183,7 @@ export class IcalService {
     // TODO: make professor queues instead of this bullshit lmao
     const professorQueues = await QueueModel.find({
       where: {
-        courseId: course.id,
-        room: Not('online'),
+        isProfessorOfficeHour: true,
       },
     });
 
@@ -198,6 +197,7 @@ export class IcalService {
             staffList: [],
             questions: [],
             allowQuestions: false,
+            isProfessorOfficeHour: true,
           });
           await newProfQ.save();
           professorQueues.push(newProfQ);
