@@ -87,12 +87,12 @@ export class SSEService<T> implements OnModuleDestroy {
         // Remove from the redis room
         await redis.srem(room, clientInfo);
         await redisSub.unsubscribe(this.idToChannel(clientId));
-        client.res.end();
+        res.end();
       },
     };
 
     // Ack so frontend knows we're connected
-    client.res.write('\n');
+    res.write('\n');
 
     // Remove dead connections!
     res.socket.on('end', async () => {
