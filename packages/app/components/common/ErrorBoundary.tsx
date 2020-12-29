@@ -1,7 +1,7 @@
 import { apm } from "@elastic/apm-rum";
 import { Result } from "antd";
 import React, { ReactNode } from "react";
-import * as Sentry from '@sentry/node';
+import * as Sentry from "@sentry/node";
 
 interface EBState {
   hasError: boolean;
@@ -18,10 +18,10 @@ export class ErrorBoundary extends React.Component<{}, EBState> {
   }
 
   componentDidCatch(error, errorInfo): void {
-    console.log("CATCH")
+    console.log("CATCH");
     if (window) {
       apm.captureError(error);
-      Sentry.captureException(error)
+      Sentry.captureException(error);
     }
   }
 
