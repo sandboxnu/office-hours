@@ -7,9 +7,11 @@ import {
   QuestionFactory,
   CourseFactory,
   QueueFactory,
+  UserFactory,
 } from '../../test/util/factories';
 import { INSIGHTS_MAP } from './insights';
 import { QuestionType } from '@koh/common';
+import { UserModel } from 'profile/user.entity';
 
 describe('InsightsService', () => {
   let service: InsightsService;
@@ -155,6 +157,33 @@ describe('InsightsService', () => {
       });
       expect(res.TotalStudents.output).toEqual(4);
       expect(res.TotalQuestionsAsked.output).toEqual(18);
+    });
+  });
+
+  describe('toggleInsightOn', () => {
+    it('works correctly', async () => {
+      const userFactory = await UserFactory.create();
+      const user = await UserModel.findOne(userFactory.id);
+      expect(user.insights).toBeNull();
+      await service.toggleInsightOn(user, 'questionTypeBreakdown');
+      await user.reload();
+      expect(user.insights).toStrictEqual(['questionTypeBreakdown']);
+    });
+  });
+
+  describe('toggleInsightOff', () => {
+    it('works correctly', async () => {
+      const userFactory = await UserFactory.create({
+        insights: ['averageWaitTime', 'questionTypeBreakdown'],
+      });
+      const user = await UserModel.findOne(userFactory.id);
+      expect(user.insights).toStrictEqual([
+        'averageWaitTime',
+        'questionTypeBreakdown',
+      ]);
+      await service.toggleInsightOff(user, 'questionTypeBreakdown');
+      await user.reload();
+      expect(user.insights).toStrictEqual(['averageWaitTime']);
     });
   });
 });

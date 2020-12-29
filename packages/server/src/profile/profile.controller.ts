@@ -75,6 +75,7 @@ export class ProfileController {
       'photoURL',
       'desktopNotifsEnabled',
       'phoneNotifsEnabled',
+      'insights',
     ]);
     return {
       ...userResponse,

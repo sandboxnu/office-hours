@@ -49,6 +49,7 @@ ListQuestionsResponse {
       "email": "user@neu.edu",
       "firstName": "User",
       "id": 1,
+      "insights": null,
       "lastName": null,
       "name": "User",
       "phoneNotifsEnabled": false,

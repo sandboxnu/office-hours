@@ -1,30 +1,70 @@
-import { InfoCircleOutlined } from "@ant-design/icons";
+import React, { ReactElement, useState } from "react";
 import { API } from "@koh/api-client";
-import { InsightDisplay } from "@koh/common";
-import { Card, Tooltip } from "antd";
-import { CardSize } from "antd/lib/card";
-import { useRouter } from "next/router";
-import React, { ReactElement } from "react";
 import useSWR from "swr";
+import { Tooltip, Card, Space, Drawer, Button } from "antd";
+import { CardSize } from "antd/lib/card";
+import { CloseSquareOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import { useRouter } from "next/router";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
+import { InsightDisplay } from "@koh/common";
+import NavBar from "../../../components/Nav/NavBar";
 import SimpleChartComponent from "../../../components/Insights/components/SimpleChartComponent";
 import SimpleDisplayComponent from "../../../components/Insights/components/SimpleDisplayComponent";
+import InsightsDisplayOptions from "../../../components/Insights/components/InsightsDisplayOptions";
 
 export default function Insights(): ReactElement {
-  // TODO: In the future this will come from the users specific insights that want to see
-  const insights = ["TotalQuestionsAsked", "TotalStudents"];
+  const router = useRouter();
+  const { cid } = router.query;
+  const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
+    API.profile.index()
+  );
+  const [settingsVisible, setSettingsVisible] = useState(false);
+
+  const toggleInsightOn = async (insightName) => {
+    await API.insights.toggleOn(insightName);
+    mutate();
+  };
+
+  const toggleInsightOff = async (insightName) => {
+    await API.insights.toggleOff(insightName);
+    mutate();
+  };
 
   return (
     <>
       <StandardPageContainer>
-        <h1 style={{ margin: "20px" }}>Insights Dashboard</h1>
+        <NavBar courseId={Number(cid)} />
+        <h1 style={{ margin: "24px" }}>Insights Dashboard</h1>
+        <Drawer
+          title="Display Options"
+          placement="left"
+          closable={true}
+          onClose={() => setSettingsVisible(false)}
+          visible={settingsVisible}
+          width={400}
+        >
+          <InsightsDisplayOptions
+            toggleInsightOn={toggleInsightOn}
+            toggleInsightOff={toggleInsightOff}
+          />
+        </Drawer>
         <div style={{ display: "flex", direction: "ltr" }}>
-          {insights?.map((insightName: string) => {
+          {profile?.insights?.map((insightName: string) => {
             return (
-              <RenderInsight key={insightName} insightName={insightName} />
+              <RenderInsight
+                key={insightName}
+                insightName={insightName}
+                toggleInsightOff={toggleInsightOff}
+              />
             );
           })}
         </div>
+        <Button
+          style={{ marginLeft: "24px", width: "256px" }}
+          onClick={() => setSettingsVisible(true)}
+        >
+          Open Insights Display Options
+        </Button>
       </StandardPageContainer>
     </>
   );
@@ -32,9 +72,13 @@ export default function Insights(): ReactElement {
 
 interface RenderInsightProps {
   insightName: string;
+  toggleInsightOff: (insightName: string) => void;
 }
 
-function RenderInsight({ insightName }: RenderInsightProps): ReactElement {
+function RenderInsight({
+  insightName,
+  toggleInsightOff,
+}: RenderInsightProps): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
 
@@ -67,9 +111,16 @@ function RenderInsight({ insightName }: RenderInsightProps): ReactElement {
       size={insight.size as CardSize}
       title={insight.displayName}
       extra={
-        <Tooltip placement="topRight" title={insight.description}>
-          <InfoCircleOutlined />
-        </Tooltip>
+        <Space>
+          <Tooltip placement="topRight" title="Hide">
+            <CloseSquareOutlined
+              onClick={() => toggleInsightOff(insightName)}
+            />
+          </Tooltip>
+          <Tooltip placement="topRight" title={insight.description}>
+            <InfoCircleOutlined />
+          </Tooltip>
+        </Space>
       }
       style={insight.style}
     >

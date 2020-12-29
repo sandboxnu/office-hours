@@ -43,7 +43,7 @@ describe('Insights Integration', () => {
     });
 
     it('returns an error when the insight name is not found', async () => {
-      const ucf = await UserCourseFactory.create({ role: Role.STUDENT });
+      const ucf = await UserCourseFactory.create({ role: Role.PROFESSOR });
 
       const res = await supertest({ userId: ucf.userId })
         .get(`/insights/${ucf.courseId}/AlamoInsight`)
