@@ -14,6 +14,7 @@
     "@elastic/apm-rum": "^5.4.0",
     "@koh/api-client": "0.1.0",
     "@koh/common": "0.1.0",
+    "@react-hook/window-size": "^3.0.7",
     "@visx/axis": "^1.1.0",
     "@visx/grid": "^1.1.0",
     "@visx/group": "^1.0.0",
@@ -21,7 +22,6 @@
     "@visx/scale": "^1.1.0",
     "@visx/shape": "^1.1.0",
     "@visx/tooltip": "^1.1.0",
-    "@react-hook/window-size": "^3.0.7",
     "antd": "^4.2.4",
     "axios": "^0.19.2",
     "class-transformer": "^0.3.1",
@@ -37,6 +37,7 @@
     "react-big-calendar": "^0.24.6",
     "react-dom": "16.13.1",
     "react-notion": "^0.8.1",
+    "reconnecting-eventsource": "^1.1.0",
     "styled-components": "^5.1.0",
     "swr": "^0.2.2"
   },
