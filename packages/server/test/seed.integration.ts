@@ -44,7 +44,7 @@ describe('Seed Integration', () => {
     expect(response.text).toBe('Data successfully seeded');
 
     const numQuestions = await QuestionModel.count();
-    expect(numQuestions).toBe(3);
+    expect(numQuestions).toBe(4);
   });
 
   it('GET /seeds/createUser', async () => {
@@ -100,7 +100,7 @@ describe('Seed Integration', () => {
       queueId: 1,
       status: 'Queued',
       taHelpedId: null,
-      text: 'question 7',
+      text: 'question 8',
     });
   });
 });
