@@ -73,8 +73,6 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
     );
   };
 
-  console.log(queue);
-
   if (queue) {
     return (
       <>
