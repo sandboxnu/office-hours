@@ -4,7 +4,7 @@ const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
 const SentryPlugin = require('@sentry/webpack-plugin');
 
-module.exports = function (options) {
+module.exports = function(options) {
   return {
     ...options,
     externals: [
@@ -28,18 +28,21 @@ module.exports = function (options) {
       ],
     },
     devtool: 'source-map',
-    plugins: [
-      // SERVICE_VERSION is the git hash, passed during build time.
-      new SentryPlugin({
-        org: 'sandboxnu',
-        project: 'khoury-office-hours',
-        release: process.env.SERVICE_VERSION,
-        include: './dist',
-      }),
-      // Write the build-time value of SERVICE_VERSION so it can be read at runtime
-      new webpack.EnvironmentPlugin({
-        SERVICE_VERSION: process.env.SERVICE_VERSION,
-      }),
-    ],
+    plugins:
+      process.env.SENTRY_AUTH_TOKEN && process.env.SERVICE_VERSION
+        ? [
+            // SERVICE_VERSION is the git hash, passed during build time.
+            new SentryPlugin({
+              org: 'sandboxnu',
+              project: 'khoury-office-hours',
+              release: process.env.SERVICE_VERSION,
+              include: './dist',
+            }),
+            // Write the build-time value of SERVICE_VERSION so it can be read at runtime
+            new webpack.EnvironmentPlugin({
+              SERVICE_VERSION: process.env.SERVICE_VERSION,
+            }),
+          ]
+        : [],
   };
 };
