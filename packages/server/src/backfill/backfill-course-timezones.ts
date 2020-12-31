@@ -12,11 +12,9 @@ export class BackfillQuestionFirstHelpedAt {
   async copy(): Promise<void> {
     await CourseModel.createQueryBuilder()
       .update()
-      .set({ timezone: () => "America/New_York" })
+      .set({ timezone: () => 'America/New_York' })
       .callListeners(false)
       .execute();
-    console.log(
-      `Updated ${await CourseModel.count()} courses`
-    );
+    console.log(`Updated ${await CourseModel.count()} courses`);
   }
 }

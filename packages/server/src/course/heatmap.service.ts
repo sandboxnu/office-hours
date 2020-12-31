@@ -59,7 +59,7 @@ export class HeatmapService {
       return false;
     }
 
-    const tz = (await CourseModel.findOne({id: courseId})).timezone;
+    const tz = (await CourseModel.findOne({ id: courseId })).timezone;
     let heatmap = this._generateHeatMapWithReplay(
       // Ignore questions that cross midnight (usually a fluke)
       questions.filter((q) => q.helpedAt.getDate() === q.createdAt.getDate()),
