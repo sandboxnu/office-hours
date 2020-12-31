@@ -70,7 +70,12 @@ export class CourseController {
       },
     });
 
-    if (userCourseModel.role !== Role.PROFESSOR) {
+    if (userCourseModel.role === Role.PROFESSOR) {
+      course.queues = await async.filter(
+        course.queues,
+        async (q) => q.isProfessorQueue || (await q.checkIsOpen()),
+      );
+    } else {
       course.queues = await async.filter(
         course.queues,
         async (q) => await q.checkIsOpen(),

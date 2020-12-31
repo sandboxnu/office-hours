@@ -157,14 +157,9 @@ export class IcalService {
       }).save();
     }
 
-    const officeHoursEventRegex = /\b^(OH|Hours)\b/;
     const icalURL = await fromURL(course.icalURL);
 
-    const officeHours = this.parseIcal(
-      icalURL,
-      course.id,
-      officeHoursEventRegex,
-    );
+    const officeHours = this.parseIcal(icalURL, course.id);
     await OfficeHourModel.delete({ courseId: course.id });
     await OfficeHourModel.save(
       officeHours.map((e) => {
