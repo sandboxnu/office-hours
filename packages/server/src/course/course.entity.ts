@@ -67,6 +67,10 @@ export class CourseModel extends BaseEntity {
   // The heatmap is false when there havent been any questions asked yet or there havent been any office hours
   heatmap: Heatmap | false;
 
+  // The IANA string representing the timezone the course is centered around. This is important for any time based events for a course
+  @Column('text', {nullable: true})  
+  timezone: string;
+
   @OneToMany((type) => EventModel, (event) => event.course)
   @Exclude()
   events: EventModel[];
