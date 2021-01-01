@@ -7,6 +7,7 @@ import { QuestionModel } from 'question/question.entity';
 import { MoreThan } from 'typeorm';
 import { OfficeHourModel } from './office-hour.entity';
 import { Cache } from 'cache-manager';
+import { CourseModel } from './course.entity';
 
 function arrayRotate(arr, count) {
   count -= arr.length * Math.floor(count / arr.length);
@@ -58,7 +59,7 @@ export class HeatmapService {
       return false;
     }
 
-    const tz = 'America/New_York';
+    const tz = (await CourseModel.findOne({ id: courseId })).timezone;
     let heatmap = this._generateHeatMapWithReplay(
       // Ignore questions that cross midnight (usually a fluke)
       questions.filter((q) => q.helpedAt.getDate() === q.createdAt.getDate()),
