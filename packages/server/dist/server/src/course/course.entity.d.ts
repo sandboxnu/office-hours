@@ -16,5 +16,6 @@ export declare class CourseModel extends BaseEntity {
     semesterId: number;
     enabled: boolean;
     heatmap: Heatmap | false;
+    timezone: string;
     events: EventModel[];
 }
