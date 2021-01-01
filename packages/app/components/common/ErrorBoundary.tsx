@@ -18,7 +18,6 @@ export class ErrorBoundary extends React.Component<{}, EBState> {
   }
 
   componentDidCatch(error, errorInfo): void {
-    console.log("CATCH");
     if (window) {
       apm.captureError(error);
       Sentry.captureException(error);
