@@ -19,7 +19,7 @@ export class LoginCourseService {
     let user: UserModel;
     user = await UserModel.findOne({
       where: { email: info.email },
-      relations: ['courses'],
+      relations: ['courses', 'courses.course'],
     });
 
     if (!user) {
@@ -68,6 +68,17 @@ export class LoginCourseService {
         }
       }),
     );
+
+    // Delete "stale" user courses
+    for (const previousCourse of user.courses) {
+      if (
+        previousCourse.course.enabled &&
+        !userCourses.includes(previousCourse)
+      ) {
+        previousCourse.remove();
+      }
+    }
+
     user.courses = userCourses;
     await user.save();
     return user;
