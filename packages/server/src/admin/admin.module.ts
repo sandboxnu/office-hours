@@ -19,15 +19,15 @@ import * as session from 'express-session';
 import * as connectRedis from 'connect-redis';
 import { createClient } from 'redis';
 
-const redisClient = createClient()
-const RedisStore = connectRedis(session)
+const redisClient = createClient();
+const RedisStore = connectRedis(session);
 
 const CoreModule = AdminCoreModuleFactory.createAdminCoreModule({
   appConfig: {
     session: {
       store: new RedisStore({ client: redisClient }),
-    }
-  }
+    },
+  },
 });
 const AuthModule = AdminAuthModuleFactory.createAdminAuthModule({
   adminCoreModule: CoreModule,
