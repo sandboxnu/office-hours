@@ -146,7 +146,6 @@ describe("TA interacts with student question", () => {
           );
 
           cy.get("body").should("contain", "Rejoin Queue");
-          cy.percySnapshot("Student Queue Page - Rejoin Queue Modal");
           cy.get("button").contains("Rejoin Queue").click();
 
           // Check that the student was sucessfully but back into the queue
@@ -180,7 +179,6 @@ describe("TA interacts with student question", () => {
             "You've been removed from the queue by a TA. If you have any questions, please reach out to the TA. If you'd like to join back into the queue with your previous question, click Rejoin Queue, otherwise click Leave Queue."
           );
 
-          cy.percySnapshot("Student Queue Page - Leave Queue Modal");
           cy.get("button").contains("Leave Queue").click();
 
           // Check to see that the student sucessfully left the queue
