@@ -15,8 +15,20 @@ import {
   CourseSectionMappingAdmin,
 } from './admin-entities';
 import { AdminCommand } from './admin.command';
+import * as session from 'express-session';
+import * as connectRedis from 'connect-redis';
+import { createClient } from 'redis';
 
-const CoreModule = AdminCoreModuleFactory.createAdminCoreModule({});
+const redisClient = createClient();
+const RedisStore = connectRedis(session);
+
+const CoreModule = AdminCoreModuleFactory.createAdminCoreModule({
+  appConfig: {
+    session: {
+      store: new RedisStore({ client: redisClient }),
+    },
+  },
+});
 const AuthModule = AdminAuthModuleFactory.createAdminAuthModule({
   adminCoreModule: CoreModule,
   credentialValidator: adminCredentialValidator, // how do you validate credentials
