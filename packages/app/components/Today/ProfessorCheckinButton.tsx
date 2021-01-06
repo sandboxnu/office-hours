@@ -18,7 +18,7 @@ const ProfessorModalRadio = styled(Radio)`
 export default function TodayPageCheckinButton(): ReactElement {
   const profile = useProfile();
   const [modalVisible, setModalVisible] = useState(false);
-  const [value, setValue] = useState(0);
+  const [queueToCheckInto, setQueueToCheckInto] = useState(0);
   const router = useRouter();
   const { cid } = router.query;
   const { course } = useCourse(Number(cid));
@@ -38,7 +38,7 @@ export default function TodayPageCheckinButton(): ReactElement {
           onOk={async () => {
             const redirectID = await API.taStatus.checkIn(
               Number(cid),
-              course?.queues[value].room
+              course?.queues[queueToCheckInto].room
             );
 
             router.push(
@@ -48,7 +48,10 @@ export default function TodayPageCheckinButton(): ReactElement {
           }}
         >
           <h3>Which queue would you like to check into?</h3>
-          <Radio.Group value={value} onChange={(e) => setValue(e.target.value)}>
+          <Radio.Group
+            value={queueToCheckInto}
+            onChange={(e) => setQueueToCheckInto(e.target.value)}
+          >
             {course?.queues.map((q, i) => (
               <ProfessorModalRadio key={q.id} value={i}>
                 {q.room}
