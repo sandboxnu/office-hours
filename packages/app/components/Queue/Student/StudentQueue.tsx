@@ -26,6 +26,7 @@ import StudentBanner from "./StudentBanner";
 import CantFindModal from "./StudentCantFindModal";
 import StudentQueueCard from "./StudentQueueCard";
 import StudentRemovedFromQueueModal from "./StudentRemovedFromQueueModal";
+import StudentQuestionRephraseModal from "./StudentQuestionRephraseModal";
 
 const Container = styled.div`
   flex: 1;
@@ -268,6 +269,10 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
             question={studentQuestion}
             leaveQueue={leaveQueue}
             joinQueue={joinQueueAfterDeletion}
+          />
+          <StudentQuestionRephraseModal
+            question={studentQuestion}
+            editQuestion={() => setPopupEditQuestion(true)}
           />
           <QueueInfoColumn
             queueId={qid}

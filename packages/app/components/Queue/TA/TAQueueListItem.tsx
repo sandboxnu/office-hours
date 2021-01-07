@@ -1,6 +1,6 @@
 import { HourglassOutlined, QuestionOutlined } from "@ant-design/icons";
 import { OpenQuestionStatus, Question } from "@koh/common";
-import { Badge } from "antd";
+import { Badge, Tooltip } from "antd";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { getWaitTime } from "../../../utils/TimeUtil";
@@ -69,7 +69,7 @@ export default function TAQueueListItem({
     >
       <AvatarContainer>
         <Badge
-          // 0 is not displayed, hide if no index
+          // position in queue ---  0 is not displayed, hide if no index
           count={index ? `#${index}` : 0}
           style={{ backgroundColor: "#3684c6" }}
           offset={[-40, 0]}
@@ -88,6 +88,9 @@ export default function TAQueueListItem({
         </QuestionText>
         <QuestionMetaRow info={metaInfo} />
       </QuestionInfoContainer>
+      <Tooltip>
+        <button>Rephrase</button>
+      </Tooltip>
     </Container>
   );
 }
