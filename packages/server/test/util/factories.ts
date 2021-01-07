@@ -65,7 +65,7 @@ export const QueueFactory = new Factory(QueueModel)
 // WARNING: DO NOT USE CREATORID. AS YOU SEE HERE, WE ONLY ACCEPT CREATOR
 //TODO: make it accept creatorId as well
 export const QuestionFactory = new Factory(QuestionModel)
-  .sequence('text', (i) => `question ${i}`)
+  .attr('text', 'question description')
   .attr('status', 'Queued')
   .attr('questionType', QuestionType.Other)
   .assocOne('queue', QueueFactory)
