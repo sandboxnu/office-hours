@@ -70,7 +70,7 @@ describe("TA interacts with student question", () => {
     cy.get("[data-cy='help-next']").click();
 
     // See that the students question is shown as helping
-    cy.contains("Helping");
+    cy.get("[data-cy='finish-helping-button']").should("exist");
     cy.percySnapshot("TA Queue Page - Helping Student Banner");
   });
 
