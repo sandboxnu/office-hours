@@ -87,6 +87,10 @@ export default function TAQueueListDetail({
   if (selectedQuestionId && !selectedQuestion) {
     setSelectedQuestionId(null);
   }
+  // set current question to first helping question if none is selected (used when help next is clicked)
+  if (!selectedQuestionId && helpingQuestions.length) {
+    setSelectedQuestionId(helpingQuestions[0].id);
+  }
 
   if (!questions) {
     return <Skeleton />;
