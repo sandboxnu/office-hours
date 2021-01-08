@@ -5313,7 +5313,7 @@ let BackfillCourseTimezones = class BackfillCourseTimezones {
     async copy() {
         await course_entity_1.CourseModel.createQueryBuilder()
             .update()
-            .set({ timezone: () => 'America/New_York' })
+            .set({ timezone: () => '"America/New_York"' })
             .callListeners(false)
             .execute();
         console.log(`Updated ${await course_entity_1.CourseModel.count()} courses`);
