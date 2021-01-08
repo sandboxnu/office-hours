@@ -1,1 +1,1 @@
-import 'elastic-apm-node/start';
+export {};
