@@ -13,6 +13,7 @@ import {
   Post,
   UseGuards,
   UseInterceptors,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import async from 'async';
 import { EventModel, EventType } from 'profile/event-model.entity';
