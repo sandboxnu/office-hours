@@ -272,6 +272,7 @@ export class SeedController {
     const question: QuestionModel = await QuestionFactory.create({
       ...options,
       ...body.data,
+      createdAt: new Date(),
     });
     return question;
   }
