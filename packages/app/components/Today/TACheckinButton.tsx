@@ -6,7 +6,7 @@ import { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useCourse } from "../../hooks/useCourse";
 
-const CheckinButton = styled(Button)`
+export const CheckinButton = styled(Button)`
   background: #2a9187;
   border-radius: 6px;
   color: white;
@@ -14,7 +14,7 @@ const CheckinButton = styled(Button)`
   font-size: 14px;
 `;
 
-const CheckOutButton = styled(Button)`
+export const CheckOutButton = styled(Button)`
   color: #da3236;
   font-weight: 500;
   font-size: 14px;

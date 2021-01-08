@@ -175,6 +175,8 @@ export class QueuePartial {
   endTime?: Date;
 
   allowQuestions!: boolean;
+
+  isProfessorQueue!: boolean;
 }
 
 // Represents a list of office hours wait times of each hour of the week.
