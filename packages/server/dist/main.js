@@ -4755,7 +4755,7 @@ let SeedController = class SeedController {
             const student = await user_entity_1.UserModel.findOneOrFail(body.studentId);
             options['creator'] = student;
         }
-        const question = await factories_1.QuestionFactory.create(Object.assign(Object.assign({}, options), body.data));
+        const question = await factories_1.QuestionFactory.create(Object.assign(Object.assign(Object.assign({}, options), body.data), { createdAt: new Date() }));
         return question;
     }
 };
@@ -4863,10 +4863,9 @@ exports.QueueFactory = new typeorm_factory_1.Factory(queue_entity_1.QueueModel)
     .assocMany('officeHours', exports.OfficeHourFactory)
     .assocMany('staffList', exports.UserFactory, 0);
 exports.QuestionFactory = new typeorm_factory_1.Factory(question_entity_1.QuestionModel)
-    .sequence('text', (i) => `question ${i}`)
+    .attr('text', 'question description')
     .attr('status', 'Queued')
     .attr('questionType', common_1.QuestionType.Other)
-    .attr('createdAt', new Date())
     .assocOne('queue', exports.QueueFactory)
     .assocOne('creator', exports.UserFactory);
 
