@@ -12,7 +12,7 @@ export declare class CourseController {
     private heatmapService;
     private icalService;
     constructor(connection: Connection, queueCleanService: QueueCleanService, queueSSEService: QueueSSEService, heatmapService: HeatmapService, icalService: IcalService);
-    get(id: number): Promise<GetCourseResponse>;
+    get(id: number, user: UserModel): Promise<GetCourseResponse>;
     checkIn(courseId: number, room: string, user: UserModel): Promise<QueuePartial>;
     checkOut(courseId: number, room: string, user: UserModel): Promise<TACheckoutResponse>;
     updateCalendar(courseId: number): Promise<void>;

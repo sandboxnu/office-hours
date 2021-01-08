@@ -13,6 +13,7 @@ export declare class QueueModel extends BaseEntity {
     staffList: UserModel[];
     allowQuestions: boolean;
     officeHours: OfficeHourModel[];
+    isProfessorQueue: boolean;
     startTime: Date;
     endTime: Date;
     isOpen: boolean;

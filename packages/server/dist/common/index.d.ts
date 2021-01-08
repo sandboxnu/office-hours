@@ -68,6 +68,7 @@ export declare class QueuePartial {
     startTime?: Date;
     endTime?: Date;
     allowQuestions: boolean;
+    isProfessorQueue: boolean;
 }
 export declare type Heatmap = Array<number>;
 export declare class Question {

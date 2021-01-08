@@ -381,6 +381,7 @@ const common_1 = __webpack_require__(16);
 const common_2 = __webpack_require__(7);
 const async_1 = __webpack_require__(20);
 const event_model_entity_1 = __webpack_require__(21);
+const user_course_entity_1 = __webpack_require__(24);
 const typeorm_1 = __webpack_require__(22);
 const jwt_auth_guard_1 = __webpack_require__(33);
 const roles_decorator_1 = __webpack_require__(35);
@@ -403,7 +404,7 @@ let CourseController = class CourseController {
         this.heatmapService = heatmapService;
         this.icalService = icalService;
     }
-    async get(id) {
+    async get(id, user) {
         const course = await course_entity_1.CourseModel.findOne(id, {
             relations: ['queues', 'queues.staffList'],
         });
@@ -413,7 +414,18 @@ let CourseController = class CourseController {
             .where('oh.courseId = :courseId', { courseId: course.id })
             .getRawMany();
         course.heatmap = await this.heatmapService.getCachedHeatmapFor(id);
-        course.queues = await async_1.default.filter(course.queues, async (q) => await q.checkIsOpen());
+        const userCourseModel = await user_course_entity_1.UserCourseModel.findOne({
+            where: {
+                user,
+                courseId: id,
+            },
+        });
+        if (userCourseModel.role === common_1.Role.PROFESSOR) {
+            course.queues = await async_1.default.filter(course.queues, async (q) => q.isProfessorQueue || (await q.checkIsOpen()));
+        }
+        else {
+            course.queues = await async_1.default.filter(course.queues, async (q) => await q.checkIsOpen());
+        }
         await async_1.default.each(course.queues, async (q) => {
             await q.addQueueTimes();
             await q.addQueueSize();
@@ -488,8 +500,9 @@ __decorate([
     common_2.Get(':id'),
     roles_decorator_1.Roles(common_1.Role.PROFESSOR, common_1.Role.STUDENT, common_1.Role.TA),
     __param(0, common_2.Param('id')),
+    __param(1, user_decorator_1.User()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Number, user_entity_1.UserModel]),
     __metadata("design:returntype", Promise)
 ], CourseController.prototype, "get", null);
 __decorate([
@@ -1550,6 +1563,10 @@ __decorate([
     typeorm_1.JoinTable(),
     __metadata("design:type", Array)
 ], QueueModel.prototype, "officeHours", void 0);
+__decorate([
+    typeorm_1.Column({ default: false }),
+    __metadata("design:type", Boolean)
+], QueueModel.prototype, "isProfessorQueue", void 0);
 QueueModel = __decorate([
     typeorm_1.Entity('queue_model')
 ], QueueModel);
@@ -2587,15 +2604,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.IcalService = void 0;
 const common_1 = __webpack_require__(7);
 const schedule_1 = __webpack_require__(13);
-const node_ical_1 = __webpack_require__(50);
+__webpack_require__(50);
+const node_ical_1 = __webpack_require__(51);
+const rrule_1 = __webpack_require__(52);
 const typeorm_1 = __webpack_require__(22);
-const office_hour_entity_1 = __webpack_require__(29);
-const course_entity_1 = __webpack_require__(23);
+const dist_1 = __webpack_require__(53);
 const queue_entity_1 = __webpack_require__(28);
-const dist_1 = __webpack_require__(51);
-__webpack_require__(52);
+const course_entity_1 = __webpack_require__(23);
+const office_hour_entity_1 = __webpack_require__(29);
 const moment = __webpack_require__(38);
-const rrule_1 = __webpack_require__(53);
 let IcalService = class IcalService {
     constructor(connection) {
         this.connection = connection;
@@ -2638,13 +2655,12 @@ let IcalService = class IcalService {
             .filter((date) => !exdates.includes(date.getTime()))
             .map((d) => fixDST(postRRule(moment(d))).toDate());
     }
-    parseIcal(icalData, courseId) {
+    parseIcal(icalData, courseId, testRegex = /\b^(OH|Hours)\b/) {
         const icalDataValues = Object.values(icalData);
         const officeHours = icalDataValues.filter((iCalElement) => iCalElement.type === 'VEVENT' &&
             iCalElement.start !== undefined &&
             iCalElement.end !== undefined);
-        const officeHoursEventRegex = /\b^(OH|Hours)\b/;
-        const filteredOfficeHours = officeHours.filter((event) => officeHoursEventRegex.test(event.summary));
+        const filteredOfficeHours = officeHours.filter((event) => testRegex.test(event.summary));
         let resultOfficeHours = [];
         filteredOfficeHours.forEach((oh) => {
             const eventTZ = oh.start.tz;
@@ -2688,12 +2704,39 @@ let IcalService = class IcalService {
                 allowQuestions: false,
             }).save();
         }
-        const officeHours = this.parseIcal(await node_ical_1.fromURL(course.icalURL), course.id);
+        const icalURL = await node_ical_1.fromURL(course.icalURL);
+        const officeHours = this.parseIcal(icalURL, course.id);
         await office_hour_entity_1.OfficeHourModel.delete({ courseId: course.id });
         await office_hour_entity_1.OfficeHourModel.save(officeHours.map((e) => {
             e.queueId = queue.id;
             return office_hour_entity_1.OfficeHourModel.create(e);
         }));
+        const professorHoursRegex = /\b^(Prof|Professor)/;
+        const professorOfficeHours = this.parseIcal(icalURL, course.id, professorHoursRegex);
+        const professorQueues = await queue_entity_1.QueueModel.find({
+            where: {
+                isProfessorQueue: true,
+            },
+        });
+        const processedProfessorOfficeHours = await Promise.all(professorOfficeHours.map(async (oh) => {
+            const professorLocation = oh.title;
+            if (!professorQueues.some((q) => q.room === professorLocation)) {
+                const newProfQ = queue_entity_1.QueueModel.create({
+                    room: professorLocation,
+                    courseId: course.id,
+                    staffList: [],
+                    questions: [],
+                    allowQuestions: false,
+                    isProfessorQueue: true,
+                });
+                await newProfQ.save();
+                professorQueues.push(newProfQ);
+            }
+            const professorQueue = professorQueues.find((q) => q.room === professorLocation);
+            return office_hour_entity_1.OfficeHourModel.create(Object.assign({ queueId: professorQueue.id }, oh));
+        }));
+        await office_hour_entity_1.OfficeHourModel.save(processedProfessorOfficeHours);
+        await queue_entity_1.QueueModel.save(professorQueues);
         console.timeEnd(`scrape course ${course.id}`);
         console.log('done scraping!');
     }
@@ -2720,25 +2763,25 @@ exports.IcalService = IcalService;
 /* 50 */
 /***/ (function(module, exports) {
 
-module.exports = require("node-ical");
+module.exports = require("moment-timezone");
 
 /***/ }),
 /* 51 */
 /***/ (function(module, exports) {
 
-module.exports = require("windows-iana/dist");
+module.exports = require("node-ical");
 
 /***/ }),
 /* 52 */
 /***/ (function(module, exports) {
 
-module.exports = require("moment-timezone");
+module.exports = require("rrule");
 
 /***/ }),
 /* 53 */
 /***/ (function(module, exports) {
 
-module.exports = require("rrule");
+module.exports = require("windows-iana/dist");
 
 /***/ }),
 /* 54 */
@@ -4594,6 +4637,10 @@ let SeedController = class SeedController {
             startTime: tomorrow,
             endTime: new Date(tomorrow.valueOf() + 4500000),
         });
+        const professorOfficeHours = await factories_1.OfficeHourFactory.create({
+            startTime: now,
+            endTime: new Date(now.valueOf() + 4500000),
+        });
         const courseExists = await course_entity_1.CourseModel.findOne({
             where: { name: 'CS 2500' },
         });
@@ -4610,6 +4657,7 @@ let SeedController = class SeedController {
             officeHoursYesterday,
             officeHoursTomorrow,
             officeHoursTodayOverlap,
+            professorOfficeHours,
         ];
         course.save();
         const userExsists = await user_entity_1.UserModel.findOne();
@@ -4696,6 +4744,17 @@ let SeedController = class SeedController {
         });
         await factories_1.QuestionFactory.create({
             queue: queue,
+            createdAt: new Date(Date.now() - 1500000),
+        });
+        const professorQueue = await factories_1.QueueFactory.create({
+            room: "Professor Li's Hours",
+            course: course,
+            officeHours: [professorOfficeHours],
+            allowQuestions: true,
+            isProfessorQueue: true,
+        });
+        await factories_1.QuestionFactory.create({
+            queue: professorQueue,
             createdAt: new Date(Date.now() - 1500000),
         });
         return 'Data successfully seeded';
@@ -4861,7 +4920,8 @@ exports.QueueFactory = new typeorm_factory_1.Factory(queue_entity_1.QueueModel)
     .assocOne('course', exports.CourseFactory)
     .attr('allowQuestions', false)
     .assocMany('officeHours', exports.OfficeHourFactory)
-    .assocMany('staffList', exports.UserFactory, 0);
+    .assocMany('staffList', exports.UserFactory, 0)
+    .attr('isProfessorQueue', false);
 exports.QuestionFactory = new typeorm_factory_1.Factory(question_entity_1.QuestionModel)
     .attr('text', 'question description')
     .attr('status', 'Queued')
