@@ -19,6 +19,22 @@ const Container = styled.div<{ selected: boolean }>`
   align-items: flex-start;
 
   padding-top: 16px;
+  return string;
+}
+
+const Container = styled.div<{ selected: boolean }>\`
+  display: flex;
+  align-items: flex-start;
+
+  padding-top: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #cfd6de;
+  background: ${({ selected }) => (selected ? "#EFF8FF" : "white")};
+
+  cursor: pointer;
+  &:hover {
+    background: ${({ selected }) => (selected ? "#EFF8FF" : "#ECF0F3")};
+  }
   padding-bottom: 12px;
   border-bottom: 1px solid #cfd6de;
   background: ${({ selected }) => (selected ? "#EFF8FF" : "white")};
@@ -89,7 +105,7 @@ export default function TAQueueListItem({
         <QuestionMetaRow info={metaInfo} />
       </QuestionInfoContainer>
       <Tooltip>
-        <button>Rephrase</button>
+        <button onClick={}>Rephrase</button>
       </Tooltip>
     </Container>
   );
