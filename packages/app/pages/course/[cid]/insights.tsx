@@ -3,7 +3,7 @@ import { API } from "@koh/api-client";
 import useSWR from "swr";
 import { Tooltip, Card, Space, Drawer, Button } from "antd";
 import { CardSize } from "antd/lib/card";
-import { CloseSquareOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import { InfoCircleOutlined, MinusSquareOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
 import { InsightDisplay } from "@koh/common";
