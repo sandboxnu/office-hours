@@ -39,6 +39,7 @@ export default function Insights(): ReactElement {
           title="Display Options"
           placement="left"
           closable={true}
+          destroyOnClose={true}
           onClose={() => setSettingsVisible(false)}
           visible={settingsVisible}
           width={400}
@@ -113,7 +114,7 @@ function RenderInsight({
       extra={
         <Space>
           <Tooltip placement="topRight" title="Hide">
-            <CloseSquareOutlined
+            <MinusSquareOutlined
               onClick={() => toggleInsightOff(insightName)}
             />
           </Tooltip>
