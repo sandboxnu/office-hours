@@ -31,7 +31,8 @@ module.exports = {
       repo: "https://github.com/sandboxnu/office-hours.git",
       path: "/var/www",
       "pre-deploy-local": "",
-      "post-deploy": "yarn && yarn typeorm migration:run && yarn pm2 startOrReload ./infrastructure/prod/ecosystem.config.js",
+      "post-deploy":
+        "yarn && yarn typeorm migration:run && yarn pm2 startOrReload ./infrastructure/prod/ecosystem.config.js",
       "pre-setup": "",
     },
   },
