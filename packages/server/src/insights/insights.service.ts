@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { InsightInterface } from './insights';
+import { InsightInterface } from './insight-classes';
 import { UserModel } from 'profile/user.entity';
 
 // interface generateAllInsightsParams {

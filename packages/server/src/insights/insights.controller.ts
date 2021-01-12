@@ -21,7 +21,7 @@ import {
   Role,
 } from '@koh/common';
 import { User } from '../profile/user.decorator';
-import { INSIGHTS_MAP } from './insights';
+import { INSIGHTS_MAP } from './insight-classes';
 import { UserModel } from 'profile/user.entity';
 import { Roles } from 'profile/roles.decorator';
 import { CourseRole } from './course-role.decorator';
