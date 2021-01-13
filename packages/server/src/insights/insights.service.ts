@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { InsightInterface } from './insight-classes';
+import { InsightInterface, INSIGHTS_MAP } from './insight-classes';
+import { InsightPartial, ListInsightsResponse } from '@koh/common';
 import { UserModel } from 'profile/user.entity';
 
 // interface generateAllInsightsParams {
@@ -40,7 +41,23 @@ export class InsightsService {
     return insightsWithOutput;
   }
 
-  async toggleInsightOn(user: UserModel, insightName: string): Promise<any> {
+  convertToInsightListResponse(insightNames: string[]): ListInsightsResponse {
+    return insightNames.reduce(
+      (obj, insightName) => ({
+        ...obj,
+        [insightName]: {
+          displayName: INSIGHTS_MAP[insightName].displayName,
+          size: INSIGHTS_MAP[insightName].size,
+        },
+      }),
+      {},
+    );
+  }
+
+  async toggleInsightOn(
+    user: UserModel,
+    insightName: string,
+  ): Promise<string[]> {
     if (user.insights === null) {
       user.insights = [];
     }

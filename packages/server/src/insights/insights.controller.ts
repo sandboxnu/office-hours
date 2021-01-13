@@ -72,10 +72,9 @@ export class InsightsController {
   @Get('list')
   @Roles(Role.PROFESSOR)
   async getAllInsights(): Promise<ListInsightsResponse> {
-    return Object.entries(INSIGHTS_MAP).map(([insightName, insight]) => ({
-      name: insightName,
-      displayName: insight.displayName,
-    }));
+    return this.insightsService.convertToInsightListResponse(
+      Object.keys(INSIGHTS_MAP),
+    );
   }
 
   @Patch('')
@@ -84,10 +83,7 @@ export class InsightsController {
     @Body() body: { insightName: string },
     @User() user: UserModel,
   ): Promise<void> {
-    await this.insightsService.toggleInsightOn(
-      user,
-      body.insightName,
-    );
+    await this.insightsService.toggleInsightOn(user, body.insightName);
     return;
   }
 
@@ -97,10 +93,7 @@ export class InsightsController {
     @Body() body: { insightName: string },
     @User() user: UserModel,
   ): Promise<void> {
-    await this.insightsService.toggleInsightOff(
-      user,
-      body.insightName,
-    );
+    await this.insightsService.toggleInsightOff(user, body.insightName);
     return;
   }
 }
