@@ -4,6 +4,7 @@ import { ReactElement } from "react";
 import { Question } from "@koh/common";
 
 type StudentQuestionRephraseModalProps = {
+  visible: boolean;
   question: Question;
   editQuestion: () => void;
 };

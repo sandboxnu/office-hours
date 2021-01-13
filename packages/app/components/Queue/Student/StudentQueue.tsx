@@ -271,6 +271,7 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
             joinQueue={joinQueueAfterDeletion}
           />
           <StudentQuestionRephraseModal
+            visible={studentQuestion?.status === OpenQuestionStatus.Rephrasing}
             question={studentQuestion}
             editQuestion={() => setPopupEditQuestion(true)}
           />

@@ -125,6 +125,15 @@ export default function TAQueueDetailButtons({
             />
           </Tooltip>
         </Popconfirm>
+        <Tooltip title="Send student back to draft their question more clearly">
+          <button
+            onClick={async () => {
+              await changeStatus(OpenQuestionStatus.Rephrasing);
+            }}
+          >
+            Rephrase
+          </button>
+        </Tooltip>
         <Tooltip title={helpTooltip}>
           <span>
             {/* This span is a workaround for tooltip-on-disabled-button 
