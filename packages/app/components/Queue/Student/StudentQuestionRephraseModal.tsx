@@ -13,6 +13,7 @@ export default function StudentQuestionRephraseModal(
 ): ReactElement {
   return (
     <Modal
+      visible={props.visible}
       footer={[
         <Button type={"primary"} key={"continue"} onClick={props.editQuestion}>
           Continue
