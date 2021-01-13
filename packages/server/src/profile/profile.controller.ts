@@ -22,7 +22,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import * as checkDiskSpace from 'check-disk-space';
 import { Response } from 'express';
 import * as fs from 'fs';
-import { INSIGHTS_MAP } from 'insights/insight-classes';
 import { pick } from 'lodash';
 import { memoryStorage } from 'multer';
 import * as path from 'path';
