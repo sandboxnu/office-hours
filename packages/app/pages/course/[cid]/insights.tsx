@@ -15,20 +15,34 @@ import InsightsDisplayOptions from "../../../components/Insights/components/Insi
 export default function Insights(): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
-  const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
-    API.profile.index()
+  const { data: profile, mutate: mutateProfile } = useSWR(
+    `api/v1/profile`,
+    async () => API.profile.index()
+  );
+  const { data: allInsights } = useSWR(`api/v1/insights/listAll`, async () =>
+    API.insights.list()
   );
   const [settingsVisible, setSettingsVisible] = useState(false);
 
   const toggleInsightOn = async (insightName) => {
     await API.insights.toggleOn(insightName);
-    mutate();
+    mutateProfile();
   };
 
   const toggleInsightOff = async (insightName) => {
     await API.insights.toggleOff(insightName);
-    mutate();
+    mutateProfile();
   };
+
+  if (!allInsights || !profile?.insights) {
+    return null;
+  }
+  // Split users insights into group by size so they can be rendered correctly
+  const [smallInsights, defaultInsights] = profile.insights.reduce(
+    ([s, d], i) =>
+      allInsights[i].size === "small" ? [[...s, i], d] : [s, [...d, i]],
+    [[], []]
+  );
 
   return (
     <>
@@ -50,7 +64,18 @@ export default function Insights(): ReactElement {
           />
         </Drawer>
         <div style={{ display: "flex", direction: "ltr" }}>
-          {profile?.insights?.map((insightName: string) => {
+          {smallInsights?.map((insightName: string) => {
+            return (
+              <RenderInsight
+                key={insightName}
+                insightName={insightName}
+                toggleInsightOff={toggleInsightOff}
+              />
+            );
+          })}
+        </div>
+        <div style={{ display: "flex", direction: "ltr" }}>
+          {defaultInsights?.map((insightName: string) => {
             return (
               <RenderInsight
                 key={insightName}
@@ -93,7 +118,6 @@ function RenderInsight({
     return null;
   }
 
-  // Determine which insight component to render
   let InsightComponent;
   switch (insight.component) {
     case InsightDisplay.SimpleDisplay:
@@ -111,6 +135,11 @@ function RenderInsight({
     <Card
       size={insight.size as CardSize}
       title={insight.displayName}
+      style={{
+        margin: "8px",
+        width: insight.size === "default" ? "600px" : "200px",
+        height: insight.size === "default" ? "600px" : "150px",
+      }}
       extra={
         <Space>
           <Tooltip placement="topRight" title="Hide">
@@ -123,7 +152,6 @@ function RenderInsight({
           </Tooltip>
         </Space>
       }
-      style={insight.style}
     >
       <InsightComponent key={insight.name} {...insight} />
     </Card>
