@@ -46,12 +46,12 @@ export class InsightsService {
     }
     user.insights = [insightName, ...user.insights];
     await user.save();
-    return user.insights;
+    return;
   }
 
-  async toggleInsightOff(user: UserModel, insightName: string): Promise<any> {
+  async toggleInsightOff(user: UserModel, insightName: string): Promise<void> {
     user.insights = user.insights?.filter((insight) => insight !== insightName);
     await user.save();
-    return user.insights;
+    return;
   }
 }

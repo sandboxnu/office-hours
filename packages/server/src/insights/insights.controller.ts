@@ -83,12 +83,12 @@ export class InsightsController {
   async toggleInsightOn(
     @Body() body: { insightName: string },
     @User() user: UserModel,
-  ): Promise<ListInsightsResponse> {
-    const updatedInsights = await this.insightsService.toggleInsightOn(
+  ): Promise<void> {
+    await this.insightsService.toggleInsightOn(
       user,
       body.insightName,
     );
-    return updatedInsights;
+    return;
   }
 
   @Delete('')
@@ -96,11 +96,11 @@ export class InsightsController {
   async toggleInsightOff(
     @Body() body: { insightName: string },
     @User() user: UserModel,
-  ): Promise<ListInsightsResponse> {
-    const updatedInsights = await this.insightsService.toggleInsightOff(
+  ): Promise<void> {
+    await this.insightsService.toggleInsightOff(
       user,
       body.insightName,
     );
-    return updatedInsights;
+    return;
   }
 }
