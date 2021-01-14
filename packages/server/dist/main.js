@@ -3593,11 +3593,12 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoginController = void 0;
-const common_1 = __webpack_require__(16);
 const apm_rum_1 = __webpack_require__(70);
+const common_1 = __webpack_require__(16);
 const common_2 = __webpack_require__(7);
 const config_1 = __webpack_require__(11);
 const jwt_1 = __webpack_require__(71);
+const Sentry = __webpack_require__(3);
 const httpSignature = __webpack_require__(72);
 const typeorm_1 = __webpack_require__(22);
 const non_production_guard_1 = __webpack_require__(73);
@@ -3615,6 +3616,7 @@ let LoginController = class LoginController {
             const verifySignature = httpSignature.verifyHMAC(parsedRequest, this.configService.get('KHOURY_PRIVATE_KEY'));
             if (!verifySignature) {
                 apm_rum_1.apm.captureError('Invalid request signature');
+                Sentry.captureMessage('Invalid request signature: ' + parsedRequest);
                 throw new common_2.UnauthorizedException('Invalid request signature');
             }
             const verifyIP = this.configService
@@ -3622,10 +3624,20 @@ let LoginController = class LoginController {
                 .includes(req.ip);
             if (!verifyIP) {
                 apm_rum_1.apm.captureError('The IP of the request does not seem to be coming from the Khoury server');
+                Sentry.captureMessage('The IP of the request does not seem to be coming from the Khoury server: ' +
+                    req.ip);
                 throw new common_2.UnauthorizedException('The IP of the request does not seem to be coming from the Khoury server');
             }
         }
-        const user = await this.loginCourseService.addUserFromKhoury(body);
+        let user;
+        try {
+            user = await this.loginCourseService.addUserFromKhoury(body);
+        }
+        catch (e) {
+            Sentry.captureException(e);
+            console.error('Khoury login threw an exception, the body was ', body);
+            throw e;
+        }
         const token = await this.jwtService.signAsync({ userId: user.id }, { expiresIn: 60 });
         return {
             redirect: this.configService.get('DOMAIN') + `/api/v1/login/entry?token=${token}`,
