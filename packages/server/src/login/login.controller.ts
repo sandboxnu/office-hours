@@ -1,5 +1,5 @@
-import { KhouryDataParams, KhouryRedirectResponse } from '@koh/common';
 import { apm } from '@elastic/apm-rum';
+import { KhouryDataParams, KhouryRedirectResponse } from '@koh/common';
 import {
   Body,
   Controller,
@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import * as Sentry from '@sentry/node';
 import { Request, Response } from 'express';
 import * as httpSignature from 'http-signature';
 import { Connection } from 'typeorm';
@@ -42,6 +43,7 @@ export class LoginController {
       );
       if (!verifySignature) {
         apm.captureError('Invalid request signature');
+        Sentry.captureMessage('Invalid request signature: ' + parsedRequest);
         throw new UnauthorizedException('Invalid request signature');
       }
       // This checks if the request is coming from one of the khoury servers
@@ -52,13 +54,24 @@ export class LoginController {
         apm.captureError(
           'The IP of the request does not seem to be coming from the Khoury server',
         );
+        Sentry.captureMessage(
+          'The IP of the request does not seem to be coming from the Khoury server: ' +
+            req.ip,
+        );
         throw new UnauthorizedException(
           'The IP of the request does not seem to be coming from the Khoury server',
         );
       }
     }
 
-    const user = await this.loginCourseService.addUserFromKhoury(body);
+    let user;
+    try {
+      user = await this.loginCourseService.addUserFromKhoury(body);
+    } catch (e) {
+      Sentry.captureException(e);
+      console.error('Khoury login threw an exception, the body was ', body);
+      throw e;
+    }
 
     // Create temporary login token to send user to.
     const token = await this.jwtService.signAsync(
