@@ -43,7 +43,7 @@ export class LoginController {
       );
       if (!verifySignature) {
         apm.captureError('Invalid request signature');
-        Sentry.captureMessage('Invalid request signature');
+        Sentry.captureMessage('Invalid request signature: ' + parsedRequest);
         throw new UnauthorizedException('Invalid request signature');
       }
       // This checks if the request is coming from one of the khoury servers
