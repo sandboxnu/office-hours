@@ -41,7 +41,7 @@ export class InsightsService {
     return insightsWithOutput;
   }
 
-  convertToInsightListResponse(insightNames: string[]): ListInsightsResponse {
+  convertToInsightsListResponse(insightNames: string[]): ListInsightsResponse {
     return insightNames.reduce(
       (obj, insightName) => ({
         ...obj,

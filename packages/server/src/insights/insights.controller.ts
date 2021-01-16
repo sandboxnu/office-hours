@@ -72,7 +72,7 @@ export class InsightsController {
   @Get('list')
   @Roles(Role.PROFESSOR)
   async getAllInsights(): Promise<ListInsightsResponse> {
-    return this.insightsService.convertToInsightListResponse(
+    return this.insightsService.convertToInsightsListResponse(
       Object.keys(INSIGHTS_MAP),
     );
   }
