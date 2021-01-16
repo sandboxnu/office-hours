@@ -137,8 +137,8 @@ function RenderInsight({
       title={insight.displayName}
       style={{
         margin: "8px",
-        width: insight.size === "default" ? "600px" : "200px",
-        height: insight.size === "default" ? "600px" : "150px",
+        width: insight.size === "default" ? "50%" : "20%",
+        maxWidth: insight.size === "default" ? "" : "200px",
       }}
       extra={
         <Space>
