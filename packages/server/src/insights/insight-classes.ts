@@ -162,7 +162,7 @@ export class AverageWaitTime implements InsightInterface<QuestionModel> {
   displayName = 'Average Wait Time';
   description = 'Gets the average wait time';
   roles = [Role.PROFESSOR];
-  component = InsightDisplay.SimpleChart;
+  component = InsightDisplay.SimpleDisplay;
   model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
   size = 'default' as const;
