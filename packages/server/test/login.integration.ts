@@ -165,6 +165,70 @@ describe('Login Integration', () => {
         expect(student.courses).toHaveLength(1);
         expect(student.courses[0].id).toBe(course.id);
       });
+
+      it('deletes stale user course if no longer valid', async () => {
+        await supertest()
+          .post('/khoury_login')
+          .send({
+            email: 'stenzel.w@northeastern.edu',
+            campus: 1,
+            first_name: 'Will',
+            last_name: 'Stenzel',
+            photo_url: '',
+            courses: [
+              {
+                course: 'CS 2510',
+                crn: 12345,
+                accelerated: false,
+                section: 1,
+                semester: '000',
+                title: 'Fundamentals of Computer Science II',
+              },
+            ],
+            ta_courses: [],
+          })
+          .expect(201);
+
+        const user = await UserModel.findOne({
+          where: { email: 'stenzel.w@northeastern.edu' },
+          relations: ['courses'],
+        });
+
+        const fundiesUserCourse = await UserCourseModel.findOne({
+          where: { userId: user.id },
+        });
+        expect(fundiesUserCourse).toEqual({
+          courseId: 1,
+          id: 1,
+          role: 'student',
+          userId: 1,
+        });
+
+        const totalUserCourses = await UserCourseModel.count();
+        expect(totalUserCourses).toEqual(1);
+
+        // After dropping fundies II, user logs in again
+        await supertest()
+          .post('/khoury_login')
+          .send({
+            email: 'stenzel.w@northeastern.edu',
+            campus: 1,
+            first_name: 'Will',
+            last_name: 'Stenzel',
+            photo_url: '',
+            courses: [],
+            ta_courses: [],
+          })
+          .expect(201);
+
+        const noUserCourse = await UserCourseModel.findOne(
+          fundiesUserCourse.id,
+        );
+        expect(noUserCourse).toBeUndefined();
+
+        const totalUserCoursesUpdated = await UserCourseModel.count();
+        expect(totalUserCoursesUpdated).toEqual(0);
+      });
     });
 
     const setupTAAndProfessorCourses = async () => {

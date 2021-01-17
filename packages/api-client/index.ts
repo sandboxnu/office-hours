@@ -147,9 +147,9 @@ class APIClient {
       this.req("GET", `/api/v1/insights/${courseId}/${insightName}`),
     list: async (): Promise<ListInsightsResponse> =>
       this.req("GET", `/api/v1/insights/list`),
-    toggleOn: async (insightName: string): Promise<ListInsightsResponse> =>
+    toggleOn: async (insightName: string): Promise<void> =>
       this.req("PATCH", `/api/v1/insights`, undefined, { insightName }),
-    toggleOff: async (insightName: string): Promise<ListInsightsResponse> =>
+    toggleOff: async (insightName: string): Promise<void> =>
       this.req("DELETE", `/api/v1/insights`, undefined, { insightName }),
   };
   constructor(baseURL = "") {

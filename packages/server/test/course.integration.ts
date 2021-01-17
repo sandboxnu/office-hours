@@ -22,6 +22,7 @@ describe('Course Integration', () => {
     it('gets office hours no queues, since no queue is happening right now', async () => {
       const course = await CourseFactory.create({
         officeHours: [await ClosedOfficeHourFactory.create()],
+        timezone: 'America/New_York',
       });
       await QueueFactory.create();
 

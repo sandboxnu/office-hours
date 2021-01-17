@@ -63,5 +63,13 @@
   "dependencies": {
     "pm2": "^4.4.0",
     "rimraf": "^3.0.2"
+  },
+  "percy": {
+    "snapshot": {
+      "widths": [
+        1280,
+        1920
+      ]
+    }
   }
 }

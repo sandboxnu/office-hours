@@ -21,7 +21,7 @@ import {
   Role,
 } from '@koh/common';
 import { User } from '../profile/user.decorator';
-import { INSIGHTS_MAP } from './insights';
+import { INSIGHTS_MAP } from './insight-classes';
 import { UserModel } from 'profile/user.entity';
 import { Roles } from 'profile/roles.decorator';
 import { CourseRole } from './course-role.decorator';
@@ -72,10 +72,9 @@ export class InsightsController {
   @Get('list')
   @Roles(Role.PROFESSOR)
   async getAllInsights(): Promise<ListInsightsResponse> {
-    return Object.entries(INSIGHTS_MAP).map(([insightName, insight]) => ({
-      name: insightName,
-      displayName: insight.displayName,
-    }));
+    return this.insightsService.convertToInsightsListResponse(
+      Object.keys(INSIGHTS_MAP),
+    );
   }
 
   @Patch('')
@@ -83,12 +82,9 @@ export class InsightsController {
   async toggleInsightOn(
     @Body() body: { insightName: string },
     @User() user: UserModel,
-  ): Promise<ListInsightsResponse> {
-    const updatedInsights = await this.insightsService.toggleInsightOn(
-      user,
-      body.insightName,
-    );
-    return updatedInsights;
+  ): Promise<void> {
+    await this.insightsService.toggleInsightOn(user, body.insightName);
+    return;
   }
 
   @Delete('')
@@ -96,11 +92,8 @@ export class InsightsController {
   async toggleInsightOff(
     @Body() body: { insightName: string },
     @User() user: UserModel,
-  ): Promise<ListInsightsResponse> {
-    const updatedInsights = await this.insightsService.toggleInsightOff(
-      user,
-      body.insightName,
-    );
-    return updatedInsights;
+  ): Promise<void> {
+    await this.insightsService.toggleInsightOff(user, body.insightName);
+    return;
   }
 }

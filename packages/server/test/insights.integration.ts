@@ -8,7 +8,7 @@ import {
 import { setupIntegrationTest } from './util/testUtils';
 import { InsightsModule } from '../src/insights/insights.module';
 import { Role } from '@koh/common';
-import { TotalQuestionsAsked } from 'insights/insights';
+import { TotalQuestionsAsked } from 'insights/insight-classes';
 
 describe('Insights Integration', () => {
   const supertest = setupIntegrationTest(InsightsModule);
