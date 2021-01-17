@@ -3,45 +3,26 @@ name: Deploy Staging
 on:
   push:
     branches:
-      - master
+      - dc/release
 
 jobs:
   build:
-    name: Build Dist Branch
+    name: Create Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: "dist"
-          fetch-depth: 0
+      - name: Checkout code
+        uses: actions/checkout@v2
+      # ========= BUILD ======== #
       - uses: actions/setup-node@v1
         with:
           node-version: "12"
-      - name: "set git bot commiter"
-        run: git config --global user.name "KOH Build Bot" && git config --global user.email "bot@khouryofficehours.com"
-      - name: "merge new changes into dist"
-        run: git merge origin/master
-      - run: echo "::set-output name=version::$(git rev-parse origin/master)"
-        id: pre-version
-      - uses: bahmutov/npm-install@v1
       - run: yarn build
         env:
           NEXT_PUBLIC_APM_SERVER: ${{ secrets.ELASTIC_APM_SERVER_URL}}
           NEXT_PUBLIC_SERVICE_VERSION: ${{ steps.pre-version.outputs.version }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-      ## Ensure no new changes have been pushed in the time we spent building
-      - run: git fetch && echo "::set-output name=version::$(git rev-parse origin/master)"
-        id: post-version
-      - if: steps.pre-version.outputs.version == steps.post-version.outputs.version
-        uses: EndBug/add-and-commit@v4
-        with:
-          add: "packages"
-          author_name: KOH Build Bot
-          author_email: bot@khouryofficehours.com
-          message: "Added built files"
-          ref: "dist"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Zip everything
+        run: zip -r release.zip . -x ".git/*" ".github/*"
       ## Associate release with git commits, so Sentry can guess which commits caused errors
       - name: Create Sentry release
         uses: getsentry/action-release@v1
@@ -61,22 +42,42 @@ jobs:
           version: ${{ steps.pre-version.outputs.version }}
           environment: staging
           projects: khoury-office-hours khoury-office-hours-frontend
+      # Sourcemaps to Elastic APM
       - name: Upload Sourcemaps to Elastic APM
         run: yarn ts-node packages/app/scripts/uploadSourceMapToAPM.js
         env:
           ELASTIC_APM_SERVER_URL: ${{ secrets.ELASTIC_APM_SERVER_URL}}
           ELASTIC_APM_SECRET_TOKEN: ${{ secrets.ELASTIC_APM_SECRET_TOKEN }}
           SERVICE_VERSION: ${{ steps.pre-version.outputs.version }}
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
+      # ========== CREATE AND UPLOAD RELEASE =========== #
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          key: ${{ secrets.SSH_KEY }}
-          name: id_rsa
-          known_hosts: ${{ secrets.KNOWN_HOSTS }}
-      - uses: actions/checkout@v2
-      - name: "pm2 deploy to staging"
-        run: "npx pm2 deploy infrastructure/prod/ecosystem.config.js staging update"
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./release.zip
+          asset_name: ${{ github.ref }}.zip
+          asset_content_type: application/zip
+  # deploy:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Install SSH key
+  #       uses: shimataro/ssh-key-action@v2
+  #       with:
+  #         key: ${{ secrets.SSH_KEY }}
+  #         name: id_rsa
+  #         known_hosts: ${{ secrets.KNOWN_HOSTS }}
+  #     - uses: actions/checkout@v2
+  #     - name: "pm2 deploy to staging"
+  #       run: "npx pm2 deploy infrastructure/prod/ecosystem.config.js staging update"
