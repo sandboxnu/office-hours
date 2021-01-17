@@ -3813,12 +3813,6 @@ let LoginCourseService = class LoginCourseService {
                 userCourses.push(taCourse);
             }
         }));
-        for (const previousCourse of user.courses) {
-            if (previousCourse.course.enabled &&
-                !userCourses.includes(previousCourse)) {
-                previousCourse.remove();
-            }
-        }
         user.courses = userCourses;
         await user.save();
         return user;
