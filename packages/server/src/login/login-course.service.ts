@@ -69,15 +69,16 @@ export class LoginCourseService {
       }),
     );
 
-    // Delete "stale" user courses
-    for (const previousCourse of user.courses) {
-      if (
-        previousCourse.course.enabled &&
-        !userCourses.includes(previousCourse)
-      ) {
-        previousCourse.remove();
-      }
-    }
+    // TODO: figure out how to make this work
+    // // Delete "stale" user courses
+    // for (const previousCourse of user.courses) {
+    //   if (
+    //     previousCourse.course.enabled &&
+    //     !userCourses.includes(previousCourse)
+    //   ) {
+    //     previousCourse.remove();
+    //   }
+    // }
 
     user.courses = userCourses;
     await user.save();
