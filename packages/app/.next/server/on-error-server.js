@@ -120,7 +120,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ "w0yH":
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"0ba019469ee85c9d6c9eea300a0cbd8f7f112c49"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"0ef526043ad115f0d10d10171a749e8926dcb57d"};
 
 /***/ })
 

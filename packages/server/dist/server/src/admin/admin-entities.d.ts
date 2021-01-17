@@ -7,6 +7,7 @@ import { UserCourseModel } from 'profile/user-course.entity';
 export declare class CourseAdmin extends AdminEntity {
     entity: typeof CourseModel;
     listDisplay: string[];
+    fields: string[];
 }
 export declare class QueueAdmin extends AdminEntity {
     entity: typeof QueueModel;

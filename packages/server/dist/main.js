@@ -5137,6 +5137,7 @@ class CourseAdmin extends nestjs_admin_1.AdminEntity {
         super(...arguments);
         this.entity = course_entity_1.CourseModel;
         this.listDisplay = ['id', 'name'];
+        this.fields = ['id', 'name', 'icalURL', 'semesterId', 'enabled', 'timezone'];
     }
 }
 exports.CourseAdmin = CourseAdmin;
