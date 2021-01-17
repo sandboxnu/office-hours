@@ -8,6 +8,7 @@ import { UserCourseModel } from 'profile/user-course.entity';
 export class CourseAdmin extends AdminEntity {
   entity = CourseModel;
   listDisplay = ['id', 'name'];
+  fields = ['id', 'name', 'icalURL', 'semesterId', 'enabled', 'timezone'];
 }
 
 export class QueueAdmin extends AdminEntity {
