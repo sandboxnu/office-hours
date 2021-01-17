@@ -3611,6 +3611,7 @@ let LoginController = class LoginController {
         this.configService = configService;
     }
     async recieveDataFromKhoury(req, body) {
+        console.log('Khoury Login Body', JSON.stringify(body));
         if (process.env.NODE_ENV === 'production') {
             const parsedRequest = httpSignature.parseRequest(req);
             const verifySignature = httpSignature.verifyHMAC(parsedRequest, this.configService.get('KHOURY_PRIVATE_KEY'));
