@@ -4,8 +4,9 @@
 2. Make sure you have [node](https://nodejs.org/en/download/), [yarn](https://classic.yarnpkg.com/en/docs/install), and [psql](https://blog.timescale.com/tutorials/how-to-install-psql-on-mac-ubuntu-debian-windows/) installed. `yarn -v` should be `1.x.x`. Do not get Yarn 2.
 3. Run `yarn install` in this directory to get dependencies
 4. Run `yarn dev:db:up` to start the database via docker. `yarn dev:db:down` will stop it.
-5. Start the app in development with `yarn dev`
-6. Visit the app at http://localhost:3000
+5. Run `psql -U postgres -h localhost` to connect to your postgres instance, and run `CREATE database dev;` to initialize your database.
+6. Start the app in development with `yarn dev`
+7. Visit the app at http://localhost:3000
 
 ## Technologies
 
