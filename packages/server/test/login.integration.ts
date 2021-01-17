@@ -59,14 +59,14 @@ describe('Login Integration', () => {
     });
   });
 
-  describe('POST /khoury_login', () => {
+  describe('POST /admin_hook', () => {
     it('creates user and sends back correct redirect', async () => {
       const user = await UserModel.findOne({
         where: { email: 'stenzel.w@northeastern.edu' },
       });
       expect(user).toBeUndefined();
 
-      const res = await supertest().post('/khoury_login').send({
+      const res = await supertest().post('/admin_hook').send({
         email: 'stenzel.w@northeastern.edu',
         campus: 1,
         first_name: 'Will',
@@ -106,7 +106,7 @@ describe('Login Integration', () => {
         let user = await UserFactory.create();
 
         const res = await supertest()
-          .post('/khoury_login')
+          .post('/admin_hook')
           .send({
             email: user.email,
             campus: 1,
@@ -135,7 +135,7 @@ describe('Login Integration', () => {
 
       it('handles student courses and sections correctly', async () => {
         const res = await supertest()
-          .post('/khoury_login')
+          .post('/admin_hook')
           .send({
             email: 'stenzel.w@northeastern.edu',
             campus: 1,
@@ -168,7 +168,7 @@ describe('Login Integration', () => {
 
       it('deletes stale user course if no longer valid', async () => {
         await supertest()
-          .post('/khoury_login')
+          .post('/admin_hook')
           .send({
             email: 'stenzel.w@northeastern.edu',
             campus: 1,
@@ -209,7 +209,7 @@ describe('Login Integration', () => {
 
         // After dropping fundies II, user logs in again
         await supertest()
-          .post('/khoury_login')
+          .post('/admin_hook')
           .send({
             email: 'stenzel.w@northeastern.edu',
             campus: 1,
@@ -262,7 +262,7 @@ describe('Login Integration', () => {
       await setupTAAndProfessorCourses();
 
       const res = await supertest()
-        .post('/khoury_login')
+        .post('/admin_hook')
         .send({
           email: 'stenzel.w@northeastern.edu',
           campus: 1,
@@ -292,7 +292,7 @@ describe('Login Integration', () => {
       await setupTAAndProfessorCourses();
 
       const res = await supertest()
-        .post('/khoury_login')
+        .post('/admin_hook')
         .send({
           email: 'stenzel.w@northeastern.edu',
           campus: 1,
