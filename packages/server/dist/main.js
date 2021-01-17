@@ -3676,7 +3676,7 @@ let LoginController = class LoginController {
     }
 };
 __decorate([
-    common_2.Post('/khoury_login'),
+    common_2.Post('/admin_hook'),
     __param(0, common_2.Req()),
     __param(1, common_2.Body()),
     __metadata("design:type", Function),
