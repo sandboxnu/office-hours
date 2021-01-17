@@ -4,6 +4,7 @@ import { QueueModel } from '../queue/queue.entity';
 import { UserModel } from '../profile/user.entity';
 import { CourseSectionMappingModel } from '../login/course-section-mapping.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
+import { SemesterModel } from 'course/semester.entity';
 
 export class CourseAdmin extends AdminEntity {
   entity = CourseModel;
@@ -38,4 +39,9 @@ export class UserCourseAdmin extends AdminEntity {
 export class CourseSectionMappingAdmin extends AdminEntity {
   entity = CourseSectionMappingModel;
   listDisplay = ['id', 'genericCourseName', 'section', 'courseId'];
+}
+
+export class SemesterAdmin extends AdminEntity {
+  entity = SemesterModel;
+  listDisplay = ['id', 'season', 'year'];
 }
