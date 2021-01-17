@@ -4,6 +4,7 @@ import { QueueModel } from '../queue/queue.entity';
 import { UserModel } from '../profile/user.entity';
 import { CourseSectionMappingModel } from '../login/course-section-mapping.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
+import { SemesterModel } from 'course/semester.entity';
 export declare class CourseAdmin extends AdminEntity {
     entity: typeof CourseModel;
     listDisplay: string[];
@@ -25,5 +26,9 @@ export declare class UserCourseAdmin extends AdminEntity {
 }
 export declare class CourseSectionMappingAdmin extends AdminEntity {
     entity: typeof CourseSectionMappingModel;
+    listDisplay: string[];
+}
+export declare class SemesterAdmin extends AdminEntity {
+    entity: typeof SemesterModel;
     listDisplay: string[];
 }

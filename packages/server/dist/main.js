@@ -5025,6 +5025,7 @@ let AdminModule = class AdminModule {
         adminSite.register('UserCourse', admin_entities_1.UserCourseAdmin);
         adminSite.register('Queue', admin_entities_1.QueueAdmin);
         adminSite.register('CourseSectionMapping', admin_entities_1.CourseSectionMappingAdmin);
+        adminSite.register('Semester', admin_entities_1.SemesterAdmin);
     }
 };
 AdminModule = __decorate([
@@ -5125,13 +5126,14 @@ module.exports = require("bcrypt");
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CourseSectionMappingAdmin = exports.UserCourseAdmin = exports.UserAdmin = exports.QueueAdmin = exports.CourseAdmin = void 0;
+exports.SemesterAdmin = exports.CourseSectionMappingAdmin = exports.UserCourseAdmin = exports.UserAdmin = exports.QueueAdmin = exports.CourseAdmin = void 0;
 const nestjs_admin_1 = __webpack_require__(96);
 const course_entity_1 = __webpack_require__(23);
 const queue_entity_1 = __webpack_require__(28);
 const user_entity_1 = __webpack_require__(25);
 const course_section_mapping_entity_1 = __webpack_require__(75);
 const user_course_entity_1 = __webpack_require__(24);
+const semester_entity_1 = __webpack_require__(32);
 class CourseAdmin extends nestjs_admin_1.AdminEntity {
     constructor() {
         super(...arguments);
@@ -5182,6 +5184,14 @@ class CourseSectionMappingAdmin extends nestjs_admin_1.AdminEntity {
     }
 }
 exports.CourseSectionMappingAdmin = CourseSectionMappingAdmin;
+class SemesterAdmin extends nestjs_admin_1.AdminEntity {
+    constructor() {
+        super(...arguments);
+        this.entity = semester_entity_1.SemesterModel;
+        this.listDisplay = ['id', 'season', 'year'];
+    }
+}
+exports.SemesterAdmin = SemesterAdmin;
 
 
 /***/ }),
