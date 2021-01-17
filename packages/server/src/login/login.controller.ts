@@ -29,7 +29,7 @@ export class LoginController {
     private configService: ConfigService,
   ) {}
 
-  @Post('/admin_hook')
+  @Post('/khoury_login')
   async recieveDataFromKhoury(
     @Req() req: Request,
     @Body() body: KhouryDataParams,
