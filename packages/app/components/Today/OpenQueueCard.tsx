@@ -57,10 +57,6 @@ const HeaderText = styled.div`
   margin-bottom: 8px;
 `;
 
-const AvatarWithMargin = styled(KOHAvatar)`
-  margin-right: 25px;
-`;
-
 const OpenQueueButton = styled(Button)`
   background-color: #3684c6;
   border-radius: 6px;
@@ -174,10 +170,11 @@ const OpenQueueCard = ({
         <div>
           {staffList.map((staffMember) => (
             <Tooltip key={staffMember.id} title={staffMember.name}>
-              <AvatarWithMargin
+              <KOHAvatar
                 size={96}
                 photoURL={staffMember.photoURL}
                 name={staffMember.name}
+                style={{ marginRight: "25px" }}
               />
             </Tooltip>
           ))}
