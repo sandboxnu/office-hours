@@ -3619,15 +3619,6 @@ let LoginController = class LoginController {
                 Sentry.captureMessage('Invalid request signature: ' + parsedRequest);
                 throw new common_2.UnauthorizedException('Invalid request signature');
             }
-            const verifyIP = this.configService
-                .get('KHOURY_SERVER_IP')
-                .includes(req.ip);
-            if (!verifyIP) {
-                apm_rum_1.apm.captureError('The IP of the request does not seem to be coming from the Khoury server');
-                Sentry.captureMessage('The IP of the request does not seem to be coming from the Khoury server: ' +
-                    req.ip);
-                throw new common_2.UnauthorizedException('The IP of the request does not seem to be coming from the Khoury server');
-            }
         }
         let user;
         try {
