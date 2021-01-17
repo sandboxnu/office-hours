@@ -529,11 +529,11 @@ export interface GetReleaseNotesResponse {
 
 export type GetInsightResponse = Insight;
 
-export type ListInsightsResponse = InsightNames[];
+export type ListInsightsResponse = Record<string, InsightPartial>;
 
-type InsightNames = {
-  name: string;
+export type InsightPartial = {
   displayName: string;
+  size: "small" | "default";
 };
 
 export class Insight {

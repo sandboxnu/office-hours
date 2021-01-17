@@ -3,7 +3,7 @@ import { API } from "@koh/api-client";
 import useSWR from "swr";
 import { Tooltip, Card, Space, Drawer, Button } from "antd";
 import { CardSize } from "antd/lib/card";
-import { CloseSquareOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import { InfoCircleOutlined, MinusSquareOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
 import { InsightDisplay } from "@koh/common";
@@ -15,20 +15,36 @@ import InsightsDisplayOptions from "../../../components/Insights/components/Insi
 export default function Insights(): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
-  const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
-    API.profile.index()
+  const { data: profile, mutate: mutateProfile } = useSWR(
+    `api/v1/profile`,
+    async () => API.profile.index()
+  );
+  const { data: allInsights } = useSWR(`api/v1/insights/listAll`, async () =>
+    API.insights.list()
   );
   const [settingsVisible, setSettingsVisible] = useState(false);
 
   const toggleInsightOn = async (insightName) => {
     await API.insights.toggleOn(insightName);
-    mutate();
+    mutateProfile();
   };
 
   const toggleInsightOff = async (insightName) => {
     await API.insights.toggleOff(insightName);
-    mutate();
+    mutateProfile();
   };
+
+  if (!allInsights || !profile?.insights) {
+    return null;
+  }
+  // Group users insights by size (small | default) so they can be rendered correctly
+  const [smallInsights, defaultInsights] = profile.insights.reduce(
+    ([smallInsights, defaultInsights], insight) =>
+      allInsights[insight].size === "small"
+        ? [[...smallInsights, insight], defaultInsights]
+        : [smallInsights, [...defaultInsights, insight]],
+    [[], []]
+  );
 
   return (
     <>
@@ -39,6 +55,7 @@ export default function Insights(): ReactElement {
           title="Display Options"
           placement="left"
           closable={true}
+          destroyOnClose={true}
           onClose={() => setSettingsVisible(false)}
           visible={settingsVisible}
           width={400}
@@ -49,7 +66,18 @@ export default function Insights(): ReactElement {
           />
         </Drawer>
         <div style={{ display: "flex", direction: "ltr" }}>
-          {profile?.insights?.map((insightName: string) => {
+          {smallInsights?.map((insightName: string) => {
+            return (
+              <RenderInsight
+                key={insightName}
+                insightName={insightName}
+                toggleInsightOff={toggleInsightOff}
+              />
+            );
+          })}
+        </div>
+        <div style={{ display: "flex", direction: "ltr" }}>
+          {defaultInsights?.map((insightName: string) => {
             return (
               <RenderInsight
                 key={insightName}
@@ -92,7 +120,6 @@ function RenderInsight({
     return null;
   }
 
-  // Determine which insight component to render
   let InsightComponent;
   switch (insight.component) {
     case InsightDisplay.SimpleDisplay:
@@ -110,10 +137,15 @@ function RenderInsight({
     <Card
       size={insight.size as CardSize}
       title={insight.displayName}
+      style={{
+        margin: "8px",
+        width: insight.size === "default" ? "50%" : "20%",
+        maxWidth: insight.size === "default" ? "" : "200px",
+      }}
       extra={
         <Space>
           <Tooltip placement="topRight" title="Hide">
-            <CloseSquareOutlined
+            <MinusSquareOutlined
               onClick={() => toggleInsightOff(insightName)}
             />
           </Tooltip>
@@ -122,7 +154,6 @@ function RenderInsight({
           </Tooltip>
         </Space>
       }
-      style={insight.style}
     >
       <InsightComponent key={insight.name} {...insight} />
     </Card>
