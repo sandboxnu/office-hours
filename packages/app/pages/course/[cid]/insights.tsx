@@ -39,8 +39,10 @@ export default function Insights(): ReactElement {
   }
   // Group users insights by size (small | default) so they can be rendered correctly
   const [smallInsights, defaultInsights] = profile.insights.reduce(
-    ([s, d], i) =>
-      allInsights[i].size === "small" ? [[...s, i], d] : [s, [...d, i]],
+    ([smallInsights, defaultInsights], insight) =>
+      allInsights[insight].size === "small"
+        ? [[...smallInsights, insight], defaultInsights]
+        : [smallInsights, [...defaultInsights, insight]],
     [[], []]
   );
 
