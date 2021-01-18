@@ -2718,8 +2718,9 @@ let IcalService = class IcalService {
                 isProfessorQueue: true,
             },
         });
-        const processedProfessorOfficeHours = await Promise.all(professorOfficeHours.map(async (oh) => {
-            const professorLocation = oh.title;
+        const processedProfessorOfficeHours = [];
+        for (const poh of professorOfficeHours) {
+            const professorLocation = poh.title;
             if (!professorQueues.some((q) => q.room === professorLocation)) {
                 const newProfQ = queue_entity_1.QueueModel.create({
                     room: professorLocation,
@@ -2733,8 +2734,8 @@ let IcalService = class IcalService {
                 professorQueues.push(newProfQ);
             }
             const professorQueue = professorQueues.find((q) => q.room === professorLocation);
-            return office_hour_entity_1.OfficeHourModel.create(Object.assign({ queueId: professorQueue.id }, oh));
-        }));
+            processedProfessorOfficeHours.push(office_hour_entity_1.OfficeHourModel.create(Object.assign({ queueId: professorQueue.id }, poh)));
+        }
         await office_hour_entity_1.OfficeHourModel.save(processedProfessorOfficeHours);
         await queue_entity_1.QueueModel.save(professorQueues);
         console.timeEnd(`scrape course ${course.id}`);
