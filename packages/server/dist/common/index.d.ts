@@ -1,5 +1,5 @@
 import "reflect-metadata";
-export declare const PROD_URL = "https://khouryofficehours.com";
+export declare const PROD_URL = "https://officehours.khoury.northeastern.edu";
 export declare const STAGING_URL = "https://staging.khouryofficehours.com";
 export declare const getEnv: () => "production" | "staging" | "dev";
 export declare const isProd: () => boolean;

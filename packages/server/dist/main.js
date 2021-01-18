@@ -566,7 +566,7 @@ exports.ERROR_MESSAGES = exports.SSEQueueResponse = exports.UpdateQueueParams = 
 const class_transformer_1 = __webpack_require__(17);
 const class_validator_1 = __webpack_require__(18);
 __webpack_require__(19);
-exports.PROD_URL = "https://khouryofficehours.com";
+exports.PROD_URL = "https://officehours.khoury.northeastern.edu";
 exports.STAGING_URL = "https://staging.khouryofficehours.com";
 const domain = () => {
     var _a;
