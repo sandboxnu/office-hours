@@ -182,31 +182,33 @@ export class IcalService {
       },
     });
 
-    const processedProfessorOfficeHours = await Promise.all(
-      professorOfficeHours.map(async (oh) => {
-        const professorLocation = oh.title;
-        if (!professorQueues.some((q) => q.room === professorLocation)) {
-          const newProfQ = QueueModel.create({
-            room: professorLocation,
-            courseId: course.id,
-            staffList: [],
-            questions: [],
-            allowQuestions: false,
-            isProfessorQueue: true,
-          });
-          await newProfQ.save();
-          professorQueues.push(newProfQ);
-        }
+    const processedProfessorOfficeHours = [];
 
-        const professorQueue = professorQueues.find(
-          (q) => q.room === professorLocation,
-        );
-        return OfficeHourModel.create({
-          queueId: professorQueue.id,
-          ...oh,
+    for (const poh of professorOfficeHours) {
+      const professorLocation = poh.title;
+      if (!professorQueues.some((q) => q.room === professorLocation)) {
+        const newProfQ = QueueModel.create({
+          room: professorLocation,
+          courseId: course.id,
+          staffList: [],
+          questions: [],
+          allowQuestions: false,
+          isProfessorQueue: true,
         });
-      }),
-    );
+        await newProfQ.save();
+        professorQueues.push(newProfQ);
+      }
+
+      const professorQueue = professorQueues.find(
+        (q) => q.room === professorLocation,
+      );
+      processedProfessorOfficeHours.push(
+        OfficeHourModel.create({
+          queueId: professorQueue.id,
+          ...poh,
+        }),
+      );
+    }
 
     await OfficeHourModel.save(processedProfessorOfficeHours);
     await QueueModel.save(professorQueues);
