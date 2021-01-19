@@ -286,7 +286,7 @@ describe('Login Integration', () => {
       expect(ta.courses).toHaveLength(3);
     });
 
-    it('handles professor courses correctly', async () => {
+    it.only('handles professor courses correctly', async () => {
       await setupTAAndProfessorCourses();
 
       const res = await supertest()
@@ -319,7 +319,7 @@ describe('Login Integration', () => {
 
       // Expect the professor to have been all three courses accosiated with the given generic courses (CS 2500)
       expect(professor.courses).toHaveLength(3);
-      expect(ucms.every((ucm) => ucm.role === Role.PROFESSOR));
+      expect(ucms.every((ucm) => ucm.role === Role.PROFESSOR)).toBeTruthy();
     });
   });
 

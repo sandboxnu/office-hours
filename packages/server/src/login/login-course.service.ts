@@ -1,9 +1,4 @@
-import {
-  KhouryDataParams,
-  KhouryStudentCourse,
-  KhouryTACourse,
-  Role,
-} from '@koh/common';
+import { KhouryDataParams, KhouryStudentCourse, Role } from '@koh/common';
 import { Injectable } from '@nestjs/common';
 import { CourseModel } from 'course/course.entity';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
@@ -51,23 +46,21 @@ export class LoginCourseService {
       }),
     );
 
-    await Promise.all(
-      info.ta_courses.map(async (c: KhouryTACourse) => {
-        // Query for all the courses which match the name of the generic course from Khoury
-        const courseMappings = await CourseSectionMappingModel.find({
-          where: { genericCourseName: c.course }, // TODO: Add semester support
-        });
+    for (const c of info.ta_courses) {
+      // Query for all the courses which match the name of the generic course from Khoury
+      const courseMappings = await CourseSectionMappingModel.find({
+        where: { genericCourseName: c.course }, // TODO: Add semester support
+      });
 
-        for (const courseMapping of courseMappings) {
-          const taCourse = await this.courseToUserCourse(
-            user.id,
-            courseMapping.courseId,
-            c.instructor === '1' ? Role.PROFESSOR : Role.TA,
-          );
-          userCourses.push(taCourse);
-        }
-      }),
-    );
+      for (const courseMapping of courseMappings) {
+        const taCourse = await this.courseToUserCourse(
+          user.id,
+          courseMapping.courseId,
+          c.instructor === 1 ? Role.PROFESSOR : Role.TA,
+        );
+        userCourses.push(taCourse);
+      }
+    }
 
     // TODO: figure out how to make this work
     // // Delete "stale" user courses
