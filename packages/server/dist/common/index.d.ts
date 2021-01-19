@@ -146,7 +146,6 @@ export declare class KhouryDataParams {
     first_name: string;
     last_name: string;
     campus: string;
-    professor: string;
     photo_url: string;
     courses: KhouryStudentCourse[];
     ta_courses: KhouryTACourse[];
@@ -162,6 +161,7 @@ export declare class KhouryStudentCourse {
 export declare class KhouryTACourse {
     course: string;
     semester: string;
+    instructor: string;
 }
 export interface KhouryRedirectResponse {
     redirect: string;

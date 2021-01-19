@@ -724,11 +724,6 @@ __decorate([
     __metadata("design:type", String)
 ], KhouryDataParams.prototype, "campus", void 0);
 __decorate([
-    class_validator_1.IsInt(),
-    class_validator_1.IsOptional(),
-    __metadata("design:type", String)
-], KhouryDataParams.prototype, "professor", void 0);
-__decorate([
     class_validator_1.IsOptional(),
     class_validator_1.IsString(),
     __metadata("design:type", String)
@@ -781,6 +776,11 @@ __decorate([
     class_validator_1.IsString(),
     __metadata("design:type", String)
 ], KhouryTACourse.prototype, "semester", void 0);
+__decorate([
+    class_validator_1.IsInt(),
+    class_validator_1.IsOptional(),
+    __metadata("design:type", String)
+], KhouryTACourse.prototype, "instructor", void 0);
 exports.KhouryTACourse = KhouryTACourse;
 class UpdateProfileParams {
 }
@@ -3810,7 +3810,7 @@ let LoginCourseService = class LoginCourseService {
                 where: { genericCourseName: c.course },
             });
             for (const courseMapping of courseMappings) {
-                const taCourse = await this.courseToUserCourse(user.id, courseMapping.courseId, info.professor === '1' ? common_1.Role.PROFESSOR : common_1.Role.TA);
+                const taCourse = await this.courseToUserCourse(user.id, courseMapping.courseId, c.instructor === '1' ? common_1.Role.PROFESSOR : common_1.Role.TA);
                 userCourses.push(taCourse);
             }
         }));
@@ -4926,7 +4926,8 @@ exports.QuestionFactory = new typeorm_factory_1.Factory(question_entity_1.Questi
     .attr('status', 'Queued')
     .attr('questionType', common_1.QuestionType.Other)
     .assocOne('queue', exports.QueueFactory)
-    .assocOne('creator', exports.UserFactory);
+    .assocOne('creator', exports.UserFactory)
+    .attr('createdAt', new Date());
 
 
 /***/ }),
