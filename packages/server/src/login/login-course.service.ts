@@ -62,7 +62,7 @@ export class LoginCourseService {
           const taCourse = await this.courseToUserCourse(
             user.id,
             courseMapping.courseId,
-            info.professor === '1' ? Role.PROFESSOR : Role.TA,
+            c.instructor === '1' ? Role.PROFESSOR : Role.TA,
           );
           userCourses.push(taCourse);
         }
