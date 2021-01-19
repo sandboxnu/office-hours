@@ -74,7 +74,6 @@ describe('Login Integration', () => {
         photo_url: 'sdf',
         courses: [],
         ta_courses: [],
-        professor: 0,
       });
 
       // Expect that the new user has been created
@@ -124,7 +123,6 @@ describe('Login Integration', () => {
               },
             ],
             ta_courses: [],
-            professor: 0,
           })
           .expect(201);
         user = await UserModel.findOne(user, { relations: ['courses'] });
@@ -153,7 +151,6 @@ describe('Login Integration', () => {
               },
             ],
             ta_courses: [],
-            professor: 0,
           })
           .expect(201);
 
@@ -304,9 +301,9 @@ describe('Login Integration', () => {
             {
               course: 'CS 2500',
               semester: '000',
+              instructor: 1,
             },
           ],
-          professor: 1,
         })
         .expect(201);
 

@@ -332,10 +332,6 @@ export class KhouryDataParams {
   @IsInt()
   campus!: string;
 
-  @IsInt()
-  @IsOptional()
-  professor!: string;
-
   @IsOptional()
   @IsString()
   photo_url!: string;
@@ -375,6 +371,10 @@ export class KhouryTACourse {
 
   @IsString()
   semester!: string;
+
+  @IsInt()
+  @IsOptional()
+  instructor!: string;
 }
 
 export interface KhouryRedirectResponse {
