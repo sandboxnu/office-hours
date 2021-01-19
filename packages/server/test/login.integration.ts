@@ -163,7 +163,7 @@ describe('Login Integration', () => {
         expect(student.courses[0].id).toBe(course.id);
       });
 
-      it('deletes stale user course if no longer valid', async () => {
+      /*it('deletes stale user course if no longer valid', async () => {
         await supertest()
           .post('/khoury_login')
           .send({
@@ -226,6 +226,7 @@ describe('Login Integration', () => {
         const totalUserCoursesUpdated = await UserCourseModel.count();
         expect(totalUserCoursesUpdated).toEqual(0);
       });
+      */
     });
 
     const setupTAAndProfessorCourses = async () => {
