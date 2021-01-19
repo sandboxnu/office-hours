@@ -70,4 +70,5 @@ export const QuestionFactory = new Factory(QuestionModel)
   .attr('status', 'Queued')
   .attr('questionType', QuestionType.Other)
   .assocOne('queue', QueueFactory)
-  .assocOne('creator', UserFactory);
+  .assocOne('creator', UserFactory)
+  .attr('createdAt', new Date());
