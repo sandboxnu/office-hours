@@ -2603,7 +2603,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.IcalService = void 0;
 const common_1 = __webpack_require__(7);
-const schedule_1 = __webpack_require__(13);
 __webpack_require__(50);
 const node_ical_1 = __webpack_require__(51);
 const rrule_1 = __webpack_require__(52);
@@ -2747,12 +2746,6 @@ let IcalService = class IcalService {
         await Promise.all(courses.map((c) => this.updateCalendarForCourse(c)));
     }
 };
-__decorate([
-    schedule_1.Cron('51 0 * * *'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], IcalService.prototype, "updateAllCourses", null);
 IcalService = __decorate([
     common_1.Injectable(),
     __metadata("design:paramtypes", [typeorm_1.Connection])
