@@ -374,7 +374,7 @@ export class KhouryTACourse {
 
   @IsInt()
   @IsOptional()
-  instructor!: string;
+  instructor!: number;
 }
 
 export interface KhouryRedirectResponse {
