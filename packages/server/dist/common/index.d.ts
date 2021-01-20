@@ -161,7 +161,7 @@ export declare class KhouryStudentCourse {
 export declare class KhouryTACourse {
     course: string;
     semester: string;
-    instructor: string;
+    instructor: number;
 }
 export interface KhouryRedirectResponse {
     redirect: string;

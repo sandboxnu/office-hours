@@ -779,7 +779,7 @@ __decorate([
 __decorate([
     class_validator_1.IsInt(),
     class_validator_1.IsOptional(),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], KhouryTACourse.prototype, "instructor", void 0);
 exports.KhouryTACourse = KhouryTACourse;
 class UpdateProfileParams {
@@ -3798,15 +3798,15 @@ let LoginCourseService = class LoginCourseService {
                 userCourses.push(userCourse);
             }
         }));
-        await Promise.all(info.ta_courses.map(async (c) => {
+        for (const c of info.ta_courses) {
             const courseMappings = await course_section_mapping_entity_1.CourseSectionMappingModel.find({
                 where: { genericCourseName: c.course },
             });
             for (const courseMapping of courseMappings) {
-                const taCourse = await this.courseToUserCourse(user.id, courseMapping.courseId, c.instructor === '1' ? common_1.Role.PROFESSOR : common_1.Role.TA);
+                const taCourse = await this.courseToUserCourse(user.id, courseMapping.courseId, c.instructor === 1 ? common_1.Role.PROFESSOR : common_1.Role.TA);
                 userCourses.push(taCourse);
             }
-        }));
+        }
         user.courses = userCourses;
         await user.save();
         return user;
