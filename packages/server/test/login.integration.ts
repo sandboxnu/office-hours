@@ -286,7 +286,7 @@ describe('Login Integration', () => {
       expect(ta.courses).toHaveLength(3);
     });
 
-    it.only('handles professor courses correctly', async () => {
+    it('handles professor courses correctly', async () => {
       await setupTAAndProfessorCourses();
 
       const res = await supertest()
