@@ -2720,7 +2720,7 @@ let IcalService = class IcalService {
         const processedProfessorOfficeHours = [];
         for (const poh of professorOfficeHours) {
             const professorLocation = poh.title;
-            if (!professorQueues.some((q) => q.room === professorLocation)) {
+            if (!professorQueues.some((q) => q.room === professorLocation && q.courseId === course.id)) {
                 const newProfQ = queue_entity_1.QueueModel.create({
                     room: professorLocation,
                     courseId: course.id,
