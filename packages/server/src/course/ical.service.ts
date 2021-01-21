@@ -217,7 +217,8 @@ export class IcalService {
     console.log('done scraping!');
   }
 
-  @Cron('51 0 * * *')
+  // TODO: Disable Cron job until Redis issue is resolved
+  // @Cron('51 0 * * *')
   public async updateAllCourses(): Promise<void> {
     console.log('updating course icals');
     const courses = await CourseModel.find();
