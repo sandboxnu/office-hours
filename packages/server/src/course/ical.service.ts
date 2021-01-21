@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
 import 'moment-timezone';
 import {
   CalendarComponent,
@@ -186,7 +185,11 @@ export class IcalService {
 
     for (const poh of professorOfficeHours) {
       const professorLocation = poh.title;
-      if (!professorQueues.some((q) => q.room === professorLocation)) {
+      if (
+        !professorQueues.some(
+          (q) => q.room === professorLocation && q.courseId === course.id,
+        )
+      ) {
         const newProfQ = QueueModel.create({
           room: professorLocation,
           courseId: course.id,
