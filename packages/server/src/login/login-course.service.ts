@@ -1,4 +1,4 @@
-import { KhouryDataParams, KhouryStudentCourse, Role } from '@koh/common';
+import { KhouryDataParams, Role } from '@koh/common';
 import { Injectable } from '@nestjs/common';
 import { CourseModel } from 'course/course.entity';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
@@ -28,23 +28,22 @@ export class LoginCourseService {
     }
 
     const userCourses = [];
-    await Promise.all(
-      info.courses.map(async (c: KhouryStudentCourse) => {
-        const course: CourseModel = await this.courseSectionToCourse(
-          c.course,
-          c.section,
-        );
 
-        if (course) {
-          const userCourse = await this.courseToUserCourse(
-            user.id,
-            course.id,
-            Role.STUDENT,
-          );
-          userCourses.push(userCourse);
-        }
-      }),
-    );
+    for (const c of info.courses) {
+      const course: CourseModel = await this.courseSectionToCourse(
+        c.course,
+        c.section,
+      );
+
+      if (course) {
+        const userCourse = await this.courseToUserCourse(
+          user.id,
+          course.id,
+          Role.STUDENT,
+        );
+        userCourses.push(userCourse);
+      }
+    }
 
     for (const c of info.ta_courses) {
       // Query for all the courses which match the name of the generic course from Khoury
