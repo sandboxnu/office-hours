@@ -1,6 +1,6 @@
 import { API } from "@koh/api-client";
 import { UpdateProfileParams } from "@koh/common";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, message } from "antd";
 import { pick } from "lodash";
 import React, { ReactElement } from "react";
 import useSWR from "swr";
@@ -23,6 +23,7 @@ export default function ProfileSettings(): ReactElement {
     const value = await form.validateFields();
     const newProfile = await editProfile(value);
     form.setFieldsValue(newProfile);
+    message.success("Your profile settings have been sucsessfully updated");
   };
 
   return profile ? (
