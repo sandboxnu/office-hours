@@ -3809,13 +3809,18 @@ let LoginCourseService = class LoginCourseService {
         }
         for (const previousCourse of user.courses) {
             if (previousCourse.course.enabled &&
-                !userCourses.includes(previousCourse)) {
+                !this.hasUserCourse(userCourses, previousCourse)) {
                 previousCourse.remove();
             }
         }
         user.courses = userCourses;
         await user.save();
         return user;
+    }
+    hasUserCourse(userCourses, previousCourse) {
+        return userCourses.some((uc) => uc.courseId === previousCourse.courseId &&
+            uc.userId === previousCourse.userId &&
+            uc.role === previousCourse.role);
     }
     async courseSectionToCourse(couresName, courseSection) {
         const courseSectionModel = await course_section_mapping_entity_1.CourseSectionMappingModel.findOne({
