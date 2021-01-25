@@ -90,6 +90,8 @@ describe('Login Integration', () => {
 
     describe('with course mapping', () => {
       let course;
+      let course2;
+      let course3;
       beforeEach(async () => {
         // Make course mapping so usercourse can be added
         course = await CourseFactory.create({
@@ -99,6 +101,22 @@ describe('Login Integration', () => {
           genericCourseName: 'CS 2510',
           section: 1,
           course: course,
+        });
+        course2 = await CourseFactory.create({
+          name: 'CS 2510',
+        });
+        await CourseSectionFactory.create({
+          genericCourseName: 'CS 2510',
+          section: 2,
+          course: course2,
+        });
+        course3 = await CourseFactory.create({
+          name: 'CS 2500',
+        });
+        await CourseSectionFactory.create({
+          genericCourseName: 'CS 2500',
+          section: 555555,
+          course: course3,
         });
       });
       it('overwrites courses but not names of existing users', async () => {
@@ -163,7 +181,7 @@ describe('Login Integration', () => {
         expect(student.courses[0].id).toBe(course.id);
       });
 
-      /*it('deletes stale user course if no longer valid', async () => {
+      it('deletes stale user course if no longer valid', async () => {
         await supertest()
           .post('/khoury_login')
           .send({
@@ -181,8 +199,25 @@ describe('Login Integration', () => {
                 semester: '000',
                 title: 'Fundamentals of Computer Science II',
               },
+              {
+                course: 'CS 2510',
+                crn: 24680,
+                accelerated: true,
+                section: 2,
+                semester: '000',
+                title: 'Fundamentals of Computer Science II',
+              },
             ],
-            ta_courses: [],
+            ta_courses: [
+              {
+                course: 'CS 2500',
+                crn: 12312,
+                accelerated: false,
+                section: 55555,
+                semester: '000',
+                title: 'Fundamentals of Computer Science I',
+              },
+            ],
           })
           .expect(201);
 
@@ -192,7 +227,7 @@ describe('Login Integration', () => {
         });
 
         const fundiesUserCourse = await UserCourseModel.findOne({
-          where: { userId: user.id },
+          where: { user, course },
         });
         expect(fundiesUserCourse).toEqual({
           courseId: 1,
@@ -202,7 +237,7 @@ describe('Login Integration', () => {
         });
 
         const totalUserCourses = await UserCourseModel.count();
-        expect(totalUserCourses).toEqual(1);
+        expect(totalUserCourses).toEqual(3);
 
         // After dropping fundies II, user logs in again
         await supertest()
@@ -213,8 +248,26 @@ describe('Login Integration', () => {
             first_name: 'Will',
             last_name: 'Stenzel',
             photo_url: '',
-            courses: [],
-            ta_courses: [],
+            courses: [
+              {
+                course: 'CS 2510',
+                crn: 24680,
+                accelerated: true,
+                section: 2,
+                semester: '000',
+                title: 'Fundamentals of Computer Science II',
+              },
+            ],
+            ta_courses: [
+              {
+                course: 'CS 2500',
+                crn: 12312,
+                accelerated: false,
+                section: 55555,
+                semester: '000',
+                title: 'Fundamentals of Computer Science I',
+              },
+            ],
           })
           .expect(201);
 
@@ -224,9 +277,8 @@ describe('Login Integration', () => {
         expect(noUserCourse).toBeUndefined();
 
         const totalUserCoursesUpdated = await UserCourseModel.count();
-        expect(totalUserCoursesUpdated).toEqual(0);
+        expect(totalUserCoursesUpdated).toEqual(2);
       });
-      */
     });
 
     const setupTAAndProfessorCourses = async () => {
