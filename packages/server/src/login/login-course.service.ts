@@ -76,15 +76,6 @@ export class LoginCourseService {
     return user;
   }
 
-  private hasUserCourse(userCourses, previousCourse) {
-    return userCourses.some(
-      (uc: UserCourseModel) =>
-        uc.courseId === previousCourse.courseId &&
-        uc.userId === previousCourse.userId &&
-        uc.role === previousCourse.role,
-    );
-  }
-
   public async courseSectionToCourse(
     couresName: string,
     courseSection: number,
@@ -113,5 +104,17 @@ export class LoginCourseService {
       }).save();
     }
     return userCourse;
+  }
+
+  private hasUserCourse(
+    userCourses: UserCourseModel[],
+    previousCourse: UserCourseModel,
+  ): boolean {
+    return userCourses.some(
+      (uc) =>
+        uc.courseId === previousCourse.courseId &&
+        uc.userId === previousCourse.userId &&
+        uc.role === previousCourse.role,
+    );
   }
 }
