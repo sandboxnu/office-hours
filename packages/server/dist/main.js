@@ -3817,11 +3817,6 @@ let LoginCourseService = class LoginCourseService {
         await user.save();
         return user;
     }
-    hasUserCourse(userCourses, previousCourse) {
-        return userCourses.some((uc) => uc.courseId === previousCourse.courseId &&
-            uc.userId === previousCourse.userId &&
-            uc.role === previousCourse.role);
-    }
     async courseSectionToCourse(couresName, courseSection) {
         const courseSectionModel = await course_section_mapping_entity_1.CourseSectionMappingModel.findOne({
             where: { genericCourseName: couresName, section: courseSection },
@@ -3842,6 +3837,11 @@ let LoginCourseService = class LoginCourseService {
             }).save();
         }
         return userCourse;
+    }
+    hasUserCourse(userCourses, previousCourse) {
+        return userCourses.some((uc) => uc.courseId === previousCourse.courseId &&
+            uc.userId === previousCourse.userId &&
+            uc.role === previousCourse.role);
     }
 };
 LoginCourseService = __decorate([

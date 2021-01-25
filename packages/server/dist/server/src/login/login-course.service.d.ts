@@ -7,7 +7,7 @@ export declare class LoginCourseService {
     private connection;
     constructor(connection: Connection);
     addUserFromKhoury(info: KhouryDataParams): Promise<UserModel>;
-    private hasUserCourse;
     courseSectionToCourse(couresName: string, courseSection: number): Promise<CourseModel>;
     courseToUserCourse(userId: number, courseId: number, role: Role): Promise<UserCourseModel>;
+    private hasUserCourse;
 }
