@@ -65,7 +65,7 @@ export class LoginCourseService {
     for (const previousCourse of user.courses) {
       if (
         previousCourse.course.enabled &&
-        !userCourses.includes(previousCourse)
+        !this.hasUserCourse(userCourses, previousCourse)
       ) {
         previousCourse.remove();
       }
@@ -74,6 +74,15 @@ export class LoginCourseService {
     user.courses = userCourses;
     await user.save();
     return user;
+  }
+
+  private hasUserCourse(userCourses, previousCourse) {
+    return userCourses.some(
+      (uc: UserCourseModel) =>
+        uc.courseId === previousCourse.courseId &&
+        uc.userId === previousCourse.userId &&
+        uc.role === previousCourse.role,
+    );
   }
 
   public async courseSectionToCourse(
