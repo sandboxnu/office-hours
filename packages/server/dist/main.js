@@ -3791,13 +3791,13 @@ let LoginCourseService = class LoginCourseService {
             });
         }
         const userCourses = [];
-        await Promise.all(info.courses.map(async (c) => {
+        for (const c of info.courses) {
             const course = await this.courseSectionToCourse(c.course, c.section);
             if (course) {
                 const userCourse = await this.courseToUserCourse(user.id, course.id, common_1.Role.STUDENT);
                 userCourses.push(userCourse);
             }
-        }));
+        }
         for (const c of info.ta_courses) {
             const courseMappings = await course_section_mapping_entity_1.CourseSectionMappingModel.find({
                 where: { genericCourseName: c.course },
@@ -3805,6 +3805,12 @@ let LoginCourseService = class LoginCourseService {
             for (const courseMapping of courseMappings) {
                 const taCourse = await this.courseToUserCourse(user.id, courseMapping.courseId, c.instructor === 1 ? common_1.Role.PROFESSOR : common_1.Role.TA);
                 userCourses.push(taCourse);
+            }
+        }
+        for (const previousCourse of user.courses) {
+            if (previousCourse.course.enabled &&
+                !userCourses.includes(previousCourse)) {
+                previousCourse.remove();
             }
         }
         user.courses = userCourses;
