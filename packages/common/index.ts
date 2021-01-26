@@ -544,6 +544,12 @@ export interface GetReleaseNotesResponse {
 }
 
 export const ERROR_MESSAGES = {
+  courseController: {
+    checkIn: {
+      cannotCreateNewQueueIfNotProfessor:
+        "You can't create a new queue if you're not a professor",
+    },
+  },
   questionController: {
     createQuestion: {
       invalidQueue: "Posted to an invalid queue",

@@ -1,4 +1,5 @@
 import {
+  ERROR_MESSAGES,
   GetCourseResponse,
   QueuePartial,
   Role,
@@ -8,6 +9,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   Post,
@@ -106,14 +108,27 @@ export class CourseController {
     );
 
     if (!queue) {
-      queue = await QueueModel.create({
-        room,
-        courseId,
-        staffList: [],
-        questions: [],
-        allowQuestions: true,
-        isProfessorQueue: true, // only professors should be able to make queues
-      }).save();
+      const userCourseModel = await UserCourseModel.findOne({
+        where: {
+          user,
+          courseId,
+        },
+      });
+
+      if (userCourseModel.role === Role.PROFESSOR) {
+        queue = await QueueModel.create({
+          room,
+          courseId,
+          staffList: [],
+          questions: [],
+          allowQuestions: true,
+          isProfessorQueue: true, // only professors should be able to make queues
+        }).save();
+      } else {
+        throw new ForbiddenException(
+          ERROR_MESSAGES.courseController.checkIn.cannotCreateNewQueueIfNotProfessor,
+        );
+      }
     }
 
     if (queue.staffList.length === 0) {
