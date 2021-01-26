@@ -15,7 +15,6 @@ export interface InsightInterface<Model> {
   description: string;
   roles: Role[];
   component: InsightDisplay;
-  model: new () => Model; // One of the modals have
   possibleFilters: string[];
   compute: (
     queryBuilder: SelectQueryBuilder<Model>,
@@ -69,7 +68,6 @@ export class TotalStudents implements InsightInterface<UserCourseModel> {
   description = 'Gets the total number of students';
   roles = [Role.PROFESSOR];
   component = InsightDisplay.SimpleDisplay;
-  model = UserCourseModel;
   possibleFilters = ['courseId', 'role'];
   size = 'small' as const;
 
@@ -79,7 +77,7 @@ export class TotalStudents implements InsightInterface<UserCourseModel> {
   ): Promise<SimpleDisplayOutputType> {
     return await addFilters(
       queryBuilder.where("role = 'student'"),
-      this.model.name,
+      UserCourseModel,
       filters,
       this.possibleFilters,
     ).getCount();
@@ -115,7 +113,6 @@ export class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
     'Returns a table of each question type and how many questions of that type were asked';
   roles = [Role.PROFESSOR];
   component = InsightDisplay.SimpleChart;
-  model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
   size = 'default' as const;
 
@@ -128,7 +125,7 @@ export class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
         .select('"QuestionModel"."questionType"', 'questionType')
         .addSelect('COUNT(*)', 'totalQuestions')
         .andWhere('"QuestionModel"."questionType" IS NOT NULL'),
-      this.model.name,
+      QuestionModel,
       filters,
       this.possibleFilters,
     )
@@ -163,7 +160,6 @@ export class AverageWaitTime implements InsightInterface<QuestionModel> {
   description = 'Gets the average wait time';
   roles = [Role.PROFESSOR];
   component = InsightDisplay.SimpleDisplay;
-  model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
   size = 'default' as const;
 
@@ -178,7 +174,7 @@ export class AverageWaitTime implements InsightInterface<QuestionModel> {
           'avgWaitTimeInMinutes',
         )
         .where('QuestionModel.helpedAt IS NOT NULL'),
-      this.model.name,
+      QuestionModel,
       filters,
       this.possibleFilters,
     ).getRawOne();
