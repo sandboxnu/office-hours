@@ -13,7 +13,6 @@ import {
   Post,
   UseGuards,
   UseInterceptors,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import async from 'async';
 import { EventModel, EventType } from 'profile/event-model.entity';
@@ -113,6 +112,7 @@ export class CourseController {
         staffList: [],
         questions: [],
         allowQuestions: true,
+        isProfessorQueue: true, // only professors should be able to make queues
       }).save();
     }
 
