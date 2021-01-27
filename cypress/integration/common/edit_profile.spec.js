@@ -8,6 +8,7 @@ describe("User can edit their name", () => {
   it("Changes TA name to Bill Benzel", function () {
     cy.visit(`/settings`).then(() => {
       cy.get("body").should("contain", "First Name");
+      cy.get("body").should("contain", "CS 2500"); // wait for Navbar to load
       cy.percySnapshot("Profile Page");
       cy.get('[data-cy="firstNameInput"]')
         .should("be.visible")
