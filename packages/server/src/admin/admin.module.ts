@@ -23,6 +23,12 @@ import { createClient } from 'redis';
 const redisClient = createClient();
 const RedisStore = connectRedis(session);
 
+// This stops redisClient from causing jest tests to hang from an open handler
+// We only use redisClient in the admin module, which isn't needed for our tests
+if (process.env.NODE_ENV === 'test') {
+  redisClient.quit();
+}
+
 const CoreModule = AdminCoreModuleFactory.createAdminCoreModule({
   appConfig: {
     session: {
