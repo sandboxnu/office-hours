@@ -42,8 +42,7 @@ export async function bootstrap(hot: any): Promise<void> {
 
 function setupAPM(app: INestApplication): void {
   Sentry.init({
-    dsn:
-      'https://7300ca8a1f1a4902b0a6f9a889525180@o440615.ingest.sentry.io/5410042',
+    dsn: process.env.SENTRY_APM_DSN,
     tracesSampleRate: 1,
     integrations: [
       // enable HTTP calls tracing
