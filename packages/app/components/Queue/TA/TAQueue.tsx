@@ -81,11 +81,7 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
     );
   };
 
-  // TODO: tooltips don't quite work -- luckily they're just disabled for now
-  // pinged @Da-Jin, will ping him again on Github
-  // another option is to rig up the TAQueueButton with a callback and have the button
-  // call the callback again, maybe make the callback message.error("aaaa")
-
+  // TODO: figure out tooltips
   if (queue) {
     return (
       <>

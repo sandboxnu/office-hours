@@ -70,7 +70,7 @@ export default function TodayPageCheckinButton(): ReactElement {
               {queueToCheckInto === -1 ? (
                 <Input
                   onChange={(e) => setQueueToBeCreated(e.target.value)}
-                  style={{ width: 100, marginLeft: 10 }}
+                  style={{ width: 400, marginLeft: 10 }}
                 />
               ) : null}
             </ProfessorModalRadio>
