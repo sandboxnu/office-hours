@@ -4996,6 +4996,9 @@ const connectRedis = __webpack_require__(104);
 const redis_1 = __webpack_require__(105);
 const redisClient = redis_1.createClient();
 const RedisStore = connectRedis(session);
+if (process.env.NODE_ENV === 'test') {
+    redisClient.quit();
+}
 const CoreModule = nestjs_admin_1.AdminCoreModuleFactory.createAdminCoreModule({
     appConfig: {
         session: {
