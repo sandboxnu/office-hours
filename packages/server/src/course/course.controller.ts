@@ -13,6 +13,7 @@ import {
   Get,
   Param,
   Post,
+  UnauthorizedException,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -99,6 +100,20 @@ export class CourseController {
     @Param('room') room: string,
     @User() user: UserModel,
   ): Promise<QueuePartial> {
+    // First ensure user is not checked into another queue
+    const queues = await QueueModel.find({
+      where: {
+        courseId: courseId,
+      },
+      relations: ['staffList'],
+    });
+
+    if (queues.some((q) => q.staffList.some((staff) => staff.id === user.id))) {
+      throw new UnauthorizedException(
+        ERROR_MESSAGES.courseController.checkIn.cannotCheckIntoMultipleQueues,
+      );
+    }
+
     let queue = await QueueModel.findOne(
       {
         room,

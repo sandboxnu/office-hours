@@ -2,6 +2,7 @@ import { QuestionStatusKeys, Role } from "@koh/common";
 import { Tooltip } from "antd";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
+import { useCourse } from "../../../hooks/useCourse";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { useQueue } from "../../../hooks/useQueue";
@@ -59,6 +60,13 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
 
   const [queueSettingsModal, setQueueSettingsModal] = useState(false);
 
+  const { course } = useCourse(courseId);
+  const staffCheckedIntoAnotherQueue = course?.queues.some(
+    (q) =>
+      q.id !== qid &&
+      q.staffList.some((staffMember) => staffMember.id === user.id)
+  );
+
   const nextQuestion =
     questions?.priorityQueue[0] || // gets the first item of priority queue if it exists
     questions?.queue?.find(
@@ -72,6 +80,11 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
       `https://teams.microsoft.com/l/chat/0/0?users=${nextQuestion.creator.email}`
     );
   };
+
+  // TODO: tooltips don't quite work -- luckily they're just disabled for now
+  // pinged @Da-Jin, will ping him again on Github
+  // another option is to rig up the TAQueueButton with a callback and have the button
+  // call the callback again, maybe make the callback message.error("aaaa")
 
   if (queue) {
     return (
@@ -103,6 +116,7 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
                     courseId={courseId}
                     room={queue?.room}
                     disabled={
+                      staffCheckedIntoAnotherQueue ||
                       isHelping ||
                       (queue.isProfessorQueue && role !== Role.PROFESSOR)
                     }

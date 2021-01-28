@@ -172,6 +172,34 @@ describe('Course Integration', () => {
       expect(events.length).toBe(1);
       expect(events[0].eventType).toBe(EventType.TA_CHECKED_IN);
     });
+
+    it("Doesn't allow users to check into multiple queues", async () => {
+      const queue1 = await QueueFactory.create();
+      const ta = await UserFactory.create();
+      await TACourseFactory.create({
+        course: queue1.course,
+        user: ta,
+      });
+      const queue2 = await QueueFactory.create({
+        course: queue1.course,
+      });
+
+      const response = await supertest({ userId: ta.id })
+        .post(`/courses/${queue1.courseId}/ta_location/${queue1.room}`)
+        .expect(201);
+
+      let events = await EventModel.count();
+      expect(events).toBe(1);
+
+      const response2 = await supertest({ userId: ta.id })
+        .post(`/courses/${queue2.courseId}/ta_location/${queue2.room}`)
+        .expect(401);
+      expect(response2.body.message).toBe(
+        ERROR_MESSAGES.courseController.checkIn.cannotCheckIntoMultipleQueues,
+      );
+      events = await EventModel.count();
+      expect(events).toBe(1);
+    });
   });
 
   describe('DELETE, /courses/:id/ta_location/:room', () => {
