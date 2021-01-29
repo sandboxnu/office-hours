@@ -1791,7 +1791,7 @@ const QUEUE_TRANSITIONS = {
 const QUESTION_STATES = {
     [common_1.OpenQuestionStatus.Drafting]: {
         student: [common_1.OpenQuestionStatus.Queued, common_1.ClosedQuestionStatus.ConfirmedDeleted],
-        ta: [common_1.ClosedQuestionStatus.DeletedDraft],
+        ta: [common_1.OpenQuestionStatus.Helping, common_1.ClosedQuestionStatus.DeletedDraft],
     },
     [common_1.OpenQuestionStatus.Queued]: QUEUE_TRANSITIONS,
     [common_1.OpenQuestionStatus.PriorityQueued]: QUEUE_TRANSITIONS,
