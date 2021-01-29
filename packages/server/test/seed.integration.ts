@@ -100,7 +100,7 @@ describe('Seed Integration', () => {
       queueId: 1,
       status: 'Queued',
       taHelpedId: null,
-      text: 'question 8',
+      text: 'question description',
     });
   });
 });
