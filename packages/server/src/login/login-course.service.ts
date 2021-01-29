@@ -100,7 +100,7 @@ export class LoginCourseService {
     userCourse = await UserCourseModel.findOne({
       where: { userId, courseId },
     });
-    if (userCourse.override && userCourse.role === role) {
+    if (userCourse && userCourse.override && userCourse.role === role) {
       userCourse.override = false;
       await userCourse.save();
     }

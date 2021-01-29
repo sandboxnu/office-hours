@@ -232,6 +232,7 @@ describe('Login Integration', () => {
         expect(fundiesUserCourse).toEqual({
           courseId: 1,
           id: 1,
+          override: false,
           role: 'student',
           userId: 1,
         });
@@ -335,6 +336,7 @@ describe('Login Integration', () => {
         expect(fundiesUserCourse).toEqual({
           courseId: 1,
           id: 1,
+          override: false,
           role: 'student',
           userId: 1,
         });
@@ -383,7 +385,13 @@ describe('Login Integration', () => {
           overrideCourse.id,
         );
         expect(overrideStillExists).toBeDefined();
-        expect(overrideStillExists).toStrictEqual(overrideCourse);
+        expect(overrideStillExists).toEqual({
+          courseId: overrideCourse.courseId,
+          id: overrideCourse.id,
+          override: overrideCourse.override,
+          role: overrideCourse.role,
+          userId: overrideCourse.userId,
+        });
 
         const totalUserCoursesUpdated = await UserCourseModel.count();
         expect(totalUserCoursesUpdated).toEqual(3);
