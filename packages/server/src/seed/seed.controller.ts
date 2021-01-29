@@ -168,7 +168,7 @@ export class SeedController {
     }
 
     const queue = await QueueFactory.create({
-      room: 'WHV 101',
+      room: 'Online',
       course: course,
       officeHours: [
         officeHoursToday,
