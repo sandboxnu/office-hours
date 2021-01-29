@@ -64,10 +64,14 @@ export class LoginCourseService {
     // Delete "stale" user courses
     for (const previousCourse of user.courses) {
       if (
-        previousCourse.course.enabled &&
-        !this.hasUserCourse(userCourses, previousCourse)
+        !this.hasUserCourse(userCourses, previousCourse) &&
+        previousCourse.course.enabled
       ) {
-        previousCourse.remove();
+        if (!previousCourse.override) {
+          previousCourse.remove();
+        } else {
+          userCourses.push(previousCourse);
+        }
       }
     }
 
@@ -94,8 +98,12 @@ export class LoginCourseService {
   ): Promise<UserCourseModel> {
     let userCourse: UserCourseModel;
     userCourse = await UserCourseModel.findOne({
-      where: { userId, courseId, role },
+      where: { userId, courseId },
     });
+    if (userCourse.override && userCourse.role === role) {
+      userCourse.override = false;
+      await userCourse.save();
+    }
     if (!userCourse) {
       userCourse = await UserCourseModel.create({
         userId,
