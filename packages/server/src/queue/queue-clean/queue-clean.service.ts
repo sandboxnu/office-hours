@@ -41,16 +41,18 @@ export class QueueCleanService {
       { relations: ['staffList'] },
     );
 
-    await queuesWithCheckedInStaff.forEach(async (queue) => {
-      await queue.staffList.forEach(async (ta) => {
-        await EventModel.create({
-          time: new Date(),
-          eventType: EventType.TA_CHECKED_OUT_FORCED,
-          userId: ta.id,
-          courseId: queue.courseId,
-        }).save();
-      });
-      queue.staffList = [];
+    queuesWithCheckedInStaff.forEach(async (queue) => {
+      if (!(await queue.areThereOfficeHoursRightNow())) {
+        queue.staffList.forEach(async (ta) => {
+          await EventModel.create({
+            time: new Date(),
+            eventType: EventType.TA_CHECKED_OUT_FORCED,
+            userId: ta.id,
+            courseId: queue.courseId,
+          }).save();
+        });
+        queue.staffList = [];
+      }
     });
     await QueueModel.save(queuesWithCheckedInStaff);
   }

@@ -1,6 +1,7 @@
 import { OpenQuestionStatus, LimboQuestionStatus } from '@koh/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CourseModel } from 'course/course.entity';
+import { OfficeHourModel } from 'course/office-hour.entity';
 import moment = require('moment');
 import { EventModel } from 'profile/event-model.entity';
 import { QueueModel } from 'queue/queue.entity';
@@ -103,12 +104,20 @@ describe('QueueService', () => {
       expect(question.status).toEqual('Stale');
     });
 
-    it('checkout all staff from all queues', async () => {
+    it.only('checkout all staff from all queues', async () => {
       const ta = await UserFactory.create();
       const ta2 = await UserFactory.create();
       const ta3 = await UserFactory.create();
+      const ta4 = await UserFactory.create();
       const queue = await QueueFactory.create({ staffList: [ta] });
       const queue2 = await QueueFactory.create({ staffList: [ta2, ta3] });
+      const queue3 = await QueueFactory.create({ staffList: [ta4] });
+      await OfficeHourModel.create({
+        courseId: queue3.courseId,
+        queueId: queue3.id,
+        startTime: new Date(Date.now() - 1000 * 60 * 5),
+        endTime: new Date(Date.now() + 1000 * 60 * 5),
+      });
 
       await service.checkoutAllStaff();
 
@@ -118,12 +127,17 @@ describe('QueueService', () => {
       const updatedQueue2 = await QueueModel.findOne(queue2.id, {
         relations: ['staffList'],
       });
+
+      const updatedQueue3 = await QueueModel.findOne(queue2.id, {
+        relations: ['staffList'],
+      });
       const checkoutEvents = (
         await EventModel.createQueryBuilder().getMany()
       ).map((em) => em.eventType);
 
       expect(updatedQueue1.staffList.length).toEqual(0);
       expect(updatedQueue2.staffList.length).toEqual(0);
+      expect(updatedQueue3.staffList.length).toEqual(1);
       expect(checkoutEvents).toEqual([
         'taCheckedOutForced',
         'taCheckedOutForced',

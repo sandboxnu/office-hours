@@ -68,16 +68,20 @@ export class QueueModel extends BaseEntity {
       this.isOpen = true;
       return true;
     }
+
+    this.isOpen = await this.areThereOfficeHoursRightNow();
+    return this.isOpen;
+  }
+
+  async areThereOfficeHoursRightNow(): Promise<boolean> {
     const now = new Date();
     const MS_IN_MINUTE = 60000;
     const ohs = await this.getOfficeHours();
-    const open = !!ohs.find(
+    return !!ohs.find(
       (e) =>
         e.startTime.getTime() - 10 * MS_IN_MINUTE < now.getTime() &&
         e.endTime.getTime() + 1 * MS_IN_MINUTE > now.getTime(),
     );
-    this.isOpen = open;
-    return open;
   }
 
   queueSize: number;
