@@ -49,7 +49,7 @@ export default function NotificationsSettings(): ReactElement {
       const newProfile = await editProfile(value);
       form.setFieldsValue(newProfile);
       message.success(
-        "Your notification settings have been sucsessfully updated"
+        "Your notification settings have been successfully updated"
       );
     } catch (e) {
       if (

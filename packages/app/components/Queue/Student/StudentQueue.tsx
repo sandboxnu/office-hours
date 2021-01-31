@@ -119,9 +119,9 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
         text,
         questionType,
         status:
-          studentQuestionStatus === OpenQuestionStatus.PriorityQueued
-            ? OpenQuestionStatus.PriorityQueued
-            : OpenQuestionStatus.Queued,
+          studentQuestionStatus === OpenQuestionStatus.Drafting
+            ? OpenQuestionStatus.Queued
+            : studentQuestionStatus,
       };
 
       const updatedQuestionFromStudent = await API.questions.update(

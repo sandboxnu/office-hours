@@ -96,8 +96,6 @@ export default function TAQueueDetailButtons({
         return [false, "You must check in to help students!"];
       } else if (isHelping) {
         return [false, "You are already helping a student"];
-      } else if (question.status === OpenQuestionStatus.Drafting) {
-        return [false, "Student is drafting"];
       } else {
         return [true, "Help Student"];
       }
