@@ -140,9 +140,9 @@ const common_1 = __webpack_require__(7);
 const cookieParser = __webpack_require__(8);
 const morgan = __webpack_require__(9);
 const app_module_1 = __webpack_require__(10);
-const stripUndefined_pipe_1 = __webpack_require__(119);
+const stripUndefined_pipe_1 = __webpack_require__(120);
 const common_2 = __webpack_require__(16);
-const apm_interceptor_1 = __webpack_require__(120);
+const apm_interceptor_1 = __webpack_require__(121);
 async function bootstrap(hot) {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, {
         logger: ['error', 'warn', 'log', 'debug', 'verbose'],
@@ -270,9 +270,9 @@ const nestjs_command_1 = __webpack_require__(48);
 const sse_module_1 = __webpack_require__(58);
 const typeormConfig = __webpack_require__(106);
 const backfill_module_1 = __webpack_require__(108);
-const release_notes_module_1 = __webpack_require__(114);
+const release_notes_module_1 = __webpack_require__(115);
 const nestjs_redis_1 = __webpack_require__(43);
-const healthcheck_module_1 = __webpack_require__(116);
+const healthcheck_module_1 = __webpack_require__(117);
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -3777,14 +3777,15 @@ let LoginCourseService = class LoginCourseService {
     }
     async addUserFromKhoury(info) {
         let user;
+        const neuEmail = info.email.replace('@husky.neu.edu', '@northeastern.edu');
         user = await user_entity_1.UserModel.findOne({
-            where: { email: info.email },
+            where: { email: neuEmail },
             relations: ['courses', 'courses.course'],
         });
         if (!user) {
             user = user_entity_1.UserModel.create({
                 courses: [],
-                email: info.email,
+                email: neuEmail,
                 firstName: info.first_name,
                 lastName: info.last_name,
                 name: info.first_name + ' ' + info.last_name,
@@ -5345,10 +5346,11 @@ exports.BackfillModule = void 0;
 const common_1 = __webpack_require__(7);
 const notification_module_1 = __webpack_require__(61);
 const backfill_course_timezones_1 = __webpack_require__(109);
-const backfill_phone_notifs_command_1 = __webpack_require__(110);
-const make_empty_photourl_null_command_1 = __webpack_require__(111);
-const question_first_helped_at_command_1 = __webpack_require__(112);
-const separate_first_last_names_command_1 = __webpack_require__(113);
+const backfill_husky_emails_to_northeastern_1 = __webpack_require__(110);
+const backfill_phone_notifs_command_1 = __webpack_require__(111);
+const make_empty_photourl_null_command_1 = __webpack_require__(112);
+const question_first_helped_at_command_1 = __webpack_require__(113);
+const separate_first_last_names_command_1 = __webpack_require__(114);
 let BackfillModule = class BackfillModule {
 };
 BackfillModule = __decorate([
@@ -5360,6 +5362,7 @@ BackfillModule = __decorate([
             separate_first_last_names_command_1.BackfillSeparateFirstLastNames,
             make_empty_photourl_null_command_1.BackfillMakeEmptyPhotoURLNull,
             backfill_course_timezones_1.BackfillCourseTimezones,
+            backfill_husky_emails_to_northeastern_1.BackfillHuskyEmailsAsNortheastern,
         ],
     })
 ], BackfillModule);
@@ -5414,6 +5417,53 @@ exports.BackfillCourseTimezones = BackfillCourseTimezones;
 
 /***/ }),
 /* 110 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.BackfillHuskyEmailsAsNortheastern = void 0;
+const common_1 = __webpack_require__(7);
+const nestjs_command_1 = __webpack_require__(48);
+const user_entity_1 = __webpack_require__(25);
+let BackfillHuskyEmailsAsNortheastern = class BackfillHuskyEmailsAsNortheastern {
+    async fix() {
+        const users = await user_entity_1.UserModel.find();
+        const usersToBeUpdated = users.filter((user) => user.email.includes('@husky.neu.edu'));
+        users.forEach((user) => {
+            user.email = user.email.replace('@husky.neu.edu', '@northeastern.edu');
+        });
+        await user_entity_1.UserModel.save(users);
+        console.log(`Updated the emails of ${usersToBeUpdated.length} users`);
+    }
+};
+__decorate([
+    nestjs_command_1.Command({
+        command: 'backfill:husky-emails-to-northeastern',
+        describe: 'Converts @husky.neu.edu emails to @northeastern.edu emails',
+        autoExit: true,
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], BackfillHuskyEmailsAsNortheastern.prototype, "fix", null);
+BackfillHuskyEmailsAsNortheastern = __decorate([
+    common_1.Injectable()
+], BackfillHuskyEmailsAsNortheastern);
+exports.BackfillHuskyEmailsAsNortheastern = BackfillHuskyEmailsAsNortheastern;
+
+
+/***/ }),
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5500,7 +5550,7 @@ exports.BackfillPhoneNotifs = BackfillPhoneNotifs;
 
 
 /***/ }),
-/* 111 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5550,7 +5600,7 @@ exports.BackfillMakeEmptyPhotoURLNull = BackfillMakeEmptyPhotoURLNull;
 
 
 /***/ }),
-/* 112 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5601,7 +5651,7 @@ exports.BackfillQuestionFirstHelpedAt = BackfillQuestionFirstHelpedAt;
 
 
 /***/ }),
-/* 113 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5655,7 +5705,7 @@ exports.BackfillSeparateFirstLastNames = BackfillSeparateFirstLastNames;
 
 
 /***/ }),
-/* 114 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5669,7 +5719,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReleaseNotesModule = void 0;
 const common_1 = __webpack_require__(7);
-const release_notes_controller_1 = __webpack_require__(115);
+const release_notes_controller_1 = __webpack_require__(116);
 let ReleaseNotesModule = class ReleaseNotesModule {
 };
 ReleaseNotesModule = __decorate([
@@ -5690,7 +5740,7 @@ exports.ReleaseNotesModule = ReleaseNotesModule;
 
 
 /***/ }),
-/* 115 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5754,7 +5804,7 @@ exports.ReleaseNotesController = ReleaseNotesController;
 
 
 /***/ }),
-/* 116 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5768,7 +5818,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HealthcheckModule = void 0;
 const common_1 = __webpack_require__(7);
-const healthcheck_controller_1 = __webpack_require__(117);
+const healthcheck_controller_1 = __webpack_require__(118);
 let HealthcheckModule = class HealthcheckModule {
 };
 HealthcheckModule = __decorate([
@@ -5780,7 +5830,7 @@ exports.HealthcheckModule = HealthcheckModule;
 
 
 /***/ }),
-/* 117 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5797,7 +5847,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HealthcheckController = void 0;
 const common_1 = __webpack_require__(7);
-const decorators_1 = __webpack_require__(118);
+const decorators_1 = __webpack_require__(119);
 let HealthcheckController = class HealthcheckController {
     health() {
         return 'healthy';
@@ -5816,13 +5866,13 @@ exports.HealthcheckController = HealthcheckController;
 
 
 /***/ }),
-/* 118 */
+/* 119 */
 /***/ (function(module, exports) {
 
 module.exports = require("@nestjs/common/decorators");
 
 /***/ }),
-/* 119 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5862,7 +5912,7 @@ exports.StripUndefinedPipe = StripUndefinedPipe;
 
 
 /***/ }),
-/* 120 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5879,9 +5929,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ApmInterceptor = void 0;
 const common_1 = __webpack_require__(7);
-const operators_1 = __webpack_require__(121);
+const operators_1 = __webpack_require__(122);
 const apm = __webpack_require__(42);
-const Constants = __webpack_require__(122);
+const Constants = __webpack_require__(123);
 const Sentry = __webpack_require__(3);
 const core_1 = __webpack_require__(6);
 let ApmInterceptor = class ApmInterceptor {
@@ -5924,13 +5974,13 @@ exports.ApmInterceptor = ApmInterceptor;
 
 
 /***/ }),
-/* 121 */
+/* 122 */
 /***/ (function(module, exports) {
 
 module.exports = require("rxjs/operators");
 
 /***/ }),
-/* 122 */
+/* 123 */
 /***/ (function(module, exports) {
 
 module.exports = require("@nestjs/common/constants");
