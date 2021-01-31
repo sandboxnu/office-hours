@@ -417,6 +417,18 @@ export class GetCourseResponse {
   heatmap!: Heatmap | false;
 }
 
+export class GetCourseOverridesRow {
+  id!: number;
+  role!: string;
+  name!: string;
+  email!: string;
+}
+
+export class GetCourseOverridesResponse {
+  @Type(() => GetCourseOverridesRow)
+  data!: GetCourseOverridesRow[];
+}
+
 export class GetQueueResponse extends QueuePartial {}
 
 export class GetCourseQueuesResponse extends Array<QueuePartial> {}

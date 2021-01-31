@@ -1,4 +1,5 @@
 import {
+  GetCourseOverridesResponse,
   GetCourseResponse,
   QueuePartial,
   Role,
@@ -184,5 +185,24 @@ export class CourseController {
   async updateCalendar(@Param('id') courseId: number): Promise<void> {
     const course = await CourseModel.findOne(courseId);
     await this.icalService.updateCalendarForCourse(course);
+  }
+
+  @Get(':id/course_override')
+  @Roles(Role.PROFESSOR)
+  async getCourseOverrides(
+    @Param('id') courseId: number,
+  ): Promise<GetCourseOverridesResponse> {
+    const resp = await UserCourseModel.find({
+      where: { courseId, override: true },
+      relations: ['user'],
+    });
+    return {
+      data: resp.map((row) => ({
+        id: row.id,
+        role: row.role,
+        name: `${row.user.firstName} ${row.user.lastName}`,
+        email: row.user.email,
+      })),
+    };
   }
 }
