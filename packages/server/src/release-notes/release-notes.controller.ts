@@ -31,7 +31,7 @@ export class ReleaseNotesController {
     const data = request.data;
     try {
       const timeText =
-        data['beae2a02-249e-4b61-9bfc-81258d93f20d']?.value?.properties
+        data[process.env.RELEASE_NOTE_TIMESTAMP_ID]?.value?.properties
           ?.title[0][0];
       response.lastUpdatedUnixTime = timeText.split('Unix ')[1] * 1000;
     } catch (e) {
