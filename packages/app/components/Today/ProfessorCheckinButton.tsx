@@ -69,6 +69,7 @@ export default function TodayPageCheckinButton(): ReactElement {
               Other...
               {queueToCheckInto === -1 ? (
                 <Input
+                  defaultValue={`Professor ${profile.lastName}'s Office Hours`}
                   onChange={(e) => setQueueToBeCreated(e.target.value)}
                   style={{ width: 400, marginLeft: 10 }}
                 />
