@@ -1,9 +1,9 @@
 import {
+  BarChartOutputType,
   InsightDisplay,
   PossibleOutputTypes,
   QuestionType,
   Role,
-  SimpleChartOutputType,
   SimpleDisplayOutputType,
 } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
@@ -99,17 +99,16 @@ export class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
   }
 }
 
-// WIP
 export class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
   displayName = 'Question Type Breakdown';
   description =
     'Returns a table of each question type and how many questions of that type were asked';
   roles = [Role.PROFESSOR];
-  component = InsightDisplay.SimpleChart;
+  component = InsightDisplay.BarChart;
   possibleFilters = ['courseId', 'timeframe'];
   size = 'default' as const;
 
-  async compute(filters): Promise<SimpleChartOutputType> {
+  async compute(filters): Promise<BarChartOutputType> {
     const info = await addFilters(
       createQueryBuilder(QuestionModel)
         .select('"QuestionModel"."questionType"', 'questionType')
@@ -127,7 +126,7 @@ export class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
 
     Object.values(QuestionType).forEach((v) => {
       if (!typesFromInfo.includes(v)) {
-        info.push({ questionType: v, totalQuestions: '0' });
+        info.push({ questionType: v, totalQuestions: 0 });
       }
     });
     const insightObj = {
@@ -138,6 +137,9 @@ export class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
           ? 1
           : -1,
       ),
+      xField: 'totalQuestions',
+      yField: 'questionType',
+      seriesField: 'questionType',
       xAxisName: 'questionType',
       yAxisName: 'totalQuestions',
     };

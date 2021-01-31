@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
 import { InsightDisplay } from "@koh/common";
 import NavBar from "../../../components/Nav/NavBar";
+import BarChartComponent from "../../../components/Insights/components/BarChartComponent";
 import SimpleChartComponent from "../../../components/Insights/components/SimpleChartComponent";
 import SimpleDisplayComponent from "../../../components/Insights/components/SimpleDisplayComponent";
 import InsightsDisplayOptions from "../../../components/Insights/components/InsightsDisplayOptions";
@@ -124,6 +125,9 @@ function RenderInsight({
   switch (insight.component) {
     case InsightDisplay.SimpleDisplay:
       InsightComponent = SimpleDisplayComponent;
+      break;
+    case InsightDisplay.BarChart:
+      InsightComponent = BarChartComponent;
       break;
     case InsightDisplay.SimpleChart:
       InsightComponent = SimpleChartComponent;
