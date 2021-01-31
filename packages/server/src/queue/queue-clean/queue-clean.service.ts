@@ -43,7 +43,7 @@ export class QueueCleanService {
 
     queuesWithCheckedInStaff.forEach(async (queue) => {
       if (!(await queue.areThereOfficeHoursRightNow())) {
-        queue.staffList.forEach(async (ta) => {
+        await queue.staffList.forEach(async (ta) => {
           await EventModel.create({
             time: new Date(),
             eventType: EventType.TA_CHECKED_OUT_FORCED,

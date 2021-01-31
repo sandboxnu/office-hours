@@ -109,14 +109,23 @@ describe('QueueService', () => {
       const ta2 = await UserFactory.create();
       const ta3 = await UserFactory.create();
       const ta4 = await UserFactory.create();
-      const queue = await QueueFactory.create({ staffList: [ta] });
-      const queue2 = await QueueFactory.create({ staffList: [ta2, ta3] });
-      const queue3 = await QueueFactory.create({ staffList: [ta4] });
-      await OfficeHourModel.create({
-        courseId: queue3.courseId,
-        queueId: queue3.id,
-        startTime: new Date(Date.now() - 1000 * 60 * 5),
-        endTime: new Date(Date.now() + 1000 * 60 * 5),
+
+      const queue = await QueueFactory.create({
+        staffList: [ta],
+        officeHours: [],
+      });
+      const queue2 = await QueueFactory.create({
+        staffList: [ta2, ta3],
+        officeHours: [],
+      });
+      const queue3 = await QueueFactory.create({
+        staffList: [ta4],
+        officeHours: [
+          await OfficeHourFactory.create({
+            startTime: new Date(Date.now() - 1000 * 60 * 5),
+            endTime: new Date(Date.now() + 1000 * 60 * 5),
+          }),
+        ],
       });
 
       await service.checkoutAllStaff();
@@ -127,8 +136,7 @@ describe('QueueService', () => {
       const updatedQueue2 = await QueueModel.findOne(queue2.id, {
         relations: ['staffList'],
       });
-
-      const updatedQueue3 = await QueueModel.findOne(queue2.id, {
+      const updatedQueue3 = await QueueModel.findOne(queue3.id, {
         relations: ['staffList'],
       });
       const checkoutEvents = (
