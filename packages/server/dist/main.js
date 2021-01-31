@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"5e22b2d49130d2e7b332de0a522865d781745d8b"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"2b5fe4b37c3c3ebf3ab4ee595cfcb5b58c3139e4"};
 
 /***/ }),
 /* 2 */
@@ -196,7 +196,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "5e22b2d49130d2e7b332de0a522865d781745d8b",
+        release: "2b5fe4b37c3c3ebf3ab4ee595cfcb5b58c3139e4",
         environment: common_2.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -437,7 +437,7 @@ let CourseController = class CourseController {
             },
         });
         if (userCourseModel.role === common_1.Role.PROFESSOR) {
-            course.queues = await async_1.default.filter(course.queues, async (q) => q.isProfessorQueue || (await q.checkIsOpen()));
+            course.queues = await async_1.default.filter(course.queues, async (q) => (await q.checkIsOpen()) || q.isProfessorQueue);
         }
         else {
             course.queues = await async_1.default.filter(course.queues, async (q) => await q.checkIsOpen());
