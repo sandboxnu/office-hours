@@ -15,11 +15,7 @@ export class InsightsService {
 
   // Generate the output data for an insight by calling its compute function
   async generateOutput({ insight, filters }): Promise<any> {
-    const queryBuilder = await insight.model
-      .getRepository()
-      .createQueryBuilder();
-
-    const output = await insight.compute(queryBuilder, filters);
+    const output = await insight.compute(filters);
     return output;
   }
 
