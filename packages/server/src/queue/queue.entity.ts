@@ -1,4 +1,3 @@
-import { OpenQuestionStatus } from '@koh/common';
 import { Exclude } from 'class-transformer';
 import {
   BaseEntity,
@@ -57,6 +56,9 @@ export class QueueModel extends BaseEntity {
   @OneToMany((type) => OfficeHourModel, (oh) => oh.queue)
   @JoinTable()
   officeHours: OfficeHourModel[];
+
+  @Column({ default: false })
+  isProfessorQueue: boolean;
 
   startTime: Date;
   endTime: Date;

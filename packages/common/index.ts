@@ -12,9 +12,22 @@ import {
 import "reflect-metadata";
 
 export const PROD_URL = "https://khouryofficehours.com";
-export const isProd = (): boolean =>
-  process.env.DOMAIN === PROD_URL ||
-  (typeof window !== "undefined" && window?.location?.origin === PROD_URL);
+export const STAGING_URL = "https://staging.khouryofficehours.com";
+// Get domain. works on node and browser
+const domain = (): string | false =>
+  process.env.DOMAIN ||
+  (typeof window !== "undefined" && window?.location?.origin);
+export const getEnv = (): "production" | "staging" | "dev" => {
+  switch (domain()) {
+    case PROD_URL:
+      return "production";
+    case STAGING_URL:
+      return "staging";
+    default:
+      return "dev";
+  }
+};
+export const isProd = (): boolean => domain() === PROD_URL;
 
 // TODO: Clean this up, move it somwhere else, use moment???
 // a - b, in minutes
@@ -162,6 +175,8 @@ export class QueuePartial {
   endTime?: Date;
 
   allowQuestions!: boolean;
+
+  isProfessorQueue!: boolean;
 }
 
 // Represents a list of office hours wait times of each hour of the week.
@@ -318,6 +333,7 @@ export class KhouryDataParams {
   campus!: string;
 
   @IsInt()
+  @IsOptional()
   professor!: string;
 
   @IsOptional()
@@ -576,5 +592,9 @@ export const ERROR_MESSAGES = {
     notInCourse: "Not In This Course",
     mustBeRoleToJoinCourse: (roles: string[]): string =>
       `You must have one of roles [${roles.join(", ")}] to access this course`,
+  },
+  profileController: {
+    noDiskSpace:
+      "There is no disk space left to store an image. Please immediately contact your course staff and let them know. They will contact the Khoury Office Hours team as soon as possible.",
   },
 };

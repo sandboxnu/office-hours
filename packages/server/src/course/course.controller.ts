@@ -1,4 +1,10 @@
 import {
+  GetCourseResponse,
+  QueuePartial,
+  Role,
+  TACheckoutResponse,
+} from '@koh/common';
+import {
   ClassSerializerInterceptor,
   Controller,
   Delete,
@@ -7,27 +13,24 @@ import {
   Post,
   UseGuards,
   UseInterceptors,
+  InternalServerErrorException,
 } from '@nestjs/common';
-import {
-  GetCourseResponse,
-  QueuePartial,
-  Role,
-  TACheckoutResponse,
-} from '@koh/common';
 import async from 'async';
-import { Connection, getRepository, MoreThanOrEqual } from 'typeorm';
 import { EventModel, EventType } from 'profile/event-model.entity';
+import { UserCourseModel } from 'profile/user-course.entity';
+import { Connection, getRepository, MoreThanOrEqual } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { Roles } from '../profile/roles.decorator';
 import { User } from '../profile/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { QueueCleanService } from '../queue/queue-clean/queue-clean.service';
+import { QueueSSEService } from '../queue/queue-sse.service';
 import { QueueModel } from '../queue/queue.entity';
 import { CourseRolesGuard } from './course-roles.guard';
 import { CourseModel } from './course.entity';
 import { HeatmapService } from './heatmap.service';
+import { IcalService } from './ical.service';
 import { OfficeHourModel } from './office-hour.entity';
-import { QueueSSEService } from '../queue/queue-sse.service';
 import moment = require('moment');
 
 @Controller('courses')
@@ -39,11 +42,15 @@ export class CourseController {
     private queueCleanService: QueueCleanService,
     private queueSSEService: QueueSSEService,
     private heatmapService: HeatmapService,
+    private icalService: IcalService,
   ) {}
 
   @Get(':id')
   @Roles(Role.PROFESSOR, Role.STUDENT, Role.TA)
-  async get(@Param('id') id: number): Promise<GetCourseResponse> {
+  async get(
+    @Param('id') id: number,
+    @User() user: UserModel,
+  ): Promise<GetCourseResponse> {
     // TODO: for all course endpoint, check if they're a student or a TA
     const course = await CourseModel.findOne(id, {
       relations: ['queues', 'queues.staffList'],
@@ -57,10 +64,25 @@ export class CourseController {
       .getRawMany();
     course.heatmap = await this.heatmapService.getCachedHeatmapFor(id);
 
-    course.queues = await async.filter(
-      course.queues,
-      async (q) => await q.checkIsOpen(),
-    );
+    const userCourseModel = await UserCourseModel.findOne({
+      where: {
+        user,
+        courseId: id,
+      },
+    });
+
+    if (userCourseModel.role === Role.PROFESSOR) {
+      course.queues = await async.filter(
+        course.queues,
+        async (q) => q.isProfessorQueue || (await q.checkIsOpen()),
+      );
+    } else {
+      course.queues = await async.filter(
+        course.queues,
+        async (q) => await q.checkIsOpen(),
+      );
+    }
+
     await async.each(course.queues, async (q) => {
       await q.addQueueTimes();
       await q.addQueueSize();
@@ -155,5 +177,12 @@ export class CourseController {
     }
     await this.queueSSEService.updateQueue(queue.id);
     return { queueId: queue.id, canClearQueue, nextOfficeHourTime };
+  }
+
+  @Post(':id/update_calendar')
+  @Roles(Role.PROFESSOR)
+  async updateCalendar(@Param('id') courseId: number): Promise<void> {
+    const course = await CourseModel.findOne(courseId);
+    await this.icalService.updateCalendarForCourse(course);
   }
 }

@@ -2,18 +2,22 @@ module.exports = {
   apps: [
     {
       name: "app",
-      script: "npm",
-      args: "run prod:start",
+      script: "./node_modules/.bin/next",
+      args: "start -p 3001",
       cwd: "./packages/app",
+      instances: 2,
+      exec_mode: "cluster",
       env: {
         NODE_ENV: "production",
       },
     },
     {
       name: "server",
-      script: "npm",
-      args: "run prod:start",
       cwd: "./packages/server",
+      script: "dist/main.js",
+      node_args: "--max-old-space-size=4096",
+      instances: 2,
+      exec_mode: "cluster",
       env: {
         NODE_ENV: "production",
       },

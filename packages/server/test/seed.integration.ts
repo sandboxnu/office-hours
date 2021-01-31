@@ -1,13 +1,13 @@
+import { Role } from '@koh/common';
+import { QuestionModel } from '../../server/src/question/question.entity';
+import { SeedModule } from '../../server/src/seed/seed.module';
 import {
-  OfficeHourFactory,
-  QueueFactory,
   CourseFactory,
+  OfficeHourFactory,
   QuestionFactory,
+  QueueFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
-import { SeedModule } from '../../server/src/seed/seed.module';
-import { QuestionModel } from '../../server/src/question/question.entity';
-import { Role } from '@koh/common';
 
 describe('Seed Integration', () => {
   const supertest = setupIntegrationTest(SeedModule);
@@ -44,7 +44,7 @@ describe('Seed Integration', () => {
     expect(response.text).toBe('Data successfully seeded');
 
     const numQuestions = await QuestionModel.count();
-    expect(numQuestions).toBe(3);
+    expect(numQuestions).toBe(4);
   });
 
   it('GET /seeds/createUser', async () => {
@@ -61,7 +61,7 @@ describe('Seed Integration', () => {
         id: 1,
         name: 'User',
         phoneNotifsEnabled: false,
-        photoURL: 'https://pics/user',
+        photoURL: null,
       },
       userId: 1,
     });
@@ -100,7 +100,7 @@ describe('Seed Integration', () => {
       queueId: 1,
       status: 'Queued',
       taHelpedId: null,
-      text: 'question 7',
+      text: 'question 8',
     });
   });
 });

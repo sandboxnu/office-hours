@@ -14,11 +14,10 @@ import OpenQueueCard, {
   OpenQueueCardSkeleton,
 } from "../../../components/Today/OpenQueueCard";
 import PopularTimes from "../../../components/Today/PopularTimes/PopularTimes";
+import TodayPageCheckinButton from "../../../components/Today/ProfessorCheckinButton";
 import ReleaseNotes from "../../../components/Today/ReleaseNotes";
-import TACheckinButton from "../../../components/Today/TACheckinButton";
 import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useCourse } from "../../../hooks/useCourse";
-import { useProfile } from "../../../hooks/useProfile";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 
 const Container = styled.div`
@@ -47,9 +46,7 @@ const collapseHeatmap = (heatmap: Heatmap): Heatmap =>
 export default function Today(): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
-  const profile = useProfile();
   const role = useRoleInCourse(Number(cid));
-
   const { course, mutateCourse } = useCourse(Number(cid));
 
   const updateQueueNotes = async (
@@ -68,10 +65,6 @@ export default function Today(): ReactElement {
     mutateCourse();
   };
 
-  const queueCheckedIn = course?.queues.find((queue) =>
-    queue.staffList.find((staff) => staff.id === profile.id)
-  );
-
   return (
     <StandardPageContainer>
       <Head>
@@ -85,13 +78,7 @@ export default function Today(): ReactElement {
           <Col md={12} xs={24}>
             <Row justify="space-between">
               <Title>Current Office Hours</Title>
-              {role === Role.TA && (
-                <TACheckinButton
-                  courseId={Number(cid)}
-                  room="Online"
-                  state={queueCheckedIn ? "CheckedIn" : "CheckedOut"}
-                />
-              )}
+              <TodayPageCheckinButton />
             </Row>
             {role === Role.PROFESSOR && (
               <Row>

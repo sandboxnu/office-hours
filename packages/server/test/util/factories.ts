@@ -12,8 +12,7 @@ import { QueueModel } from '../../src/queue/queue.entity';
 export const UserFactory = new Factory(UserModel)
   .attr('email', `user@neu.edu`)
   .attr('name', `User`)
-  .attr('firstName', 'User')
-  .attr('photoURL', `https://pics/user`);
+  .attr('firstName', 'User');
 
 export const StudentCourseFactory = new Factory(UserCourseModel).attr(
   'role',
@@ -61,14 +60,14 @@ export const QueueFactory = new Factory(QueueModel)
   .assocOne('course', CourseFactory)
   .attr('allowQuestions', false)
   .assocMany('officeHours', OfficeHourFactory)
-  .assocMany('staffList', UserFactory, 0);
+  .assocMany('staffList', UserFactory, 0)
+  .attr('isProfessorQueue', false);
 
 // WARNING: DO NOT USE CREATORID. AS YOU SEE HERE, WE ONLY ACCEPT CREATOR
 //TODO: make it accept creatorId as well
 export const QuestionFactory = new Factory(QuestionModel)
-  .sequence('text', (i) => `question ${i}`)
+  .attr('text', 'question description')
   .attr('status', 'Queued')
   .attr('questionType', QuestionType.Other)
-  .attr('createdAt', new Date())
   .assocOne('queue', QueueFactory)
   .assocOne('creator', UserFactory);

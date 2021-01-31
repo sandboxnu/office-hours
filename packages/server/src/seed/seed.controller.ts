@@ -66,6 +66,10 @@ export class SeedController {
       startTime: tomorrow,
       endTime: new Date(tomorrow.valueOf() + 4500000),
     });
+    const professorOfficeHours = await OfficeHourFactory.create({
+      startTime: now,
+      endTime: new Date(now.valueOf() + 4500000),
+    });
 
     const courseExists = await CourseModel.findOne({
       where: { name: 'CS 2500' },
@@ -85,6 +89,7 @@ export class SeedController {
       officeHoursYesterday,
       officeHoursTomorrow,
       officeHoursTodayOverlap,
+      professorOfficeHours,
     ];
     course.save();
 
@@ -187,6 +192,19 @@ export class SeedController {
       createdAt: new Date(Date.now() - 1500000),
     });
 
+    const professorQueue = await QueueFactory.create({
+      room: "Professor Li's Hours",
+      course: course,
+      officeHours: [professorOfficeHours],
+      allowQuestions: true,
+      isProfessorQueue: true,
+    });
+
+    await QuestionFactory.create({
+      queue: professorQueue,
+      createdAt: new Date(Date.now() - 1500000),
+    });
+
     return 'Data successfully seeded';
   }
 
@@ -272,6 +290,7 @@ export class SeedController {
     const question: QuestionModel = await QuestionFactory.create({
       ...options,
       ...body.data,
+      createdAt: new Date(),
     });
     return question;
   }
