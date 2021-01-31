@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"2b5fe4b37c3c3ebf3ab4ee595cfcb5b58c3139e4"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"1c58d1da500c249c422fcefaf3b923c915081dec"};
 
 /***/ }),
 /* 2 */
@@ -196,7 +196,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "2b5fe4b37c3c3ebf3ab4ee595cfcb5b58c3139e4",
+        release: "1c58d1da500c249c422fcefaf3b923c915081dec",
         environment: common_2.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -5806,7 +5806,7 @@ let ReleaseNotesController = class ReleaseNotesController {
             .toPromise();
         const data = request.data;
         try {
-            const timeText = (_c = (_b = (_a = data['beae2a02-249e-4b61-9bfc-81258d93f20d']) === null || _a === void 0 ? void 0 : _a.value) === null || _b === void 0 ? void 0 : _b.properties) === null || _c === void 0 ? void 0 : _c.title[0][0];
+            const timeText = (_c = (_b = (_a = data[process.env.RELEASE_NOTE_TIMESTAMP_ID]) === null || _a === void 0 ? void 0 : _a.value) === null || _b === void 0 ? void 0 : _b.properties) === null || _c === void 0 ? void 0 : _c.title[0][0];
             response.lastUpdatedUnixTime = timeText.split('Unix ')[1] * 1000;
         }
         catch (e) {
