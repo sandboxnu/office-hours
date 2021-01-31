@@ -35,7 +35,7 @@ export class QueueCleanService {
     );
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  @Cron(CronExpression.EVERY_DAY_AT_3AM)
   public async checkoutAllStaff(): Promise<void> {
     const queuesWithCheckedInStaff: QueueModel[] = await QueueModel.getRepository().find(
       { relations: ['staffList'] },
