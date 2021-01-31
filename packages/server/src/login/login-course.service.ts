@@ -12,15 +12,16 @@ export class LoginCourseService {
 
   public async addUserFromKhoury(info: KhouryDataParams): Promise<UserModel> {
     let user: UserModel;
+    const neuEmail = info.email.replace('@husky.neu.edu', '@northeastern.edu');
     user = await UserModel.findOne({
-      where: { email: info.email },
+      where: { email: neuEmail },
       relations: ['courses', 'courses.course'],
     });
 
     if (!user) {
       user = UserModel.create({
         courses: [],
-        email: info.email,
+        email: neuEmail,
         firstName: info.first_name,
         lastName: info.last_name,
         name: info.first_name + ' ' + info.last_name,
@@ -64,10 +65,14 @@ export class LoginCourseService {
     // Delete "stale" user courses
     for (const previousCourse of user.courses) {
       if (
-        previousCourse.course.enabled &&
-        !this.hasUserCourse(userCourses, previousCourse)
+        !this.hasUserCourse(userCourses, previousCourse) &&
+        previousCourse.course.enabled
       ) {
-        previousCourse.remove();
+        if (!previousCourse.override) {
+          previousCourse.remove();
+        } else {
+          userCourses.push(previousCourse);
+        }
       }
     }
 
@@ -94,8 +99,12 @@ export class LoginCourseService {
   ): Promise<UserCourseModel> {
     let userCourse: UserCourseModel;
     userCourse = await UserCourseModel.findOne({
-      where: { userId, courseId, role },
+      where: { userId, courseId },
     });
+    if (userCourse && userCourse.override && userCourse.role === role) {
+      userCourse.override = false;
+      await userCourse.save();
+    }
     if (!userCourse) {
       userCourse = await UserCourseModel.create({
         userId,
