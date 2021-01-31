@@ -88,6 +88,34 @@ describe('Login Integration', () => {
       });
     });
 
+    it('converts husky emails to northeastern emails', async () => {
+      const user = await UserModel.findOne({
+        where: { email: 'stenzel.w@northeastern.edu' },
+      });
+      expect(user).toBeUndefined();
+
+      const res = await supertest().post('/khoury_login').send({
+        email: 'stenzel.w@husky.neu.edu',
+        campus: 1,
+        first_name: 'Will',
+        last_name: 'Stenzel',
+        photo_url: 'sdf',
+        courses: [],
+        ta_courses: [],
+      });
+
+      // Expect that the new user has been created
+      const newUser = await UserModel.findOne({
+        where: { email: 'stenzel.w@northeastern.edu' },
+      });
+      expect(newUser).toBeDefined();
+
+      const huskyUser = await UserModel.findOne({
+        where: { email: 'stenzel.w@husky.neu.edu' },
+      });
+      expect(huskyUser).toBeUndefined();
+    });
+
     describe('with course mapping', () => {
       let course;
       let course2;

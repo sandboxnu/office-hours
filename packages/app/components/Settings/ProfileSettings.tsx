@@ -23,7 +23,7 @@ export default function ProfileSettings(): ReactElement {
     const value = await form.validateFields();
     const newProfile = await editProfile(value);
     form.setFieldsValue(newProfile);
-    message.success("Your profile settings have been sucsessfully updated");
+    message.success("Your profile settings have been successfully updated");
   };
 
   return profile ? (

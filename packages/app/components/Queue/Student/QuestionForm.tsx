@@ -65,6 +65,7 @@ export default function QuestionForm({
   const courseId = router.query["cid"];
 
   const drafting = question?.status === OpenQuestionStatus.Drafting;
+  const helping = question?.status === OpenQuestionStatus.Helping;
   const [questionTypeInput, setQuestionTypeInput] = useState<QuestionType>(
     question?.questionType || null
   );
@@ -151,6 +152,15 @@ export default function QuestionForm({
             message={`You are currently ${toOrdinal(position)} in queue`}
             description="Your spot in queue has been temporarily reserved. Please describe your question to finish joining the queue."
             type="success"
+            showIcon
+          />
+        )}
+        {helping && (
+          <Alert
+            style={{ marginBottom: "32px" }}
+            message={`A TA is coming to help you`}
+            description="Please click 'Save Changes' to submit what you've filled out"
+            type="info"
             showIcon
           />
         )}
