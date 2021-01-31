@@ -12,15 +12,16 @@ export class LoginCourseService {
 
   public async addUserFromKhoury(info: KhouryDataParams): Promise<UserModel> {
     let user: UserModel;
+    const neuEmail = info.email.replace('@husky.neu.edu', '@northeastern.edu');
     user = await UserModel.findOne({
-      where: { email: info.email },
+      where: { email: neuEmail },
       relations: ['courses', 'courses.course'],
     });
 
     if (!user) {
       user = UserModel.create({
         courses: [],
-        email: info.email,
+        email: neuEmail,
         firstName: info.first_name,
         lastName: info.last_name,
         name: info.first_name + ' ' + info.last_name,
