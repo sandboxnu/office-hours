@@ -9,4 +9,5 @@ export declare class UserCourseModel extends BaseEntity {
     course: CourseModel;
     courseId: number;
     role: Role;
+    override: boolean;
 }

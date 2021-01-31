@@ -1217,6 +1217,10 @@ __decorate([
     typeorm_1.Column({ type: 'enum', enum: common_1.Role, default: common_1.Role.STUDENT }),
     __metadata("design:type", String)
 ], UserCourseModel.prototype, "role", void 0);
+__decorate([
+    typeorm_1.Column({ default: false }),
+    __metadata("design:type", Boolean)
+], UserCourseModel.prototype, "override", void 0);
 UserCourseModel = __decorate([
     typeorm_1.Entity('user_course_model')
 ], UserCourseModel);
@@ -3809,9 +3813,14 @@ let LoginCourseService = class LoginCourseService {
             }
         }
         for (const previousCourse of user.courses) {
-            if (previousCourse.course.enabled &&
-                !this.hasUserCourse(userCourses, previousCourse)) {
-                previousCourse.remove();
+            if (!this.hasUserCourse(userCourses, previousCourse) &&
+                previousCourse.course.enabled) {
+                if (!previousCourse.override) {
+                    previousCourse.remove();
+                }
+                else {
+                    userCourses.push(previousCourse);
+                }
             }
         }
         user.courses = userCourses;
@@ -3828,8 +3837,12 @@ let LoginCourseService = class LoginCourseService {
     async courseToUserCourse(userId, courseId, role) {
         let userCourse;
         userCourse = await user_course_entity_1.UserCourseModel.findOne({
-            where: { userId, courseId, role },
+            where: { userId, courseId },
         });
+        if (userCourse && userCourse.override && userCourse.role === role) {
+            userCourse.override = false;
+            await userCourse.save();
+        }
         if (!userCourse) {
             userCourse = await user_course_entity_1.UserCourseModel.create({
                 userId,
@@ -4918,7 +4931,8 @@ exports.CourseSectionFactory = new typeorm_factory_1.Factory(course_section_mapp
 exports.UserCourseFactory = new typeorm_factory_1.Factory(user_course_entity_1.UserCourseModel)
     .assocOne('user', exports.UserFactory)
     .assocOne('course', exports.CourseFactory)
-    .attr('role', common_1.Role.STUDENT);
+    .attr('role', common_1.Role.STUDENT)
+    .attr('override', false);
 exports.QueueFactory = new typeorm_factory_1.Factory(queue_entity_1.QueueModel)
     .attr('room', 'Online')
     .assocOne('course', exports.CourseFactory)
