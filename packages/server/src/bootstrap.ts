@@ -15,8 +15,10 @@ export async function bootstrap(hot: any): Promise<void> {
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
-  setupAPM(app);
-  app.useGlobalInterceptors(new ApmInterceptor(new Reflector()));
+  if (process.env.NODE_ENV === 'production') {
+    setupAPM(app);
+    app.useGlobalInterceptors(new ApmInterceptor(new Reflector()));
+  }
   app.enableShutdownHooks(); // So we can clean up SSE.
   addGlobalsToApp(app);
   app.setGlobalPrefix('api/v1');
@@ -42,8 +44,7 @@ export async function bootstrap(hot: any): Promise<void> {
 
 function setupAPM(app: INestApplication): void {
   Sentry.init({
-    dsn:
-      'https://7300ca8a1f1a4902b0a6f9a889525180@o440615.ingest.sentry.io/5410042',
+    dsn: process.env.SENTRY_APM_DSN,
     tracesSampleRate: 1,
     integrations: [
       // enable HTTP calls tracing
