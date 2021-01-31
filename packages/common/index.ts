@@ -564,23 +564,11 @@ export class Insight {
 export enum InsightDisplay {
   SimpleDisplay = "SimpleDisplay",
   BarChart = "BarChart",
-  SimpleChart = "SimpleChart",
 }
 
-export type PossibleOutputTypes =
-  | SimpleDisplayOutputType
-  | BarChartOutputType
-  | SimpleChartOutputType;
+export type PossibleOutputTypes = SimpleDisplayOutputType | BarChartOutputType;
 
 export type SimpleDisplayOutputType = number;
-
-export type SimpleChartOutputType = {
-  data: any[];
-  xAxisName?: string;
-  yAxisName?: string;
-  xAxisLabels?: string[];
-  yAxisLabels?: string[];
-};
 
 export type BarChartOutputType = {
   data: any[];
