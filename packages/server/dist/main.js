@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"1c58d1da500c249c422fcefaf3b923c915081dec"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"a6a61d2168b63406c7666cfb28ff80306642c26e"};
 
 /***/ }),
 /* 2 */
@@ -196,7 +196,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "1c58d1da500c249c422fcefaf3b923c915081dec",
+        release: "a6a61d2168b63406c7666cfb28ff80306642c26e",
         environment: common_2.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -5812,8 +5812,8 @@ let ReleaseNotesController = class ReleaseNotesController {
         catch (e) {
             throw new common_2.InternalServerErrorException(common_1.ERROR_MESSAGES.releaseNotesController.releaseNotesTime(e));
         }
-        data['beae2a02-249e-4b61-9bfc-81258d93f20d'].value.properties.title = [];
-        data['4d25f393-e570-4cd5-ad66-b278a0924225'].value.properties.title = [];
+        data[process.env.RELEASE_NOTE_TIMESTAMP_ID].value.properties.title = [];
+        data[process.env.WANT_TO_SEE_MORE_ID].value.properties.title = [];
         response.releaseNotes = data;
         return response;
     }
