@@ -131,7 +131,7 @@ describe('Profile Integration', () => {
       expect(profile.body?.phoneNumber).toEqual('1234567890');
       await supertest({ userId: user.id })
         .patch('/profile')
-        .send({ phoneNumber: '0987654321' })
+        .send({ phoneNotifsEnabled: true, phoneNumber: '0987654321' })
         .expect(200);
       profile = await supertest({ userId: user.id }).get('/profile');
       expect(profile.body?.phoneNumber).toEqual('real0987654321');
