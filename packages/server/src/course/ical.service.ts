@@ -13,6 +13,9 @@ import { QueueModel } from '../queue/queue.entity';
 import { CourseModel } from './course.entity';
 import { OfficeHourModel } from './office-hour.entity';
 import moment = require('moment');
+import { Cron } from '@nestjs/schedule';
+import { RedisService } from 'nestjs-redis';
+import { throwError } from 'rxjs';
 
 type Moment = moment.Moment;
 
@@ -20,7 +23,10 @@ type CreateOfficeHour = DeepPartial<OfficeHourModel>[];
 
 @Injectable()
 export class IcalService {
-  constructor(private connection: Connection) {}
+  constructor(
+    private connection: Connection,
+    private readonly redisService: RedisService,
+  ) {}
 
   // tz should not be preconverted by findOneIana
   private fixOutlookTZ(date: Moment, tz: string): Moment {
@@ -221,10 +227,47 @@ export class IcalService {
   }
 
   // TODO: Disable Cron job until Redis issue is resolved
-  // @Cron('51 0 * * *')
+  @Cron('51 0 * * *')
   public async updateAllCourses(): Promise<void> {
-    console.log('updating course icals');
-    const courses = await CourseModel.find();
-    await Promise.all(courses.map((c) => this.updateCalendarForCourse(c)));
+    const redisDB = this.redisService.getClient('db');
+
+    redisDB.watch('foo', function (watchError) {
+      if (watchError) throw watchError;
+
+      redisDB.get('foo', function (getError, result) {
+        if (getError) throw getError;
+
+        // Process result
+        // Heavy and time consuming operation here to generate "bar"
+
+        redisDB
+          .multi()
+          .set('foo', 'bar')
+          .exec(async function (execError, results) {
+            /**
+             * If err is null, it means Redis successfully attempted
+             * the operation.
+             */
+            if (execError) throw 'exec error';
+
+            /**
+             * If results === null, it means that a concurrent client
+             * changed the key while we were processing it and thus
+             * the execution of the MULTI command was not performed.
+             *
+             * NOTICE: Failing an execution of MULTI is not considered
+             * an error. So you will have err === null and results === null
+             */
+
+            if (results !== null) {
+              console.log('updating course icals');
+              const courses = await CourseModel.find();
+              await Promise.all(
+                courses.map((c) => this.updateCalendarForCourse(c)),
+              );
+            }
+          });
+      });
+    });
   }
 }
