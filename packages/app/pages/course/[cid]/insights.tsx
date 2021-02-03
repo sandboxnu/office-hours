@@ -11,6 +11,7 @@ import NavBar from "../../../components/Nav/NavBar";
 import SimpleChartComponent from "../../../components/Insights/components/SimpleChartComponent";
 import SimpleDisplayComponent from "../../../components/Insights/components/SimpleDisplayComponent";
 import InsightsDisplayOptions from "../../../components/Insights/components/InsightsDisplayOptions";
+import { SimpleTable } from "../../../components/Insights/components/SimpleTable";
 
 export default function Insights(): ReactElement {
   const router = useRouter();
@@ -100,6 +101,9 @@ function RenderInsight({
       break;
     case InsightDisplay.SimpleChart:
       InsightComponent = SimpleChartComponent;
+      break;
+    case InsightDisplay.SimpleTable:
+      InsightComponent = SimpleTable;
       break;
     default:
       // Line below will show error if switch is not exhaustive of all enum values

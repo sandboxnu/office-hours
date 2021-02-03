@@ -549,11 +549,13 @@ export class Insight {
 export enum InsightDisplay {
   SimpleDisplay = "SimpleDisplay",
   SimpleChart = "SimpleChart",
+  SimpleTable = "SimpleTable",
 }
 
 export type PossibleOutputTypes =
   | SimpleDisplayOutputType
-  | SimpleChartOutputType;
+  | SimpleChartOutputType
+  | SimpleTableOutputType;
 
 export type SimpleDisplayOutputType = number;
 
@@ -563,6 +565,11 @@ export type SimpleChartOutputType = {
   yAxisName?: string;
   xAxisLabels?: string[];
   yAxisLabels?: string[];
+};
+
+export type SimpleTableOutputType = {
+  dataSource: any[];
+  columns: any[];
 };
 
 export const ERROR_MESSAGES = {
