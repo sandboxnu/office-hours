@@ -104,7 +104,7 @@ describe('QueueService', () => {
       expect(question.status).toEqual('Stale');
     });
 
-    it.only('checkout all staff from all queues', async () => {
+    it('checkout all staff from all queues', async () => {
       const ta = await UserFactory.create();
       const ta2 = await UserFactory.create();
       const ta3 = await UserFactory.create();
