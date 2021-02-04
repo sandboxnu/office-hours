@@ -3,7 +3,8 @@ import { CourseModel } from '../course/course.entity';
 import { UserModel } from './user.entity';
 export declare enum EventType {
     TA_CHECKED_IN = "taCheckedIn",
-    TA_CHECKED_OUT = "taCheckedOut"
+    TA_CHECKED_OUT = "taCheckedOut",
+    TA_CHECKED_OUT_FORCED = "taCheckedOutForced"
 }
 export declare class EventModel extends BaseEntity {
     id: number;

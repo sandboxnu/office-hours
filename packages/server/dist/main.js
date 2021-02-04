@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"a6a61d2168b63406c7666cfb28ff80306642c26e"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"b19e0c4924aa554e06bc088effb11b270bb195b0"};
 
 /***/ }),
 /* 2 */
@@ -196,7 +196,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "a6a61d2168b63406c7666cfb28ff80306642c26e",
+        release: "b19e0c4924aa554e06bc088effb11b270bb195b0",
         environment: common_2.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -1055,6 +1055,7 @@ var EventType;
 (function (EventType) {
     EventType["TA_CHECKED_IN"] = "taCheckedIn";
     EventType["TA_CHECKED_OUT"] = "taCheckedOut";
+    EventType["TA_CHECKED_OUT_FORCED"] = "taCheckedOutForced";
 })(EventType = exports.EventType || (exports.EventType = {}));
 let EventModel = class EventModel extends typeorm_1.BaseEntity {
 };
@@ -1475,13 +1476,15 @@ let QueueModel = class QueueModel extends typeorm_1.BaseEntity {
             this.isOpen = true;
             return true;
         }
+        this.isOpen = await this.areThereOfficeHoursRightNow();
+        return this.isOpen;
+    }
+    async areThereOfficeHoursRightNow() {
         const now = new Date();
         const MS_IN_MINUTE = 60000;
         const ohs = await this.getOfficeHours();
-        const open = !!ohs.find((e) => e.startTime.getTime() - 10 * MS_IN_MINUTE < now.getTime() &&
+        return !!ohs.find((e) => e.startTime.getTime() - 10 * MS_IN_MINUTE < now.getTime() &&
             e.endTime.getTime() + 1 * MS_IN_MINUTE > now.getTime());
-        this.isOpen = open;
-        return open;
     }
     async addQueueSize() {
         this.queueSize = await question_entity_1.QuestionModel.waitingInQueue(this.id).getCount();
@@ -1981,6 +1984,7 @@ const moment = __webpack_require__(40);
 const typeorm_1 = __webpack_require__(24);
 const question_entity_1 = __webpack_require__(32);
 const queue_entity_1 = __webpack_require__(30);
+const event_model_entity_1 = __webpack_require__(23);
 let QueueCleanService = class QueueCleanService {
     constructor(connection) {
         this.connection = connection;
@@ -1994,6 +1998,23 @@ let QueueCleanService = class QueueCleanService {
         })
             .getMany();
         await Promise.all(queuesWithOpenQuestions.map((queue) => this.cleanQueue(queue.id)));
+    }
+    async checkoutAllStaff() {
+        const queuesWithCheckedInStaff = await queue_entity_1.QueueModel.getRepository().find({ relations: ['staffList'] });
+        queuesWithCheckedInStaff.forEach(async (queue) => {
+            if (!(await queue.areThereOfficeHoursRightNow())) {
+                await queue.staffList.forEach(async (ta) => {
+                    await event_model_entity_1.EventModel.create({
+                        time: new Date(),
+                        eventType: event_model_entity_1.EventType.TA_CHECKED_OUT_FORCED,
+                        userId: ta.id,
+                        courseId: queue.courseId,
+                    }).save();
+                });
+                queue.staffList = [];
+            }
+        });
+        await queue_entity_1.QueueModel.save(queuesWithCheckedInStaff);
     }
     async cleanQueue(queueId, force) {
         const queue = await queue_entity_1.QueueModel.findOne(queueId, {
@@ -2041,6 +2062,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], QueueCleanService.prototype, "cleanAllQueues", null);
+__decorate([
+    schedule_1.Cron(schedule_1.CronExpression.EVERY_DAY_AT_3AM),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], QueueCleanService.prototype, "checkoutAllStaff", null);
 QueueCleanService = __decorate([
     common_2.Injectable(),
     __metadata("design:paramtypes", [typeorm_1.Connection])
