@@ -19,6 +19,7 @@ if (process.env.NODE_ENV === "production" && typeof window !== "undefined") {
     enabled: process.env.NODE_ENV === "production",
     dsn:
       "https://9cfb47804c93495ba3a66a9d79cec084@o440615.ingest.sentry.io/5557379",
+    tracesSampleRate: 0.2
   });
 }
 
