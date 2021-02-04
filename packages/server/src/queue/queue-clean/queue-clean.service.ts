@@ -9,9 +9,8 @@ import { OfficeHourModel } from 'course/office-hour.entity';
 import moment = require('moment');
 import { Connection, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { QuestionModel } from '../../question/question.entity';
-import { QueueModel } from 'queue/queue.entity';
+import { QueueModel } from '../queue.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
-import { UserModel } from 'profile/user.entity';
 
 /**
  * Clean the queue and mark stale
