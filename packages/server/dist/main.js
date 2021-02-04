@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"b19e0c4924aa554e06bc088effb11b270bb195b0"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"3c509e35a44a91c59a6db331d293baec0030f86f"};
 
 /***/ }),
 /* 2 */
@@ -196,7 +196,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "b19e0c4924aa554e06bc088effb11b270bb195b0",
+        release: "3c509e35a44a91c59a6db331d293baec0030f86f",
         environment: common_2.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -4104,9 +4104,11 @@ let ProfileController = class ProfileController {
         var _a;
         user = Object.assign(user, userPatch);
         user.name = user.firstName + ' ' + user.lastName;
-        if (user.phoneNotifsEnabled &&
-            userPatch.phoneNumber !== ((_a = user.phoneNotif) === null || _a === void 0 ? void 0 : _a.phoneNumber)) {
-            await this.notifService.registerPhone(userPatch.phoneNumber, user);
+        if (userPatch.phoneNotifsEnabled && userPatch.phoneNumber) {
+            if (user.phoneNotifsEnabled &&
+                userPatch.phoneNumber !== ((_a = user.phoneNotif) === null || _a === void 0 ? void 0 : _a.phoneNumber)) {
+                await this.notifService.registerPhone(userPatch.phoneNumber, user);
+            }
         }
         await user.save();
         return this.get(user);
