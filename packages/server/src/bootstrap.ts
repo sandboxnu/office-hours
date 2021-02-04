@@ -45,7 +45,7 @@ export async function bootstrap(hot: any): Promise<void> {
 function setupAPM(app: INestApplication): void {
   Sentry.init({
     dsn: process.env.SENTRY_APM_DSN,
-    tracesSampleRate: 1,
+    tracesSampleRate: .2,
     integrations: [
       // enable HTTP calls tracing
       new Sentry.Integrations.Http({ tracing: true }),
