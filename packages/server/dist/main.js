@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"3c509e35a44a91c59a6db331d293baec0030f86f"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"cf69939058d22bc005829435c860f6cd76ae96c9"};
 
 /***/ }),
 /* 2 */
@@ -187,7 +187,7 @@ exports.bootstrap = bootstrap;
 function setupAPM(app) {
     Sentry.init({
         dsn: process.env.SENTRY_APM_DSN,
-        tracesSampleRate: 1,
+        tracesSampleRate: 0.2,
         integrations: [
             new Sentry.Integrations.Http({ tracing: true }),
             new Tracing.Integrations.Postgres(),
@@ -196,7 +196,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "3c509e35a44a91c59a6db331d293baec0030f86f",
+        release: "cf69939058d22bc005829435c860f6cd76ae96c9",
         environment: common_2.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
