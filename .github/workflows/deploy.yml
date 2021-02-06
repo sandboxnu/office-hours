@@ -23,7 +23,7 @@ jobs:
           NEXT_PUBLIC_SERVICE_VERSION: ${{ steps.pre-version.outputs.version }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: Zip everything
-        run: zip -r release.zip . -x ".git/*" ".github/*"
+        run: zip -r release.zip . -x "*.git*" "*.github*" "*node_modules*"
       ## Associate release with git commits, so Sentry can guess which commits caused errors
       - name: Create Sentry release
         uses: getsentry/action-release@v1
@@ -61,7 +61,7 @@ jobs:
           release_name: Release ${{ github.sha }}
           draft: true
       - name: Upload Release Asset
-        id: upload-release-asset 
+        id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
