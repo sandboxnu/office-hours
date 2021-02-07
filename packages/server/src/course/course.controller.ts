@@ -1,4 +1,5 @@
 import {
+  ERROR_MESSAGES,
   GetCourseResponse,
   QueuePartial,
   Role,
@@ -8,12 +9,13 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   Post,
+  UnauthorizedException,
   UseGuards,
   UseInterceptors,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import async from 'async';
 import { EventModel, EventType } from 'profile/event-model.entity';
@@ -98,6 +100,20 @@ export class CourseController {
     @Param('room') room: string,
     @User() user: UserModel,
   ): Promise<QueuePartial> {
+    // First ensure user is not checked into another queue
+    const queues = await QueueModel.find({
+      where: {
+        courseId: courseId,
+      },
+      relations: ['staffList'],
+    });
+
+    if (queues.some((q) => q.staffList.some((staff) => staff.id === user.id))) {
+      throw new UnauthorizedException(
+        ERROR_MESSAGES.courseController.checkIn.cannotCheckIntoMultipleQueues,
+      );
+    }
+
     let queue = await QueueModel.findOne(
       {
         room,
@@ -107,13 +123,27 @@ export class CourseController {
     );
 
     if (!queue) {
-      queue = await QueueModel.create({
-        room,
-        courseId,
-        staffList: [],
-        questions: [],
-        allowQuestions: true,
-      }).save();
+      const userCourseModel = await UserCourseModel.findOne({
+        where: {
+          user,
+          courseId,
+        },
+      });
+
+      if (userCourseModel.role === Role.PROFESSOR) {
+        queue = await QueueModel.create({
+          room,
+          courseId,
+          staffList: [],
+          questions: [],
+          allowQuestions: true,
+          isProfessorQueue: true, // only professors should be able to make queues
+        }).save();
+      } else {
+        throw new ForbiddenException(
+          ERROR_MESSAGES.courseController.checkIn.cannotCreateNewQueueIfNotProfessor,
+        );
+      }
     }
 
     if (queue.staffList.length === 0) {

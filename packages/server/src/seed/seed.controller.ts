@@ -168,7 +168,7 @@ export class SeedController {
     }
 
     const queue = await QueueFactory.create({
-      room: 'WHV 101',
+      room: 'Online',
       course: course,
       officeHours: [
         officeHoursToday,
@@ -293,5 +293,24 @@ export class SeedController {
       createdAt: new Date(),
     });
     return question;
+  }
+
+  @Post('createQueueWithoutOfficeHour')
+  async createQueueWithoutOfficeHour(
+    @Body()
+    body: {
+      courseId: number;
+      allowQuestions: boolean;
+    },
+  ): Promise<QueueModel> {
+    const options = {
+      allowQuestions: body.allowQuestions ?? false,
+      officeHours: [],
+    };
+    if (body.courseId) {
+      const course = await CourseModel.findOneOrFail(body.courseId);
+      options['course'] = course;
+    }
+    return await QueueFactory.create(options);
   }
 }
