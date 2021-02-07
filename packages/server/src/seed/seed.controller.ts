@@ -294,4 +294,23 @@ export class SeedController {
     });
     return question;
   }
+
+  @Post('createQueueWithoutOfficeHour')
+  async createQueueWithoutOfficeHour(
+    @Body()
+    body: {
+      courseId: number;
+      allowQuestions: boolean;
+    },
+  ): Promise<QueueModel> {
+    const options = {
+      allowQuestions: body.allowQuestions ?? false,
+      officeHours: [],
+    };
+    if (body.courseId) {
+      const course = await CourseModel.findOneOrFail(body.courseId);
+      options['course'] = course;
+    }
+    return await QueueFactory.create(options);
+  }
 }
