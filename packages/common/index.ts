@@ -225,7 +225,6 @@ export enum OpenQuestionStatus {
   Queued = "Queued",
   Helping = "Helping",
   PriorityQueued = "PriorityQueued",
-  Rephrasing = "Rephrasing", //When a TA has requested the student rephrase this question
 }
 
 /**
@@ -247,7 +246,6 @@ export enum ClosedQuestionStatus {
 export const StatusInQueue = [
   OpenQuestionStatus.Drafting,
   OpenQuestionStatus.Queued,
-  OpenQuestionStatus.Rephrasing,
 ];
 
 export const StatusInPriorityQueue = [OpenQuestionStatus.PriorityQueued];

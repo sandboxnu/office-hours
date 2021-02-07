@@ -96,6 +96,8 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
   const [showJoinPopconfirm, setShowJoinPopconfirm] = useState(false);
   const { deleteDraftQuestion } = useDraftQuestion();
 
+  const [rephraseQuestion, setRephraseQuestion] = useState(false);
+
   const studentQuestionId = studentQuestion?.id;
   const studentQuestionStatus = studentQuestion?.status;
   const leaveQueue = useCallback(async () => {
@@ -271,9 +273,12 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
             joinQueue={joinQueueAfterDeletion}
           />
           <StudentQuestionRephraseModal
-            visible={studentQuestion?.status === OpenQuestionStatus.Rephrasing}
+            visible={rephraseQuestion}
             question={studentQuestion}
-            editQuestion={() => setPopupEditQuestion(true)}
+            editQuestion={() => {
+              setPopupEditQuestion(true);
+              setRephraseQuestion(false);
+            }}
           />
           <QueueInfoColumn
             queueId={qid}
