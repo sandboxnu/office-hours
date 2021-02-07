@@ -255,6 +255,12 @@ export interface GetReleaseNotesResponse {
     lastUpdatedUnixTime: number;
 }
 export declare const ERROR_MESSAGES: {
+    courseController: {
+        checkIn: {
+            cannotCreateNewQueueIfNotProfessor: string;
+            cannotCheckIntoMultipleQueues: string;
+        };
+    };
     questionController: {
         createQuestion: {
             invalidQueue: string;

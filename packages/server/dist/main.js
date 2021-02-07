@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"eea4ab29a0d8aee9829ec5e73a6c2df19f92a6e1"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"8ae33714e8937d64efedb4496c36a6d2c13e5132"};
 
 /***/ }),
 /* 2 */
@@ -196,7 +196,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "eea4ab29a0d8aee9829ec5e73a6c2df19f92a6e1",
+        release: "8ae33714e8937d64efedb4496c36a6d2c13e5132",
         environment: common_2.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -449,18 +449,39 @@ let CourseController = class CourseController {
         return course;
     }
     async checkIn(courseId, room, user) {
+        const queues = await queue_entity_1.QueueModel.find({
+            where: {
+                courseId: courseId,
+            },
+            relations: ['staffList'],
+        });
+        if (queues.some((q) => q.staffList.some((staff) => staff.id === user.id))) {
+            throw new common_2.UnauthorizedException(common_1.ERROR_MESSAGES.courseController.checkIn.cannotCheckIntoMultipleQueues);
+        }
         let queue = await queue_entity_1.QueueModel.findOne({
             room,
             courseId,
         }, { relations: ['staffList'] });
         if (!queue) {
-            queue = await queue_entity_1.QueueModel.create({
-                room,
-                courseId,
-                staffList: [],
-                questions: [],
-                allowQuestions: true,
-            }).save();
+            const userCourseModel = await user_course_entity_1.UserCourseModel.findOne({
+                where: {
+                    user,
+                    courseId,
+                },
+            });
+            if (userCourseModel.role === common_1.Role.PROFESSOR) {
+                queue = await queue_entity_1.QueueModel.create({
+                    room,
+                    courseId,
+                    staffList: [],
+                    questions: [],
+                    allowQuestions: true,
+                    isProfessorQueue: true,
+                }).save();
+            }
+            else {
+                throw new common_2.ForbiddenException(common_1.ERROR_MESSAGES.courseController.checkIn.cannotCreateNewQueueIfNotProfessor);
+            }
         }
         if (queue.staffList.length === 0) {
             queue.allowQuestions = true;
@@ -958,6 +979,12 @@ class SSEQueueResponse {
 }
 exports.SSEQueueResponse = SSEQueueResponse;
 exports.ERROR_MESSAGES = {
+    courseController: {
+        checkIn: {
+            cannotCreateNewQueueIfNotProfessor: "You can't create a new queue if you're not a professor",
+            cannotCheckIntoMultipleQueues: "Cannot check into multiple queues at the same time",
+        },
+    },
     questionController: {
         createQuestion: {
             invalidQueue: "Posted to an invalid queue",
@@ -4786,7 +4813,7 @@ let SeedController = class SeedController {
             });
         }
         const queue = await factories_1.QueueFactory.create({
-            room: 'WHV 101',
+            room: 'Online',
             course: course,
             officeHours: [
                 officeHoursToday,
@@ -4879,6 +4906,18 @@ let SeedController = class SeedController {
         const question = await factories_1.QuestionFactory.create(Object.assign(Object.assign(Object.assign({}, options), body.data), { createdAt: new Date() }));
         return question;
     }
+    async createQueueWithoutOfficeHour(body) {
+        var _a;
+        const options = {
+            allowQuestions: (_a = body.allowQuestions) !== null && _a !== void 0 ? _a : false,
+            officeHours: [],
+        };
+        if (body.courseId) {
+            const course = await course_entity_1.CourseModel.findOneOrFail(body.courseId);
+            options['course'] = course;
+        }
+        return await factories_1.QueueFactory.create(options);
+    }
 };
 __decorate([
     common_2.Get('delete'),
@@ -4919,6 +4958,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], SeedController.prototype, "createQuestion", null);
+__decorate([
+    common_2.Post('createQueueWithoutOfficeHour'),
+    __param(0, common_2.Body()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], SeedController.prototype, "createQueueWithoutOfficeHour", null);
 SeedController = __decorate([
     common_2.Controller('seeds'),
     common_2.UseGuards(non_production_guard_1.NonProductionGuard),

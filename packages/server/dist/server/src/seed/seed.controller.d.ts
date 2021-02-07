@@ -25,4 +25,8 @@ export declare class SeedController {
         studentId: number;
         data: CreateQuestionParams;
     }): Promise<QuestionModel>;
+    createQueueWithoutOfficeHour(body: {
+        courseId: number;
+        allowQuestions: boolean;
+    }): Promise<QueueModel>;
 }
