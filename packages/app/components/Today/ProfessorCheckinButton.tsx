@@ -26,7 +26,9 @@ export default function TodayPageCheckinButton(): ReactElement {
   const queueCheckedIn = course?.queues.find((queue) =>
     queue.staffList.find((staff) => staff.id === profile?.id)
   );
-  const [queueToBeCreated, setQueueToBeCreated] = useState("");
+  const [queueToBeCreated, setQueueToBeCreated] = useState(
+    `Professor ${profile?.lastName}'s Office Hours`
+  );
 
   return (
     <>
