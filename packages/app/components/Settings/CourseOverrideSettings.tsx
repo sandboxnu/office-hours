@@ -1,22 +1,25 @@
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement } from "react";
+import useSWR from "swr";
 import { Table } from "antd";
 import { API } from "@koh/api-client";
 const { Column } = Table;
 
-export default function CourseOverrideSettings(): ReactElement {
-  const [overrides, setOverrides] = useState(null);
+type CourseOverrideSettingsProps = { courseId: number };
 
-  const fetchOverridesData = () => {
-    API.course.getCourseOverrides(1).then((resp) => setOverrides(resp.data));
-  };
+export default function CourseOverrideSettings({
+  courseId,
+}: CourseOverrideSettingsProps): ReactElement {
+  const { data, mutate } = useSWR(`/api/v1/courses/course_override`, async () =>
+    API.course.getCourseOverrides(courseId)
+  );
 
-  useEffect(fetchOverridesData, []);
-
+  console.log(data);
   return (
-    <Table dataSource={overrides}>
-      <Column title="Name" dataIndex="name" key="name" />
-      <Column title="Email" dataIndex="email" key="email" />
-      <Column title="Role" dataIndex="role" key="role" />
-    </Table>
+    <div></div>
+    // <Table dataSource={null}>
+    //   <Column title="Name" dataIndex="name" key="name" />
+    //   <Column title="Email" dataIndex="email" key="email" />
+    //   <Column title="Role" dataIndex="role" key="role" />
+    // </Table>
   );
 }
