@@ -132,6 +132,22 @@ export const createQueue = ({
   });
 };
 
+export const createQueueWithoutOfficeHour = ({
+  courseId = null,
+  allowQuestions = true,
+  room = "Online",
+}) => {
+  const req = ({ id }) =>
+    cy.request("POST", "/api/v1/seeds/createQueueWithoutOfficeHour", {
+      courseId: id,
+      room,
+      allowQuestions,
+    });
+  getId(courseId).then((id) => {
+    makeRequest(req, "queue", { id });
+  });
+};
+
 /**
  * Creates a question and binds it to cypress with an alias of the identifier.
  * @param {number} queueId - the id of the queue this question is being added to.
