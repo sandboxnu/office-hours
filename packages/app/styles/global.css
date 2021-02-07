@@ -68,4 +68,7 @@ body {
   .rbc-current-time-indicator {
     visibility: hidden;
   }
+  .rbc-toolbar {
+    visibility: hidden;
+  }
 }

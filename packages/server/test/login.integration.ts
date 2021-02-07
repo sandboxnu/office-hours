@@ -88,6 +88,34 @@ describe('Login Integration', () => {
       });
     });
 
+    it('converts husky emails to northeastern emails', async () => {
+      const user = await UserModel.findOne({
+        where: { email: 'stenzel.w@northeastern.edu' },
+      });
+      expect(user).toBeUndefined();
+
+      const res = await supertest().post('/khoury_login').send({
+        email: 'stenzel.w@husky.neu.edu',
+        campus: 1,
+        first_name: 'Will',
+        last_name: 'Stenzel',
+        photo_url: 'sdf',
+        courses: [],
+        ta_courses: [],
+      });
+
+      // Expect that the new user has been created
+      const newUser = await UserModel.findOne({
+        where: { email: 'stenzel.w@northeastern.edu' },
+      });
+      expect(newUser).toBeDefined();
+
+      const huskyUser = await UserModel.findOne({
+        where: { email: 'stenzel.w@husky.neu.edu' },
+      });
+      expect(huskyUser).toBeUndefined();
+    });
+
     describe('with course mapping', () => {
       let course;
       let course2;
@@ -232,6 +260,7 @@ describe('Login Integration', () => {
         expect(fundiesUserCourse).toEqual({
           courseId: 1,
           id: 1,
+          override: false,
           role: 'student',
           userId: 1,
         });
@@ -278,6 +307,122 @@ describe('Login Integration', () => {
 
         const totalUserCoursesUpdated = await UserCourseModel.count();
         expect(totalUserCoursesUpdated).toEqual(2);
+      });
+
+      it('respects user course overrides', async () => {
+        await supertest()
+          .post('/khoury_login')
+          .send({
+            email: 'stenzel.w@northeastern.edu',
+            campus: 1,
+            first_name: 'Will',
+            last_name: 'Stenzel',
+            photo_url: '',
+            courses: [
+              {
+                course: 'CS 2510',
+                crn: 12345,
+                accelerated: false,
+                section: 1,
+                semester: '000',
+                title: 'Fundamentals of Computer Science II',
+              },
+              {
+                course: 'CS 2510',
+                crn: 24680,
+                accelerated: true,
+                section: 2,
+                semester: '000',
+                title: 'Fundamentals of Computer Science II',
+              },
+            ],
+            ta_courses: [
+              {
+                course: 'CS 2500',
+                crn: 12312,
+                accelerated: false,
+                section: 55555,
+                semester: '000',
+                title: 'Fundamentals of Computer Science I',
+              },
+            ],
+          })
+          .expect(201);
+
+        const user = await UserModel.findOne({
+          where: { email: 'stenzel.w@northeastern.edu' },
+          relations: ['courses'],
+        });
+
+        const overrideCourse = await UserCourseFactory.create({
+          override: true,
+        });
+
+        const fundiesUserCourse = await UserCourseModel.findOne({
+          where: { user, course },
+        });
+        expect(fundiesUserCourse).toEqual({
+          courseId: 1,
+          id: 1,
+          override: false,
+          role: 'student',
+          userId: 1,
+        });
+
+        const totalUserCourses = await UserCourseModel.count();
+        expect(totalUserCourses).toEqual(4);
+
+        // After dropping fundies II, user logs in again
+        await supertest()
+          .post('/khoury_login')
+          .send({
+            email: 'stenzel.w@northeastern.edu',
+            campus: 1,
+            first_name: 'Will',
+            last_name: 'Stenzel',
+            photo_url: '',
+            courses: [
+              {
+                course: 'CS 2510',
+                crn: 24680,
+                accelerated: true,
+                section: 2,
+                semester: '000',
+                title: 'Fundamentals of Computer Science II',
+              },
+            ],
+            ta_courses: [
+              {
+                course: 'CS 2500',
+                crn: 12312,
+                accelerated: false,
+                section: 55555,
+                semester: '000',
+                title: 'Fundamentals of Computer Science I',
+              },
+            ],
+          })
+          .expect(201);
+
+        const noUserCourse = await UserCourseModel.findOne(
+          fundiesUserCourse.id,
+        );
+        expect(noUserCourse).toBeUndefined();
+
+        const overrideStillExists = await UserCourseModel.findOne(
+          overrideCourse.id,
+        );
+        expect(overrideStillExists).toBeDefined();
+        expect(overrideStillExists).toEqual({
+          courseId: overrideCourse.courseId,
+          id: overrideCourse.id,
+          override: overrideCourse.override,
+          role: overrideCourse.role,
+          userId: overrideCourse.userId,
+        });
+
+        const totalUserCoursesUpdated = await UserCourseModel.count();
+        expect(totalUserCoursesUpdated).toEqual(3);
       });
     });
 

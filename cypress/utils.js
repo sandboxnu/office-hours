@@ -1,3 +1,8 @@
+export const checkNavbarLoaded = () => {
+  cy.get("nav").should("contain", "CS 2500");
+  cy.get("nav").should("contain", "Schedule");
+};
+
 export const getId = (id) => {
   if (!id) {
     return cy.wrap();

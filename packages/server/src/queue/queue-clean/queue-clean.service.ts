@@ -10,6 +10,7 @@ import moment = require('moment');
 import { Connection, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { QuestionModel } from '../../question/question.entity';
 import { QueueModel } from '../queue.entity';
+import { EventModel, EventType } from 'profile/event-model.entity';
 
 /**
  * Clean the queue and mark stale
@@ -31,6 +32,28 @@ export class QueueCleanService {
     await Promise.all(
       queuesWithOpenQuestions.map((queue) => this.cleanQueue(queue.id)),
     );
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_3AM)
+  public async checkoutAllStaff(): Promise<void> {
+    const queuesWithCheckedInStaff: QueueModel[] = await QueueModel.getRepository().find(
+      { relations: ['staffList'] },
+    );
+
+    queuesWithCheckedInStaff.forEach(async (queue) => {
+      if (!(await queue.areThereOfficeHoursRightNow())) {
+        await queue.staffList.forEach(async (ta) => {
+          await EventModel.create({
+            time: new Date(),
+            eventType: EventType.TA_CHECKED_OUT_FORCED,
+            userId: ta.id,
+            courseId: queue.courseId,
+          }).save();
+        });
+        queue.staffList = [];
+      }
+    });
+    await QueueModel.save(queuesWithCheckedInStaff);
   }
 
   public async cleanQueue(queueId: number, force?: boolean): Promise<void> {
