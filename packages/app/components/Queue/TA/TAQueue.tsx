@@ -64,7 +64,7 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
   const staffCheckedIntoAnotherQueue = course?.queues.some(
     (q) =>
       q.id !== qid &&
-      q.staffList.some((staffMember) => staffMember.id === user.id)
+      q.staffList.some((staffMember) => staffMember.id === user?.id)
   );
 
   const nextQuestion =
