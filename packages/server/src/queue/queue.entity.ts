@@ -75,10 +75,9 @@ export class QueueModel extends BaseEntity {
     return this.isOpen;
   }
 
-  async areThereOfficeHoursRightNow(): Promise<boolean> {
-    const now = new Date();
+  async areThereOfficeHoursRightNow(now = new Date()): Promise<boolean> {
     const MS_IN_MINUTE = 60000;
-    const ohs = await this.getOfficeHours();
+    const ohs = await this.getOfficeHours(now);
     return !!ohs.find(
       (e) =>
         e.startTime.getTime() - 10 * MS_IN_MINUTE < now.getTime() &&
@@ -111,15 +110,13 @@ export class QueueModel extends BaseEntity {
   }
 
   // Get Office hours in a 72hr window around now, snapped to midnight
-  private async getOfficeHours(): Promise<OfficeHourModel[]> {
-    const now = new Date();
-
+  private async getOfficeHours(now = new Date()): Promise<OfficeHourModel[]> {
     const lowerBound = new Date(now);
-    lowerBound.setUTCHours(now.getUTCHours() - 24);
+    lowerBound.setUTCHours(now.getUTCHours() - 30);
     lowerBound.setUTCHours(0, 0, 0, 0);
 
     const upperBound = new Date(now);
-    upperBound.setUTCHours(now.getUTCHours() + 24);
+    upperBound.setUTCHours(now.getUTCHours() + 30);
     upperBound.setUTCHours(0, 0, 0, 0);
 
     return await OfficeHourModel.find({
