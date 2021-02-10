@@ -19,7 +19,7 @@ export function useTAInQueueInfo(queueId: number): TAInQueueInfo {
 
   const { questions, mutateQuestions } = useQuestions(queueId);
   const helpingQuestions = questions?.questionsGettingHelp?.filter(
-    (question) => question.taHelped?.id === user.id
+    (question) => question.taHelped?.id === user?.id
   );
   const isHelping = helpingQuestions?.length > 0;
 
