@@ -18,7 +18,7 @@ export declare class QueueModel extends BaseEntity {
     endTime: Date;
     isOpen: boolean;
     checkIsOpen(): Promise<boolean>;
-    areThereOfficeHoursRightNow(): Promise<boolean>;
+    areThereOfficeHoursRightNow(now?: Date): Promise<boolean>;
     queueSize: number;
     addQueueSize(): Promise<void>;
     addQueueTimes(): Promise<void>;

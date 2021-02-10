@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"06ba0e3675340d0badda3e0f25f0523f4ee3d8b5"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"6787a17b7cc607f27c32041edd0c956e90a50b45"};
 
 /***/ }),
 /* 2 */
@@ -196,7 +196,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "06ba0e3675340d0badda3e0f25f0523f4ee3d8b5",
+        release: "6787a17b7cc607f27c32041edd0c956e90a50b45",
         environment: common_2.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -1506,10 +1506,9 @@ let QueueModel = class QueueModel extends typeorm_1.BaseEntity {
         this.isOpen = await this.areThereOfficeHoursRightNow();
         return this.isOpen;
     }
-    async areThereOfficeHoursRightNow() {
-        const now = new Date();
+    async areThereOfficeHoursRightNow(now = new Date()) {
         const MS_IN_MINUTE = 60000;
-        const ohs = await this.getOfficeHours();
+        const ohs = await this.getOfficeHours(now);
         return !!ohs.find((e) => e.startTime.getTime() - 10 * MS_IN_MINUTE < now.getTime() &&
             e.endTime.getTime() + 1 * MS_IN_MINUTE > now.getTime());
     }
@@ -1530,13 +1529,12 @@ let QueueModel = class QueueModel extends typeorm_1.BaseEntity {
             this.endTime = currTime.endTime;
         }
     }
-    async getOfficeHours() {
-        const now = new Date();
+    async getOfficeHours(now = new Date()) {
         const lowerBound = new Date(now);
-        lowerBound.setUTCHours(now.getUTCHours() - 24);
+        lowerBound.setUTCHours(now.getUTCHours() - 30);
         lowerBound.setUTCHours(0, 0, 0, 0);
         const upperBound = new Date(now);
-        upperBound.setUTCHours(now.getUTCHours() + 24);
+        upperBound.setUTCHours(now.getUTCHours() + 30);
         upperBound.setUTCHours(0, 0, 0, 0);
         return await office_hour_entity_1.OfficeHourModel.find({
             where: [
