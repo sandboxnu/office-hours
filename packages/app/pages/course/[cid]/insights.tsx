@@ -1,7 +1,7 @@
 import React, { ReactElement, useState } from "react";
 import { API } from "@koh/api-client";
 import useSWR from "swr";
-import { Tooltip, Card, Space, Drawer, Button } from "antd";
+import { Tooltip, Card, Space, Drawer, Button, DatePicker } from "antd";
 import { CardSize } from "antd/lib/card";
 import { InfoCircleOutlined, MinusSquareOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
@@ -19,6 +19,9 @@ export default function Insights(): ReactElement {
     `api/v1/profile`,
     async () => API.profile.index()
   );
+  const [dates, setDates] = useState([]);
+  // const [hackValue, setHackValue] = useState();
+  const [value, setValue] = useState();
   const { data: allInsights } = useSWR(`api/v1/insights/listAll`, async () =>
     API.insights.list()
   );
@@ -46,6 +49,16 @@ export default function Insights(): ReactElement {
     [[], []]
   );
 
+  const { RangePicker } = DatePicker;
+  const onOpenChange = (open) => {
+    if (open) {
+      //setHackValue([]);
+      setDates([]);
+    } else {
+      // setHackValue(undefined);
+    }
+  };
+
   return (
     <>
       <StandardPageContainer>
@@ -65,6 +78,15 @@ export default function Insights(): ReactElement {
             toggleInsightOff={toggleInsightOff}
           />
         </Drawer>
+
+        {console.log("dates", dates)}
+        <RangePicker
+          value={value}
+          onCalendarChange={(val) => setDates(val)}
+          // onChange={(val) => setValue(val)}
+          onOpenChange={onOpenChange}
+        />
+
         <div style={{ display: "flex", direction: "ltr" }}>
           {smallInsights?.map((insightName: string) => {
             return (
