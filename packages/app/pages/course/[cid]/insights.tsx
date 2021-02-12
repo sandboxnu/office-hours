@@ -11,6 +11,7 @@ import NavBar from "../../../components/Nav/NavBar";
 import BarChartComponent from "../../../components/Insights/components/BarChartComponent";
 import SimpleDisplayComponent from "../../../components/Insights/components/SimpleDisplayComponent";
 import InsightsDisplayOptions from "../../../components/Insights/components/InsightsDisplayOptions";
+import { list } from "pm2";
 
 export default function Insights(): ReactElement {
   const router = useRouter();
@@ -19,9 +20,10 @@ export default function Insights(): ReactElement {
     `api/v1/profile`,
     async () => API.profile.index()
   );
+
   const [dates, setDates] = useState([]);
-  // const [hackValue, setHackValue] = useState();
   const [value, setValue] = useState();
+
   const { data: allInsights } = useSWR(`api/v1/insights/listAll`, async () =>
     API.insights.list()
   );
@@ -50,15 +52,6 @@ export default function Insights(): ReactElement {
   );
 
   const { RangePicker } = DatePicker;
-  const onOpenChange = (open) => {
-    if (open) {
-      //setHackValue([]);
-      setDates([]);
-    } else {
-      // setHackValue(undefined);
-    }
-  };
-
   return (
     <>
       <StandardPageContainer>
@@ -79,12 +72,11 @@ export default function Insights(): ReactElement {
           />
         </Drawer>
 
-        {console.log("dates", dates)}
         <RangePicker
           value={value}
-          onCalendarChange={(val) => setDates(val)}
-          // onChange={(val) => setValue(val)}
-          onOpenChange={onOpenChange}
+          onChange={(val) => {
+            setDates(val);
+          }}
         />
 
         <div style={{ display: "flex", direction: "ltr" }}>
@@ -93,6 +85,7 @@ export default function Insights(): ReactElement {
               <RenderInsight
                 key={insightName}
                 insightName={insightName}
+                dateRange={dates}
                 toggleInsightOff={toggleInsightOff}
               />
             );
@@ -104,6 +97,7 @@ export default function Insights(): ReactElement {
               <RenderInsight
                 key={insightName}
                 insightName={insightName}
+                dateRange={dates}
                 toggleInsightOff={toggleInsightOff}
               />
             );
@@ -122,11 +116,13 @@ export default function Insights(): ReactElement {
 
 interface RenderInsightProps {
   insightName: string;
+  dateRange: any; //TODO: type for [Moment, Moment] array representing the date range
   toggleInsightOff: (insightName: string) => void;
 }
 
 function RenderInsight({
   insightName,
+  dateRange,
   toggleInsightOff,
 }: RenderInsightProps): ReactElement {
   const router = useRouter();

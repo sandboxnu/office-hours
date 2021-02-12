@@ -40,7 +40,8 @@ export class InsightsController {
     @Param('courseId') courseId: number,
     @Param('insightName') insightName: string,
     @CourseRole() role: Role,
-    @Query() filters: any,
+    @Query('start') start: Date,
+    @Query('end') end: Date,
   ): Promise<GetInsightResponse> {
     // Check that the insight name is valid
     const insightNames = Object.keys(INSIGHTS_MAP);
@@ -62,6 +63,11 @@ export class InsightsController {
         {
           type: 'courseId',
           courseId,
+        },
+        {
+          type: 'timeframe',
+          start,
+          end,
         },
       ],
     });
