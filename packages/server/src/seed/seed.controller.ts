@@ -124,6 +124,7 @@ export class SeedController {
         course: course,
         override: true,
       });
+
       // TA 1
       const user3 = await UserFactory.create({
         email: 'stenzel.w@northeastern.edu',

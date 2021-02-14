@@ -1,14 +1,15 @@
 import {
+  ERROR_MESSAGES,
   GetCourseOverridesResponse,
-  UpdateCourseOverrideBody,
   GetCourseResponse,
   QueuePartial,
   Role,
   TACheckoutResponse,
-  ERROR_MESSAGES,
+  UpdateCourseOverrideBody,
   UpdateCourseOverrideResponse,
 } from '@koh/common';
 import {
+  BadRequestException,
   Body,
   ClassSerializerInterceptor,
   Controller,
@@ -18,10 +19,9 @@ import {
   Post,
   UseGuards,
   UseInterceptors,
-  InternalServerErrorException,
-  BadRequestException,
 } from '@nestjs/common';
 import async from 'async';
+import moment = require('moment');
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { Connection, getRepository, MoreThanOrEqual } from 'typeorm';
@@ -37,7 +37,6 @@ import { CourseModel } from './course.entity';
 import { HeatmapService } from './heatmap.service';
 import { IcalService } from './ical.service';
 import { OfficeHourModel } from './office-hour.entity';
-import moment = require('moment');
 
 @Controller('courses')
 @UseGuards(JwtAuthGuard, CourseRolesGuard)

@@ -430,7 +430,10 @@ export class GetCourseOverridesResponse {
 }
 
 export class UpdateCourseOverrideBody {
+  @IsString()
   email!: string;
+
+  @IsString()
   role!: Role;
 }
 

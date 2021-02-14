@@ -1,5 +1,4 @@
 import {
-  UpdateCourseOverrideBody,
   CreateQuestionParams,
   CreateQuestionResponse,
   DesktopNotifBody,
@@ -13,11 +12,12 @@ import {
   ListQuestionsResponse,
   TACheckoutResponse,
   TAUpdateStatusResponse,
+  UpdateCourseOverrideBody,
+  UpdateCourseOverrideResponse,
   UpdateProfileParams,
   UpdateQuestionParams,
   UpdateQuestionResponse,
   UpdateQueueParams,
-  UpdateCourseOverrideResponse,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -69,11 +69,24 @@ class APIClient {
         `/api/v1/courses/${courseId}/course_override`,
         GetCourseOverridesResponse
       ),
-    addOverride: async (courseId: number, params: UpdateCourseOverrideBody) =>
+    addOverride: async (
+      courseId: number,
+      params: UpdateCourseOverrideBody
+    ): Promise<UpdateCourseOverrideResponse> =>
       this.req(
         "POST",
         `/api/v1/courses/${courseId}/update_override`,
         UpdateCourseOverrideResponse,
+        params
+      ),
+    deleteOverride: async (
+      courseId: number,
+      params: UpdateCourseOverrideBody
+    ): Promise<void> =>
+      this.req(
+        "DELETE",
+        `/api/v1/courses/${courseId}/update_override`,
+        undefined,
         params
       ),
   };
