@@ -1,4 +1,4 @@
-import { TACheckoutResponse } from '@koh/common';
+import { Role, TACheckoutResponse } from '@koh/common';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { CourseModule } from '../src/course/course.module';
@@ -251,5 +251,56 @@ describe('Course Integration', () => {
 
       expect(events.length).toBe(0);
     });
+
+    it('tests creating override using the endpoint', async () => {
+      const course = await CourseFactory.create();
+      const user = await UserFactory.create();
+      const professor = await UserFactory.create();
+      await UserCourseFactory.create({
+        user: professor,
+        role: Role.PROFESSOR,
+        course,
+      });
+      await supertest({ userId: professor.id })
+        .post(`/courses/${course.id}/update_override`)
+        .send({ email: user.email, role: Role.STUDENT })
+        .expect(201);
+      const ucm = await UserCourseModel.findOne({
+        where: {
+          userId: user.id,
+        },
+      });
+      expect(ucm.role).toEqual(Role.STUDENT);
+      expect(ucm.override).toBeTruthy();
+    });
+  });
+
+  it('tests deleting override using the endpoint', async () => {
+    const course = await CourseFactory.create();
+    const user = await UserFactory.create();
+    const professor = await UserFactory.create();
+    await UserCourseFactory.create({
+      user: professor,
+      role: Role.PROFESSOR,
+      course,
+    });
+    await UserCourseFactory.create({
+      user: user,
+      role: Role.TA,
+      override: true,
+      course,
+    });
+
+    await supertest({ userId: professor.id })
+      .delete(`/courses/${course.id}/update_override`)
+      .send({ email: user.email, role: Role.STUDENT })
+      .expect(200);
+
+    const ucm = await UserCourseModel.findOne({
+      where: {
+        userId: user.id,
+      },
+    });
+    expect(ucm).toBeUndefined();
   });
 });
