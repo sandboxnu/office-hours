@@ -429,6 +429,13 @@ export class GetCourseOverridesResponse {
   data!: GetCourseOverridesRow[];
 }
 
+export class UpdateCourseOverrideBody {
+  email!: string;
+  role!: Role;
+}
+
+export class UpdateCourseOverrideResponse extends GetCourseOverridesRow {}
+
 export class GetQueueResponse extends QueuePartial {}
 
 export class GetCourseQueuesResponse extends Array<QueuePartial> {}
@@ -608,5 +615,8 @@ export const ERROR_MESSAGES = {
   profileController: {
     noDiskSpace:
       "There is no disk space left to store an image. Please immediately contact your course staff and let them know. They will contact the Khoury Office Hours team as soon as possible.",
+  },
+  courseController: {
+    noUserFound: "No user found with given email",
   },
 };

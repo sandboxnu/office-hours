@@ -1,11 +1,15 @@
 import {
   GetCourseOverridesResponse,
+  UpdateCourseOverrideBody,
   GetCourseResponse,
   QueuePartial,
   Role,
   TACheckoutResponse,
+  ERROR_MESSAGES,
+  UpdateCourseOverrideResponse,
 } from '@koh/common';
 import {
+  Body,
   ClassSerializerInterceptor,
   Controller,
   Delete,
@@ -15,6 +19,7 @@ import {
   UseGuards,
   UseInterceptors,
   InternalServerErrorException,
+  BadRequestException,
 } from '@nestjs/common';
 import async from 'async';
 import { EventModel, EventType } from 'profile/event-model.entity';
@@ -204,5 +209,62 @@ export class CourseController {
         email: row.user.email,
       })),
     };
+  }
+
+  @Post(':id/update_override')
+  @Roles(Role.PROFESSOR)
+  async addOverride(
+    @Param('id') courseId: number,
+    @Body() overrideInfo: UpdateCourseOverrideBody,
+  ): Promise<UpdateCourseOverrideResponse> {
+    const user = await UserModel.findOne({
+      where: { email: overrideInfo.email },
+    });
+    if (!user)
+      throw new BadRequestException(
+        ERROR_MESSAGES.courseController.noUserFound,
+      );
+    const userId = user.id;
+    let userCourse = await UserCourseModel.findOne({
+      where: { courseId, userId },
+    });
+    if (!userCourse) {
+      userCourse = await UserCourseModel.create({
+        userId,
+        courseId,
+        role: overrideInfo.role,
+        override: true,
+      }).save();
+    } else {
+      userCourse.override = true;
+      userCourse.role = overrideInfo.role;
+      await userCourse.save();
+    }
+    return {
+      id: userCourse.id,
+      role: userCourse.role,
+      name: `${user.firstName} ${user.lastName}`,
+      email: user.email,
+    };
+  }
+
+  @Delete(':id/update_override')
+  @Roles(Role.PROFESSOR)
+  async deleteOverride(
+    @Param('id') courseId: number,
+    @Body() overrideInfo: UpdateCourseOverrideBody,
+  ): Promise<void> {
+    const user = await UserModel.findOne({
+      where: { email: overrideInfo.email },
+    });
+    if (!user)
+      throw new BadRequestException(
+        ERROR_MESSAGES.courseController.noUserFound,
+      );
+    const userId = user.id;
+    const userCourse = await UserCourseModel.findOne({
+      where: { courseId, userId },
+    });
+    await UserCourseModel.remove(userCourse);
   }
 }
