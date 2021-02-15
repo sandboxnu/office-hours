@@ -579,6 +579,11 @@ export type BarChartOutputType = {
   yAxisName?: string;
 };
 
+export type DateRangeType = {
+  start: string;
+  end: string;
+};
+
 export const ERROR_MESSAGES = {
   questionController: {
     createQuestion: {
