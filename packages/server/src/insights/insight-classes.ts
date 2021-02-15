@@ -49,8 +49,8 @@ const FILTER_MAP = {
     },
     timeframe: (queryBuilder, filter) => {
       queryBuilder.andWhere('QuestionModel.createdAt BETWEEN :start AND :end', {
-        start: filter.dateRange.start,
-        end: filter.dateRange.end,
+        start: filter.start,
+        end: filter.end,
       });
     },
   },
