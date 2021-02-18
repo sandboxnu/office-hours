@@ -6,6 +6,7 @@ import styled from "styled-components";
 
 const OverrideInput = styled.div`
   display: flex;
+  margin-bottom: 20px;
 `;
 
 type AddOverrideInputProps = {
@@ -24,6 +25,8 @@ export default function AddOverrideInput({
     try {
       const resp = await API.course.addOverride(courseId, { email, role });
       onAddOverride(resp);
+      setEmail("");
+      message.success("Successfully added an override for " + resp.name);
     } catch (e) {
       message.error(e.response?.data?.message);
       console.log(e);

@@ -25,10 +25,22 @@ export default function CourseOverrideSettings({
     API.course.getCourseOverrides(courseId)
   );
 
+  const formattedRoles = {
+    student: "Student",
+    ta: "TA",
+    professor: "Professor",
+  };
+
   return (
     <OverrideContents>
       <AddOverrideInput courseId={courseId} onAddOverride={() => mutate()} />
-      <Table dataSource={data?.data.map((row, i) => ({ ...row, key: i }))}>
+      <Table
+        dataSource={data?.data.map((row, i) => ({
+          ...row,
+          key: i,
+          role: formattedRoles[row.role],
+        }))}
+      >
         <Column title="Name" dataIndex="name" key="name" />
         <Column title="Email" dataIndex="email" key="email" />
         <Column title="Role" dataIndex="role" key="role" />

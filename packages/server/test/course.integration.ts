@@ -251,7 +251,9 @@ describe('Course Integration', () => {
 
       expect(events.length).toBe(0);
     });
+  });
 
+  describe('POST /courses/:id/update_override', () => {
     it('tests creating override using the endpoint', async () => {
       const course = await CourseFactory.create();
       const user = await UserFactory.create();
@@ -275,32 +277,34 @@ describe('Course Integration', () => {
     });
   });
 
-  it('tests deleting override using the endpoint', async () => {
-    const course = await CourseFactory.create();
-    const user = await UserFactory.create();
-    const professor = await UserFactory.create();
-    await UserCourseFactory.create({
-      user: professor,
-      role: Role.PROFESSOR,
-      course,
-    });
-    await UserCourseFactory.create({
-      user: user,
-      role: Role.TA,
-      override: true,
-      course,
-    });
+  describe('POST /courses/:id/update_override', () => {
+    it('tests deleting override using the endpoint', async () => {
+      const course = await CourseFactory.create();
+      const user = await UserFactory.create();
+      const professor = await UserFactory.create();
+      await UserCourseFactory.create({
+        user: professor,
+        role: Role.PROFESSOR,
+        course,
+      });
+      await UserCourseFactory.create({
+        user: user,
+        role: Role.TA,
+        override: true,
+        course,
+      });
 
-    await supertest({ userId: professor.id })
-      .delete(`/courses/${course.id}/update_override`)
-      .send({ email: user.email, role: Role.STUDENT })
-      .expect(200);
+      await supertest({ userId: professor.id })
+        .delete(`/courses/${course.id}/update_override`)
+        .send({ email: user.email, role: Role.STUDENT })
+        .expect(200);
 
-    const ucm = await UserCourseModel.findOne({
-      where: {
-        userId: user.id,
-      },
+      const ucm = await UserCourseModel.findOne({
+        where: {
+          userId: user.id,
+        },
+      });
+      expect(ucm).toBeUndefined();
     });
-    expect(ucm).toBeUndefined();
   });
 });

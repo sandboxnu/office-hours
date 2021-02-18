@@ -18,8 +18,11 @@ describe("Professor can create an override", () => {
       "body > div:nth-child(14) > div > div > div > div:nth-child(2) > div > div > div:nth-child(2) > div"
     ).click();
     cy.get("button").contains("Add Override").click();
-    cy.contains(this.student.user.name);
+    //    cy.contains(this.student.user.name);
     cy.contains(this.student.user.email);
     cy.contains("ta");
+
+    cy.get(".ant-btn > .anticon > svg").click();
+    cy.should("not.contain", this.student.user.name);
   });
 });

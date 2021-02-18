@@ -262,7 +262,7 @@ export class CourseController {
       );
     const userId = user.id;
     const userCourse = await UserCourseModel.findOne({
-      where: { courseId, userId },
+      where: { courseId, userId, override: true },
     });
     await UserCourseModel.remove(userCourse);
   }
