@@ -1,19 +1,19 @@
 import {
   ClockCircleOutlined,
-  NotificationOutlined,
-  StopOutlined,
   CloudSyncOutlined,
   FrownOutlined,
+  NotificationOutlined,
+  StopOutlined,
 } from "@ant-design/icons";
+import { Button, Tooltip } from "antd";
+import { ButtonProps } from "antd/lib/button";
+import moment from "moment";
 import React, { ReactElement, ReactNode, useState } from "react";
 import styled from "styled-components";
 import { useQueue } from "../../hooks/useQueue";
 import { formatQueueTime } from "../../utils/TimeUtil";
-import { TAStatuses } from "./TAStatuses";
-import { Button, Tooltip } from "antd";
-import { ButtonProps } from "antd/lib/button";
-import moment from "moment";
 import { RenderEvery } from "../RenderEvery";
+import { TAStatuses } from "./TAStatuses";
 
 export const Container = styled.div`
   display: flex;
