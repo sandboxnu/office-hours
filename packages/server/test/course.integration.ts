@@ -325,7 +325,7 @@ describe('Course Integration', () => {
     });
   });
 
-  describe('POST /courses/:id/update_override', () => {
+  describe('DELETE /courses/:id/update_override', () => {
     it('tests deleting override using the endpoint', async () => {
       const course = await CourseFactory.create();
       const user = await UserFactory.create();
