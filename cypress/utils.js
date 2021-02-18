@@ -106,6 +106,21 @@ export const createAndLoginStudent = ({
   });
 
 /**
+ * Creates and logs in a professor into the course and uses the identifier to alias the professor's userCourse.
+ * @param {number} courseId - the course that this professor will be added to (defaults to null).
+ * @param {string} identifier - the id that cypress will alias this logged-in professor to. (defaults to "professor").
+ */
+export const createAndLoginProfessor = ({
+  courseId = null,
+  identifier = "professor",
+} = {}) =>
+  createUserAndLogin({
+    role: "professor",
+    courseId,
+    identifier,
+  });
+
+/**
  * Creates a new queue and binds it to cypress with an alias of the identifier.
  * @param {number} courseId - the course that this queue will be added to (defaults to null).
  * @param {number} room - the room where this queue will occur (defaults to "Online").
