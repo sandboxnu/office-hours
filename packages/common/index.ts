@@ -573,6 +573,7 @@ export const ERROR_MESSAGES = {
       cannotCheckIntoMultipleQueues:
         "Cannot check into multiple queues at the same time",
     },
+    noUserFound: "No user found with given email",
   },
   questionController: {
     createQuestion: {
@@ -626,8 +627,5 @@ export const ERROR_MESSAGES = {
   profileController: {
     noDiskSpace:
       "There is no disk space left to store an image. Please immediately contact your course staff and let them know. They will contact the Khoury Office Hours team as soon as possible.",
-  },
-  courseController: {
-    noUserFound: "No user found with given email",
   },
 };
