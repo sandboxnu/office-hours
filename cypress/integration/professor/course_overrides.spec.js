@@ -14,9 +14,7 @@ describe("Professor can create an override", () => {
     cy.visit(`/course/${this.professor.course.id}/course_overrides`);
     cy.get(".ant-input").click().type(this.student.user.email);
     cy.get(".ant-select-selector").click();
-    cy.get(
-      "body > div:nth-child(14) > div > div > div > div:nth-child(2) > div > div > div:nth-child(2) > div"
-    ).click();
+    cy.contains("TA").click();
     cy.get("button").contains("Add Override").click();
     //    cy.contains(this.student.user.name);
     cy.contains(this.student.user.email);

@@ -1,5 +1,6 @@
 import { CreateQuestionParams, Role } from '@koh/common';
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { EventModel } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
 import { Connection } from 'typeorm';
@@ -32,6 +33,10 @@ export class SeedController {
     await this.seedService.deleteAll(OfficeHourModel);
     await this.seedService.deleteAll(QuestionModel);
     await this.seedService.deleteAll(QueueModel);
+    await this.seedService.deleteAll(UserCourseModel);
+    await this.seedService.deleteAll(UserModel);
+    await this.seedService.deleteAll(CourseModel);
+    await this.seedService.deleteAll(EventModel);
 
     return 'Data successfully reset';
   }
