@@ -180,6 +180,21 @@ export declare class GetCourseResponse {
     queues: QueuePartial[];
     heatmap: Heatmap | false;
 }
+export declare class GetCourseOverridesRow {
+    id: number;
+    role: string;
+    name: string;
+    email: string;
+}
+export declare class GetCourseOverridesResponse {
+    data: GetCourseOverridesRow[];
+}
+export declare class UpdateCourseOverrideBody {
+    email: string;
+    role: Role;
+}
+export declare class UpdateCourseOverrideResponse extends GetCourseOverridesRow {
+}
 export declare class GetQueueResponse extends QueuePartial {
 }
 export declare class GetCourseQueuesResponse extends Array<QueuePartial> {
@@ -260,6 +275,7 @@ export declare const ERROR_MESSAGES: {
             cannotCreateNewQueueIfNotProfessor: string;
             cannotCheckIntoMultipleQueues: string;
         };
+        noUserFound: string;
     };
     questionController: {
         createQuestion: {
