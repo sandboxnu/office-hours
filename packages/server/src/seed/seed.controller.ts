@@ -34,9 +34,9 @@ export class SeedController {
     await this.seedService.deleteAll(QuestionModel);
     await this.seedService.deleteAll(QueueModel);
     await this.seedService.deleteAll(UserCourseModel);
+    await this.seedService.deleteAll(EventModel);
     await this.seedService.deleteAll(UserModel);
     await this.seedService.deleteAll(CourseModel);
-    await this.seedService.deleteAll(EventModel);
 
     return 'Data successfully reset';
   }

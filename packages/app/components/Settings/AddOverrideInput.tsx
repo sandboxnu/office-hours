@@ -29,7 +29,6 @@ export default function AddOverrideInput({
       message.success("Successfully added an override for " + resp.name);
     } catch (e) {
       message.error(e.response?.data?.message);
-      console.log(e);
     }
   };
 
