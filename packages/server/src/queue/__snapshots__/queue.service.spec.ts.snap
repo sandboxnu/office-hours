@@ -14,7 +14,6 @@ ListQuestionsResponse {
         "id": 1,
         "lastName": "Person",
         "photoURL": null,
-        "setFullNames": [Function],
       },
       "helpedAt": null,
       "id": 1,
@@ -30,7 +29,6 @@ ListQuestionsResponse {
       "createdAt": 2020-11-02T12:00:00.000Z,
       "creator": UserModel {
         "id": 2,
-        "setFullNames": [Function],
       },
       "helpedAt": null,
       "id": 2,
@@ -54,7 +52,6 @@ ListQuestionsResponse {
       "name": "User Person",
       "phoneNotifsEnabled": false,
       "photoURL": null,
-      "setFullNames": [Function],
     },
     "creatorId": 1,
     "firstHelpedAt": null,
