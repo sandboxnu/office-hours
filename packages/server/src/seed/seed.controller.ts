@@ -3,7 +3,7 @@ import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { EventModel } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
-import { Connection } from 'typeorm';
+import { Connection, getManager } from 'typeorm';
 import {
   CourseFactory,
   OfficeHourFactory,
@@ -37,6 +37,8 @@ export class SeedController {
     await this.seedService.deleteAll(EventModel);
     await this.seedService.deleteAll(UserModel);
     await this.seedService.deleteAll(CourseModel);
+    const manager = getManager();
+    manager.query('ALTER SEQUENCE user_model_id_seq RESTART WITH 1;');
 
     return 'Data successfully reset';
   }
@@ -108,7 +110,7 @@ export class SeedController {
         lastName: 'Liu',
         photoURL:
           'https://ca.slack-edge.com/TE565NU79-UR20CG36E-cf0f375252bd-512',
-      });
+      }).save();
       await UserCourseFactory.create({
         user: user1,
         role: Role.STUDENT,
