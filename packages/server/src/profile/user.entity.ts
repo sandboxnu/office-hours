@@ -22,9 +22,6 @@ export class UserModel extends BaseEntity {
   @Column('text')
   email: string;
 
-  @Column('text')
-  name: string;
-
   @Column('text', { nullable: true })
   firstName: string;
 
@@ -61,4 +58,8 @@ export class UserModel extends BaseEntity {
   @Exclude()
   @OneToMany((type) => EventModel, (event) => event.user)
   events: EventModel[];
+
+  public getFullName(): string {
+    return this.firstName + ' ' + this.lastName;
+  }
 }

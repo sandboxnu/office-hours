@@ -227,7 +227,7 @@ export class QuestionController {
         }
         await this.notifService.notifyUser(
           question.creator.id,
-          NotifMsgs.queue.TA_HIT_HELPED(question.taHelped.name),
+          NotifMsgs.queue.TA_HIT_HELPED(question.taHelped.getFullName()),
         );
       }
       if (newStatus in ClosedQuestionStatus) {

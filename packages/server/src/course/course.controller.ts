@@ -272,7 +272,7 @@ export class CourseController {
     return {
       id: userCourse.id,
       role: userCourse.role,
-      name: `${user.firstName} ${user.lastName}`,
+      name: user.getFullName(),
       email: user.email,
     };
   }

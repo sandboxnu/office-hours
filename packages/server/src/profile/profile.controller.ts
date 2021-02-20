@@ -69,7 +69,6 @@ export class ProfileController {
     const userResponse = pick(user, [
       'id',
       'email',
-      'name',
       'firstName',
       'lastName',
       'photoURL',
@@ -81,6 +80,7 @@ export class ProfileController {
       courses,
       phoneNumber: user.phoneNotif?.phoneNumber,
       desktopNotifs,
+      name: `${user.firstName} ${user.lastName}`,
     };
   }
 
@@ -91,7 +91,6 @@ export class ProfileController {
     user: UserModel,
   ): Promise<GetProfileResponse> {
     user = Object.assign(user, userPatch);
-    user.name = user.firstName + ' ' + user.lastName;
 
     // check that the user is trying to update the phone notifs
     if (userPatch.phoneNotifsEnabled && userPatch.phoneNumber) {

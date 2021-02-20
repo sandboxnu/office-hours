@@ -299,11 +299,12 @@ describe('Question Integration', () => {
         .send({
           taHelped: {
             id: ta.id,
-            name: ta.name,
+            name: ta.getFullName(),
           },
         })
         .expect(400);
     });
+
     it('PATCH status to helping as student not allowed', async () => {
       const course = await CourseFactory.create();
       const queue = await QueueFactory.create({ courseId: course.id });
@@ -325,10 +326,11 @@ describe('Question Integration', () => {
         })
         .expect(401);
     });
+
     it('PATCH status to helping as TA works', async () => {
       const course = await CourseFactory.create();
       const queue = await QueueFactory.create({ courseId: course.id });
-      const q = await QuestionFactory.create({
+      const question = await QuestionFactory.create({
         text: 'Help pls',
         queue: queue,
       });
@@ -336,17 +338,23 @@ describe('Question Integration', () => {
       await TACourseFactory.create({ courseId: queue.courseId, user: ta });
 
       const res = await supertest({ userId: ta.id })
-        .patch(`/questions/${q.id}`)
+        .patch(`/questions/${question.id}`)
         .send({
           status: QuestionStatusKeys.Helping,
         })
         .expect(200);
       expect(res.body).toMatchObject({
         status: QuestionStatusKeys.Helping,
-        taHelped: { id: ta.id, name: ta.name, photoURL: ta.photoURL },
+        taHelped: {
+          id: ta.id,
+          firstName: ta.firstName,
+          lastName: ta.lastName,
+          photoURL: ta.photoURL,
+        },
       });
-      expectUserNotified(q.creatorId);
+      expectUserNotified(question.creatorId);
     });
+
     it('PATCH status to Resolved as TA works', async () => {
       const course = await CourseFactory.create();
       const queue = await QueueFactory.create({ courseId: course.id });
@@ -370,6 +378,7 @@ describe('Question Integration', () => {
         status: QuestionStatusKeys.Resolved,
       });
     });
+
     it('PATCH anything other than status as TA not allowed', async () => {
       const q = await QuestionFactory.create({ text: 'Help pls' });
       const ta = await UserFactory.create();
