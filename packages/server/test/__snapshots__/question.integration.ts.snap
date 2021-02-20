@@ -9,6 +9,7 @@ Object {
     "firstName": "User",
     "id": 1,
     "lastName": "Person",
+    "name": "User Person",
     "photoURL": null,
   },
   "helpedAt": null,

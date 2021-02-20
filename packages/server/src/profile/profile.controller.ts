@@ -69,6 +69,7 @@ export class ProfileController {
     const userResponse = pick(user, [
       'id',
       'email',
+      'name',
       'firstName',
       'lastName',
       'photoURL',
@@ -80,7 +81,6 @@ export class ProfileController {
       courses,
       phoneNumber: user.phoneNotif?.phoneNumber,
       desktopNotifs,
-      name: `${user.firstName} ${user.lastName}`,
     };
   }
 
