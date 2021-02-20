@@ -1,7 +1,7 @@
 import React, { ReactElement, useState } from "react";
 import { API } from "@koh/api-client";
 import useSWR from "swr";
-import { Tooltip, Card, Space, Drawer, Button, DatePicker } from "antd";
+import { Tooltip, Card, Space, Drawer, Button, DatePicker, Divider } from "antd";
 import { CardSize } from "antd/lib/card";
 import { InfoCircleOutlined, MinusSquareOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
@@ -55,9 +55,10 @@ export default function Insights(): ReactElement {
     <>
       <StandardPageContainer>
         <NavBar courseId={Number(cid)} />
-        <h1 style={{ margin: "12px" }}>Insights Dashboard</h1>
+        <div style={{ margin: "12px 12px 0px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <h1 style={{ margin: "2px" }}>Insights Dashboard - Alpha</h1>
 
-        <div style={{ maxWidth: "200 px", marginLeft: "12px" }}>
+        <div style={{ maxWidth: "200 px"}}>
           <b style={{ display: "inline-block", marginRight: "12px" }}>
             Date Range
           </b>
@@ -65,8 +66,10 @@ export default function Insights(): ReactElement {
             onChange={(_, dateString) =>
               setDateRange({ start: dateString[0], end: dateString[1] })
             }
-          />
+            />
         </div>
+        </div>
+        <Divider style={{ margin: "0 0 8px 0" }} />
 
         <Drawer
           title="Display Options"
