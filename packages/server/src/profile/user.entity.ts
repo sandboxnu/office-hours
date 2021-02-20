@@ -63,7 +63,7 @@ export class UserModel extends BaseEntity {
   name: string;
 
   @AfterLoad()
-  setFullNames = () => {
+  setFullNames() {
     this.name = this.firstName + ' ' + this.lastName;
-  };
+  }
 }
