@@ -71,6 +71,7 @@ const QueuePropertyText = styled.div`
   // To break text in flexbox
   min-width: 0;
   overflow-wrap: break-word;
+  white-space: pre-wrap;
 `;
 
 const StaffH2 = styled.h2`

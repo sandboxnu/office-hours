@@ -110,7 +110,7 @@ export class SeedController {
         lastName: 'Liu',
         photoURL:
           'https://ca.slack-edge.com/TE565NU79-UR20CG36E-cf0f375252bd-512',
-      }).save();
+      });
       await UserCourseFactory.create({
         user: user1,
         role: Role.STUDENT,
