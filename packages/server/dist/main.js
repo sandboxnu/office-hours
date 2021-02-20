@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"5e1b4cdf80504bd0f7971504e9a24183a91e9ffa"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"eeb71a0e8fc7a4a87dccc5fac349d7e0fca4b15a"};
 
 /***/ }),
 /* 2 */
@@ -196,7 +196,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "5e1b4cdf80504bd0f7971504e9a24183a91e9ffa",
+        release: "eeb71a0e8fc7a4a87dccc5fac349d7e0fca4b15a",
         environment: common_2.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -4811,6 +4811,8 @@ let SeedController = class SeedController {
         await this.seedService.deleteAll(event_model_entity_1.EventModel);
         await this.seedService.deleteAll(user_entity_1.UserModel);
         await this.seedService.deleteAll(course_entity_1.CourseModel);
+        const manager = typeorm_1.getManager();
+        manager.query('ALTER SEQUENCE user_model_id_seq RESTART WITH 1;');
         return 'Data successfully reset';
     }
     async createSeeds() {
