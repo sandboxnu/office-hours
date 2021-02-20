@@ -105,8 +105,6 @@ export class SeedController {
         email: 'liu.sta@northeastern.edu',
         firstName: 'Stanley',
         lastName: 'Liu',
-        photoURL:
-          'https://ca.slack-edge.com/TE565NU79-UR20CG36E-cf0f375252bd-512',
       });
       await UserCourseFactory.create({
         user: user1,
@@ -118,8 +116,6 @@ export class SeedController {
         email: 'takayama.a@northeastern.edu',
         firstName: 'Alex',
         lastName: 'Takayama',
-        photoURL:
-          'https://ca.slack-edge.com/TE565NU79-UJL97443D-50121339686b-512',
       });
       await UserCourseFactory.create({
         user: user2,
@@ -133,8 +129,6 @@ export class SeedController {
         email: 'stenzel.w@northeastern.edu',
         firstName: 'Will',
         lastName: 'Stenzel',
-        photoURL:
-          'https://ca.slack-edge.com/TE565NU79-URF256KRT-d10098e879da-512',
       });
       await UserCourseFactory.create({
         user: user3,
@@ -146,8 +140,6 @@ export class SeedController {
         email: 'chu.daj@northeastern.edu',
         firstName: 'Da-Jin',
         lastName: 'Chu',
-        photoURL:
-          'https://ca.slack-edge.com/TE565NU79-UE56Y5UT1-85db59a474f4-512',
       });
       await UserCourseFactory.create({
         user: user4,
@@ -159,8 +151,6 @@ export class SeedController {
         email: 'li.edwa@northeastern.edu',
         firstName: 'Eddy',
         lastName: 'Li',
-        photoURL:
-          'https://ca.slack-edge.com/TE565NU79-UR6P32JBT-a6c89822c544-512',
       });
       await UserCourseFactory.create({
         user: user5,

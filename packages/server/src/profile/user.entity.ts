@@ -1,5 +1,6 @@
 import { Exclude } from 'class-transformer';
 import {
+  AfterLoad,
   BaseEntity,
   Column,
   Entity,
@@ -59,7 +60,10 @@ export class UserModel extends BaseEntity {
   @OneToMany((type) => EventModel, (event) => event.user)
   events: EventModel[];
 
-  public getFullName(): string {
-    return this.firstName + ' ' + this.lastName;
-  }
+  name: string;
+
+  @AfterLoad()
+  setFullNames = () => {
+    this.name = this.firstName + ' ' + this.lastName;
+  };
 }

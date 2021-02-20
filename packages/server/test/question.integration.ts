@@ -299,7 +299,7 @@ describe('Question Integration', () => {
         .send({
           taHelped: {
             id: ta.id,
-            name: ta.getFullName(),
+            name: ta.name,
           },
         })
         .expect(400);
