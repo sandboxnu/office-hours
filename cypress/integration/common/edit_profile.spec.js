@@ -17,7 +17,9 @@ describe("User can edit their name", () => {
       cy.get('[data-cy="lastNameInput"]')
         .should("be.visible")
         .click()
-        .type("Benzel");
+        .type(
+          "{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}Benzel"
+        );
       cy.get('[style="padding-top: 50px;"] > .ant-btn > span')
         .should("contain", "Ok")
         .click();
