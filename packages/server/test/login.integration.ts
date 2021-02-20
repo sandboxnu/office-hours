@@ -147,7 +147,7 @@ describe('Login Integration', () => {
           course: course3,
         });
       });
-      it.only('overwrites courses but not names of existing users', async () => {
+      it('overwrites courses but not names of existing users', async () => {
         let user = await UserFactory.create();
 
         const res = await supertest()
