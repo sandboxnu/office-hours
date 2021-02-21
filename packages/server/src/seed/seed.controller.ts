@@ -1,8 +1,9 @@
 import { CreateQuestionParams, Role } from '@koh/common';
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { EventModel } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
-import { Connection } from 'typeorm';
+import { Connection, getManager } from 'typeorm';
 import {
   CourseFactory,
   OfficeHourFactory,
@@ -32,6 +33,12 @@ export class SeedController {
     await this.seedService.deleteAll(OfficeHourModel);
     await this.seedService.deleteAll(QuestionModel);
     await this.seedService.deleteAll(QueueModel);
+    await this.seedService.deleteAll(UserCourseModel);
+    await this.seedService.deleteAll(EventModel);
+    await this.seedService.deleteAll(UserModel);
+    await this.seedService.deleteAll(CourseModel);
+    const manager = getManager();
+    manager.query('ALTER SEQUENCE user_model_id_seq RESTART WITH 1;');
 
     return 'Data successfully reset';
   }
@@ -122,7 +129,9 @@ export class SeedController {
         user: user2,
         role: Role.STUDENT,
         course: course,
+        override: true,
       });
+
       // TA 1
       const user3 = await UserFactory.create({
         email: 'stenzel.w@northeastern.edu',
@@ -173,7 +182,7 @@ export class SeedController {
     }
 
     const queue = await QueueFactory.create({
-      room: 'WHV 101',
+      room: 'Online',
       course: course,
       officeHours: [
         officeHoursToday,
@@ -298,5 +307,24 @@ export class SeedController {
       createdAt: new Date(),
     });
     return question;
+  }
+
+  @Post('createQueueWithoutOfficeHour')
+  async createQueueWithoutOfficeHour(
+    @Body()
+    body: {
+      courseId: number;
+      allowQuestions: boolean;
+    },
+  ): Promise<QueueModel> {
+    const options = {
+      allowQuestions: body.allowQuestions ?? false,
+      officeHours: [],
+    };
+    if (body.courseId) {
+      const course = await CourseModel.findOneOrFail(body.courseId);
+      options['course'] = course;
+    }
+    return await QueueFactory.create(options);
   }
 }

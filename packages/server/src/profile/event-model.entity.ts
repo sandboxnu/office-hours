@@ -16,6 +16,7 @@ import { UserModel } from './user.entity';
 export enum EventType {
   TA_CHECKED_IN = 'taCheckedIn',
   TA_CHECKED_OUT = 'taCheckedOut',
+  TA_CHECKED_OUT_FORCED = 'taCheckedOutForced',
 }
 
 @Entity('event_model')

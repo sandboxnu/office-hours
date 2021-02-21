@@ -19,7 +19,7 @@ const QUEUE_TRANSITIONS: AllowableTransitions = {
 const QUESTION_STATES: Record<QuestionStatus, AllowableTransitions> = {
   [OpenQuestionStatus.Drafting]: {
     student: [OpenQuestionStatus.Queued, ClosedQuestionStatus.ConfirmedDeleted],
-    ta: [ClosedQuestionStatus.DeletedDraft],
+    ta: [OpenQuestionStatus.Helping, ClosedQuestionStatus.DeletedDraft],
   },
   [OpenQuestionStatus.Queued]: QUEUE_TRANSITIONS,
   [OpenQuestionStatus.PriorityQueued]: QUEUE_TRANSITIONS,

@@ -100,7 +100,21 @@ describe('Seed Integration', () => {
       queueId: 1,
       status: 'Queued',
       taHelpedId: null,
-      text: 'question 8',
+      text: 'question description',
+    });
+  });
+
+  it('POST /seeds/createQueueWithoutOfficeHour', async () => {
+    await CourseFactory.create({ name: 'CS 2500 ' });
+    const res = await supertest()
+      .post('/seeds/createQueueWithoutOfficeHour')
+      .send({ courseId: 1 });
+    expect(res.body).toMatchObject({
+      courseId: 1,
+      id: 1,
+      notes: null,
+      officeHours: [],
+      room: 'Online',
     });
   });
 });

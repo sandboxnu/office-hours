@@ -1,6 +1,6 @@
 import { API } from "@koh/api-client";
-import { Role } from "@koh/common";
-import { Modal, Radio } from "antd";
+import { QueuePartial, Role } from "@koh/common";
+import { Input, Modal, Radio } from "antd";
 import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
@@ -26,6 +26,9 @@ export default function TodayPageCheckinButton(): ReactElement {
   const queueCheckedIn = course?.queues.find((queue) =>
     queue.staffList.find((staff) => staff.id === profile?.id)
   );
+  const [queueToBeCreated, setQueueToBeCreated] = useState(
+    `Professor ${profile?.lastName}'s Office Hours`
+  );
 
   return (
     <>
@@ -36,11 +39,18 @@ export default function TodayPageCheckinButton(): ReactElement {
           onCancel={() => setModalVisible(false)}
           okText="Check In"
           onOk={async () => {
-            const redirectID = await API.taStatus.checkIn(
-              Number(cid),
-              course?.queues[queueToCheckInto].room
-            );
-
+            let redirectID: QueuePartial;
+            if (queueToCheckInto > -1) {
+              redirectID = await API.taStatus.checkIn(
+                Number(cid),
+                course?.queues[queueToCheckInto].room
+              );
+            } else {
+              redirectID = await API.taStatus.checkIn(
+                Number(cid),
+                queueToBeCreated
+              );
+            }
             router.push(
               "/course/[cid]/queue/[qid]",
               `/course/${Number(cid)}/queue/${redirectID.id}`
@@ -57,6 +67,16 @@ export default function TodayPageCheckinButton(): ReactElement {
                 {q.room}
               </ProfessorModalRadio>
             ))}
+            <ProfessorModalRadio value={-1}>
+              Other...
+              {queueToCheckInto === -1 ? (
+                <Input
+                  defaultValue={`Professor ${profile.lastName}'s Office Hours`}
+                  onChange={(e) => setQueueToBeCreated(e.target.value)}
+                  style={{ width: 400, marginLeft: 10 }}
+                />
+              ) : null}
+            </ProfessorModalRadio>
           </Radio.Group>
         </Modal>
       )}
