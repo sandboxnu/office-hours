@@ -82,7 +82,7 @@ export class TotalStudents implements InsightInterface<UserCourseModel> {
 }
 
 export class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
-  displayName = 'Total Questions Asked';
+  displayName = 'Total Questions';
   description = 'Gets the total number questions asked';
   roles = [Role.PROFESSOR];
   component = InsightDisplay.SimpleDisplay;
@@ -148,7 +148,7 @@ export class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
 }
 
 export class AverageWaitTime implements InsightInterface<QuestionModel> {
-  displayName = 'Average Wait Time';
+  displayName = 'Avg Wait Time';
   description = 'Gets the average wait time';
   roles = [Role.PROFESSOR];
   component = InsightDisplay.SimpleDisplay;
