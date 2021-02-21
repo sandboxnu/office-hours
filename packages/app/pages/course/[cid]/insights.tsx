@@ -1,12 +1,12 @@
 import React, { ReactElement, useState } from "react";
 import { API } from "@koh/api-client";
 import useSWR from "swr";
-import { Tooltip, Card, Space, Drawer, Button } from "antd";
+import { Tooltip, Card, Space, Drawer, Button, DatePicker, Divider } from "antd";
 import { CardSize } from "antd/lib/card";
 import { InfoCircleOutlined, MinusSquareOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
-import { InsightDisplay } from "@koh/common";
+import { DateRangeType, InsightDisplay } from "@koh/common";
 import NavBar from "../../../components/Nav/NavBar";
 import BarChartComponent from "../../../components/Insights/components/BarChartComponent";
 import SimpleDisplayComponent from "../../../components/Insights/components/SimpleDisplayComponent";
@@ -19,6 +19,9 @@ export default function Insights(): ReactElement {
     `api/v1/profile`,
     async () => API.profile.index()
   );
+
+  const [dateRange, setDateRange] = useState({ start: "", end: "" });
+
   const { data: allInsights } = useSWR(`api/v1/insights/listAll`, async () =>
     API.insights.list()
   );
@@ -46,11 +49,28 @@ export default function Insights(): ReactElement {
     [[], []]
   );
 
+  const { RangePicker } = DatePicker;
+
   return (
     <>
       <StandardPageContainer>
         <NavBar courseId={Number(cid)} />
-        <h1 style={{ margin: "24px" }}>Insights Dashboard</h1>
+        <div style={{ margin: "12px 12px 0px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <h1 style={{ margin: "2px" }}>Insights Dashboard - Alpha</h1>
+
+        <div style={{ maxWidth: "200 px"}}>
+          <b style={{ display: "inline-block", marginRight: "12px" }}>
+            Date Range
+          </b>
+          <RangePicker
+            onChange={(_, dateString) =>
+              setDateRange({ start: dateString[0], end: dateString[1] })
+            }
+            />
+        </div>
+        </div>
+        <Divider style={{ margin: "0 0 8px 0" }} />
+
         <Drawer
           title="Display Options"
           placement="left"
@@ -65,12 +85,14 @@ export default function Insights(): ReactElement {
             toggleInsightOff={toggleInsightOff}
           />
         </Drawer>
+
         <div style={{ display: "flex", direction: "ltr" }}>
           {smallInsights?.map((insightName: string) => {
             return (
               <RenderInsight
                 key={insightName}
                 insightName={insightName}
+                dateRange={dateRange}
                 toggleInsightOff={toggleInsightOff}
               />
             );
@@ -82,6 +104,7 @@ export default function Insights(): ReactElement {
               <RenderInsight
                 key={insightName}
                 insightName={insightName}
+                dateRange={dateRange}
                 toggleInsightOff={toggleInsightOff}
               />
             );
@@ -100,19 +123,22 @@ export default function Insights(): ReactElement {
 
 interface RenderInsightProps {
   insightName: string;
+  dateRange: DateRangeType;
   toggleInsightOff: (insightName: string) => void;
 }
 
 function RenderInsight({
   insightName,
+  dateRange,
   toggleInsightOff,
 }: RenderInsightProps): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
 
   const { data: insight, error, mutate } = useSWR(
-    cid && `api/v1/insights/${cid}/${insightName}`,
-    async () => API.insights.get(Number(cid), insightName)
+    cid &&
+      `api/v1/insights/${cid}/${insightName}?start=${dateRange.start}&end=${dateRange.end}`,
+    async () => await API.insights.get(Number(cid), insightName, dateRange)
   );
 
   if (!insight) {
