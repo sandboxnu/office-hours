@@ -93,9 +93,7 @@ export default function SettingsPage({
               beforeUpload={beforeUpload}
               showUploadList={false}
               onChange={(info) => {
-                info.file.status === "uploading"
-                  ? setUploading(true)
-                  : setUploading(false);
+                setUploading(info.file.status === "uploading");
                 mutate();
               }}
             >
@@ -111,10 +109,17 @@ export default function SettingsPage({
                 icon={<DeleteOutlined />}
                 style={{ marginBottom: "60px" }}
                 onClick={async () => {
-                  await API.profile.deleteProfilePicture();
-                  message.success(
-                    "You've successfully deleted your profile picture"
-                  );
+                  try {
+                    await API.profile.deleteProfilePicture();
+                    message.success(
+                      "You've successfully deleted your profile picture"
+                    );
+                  } catch (e) {
+                    message.error(
+                      "There was an error with deleting your profile picture, please contact the Khoury Office Hours team for assistance"
+                    );
+                    throw e;
+                  }
                 }}
               >
                 Delete my Profile Picture
