@@ -610,6 +610,11 @@ export type SimpleTableOutputType = {
   columns: any[];
 };
 
+export type DateRangeType = {
+  start: string;
+  end: string;
+};
+
 export const ERROR_MESSAGES = {
   courseController: {
     checkIn: {

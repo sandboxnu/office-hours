@@ -20,6 +20,7 @@ import {
   UpdateQuestionResponse,
   UpdateQueueParams,
   ListInsightsResponse,
+  DateRangeType,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -171,9 +172,20 @@ class APIClient {
   insights = {
     get: async (
       courseId: number,
-      insightName: string
-    ): Promise<GetInsightResponse> =>
-      this.req("GET", `/api/v1/insights/${courseId}/${insightName}`),
+      insightName: string,
+      dateRange: DateRangeType
+    ): Promise<GetInsightResponse> => {
+      let dateRangeQuery = "";
+      if (dateRange.start.length && dateRange.end.length) {
+        dateRangeQuery = `?start=${encodeURIComponent(
+          dateRange.start
+        )}&end=${encodeURIComponent(dateRange.end)}`;
+      }
+      return this.req(
+        "GET",
+        `/api/v1/insights/${courseId}/${insightName}${dateRangeQuery}`
+      );
+    },
     list: async (): Promise<ListInsightsResponse> =>
       this.req("GET", `/api/v1/insights/list`),
     toggleOn: async (insightName: string): Promise<void> =>
