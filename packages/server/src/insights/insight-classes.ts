@@ -146,11 +146,6 @@ export class MostActiveStudents implements InsightInterface<QuestionModel> {
           dataIndex: 'questionsAsked',
           key: 'questionsAsked',
         },
-        {
-          title: 'Email',
-          dataIndex: 'email',
-          key: 'email',
-        },
       ],
       dataSource,
     };

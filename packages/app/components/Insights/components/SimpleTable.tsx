@@ -7,7 +7,6 @@ interface SimpleTableTypes {
 }
 
 export const SimpleTable = ({ output }: SimpleTableTypes): ReactElement => {
-  console.log(output);
   return (
     <>
       <Table
