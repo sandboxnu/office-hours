@@ -37,10 +37,11 @@ export class InsightsController {
 
   @Get(':courseId/:insightName')
   async get(
+    @CourseRole() role: Role,
     @Param('courseId') courseId: number,
     @Param('insightName') insightName: string,
-    @CourseRole() role: Role,
-    @Query() filters: any,
+    @Query('start') start: string,
+    @Query('end') end: string,
   ): Promise<GetInsightResponse> {
     // Check that the insight name is valid
     const insightNames = Object.keys(INSIGHTS_MAP);
@@ -56,14 +57,24 @@ export class InsightsController {
       );
     }
 
+    // Initialize filters with a courseId filter since all insights are filtered by courseId
+    const filters = [];
+    filters.push({
+      type: 'courseId',
+      courseId,
+    });
+    // Check if the time range filters exist and add them if so
+    if (start && end) {
+      filters.push({
+        type: 'timeframe',
+        start: new Date(start),
+        end: new Date(end),
+      });
+    }
+
     const insight = await this.insightsService.generateInsight({
       insight: INSIGHTS_MAP[insightName],
-      filters: [
-        {
-          type: 'courseId',
-          courseId,
-        },
-      ],
+      filters,
     });
 
     return insight;
