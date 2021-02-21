@@ -135,6 +135,63 @@ describe('InsightsService', () => {
     ]);
   });
 
+  it.only('mostActiveStudents', async () => {
+    const course = await CourseFactory.create();
+    const queue = await QueueFactory.create({ course });
+    const user1 = await UserFactory.create({
+      id: 1,
+      name: 'Derek Jeter',
+      email: '',
+    });
+    const user2 = await UserFactory.create({
+      id: 2,
+      name: 'David Wright',
+      email: '',
+    });
+    const user3 = await UserFactory.create({
+      id: 3,
+      name: 'Adam Smith',
+      email: '',
+    });
+    const user4 = await UserFactory.create({
+      id: 4,
+      name: 'Jean Valjean',
+      email: '',
+    });
+    await QuestionFactory.createList(8, {
+      creator: user1,
+      queue,
+    });
+    await QuestionFactory.createList(20, {
+      creator: user2,
+      queue,
+    });
+    await QuestionFactory.createList(10, {
+      creator: user3,
+      queue,
+    });
+    await QuestionFactory.createList(110, {
+      creator: user4,
+      queue,
+    });
+    const res = await service.generateInsight({
+      insight: INSIGHTS_MAP.MostActiveStudents,
+      filters: [
+        {
+          type: 'courseId',
+          courseId: course.id,
+        },
+      ],
+    });
+
+    expect(res.output.dataSource).toEqual([
+      { studentId: 4, name: 'Jean Valjean', questionsAsked: '110' },
+      { studentId: 2, name: 'David Wright', questionsAsked: '20' },
+      { studentId: 3, name: 'Adam Smith', questionsAsked: '10' },
+      { studentId: 1, name: 'Derek Jeter', questionsAsked: '8' },
+    ]);
+  });
+
   describe('generateAllInsights', () => {
     it('multiple insights', async () => {
       const course = await CourseFactory.create();

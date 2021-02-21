@@ -8,6 +8,7 @@ import {
   SimpleTableOutputType,
 } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
+import { UserModel } from 'profile/user.entity';
 import { QuestionModel } from 'question/question.entity';
 import { createQueryBuilder, SelectQueryBuilder } from 'typeorm';
 
@@ -111,21 +112,25 @@ export class MostActiveStudents implements InsightInterface<QuestionModel> {
 
   async compute(filters): Promise<SimpleTableOutputType> {
     const dataSource = await addFilters(
-      createQueryBuilder(QuestionModel)
+      createQueryBuilder()
         .select('"QuestionModel"."creatorId"', 'studentId')
-        .addSelect('UserModel.name', 'name')
+        .addSelect('"UserModel"."name"', 'name')
         .addSelect('COUNT(*)', 'questionsAsked')
-
-        .andWhere('"QuestionModel"."questionType" IS NOT NULL'),
+        .from(QuestionModel, 'QuestionModel')
+        .where('"QuestionModel"."questionType" IS NOT NULL'),
       QuestionModel.name,
       filters,
       this.possibleFilters,
     )
-      .innerJoin('user_model.id', 'id')
+      .innerJoin(
+        UserModel,
+        'UserModel',
+        '"UserModel".id = "QuestionModel"."creatorId"',
+      )
       .groupBy('"QuestionModel"."creatorId"')
-      .addGroupBy('user_model.name')
+      .addGroupBy('"UserModel".name')
       .orderBy('3', 'DESC')
-      .getMany();
+      .getRawMany();
 
     return {
       columns: ['studentId', 'name', 'questionsAsked'],

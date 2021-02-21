@@ -124,7 +124,6 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
   const [visible, setVisible] = useState<boolean>(false);
   const { pathname } = useRouter();
   const { course } = useCourse(courseId);
-  const role = useRoleInCourse(courseId);
 
   const queueId = course?.queues?.find(
     (queue) => queue.isOpen && queue.allowQuestions
