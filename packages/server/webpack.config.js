@@ -39,9 +39,7 @@ module.exports = function (options) {
               include: './dist',
             }),
             // Write the build-time value of SERVICE_VERSION so it can be read at runtime
-            new webpack.EnvironmentPlugin({
-              SERVICE_VERSION: process.env.SERVICE_VERSION,
-            }),
+            new webpack.EnvironmentPlugin(['SERVICE_VERSION']),
           ]
         : [],
   };

@@ -53,7 +53,8 @@ export const CourseSectionFactory = new Factory(CourseSectionMappingModel)
 export const UserCourseFactory = new Factory(UserCourseModel)
   .assocOne('user', UserFactory)
   .assocOne('course', CourseFactory)
-  .attr('role', Role.STUDENT);
+  .attr('role', Role.STUDENT)
+  .attr('override', false);
 
 export const QueueFactory = new Factory(QueueModel)
   .attr('room', 'Online')
@@ -70,4 +71,5 @@ export const QuestionFactory = new Factory(QuestionModel)
   .attr('status', 'Queued')
   .attr('questionType', QuestionType.Other)
   .assocOne('queue', QueueFactory)
-  .assocOne('creator', UserFactory);
+  .assocOne('creator', UserFactory)
+  .attr('createdAt', new Date());

@@ -31,4 +31,7 @@ export class UserCourseModel extends BaseEntity {
 
   @Column({ type: 'enum', enum: Role, default: Role.STUDENT })
   role: Role;
+
+  @Column({ default: false })
+  override: boolean;
 }

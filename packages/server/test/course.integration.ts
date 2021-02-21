@@ -1,4 +1,4 @@
-import { TACheckoutResponse } from '@koh/common';
+import { ERROR_MESSAGES, Role, TACheckoutResponse } from '@koh/common';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { CourseModule } from '../src/course/course.module';
@@ -132,7 +132,7 @@ describe('Course Integration', () => {
       expect(events.length).toBe(0);
     });
 
-    it('checks TA into a new queue', async () => {
+    it("Doesn't allow a TA to check into a new queue", async () => {
       const ta = await UserFactory.create();
       const tcf = await TACourseFactory.create({
         course: await CourseFactory.create(),
@@ -140,17 +140,65 @@ describe('Course Integration', () => {
       });
       const response = await supertest({ userId: ta.id })
         .post(`/courses/${tcf.courseId}/ta_location/The Alamo`)
+        .expect(403);
+
+      expect(response.body.message).toBe(
+        ERROR_MESSAGES.courseController.checkIn
+          .cannotCreateNewQueueIfNotProfessor,
+      );
+
+      const events = await EventModel.find();
+      expect(events.length).toBe(0);
+    });
+
+    it('Allows a professor to create a new queue', async () => {
+      const professor = await UserFactory.create();
+      const pcf = await UserCourseFactory.create({
+        course: await CourseFactory.create(),
+        user: professor,
+        role: Role.PROFESSOR,
+      });
+      const response = await supertest({ userId: professor.id })
+        .post(`/courses/${pcf.courseId}/ta_location/The Alamo`)
         .expect(201);
 
       expect(response.body).toMatchObject({
         id: 1,
         room: 'The Alamo',
-        staffList: [{ id: ta.id }],
+        staffList: [{ id: professor.id }],
       });
 
       const events = await EventModel.find();
       expect(events.length).toBe(1);
       expect(events[0].eventType).toBe(EventType.TA_CHECKED_IN);
+    });
+
+    it("Doesn't allow users to check into multiple queues", async () => {
+      const queue1 = await QueueFactory.create();
+      const ta = await UserFactory.create();
+      await TACourseFactory.create({
+        course: queue1.course,
+        user: ta,
+      });
+      const queue2 = await QueueFactory.create({
+        course: queue1.course,
+      });
+
+      const response = await supertest({ userId: ta.id })
+        .post(`/courses/${queue1.courseId}/ta_location/${queue1.room}`)
+        .expect(201);
+
+      let events = await EventModel.count();
+      expect(events).toBe(1);
+
+      const response2 = await supertest({ userId: ta.id })
+        .post(`/courses/${queue2.courseId}/ta_location/${queue2.room}`)
+        .expect(401);
+      expect(response2.body.message).toBe(
+        ERROR_MESSAGES.courseController.checkIn.cannotCheckIntoMultipleQueues,
+      );
+      events = await EventModel.count();
+      expect(events).toBe(1);
     });
   });
 
@@ -250,6 +298,61 @@ describe('Course Integration', () => {
       });
 
       expect(events.length).toBe(0);
+    });
+  });
+
+  describe('POST /courses/:id/update_override', () => {
+    it('tests creating override using the endpoint', async () => {
+      const course = await CourseFactory.create();
+      const user = await UserFactory.create();
+      const professor = await UserFactory.create();
+      await UserCourseFactory.create({
+        user: professor,
+        role: Role.PROFESSOR,
+        course,
+      });
+      await supertest({ userId: professor.id })
+        .post(`/courses/${course.id}/update_override`)
+        .send({ email: user.email, role: Role.STUDENT })
+        .expect(201);
+      const ucm = await UserCourseModel.findOne({
+        where: {
+          userId: user.id,
+        },
+      });
+      expect(ucm.role).toEqual(Role.STUDENT);
+      expect(ucm.override).toBeTruthy();
+    });
+  });
+
+  describe('DELETE /courses/:id/update_override', () => {
+    it('tests deleting override using the endpoint', async () => {
+      const course = await CourseFactory.create();
+      const user = await UserFactory.create();
+      const professor = await UserFactory.create();
+      await UserCourseFactory.create({
+        user: professor,
+        role: Role.PROFESSOR,
+        course,
+      });
+      await UserCourseFactory.create({
+        user: user,
+        role: Role.TA,
+        override: true,
+        course,
+      });
+
+      await supertest({ userId: professor.id })
+        .delete(`/courses/${course.id}/update_override`)
+        .send({ email: user.email, role: Role.STUDENT })
+        .expect(200);
+
+      const ucm = await UserCourseModel.findOne({
+        where: {
+          userId: user.id,
+        },
+      });
+      expect(ucm).toBeUndefined();
     });
   });
 });

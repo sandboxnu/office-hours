@@ -96,8 +96,6 @@ export default function TAQueueDetailButtons({
         return [false, "You must check in to help students!"];
       } else if (isHelping) {
         return [false, "You are already helping a student"];
-      } else if (question.status === OpenQuestionStatus.Drafting) {
-        return [false, "Student is drafting"];
       } else {
         return [true, "Help Student"];
       }
@@ -106,6 +104,7 @@ export default function TAQueueDetailButtons({
       <>
         <Popconfirm
           title="Are you sure you want to delete this question from the queue?"
+          disabled={!isCheckedIn}
           okText="Yes"
           cancelText="No"
           onConfirm={async () => {
@@ -117,18 +116,27 @@ export default function TAQueueDetailButtons({
             await API.questions.notify(question.id);
           }}
         >
-          <Tooltip title="Remove From Queue">
-            <BannerDangerButton
-              shape="circle"
-              icon={<DeleteOutlined />}
-              data-cy="remove-from-queue"
-            />
+          <Tooltip
+            title={
+              isCheckedIn
+                ? "Remove From Queue"
+                : "You must check in to remove students from the queue"
+            }
+          >
+            <span>
+              {/* This span is a workaround for tooltip-on-disabled-button 
+              https://github.com/ant-design/ant-design/issues/9581#issuecomment-599668648 */}
+              <BannerDangerButton
+                shape="circle"
+                icon={<DeleteOutlined />}
+                data-cy="remove-from-queue"
+                disabled={!isCheckedIn}
+              />
+            </span>
           </Tooltip>
         </Popconfirm>
         <Tooltip title={helpTooltip}>
           <span>
-            {/* This span is a workaround for tooltip-on-disabled-button 
-            https://github.com/ant-design/ant-design/issues/9581#issuecomment-599668648 */}
             <BannerPrimaryButton
               icon={<PhoneOutlined />}
               onClick={() => {

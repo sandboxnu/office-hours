@@ -1,4 +1,4 @@
-import { createAndLoginTA } from "../../utils";
+import { createAndLoginTA, checkNavbarLoaded } from "../../utils";
 
 describe("User can edit their name", () => {
   beforeEach(() => {
@@ -8,6 +8,7 @@ describe("User can edit their name", () => {
   it("Changes TA name to Bill Benzel", function () {
     cy.visit(`/settings`).then(() => {
       cy.get("body").should("contain", "First Name");
+      checkNavbarLoaded();
       cy.percySnapshot("Profile Page");
       cy.get('[data-cy="firstNameInput"]')
         .should("be.visible")
