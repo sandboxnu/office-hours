@@ -210,4 +210,5 @@ export const INSIGHTS_MAP = {
   [TotalQuestionsAsked.name]: new TotalQuestionsAsked(),
   [AverageWaitTime.name]: new AverageWaitTime(),
   [QuestionTypeBreakdown.name]: new QuestionTypeBreakdown(),
+  [MostActiveStudents.name]: new MostActiveStudents(),
 };

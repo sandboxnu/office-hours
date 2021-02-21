@@ -76,7 +76,7 @@ export class SeedController {
     });
     if (!courseExists) {
       await SemesterFactory.create({ season: 'Fall', year: 2020 });
-      await CourseFactory.create();
+      await CourseFactory.create({ timezone: 'America/New_York' });
     }
 
     const course = await CourseModel.findOne({
