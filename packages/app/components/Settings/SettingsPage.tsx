@@ -105,15 +105,21 @@ export default function SettingsPage({
               >
                 Upload a Profile Picture
               </Button>
-              {profile.photoURL && (
-                <Button
-                  icon={<DeleteOutlined />}
-                  style={{ marginBottom: "60px" }}
-                >
-                  Delete my Profile Picture
-                </Button>
-              )}
             </Upload>
+            {profile.photoURL && (
+              <Button
+                icon={<DeleteOutlined />}
+                style={{ marginBottom: "60px" }}
+                onClick={async () => {
+                  await API.profile.deleteProfilePicture();
+                  message.success(
+                    "You've successfully deleted your profile picture"
+                  );
+                }}
+              >
+                Delete my Profile Picture
+              </Button>
+            )}
           </>
         ) : null}
         <Menu
