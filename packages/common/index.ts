@@ -586,7 +586,7 @@ export class Insight {
 export enum InsightDisplay {
   SimpleDisplay = "SimpleDisplay",
   BarChart = "BarChart",
-  Table = "Table",
+  SimpleTable = "SimpleTable",
 }
 
 export type PossibleOutputTypes =

@@ -106,7 +106,7 @@ export class MostActiveStudents implements InsightInterface<QuestionModel> {
   description =
     'Returns a table of the students who have asked the most questions in Office Hours';
   roles = [Role.PROFESSOR];
-  component = InsightDisplay.Table;
+  component = InsightDisplay.SimpleTable;
   possibleFilters = ['courseId', 'timeframe'];
   size = 'default' as const;
 
@@ -115,6 +115,7 @@ export class MostActiveStudents implements InsightInterface<QuestionModel> {
       createQueryBuilder()
         .select('"QuestionModel"."creatorId"', 'studentId')
         .addSelect('"UserModel"."name"', 'name')
+        .addSelect('"UserModel"."email"', 'email')
         .addSelect('COUNT(*)', 'questionsAsked')
         .from(QuestionModel, 'QuestionModel')
         .where('"QuestionModel"."questionType" IS NOT NULL'),
@@ -129,11 +130,28 @@ export class MostActiveStudents implements InsightInterface<QuestionModel> {
       )
       .groupBy('"QuestionModel"."creatorId"')
       .addGroupBy('"UserModel".name')
+      .addGroupBy('"UserModel.email')
       .orderBy('3', 'DESC')
       .getRawMany();
 
     return {
-      columns: ['studentId', 'name', 'questionsAsked'],
+      columns: [
+        {
+          title: 'Name',
+          dataIndex: 'name',
+          key: 'name',
+        },
+        {
+          title: 'Questions Asked',
+          dataIndex: 'questionsAsked',
+          key: 'questionsAsked',
+        },
+        {
+          title: 'Email',
+          dataIndex: 'email',
+          key: 'email',
+        },
+      ],
       dataSource,
     };
   }

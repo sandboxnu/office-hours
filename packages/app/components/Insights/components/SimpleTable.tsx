@@ -7,11 +7,14 @@ interface SimpleTableTypes {
 }
 
 export const SimpleTable = ({ output }: SimpleTableTypes): ReactElement => {
+  console.log(output);
   return (
     <>
-      {output.dataSource.length == 0 && (
-        <Table dataSource={output.dataSource} columns={output.columns} />
-      )}
+      <Table
+        dataSource={output.dataSource}
+        columns={output.columns}
+        scroll={{ y: 1500 }}
+      />
     </>
   );
 };
