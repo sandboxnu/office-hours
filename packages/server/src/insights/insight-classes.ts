@@ -130,8 +130,8 @@ export class MostActiveStudents implements InsightInterface<QuestionModel> {
       )
       .groupBy('"QuestionModel"."creatorId"')
       .addGroupBy('"UserModel".name')
-      .addGroupBy('"UserModel.email')
-      .orderBy('3', 'DESC')
+      .addGroupBy('"UserModel".email')
+      .orderBy('4', 'DESC')
       .getRawMany();
 
     return {

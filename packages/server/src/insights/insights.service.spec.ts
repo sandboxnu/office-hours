@@ -185,10 +185,10 @@ describe('InsightsService', () => {
     });
 
     expect(res.output.dataSource).toEqual([
-      { studentId: 4, name: 'Jean Valjean', questionsAsked: '110' },
-      { studentId: 2, name: 'David Wright', questionsAsked: '20' },
-      { studentId: 3, name: 'Adam Smith', questionsAsked: '10' },
-      { studentId: 1, name: 'Derek Jeter', questionsAsked: '8' },
+      { studentId: 4, name: 'Jean Valjean', email: '', questionsAsked: '110' },
+      { studentId: 2, name: 'David Wright', email: '', questionsAsked: '20' },
+      { studentId: 3, name: 'Adam Smith', email: '', questionsAsked: '10' },
+      { studentId: 1, name: 'Derek Jeter', email: '', questionsAsked: '8' },
     ]);
   });
 
