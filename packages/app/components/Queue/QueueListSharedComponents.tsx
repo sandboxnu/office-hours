@@ -7,6 +7,7 @@ import {
 } from "@ant-design/icons";
 import { Button, Tooltip } from "antd";
 import { ButtonProps } from "antd/lib/button";
+import Linkify from 'react-linkify';
 import moment from "moment";
 import React, { ReactElement, ReactNode, useState } from "react";
 import styled from "styled-components";
@@ -71,6 +72,8 @@ const QueuePropertyText = styled.div`
   // To break text in flexbox
   min-width: 0;
   overflow-wrap: break-word;
+
+  // to show new lines in the text
   white-space: pre-wrap;
 `;
 
@@ -119,7 +122,7 @@ export function QueueInfoColumn({
       {queue?.notes && (
         <QueuePropertyRow>
           <NotificationOutlined />
-          <QueuePropertyText>{queue.notes}</QueuePropertyText>
+          <Linkify><QueuePropertyText>{queue.notes}</QueuePropertyText></Linkify>
         </QueuePropertyRow>
       )}
       <QueueUpToDateInfo queueId={queueId} />
