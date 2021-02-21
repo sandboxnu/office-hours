@@ -3,6 +3,7 @@ import {
   CreateQuestionResponse,
   DesktopNotifBody,
   DesktopNotifPartial,
+  GetAlertsResponse,
   GetCourseOverridesResponse,
   GetCourseResponse,
   GetProfileResponse,
@@ -166,6 +167,12 @@ class APIClient {
     get: async (): Promise<GetReleaseNotesResponse> =>
       this.req("GET", `/api/v1/release_notes`),
   };
+
+  alerts = {
+    get: async (courseId: number): Promise<GetAlertsResponse> =>
+      this.req("GET", `/api/v1/alerts/${courseId}`),
+  };
+
   constructor(baseURL = "") {
     this.axios = Axios.create({ baseURL: baseURL });
   }

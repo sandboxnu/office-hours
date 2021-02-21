@@ -1,4 +1,4 @@
-import { Heatmap } from '@koh/common';
+import { AlertType, Heatmap } from '@koh/common';
 import { Exclude } from 'class-transformer';
 import {
   BaseEntity,
@@ -25,10 +25,6 @@ import { CourseModel } from '../course/course.entity';
     users: UserCourse[]
 }*/
 
-export enum AlertType {
-  REPHRASE_QUESTION = 'rephraseQuestion',
-}
-
 @Entity('alert_model')
 export class AlertModel extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -38,7 +34,10 @@ export class AlertModel extends BaseEntity {
   alertType: AlertType;
 
   @Column()
-  time: Date;
+  sent: Date;
+
+  @Column({ nullable: true })
+  resolved: Date;
 
   @ManyToOne((type) => UserModel, (user) => user.alerts)
   @JoinColumn({ name: 'userId' })

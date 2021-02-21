@@ -1,7 +1,9 @@
 import { Type } from "class-transformer";
 import {
   IsBoolean,
+  IsDate,
   IsDefined,
+  isEnum,
   IsEnum,
   IsInt,
   IsNotEmpty,
@@ -531,6 +533,23 @@ export class UpdateQueueParams {
 
   @IsBoolean()
   allowQuestions?: boolean;
+}
+
+export enum AlertType {
+  REPHRASE_QUESTION = "rephraseQuestion",
+}
+
+export class GetAlertsResponse {
+  @Type(() => Alert)
+  alerts!: Alert;
+}
+
+export class Alert {
+  @IsEnum(AlertType)
+  alertType!: AlertType;
+
+  @IsDate()
+  sent!: Date;
 }
 
 export class SSEQueueResponse {
