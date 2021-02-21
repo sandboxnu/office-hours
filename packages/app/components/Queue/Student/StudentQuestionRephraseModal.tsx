@@ -1,21 +1,33 @@
 import { Button } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import React, { ReactElement } from "react";
-import { Question } from "@koh/common";
+import { useCourse } from "../../../hooks/useCourse";
+import { useQuestions } from "../../../hooks/useQuestions";
 
 type StudentQuestionRephraseModalProps = {
-  visible: boolean;
-  question: Question;
-  editQuestion: () => void;
+  courseId: number;
 };
-export default function StudentQuestionRephraseModal(
-  props: StudentQuestionRephraseModalProps
-): ReactElement {
+export default function StudentQuestionRephraseModal({
+  courseId,
+}: StudentQuestionRephraseModalProps): ReactElement {
+  const { course } = useCourse(courseId);
+  const queues = course?.queues;
+  const questions = [];
+
+  for (const queue of queues) {
+    // questions.push(useQuestions(queue.id))
+  }
+
+  const question = { queueId: 2 };
+
   return (
     <Modal
-      visible={props.visible}
       footer={[
-        <Button type={"primary"} key={"continue"} onClick={props.editQuestion}>
+        <Button
+          type={"primary"}
+          key={"continue"}
+          target={`/course/${courseId}/queue/${question.queueId}`}
+        >
           Edit Question
         </Button>,
       ]}
