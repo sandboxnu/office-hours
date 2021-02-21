@@ -1,4 +1,9 @@
-import { BellOutlined, EditOutlined, UploadOutlined } from "@ant-design/icons";
+import {
+  BellOutlined,
+  EditOutlined,
+  UploadOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import { useWindowWidth } from "@react-hook/window-size";
 import { Button, Col, Menu, message, Row, Skeleton, Space, Upload } from "antd";
@@ -50,6 +55,7 @@ export default function SettingsPage({
     if (!isLt1M) {
       message.error("Image must smaller than 1MB!");
     }
+
     return isJpgOrPng && isLt1M;
   };
 
@@ -99,6 +105,14 @@ export default function SettingsPage({
               >
                 Upload a Profile Picture
               </Button>
+              {profile.photoURL && (
+                <Button
+                  icon={<DeleteOutlined />}
+                  style={{ marginBottom: "60px" }}
+                >
+                  Delete my Profile Picture
+                </Button>
+              )}
             </Upload>
           </>
         ) : null}

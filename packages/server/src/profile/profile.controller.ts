@@ -7,6 +7,7 @@ import {
 import {
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Param,
@@ -175,5 +176,19 @@ export class ProfileController {
         }
       },
     );
+  }
+
+  @Delete('/delete_profile_picture')
+  async deleteProfilePicture(@User() user: UserModel): Promise<void> {
+    if (user.photoURL) {
+      fs.unlink(process.env.UPLOAD_LOCATION + '/' + user.photoURL, (err) => {
+        console.log(
+          'Error deleting previous picture at : ',
+          user.photoURL,
+          err,
+          'the previous image was at an invalid location?',
+        );
+      });
+    }
   }
 }
