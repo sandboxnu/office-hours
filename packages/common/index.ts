@@ -567,7 +567,10 @@ export enum InsightDisplay {
   Table = "Table",
 }
 
-export type PossibleOutputTypes = SimpleDisplayOutputType | BarChartOutputType;
+export type PossibleOutputTypes =
+  | SimpleDisplayOutputType
+  | BarChartOutputType
+  | SimpleTableOutputType;
 
 export type SimpleDisplayOutputType = number;
 

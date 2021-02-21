@@ -5,6 +5,7 @@ import {
   QuestionType,
   Role,
   SimpleDisplayOutputType,
+  SimpleTableOutputType,
 } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { QuestionModel } from 'question/question.entity';
@@ -96,6 +97,40 @@ export class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
       filters,
       this.possibleFilters,
     ).getCount();
+  }
+}
+
+export class MostActiveStudents implements InsightInterface<QuestionModel> {
+  displayName = 'Most Active Students';
+  description =
+    'Returns a table of the students who have asked the most questions in Office Hours';
+  roles = [Role.PROFESSOR];
+  component = InsightDisplay.Table;
+  possibleFilters = ['courseId', 'timeframe'];
+  size = 'default' as const;
+
+  async compute(filters): Promise<SimpleTableOutputType> {
+    const dataSource = await addFilters(
+      createQueryBuilder(QuestionModel)
+        .select('"QuestionModel"."creatorId"', 'studentId')
+        .addSelect('UserModel.name', 'name')
+        .addSelect('COUNT(*)', 'questionsAsked')
+
+        .andWhere('"QuestionModel"."questionType" IS NOT NULL'),
+      QuestionModel.name,
+      filters,
+      this.possibleFilters,
+    )
+      .innerJoin('user_model.id', 'id')
+      .groupBy('"QuestionModel"."creatorId"')
+      .addGroupBy('user_model.name')
+      .orderBy('3', 'DESC')
+      .getMany();
+
+    return {
+      columns: ['studentId', 'name', 'questionsAsked'],
+      dataSource,
+    };
   }
 }
 
