@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { IcalService } from './ical.service';
 import * as iCal from 'node-ical';
-const { parseICS } = jest.requireActual('node-ical');
 import { mocked } from 'ts-jest/utils';
-import { TestTypeOrmModule } from '../../test/util/testUtils';
-import { CourseFactory } from '../../test/util/factories';
-import { QueueModel } from '../queue/queue.entity';
 import { Connection } from 'typeorm';
+import { CourseFactory } from '../../test/util/factories';
+import { TestTypeOrmModule } from '../../test/util/testUtils';
+import { QueueModel } from '../queue/queue.entity';
 import { CourseModel } from './course.entity';
+import { IcalService } from './ical.service';
+const { parseICS } = jest.requireActual('node-ical');
 
 const mkCal = (events: string) =>
   parseICS(`BEGIN:VCALENDAR
@@ -372,6 +372,54 @@ TRANSP:OPAQUE
 STATUS:CONFIRMED
 SEQUENCE:0
 LOCATION:
+END:VEVENT
+`;
+
+const VEVENT_WITH_RECURRING_PROFESSOR = `
+BEGIN:VEVENT
+RRULE:FREQ=WEEKLY;WKST=SU;UNTIL=20210215T045959Z;BYDAY=MO
+UID:2ans373bjq4h1chekolpdmafcq@google.com
+SUMMARY:Professor Gamburg's Hours
+DTSTART;TZID=America/New_York:20201228T090000
+DTEND;TZID=America/New_York:20201228T100000
+CLASS: PUBLIC
+PRIORITY: 5
+DTSTAMP:20201229T003037Z
+LOCATION:
+SEQUENCE:1
+STATUS:CONFIRMED
+TRANSP:OPAQUE
+END:VEVENT
+`;
+
+const VEVENT_WITH_TWO_PROFESSORS = `
+BEGIN:VEVENT
+DTSTART:20201228T140000Z
+DTEND:20201228T150000Z
+DTSTAMP:20201229T014021Z
+UID:2ans373bjq4h1chekolpdmafcq@google.com
+CREATED:20201229T002002Z
+DESCRIPTION:
+LAST-MODIFIED:20201229T013946Z
+LOCATION:
+SEQUENCE:2
+STATUS:CONFIRMED
+SUMMARY:Professor Gamburg's Hours
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20201228T160000Z
+DTEND:20201228T170000Z
+DTSTAMP:20201229T014021Z
+UID:1188djun11fm229tk07kkufdgu@google.com
+CREATED:20201229T014011Z
+DESCRIPTION:
+LAST-MODIFIED:20201229T014011Z
+LOCATION:
+SEQUENCE:0
+STATUS:CONFIRMED
+SUMMARY:Prof Usyvatsky's Hours
+TRANSP:OPAQUE
 END:VEVENT
 `;
 
@@ -761,6 +809,46 @@ describe('IcalService', () => {
       });
     });
 
+    it('generates some professor office hours based on recurrence', () => {
+      const parsedICS = mkCal(VEVENT_WITH_RECURRING_PROFESSOR);
+      const endData = service.parseIcal(parsedICS, 123, /\b^(Prof|Professor)/);
+      expect(endData).toContainEqual({
+        title: "Professor Gamburg's Hours",
+        courseId: 123,
+        room: '',
+        startTime: new Date('2021-01-11T14:00:00.000Z'),
+        endTime: new Date('2021-01-11T15:00:00.000Z'),
+      });
+      expect(endData).toContainEqual({
+        title: "Professor Gamburg's Hours",
+        courseId: 123,
+        room: '',
+        startTime: new Date('2021-02-08T14:00:00.000Z'),
+        endTime: new Date('2021-02-08T15:00:00.000Z'),
+      });
+    });
+
+    it('generates two sets of professor office hours', () => {
+      const parsedICS = mkCal(VEVENT_WITH_TWO_PROFESSORS);
+      const endData = service.parseIcal(parsedICS, 123, /\b^(Prof|Professor)/);
+      expect(endData).toEqual([
+        {
+          title: "Professor Gamburg's Hours",
+          courseId: 123,
+          room: '',
+          startTime: new Date('2020-12-28T14:00:00.000Z'),
+          endTime: new Date('2020-12-28T15:00:00.000Z'),
+        },
+        {
+          title: "Prof Usyvatsky's Hours",
+          courseId: 123,
+          room: '',
+          startTime: new Date('2020-12-28T16:00:00.000Z'),
+          endTime: new Date('2020-12-28T17:00:00.000Z'),
+        },
+      ]);
+    });
+
     describe('updateCalendarForCourse', () => {
       beforeEach(async () => {
         await conn.synchronize(true);
@@ -768,13 +856,25 @@ describe('IcalService', () => {
       it('creates officehours', async () => {
         const course = await CourseFactory.create({ id: 123 });
 
-        const parsedICS = mkCal(VEVENT_ROOM + VEVENT_NOROOM);
+        const parsedICS = mkCal(
+          VEVENT_ROOM + VEVENT_NOROOM + VEVENT_WITH_TWO_PROFESSORS,
+        );
         mockedICal.fromURL.mockReturnValue(Promise.resolve(parsedICS));
 
         await service.updateCalendarForCourse(course);
         const queue = await QueueModel.findOne({
           courseId: course.id,
           room: 'Online',
+        });
+        const gamburgQueue = await QueueModel.findOne({
+          courseId: course.id,
+          room: "Professor Gamburg's Hours",
+          isProfessorQueue: true,
+        });
+        const shortQueue = await QueueModel.findOne({
+          courseId: course.id,
+          room: "Prof Usyvatsky's Hours",
+          isProfessorQueue: true,
         });
         expect(
           (await CourseModel.findOne(course.id, { relations: ['officeHours'] }))
@@ -793,6 +893,22 @@ describe('IcalService', () => {
             startTime: new Date(1589475600000),
             endTime: new Date(1589482800000),
             queueId: queue.id,
+          },
+          {
+            title: "Professor Gamburg's Hours",
+            courseId: course.id,
+            startTime: new Date('2020-12-28T14:00:00.000Z'),
+            endTime: new Date('2020-12-28T15:00:00.000Z'),
+            queueId: gamburgQueue.id,
+            room: "Professor Gamburg's Hours",
+          },
+          {
+            title: "Prof Usyvatsky's Hours",
+            courseId: course.id,
+            startTime: new Date('2020-12-28T16:00:00.000Z'),
+            endTime: new Date('2020-12-28T17:00:00.000Z'),
+            queueId: shortQueue.id,
+            room: "Prof Usyvatsky's Hours",
           },
         ]);
       });

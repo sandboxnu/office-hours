@@ -1,19 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import 'moment-timezone';
 import {
-  fromURL,
   CalendarComponent,
   CalendarResponse,
+  fromURL,
   VEvent,
 } from 'node-ical';
-import { DeepPartial, Connection } from 'typeorm';
-import { OfficeHourModel } from './office-hour.entity';
-import { CourseModel } from './course.entity';
-import { QueueModel } from '../queue/queue.entity';
-import { findOneIana } from 'windows-iana/dist';
-import 'moment-timezone';
-import moment = require('moment');
 import { RRule } from 'rrule';
+import { Connection, DeepPartial } from 'typeorm';
+import { findOneIana } from 'windows-iana/dist';
+import { QueueModel } from '../queue/queue.entity';
+import { CourseModel } from './course.entity';
+import { OfficeHourModel } from './office-hour.entity';
+import moment = require('moment');
 
 type Moment = moment.Moment;
 
@@ -86,7 +85,11 @@ export class IcalService {
       .map((d) => fixDST(postRRule(moment(d))).toDate());
   }
 
-  parseIcal(icalData: CalendarResponse, courseId: number): CreateOfficeHour {
+  parseIcal(
+    icalData: CalendarResponse,
+    courseId: number,
+    testRegex = /\b^(OH|Hours)\b/,
+  ): CreateOfficeHour {
     const icalDataValues: Array<CalendarComponent> = Object.values(icalData);
 
     const officeHours = icalDataValues.filter(
@@ -96,10 +99,8 @@ export class IcalService {
         iCalElement.end !== undefined,
     );
 
-    const officeHoursEventRegex = /\b^(OH|Hours)\b/;
-
     const filteredOfficeHours = officeHours.filter((event) =>
-      officeHoursEventRegex.test(event.summary),
+      testRegex.test(event.summary),
     );
 
     let resultOfficeHours = [];
@@ -155,10 +156,9 @@ export class IcalService {
       }).save();
     }
 
-    const officeHours = this.parseIcal(
-      await fromURL(course.icalURL),
-      course.id,
-    );
+    const icalURL = await fromURL(course.icalURL);
+
+    const officeHours = this.parseIcal(icalURL, course.id);
     await OfficeHourModel.delete({ courseId: course.id });
     await OfficeHourModel.save(
       officeHours.map((e) => {
@@ -166,11 +166,62 @@ export class IcalService {
         return OfficeHourModel.create(e);
       }),
     );
+
+    const professorHoursRegex = /\b^(Prof|Professor)/;
+    const professorOfficeHours = this.parseIcal(
+      icalURL,
+      course.id,
+      professorHoursRegex,
+    );
+
+    // TODO: make professor queues instead of this bullshit lmao
+    const professorQueues = await QueueModel.find({
+      where: {
+        isProfessorQueue: true,
+      },
+    });
+
+    const processedProfessorOfficeHours = [];
+
+    for (const poh of professorOfficeHours) {
+      const professorLocation = poh.title;
+      if (
+        !professorQueues.some(
+          (q) => q.room === professorLocation && q.courseId === course.id,
+        )
+      ) {
+        const newProfQ = QueueModel.create({
+          room: professorLocation,
+          courseId: course.id,
+          staffList: [],
+          questions: [],
+          allowQuestions: false,
+          isProfessorQueue: true,
+        });
+        await newProfQ.save();
+        professorQueues.push(newProfQ);
+      }
+
+      const professorQueue = professorQueues.find(
+        (q) => q.room === professorLocation,
+      );
+      processedProfessorOfficeHours.push(
+        OfficeHourModel.create({
+          queueId: professorQueue.id,
+          ...poh,
+        }),
+      );
+    }
+
+    await OfficeHourModel.save(processedProfessorOfficeHours);
+    await QueueModel.save(professorQueues);
+
     console.timeEnd(`scrape course ${course.id}`);
     console.log('done scraping!');
   }
 
-  @Cron('51 0 * * *')
+  // TODO: Disable Cron job until Redis issue is resolved
+  // @Cron('51 0 * * *')
   public async updateAllCourses(): Promise<void> {
     console.log('updating course icals');
     const courses = await CourseModel.find();

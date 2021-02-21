@@ -26,8 +26,6 @@ describe("Allow or disable new questions for a queue", () => {
     // See that allow questions has been toggled off
     cy.get("[data-cy='stopQuestions']").should("exist");
 
-    cy.percySnapshot("TA Queue Page - Not Allowing Questions");
-
     // Change the toggle back to allow new questions
     cy.get("[data-cy='editQueue']").click();
     cy.get("[data-cy='allow-questions-toggle']").click();
@@ -35,8 +33,6 @@ describe("Allow or disable new questions for a queue", () => {
 
     // See that the 'not allowing new questions' icon is not there any more
     cy.get("[data-cy='stopQuestions']").should("not.exist");
-
-    cy.percySnapshot("TA Queue Page - Allowing Questions");
   });
 });
 

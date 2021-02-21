@@ -1,4 +1,5 @@
 import { DownOutlined } from "@ant-design/icons";
+import { Role } from "@koh/common";
 import { Button, Drawer, Dropdown, Menu } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -7,6 +8,7 @@ import styled from "styled-components";
 import { useCourse } from "../../hooks/useCourse";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useProfile } from "../../hooks/useProfile";
+import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import NavBarTabs, { NavBarTabsItem } from "./NavBarTabs";
 import ProfileDrawer from "./ProfileDrawer";
 
@@ -119,13 +121,13 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     null
   );
   const [visible, setVisible] = useState<boolean>(false);
-
   const { pathname } = useRouter();
-
   const { course } = useCourse(courseId);
+  const role = useRoleInCourse(courseId);
 
-  const queueId =
-    course?.queues && course.queues.length > 0 && course.queues[0].id;
+  const queueId = course?.queues?.find(
+    (queue) => queue.isOpen && queue.allowQuestions
+  )?.id;
 
   const showDrawer = () => {
     setVisible(true);
@@ -161,6 +163,15 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
       text: "Schedule",
     },
   ];
+
+  if (role === Role.PROFESSOR) {
+    tabs.push({
+      href: "/course/[cid]/course_overrides",
+      as: `/course/${courseId}/course_overrides`,
+      text: "Overrides",
+    });
+  }
+
   if (queueId) {
     tabs.push({
       href: "/course/[cid]/queue/[qid]",

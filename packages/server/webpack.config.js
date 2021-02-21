@@ -2,6 +2,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
+const SentryPlugin = require('@sentry/webpack-plugin');
 
 module.exports = function (options) {
   return {
@@ -26,13 +27,20 @@ module.exports = function (options) {
         },
       ],
     },
-    devtool: 'inline-source-map',
-    plugins: [
-      new webpack.BannerPlugin({
-        banner: 'require("source-map-support").install();',
-        raw: true,
-        entryOnly: false,
-      }),
-    ],
+    devtool: 'source-map',
+    plugins:
+      process.env.SENTRY_AUTH_TOKEN && process.env.SERVICE_VERSION
+        ? [
+            // SERVICE_VERSION is the git hash, passed during build time.
+            new SentryPlugin({
+              org: 'sandboxnu',
+              project: 'khoury-office-hours',
+              release: process.env.SERVICE_VERSION,
+              include: './dist',
+            }),
+            // Write the build-time value of SERVICE_VERSION so it can be read at runtime
+            new webpack.EnvironmentPlugin(['SERVICE_VERSION']),
+          ]
+        : [],
   };
 };

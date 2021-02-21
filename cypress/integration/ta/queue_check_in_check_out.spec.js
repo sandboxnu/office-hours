@@ -3,6 +3,7 @@ import {
   checkInTA,
   createQueue,
   createQuestion,
+  createQueueWithoutOfficeHour,
 } from "../../utils";
 
 describe("Can successfuly check in and out of a queue when their is scheduled office hours", () => {
@@ -69,6 +70,7 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
     cy.get("[data-cy='check-out-button']").click();
     cy.get("button").should("contain", "Check In");
 
+    cy.contains("Schedule"); // Wait for nav to reload, then take snapshot
     cy.percySnapshot("TA Queue Page - TA Checked Out");
   });
 
@@ -86,14 +88,13 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
     cy.location("pathname").should("contain", "/queue");
     cy.get("body").should("contain", "There are no questions in the queue");
 
-    cy.percySnapshot("TA Today Page - TA Checked In");
-
     cy.visit(`/course/${this.ta.courseId}/today`);
 
     // Click "Check out"
     cy.get("[data-cy='check-out-button']").click();
     cy.get("button").should("contain", "Check In");
 
+    cy.contains("Schedule"); // Wait for nav to reload, then take snapshot
     cy.percySnapshot("TA Today Page - TA Checked Out");
   });
 });
@@ -142,11 +143,14 @@ describe("Checking out when office hours end soon", () => {
   });
 });
 
-describe("Checking in and out when there arent scheduled office hours", function () {
+describe("Checking in and out when there arent scheduled office hours, but the online queue exists", function () {
   beforeEach(() => {
     createAndLoginTA();
     // check into the queue
     cy.get("@ta").then((ta) => {
+      createQueueWithoutOfficeHour({
+        courseId: ta.courseId,
+      });
       cy.request({
         method: "POST",
         url: `/api/v1/courses/${ta.courseId}/ta_location/Online`,

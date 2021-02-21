@@ -68,8 +68,14 @@ export default function TAQueueDetail({
         </StillDrafting>
       ) : (
         <QuestionTextBox>
-          <QuestionText>{question.text}</QuestionText>
-          <QuestionTypePill>{question.questionType}</QuestionTypePill>
+          {question.text || question.questionType ? (
+            <>
+              <QuestionText>{question.text}</QuestionText>
+              <QuestionTypePill>{question.questionType}</QuestionTypePill>
+            </>
+          ) : (
+            <p>No question details</p>
+          )}
         </QuestionTextBox>
       )}
     </Container>

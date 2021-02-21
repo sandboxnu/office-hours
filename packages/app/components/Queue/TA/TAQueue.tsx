@@ -1,11 +1,12 @@
-import { API } from "@koh/api-client";
-import { QuestionStatusKeys } from "@koh/common";
+import { QuestionStatusKeys, Role } from "@koh/common";
 import { Tooltip } from "antd";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
+import { useCourse } from "../../../hooks/useCourse";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { useQueue } from "../../../hooks/useQueue";
+import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
 import TACheckinButton from "../../Today/TACheckinButton";
 import {
@@ -50,6 +51,7 @@ interface TAQueueProps {
 
 export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
   const user = useProfile();
+  const role = useRoleInCourse(courseId);
   const { queue, mutateQueue } = useQueue(qid);
 
   const { questions, mutateQuestions } = useQuestions(qid);
@@ -57,6 +59,13 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
   const { isCheckedIn, isHelping } = useTAInQueueInfo(qid);
 
   const [queueSettingsModal, setQueueSettingsModal] = useState(false);
+
+  const { course } = useCourse(courseId);
+  const staffCheckedIntoAnotherQueue = course?.queues.some(
+    (q) =>
+      q.id !== qid &&
+      q.staffList.some((staffMember) => staffMember.id === user?.id)
+  );
 
   const nextQuestion =
     questions?.priorityQueue[0] || // gets the first item of priority queue if it exists
@@ -72,6 +81,7 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
     );
   };
 
+  // TODO: figure out tooltips
   if (queue) {
     return (
       <>
@@ -101,7 +111,11 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
                   <TACheckinButton
                     courseId={courseId}
                     room={queue?.room}
-                    disabled={isHelping}
+                    disabled={
+                      staffCheckedIntoAnotherQueue ||
+                      isHelping ||
+                      (queue.isProfessorQueue && role !== Role.PROFESSOR)
+                    }
                     state={isCheckedIn ? "CheckedIn" : "CheckedOut"}
                     block
                   />

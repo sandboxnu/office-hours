@@ -1,8 +1,9 @@
 import { CreateQuestionParams, Role } from '@koh/common';
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { EventModel } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
-import { Connection } from 'typeorm';
+import { Connection, getManager } from 'typeorm';
 import {
   CourseFactory,
   OfficeHourFactory,
@@ -32,6 +33,12 @@ export class SeedController {
     await this.seedService.deleteAll(OfficeHourModel);
     await this.seedService.deleteAll(QuestionModel);
     await this.seedService.deleteAll(QueueModel);
+    await this.seedService.deleteAll(UserCourseModel);
+    await this.seedService.deleteAll(EventModel);
+    await this.seedService.deleteAll(UserModel);
+    await this.seedService.deleteAll(CourseModel);
+    const manager = getManager();
+    manager.query('ALTER SEQUENCE user_model_id_seq RESTART WITH 1;');
 
     return 'Data successfully reset';
   }
@@ -66,6 +73,10 @@ export class SeedController {
       startTime: tomorrow,
       endTime: new Date(tomorrow.valueOf() + 4500000),
     });
+    const professorOfficeHours = await OfficeHourFactory.create({
+      startTime: now,
+      endTime: new Date(now.valueOf() + 4500000),
+    });
 
     const courseExists = await CourseModel.findOne({
       where: { name: 'CS 2500' },
@@ -85,6 +96,7 @@ export class SeedController {
       officeHoursYesterday,
       officeHoursTomorrow,
       officeHoursTodayOverlap,
+      professorOfficeHours,
     ];
     course.save();
 
@@ -117,7 +129,9 @@ export class SeedController {
         user: user2,
         role: Role.STUDENT,
         course: course,
+        override: true,
       });
+
       // TA 1
       const user3 = await UserFactory.create({
         email: 'stenzel.w@northeastern.edu',
@@ -163,7 +177,7 @@ export class SeedController {
     }
 
     const queue = await QueueFactory.create({
-      room: 'WHV 101',
+      room: 'Online',
       course: course,
       officeHours: [
         officeHoursToday,
@@ -184,6 +198,19 @@ export class SeedController {
     });
     await QuestionFactory.create({
       queue: queue,
+      createdAt: new Date(Date.now() - 1500000),
+    });
+
+    const professorQueue = await QueueFactory.create({
+      room: "Professor Li's Hours",
+      course: course,
+      officeHours: [professorOfficeHours],
+      allowQuestions: true,
+      isProfessorQueue: true,
+    });
+
+    await QuestionFactory.create({
+      queue: professorQueue,
       createdAt: new Date(Date.now() - 1500000),
     });
 
@@ -272,7 +299,27 @@ export class SeedController {
     const question: QuestionModel = await QuestionFactory.create({
       ...options,
       ...body.data,
+      createdAt: new Date(),
     });
     return question;
+  }
+
+  @Post('createQueueWithoutOfficeHour')
+  async createQueueWithoutOfficeHour(
+    @Body()
+    body: {
+      courseId: number;
+      allowQuestions: boolean;
+    },
+  ): Promise<QueueModel> {
+    const options = {
+      allowQuestions: body.allowQuestions ?? false,
+      officeHours: [],
+    };
+    if (body.courseId) {
+      const course = await CourseModel.findOneOrFail(body.courseId);
+      options['course'] = course;
+    }
+    return await QueueFactory.create(options);
   }
 }

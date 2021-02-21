@@ -7,12 +7,19 @@ import { Footer } from "../components/common/Footer";
 import styled from "styled-components";
 import { ReactElement } from "react";
 import { ErrorBoundary } from "../components/common/ErrorBoundary";
+import * as Sentry from "@sentry/node";
 
 if (process.env.NODE_ENV === "production" && typeof window !== "undefined") {
   initApm({
     serviceName: `${window.location.hostname.replace(/\./g, "-")}-frontend`,
     serverUrl: process.env.NEXT_PUBLIC_APM_SERVER,
     serviceVersion: process.env.NEXT_PUBLIC_SERVICE_VERSION,
+  });
+  Sentry.init({
+    enabled: process.env.NODE_ENV === "production",
+    dsn:
+      "https://9cfb47804c93495ba3a66a9d79cec084@o440615.ingest.sentry.io/5557379",
+    tracesSampleRate: 0.2,
   });
 }
 

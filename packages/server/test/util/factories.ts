@@ -53,21 +53,23 @@ export const CourseSectionFactory = new Factory(CourseSectionMappingModel)
 export const UserCourseFactory = new Factory(UserCourseModel)
   .assocOne('user', UserFactory)
   .assocOne('course', CourseFactory)
-  .attr('role', Role.STUDENT);
+  .attr('role', Role.STUDENT)
+  .attr('override', false);
 
 export const QueueFactory = new Factory(QueueModel)
   .attr('room', 'Online')
   .assocOne('course', CourseFactory)
   .attr('allowQuestions', false)
   .assocMany('officeHours', OfficeHourFactory)
-  .assocMany('staffList', UserFactory, 0);
+  .assocMany('staffList', UserFactory, 0)
+  .attr('isProfessorQueue', false);
 
 // WARNING: DO NOT USE CREATORID. AS YOU SEE HERE, WE ONLY ACCEPT CREATOR
 //TODO: make it accept creatorId as well
 export const QuestionFactory = new Factory(QuestionModel)
-  .sequence('text', (i) => `question ${i}`)
+  .attr('text', 'question description')
   .attr('status', 'Queued')
   .attr('questionType', QuestionType.Other)
-  .attr('createdAt', new Date())
   .assocOne('queue', QueueFactory)
-  .assocOne('creator', UserFactory);
+  .assocOne('creator', UserFactory)
+  .attr('createdAt', new Date());

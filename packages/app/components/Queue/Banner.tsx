@@ -89,6 +89,7 @@ export const BannerPrimaryButton = styled(BannerButton)`
 `;
 
 export const BannerDangerButton = styled(BannerButton)`
+  ${({ disabled }) => disabled && "pointer-events: none"};
   background: #e26567;
   color: #fff;
   &:hover,

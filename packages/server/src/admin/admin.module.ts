@@ -13,6 +13,7 @@ import {
   UserAdmin,
   UserCourseAdmin,
   CourseSectionMappingAdmin,
+  SemesterAdmin,
 } from './admin-entities';
 import { AdminCommand } from './admin.command';
 import * as session from 'express-session';
@@ -21,6 +22,12 @@ import { createClient } from 'redis';
 
 const redisClient = createClient();
 const RedisStore = connectRedis(session);
+
+// This stops redisClient from causing jest tests to hang from an open handler
+// We only use redisClient in the admin module, which isn't needed for our tests
+if (process.env.NODE_ENV === 'test') {
+  redisClient.quit();
+}
 
 const CoreModule = AdminCoreModuleFactory.createAdminCoreModule({
   appConfig: {
@@ -48,5 +55,6 @@ export class AdminModule {
     adminSite.register('UserCourse', UserCourseAdmin);
     adminSite.register('Queue', QueueAdmin);
     adminSite.register('CourseSectionMapping', CourseSectionMappingAdmin);
+    adminSite.register('Semester', SemesterAdmin);
   }
 }

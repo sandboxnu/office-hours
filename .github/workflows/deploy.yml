@@ -28,9 +28,30 @@ jobs:
         env:
           NEXT_PUBLIC_APM_SERVER: ${{ secrets.ELASTIC_APM_SERVER_URL}}
           NEXT_PUBLIC_SERVICE_VERSION: ${{ steps.pre-version.outputs.version }}
+          SERVICE_VERSION: ${{ steps.pre-version.outputs.version }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       ## Ensure no new changes have been pushed in the time we spent building
       - run: git fetch && echo "::set-output name=version::$(git rev-parse origin/master)"
         id: post-version
+      ## Associate release with git commits, so Sentry can guess which commits caused errors
+      - name: Create Sentry release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: sandboxnu
+        with:
+          version: ${{ steps.pre-version.outputs.version }}
+          environment: production
+          projects: khoury-office-hours khoury-office-hours-frontend
+      - name: Create Sentry release (staging)
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: sandboxnu
+        with:
+          version: ${{ steps.pre-version.outputs.version }}
+          environment: staging
+          projects: khoury-office-hours khoury-office-hours-frontend
       - if: steps.pre-version.outputs.version == steps.post-version.outputs.version
         uses: EndBug/add-and-commit@v4
         with:

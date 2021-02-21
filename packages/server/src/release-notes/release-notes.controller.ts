@@ -31,7 +31,7 @@ export class ReleaseNotesController {
     const data = request.data;
     try {
       const timeText =
-        data['beae2a02-249e-4b61-9bfc-81258d93f20d']?.value?.properties
+        data[process.env.RELEASE_NOTE_TIMESTAMP_ID]?.value?.properties
           ?.title[0][0];
       response.lastUpdatedUnixTime = timeText.split('Unix ')[1] * 1000;
     } catch (e) {
@@ -40,8 +40,8 @@ export class ReleaseNotesController {
       );
     }
     // Remove the time block and page link block from page
-    data['beae2a02-249e-4b61-9bfc-81258d93f20d'].value.properties.title = [];
-    data['4d25f393-e570-4cd5-ad66-b278a0924225'].value.properties.title = [];
+    data[process.env.RELEASE_NOTE_TIMESTAMP_ID].value.properties.title = [];
+    data[process.env.WANT_TO_SEE_MORE_ID].value.properties.title = [];
     response.releaseNotes = data;
     return response;
   }
