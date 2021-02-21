@@ -153,10 +153,10 @@ export class AverageWaitTime implements InsightInterface<QuestionModel> {
   roles = [Role.PROFESSOR];
   component = InsightDisplay.SimpleDisplay;
   possibleFilters = ['courseId', 'timeframe'];
-  size = 'default' as const;
+  size = 'small' as const;
 
   async compute(filters): Promise<SimpleDisplayOutputType> {
-    return await addFilters(
+    const waitTime = await addFilters(
       createQueryBuilder(QuestionModel)
         .select(
           'EXTRACT(EPOCH FROM AVG(QuestionModel.helpedAt - QuestionModel.createdAt)::INTERVAL)/60',
@@ -167,6 +167,7 @@ export class AverageWaitTime implements InsightInterface<QuestionModel> {
       filters,
       this.possibleFilters,
     ).getRawOne();
+    return `${Math.floor(waitTime.avgWaitTimeInMinutes)} min`;
   }
 }
 
