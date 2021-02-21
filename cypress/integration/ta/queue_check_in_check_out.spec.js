@@ -69,6 +69,7 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
     cy.get("[data-cy='check-out-button']").click();
     cy.get("button").should("contain", "Check In");
 
+    cy.contains("Schedule"); // Wait for nav to reload, then take snapshot
     cy.percySnapshot("TA Queue Page - TA Checked Out");
   });
 
@@ -86,14 +87,13 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
     cy.location("pathname").should("contain", "/queue");
     cy.get("body").should("contain", "There are no questions in the queue");
 
-    cy.percySnapshot("TA Today Page - TA Checked In");
-
     cy.visit(`/course/${this.ta.courseId}/today`);
 
     // Click "Check out"
     cy.get("[data-cy='check-out-button']").click();
     cy.get("button").should("contain", "Check In");
 
+    cy.contains("Schedule"); // Wait for nav to reload, then take snapshot
     cy.percySnapshot("TA Today Page - TA Checked Out");
   });
 });

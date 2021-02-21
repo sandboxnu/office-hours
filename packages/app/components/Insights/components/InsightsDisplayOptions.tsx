@@ -23,25 +23,26 @@ export default function InsightsDisplayOptions({
     <>
       <br />
       <Form form={null} initialValues={null}>
-        {insightsList?.map((insight) => (
-          <Form.Item
-            key={insight.name}
-            label={insight.displayName}
-            initialValue={profile?.insights?.includes(insight.name)}
-            valuePropName="checked"
-            name={insight.name}
-          >
-            <Switch
-              onChange={(checked) => {
-                if (checked) {
-                  toggleInsightOn(insight.name);
-                } else {
-                  toggleInsightOff(insight.name);
-                }
-              }}
-            />
-          </Form.Item>
-        ))}
+        {insightsList &&
+          Object.entries(insightsList)?.map(([insightName, insightPartial]) => (
+            <Form.Item
+              key={insightName}
+              label={insightPartial.displayName}
+              initialValue={profile?.insights?.includes(insightName)}
+              valuePropName="checked"
+              name={insightName}
+            >
+              <Switch
+                onChange={(checked) => {
+                  if (checked) {
+                    toggleInsightOn(insightName);
+                  } else {
+                    toggleInsightOff(insightName);
+                  }
+                }}
+              />
+            </Form.Item>
+          ))}
       </Form>
     </>
   );

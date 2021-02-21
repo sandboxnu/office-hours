@@ -1,21 +1,20 @@
 import {
+  BarChartOutputType,
   InsightDisplay,
   PossibleOutputTypes,
   QuestionType,
   Role,
-  SimpleChartOutputType,
   SimpleDisplayOutputType,
 } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { QuestionModel } from 'question/question.entity';
-import { SelectQueryBuilder } from 'typeorm';
+import { createQueryBuilder, SelectQueryBuilder } from 'typeorm';
 
 export interface InsightInterface<Model> {
   displayName: string;
   description: string;
   roles: Role[];
   component: InsightDisplay;
-  model: new () => Model; // One of the modals have
   possibleFilters: string[];
   compute: (
     queryBuilder: SelectQueryBuilder<Model>,
@@ -23,12 +22,11 @@ export interface InsightInterface<Model> {
   ) => Promise<PossibleOutputTypes>;
   output?: Promise<PossibleOutputTypes>;
   size: 'default' | 'small';
-  style?: Record<string, any>;
 }
 
 function addFilters(
-  queryBuilder,
-  modelName,
+  queryBuilder: SelectQueryBuilder<any>,
+  modelName: string,
   filters,
   possibleFilters,
 ): SelectQueryBuilder<QuestionModel> {
@@ -70,18 +68,13 @@ export class TotalStudents implements InsightInterface<UserCourseModel> {
   description = 'Gets the total number of students';
   roles = [Role.PROFESSOR];
   component = InsightDisplay.SimpleDisplay;
-  model = UserCourseModel;
   possibleFilters = ['courseId', 'role'];
   size = 'small' as const;
-  style = { width: '200px', margin: '10px' };
 
-  async compute(
-    queryBuilder: SelectQueryBuilder<UserCourseModel>,
-    filters,
-  ): Promise<SimpleDisplayOutputType> {
+  async compute(filters): Promise<SimpleDisplayOutputType> {
     return await addFilters(
-      queryBuilder.where("role = 'student'"),
-      this.model.name,
+      createQueryBuilder(UserCourseModel).where("role = 'student'"),
+      UserCourseModel.name,
       filters,
       this.possibleFilters,
     ).getCount();
@@ -93,46 +86,35 @@ export class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
   description = 'Gets the total number questions asked';
   roles = [Role.PROFESSOR];
   component = InsightDisplay.SimpleDisplay;
-  model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
   size = 'small' as const;
-  style = { width: '200px', margin: '10px' };
 
-  async compute(
-    queryBuilder: SelectQueryBuilder<QuestionModel>,
-    filters,
-  ): Promise<SimpleDisplayOutputType> {
+  async compute(filters): Promise<SimpleDisplayOutputType> {
     return await addFilters(
-      queryBuilder.where('TRUE'),
-      this.model.name,
+      createQueryBuilder(QuestionModel).where('TRUE'),
+      QuestionModel.name,
       filters,
       this.possibleFilters,
     ).getCount();
   }
 }
 
-// WIP
 export class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
   displayName = 'Question Type Breakdown';
   description =
     'Returns a table of each question type and how many questions of that type were asked';
   roles = [Role.PROFESSOR];
-  component = InsightDisplay.SimpleChart;
-  model = QuestionModel;
+  component = InsightDisplay.BarChart;
   possibleFilters = ['courseId', 'timeframe'];
   size = 'default' as const;
-  style = { width: '200px', margin: '10px' };
 
-  async compute(
-    queryBuilder: SelectQueryBuilder<QuestionModel>,
-    filters,
-  ): Promise<SimpleChartOutputType> {
+  async compute(filters): Promise<BarChartOutputType> {
     const info = await addFilters(
-      queryBuilder
+      createQueryBuilder(QuestionModel)
         .select('"QuestionModel"."questionType"', 'questionType')
         .addSelect('COUNT(*)', 'totalQuestions')
         .andWhere('"QuestionModel"."questionType" IS NOT NULL'),
-      this.model.name,
+      QuestionModel.name,
       filters,
       this.possibleFilters,
     )
@@ -144,7 +126,7 @@ export class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
 
     Object.values(QuestionType).forEach((v) => {
       if (!typesFromInfo.includes(v)) {
-        info.push({ questionType: v, totalQuestions: '0' });
+        info.push({ questionType: v, totalQuestions: 0 });
       }
     });
     const insightObj = {
@@ -155,6 +137,9 @@ export class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
           ? 1
           : -1,
       ),
+      xField: 'totalQuestions',
+      yField: 'questionType',
+      seriesField: 'questionType',
       xAxisName: 'questionType',
       yAxisName: 'totalQuestions',
     };
@@ -167,23 +152,18 @@ export class AverageWaitTime implements InsightInterface<QuestionModel> {
   description = 'Gets the average wait time';
   roles = [Role.PROFESSOR];
   component = InsightDisplay.SimpleDisplay;
-  model = QuestionModel;
   possibleFilters = ['courseId', 'timeframe'];
-  size = 'small' as const;
-  style = { width: '200px', margin: '10px' };
+  size = 'default' as const;
 
-  async compute(
-    queryBuilder: SelectQueryBuilder<QuestionModel>,
-    filters,
-  ): Promise<SimpleDisplayOutputType> {
+  async compute(filters): Promise<SimpleDisplayOutputType> {
     return await addFilters(
-      queryBuilder
+      createQueryBuilder(QuestionModel)
         .select(
           'EXTRACT(EPOCH FROM AVG(QuestionModel.helpedAt - QuestionModel.createdAt)::INTERVAL)/60',
           'avgWaitTimeInMinutes',
         )
         .where('QuestionModel.helpedAt IS NOT NULL'),
-      this.model.name,
+      QuestionModel.name,
       filters,
       this.possibleFilters,
     ).getRawOne();

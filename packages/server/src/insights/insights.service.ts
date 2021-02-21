@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { InsightInterface } from './insights';
+import { InsightInterface, INSIGHTS_MAP } from './insight-classes';
+import { InsightPartial, ListInsightsResponse } from '@koh/common';
 import { UserModel } from 'profile/user.entity';
 
 // interface generateAllInsightsParams {
@@ -14,11 +15,7 @@ export class InsightsService {
 
   // Generate the output data for an insight by calling its compute function
   async generateOutput({ insight, filters }): Promise<any> {
-    const queryBuilder = await insight.model
-      .getRepository()
-      .createQueryBuilder();
-
-    const output = await insight.compute(queryBuilder, filters);
+    const output = await insight.compute(filters);
     return output;
   }
 
@@ -40,18 +37,34 @@ export class InsightsService {
     return insightsWithOutput;
   }
 
-  async toggleInsightOn(user: UserModel, insightName: string): Promise<any> {
+  convertToInsightsListResponse(insightNames: string[]): ListInsightsResponse {
+    return insightNames.reduce(
+      (obj, insightName) => ({
+        ...obj,
+        [insightName]: {
+          displayName: INSIGHTS_MAP[insightName].displayName,
+          size: INSIGHTS_MAP[insightName].size,
+        },
+      }),
+      {},
+    );
+  }
+
+  async toggleInsightOn(
+    user: UserModel,
+    insightName: string,
+  ): Promise<string[]> {
     if (user.insights === null) {
       user.insights = [];
     }
     user.insights = [insightName, ...user.insights];
     await user.save();
-    return user.insights;
+    return;
   }
 
-  async toggleInsightOff(user: UserModel, insightName: string): Promise<any> {
+  async toggleInsightOff(user: UserModel, insightName: string): Promise<void> {
     user.insights = user.insights?.filter((insight) => insight !== insightName);
     await user.save();
-    return user.insights;
+    return;
   }
 }

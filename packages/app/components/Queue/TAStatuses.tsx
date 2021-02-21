@@ -1,6 +1,6 @@
 import { Question } from "@koh/common";
 import { Badge, Col, Row } from "antd";
-import { ReactElement } from "react";
+import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
@@ -55,9 +55,7 @@ const StyledCard = styled.div`
   display: flex;
   margin-bottom: 16px;
 `;
-const AvatarNoShrink = styled(KOHAvatar)`
-  flex-shrink: 0;
-`;
+
 const CardContent = styled.div`
   margin-left: 16px;
 `;
@@ -88,7 +86,12 @@ function StatusCard({
   const isBusy = !!helpedAt;
   return (
     <StyledCard data-cy="ta-status-card">
-      <AvatarNoShrink size={48} name={taName} photoURL={taPhotoURL} />
+      <KOHAvatar
+        size={48}
+        name={taName}
+        photoURL={taPhotoURL}
+        style={{ flexShrink: 0 }}
+      />
       <CardContent>
         <Row justify="space-between">
           <TAName>{taName}</TAName>

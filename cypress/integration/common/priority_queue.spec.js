@@ -120,7 +120,7 @@ describe("TA Priority Queue", () => {
   });
 
   describe("Requeue Student", () => {
-    it.only("Requeue student works", function () {
+    it("Requeue student works", function () {
       helpQuestionWithID(this.question.id);
       cy.get('[data-cy="requeue-student-button"]').should("be.visible").click();
       cy.get("body").should("contain", "Yes");

@@ -1,11 +1,11 @@
-import { API } from "@koh/api-client";
-import { QuestionStatusKeys } from "@koh/common";
+import { QuestionStatusKeys, Role } from "@koh/common";
 import { Tooltip } from "antd";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { useQueue } from "../../../hooks/useQueue";
+import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
 import TACheckinButton from "../../Today/TACheckinButton";
 import {
@@ -50,6 +50,7 @@ interface TAQueueProps {
 
 export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
   const user = useProfile();
+  const role = useRoleInCourse(courseId);
   const { queue, mutateQueue } = useQueue(qid);
 
   const { questions, mutateQuestions } = useQuestions(qid);
@@ -101,7 +102,10 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
                   <TACheckinButton
                     courseId={courseId}
                     room={queue?.room}
-                    disabled={isHelping}
+                    disabled={
+                      isHelping ||
+                      (queue.isProfessorQueue && role !== Role.PROFESSOR)
+                    }
                     state={isCheckedIn ? "CheckedIn" : "CheckedOut"}
                     block
                   />
