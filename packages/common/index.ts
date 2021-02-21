@@ -11,7 +11,7 @@ import {
 } from "class-validator";
 import "reflect-metadata";
 
-export const PROD_URL = "https://khouryofficehours.com";
+export const PROD_URL = "https://officehours.khoury.northeastern.edu";
 export const STAGING_URL = "https://staging.khouryofficehours.com";
 // Get domain. works on node and browser
 const domain = (): string | false =>
@@ -331,10 +331,6 @@ export class KhouryDataParams {
   @IsInt()
   campus!: string;
 
-  @IsInt()
-  @IsOptional()
-  professor!: string;
-
   @IsOptional()
   @IsString()
   photo_url!: string;
@@ -374,6 +370,10 @@ export class KhouryTACourse {
 
   @IsString()
   semester!: string;
+
+  @IsInt()
+  @IsOptional()
+  instructor!: number;
 }
 
 export interface KhouryRedirectResponse {
@@ -415,6 +415,28 @@ export class GetCourseResponse {
 
   heatmap!: Heatmap | false;
 }
+
+export class GetCourseOverridesRow {
+  id!: number;
+  role!: string;
+  name!: string;
+  email!: string;
+}
+
+export class GetCourseOverridesResponse {
+  @Type(() => GetCourseOverridesRow)
+  data!: GetCourseOverridesRow[];
+}
+
+export class UpdateCourseOverrideBody {
+  @IsString()
+  email!: string;
+
+  @IsString()
+  role!: Role;
+}
+
+export class UpdateCourseOverrideResponse extends GetCourseOverridesRow {}
 
 export class GetQueueResponse extends QueuePartial {}
 
@@ -585,6 +607,15 @@ export type DateRangeType = {
 };
 
 export const ERROR_MESSAGES = {
+  courseController: {
+    checkIn: {
+      cannotCreateNewQueueIfNotProfessor:
+        "You can't create a new queue if you're not a professor",
+      cannotCheckIntoMultipleQueues:
+        "Cannot check into multiple queues at the same time",
+    },
+    noUserFound: "No user found with given email",
+  },
   questionController: {
     createQuestion: {
       invalidQueue: "Posted to an invalid queue",

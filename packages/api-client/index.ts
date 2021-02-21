@@ -3,6 +3,7 @@ import {
   CreateQuestionResponse,
   DesktopNotifBody,
   DesktopNotifPartial,
+  GetCourseOverridesResponse,
   GetCourseResponse,
   GetInsightResponse,
   GetProfileResponse,
@@ -12,6 +13,8 @@ import {
   ListQuestionsResponse,
   TACheckoutResponse,
   TAUpdateStatusResponse,
+  UpdateCourseOverrideBody,
+  UpdateCourseOverrideResponse,
   UpdateProfileParams,
   UpdateQuestionParams,
   UpdateQuestionResponse,
@@ -63,6 +66,32 @@ class APIClient {
       this.req("GET", `/api/v1/courses/${courseId}`, GetCourseResponse),
     updateCalendar: async (courseId: number) =>
       this.req("POST", `/api/v1/courses/${courseId}/update_calendar`),
+    getCourseOverrides: async (courseId: number) =>
+      this.req(
+        "GET",
+        `/api/v1/courses/${courseId}/course_override`,
+        GetCourseOverridesResponse
+      ),
+    addOverride: async (
+      courseId: number,
+      params: UpdateCourseOverrideBody
+    ): Promise<UpdateCourseOverrideResponse> =>
+      this.req(
+        "POST",
+        `/api/v1/courses/${courseId}/update_override`,
+        UpdateCourseOverrideResponse,
+        params
+      ),
+    deleteOverride: async (
+      courseId: number,
+      params: UpdateCourseOverrideBody
+    ): Promise<void> =>
+      this.req(
+        "DELETE",
+        `/api/v1/courses/${courseId}/update_override`,
+        undefined,
+        params
+      ),
   };
   taStatus = {
     checkIn: async (

@@ -122,13 +122,13 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     null
   );
   const [visible, setVisible] = useState<boolean>(false);
-
   const { pathname } = useRouter();
-
   const { course } = useCourse(courseId);
+  const role = useRoleInCourse(courseId);
 
-  const queueId =
-    course?.queues && course.queues.length > 0 && course.queues[0].id;
+  const queueId = course?.queues?.find(
+    (queue) => queue.isOpen && queue.allowQuestions
+  )?.id;
 
   const showDrawer = () => {
     setVisible(true);
@@ -164,6 +164,15 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
       text: "Schedule",
     },
   ];
+
+  if (role === Role.PROFESSOR) {
+    tabs.push({
+      href: "/course/[cid]/course_overrides",
+      as: `/course/${courseId}/course_overrides`,
+      text: "Overrides",
+    });
+  }
+
   if (queueId) {
     tabs.push({
       href: "/course/[cid]/queue/[qid]",

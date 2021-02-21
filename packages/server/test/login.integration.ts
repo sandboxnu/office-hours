@@ -74,7 +74,6 @@ describe('Login Integration', () => {
         photo_url: 'sdf',
         courses: [],
         ta_courses: [],
-        professor: 0,
       });
 
       // Expect that the new user has been created
@@ -89,8 +88,38 @@ describe('Login Integration', () => {
       });
     });
 
+    it('converts husky emails to northeastern emails', async () => {
+      const user = await UserModel.findOne({
+        where: { email: 'stenzel.w@northeastern.edu' },
+      });
+      expect(user).toBeUndefined();
+
+      const res = await supertest().post('/khoury_login').send({
+        email: 'stenzel.w@husky.neu.edu',
+        campus: 1,
+        first_name: 'Will',
+        last_name: 'Stenzel',
+        photo_url: 'sdf',
+        courses: [],
+        ta_courses: [],
+      });
+
+      // Expect that the new user has been created
+      const newUser = await UserModel.findOne({
+        where: { email: 'stenzel.w@northeastern.edu' },
+      });
+      expect(newUser).toBeDefined();
+
+      const huskyUser = await UserModel.findOne({
+        where: { email: 'stenzel.w@husky.neu.edu' },
+      });
+      expect(huskyUser).toBeUndefined();
+    });
+
     describe('with course mapping', () => {
       let course;
+      let course2;
+      let course3;
       beforeEach(async () => {
         // Make course mapping so usercourse can be added
         course = await CourseFactory.create({
@@ -100,6 +129,22 @@ describe('Login Integration', () => {
           genericCourseName: 'CS 2510',
           section: 1,
           course: course,
+        });
+        course2 = await CourseFactory.create({
+          name: 'CS 2510',
+        });
+        await CourseSectionFactory.create({
+          genericCourseName: 'CS 2510',
+          section: 2,
+          course: course2,
+        });
+        course3 = await CourseFactory.create({
+          name: 'CS 2500',
+        });
+        await CourseSectionFactory.create({
+          genericCourseName: 'CS 2500',
+          section: 555555,
+          course: course3,
         });
       });
       it('overwrites courses but not names of existing users', async () => {
@@ -124,7 +169,6 @@ describe('Login Integration', () => {
               },
             ],
             ta_courses: [],
-            professor: 0,
           })
           .expect(201);
         user = await UserModel.findOne(user, { relations: ['courses'] });
@@ -153,7 +197,6 @@ describe('Login Integration', () => {
               },
             ],
             ta_courses: [],
-            professor: 0,
           })
           .expect(201);
 
@@ -184,8 +227,25 @@ describe('Login Integration', () => {
                 semester: '000',
                 title: 'Fundamentals of Computer Science II',
               },
+              {
+                course: 'CS 2510',
+                crn: 24680,
+                accelerated: true,
+                section: 2,
+                semester: '000',
+                title: 'Fundamentals of Computer Science II',
+              },
             ],
-            ta_courses: [],
+            ta_courses: [
+              {
+                course: 'CS 2500',
+                crn: 12312,
+                accelerated: false,
+                section: 55555,
+                semester: '000',
+                title: 'Fundamentals of Computer Science I',
+              },
+            ],
           })
           .expect(201);
 
@@ -195,17 +255,18 @@ describe('Login Integration', () => {
         });
 
         const fundiesUserCourse = await UserCourseModel.findOne({
-          where: { userId: user.id },
+          where: { user, course },
         });
         expect(fundiesUserCourse).toEqual({
           courseId: 1,
           id: 1,
+          override: false,
           role: 'student',
           userId: 1,
         });
 
         const totalUserCourses = await UserCourseModel.count();
-        expect(totalUserCourses).toEqual(1);
+        expect(totalUserCourses).toEqual(3);
 
         // After dropping fundies II, user logs in again
         await supertest()
@@ -216,8 +277,26 @@ describe('Login Integration', () => {
             first_name: 'Will',
             last_name: 'Stenzel',
             photo_url: '',
-            courses: [],
-            ta_courses: [],
+            courses: [
+              {
+                course: 'CS 2510',
+                crn: 24680,
+                accelerated: true,
+                section: 2,
+                semester: '000',
+                title: 'Fundamentals of Computer Science II',
+              },
+            ],
+            ta_courses: [
+              {
+                course: 'CS 2500',
+                crn: 12312,
+                accelerated: false,
+                section: 55555,
+                semester: '000',
+                title: 'Fundamentals of Computer Science I',
+              },
+            ],
           })
           .expect(201);
 
@@ -227,7 +306,123 @@ describe('Login Integration', () => {
         expect(noUserCourse).toBeUndefined();
 
         const totalUserCoursesUpdated = await UserCourseModel.count();
-        expect(totalUserCoursesUpdated).toEqual(0);
+        expect(totalUserCoursesUpdated).toEqual(2);
+      });
+
+      it('respects user course overrides', async () => {
+        await supertest()
+          .post('/khoury_login')
+          .send({
+            email: 'stenzel.w@northeastern.edu',
+            campus: 1,
+            first_name: 'Will',
+            last_name: 'Stenzel',
+            photo_url: '',
+            courses: [
+              {
+                course: 'CS 2510',
+                crn: 12345,
+                accelerated: false,
+                section: 1,
+                semester: '000',
+                title: 'Fundamentals of Computer Science II',
+              },
+              {
+                course: 'CS 2510',
+                crn: 24680,
+                accelerated: true,
+                section: 2,
+                semester: '000',
+                title: 'Fundamentals of Computer Science II',
+              },
+            ],
+            ta_courses: [
+              {
+                course: 'CS 2500',
+                crn: 12312,
+                accelerated: false,
+                section: 55555,
+                semester: '000',
+                title: 'Fundamentals of Computer Science I',
+              },
+            ],
+          })
+          .expect(201);
+
+        const user = await UserModel.findOne({
+          where: { email: 'stenzel.w@northeastern.edu' },
+          relations: ['courses'],
+        });
+
+        const overrideCourse = await UserCourseFactory.create({
+          override: true,
+        });
+
+        const fundiesUserCourse = await UserCourseModel.findOne({
+          where: { user, course },
+        });
+        expect(fundiesUserCourse).toEqual({
+          courseId: 1,
+          id: 1,
+          override: false,
+          role: 'student',
+          userId: 1,
+        });
+
+        const totalUserCourses = await UserCourseModel.count();
+        expect(totalUserCourses).toEqual(4);
+
+        // After dropping fundies II, user logs in again
+        await supertest()
+          .post('/khoury_login')
+          .send({
+            email: 'stenzel.w@northeastern.edu',
+            campus: 1,
+            first_name: 'Will',
+            last_name: 'Stenzel',
+            photo_url: '',
+            courses: [
+              {
+                course: 'CS 2510',
+                crn: 24680,
+                accelerated: true,
+                section: 2,
+                semester: '000',
+                title: 'Fundamentals of Computer Science II',
+              },
+            ],
+            ta_courses: [
+              {
+                course: 'CS 2500',
+                crn: 12312,
+                accelerated: false,
+                section: 55555,
+                semester: '000',
+                title: 'Fundamentals of Computer Science I',
+              },
+            ],
+          })
+          .expect(201);
+
+        const noUserCourse = await UserCourseModel.findOne(
+          fundiesUserCourse.id,
+        );
+        expect(noUserCourse).toBeUndefined();
+
+        const overrideStillExists = await UserCourseModel.findOne(
+          overrideCourse.id,
+        );
+        expect(overrideStillExists).toBeDefined();
+        expect(overrideStillExists).toEqual({
+          courseId: overrideCourse.courseId,
+          id: overrideCourse.id,
+          override: overrideCourse.override,
+          role: overrideCourse.role,
+          userId: overrideCourse.userId,
+        });
+
+        const totalUserCoursesUpdated = await UserCourseModel.count();
+        expect(totalUserCoursesUpdated).toEqual(3);
       });
     });
 
@@ -304,9 +499,9 @@ describe('Login Integration', () => {
             {
               course: 'CS 2500',
               semester: '000',
+              instructor: 1,
             },
           ],
-          professor: 1,
         })
         .expect(201);
 
@@ -321,7 +516,7 @@ describe('Login Integration', () => {
 
       // Expect the professor to have been all three courses accosiated with the given generic courses (CS 2500)
       expect(professor.courses).toHaveLength(3);
-      expect(ucms.every((ucm) => ucm.role === Role.PROFESSOR));
+      expect(ucms.every((ucm) => ucm.role === Role.PROFESSOR)).toBeTruthy();
     });
   });
 

@@ -1,21 +1,29 @@
 import {
+  ERROR_MESSAGES,
+  GetCourseOverridesResponse,
   GetCourseResponse,
   QueuePartial,
   Role,
   TACheckoutResponse,
+  UpdateCourseOverrideBody,
+  UpdateCourseOverrideResponse,
 } from '@koh/common';
 import {
+  BadRequestException,
+  Body,
   ClassSerializerInterceptor,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   Post,
+  UnauthorizedException,
   UseGuards,
   UseInterceptors,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import async from 'async';
+import moment = require('moment');
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { Connection, getRepository, MoreThanOrEqual } from 'typeorm';
@@ -31,7 +39,6 @@ import { CourseModel } from './course.entity';
 import { HeatmapService } from './heatmap.service';
 import { IcalService } from './ical.service';
 import { OfficeHourModel } from './office-hour.entity';
-import moment = require('moment');
 
 @Controller('courses')
 @UseGuards(JwtAuthGuard, CourseRolesGuard)
@@ -74,7 +81,7 @@ export class CourseController {
     if (userCourseModel.role === Role.PROFESSOR) {
       course.queues = await async.filter(
         course.queues,
-        async (q) => q.isProfessorQueue || (await q.checkIsOpen()),
+        async (q) => (await q.checkIsOpen()) || q.isProfessorQueue,
       );
     } else {
       course.queues = await async.filter(
@@ -98,6 +105,20 @@ export class CourseController {
     @Param('room') room: string,
     @User() user: UserModel,
   ): Promise<QueuePartial> {
+    // First ensure user is not checked into another queue
+    const queues = await QueueModel.find({
+      where: {
+        courseId: courseId,
+      },
+      relations: ['staffList'],
+    });
+
+    if (queues.some((q) => q.staffList.some((staff) => staff.id === user.id))) {
+      throw new UnauthorizedException(
+        ERROR_MESSAGES.courseController.checkIn.cannotCheckIntoMultipleQueues,
+      );
+    }
+
     let queue = await QueueModel.findOne(
       {
         room,
@@ -107,13 +128,27 @@ export class CourseController {
     );
 
     if (!queue) {
-      queue = await QueueModel.create({
-        room,
-        courseId,
-        staffList: [],
-        questions: [],
-        allowQuestions: true,
-      }).save();
+      const userCourseModel = await UserCourseModel.findOne({
+        where: {
+          user,
+          courseId,
+        },
+      });
+
+      if (userCourseModel.role === Role.PROFESSOR) {
+        queue = await QueueModel.create({
+          room,
+          courseId,
+          staffList: [],
+          questions: [],
+          allowQuestions: true,
+          isProfessorQueue: true, // only professors should be able to make queues
+        }).save();
+      } else {
+        throw new ForbiddenException(
+          ERROR_MESSAGES.courseController.checkIn.cannotCreateNewQueueIfNotProfessor,
+        );
+      }
     }
 
     if (queue.staffList.length === 0) {
@@ -184,5 +219,81 @@ export class CourseController {
   async updateCalendar(@Param('id') courseId: number): Promise<void> {
     const course = await CourseModel.findOne(courseId);
     await this.icalService.updateCalendarForCourse(course);
+  }
+
+  @Get(':id/course_override')
+  @Roles(Role.PROFESSOR)
+  async getCourseOverrides(
+    @Param('id') courseId: number,
+  ): Promise<GetCourseOverridesResponse> {
+    const resp = await UserCourseModel.find({
+      where: { courseId, override: true },
+      relations: ['user'],
+    });
+    return {
+      data: resp.map((row) => ({
+        id: row.id,
+        role: row.role,
+        name: `${row.user.firstName} ${row.user.lastName}`,
+        email: row.user.email,
+      })),
+    };
+  }
+
+  @Post(':id/update_override')
+  @Roles(Role.PROFESSOR)
+  async addOverride(
+    @Param('id') courseId: number,
+    @Body() overrideInfo: UpdateCourseOverrideBody,
+  ): Promise<UpdateCourseOverrideResponse> {
+    const user = await UserModel.findOne({
+      where: { email: overrideInfo.email },
+    });
+    if (!user)
+      throw new BadRequestException(
+        ERROR_MESSAGES.courseController.noUserFound,
+      );
+    const userId = user.id;
+    let userCourse = await UserCourseModel.findOne({
+      where: { courseId, userId },
+    });
+    if (!userCourse) {
+      userCourse = await UserCourseModel.create({
+        userId,
+        courseId,
+        role: overrideInfo.role,
+        override: true,
+      }).save();
+    } else {
+      userCourse.override = true;
+      userCourse.role = overrideInfo.role;
+      await userCourse.save();
+    }
+    return {
+      id: userCourse.id,
+      role: userCourse.role,
+      name: `${user.firstName} ${user.lastName}`,
+      email: user.email,
+    };
+  }
+
+  @Delete(':id/update_override')
+  @Roles(Role.PROFESSOR)
+  async deleteOverride(
+    @Param('id') courseId: number,
+    @Body() overrideInfo: UpdateCourseOverrideBody,
+  ): Promise<void> {
+    const user = await UserModel.findOne({
+      where: { email: overrideInfo.email },
+    });
+    if (!user)
+      throw new BadRequestException(
+        ERROR_MESSAGES.courseController.noUserFound,
+      );
+    const userId = user.id;
+    const userCourse = await UserCourseModel.findOne({
+      where: { courseId, userId, override: true },
+    });
+    await UserCourseModel.remove(userCourse);
   }
 }

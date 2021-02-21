@@ -71,6 +71,7 @@ describe("TA interacts with student question", () => {
 
     // See that the students question is shown as helping
     cy.get("[data-cy='finish-helping-button']").should("exist");
+    cy.get("body").should("not.contain", "#2"); // wait for numbers to reload for Percy
     cy.percySnapshot("TA Queue Page - Helping Student Banner");
   });
 

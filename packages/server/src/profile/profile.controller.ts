@@ -93,12 +93,18 @@ export class ProfileController {
   ): Promise<GetProfileResponse> {
     user = Object.assign(user, userPatch);
     user.name = user.firstName + ' ' + user.lastName;
-    if (
-      user.phoneNotifsEnabled &&
-      userPatch.phoneNumber !== user.phoneNotif?.phoneNumber
-    ) {
-      await this.notifService.registerPhone(userPatch.phoneNumber, user);
+
+    // check that the user is trying to update the phone notifs
+    if (userPatch.phoneNotifsEnabled && userPatch.phoneNumber) {
+      // only register new phone if the notifs are enables and the phone number is new
+      if (
+        user.phoneNotifsEnabled &&
+        userPatch.phoneNumber !== user.phoneNotif?.phoneNumber
+      ) {
+        await this.notifService.registerPhone(userPatch.phoneNumber, user);
+      }
     }
+
     await user.save();
 
     return this.get(user);

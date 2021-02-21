@@ -18,9 +18,6 @@
     "dev:db:reset": "yarn workspace @koh/server run dev:db:reset",
     "migration:generate": "yarn workspace @koh/server run migration:generate",
     "build": "yarn workspace @koh/server run build && yarn workspace @koh/app run build",
-    "prod:start": "pm2 startOrReload ./infrastructure/prod/ecosystem.config.js --time",
-    "prod:stop": "pm2 del ./infrastructure/prod/ecosystem.config.js",
-    "deploy": "pm2 deploy infrastructure/prod/ecosystem.config.js",
     "ci:start": "yarn concurrently \"yarn dev:proxy\" \"yarn workspace @koh/server prod:start\" \"yarn workspace @koh/app prod:start\""
   },
   "workspaces": {
@@ -40,9 +37,10 @@
     "@typescript-eslint/parser": "4.0.1",
     "concurrently": "^5.2.0",
     "cypress": "5.5.0",
-    "eslint": "^7.8.0",
+    "eslint": "^7.20.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-no-only-tests": "^2.4.0",
     "express": "^4.17.1",
     "http-proxy-cli": "^2.1.0",
     "http-proxy-middleware": "^1.0.3",
