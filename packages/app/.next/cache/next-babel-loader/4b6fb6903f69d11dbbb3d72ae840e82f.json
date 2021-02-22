@@ -1,0 +1,1 @@
+{"ast":null,"code":"export default function getInitialsFromName(name) {\n  if (name) {\n    const initialsRegex = name.replace(\"'\", \"\").replace(\"-\", \"\").match(/\\b\\w/g) || [];\n    return ((initialsRegex.shift() || \"\") + (initialsRegex.pop() || \"\")).toUpperCase();\n  }\n\n  return \"\";\n}","map":null,"metadata":{},"sourceType":"module"}
