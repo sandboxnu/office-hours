@@ -1,5 +1,7 @@
 import { CreateQuestionParams, Role } from '@koh/common';
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { DesktopNotifModel } from 'notification/desktop-notif.entity';
+import { PhoneNotifModel } from 'notification/phone-notif.entity';
 import { EventModel } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
@@ -35,6 +37,8 @@ export class SeedController {
     await this.seedService.deleteAll(QueueModel);
     await this.seedService.deleteAll(UserCourseModel);
     await this.seedService.deleteAll(EventModel);
+    await this.seedService.deleteAll(DesktopNotifModel);
+    await this.seedService.deleteAll(PhoneNotifModel);
     await this.seedService.deleteAll(UserModel);
     await this.seedService.deleteAll(CourseModel);
     const manager = getManager();
