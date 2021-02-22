@@ -96,7 +96,7 @@ describe('InsightsService', () => {
           },
         ],
       });
-      expect(res.output.avgWaitTimeInMinutes).toBeCloseTo(5);
+      expect(res.output).toEqual("5 min");
     });
   });
 
@@ -128,9 +128,9 @@ describe('InsightsService', () => {
     expect(res.output.data).toEqual([
       { questionType: 'Bug', totalQuestions: '8' },
       { questionType: 'Clarification', totalQuestions: '20' },
-      { questionType: 'Concept', totalQuestions: '0' },
-      { questionType: 'Other', totalQuestions: '0' },
-      { questionType: 'Setup', totalQuestions: '0' },
+      { questionType: 'Concept', totalQuestions: 0 },
+      { questionType: 'Other', totalQuestions: 0 },
+      { questionType: 'Setup', totalQuestions: 0 },
       { questionType: 'Testing', totalQuestions: '10' },
     ]);
   });
