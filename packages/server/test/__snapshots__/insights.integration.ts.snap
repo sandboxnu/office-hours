@@ -4,7 +4,7 @@ exports[`Insights Integration GET /insights/:courseId/:insightName returns the c
 Object {
   "component": "SimpleDisplay",
   "description": "Gets the total number questions asked",
-  "displayName": "Total Questions Asked",
+  "displayName": "Total Questions",
   "output": 6,
   "possibleFilters": Array [
     "courseId",
