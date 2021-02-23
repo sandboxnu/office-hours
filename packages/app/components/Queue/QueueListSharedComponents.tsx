@@ -7,7 +7,7 @@ import {
 } from "@ant-design/icons";
 import { Button, Tooltip } from "antd";
 import { ButtonProps } from "antd/lib/button";
-import Linkify from 'react-linkify';
+import Linkify from "react-linkify";
 import moment from "moment";
 import React, { ReactElement, ReactNode, useState } from "react";
 import styled from "styled-components";
@@ -122,7 +122,9 @@ export function QueueInfoColumn({
       {queue?.notes && (
         <QueuePropertyRow>
           <NotificationOutlined />
-          <Linkify><QueuePropertyText>{queue.notes}</QueuePropertyText></Linkify>
+          <Linkify>
+            <QueuePropertyText>{queue.notes}</QueuePropertyText>
+          </Linkify>
         </QueuePropertyRow>
       )}
       <QueueUpToDateInfo queueId={queueId} />

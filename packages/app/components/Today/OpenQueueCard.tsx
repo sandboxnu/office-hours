@@ -1,6 +1,6 @@
 import { StopOutlined } from "@ant-design/icons";
 import { Button, Card, Input, Row, Skeleton, Tooltip } from "antd";
-import Linkify from 'react-linkify';
+import Linkify from "react-linkify";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
@@ -156,7 +156,9 @@ const OpenQueueCard = ({
         queue.notes && (
           <div>
             <HeaderText style={{ marginBottom: 0 }}>staff notes</HeaderText>
-            <Linkify><Notes>{queue.notes}</Notes></Linkify>
+            <Linkify>
+              <Notes>{queue.notes}</Notes>
+            </Linkify>
           </div>
         )
       )}
