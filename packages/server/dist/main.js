@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"e53a1e32534ff3add3b814adc54527a93be9347d"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"7fac68bd047bb1e62a026e9cd0ffd9a5fa64cc0d"};
 
 /***/ }),
 /* 2 */
@@ -196,7 +196,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "e53a1e32534ff3add3b814adc54527a93be9347d",
+        release: "7fac68bd047bb1e62a026e9cd0ffd9a5fa64cc0d",
         environment: common_2.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -4787,6 +4787,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SeedController = void 0;
 const common_1 = __webpack_require__(18);
 const common_2 = __webpack_require__(9);
+const desktop_notif_entity_1 = __webpack_require__(29);
+const phone_notif_entity_1 = __webpack_require__(30);
 const event_model_entity_1 = __webpack_require__(24);
 const user_course_entity_1 = __webpack_require__(27);
 const user_entity_1 = __webpack_require__(28);
@@ -4809,6 +4811,8 @@ let SeedController = class SeedController {
         await this.seedService.deleteAll(queue_entity_1.QueueModel);
         await this.seedService.deleteAll(user_course_entity_1.UserCourseModel);
         await this.seedService.deleteAll(event_model_entity_1.EventModel);
+        await this.seedService.deleteAll(desktop_notif_entity_1.DesktopNotifModel);
+        await this.seedService.deleteAll(phone_notif_entity_1.PhoneNotifModel);
         await this.seedService.deleteAll(user_entity_1.UserModel);
         await this.seedService.deleteAll(course_entity_1.CourseModel);
         const manager = typeorm_1.getManager();
