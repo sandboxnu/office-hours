@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"7fac68bd047bb1e62a026e9cd0ffd9a5fa64cc0d"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"495691dc542ee8788b70ad519ddd50066af3807e"};
 
 /***/ }),
 /* 2 */
@@ -196,7 +196,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "7fac68bd047bb1e62a026e9cd0ffd9a5fa64cc0d",
+        release: "495691dc542ee8788b70ad519ddd50066af3807e",
         environment: common_2.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -3144,6 +3144,9 @@ exports.QueueRole = common_1.createParamDecorator(async (data, ctx) => {
     const userCourse = user.courses.find((course) => {
         return Number(course.courseId) === Number(courseId);
     });
+    if (!userCourse) {
+        throw new common_1.NotFoundException("cannot read propery 'role ' of undefined on user: " + user.id + user);
+    }
     return userCourse.role;
 });
 
