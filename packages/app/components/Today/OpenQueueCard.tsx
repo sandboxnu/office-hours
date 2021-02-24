@@ -174,7 +174,7 @@ const OpenQueueCard = ({
                 size={96}
                 photoURL={staffMember.photoURL}
                 name={staffMember.name}
-                style={{ marginRight: "25px" }}
+                style={{ marginRight: "25px", marginTop: "10px" }}
               />
             </Tooltip>
           ))}
@@ -185,7 +185,7 @@ const OpenQueueCard = ({
           </SaveButton>
         )}
         {!editingNotes && (
-          <Row>
+          <Row style={{ paddingTop: 10 }}>
             {isTA && (
               <EditNotesButton
                 size="large"
