@@ -8,7 +8,7 @@ Khoury Office Hours provides a platform for classes at [Khoury College](https://
 
 Khoury Office Hours was developed by [Sandbox](https://www.sandboxnu.com/), Northeastern's student-led software consultancy.
 
-![Queue Demo](https://i.imgur.com/Z7C31nW.png)
+![Queue Demo](https://i.imgur.com/LxxLW3O.jpg)
 
 ## Features
 
