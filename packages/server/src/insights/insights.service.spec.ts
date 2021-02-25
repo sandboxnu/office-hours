@@ -135,28 +135,28 @@ describe('InsightsService', () => {
     ]);
   });
 
-  it.only('mostActiveStudents', async () => {
+  it('mostActiveStudents', async () => {
     const course = await CourseFactory.create();
     const queue = await QueueFactory.create({ course });
     const user1 = await UserFactory.create({
       id: 1,
       name: 'Derek Jeter',
-      email: '',
+      email: 'jeter.d@northeastern.edu',
     });
     const user2 = await UserFactory.create({
       id: 2,
       name: 'David Wright',
-      email: '',
+      email: 'wright.da@northeastern.edu',
     });
     const user3 = await UserFactory.create({
       id: 3,
       name: 'Adam Smith',
-      email: '',
+      email: 'smith.a@northeastern.edu',
     });
     const user4 = await UserFactory.create({
       id: 4,
       name: 'Jean Valjean',
-      email: '',
+      email: 'valjean.j@protonmail.com',
     });
     await QuestionFactory.createList(8, {
       creator: user1,
@@ -185,10 +185,30 @@ describe('InsightsService', () => {
     });
 
     expect(res.output.dataSource).toEqual([
-      { studentId: 4, name: 'Jean Valjean', email: '', questionsAsked: '110' },
-      { studentId: 2, name: 'David Wright', email: '', questionsAsked: '20' },
-      { studentId: 3, name: 'Adam Smith', email: '', questionsAsked: '10' },
-      { studentId: 1, name: 'Derek Jeter', email: '', questionsAsked: '8' },
+      {
+        studentId: 4,
+        name: 'Jean Valjean',
+        email: 'valjean.j@protonmail.com',
+        questionsAsked: '110',
+      },
+      {
+        studentId: 2,
+        name: 'David Wright',
+        email: 'wright.da@northeastern.edu',
+        questionsAsked: '20',
+      },
+      {
+        studentId: 3,
+        name: 'Adam Smith',
+        email: 'smith.a@northeastern.edu',
+        questionsAsked: '10',
+      },
+      {
+        studentId: 1,
+        name: 'Derek Jeter',
+        email: 'jeter.d@northeastern.edu',
+        questionsAsked: '8',
+      },
     ]);
   });
 
