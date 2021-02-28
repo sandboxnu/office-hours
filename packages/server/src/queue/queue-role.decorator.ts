@@ -1,4 +1,8 @@
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import {
+  createParamDecorator,
+  ExecutionContext,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserModel } from 'profile/user.entity';
 import { QueueModel } from './queue.entity';
 
@@ -14,6 +18,12 @@ export const QueueRole = createParamDecorator(
     const userCourse = user.courses.find((course) => {
       return Number(course.courseId) === Number(courseId);
     });
+
+    if (!userCourse) {
+      throw new NotFoundException(
+        "cannot read propery 'role ' of undefined on user: " + user.id + user,
+      );
+    }
     return userCourse.role;
   },
 );
