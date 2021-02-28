@@ -122,7 +122,7 @@ export function QueueInfoColumn({
       {queue?.notes && (
         <QueuePropertyRow>
           <NotificationOutlined />
-          <Linkify properties={{target: '_blank', rel:"noopener noreferrer"}}>
+          <Linkify>
             <QueuePropertyText>{queue.notes}</QueuePropertyText>
           </Linkify>
         </QueuePropertyRow>
