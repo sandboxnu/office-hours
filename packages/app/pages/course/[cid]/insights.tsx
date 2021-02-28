@@ -184,9 +184,9 @@ function RenderInsight({
       size={insight.size as CardSize}
       title={insight.displayName}
       style={{
-        margin: "8px",
-        width: insight.size === "default" ? "50%" : "20%",
-        maxWidth: insight.size === "default" ? "" : "200px",
+        margin: "0.5%",
+        width: insight.size === "default" ? "50%" : "16%",
+        maxWidth: insight.size === "default" ? "625px" : "200px",
       }}
       extra={
         <Space>

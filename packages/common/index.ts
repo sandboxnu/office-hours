@@ -594,7 +594,7 @@ export type PossibleOutputTypes =
   | BarChartOutputType
   | SimpleTableOutputType;
 
-export type SimpleDisplayOutputType = number;
+export type SimpleDisplayOutputType = number | string;
 
 export type BarChartOutputType = {
   data: any[];
