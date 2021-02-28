@@ -156,7 +156,9 @@ const OpenQueueCard = ({
         queue.notes && (
           <div>
             <HeaderText style={{ marginBottom: 0 }}>staff notes</HeaderText>
-            <Linkify><Notes>{queue.notes}</Notes></Linkify>
+            <Linkify properties={{target: '_blank', rel:"noopener noreferrer"}}>
+              <Notes>{queue.notes}</Notes>
+            </Linkify>
           </div>
         )
       )}

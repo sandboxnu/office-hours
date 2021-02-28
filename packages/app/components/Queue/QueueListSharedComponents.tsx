@@ -122,7 +122,9 @@ export function QueueInfoColumn({
       {queue?.notes && (
         <QueuePropertyRow>
           <NotificationOutlined />
-          <Linkify><QueuePropertyText>{queue.notes}</QueuePropertyText></Linkify>
+          <Linkify properties={{target: '_blank', rel:"noopener noreferrer"}}>
+            <QueuePropertyText>{queue.notes}</QueuePropertyText>
+          </Linkify>
         </QueuePropertyRow>
       )}
       <QueueUpToDateInfo queueId={queueId} />
