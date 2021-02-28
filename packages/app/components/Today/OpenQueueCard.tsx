@@ -87,7 +87,7 @@ const ExtraText = styled.div`
   font-weight: normal;
 `;
 
-const NotesInput = styled(Input)`
+const NotesInput = styled(Input.TextArea)`
   border-radius: 6px;
   border: 1px solid #b8c4ce;
 `;
@@ -147,7 +147,6 @@ const OpenQueueCard = ({
           <HeaderText>staff notes</HeaderText>
           <NotesInput
             defaultValue={queue.notes}
-            onPressEnter={handleUpdate}
             value={updatedNotes}
             onChange={(e) => setUpdatedNotes(e.target.value as any)}
           />
