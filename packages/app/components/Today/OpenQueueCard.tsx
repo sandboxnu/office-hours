@@ -155,11 +155,18 @@ const OpenQueueCard = ({
         queue.notes && (
           <div>
             <HeaderText style={{ marginBottom: 0 }}>staff notes</HeaderText>
-            <Linkify componentDecorator={(decoratedHref, decoratedText, key) => (
-              <a target="_blank" rel="noopener noreferrer" href={decoratedHref} key={key}>
+            <Linkify
+              componentDecorator={(decoratedHref, decoratedText, key) => (
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={decoratedHref}
+                  key={key}
+                >
                   {decoratedText}
-              </a>
-            )}>
+                </a>
+              )}
+            >
               <Notes>{queue.notes}</Notes>
             </Linkify>
           </div>

@@ -122,11 +122,18 @@ export function QueueInfoColumn({
       {queue?.notes && (
         <QueuePropertyRow>
           <NotificationOutlined />
-          <Linkify componentDecorator={(decoratedHref, decoratedText, key) => (
-            <a target="_blank" rel="noopener noreferrer" href={decoratedHref} key={key}>
+          <Linkify
+            componentDecorator={(decoratedHref, decoratedText, key) => (
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href={decoratedHref}
+                key={key}
+              >
                 {decoratedText}
-            </a>
-          )}>
+              </a>
+            )}
+          >
             <QueuePropertyText>{queue.notes}</QueuePropertyText>
           </Linkify>
         </QueuePropertyRow>
