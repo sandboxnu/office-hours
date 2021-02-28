@@ -590,7 +590,7 @@ export enum InsightDisplay {
 
 export type PossibleOutputTypes = SimpleDisplayOutputType | BarChartOutputType;
 
-export type SimpleDisplayOutputType = number;
+export type SimpleDisplayOutputType = number | string;
 
 export type BarChartOutputType = {
   data: any[];
