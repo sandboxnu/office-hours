@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"79780b64436618e6ac49b1aa20336b0f92263b24"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"c377fe093c62c52a77456854dfed0937dae8c31b"};
 
 /***/ }),
 /* 2 */
@@ -154,9 +154,9 @@ const common_1 = __webpack_require__(9);
 const cookieParser = __webpack_require__(10);
 const morgan = __webpack_require__(11);
 const app_module_1 = __webpack_require__(12);
-const stripUndefined_pipe_1 = __webpack_require__(122);
+const stripUndefined_pipe_1 = __webpack_require__(121);
 const common_2 = __webpack_require__(18);
-const apm_interceptor_1 = __webpack_require__(123);
+const apm_interceptor_1 = __webpack_require__(122);
 async function bootstrap(hot) {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, {
         logger: ['error', 'warn', 'log', 'debug', 'verbose'],
@@ -196,7 +196,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "79780b64436618e6ac49b1aa20336b0f92263b24",
+        release: "c377fe093c62c52a77456854dfed0937dae8c31b",
         environment: common_2.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -286,9 +286,9 @@ const nestjs_command_1 = __webpack_require__(50);
 const sse_module_1 = __webpack_require__(60);
 const typeormConfig = __webpack_require__(108);
 const backfill_module_1 = __webpack_require__(110);
-const release_notes_module_1 = __webpack_require__(117);
+const release_notes_module_1 = __webpack_require__(116);
 const nestjs_redis_1 = __webpack_require__(45);
-const healthcheck_module_1 = __webpack_require__(119);
+const healthcheck_module_1 = __webpack_require__(118);
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -541,7 +541,7 @@ let CourseController = class CourseController {
             data: resp.map((row) => ({
                 id: row.id,
                 role: row.role,
-                name: `${row.user.firstName} ${row.user.lastName}`,
+                name: row.user.name,
                 email: row.user.email,
             })),
         };
@@ -572,7 +572,7 @@ let CourseController = class CourseController {
         return {
             id: userCourse.id,
             role: userCourse.role,
-            name: `${user.firstName} ${user.lastName}`,
+            name: user.name,
             email: user.email,
         };
     }
@@ -1409,6 +1409,9 @@ const queue_entity_1 = __webpack_require__(31);
 const event_model_entity_1 = __webpack_require__(24);
 const user_course_entity_1 = __webpack_require__(27);
 let UserModel = class UserModel extends typeorm_1.BaseEntity {
+    setFullNames() {
+        this.name = this.firstName + ' ' + this.lastName;
+    }
 };
 __decorate([
     typeorm_1.PrimaryGeneratedColumn(),
@@ -1418,10 +1421,6 @@ __decorate([
     typeorm_1.Column('text'),
     __metadata("design:type", String)
 ], UserModel.prototype, "email", void 0);
-__decorate([
-    typeorm_1.Column('text'),
-    __metadata("design:type", String)
-], UserModel.prototype, "name", void 0);
 __decorate([
     typeorm_1.Column('text', { nullable: true }),
     __metadata("design:type", String)
@@ -1469,6 +1468,12 @@ __decorate([
     typeorm_1.OneToMany((type) => event_model_entity_1.EventModel, (event) => event.user),
     __metadata("design:type", Array)
 ], UserModel.prototype, "events", void 0);
+__decorate([
+    typeorm_1.AfterLoad(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], UserModel.prototype, "setFullNames", null);
 UserModel = __decorate([
     typeorm_1.Entity('user_model')
 ], UserModel);
@@ -3969,7 +3974,6 @@ let LoginCourseService = class LoginCourseService {
                 email: neuEmail,
                 firstName: info.first_name,
                 lastName: info.last_name,
-                name: info.first_name + ' ' + info.last_name,
             });
         }
         const userCourses = [];
@@ -4237,7 +4241,6 @@ let ProfileController = class ProfileController {
     async patch(userPatch, user) {
         var _a;
         user = Object.assign(user, userPatch);
-        user.name = user.firstName + ' ' + user.lastName;
         if (userPatch.phoneNotifsEnabled && userPatch.phoneNumber) {
             if (user.phoneNotifsEnabled &&
                 userPatch.phoneNumber !== ((_a = user.phoneNotif) === null || _a === void 0 ? void 0 : _a.phoneNumber)) {
@@ -4872,10 +4875,8 @@ let SeedController = class SeedController {
         if (!userExsists) {
             const user1 = await factories_1.UserFactory.create({
                 email: 'liu.sta@northeastern.edu',
-                name: 'Stanley Liu',
                 firstName: 'Stanley',
                 lastName: 'Liu',
-                photoURL: 'https://ca.slack-edge.com/TE565NU79-UR20CG36E-cf0f375252bd-512',
             });
             await factories_1.UserCourseFactory.create({
                 user: user1,
@@ -4884,10 +4885,8 @@ let SeedController = class SeedController {
             });
             const user2 = await factories_1.UserFactory.create({
                 email: 'takayama.a@northeastern.edu',
-                name: 'Alex Takayama',
                 firstName: 'Alex',
                 lastName: 'Takayama',
-                photoURL: 'https://ca.slack-edge.com/TE565NU79-UJL97443D-50121339686b-512',
             });
             await factories_1.UserCourseFactory.create({
                 user: user2,
@@ -4897,10 +4896,8 @@ let SeedController = class SeedController {
             });
             const user3 = await factories_1.UserFactory.create({
                 email: 'stenzel.w@northeastern.edu',
-                name: 'Will Stenzel',
                 firstName: 'Will',
                 lastName: 'Stenzel',
-                photoURL: 'https://ca.slack-edge.com/TE565NU79-URF256KRT-d10098e879da-512',
             });
             await factories_1.UserCourseFactory.create({
                 user: user3,
@@ -4909,10 +4906,8 @@ let SeedController = class SeedController {
             });
             const user4 = await factories_1.UserFactory.create({
                 email: 'chu.daj@northeastern.edu',
-                name: 'Da-Jin Chu',
                 firstName: 'Da-Jin',
                 lastName: 'Chu',
-                photoURL: 'https://ca.slack-edge.com/TE565NU79-UE56Y5UT1-85db59a474f4-512',
             });
             await factories_1.UserCourseFactory.create({
                 user: user4,
@@ -4921,10 +4916,8 @@ let SeedController = class SeedController {
             });
             const user5 = await factories_1.UserFactory.create({
                 email: 'li.edwa@northeastern.edu',
-                name: 'Eddy Li',
                 firstName: 'Eddy',
                 lastName: 'Li',
-                photoURL: 'https://ca.slack-edge.com/TE565NU79-UR6P32JBT-a6c89822c544-512',
             });
             await factories_1.UserCourseFactory.create({
                 user: user5,
@@ -5114,8 +5107,8 @@ const question_entity_1 = __webpack_require__(33);
 const queue_entity_1 = __webpack_require__(31);
 exports.UserFactory = new typeorm_factory_1.Factory(user_entity_1.UserModel)
     .attr('email', `user@neu.edu`)
-    .attr('name', `User`)
-    .attr('firstName', 'User');
+    .attr('firstName', 'User')
+    .attr('lastName', 'Person');
 exports.StudentCourseFactory = new typeorm_factory_1.Factory(user_course_entity_1.UserCourseModel).attr('role', common_1.Role.STUDENT);
 exports.TACourseFactory = new typeorm_factory_1.Factory(user_course_entity_1.UserCourseModel).attr('role', common_1.Role.TA);
 exports.SemesterFactory = new typeorm_factory_1.Factory(semester_entity_1.SemesterModel)
@@ -5575,7 +5568,6 @@ const backfill_husky_emails_to_northeastern_1 = __webpack_require__(112);
 const backfill_phone_notifs_command_1 = __webpack_require__(113);
 const make_empty_photourl_null_command_1 = __webpack_require__(114);
 const question_first_helped_at_command_1 = __webpack_require__(115);
-const separate_first_last_names_command_1 = __webpack_require__(116);
 let BackfillModule = class BackfillModule {
 };
 BackfillModule = __decorate([
@@ -5584,7 +5576,6 @@ BackfillModule = __decorate([
         providers: [
             backfill_phone_notifs_command_1.BackfillPhoneNotifs,
             question_first_helped_at_command_1.BackfillQuestionFirstHelpedAt,
-            separate_first_last_names_command_1.BackfillSeparateFirstLastNames,
             make_empty_photourl_null_command_1.BackfillMakeEmptyPhotoURLNull,
             backfill_course_timezones_1.BackfillCourseTimezones,
             backfill_husky_emails_to_northeastern_1.BackfillHuskyEmailsAsNortheastern,
@@ -5887,64 +5878,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BackfillSeparateFirstLastNames = void 0;
-const common_1 = __webpack_require__(9);
-const nestjs_command_1 = __webpack_require__(50);
-const user_entity_1 = __webpack_require__(28);
-let BackfillSeparateFirstLastNames = class BackfillSeparateFirstLastNames {
-    async fix() {
-        const users = await user_entity_1.UserModel.find();
-        users.forEach((user) => {
-            try {
-                user.firstName = user.name.split(' ')[0];
-                user.lastName = user.name.split(' ').slice(1).join(' ');
-            }
-            catch (e) {
-                user.firstName = user.name;
-                console.log(`Updating name failed for ${user.name}`);
-            }
-        });
-        await user_entity_1.UserModel.save(users);
-        const count = user_entity_1.UserModel.count();
-        console.log(`Updated names for ${count} users`);
-    }
-};
-__decorate([
-    nestjs_command_1.Command({
-        command: 'backfill:first-last-names',
-        describe: 'change all names to first and last names',
-        autoExit: true,
-    }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], BackfillSeparateFirstLastNames.prototype, "fix", null);
-BackfillSeparateFirstLastNames = __decorate([
-    common_1.Injectable()
-], BackfillSeparateFirstLastNames);
-exports.BackfillSeparateFirstLastNames = BackfillSeparateFirstLastNames;
-
-
-/***/ }),
-/* 117 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReleaseNotesModule = void 0;
 const common_1 = __webpack_require__(9);
-const release_notes_controller_1 = __webpack_require__(118);
+const release_notes_controller_1 = __webpack_require__(117);
 let ReleaseNotesModule = class ReleaseNotesModule {
 };
 ReleaseNotesModule = __decorate([
@@ -5965,7 +5902,7 @@ exports.ReleaseNotesModule = ReleaseNotesModule;
 
 
 /***/ }),
-/* 118 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6029,7 +5966,7 @@ exports.ReleaseNotesController = ReleaseNotesController;
 
 
 /***/ }),
-/* 119 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6043,7 +5980,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HealthcheckModule = void 0;
 const common_1 = __webpack_require__(9);
-const healthcheck_controller_1 = __webpack_require__(120);
+const healthcheck_controller_1 = __webpack_require__(119);
 let HealthcheckModule = class HealthcheckModule {
 };
 HealthcheckModule = __decorate([
@@ -6055,7 +5992,7 @@ exports.HealthcheckModule = HealthcheckModule;
 
 
 /***/ }),
-/* 120 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6072,7 +6009,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HealthcheckController = void 0;
 const common_1 = __webpack_require__(9);
-const decorators_1 = __webpack_require__(121);
+const decorators_1 = __webpack_require__(120);
 let HealthcheckController = class HealthcheckController {
     health() {
         return 'healthy';
@@ -6091,13 +6028,13 @@ exports.HealthcheckController = HealthcheckController;
 
 
 /***/ }),
-/* 121 */
+/* 120 */
 /***/ (function(module, exports) {
 
 module.exports = require("@nestjs/common/decorators");
 
 /***/ }),
-/* 122 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6137,7 +6074,7 @@ exports.StripUndefinedPipe = StripUndefinedPipe;
 
 
 /***/ }),
-/* 123 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6154,9 +6091,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ApmInterceptor = void 0;
 const common_1 = __webpack_require__(9);
-const operators_1 = __webpack_require__(124);
+const operators_1 = __webpack_require__(123);
 const apm = __webpack_require__(44);
-const Constants = __webpack_require__(125);
+const Constants = __webpack_require__(124);
 const Sentry = __webpack_require__(5);
 const core_1 = __webpack_require__(8);
 let ApmInterceptor = class ApmInterceptor {
@@ -6199,13 +6136,13 @@ exports.ApmInterceptor = ApmInterceptor;
 
 
 /***/ }),
-/* 124 */
+/* 123 */
 /***/ (function(module, exports) {
 
 module.exports = require("rxjs/operators");
 
 /***/ }),
-/* 125 */
+/* 124 */
 /***/ (function(module, exports) {
 
 module.exports = require("@nestjs/common/constants");

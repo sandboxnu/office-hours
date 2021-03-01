@@ -7,7 +7,6 @@ import { UserCourseModel } from './user-course.entity';
 export declare class UserModel extends BaseEntity {
     id: number;
     email: string;
-    name: string;
     firstName: string;
     lastName: string;
     photoURL: string;
@@ -18,4 +17,6 @@ export declare class UserModel extends BaseEntity {
     phoneNotif: PhoneNotifModel;
     queues: QueueModel[];
     events: EventModel[];
+    name: string;
+    setFullNames(): void;
 }
