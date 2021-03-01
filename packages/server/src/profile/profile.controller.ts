@@ -91,7 +91,6 @@ export class ProfileController {
     user: UserModel,
   ): Promise<GetProfileResponse> {
     user = Object.assign(user, userPatch);
-    user.name = user.firstName + ' ' + user.lastName;
 
     // check that the user is trying to update the phone notifs
     if (userPatch.phoneNotifsEnabled && userPatch.phoneNumber) {

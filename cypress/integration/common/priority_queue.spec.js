@@ -76,7 +76,7 @@ describe("TA Priority Queue", () => {
           cy.get("button").contains("Rejoin Queue").click();
           cy.get("body").contains("Rejoin Queue").should("not.visible");
           cy.contains(
-            "You are now in a priority queue, you will be helped soon. You were last helped by User."
+            "You are now in a priority queue, you will be helped soon. You were last helped by User Person."
           );
 
           cy.percySnapshot("Student Queue Page - Priority Queued");
@@ -142,7 +142,7 @@ describe("TA Priority Queue", () => {
 
           cy.get("[data-cy='re-join-queue']").click();
           cy.contains(
-            "You are now in a priority queue, you will be helped soon. You were last helped by User."
+            "You are now in a priority queue, you will be helped soon. You were last helped by User Person."
           );
         }
       );
