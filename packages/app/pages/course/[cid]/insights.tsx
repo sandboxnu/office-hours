@@ -1,7 +1,15 @@
 import React, { ReactElement, useState } from "react";
 import { API } from "@koh/api-client";
 import useSWR from "swr";
-import { Tooltip, Card, Space, Drawer, Button, DatePicker, Divider } from "antd";
+import {
+  Tooltip,
+  Card,
+  Space,
+  Drawer,
+  Button,
+  DatePicker,
+  Divider,
+} from "antd";
 import { CardSize } from "antd/lib/card";
 import { InfoCircleOutlined, MinusSquareOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
@@ -11,6 +19,15 @@ import NavBar from "../../../components/Nav/NavBar";
 import BarChartComponent from "../../../components/Insights/components/BarChartComponent";
 import SimpleDisplayComponent from "../../../components/Insights/components/SimpleDisplayComponent";
 import InsightsDisplayOptions from "../../../components/Insights/components/InsightsDisplayOptions";
+import { SimpleTable } from "../../../components/Insights/components/SimpleTable";
+import styled from "styled-components";
+
+const InsightContainer = styled.div`
+  margin: "12px 12px 0px";
+  display: "flex";
+  align-items: "center";
+  justify-content: "space-between";
+`;
 
 export default function Insights(): ReactElement {
   const router = useRouter();
@@ -55,20 +72,20 @@ export default function Insights(): ReactElement {
     <>
       <StandardPageContainer>
         <NavBar courseId={Number(cid)} />
-        <div style={{ margin: "12px 12px 0px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <InsightContainer>
           <h1 style={{ margin: "2px" }}>Insights Dashboard - Alpha</h1>
 
-        <div style={{ maxWidth: "200 px"}}>
-          <b style={{ display: "inline-block", marginRight: "12px" }}>
-            Date Range
-          </b>
-          <RangePicker
-            onChange={(_, dateString) =>
-              setDateRange({ start: dateString[0], end: dateString[1] })
-            }
+          <div style={{ maxWidth: "200 px" }}>
+            <b style={{ display: "inline-block", marginRight: "12px" }}>
+              Date Range
+            </b>
+            <RangePicker
+              onChange={(_, dateString) =>
+                setDateRange({ start: dateString[0], end: dateString[1] })
+              }
             />
-        </div>
-        </div>
+          </div>
+        </InsightContainer>
         <Divider style={{ margin: "0 0 8px 0" }} />
 
         <Drawer
@@ -153,6 +170,9 @@ function RenderInsight({
       break;
     case InsightDisplay.BarChart:
       InsightComponent = BarChartComponent;
+      break;
+    case InsightDisplay.SimpleTable:
+      InsightComponent = SimpleTable;
       break;
     default:
       // Line below will show error if switch is not exhaustive of all enum values

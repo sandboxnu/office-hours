@@ -5,8 +5,10 @@ import {
   QuestionType,
   Role,
   SimpleDisplayOutputType,
+  SimpleTableOutputType,
 } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
+import { UserModel } from 'profile/user.entity';
 import { QuestionModel } from 'question/question.entity';
 import { createQueryBuilder, SelectQueryBuilder } from 'typeorm';
 
@@ -99,6 +101,57 @@ export class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
   }
 }
 
+export class MostActiveStudents implements InsightInterface<QuestionModel> {
+  displayName = 'Most Active Students';
+  description =
+    'Returns a table of the students who have asked the most questions in Office Hours';
+  roles = [Role.PROFESSOR];
+  component = InsightDisplay.SimpleTable;
+  possibleFilters = ['courseId', 'timeframe'];
+  size = 'default' as const;
+
+  async compute(filters): Promise<SimpleTableOutputType> {
+    const dataSource = await addFilters(
+      createQueryBuilder()
+        .select('"QuestionModel"."creatorId"', 'studentId')
+        .addSelect('"UserModel"."name"', 'name')
+        .addSelect('"UserModel"."email"', 'email')
+        .addSelect('COUNT(*)', 'questionsAsked')
+        .from(QuestionModel, 'QuestionModel')
+        .where('"QuestionModel"."questionType" IS NOT NULL'),
+      QuestionModel.name,
+      filters,
+      this.possibleFilters,
+    )
+      .innerJoin(
+        UserModel,
+        'UserModel',
+        '"UserModel".id = "QuestionModel"."creatorId"',
+      )
+      .groupBy('"QuestionModel"."creatorId"')
+      .addGroupBy('"UserModel".name')
+      .addGroupBy('"UserModel".email')
+      .orderBy('4', 'DESC')
+      .getRawMany();
+
+    return {
+      columns: [
+        {
+          title: 'Name',
+          dataIndex: 'name',
+          key: 'name',
+        },
+        {
+          title: 'Questions Asked',
+          dataIndex: 'questionsAsked',
+          key: 'questionsAsked',
+        },
+      ],
+      dataSource,
+    };
+  }
+}
+
 export class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
   displayName = 'Question Type Breakdown';
   description =
@@ -176,4 +229,5 @@ export const INSIGHTS_MAP = {
   [TotalQuestionsAsked.name]: new TotalQuestionsAsked(),
   [AverageWaitTime.name]: new AverageWaitTime(),
   [QuestionTypeBreakdown.name]: new QuestionTypeBreakdown(),
+  [MostActiveStudents.name]: new MostActiveStudents(),
 };

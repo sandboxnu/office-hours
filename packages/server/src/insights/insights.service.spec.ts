@@ -96,7 +96,7 @@ describe('InsightsService', () => {
           },
         ],
       });
-      expect(res.output).toEqual("5 min");
+      expect(res.output).toEqual('5 min');
     });
   });
 
@@ -132,6 +132,83 @@ describe('InsightsService', () => {
       { questionType: 'Other', totalQuestions: 0 },
       { questionType: 'Setup', totalQuestions: 0 },
       { questionType: 'Testing', totalQuestions: '10' },
+    ]);
+  });
+
+  it('mostActiveStudents', async () => {
+    const course = await CourseFactory.create();
+    const queue = await QueueFactory.create({ course });
+    const user1 = await UserFactory.create({
+      id: 1,
+      name: 'Derek Jeter',
+      email: 'jeter.d@northeastern.edu',
+    });
+    const user2 = await UserFactory.create({
+      id: 2,
+      name: 'David Wright',
+      email: 'wright.da@northeastern.edu',
+    });
+    const user3 = await UserFactory.create({
+      id: 3,
+      name: 'Adam Smith',
+      email: 'smith.a@northeastern.edu',
+    });
+    const user4 = await UserFactory.create({
+      id: 4,
+      name: 'Jean Valjean',
+      email: 'valjean.j@protonmail.com',
+    });
+    await QuestionFactory.createList(8, {
+      creator: user1,
+      queue,
+    });
+    await QuestionFactory.createList(20, {
+      creator: user2,
+      queue,
+    });
+    await QuestionFactory.createList(10, {
+      creator: user3,
+      queue,
+    });
+    await QuestionFactory.createList(110, {
+      creator: user4,
+      queue,
+    });
+    const res = await service.generateInsight({
+      insight: INSIGHTS_MAP.MostActiveStudents,
+      filters: [
+        {
+          type: 'courseId',
+          courseId: course.id,
+        },
+      ],
+    });
+
+    expect(res.output.dataSource).toEqual([
+      {
+        studentId: 4,
+        name: 'Jean Valjean',
+        email: 'valjean.j@protonmail.com',
+        questionsAsked: '110',
+      },
+      {
+        studentId: 2,
+        name: 'David Wright',
+        email: 'wright.da@northeastern.edu',
+        questionsAsked: '20',
+      },
+      {
+        studentId: 3,
+        name: 'Adam Smith',
+        email: 'smith.a@northeastern.edu',
+        questionsAsked: '10',
+      },
+      {
+        studentId: 1,
+        name: 'Derek Jeter',
+        email: 'jeter.d@northeastern.edu',
+        questionsAsked: '8',
+      },
     ]);
   });
 

@@ -586,9 +586,13 @@ export class Insight {
 export enum InsightDisplay {
   SimpleDisplay = "SimpleDisplay",
   BarChart = "BarChart",
+  SimpleTable = "SimpleTable",
 }
 
-export type PossibleOutputTypes = SimpleDisplayOutputType | BarChartOutputType;
+export type PossibleOutputTypes =
+  | SimpleDisplayOutputType
+  | BarChartOutputType
+  | SimpleTableOutputType;
 
 export type SimpleDisplayOutputType = number | string;
 
@@ -599,6 +603,11 @@ export type BarChartOutputType = {
   seriesField: string;
   xAxisName?: string;
   yAxisName?: string;
+};
+
+export type SimpleTableOutputType = {
+  dataSource: any[];
+  columns: any[];
 };
 
 export type DateRangeType = {
