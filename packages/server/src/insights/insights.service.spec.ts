@@ -96,7 +96,7 @@ describe('InsightsService', () => {
           },
         ],
       });
-      expect(res.output).toEqual("5 min");
+      expect(res.output).toEqual('5 min');
     });
   });
 
