@@ -133,6 +133,7 @@ export class MostActiveStudents implements InsightInterface<QuestionModel> {
       .addGroupBy('"UserModel".name')
       .addGroupBy('"UserModel".email')
       .orderBy('4', 'DESC')
+      .limit(75)
       .getRawMany();
 
     return {
