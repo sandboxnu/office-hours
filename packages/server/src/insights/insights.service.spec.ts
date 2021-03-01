@@ -100,9 +100,16 @@ describe('InsightsService', () => {
     });
 
     it('averageHelpingTime', async () => {
+      // 5 min of helping
       const question = await QuestionFactory.create({
         helpedAt: new Date(Date.now() - 30 * 60 * 1000),
         closedAt: new Date(Date.now() - 25 * 60 * 1000),
+      });
+      // 15 min of helping
+      const question2 = await QuestionFactory.create({
+        helpedAt: new Date(Date.now() - 50 * 60 * 1000),
+        closedAt: new Date(Date.now() - 35 * 60 * 1000),
+        queue: question.queue,
       });
 
       const res = await service.generateInsight({
@@ -114,7 +121,7 @@ describe('InsightsService', () => {
           },
         ],
       });
-      expect(res.output).toEqual('5 min');
+      expect(res.output).toEqual('10 min');
     });
 
     it('questionToStudentRatio', async () => {

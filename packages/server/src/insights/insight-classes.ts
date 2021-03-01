@@ -10,7 +10,6 @@ import {
 import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
 import { QuestionModel } from 'question/question.entity';
-import { strategy } from 'sharp';
 import { createQueryBuilder, SelectQueryBuilder } from 'typeorm';
 
 export interface InsightInterface<Model> {
