@@ -256,8 +256,8 @@ export class QuestionToStudentRatio implements InsightInterface<QuestionModel> {
   size = 'small' as const;
 
   async compute(filters): Promise<SimpleDisplayOutputType> {
-    let totalQuestions = await new TotalQuestionsAsked().compute(filters);
-    let totalStudents = await new TotalStudents().compute(filters);
+    const totalQuestions = await new TotalQuestionsAsked().compute(filters);
+    const totalStudents = await new TotalStudents().compute(filters);
     return totalStudents !== 0
       ? (totalQuestions as number) / (totalStudents as number)
       : '0 students';
