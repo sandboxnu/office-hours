@@ -26,7 +26,6 @@ jobs:
       - uses: bahmutov/npm-install@v1
       - run: yarn build
         env:
-          NEXT_PUBLIC_APM_SERVER: ${{ secrets.ELASTIC_APM_SERVER_URL}}
           NEXT_PUBLIC_SERVICE_VERSION: ${{ steps.pre-version.outputs.version }}
           SERVICE_VERSION: ${{ steps.pre-version.outputs.version }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -62,12 +61,6 @@ jobs:
           ref: "dist"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Upload Sourcemaps to Elastic APM
-        run: yarn ts-node packages/app/scripts/uploadSourceMapToAPM.js
-        env:
-          ELASTIC_APM_SERVER_URL: ${{ secrets.ELASTIC_APM_SERVER_URL}}
-          ELASTIC_APM_SECRET_TOKEN: ${{ secrets.ELASTIC_APM_SECRET_TOKEN }}
-          SERVICE_VERSION: ${{ steps.pre-version.outputs.version }}
   deploy:
     needs: build
     runs-on: ubuntu-latest
