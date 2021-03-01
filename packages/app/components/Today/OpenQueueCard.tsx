@@ -1,5 +1,6 @@
 import { StopOutlined } from "@ant-design/icons";
 import { Button, Card, Input, Row, Skeleton, Tooltip } from "antd";
+import Linkify from "react-linkify";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
@@ -86,13 +87,14 @@ const ExtraText = styled.div`
   font-weight: normal;
 `;
 
-const NotesInput = styled(Input)`
+const NotesInput = styled(Input.TextArea)`
   border-radius: 6px;
   border: 1px solid #b8c4ce;
 `;
 
 const Notes = styled.div`
   overflow-wrap: break-word;
+  white-space: pre-wrap;
 `;
 
 const OpenQueueCard = ({
@@ -145,7 +147,6 @@ const OpenQueueCard = ({
           <HeaderText>staff notes</HeaderText>
           <NotesInput
             defaultValue={queue.notes}
-            onPressEnter={handleUpdate}
             value={updatedNotes}
             onChange={(e) => setUpdatedNotes(e.target.value as any)}
           />
@@ -154,7 +155,20 @@ const OpenQueueCard = ({
         queue.notes && (
           <div>
             <HeaderText style={{ marginBottom: 0 }}>staff notes</HeaderText>
-            <Notes>{queue.notes}</Notes>
+            <Linkify
+              componentDecorator={(decoratedHref, decoratedText, key) => (
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={decoratedHref}
+                  key={key}
+                >
+                  {decoratedText}
+                </a>
+              )}
+            >
+              <Notes>{queue.notes}</Notes>
+            </Linkify>
           </div>
         )
       )}
