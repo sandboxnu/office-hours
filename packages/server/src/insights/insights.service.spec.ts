@@ -98,6 +98,54 @@ describe('InsightsService', () => {
       });
       expect(res.output).toEqual('5 min');
     });
+
+    it('averageHelpingTime', async () => {
+      const question = await QuestionFactory.create({
+        helpedAt: new Date(Date.now() - 30 * 60 * 1000),
+        closedAt: new Date(Date.now() - 25 * 60 * 1000),
+      });
+
+      const res = await service.generateInsight({
+        insight: INSIGHTS_MAP.AverageHelpingTime,
+        filters: [
+          {
+            type: 'courseId',
+            courseId: question.queue.courseId,
+          },
+        ],
+      });
+      expect(res.output).toEqual('5 min');
+    });
+
+    it('questionToStudentRatio', async () => {
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ course });
+      // questions in the past
+      await QuestionFactory.createList(20, {
+        queue,
+        createdAt: new Date(Date.now() - 30 * 60 * 1000),
+      });
+      // question right now
+      await QuestionFactory.create({ queue });
+      // students in the class
+      await UserCourseFactory.createList(4, { course });
+
+      const res = await service.generateInsight({
+        insight: INSIGHTS_MAP.QuestionToStudentRatio,
+        filters: [
+          {
+            type: 'courseId',
+            courseId: course.id,
+          },
+          {
+            type: 'timeframe',
+            start: new Date(Date.now() - 36 * 60 * 1000),
+            end: new Date(Date.now() - 6 * 60 * 1000),
+          },
+        ],
+      });
+      expect(res.output).toEqual(5);
+    });
   });
 
   it('questionTypeBreakdown', async () => {
