@@ -175,7 +175,7 @@ function RenderInsight({
       InsightComponent = SimpleTable;
       break;
     default:
-      // Line below will show error if switch is not exhaustive of all enum values!
+      // Line below will show error if switch is not exhaustive of all enum values
       componentDoesNotExist(insight.component);
   }
 
