@@ -248,7 +248,7 @@ export class AverageHelpingTime extends AverageWaitTime {
 }
 
 export class QuestionToStudentRatio implements InsightInterface<QuestionModel> {
-  displayName = 'Question to Student Ratio';
+  displayName = 'Questions per Student';
   description = 'How many questions were asked per student on average?';
   roles = [Role.PROFESSOR];
   component = InsightDisplay.SimpleDisplay;
@@ -258,7 +258,9 @@ export class QuestionToStudentRatio implements InsightInterface<QuestionModel> {
   async compute(filters): Promise<SimpleDisplayOutputType> {
     let totalQuestions = await new TotalQuestionsAsked().compute(filters);
     let totalStudents = await new TotalStudents().compute(filters);
-    return (totalQuestions as number) / (totalStudents as number);
+    return totalStudents !== 0
+      ? (totalQuestions as number) / (totalStudents as number)
+      : '0 students';
   }
 }
 
