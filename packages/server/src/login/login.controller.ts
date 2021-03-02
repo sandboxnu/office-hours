@@ -1,4 +1,3 @@
-import { apm } from '@elastic/apm-rum';
 import { KhouryDataParams, KhouryRedirectResponse } from '@koh/common';
 import {
   Body,
@@ -42,7 +41,6 @@ export class LoginController {
         this.configService.get('KHOURY_PRIVATE_KEY'),
       );
       if (!verifySignature) {
-        apm.captureError('Invalid request signature');
         Sentry.captureMessage('Invalid request signature: ' + parsedRequest);
         throw new UnauthorizedException('Invalid request signature');
       }
@@ -54,9 +52,6 @@ export class LoginController {
       //   .get('KHOURY_SERVER_IP')
       //   .includes(req.ip);
       // if (!verifyIP) {
-      //   apm.captureError(
-      //     'The IP of the request does not seem to be coming from the Khoury server',
-      //   );
       //   Sentry.captureMessage(
       //     'The IP of the request does not seem to be coming from the Khoury server: ' +
       //       req.ip,

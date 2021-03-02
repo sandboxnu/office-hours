@@ -1,7 +1,6 @@
 import { ERROR_MESSAGES } from '@koh/common';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as apm from 'elastic-apm-node';
 import { DeepPartial } from 'typeorm';
 import * as webPush from 'web-push';
 import { UserModel } from '../profile/user.entity';
@@ -168,10 +167,6 @@ export class NotificationService {
     });
 
     if (!phoneNotif) {
-      apm.setCustomContext({ phoneNumber });
-      apm.captureError(
-        new Error('Could not find phone number during verification'),
-      );
       return NotifMsgs.phone.COULD_NOT_FIND_NUMBER;
     } else if (message !== 'YES' && message !== 'NO' && message !== 'STOP') {
       return NotifMsgs.phone.WRONG_MESSAGE;
