@@ -132,6 +132,7 @@ export class MostActiveStudents implements InsightInterface<QuestionModel> {
       .addGroupBy('"UserModel".name')
       .addGroupBy('"UserModel".email')
       .orderBy('4', 'DESC')
+      .limit(75)
       .getRawMany();
 
     return {
@@ -224,10 +225,55 @@ export class AverageWaitTime implements InsightInterface<QuestionModel> {
   }
 }
 
+export class AverageHelpingTime extends AverageWaitTime {
+  displayName = 'Avg Helping Time';
+  description = 'Gets the average helping time';
+
+  async compute(filters): Promise<SimpleDisplayOutputType> {
+    const helpTime = await addFilters(
+      createQueryBuilder(QuestionModel)
+        .select(
+          'EXTRACT(EPOCH FROM AVG(QuestionModel.closedAt - QuestionModel.helpedAt)::INTERVAL)/60',
+          'avgHelpTimeInMinutes',
+        )
+        .where(
+          'QuestionModel.helpedAt IS NOT NULL AND QuestionModel.closedAt IS NOT NULL',
+        ),
+      QuestionModel.name,
+      filters,
+      this.possibleFilters,
+    ).getRawOne();
+    return `${Math.floor(helpTime.avgHelpTimeInMinutes)} min`;
+  }
+}
+
+export class QuestionToStudentRatio implements InsightInterface<QuestionModel> {
+  displayName = 'Questions per Student';
+  description = 'How many questions were asked per student on average?';
+  roles = [Role.PROFESSOR];
+  component = InsightDisplay.SimpleDisplay;
+  possibleFilters = ['courseId', 'timeframe'];
+  size = 'small' as const;
+
+  async compute(filters): Promise<SimpleDisplayOutputType> {
+    const totalQuestions = await INSIGHTS_MAP[TotalQuestionsAsked.name].compute(
+      filters,
+    );
+    const totalStudents = await INSIGHTS_MAP[TotalStudents.name].compute(
+      filters,
+    );
+    return totalStudents !== 0
+      ? (totalQuestions as number) / (totalStudents as number)
+      : '0 students';
+  }
+}
+
 export const INSIGHTS_MAP = {
   [TotalStudents.name]: new TotalStudents(),
   [TotalQuestionsAsked.name]: new TotalQuestionsAsked(),
   [AverageWaitTime.name]: new AverageWaitTime(),
   [QuestionTypeBreakdown.name]: new QuestionTypeBreakdown(),
   [MostActiveStudents.name]: new MostActiveStudents(),
+  [QuestionToStudentRatio.name]: new QuestionToStudentRatio(),
+  [AverageHelpingTime.name]: new AverageHelpingTime(),
 };
