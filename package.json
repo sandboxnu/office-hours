@@ -68,6 +68,10 @@
         1280,
         1920
       ]
+    },
+    "agent": {
+      "network-idle-timeout": 250,
+      "cache-responses": true
     }
   }
 }
