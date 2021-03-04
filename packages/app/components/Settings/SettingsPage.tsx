@@ -98,7 +98,9 @@ export default function SettingsPage({
             >
               <Button
                 icon={<UploadOutlined />}
-                style={{ marginBottom: "10px", width: "207px" }}
+                style={{
+                  width: "207px",
+                }}
               >
                 Upload a Profile Picture
               </Button>
@@ -106,13 +108,14 @@ export default function SettingsPage({
             {profile?.photoURL && (
               <Button
                 icon={<DeleteOutlined />}
-                style={{ marginBottom: "60px", width: "207px" }}
+                style={{ marginTop: "10px", width: "207px" }}
                 onClick={async () => {
                   try {
                     await API.profile.deleteProfilePicture();
                     message.success(
                       "You've successfully deleted your profile picture"
                     );
+                    mutate();
                   } catch (e) {
                     message.error(
                       "There was an error with deleting your profile picture, please contact the Khoury Office Hours team for assistance"
@@ -124,6 +127,7 @@ export default function SettingsPage({
                 Delete my Profile Picture
               </Button>
             )}
+            <div style={{ marginBottom: "60px" }} />
           </>
         ) : null}
         <Menu
