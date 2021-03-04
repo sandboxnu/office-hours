@@ -19,7 +19,6 @@ export interface InsightInterface<Model> {
   component: InsightDisplay;
   possibleFilters: string[];
   compute: (
-    queryBuilder: SelectQueryBuilder<Model>,
     insightFilters: any,
   ) => Promise<PossibleOutputTypes>;
   output?: Promise<PossibleOutputTypes>;
@@ -65,14 +64,13 @@ const FILTER_MAP = {
   },
 };
 
-export class TotalStudents implements InsightInterface<UserCourseModel> {
-  displayName = 'Total Students';
-  description = 'Gets the total number of students';
-  roles = [Role.PROFESSOR];
-  component = InsightDisplay.SimpleDisplay;
-  possibleFilters = ['courseId', 'role'];
-  size = 'small' as const;
-
+export const TotalStudents: InsightInterface<UserCourseModel> = {
+  displayName: 'Total Students',
+  description: 'Gets the total number of students',
+  roles: [Role.PROFESSOR],
+  component: InsightDisplay.SimpleDisplay,
+  possibleFilters: ['courseId', 'role'],
+  size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
     return await addFilters(
       createQueryBuilder(UserCourseModel).where("role = 'student'"),
@@ -83,14 +81,13 @@ export class TotalStudents implements InsightInterface<UserCourseModel> {
   }
 }
 
-export class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
-  displayName = 'Total Questions';
-  description = 'Gets the total number questions asked';
-  roles = [Role.PROFESSOR];
-  component = InsightDisplay.SimpleDisplay;
-  possibleFilters = ['courseId', 'timeframe'];
-  size = 'small' as const;
-
+export const TotalQuestionsAsked: InsightInterface<QuestionModel> = {
+  displayName: 'Total Questions',
+  description: 'Gets the total number questions asked',
+  roles: [Role.PROFESSOR],
+  component: InsightDisplay.SimpleDisplay,
+  possibleFilters: ['courseId', 'timeframe'],
+  size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
     return await addFilters(
       createQueryBuilder(QuestionModel).where('TRUE'),
@@ -101,15 +98,13 @@ export class TotalQuestionsAsked implements InsightInterface<QuestionModel> {
   }
 }
 
-export class MostActiveStudents implements InsightInterface<QuestionModel> {
-  displayName = 'Most Active Students';
-  description =
-    'Returns a table of the students who have asked the most questions in Office Hours';
-  roles = [Role.PROFESSOR];
-  component = InsightDisplay.SimpleTable;
-  possibleFilters = ['courseId', 'timeframe'];
-  size = 'default' as const;
-
+export const MostActiveStudents: InsightInterface<QuestionModel> = {
+  displayName: 'Most Active Students',
+  description: 'Returns a table of the students who have asked the most questions in Office Hours',
+  roles: [Role.PROFESSOR],
+  component: InsightDisplay.SimpleTable,
+  possibleFilters: ['courseId', 'timeframe'],
+  size: 'default' as const,
   async compute(filters): Promise<SimpleTableOutputType> {
     const dataSource = await addFilters(
       createQueryBuilder()
@@ -153,15 +148,13 @@ export class MostActiveStudents implements InsightInterface<QuestionModel> {
   }
 }
 
-export class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
-  displayName = 'Question Type Breakdown';
-  description =
-    'Returns a table of each question type and how many questions of that type were asked';
-  roles = [Role.PROFESSOR];
-  component = InsightDisplay.BarChart;
-  possibleFilters = ['courseId', 'timeframe'];
-  size = 'default' as const;
-
+export const QuestionTypeBreakdown: InsightInterface<QuestionModel> = {
+  displayName: 'Question Type Breakdown',
+  description: 'Returns a table of each question type and how many questions of that type were asked',
+  roles: [Role.PROFESSOR],
+  component: InsightDisplay.BarChart,
+  possibleFilters: ['courseId', 'timeframe'],
+  size: 'default' as const,
   async compute(filters): Promise<BarChartOutputType> {
     const info = await addFilters(
       createQueryBuilder(QuestionModel)
@@ -201,14 +194,13 @@ export class QuestionTypeBreakdown implements InsightInterface<QuestionModel> {
   }
 }
 
-export class AverageWaitTime implements InsightInterface<QuestionModel> {
-  displayName = 'Avg Wait Time';
-  description = 'Gets the average wait time';
-  roles = [Role.PROFESSOR];
-  component = InsightDisplay.SimpleDisplay;
-  possibleFilters = ['courseId', 'timeframe'];
-  size = 'small' as const;
-
+export const AverageWaitTime: InsightInterface<QuestionModel> = {
+  displayName: 'Avg Wait Time',
+  description: 'Gets the average wait time',
+  roles: [Role.PROFESSOR],
+  component: InsightDisplay.SimpleDisplay,
+  possibleFilters: ['courseId', 'timeframe'],
+  size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
     const waitTime = await addFilters(
       createQueryBuilder(QuestionModel)
@@ -225,9 +217,13 @@ export class AverageWaitTime implements InsightInterface<QuestionModel> {
   }
 }
 
-export class AverageHelpingTime extends AverageWaitTime {
-  displayName = 'Avg Helping Time';
-  description = 'Gets the average helping time';
+export const AverageHelpingTime: InsightInterface<QuestionModel> = {
+  displayName: 'Avg Helping Time',
+  description: 'Gets the average helping time',
+  roles: [Role.PROFESSOR],
+  component: InsightDisplay.SimpleDisplay,
+  possibleFilters: ['courseId', 'timeframe'],
+  size: 'small' as const,
 
   async compute(filters): Promise<SimpleDisplayOutputType> {
     const helpTime = await addFilters(
@@ -247,19 +243,18 @@ export class AverageHelpingTime extends AverageWaitTime {
   }
 }
 
-export class QuestionToStudentRatio implements InsightInterface<QuestionModel> {
-  displayName = 'Questions per Student';
-  description = 'How many questions were asked per student on average?';
-  roles = [Role.PROFESSOR];
-  component = InsightDisplay.SimpleDisplay;
-  possibleFilters = ['courseId', 'timeframe'];
-  size = 'small' as const;
-
+export const QuestionToStudentRatio: InsightInterface<QuestionModel> = {
+  displayName: 'Questions per Student',
+  description: 'How many questions were asked per student on average?',
+  roles: [Role.PROFESSOR],
+  component: InsightDisplay.SimpleDisplay,
+  possibleFilters: ['courseId', 'timeframe'],
+  size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
-    const totalQuestions = await INSIGHTS_MAP[TotalQuestionsAsked.name].compute(
+    const totalQuestions = await TotalQuestionsAsked.compute(
       filters,
     );
-    const totalStudents = await INSIGHTS_MAP[TotalStudents.name].compute(
+    const totalStudents = await TotalStudents.compute(
       filters,
     );
     return totalStudents !== 0
@@ -269,11 +264,11 @@ export class QuestionToStudentRatio implements InsightInterface<QuestionModel> {
 }
 
 export const INSIGHTS_MAP = {
-  [TotalStudents.name]: new TotalStudents(),
-  [TotalQuestionsAsked.name]: new TotalQuestionsAsked(),
-  [AverageWaitTime.name]: new AverageWaitTime(),
-  [QuestionTypeBreakdown.name]: new QuestionTypeBreakdown(),
-  [MostActiveStudents.name]: new MostActiveStudents(),
-  [QuestionToStudentRatio.name]: new QuestionToStudentRatio(),
-  [AverageHelpingTime.name]: new AverageHelpingTime(),
+  TotalStudents,
+  TotalQuestionsAsked,
+  AverageWaitTime,
+  QuestionTypeBreakdown,
+  MostActiveStudents,
+  QuestionToStudentRatio,
+  AverageHelpingTime
 };
