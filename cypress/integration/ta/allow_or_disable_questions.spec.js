@@ -55,8 +55,6 @@ describe("When allow questions is disabled", () => {
     // Check that the queue is not acccpeting new questions on the today page
     cy.get('[data-icon="stop"]').should("exist");
 
-    cy.percySnapshot("Student Today Page - Not Allowing Questions");
-
     // Navigate to the queue
     cy.get('[data-cy="open-queue-button"]').click();
 
@@ -65,7 +63,5 @@ describe("When allow questions is disabled", () => {
 
     // And that the join queue button is disabled
     cy.get('[data-cy="join-queue-button"]').should("be.disabled");
-
-    cy.percySnapshot("Student Queue Page - Not Allowing Questions");
   });
 });
