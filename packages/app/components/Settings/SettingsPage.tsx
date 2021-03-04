@@ -88,7 +88,6 @@ export default function SettingsPage({
               />
             )}
             <Upload
-              style={{ marginBottom: "60px" }}
               action={"/api/v1/profile/upload_picture"}
               beforeUpload={beforeUpload}
               showUploadList={false}
@@ -99,15 +98,15 @@ export default function SettingsPage({
             >
               <Button
                 icon={<UploadOutlined />}
-                style={{ marginBottom: "60px" }}
+                style={{ marginBottom: "10px", width: "207px" }}
               >
                 Upload a Profile Picture
               </Button>
             </Upload>
-            {profile.photoURL && (
+            {profile?.photoURL && (
               <Button
                 icon={<DeleteOutlined />}
-                style={{ marginBottom: "60px" }}
+                style={{ marginBottom: "60px", width: "207px" }}
                 onClick={async () => {
                   try {
                     await API.profile.deleteProfilePicture();
