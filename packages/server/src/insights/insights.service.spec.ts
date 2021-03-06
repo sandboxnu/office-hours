@@ -287,8 +287,11 @@ describe('InsightsService', () => {
           },
         ],
       });
-      expect(res.TotalStudents.output).toEqual(4);
-      expect(res.TotalQuestionsAsked.output).toEqual(18);
+
+      const totalStudentsInsight = res.find(insight => insight.displayName === 'Total Students');
+      expect(totalStudentsInsight.output).toEqual(4);
+      const totalQuestionsAskedInsight = res.find(insight => insight.displayName === 'Total Questions');
+      expect(totalQuestionsAskedInsight.output).toEqual(18);
     });
   });
 

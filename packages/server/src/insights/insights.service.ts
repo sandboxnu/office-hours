@@ -27,14 +27,12 @@ export class InsightsService {
 
   // Generate a map of insights that where the output has been computed
   async generateAllInsights({ insights, filters }): Promise<any> {
-    const insightsWithOutput = {};
-    await Promise.all(
+    return await Promise.all(
       insights.map(async (insight) => {
         const output = await this.generateOutput({ insight, filters });
-        insightsWithOutput[insight.constructor.name] = { output, ...insight };
+        return { output, ...insight };
       }),
     );
-    return insightsWithOutput;
   }
 
   convertToInsightsListResponse(insightNames: string[]): ListInsightsResponse {

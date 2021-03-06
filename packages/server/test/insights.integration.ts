@@ -26,7 +26,7 @@ describe('Insights Integration', () => {
       });
 
       const res = await supertest({ userId: user.id })
-        .get(`/insights/${course.id}/${TotalQuestionsAsked.name}`)
+        .get(`/insights/${course.id}/TotalQuestionsAsked`)
         .expect(200);
       expect(res.body).toMatchSnapshot();
     });
@@ -35,7 +35,7 @@ describe('Insights Integration', () => {
       const ucf = await UserCourseFactory.create({ role: Role.STUDENT });
 
       const res = await supertest({ userId: ucf.userId })
-        .get(`/insights/${ucf.courseId}/${TotalQuestionsAsked.name}`)
+        .get(`/insights/${ucf.courseId}/TotalQuestionsAsked`)
         .expect(400);
       expect(res.body.message).toEqual(
         'User is not authorized to view this insight',
