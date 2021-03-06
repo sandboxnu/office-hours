@@ -25,12 +25,24 @@ export interface InsightInterface<Model> {
   size: 'default' | 'small';
 }
 
-function addFilters(
-  queryBuilder: SelectQueryBuilder<any>,
-  modelName: string,
+export type Filter = {
+  type: string;
+  [x: string]: any;
+}
+
+type AddFiltersParams = {
+  queryBuilder: SelectQueryBuilder<any>;
+  modelName: string;
+  filters: Filter[];
+  possibleFilters: string[];
+}
+
+function addFilters({
+  queryBuilder,
+  modelName,
   filters,
   possibleFilters,
-): SelectQueryBuilder<QuestionModel> {
+}: AddFiltersParams): SelectQueryBuilder<QuestionModel> {
   for (const filter of filters) {
     if (possibleFilters.includes(filter.type)) {
       FILTER_MAP[modelName][filter.type](queryBuilder, filter);
@@ -72,12 +84,12 @@ export const TotalStudents: InsightInterface<UserCourseModel> = {
   possibleFilters: ['courseId', 'role'],
   size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
-    return await addFilters(
-      createQueryBuilder(UserCourseModel).where("role = 'student'"),
-      UserCourseModel.name,
+    return await addFilters({
+      queryBuilder: createQueryBuilder(UserCourseModel).where("role = 'student'"),
+      modelName: UserCourseModel.name,
+      possibleFilters: this.possibleFilters,
       filters,
-      this.possibleFilters,
-    ).getCount();
+    }).getCount();
   }
 }
 
@@ -89,12 +101,12 @@ export const TotalQuestionsAsked: InsightInterface<QuestionModel> = {
   possibleFilters: ['courseId', 'timeframe'],
   size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
-    return await addFilters(
-      createQueryBuilder(QuestionModel).where('TRUE'),
-      QuestionModel.name,
+    return await addFilters({
+      queryBuilder: createQueryBuilder(QuestionModel).where('TRUE'),
+      modelName: QuestionModel.name,
+      possibleFilters: this.possibleFilters,
       filters,
-      this.possibleFilters,
-    ).getCount();
+    }).getCount();
   }
 }
 
@@ -106,18 +118,18 @@ export const MostActiveStudents: InsightInterface<QuestionModel> = {
   possibleFilters: ['courseId', 'timeframe'],
   size: 'default' as const,
   async compute(filters): Promise<SimpleTableOutputType> {
-    const dataSource = await addFilters(
-      createQueryBuilder()
+    const dataSource = await addFilters({
+      queryBuilder: createQueryBuilder()
         .select('"QuestionModel"."creatorId"', 'studentId')
         .addSelect('"UserModel"."name"', 'name')
         .addSelect('"UserModel"."email"', 'email')
         .addSelect('COUNT(*)', 'questionsAsked')
         .from(QuestionModel, 'QuestionModel')
         .where('"QuestionModel"."questionType" IS NOT NULL'),
-      QuestionModel.name,
+      modelName: QuestionModel.name,
+      possibleFilters: this.possibleFilters,
       filters,
-      this.possibleFilters,
-    )
+    })
       .innerJoin(
         UserModel,
         'UserModel',
@@ -156,15 +168,15 @@ export const QuestionTypeBreakdown: InsightInterface<QuestionModel> = {
   possibleFilters: ['courseId', 'timeframe'],
   size: 'default' as const,
   async compute(filters): Promise<BarChartOutputType> {
-    const info = await addFilters(
-      createQueryBuilder(QuestionModel)
+    const info = await addFilters({
+      queryBuilder: createQueryBuilder(QuestionModel)
         .select('"QuestionModel"."questionType"', 'questionType')
         .addSelect('COUNT(*)', 'totalQuestions')
         .andWhere('"QuestionModel"."questionType" IS NOT NULL'),
-      QuestionModel.name,
+      modelName: QuestionModel.name,
+      possibleFilters: this.possibleFilters,
       filters,
-      this.possibleFilters,
-    )
+    })
       .groupBy('"QuestionModel"."questionType"')
       .having('"QuestionModel"."questionType" IS NOT NULL')
       .getRawMany();
@@ -202,17 +214,17 @@ export const AverageWaitTime: InsightInterface<QuestionModel> = {
   possibleFilters: ['courseId', 'timeframe'],
   size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
-    const waitTime = await addFilters(
-      createQueryBuilder(QuestionModel)
+    const waitTime = await addFilters({
+      queryBuilder: createQueryBuilder(QuestionModel)
         .select(
           'EXTRACT(EPOCH FROM AVG(QuestionModel.helpedAt - QuestionModel.createdAt)::INTERVAL)/60',
           'avgWaitTimeInMinutes',
         )
         .where('QuestionModel.helpedAt IS NOT NULL'),
-      QuestionModel.name,
+      modelName: QuestionModel.name,
+      possibleFilters: this.possibleFilters,
       filters,
-      this.possibleFilters,
-    ).getRawOne();
+    }).getRawOne();
     return `${Math.floor(waitTime.avgWaitTimeInMinutes)} min`;
   }
 }
@@ -226,8 +238,8 @@ export const AverageHelpingTime: InsightInterface<QuestionModel> = {
   size: 'small' as const,
 
   async compute(filters): Promise<SimpleDisplayOutputType> {
-    const helpTime = await addFilters(
-      createQueryBuilder(QuestionModel)
+    const helpTime = await addFilters({
+      queryBuilder: createQueryBuilder(QuestionModel)
         .select(
           'EXTRACT(EPOCH FROM AVG(QuestionModel.closedAt - QuestionModel.helpedAt)::INTERVAL)/60',
           'avgHelpTimeInMinutes',
@@ -235,10 +247,10 @@ export const AverageHelpingTime: InsightInterface<QuestionModel> = {
         .where(
           'QuestionModel.helpedAt IS NOT NULL AND QuestionModel.closedAt IS NOT NULL',
         ),
-      QuestionModel.name,
+      modelName: QuestionModel.name,
+      possibleFilters: this.possibleFilters,
       filters,
-      this.possibleFilters,
-    ).getRawOne();
+    }).getRawOne();
     return `${Math.floor(helpTime.avgHelpTimeInMinutes)} min`;
   }
 }
@@ -251,12 +263,8 @@ export const QuestionToStudentRatio: InsightInterface<QuestionModel> = {
   possibleFilters: ['courseId', 'timeframe'],
   size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
-    const totalQuestions = await TotalQuestionsAsked.compute(
-      filters,
-    );
-    const totalStudents = await TotalStudents.compute(
-      filters,
-    );
+    const totalQuestions = await TotalQuestionsAsked.compute(filters);
+    const totalStudents = await TotalStudents.compute(filters);
     return totalStudents !== 0
       ? (totalQuestions as number) / (totalStudents as number)
       : '0 students';
