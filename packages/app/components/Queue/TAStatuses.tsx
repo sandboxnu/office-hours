@@ -1,9 +1,12 @@
-import { Question } from "@koh/common";
+import { Question, Role } from "@koh/common";
 import { Badge, Col, Row } from "antd";
+import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
+import { useCourse } from "../../hooks/useCourse";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
+import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import { formatWaitTime } from "../../utils/TimeUtil";
 import { KOHAvatar } from "../common/SelfAvatar";
 import { RenderEvery } from "../RenderEvery";
@@ -16,6 +19,7 @@ interface StatusRowProps {
  */
 export function TAStatuses({ queueId }: StatusRowProps): ReactElement {
   const { questions } = useQuestions(queueId);
+
   const {
     queue: { staffList },
   } = useQueue(queueId);
@@ -120,11 +124,15 @@ interface HelpingForProps {
   helpedAt: Date;
 }
 function HelpingFor({ studentName, helpedAt }: HelpingForProps): ReactElement {
+  const router = useRouter();
+  const { cid } = router.query;
+  const role = useRoleInCourse(Number(cid));
+
   return (
     <RenderEvery
       render={() => (
         <span>
-          Helping <BlueSpan>{studentName ?? "a student"}</BlueSpan> for{" "}
+          Helping {role == Role.TA ? studentName : "a student"} for{" "}
           <BlueSpan>
             {formatWaitTime((Date.now() - helpedAt.getTime()) / 60000)}
           </BlueSpan>
