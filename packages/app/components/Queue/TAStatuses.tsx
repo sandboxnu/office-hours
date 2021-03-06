@@ -132,7 +132,9 @@ function HelpingFor({ studentName, helpedAt }: HelpingForProps): ReactElement {
     <RenderEvery
       render={() => (
         <span>
-          Helping {role == Role.TA ? studentName : "a student"} for{" "}
+          Helping{" "}
+          {role == Role.TA ? <BlueSpan>{studentName}</BlueSpan> : "a student"}{" "}
+          for{" "}
           <BlueSpan>
             {formatWaitTime((Date.now() - helpedAt.getTime()) / 60000)}
           </BlueSpan>
