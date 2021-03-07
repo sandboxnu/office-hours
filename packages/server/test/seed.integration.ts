@@ -59,7 +59,6 @@ describe('Seed Integration', () => {
         desktopNotifsEnabled: false,
         email: 'user@neu.edu',
         id: 1,
-        name: 'User',
         phoneNotifsEnabled: false,
         photoURL: null,
       },
@@ -101,6 +100,20 @@ describe('Seed Integration', () => {
       status: 'Queued',
       taHelpedId: null,
       text: 'question description',
+    });
+  });
+
+  it('POST /seeds/createQueueWithoutOfficeHour', async () => {
+    await CourseFactory.create({ name: 'CS 2500 ' });
+    const res = await supertest()
+      .post('/seeds/createQueueWithoutOfficeHour')
+      .send({ courseId: 1 });
+    expect(res.body).toMatchObject({
+      courseId: 1,
+      id: 1,
+      notes: null,
+      officeHours: [],
+      room: 'Online',
     });
   });
 });

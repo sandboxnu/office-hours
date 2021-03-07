@@ -3,6 +3,7 @@ import {
   checkInTA,
   createQueue,
   createQuestion,
+  createQueueWithoutOfficeHour,
 } from "../../utils";
 
 describe("Can successfuly check in and out of a queue when their is scheduled office hours", () => {
@@ -142,11 +143,14 @@ describe("Checking out when office hours end soon", () => {
   });
 });
 
-describe("Checking in and out when there arent scheduled office hours", function () {
+describe("Checking in and out when there arent scheduled office hours, but the online queue exists", function () {
   beforeEach(() => {
     createAndLoginTA();
     // check into the queue
     cy.get("@ta").then((ta) => {
+      createQueueWithoutOfficeHour({
+        courseId: ta.courseId,
+      });
       cy.request({
         method: "POST",
         url: `/api/v1/courses/${ta.courseId}/ta_location/Online`,

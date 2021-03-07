@@ -1,19 +1,20 @@
 import {
   ClockCircleOutlined,
-  NotificationOutlined,
-  StopOutlined,
   CloudSyncOutlined,
   FrownOutlined,
+  NotificationOutlined,
+  StopOutlined,
 } from "@ant-design/icons";
+import { Button, Tooltip } from "antd";
+import { ButtonProps } from "antd/lib/button";
+import Linkify from "react-linkify";
+import moment from "moment";
 import React, { ReactElement, ReactNode, useState } from "react";
 import styled from "styled-components";
 import { useQueue } from "../../hooks/useQueue";
 import { formatQueueTime } from "../../utils/TimeUtil";
-import { TAStatuses } from "./TAStatuses";
-import { Button, Tooltip } from "antd";
-import { ButtonProps } from "antd/lib/button";
-import moment from "moment";
 import { RenderEvery } from "../RenderEvery";
+import { TAStatuses } from "./TAStatuses";
 
 export const Container = styled.div`
   display: flex;
@@ -71,6 +72,9 @@ const QueuePropertyText = styled.div`
   // To break text in flexbox
   min-width: 0;
   overflow-wrap: break-word;
+
+  // to show new lines in the text
+  white-space: pre-wrap;
 `;
 
 const StaffH2 = styled.h2`
@@ -118,7 +122,20 @@ export function QueueInfoColumn({
       {queue?.notes && (
         <QueuePropertyRow>
           <NotificationOutlined />
-          <QueuePropertyText>{queue.notes}</QueuePropertyText>
+          <Linkify
+            componentDecorator={(decoratedHref, decoratedText, key) => (
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href={decoratedHref}
+                key={key}
+              >
+                {decoratedText}
+              </a>
+            )}
+          >
+            <QueuePropertyText>{queue.notes}</QueuePropertyText>
+          </Linkify>
         </QueuePropertyRow>
       )}
       <QueueUpToDateInfo queueId={queueId} />

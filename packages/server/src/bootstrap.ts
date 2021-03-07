@@ -8,7 +8,6 @@ import * as morgan from 'morgan';
 import { AppModule } from './app.module';
 import { StripUndefinedPipe } from './stripUndefined.pipe';
 import { getEnv, isProd } from '@koh/common';
-import { ApmInterceptor } from './apm.interceptor';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export async function bootstrap(hot: any): Promise<void> {
@@ -17,7 +16,6 @@ export async function bootstrap(hot: any): Promise<void> {
   });
   if (process.env.NODE_ENV === 'production') {
     setupAPM(app);
-    app.useGlobalInterceptors(new ApmInterceptor(new Reflector()));
   }
   app.enableShutdownHooks(); // So we can clean up SSE.
   addGlobalsToApp(app);
@@ -45,7 +43,7 @@ export async function bootstrap(hot: any): Promise<void> {
 function setupAPM(app: INestApplication): void {
   Sentry.init({
     dsn: process.env.SENTRY_APM_DSN,
-    tracesSampleRate: 1,
+    tracesSampleRate: 0.2,
     integrations: [
       // enable HTTP calls tracing
       new Sentry.Integrations.Http({ tracing: true }),

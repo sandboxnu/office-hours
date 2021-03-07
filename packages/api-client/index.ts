@@ -3,6 +3,7 @@ import {
   CreateQuestionResponse,
   DesktopNotifBody,
   DesktopNotifPartial,
+  GetCourseOverridesResponse,
   GetCourseResponse,
   GetProfileResponse,
   GetQuestionResponse,
@@ -11,6 +12,8 @@ import {
   ListQuestionsResponse,
   TACheckoutResponse,
   TAUpdateStatusResponse,
+  UpdateCourseOverrideBody,
+  UpdateCourseOverrideResponse,
   UpdateProfileParams,
   UpdateQuestionParams,
   UpdateQuestionResponse,
@@ -54,12 +57,40 @@ class APIClient {
       this.req("GET", `/api/v1/profile`, GetProfileResponse),
     patch: async (body: UpdateProfileParams): Promise<GetProfileResponse> =>
       this.req("PATCH", `/api/v1/profile`, undefined, body),
+    deleteProfilePicture: async (): Promise<void> =>
+      this.req("DELETE", `/api/v1/profile/delete_profile_picture`),
   };
   course = {
     get: async (courseId: number) =>
       this.req("GET", `/api/v1/courses/${courseId}`, GetCourseResponse),
     updateCalendar: async (courseId: number) =>
       this.req("POST", `/api/v1/courses/${courseId}/update_calendar`),
+    getCourseOverrides: async (courseId: number) =>
+      this.req(
+        "GET",
+        `/api/v1/courses/${courseId}/course_override`,
+        GetCourseOverridesResponse
+      ),
+    addOverride: async (
+      courseId: number,
+      params: UpdateCourseOverrideBody
+    ): Promise<UpdateCourseOverrideResponse> =>
+      this.req(
+        "POST",
+        `/api/v1/courses/${courseId}/update_override`,
+        UpdateCourseOverrideResponse,
+        params
+      ),
+    deleteOverride: async (
+      courseId: number,
+      params: UpdateCourseOverrideBody
+    ): Promise<void> =>
+      this.req(
+        "DELETE",
+        `/api/v1/courses/${courseId}/update_override`,
+        undefined,
+        params
+      ),
   };
   taStatus = {
     checkIn: async (

@@ -1,8 +1,11 @@
 import { CreateQuestionParams, Role } from '@koh/common';
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { DesktopNotifModel } from 'notification/desktop-notif.entity';
+import { PhoneNotifModel } from 'notification/phone-notif.entity';
+import { EventModel } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
-import { Connection } from 'typeorm';
+import { Connection, getManager } from 'typeorm';
 import {
   CourseFactory,
   OfficeHourFactory,
@@ -33,8 +36,13 @@ export class SeedController {
     await this.seedService.deleteAll(QuestionModel);
     await this.seedService.deleteAll(QueueModel);
     await this.seedService.deleteAll(UserCourseModel);
+    await this.seedService.deleteAll(EventModel);
+    await this.seedService.deleteAll(DesktopNotifModel);
+    await this.seedService.deleteAll(PhoneNotifModel);
     await this.seedService.deleteAll(UserModel);
     await this.seedService.deleteAll(CourseModel);
+    const manager = getManager();
+    manager.query('ALTER SEQUENCE user_model_id_seq RESTART WITH 1;');
 
     return 'Data successfully reset';
   }
@@ -102,11 +110,8 @@ export class SeedController {
       const user1 = await UserFactory.create({
         id: 1,
         email: 'liu.sta@northeastern.edu',
-        name: 'Stanley Liu',
         firstName: 'Stanley',
         lastName: 'Liu',
-        photoURL:
-          'https://ca.slack-edge.com/TE565NU79-UR20CG36E-cf0f375252bd-512',
       });
       await UserCourseFactory.create({
         user: user1,
@@ -117,26 +122,22 @@ export class SeedController {
       const user2 = await UserFactory.create({
         id: 2,
         email: 'takayama.a@northeastern.edu',
-        name: 'Alex Takayama',
         firstName: 'Alex',
         lastName: 'Takayama',
-        photoURL:
-          'https://ca.slack-edge.com/TE565NU79-UJL97443D-50121339686b-512',
       });
       await UserCourseFactory.create({
         user: user2,
         role: Role.STUDENT,
         course: course,
+        override: true,
       });
+
       // TA 1
       const user3 = await UserFactory.create({
         id: 3,
         email: 'stenzel.w@northeastern.edu',
-        name: 'Will Stenzel',
         firstName: 'Will',
         lastName: 'Stenzel',
-        photoURL:
-          'https://ca.slack-edge.com/TE565NU79-URF256KRT-d10098e879da-512',
       });
       await UserCourseFactory.create({
         user: user3,
@@ -147,11 +148,8 @@ export class SeedController {
       const user4 = await UserFactory.create({
         id: 4,
         email: 'chu.daj@northeastern.edu',
-        name: 'Da-Jin Chu',
         firstName: 'Da-Jin',
         lastName: 'Chu',
-        photoURL:
-          'https://ca.slack-edge.com/TE565NU79-UE56Y5UT1-85db59a474f4-512',
       });
       await UserCourseFactory.create({
         user: user4,
@@ -162,11 +160,8 @@ export class SeedController {
       const user5 = await UserFactory.create({
         id: 5,
         email: 'li.edwa@northeastern.edu',
-        name: 'Eddy Li',
         firstName: 'Eddy',
         lastName: 'Li',
-        photoURL:
-          'https://ca.slack-edge.com/TE565NU79-UR6P32JBT-a6c89822c544-512',
       });
       await UserCourseFactory.create({
         user: user5,
@@ -176,7 +171,7 @@ export class SeedController {
     }
 
     const queue = await QueueFactory.create({
-      room: 'WHV 101',
+      room: 'Online',
       course: course,
       officeHours: [
         officeHoursToday,
@@ -301,5 +296,24 @@ export class SeedController {
       createdAt: new Date(),
     });
     return question;
+  }
+
+  @Post('createQueueWithoutOfficeHour')
+  async createQueueWithoutOfficeHour(
+    @Body()
+    body: {
+      courseId: number;
+      allowQuestions: boolean;
+    },
+  ): Promise<QueueModel> {
+    const options = {
+      allowQuestions: body.allowQuestions ?? false,
+      officeHours: [],
+    };
+    if (body.courseId) {
+      const course = await CourseModel.findOneOrFail(body.courseId);
+      options['course'] = course;
+    }
+    return await QueueFactory.create(options);
   }
 }

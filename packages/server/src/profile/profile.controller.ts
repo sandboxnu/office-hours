@@ -5,8 +5,10 @@ import {
   UpdateProfileParams,
 } from '@koh/common';
 import {
+  BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Param,
@@ -91,13 +93,18 @@ export class ProfileController {
     user: UserModel,
   ): Promise<GetProfileResponse> {
     user = Object.assign(user, userPatch);
-    user.name = user.firstName + ' ' + user.lastName;
-    if (
-      user.phoneNotifsEnabled &&
-      userPatch.phoneNumber !== user.phoneNotif?.phoneNumber
-    ) {
-      await this.notifService.registerPhone(userPatch.phoneNumber, user);
+
+    // check that the user is trying to update the phone notifs
+    if (userPatch.phoneNotifsEnabled && userPatch.phoneNumber) {
+      // only register new phone if the notifs are enables and the phone number is new
+      if (
+        user.phoneNotifsEnabled &&
+        userPatch.phoneNumber !== user.phoneNotif?.phoneNumber
+      ) {
+        await this.notifService.registerPhone(userPatch.phoneNumber, user);
+      }
     }
+
     await user.save();
 
     return this.get(user);
@@ -169,5 +176,28 @@ export class ProfileController {
         }
       },
     );
+  }
+
+  @Delete('/delete_profile_picture')
+  async deleteProfilePicture(@User() user: UserModel): Promise<void> {
+    if (user.photoURL) {
+      fs.unlink(
+        process.env.UPLOAD_LOCATION + '/' + user.photoURL,
+        async (err) => {
+          if (err) {
+            const errMessage =
+              'Error deleting previous picture at : ' +
+              user.photoURL +
+              'the previous image was at an invalid location?';
+            console.error(errMessage, err);
+            throw new BadRequestException(errMessage);
+          } else {
+            user.photoURL = null;
+            await user.save();
+            return;
+          }
+        },
+      );
+    }
   }
 }
