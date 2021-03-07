@@ -2,6 +2,7 @@
 # Runs deployment on this machine. Do NOT run this locally.
 set -ex
 
+sudo su - officehours
 cd /var/www/source
 git fetch
 git reset --hard origin/dist
