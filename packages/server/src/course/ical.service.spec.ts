@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { RedisModule } from 'nestjs-redis';
 import * as iCal from 'node-ical';
 import { mocked } from 'ts-jest/utils';
 import { Connection } from 'typeorm';
@@ -429,7 +430,7 @@ describe('IcalService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TestTypeOrmModule],
+      imports: [TestTypeOrmModule, RedisModule.register({})],
       providers: [IcalService],
     }).compile();
 

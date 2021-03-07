@@ -226,30 +226,14 @@ export class IcalService {
     console.log('done scraping!');
   }
 
-  @Cron('51 0 * * *')
+  @Cron('*/5 * * * *')
   public async updateAllCourses(): Promise<void> {
     const resource = 'locks:icalcron';
     const ttl = 60000;
 
     const redisDB = await this.redisService.getClient('db');
 
-    const redlock = new Redlock([redisDB], {
-      // the expected clock drift; for more details
-      // see http://redis.io/topics/distlock
-      driftFactor: 0.01, // multiplied by lock ttl to determine drift time
-
-      // the max number of times Redlock will attempt
-      // to lock a resource before erroring
-      retryCount: 10,
-
-      // the time in ms between attempts
-      retryDelay: 200, // time in ms
-
-      // the max time in ms randomly added to retries
-      // to improve performance under high contention
-      // see https://www.awsarchitectureblog.com/2015/03/backoff.html
-      retryJitter: 200, // time in ms
-    });
+    const redlock = new Redlock([redisDB]);
 
     redlock.on('clientError', function (err) {
       console.error('A redis error has occurred:', err);
@@ -261,8 +245,6 @@ export class IcalService {
       await Promise.all(courses.map((c) => this.updateCalendarForCourse(c)));
 
       return lock.unlock().catch(function (err) {
-        // we weren't able to reach redis; your lock will eventually
-        // expire, but you probably want to log this error
         console.error(err);
       });
     });
