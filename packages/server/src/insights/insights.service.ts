@@ -1,13 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { InsightInterface, INSIGHTS_MAP } from './insight-classes';
+import { INSIGHTS_MAP } from './insight-classes';
 import { InsightPartial, ListInsightsResponse } from '@koh/common';
 import { UserModel } from 'profile/user.entity';
-
-// interface generateAllInsightsParams {
-//   insights: InsightInterface<any>[];
-//   filters: any;  // TODO
-// }
 
 @Injectable()
 export class InsightsService {
@@ -23,16 +18,6 @@ export class InsightsService {
   async generateInsight({ insight, filters }): Promise<any> {
     const output = await this.generateOutput({ insight, filters });
     return { output, ...insight };
-  }
-
-  // Generate a map of insights that where the output has been computed
-  async generateAllInsights({ insights, filters }): Promise<any> {
-    return await Promise.all(
-      insights.map(async (insight) => {
-        const output = await this.generateOutput({ insight, filters });
-        return { output, ...insight };
-      }),
-    );
   }
 
   convertToInsightsListResponse(insightNames: string[]): ListInsightsResponse {

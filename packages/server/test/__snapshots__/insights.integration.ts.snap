@@ -6,10 +6,6 @@ Object {
   "description": "Gets the total number questions asked",
   "displayName": "Total Questions",
   "output": 6,
-  "possibleFilters": Array [
-    "courseId",
-    "timeframe",
-  ],
   "roles": Array [
     "professor",
   ],

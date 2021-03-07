@@ -267,34 +267,6 @@ describe('InsightsService', () => {
     ]);
   });
 
-  describe('generateAllInsights', () => {
-    it('multiple insights', async () => {
-      const course = await CourseFactory.create();
-      await UserCourseFactory.createList(4, { course });
-      await UserCourseFactory.create();
-      const queue = await QueueFactory.create({ course });
-      await QuestionFactory.createList(18, { queue });
-
-      const res = await service.generateAllInsights({
-        insights: [
-          INSIGHTS_MAP.TotalStudents,
-          INSIGHTS_MAP.TotalQuestionsAsked,
-        ],
-        filters: [
-          {
-            type: 'courseId',
-            courseId: course.id,
-          },
-        ],
-      });
-
-      const totalStudentsInsight = res.find(insight => insight.displayName === 'Total Students');
-      expect(totalStudentsInsight.output).toEqual(4);
-      const totalQuestionsAskedInsight = res.find(insight => insight.displayName === 'Total Questions');
-      expect(totalQuestionsAskedInsight.output).toEqual(18);
-    });
-  });
-
   describe('toggleInsightOn', () => {
     it('works correctly', async () => {
       const userFactory = await UserFactory.create();
