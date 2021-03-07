@@ -108,7 +108,6 @@ export class SeedController {
     if (!userExists) {
       // Student 1
       const user1 = await UserFactory.create({
-        id: 1,
         email: 'liu.sta@northeastern.edu',
         firstName: 'Stanley',
         lastName: 'Liu',
@@ -120,7 +119,6 @@ export class SeedController {
       });
       // Stundent 2
       const user2 = await UserFactory.create({
-        id: 2,
         email: 'takayama.a@northeastern.edu',
         firstName: 'Alex',
         lastName: 'Takayama',
@@ -134,7 +132,6 @@ export class SeedController {
 
       // TA 1
       const user3 = await UserFactory.create({
-        id: 3,
         email: 'stenzel.w@northeastern.edu',
         firstName: 'Will',
         lastName: 'Stenzel',
@@ -146,7 +143,6 @@ export class SeedController {
       });
       // TA 2
       const user4 = await UserFactory.create({
-        id: 4,
         email: 'chu.daj@northeastern.edu',
         firstName: 'Da-Jin',
         lastName: 'Chu',
@@ -158,7 +154,6 @@ export class SeedController {
       });
       // Professor (Snarky!!)
       const user5 = await UserFactory.create({
-        id: 5,
         email: 'li.edwa@northeastern.edu',
         firstName: 'Eddy',
         lastName: 'Li',
