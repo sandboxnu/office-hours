@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"c473ebd65a58dc7144f371791861d9265921c9d3"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"10a505e71bfb852ed38d00b4cc4dcc9aca167599"};
 
 /***/ }),
 /* 2 */
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "c473ebd65a58dc7144f371791861d9265921c9d3",
+        release: "10a505e71bfb852ed38d00b4cc4dcc9aca167599",
         environment: common_2.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -4265,6 +4265,24 @@ let ProfileController = class ProfileController {
             }
         });
     }
+    async deleteProfilePicture(user) {
+        if (user.photoURL) {
+            fs.unlink(process.env.UPLOAD_LOCATION + '/' + user.photoURL, async (err) => {
+                if (err) {
+                    const errMessage = 'Error deleting previous picture at : ' +
+                        user.photoURL +
+                        'the previous image was at an invalid location?';
+                    console.error(errMessage, err);
+                    throw new common_2.BadRequestException(errMessage);
+                }
+                else {
+                    user.photoURL = null;
+                    await user.save();
+                    return;
+                }
+            });
+        }
+    }
 };
 __decorate([
     common_2.Get(),
@@ -4301,6 +4319,13 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], ProfileController.prototype, "getImage", null);
+__decorate([
+    common_2.Delete('/delete_profile_picture'),
+    __param(0, user_decorator_1.User()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.UserModel]),
+    __metadata("design:returntype", Promise)
+], ProfileController.prototype, "deleteProfilePicture", null);
 ProfileController = __decorate([
     common_2.Controller('profile'),
     common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard),

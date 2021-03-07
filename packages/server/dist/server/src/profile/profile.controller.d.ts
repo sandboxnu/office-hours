@@ -12,4 +12,5 @@ export declare class ProfileController {
     patch(userPatch: UpdateProfileParams, user: UserModel): Promise<GetProfileResponse>;
     uploadImage(file: Express.Multer.File, user: UserModel): Promise<void>;
     getImage(photoURL: string, res: Response): Promise<void>;
+    deleteProfilePicture(user: UserModel): Promise<void>;
 }
