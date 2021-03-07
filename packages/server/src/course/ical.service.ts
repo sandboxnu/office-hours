@@ -228,12 +228,12 @@ export class IcalService {
 
   @Cron('51 0 * * *')
   public async updateAllCourses(): Promise<void> {
-    let resource = 'locks:icalcron';
-    let ttl = 60000;
+    const resource = 'locks:icalcron';
+    const ttl = 60000;
 
     const redisDB = await this.redisService.getClient('db');
 
-    let redlock = new Redlock([redisDB], {
+    const redlock = new Redlock([redisDB], {
       // the expected clock drift; for more details
       // see http://redis.io/topics/distlock
       driftFactor: 0.01, // multiplied by lock ttl to determine drift time
