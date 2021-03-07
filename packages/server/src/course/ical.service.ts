@@ -15,7 +15,7 @@ import { OfficeHourModel } from './office-hour.entity';
 import moment = require('moment');
 import { Cron } from '@nestjs/schedule';
 import { RedisService } from 'nestjs-redis';
-import { throwError } from 'rxjs';
+import * as Redlock from 'redlock';
 
 type Moment = moment.Moment;
 
@@ -226,47 +226,44 @@ export class IcalService {
     console.log('done scraping!');
   }
 
-  // TODO: Disable Cron job until Redis issue is resolved
   @Cron('51 0 * * *')
   public async updateAllCourses(): Promise<void> {
-    const redisDB = this.redisService.getClient('db');
+    let resource = 'locks:icalcron';
+    let ttl = 60000;
 
-    redisDB.watch('foo', function (watchError) {
-      if (watchError) throw watchError;
+    const redisDB = await this.redisService.getClient('db');
 
-      redisDB.get('foo', function (getError, result) {
-        if (getError) throw getError;
+    let redlock = new Redlock([redisDB], {
+      // the expected clock drift; for more details
+      // see http://redis.io/topics/distlock
+      driftFactor: 0.01, // multiplied by lock ttl to determine drift time
 
-        // Process result
-        // Heavy and time consuming operation here to generate "bar"
+      // the max number of times Redlock will attempt
+      // to lock a resource before erroring
+      retryCount: 10,
 
-        redisDB
-          .multi()
-          .set('foo', 'bar')
-          .exec(async function (execError, results) {
-            /**
-             * If err is null, it means Redis successfully attempted
-             * the operation.
-             */
-            if (execError) throw 'exec error';
+      // the time in ms between attempts
+      retryDelay: 200, // time in ms
 
-            /**
-             * If results === null, it means that a concurrent client
-             * changed the key while we were processing it and thus
-             * the execution of the MULTI command was not performed.
-             *
-             * NOTICE: Failing an execution of MULTI is not considered
-             * an error. So you will have err === null and results === null
-             */
+      // the max time in ms randomly added to retries
+      // to improve performance under high contention
+      // see https://www.awsarchitectureblog.com/2015/03/backoff.html
+      retryJitter: 200, // time in ms
+    });
 
-            if (results !== null) {
-              console.log('updating course icals');
-              const courses = await CourseModel.find();
-              await Promise.all(
-                courses.map((c) => this.updateCalendarForCourse(c)),
-              );
-            }
-          });
+    redlock.on('clientError', function (err) {
+      console.error('A redis error has occurred:', err);
+    });
+
+    await redlock.lock(resource, ttl).then(async (lock) => {
+      console.log('updating course icals');
+      const courses = await CourseModel.find();
+      await Promise.all(courses.map((c) => this.updateCalendarForCourse(c)));
+
+      return lock.unlock().catch(function (err) {
+        // we weren't able to reach redis; your lock will eventually
+        // expire, but you probably want to log this error
+        console.error(err);
       });
     });
   }
