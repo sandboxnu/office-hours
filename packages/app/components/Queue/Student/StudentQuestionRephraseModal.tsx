@@ -6,9 +6,11 @@ import { useQuestions } from "../../../hooks/useQuestions";
 import { useQueue } from "../../../hooks/useQueue";
 import useSWR from "swr/esm/use-swr";
 import { API } from "@koh/api-client";
+import { RephraseQuestionPayload } from "@koh/common";
 
 type StudentQuestionRephraseModalProps = {
   courseId: number;
+  payload: RephraseQuestionPayload;
 };
 export default function StudentQuestionRephraseModal({
   courseId,

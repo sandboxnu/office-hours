@@ -3,7 +3,11 @@ import { ConfigService } from '@nestjs/config';
 import { User } from 'profile/user.decorator';
 import { UserModel } from 'profile/user.entity';
 import { AlertModel } from './alerts.entity';
-import { GetAlertsResponse } from '@koh/common';
+import {
+  AlertType,
+  GetAlertsResponse,
+  RephraseQuestionPayload,
+} from '@koh/common';
 import { pick } from 'lodash';
 
 @Controller('alerts')
@@ -22,7 +26,15 @@ export class AlertsController {
         },
       })
     ).map((alert) => {
-      return pick(alert, ['sent', 'alertType']);
+      return pick(alert, ['sent', 'alertType', 'payload']);
+    });
+
+    alerts.forEach((alert) => {
+      switch (alert.alertType) {
+        case AlertType.REPHRASE_QUESTION:
+          alert.payload = alert.payload as RephraseQuestionPayload;
+          break;
+      }
     });
 
     return { alerts };

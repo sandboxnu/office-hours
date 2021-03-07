@@ -1,3 +1,4 @@
+import { AlertModel } from 'alerts/alerts.entity';
 import { config } from 'dotenv';
 import { AdminUserModel } from './src/admin/admin-user.entity';
 import { CourseModel } from './src/course/course.entity';
@@ -38,6 +39,7 @@ const typeorm = {
     PhoneNotifModel,
     AdminUserModel,
     EventModel,
+    AlertModel,
   ],
   keepConnectionAlive: true,
   logging: !!process.env.TYPEORM_LOGGING,

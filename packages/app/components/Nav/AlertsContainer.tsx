@@ -16,7 +16,12 @@ export default function AlertsContainer({ courseId }: AlertsContainerProps) {
   alerts.map((alert) => {
     switch (alert.alertType) {
       case AlertType.REPHRASE_QUESTION:
-        return <StudentQuestionRephraseModal courseId={courseId} />;
+        return (
+          <StudentQuestionRephraseModal
+            courseId={courseId}
+            payload={alert.payload as RepharseQuestionPayload}
+          />
+        );
     }
   });
 

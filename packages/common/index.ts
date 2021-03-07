@@ -7,6 +7,7 @@ import {
   IsEnum,
   IsInt,
   IsNotEmpty,
+  IsObject,
   IsOptional,
   IsString,
   ValidateIf,
@@ -555,6 +556,16 @@ export class Alert {
 
   @IsDate()
   sent!: Date;
+
+  @IsObject()
+  payload!: AlertPayload;
+}
+
+export interface AlertPayload {}
+
+export class RephraseQuestionPayload implements AlertPayload {
+  @Type(() => Question)
+  question!: Question;
 }
 
 export class SSEQueueResponse {
