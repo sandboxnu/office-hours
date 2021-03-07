@@ -5,8 +5,10 @@ import {
   UpdateProfileParams,
 } from '@koh/common';
 import {
+  BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Param,
@@ -174,5 +176,28 @@ export class ProfileController {
         }
       },
     );
+  }
+
+  @Delete('/delete_profile_picture')
+  async deleteProfilePicture(@User() user: UserModel): Promise<void> {
+    if (user.photoURL) {
+      fs.unlink(
+        process.env.UPLOAD_LOCATION + '/' + user.photoURL,
+        async (err) => {
+          if (err) {
+            const errMessage =
+              'Error deleting previous picture at : ' +
+              user.photoURL +
+              'the previous image was at an invalid location?';
+            console.error(errMessage, err);
+            throw new BadRequestException(errMessage);
+          } else {
+            user.photoURL = null;
+            await user.save();
+            return;
+          }
+        },
+      );
+    }
   }
 }
