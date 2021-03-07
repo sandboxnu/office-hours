@@ -126,7 +126,7 @@ export default function SettingsPage({
                 Delete my Profile Picture
               </ProfilePicButton>
             )}
-            <div style={{ marginBottom: "60px" }} />
+            <div style={{ marginTop: "60px" }} />
           </>
         ) : null}
         <Menu
