@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { Filter, InsightInterface, INSIGHTS_MAP } from './insight-classes';
+import { Filter, InsightInterface, INSIGHTS_MAP } from './insight-objects';
 import { ListInsightsResponse } from '@koh/common';
 import { UserModel } from 'profile/user.entity';
 

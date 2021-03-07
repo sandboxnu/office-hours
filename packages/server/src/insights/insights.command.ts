@@ -2,7 +2,7 @@ import { Command, Positional } from 'nestjs-command';
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { InsightsService } from './insights.service';
-import { INSIGHTS_MAP } from './insight-classes';
+import { INSIGHTS_MAP } from './insight-objects';
 
 /**
  * Initial Product: Create a system to aggregate certain data within a certain time period for one course

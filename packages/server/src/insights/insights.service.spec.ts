@@ -9,7 +9,7 @@ import {
   QueueFactory,
   UserFactory,
 } from '../../test/util/factories';
-import { INSIGHTS_MAP } from './insight-classes';
+import { INSIGHTS_MAP } from './insight-objects';
 import { QuestionType } from '@koh/common';
 import { UserModel } from 'profile/user.entity';
 
