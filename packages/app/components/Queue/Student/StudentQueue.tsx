@@ -272,14 +272,6 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
             leaveQueue={leaveQueue}
             joinQueue={joinQueueAfterDeletion}
           />
-          <StudentQuestionRephraseModal
-            visible={rephraseQuestion}
-            question={studentQuestion}
-            editQuestion={() => {
-              setPopupEditQuestion(true);
-              setRephraseQuestion(false);
-            }}
-          />
           <QueueInfoColumn
             queueId={qid}
             buttons={

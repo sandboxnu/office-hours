@@ -22,7 +22,7 @@ export class AlertsController {
         },
       })
     ).map((alert) => {
-      pick(alert, ['sent', 'alertType']);
+      return pick(alert, ['sent', 'alertType']);
     });
 
     return { alerts };

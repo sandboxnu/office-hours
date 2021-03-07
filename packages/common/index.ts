@@ -461,6 +461,11 @@ export class ListQuestionsResponse {
 
 export class GetQuestionResponse extends Question {}
 
+export class GetStudentQuestionResponse extends Question {
+  @IsInt()
+  queueId!: number;
+}
+
 export class CreateQuestionParams {
   @IsString()
   text!: string;
@@ -541,7 +546,7 @@ export enum AlertType {
 
 export class GetAlertsResponse {
   @Type(() => Alert)
-  alerts!: Alert;
+  alerts!: Alert[];
 }
 
 export class Alert {

@@ -1,6 +1,8 @@
 import React from "react";
 import useSWR from "swr/esm/use-swr";
 import { API } from "@koh/api-client";
+import { AlertType } from "@koh/common";
+import StudentQuestionRephraseModal from "../Queue/Student/StudentQuestionRephraseModal";
 
 type AlertsContainerProps = {
   courseId: number;
@@ -10,6 +12,13 @@ export default function AlertsContainer({ courseId }: AlertsContainerProps) {
     return API.alerts.get(courseId);
   });
   const alerts = data.alerts;
+
+  alerts.map((alert) => {
+    switch (alert.alertType) {
+      case AlertType.REPHRASE_QUESTION:
+        return <StudentQuestionRephraseModal courseId={courseId} />;
+    }
+  });
 
   return <div></div>;
 }
