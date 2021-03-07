@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { RedisModule, RedisService } from 'nestjs-redis';
 import * as iCal from 'node-ical';
 import { mocked } from 'ts-jest/utils';
 import { Connection } from 'typeorm';
@@ -425,20 +426,34 @@ END:VEVENT
 
 describe('IcalService', () => {
   let service: IcalService;
+  let redis: RedisService;
   let conn: Connection;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TestTypeOrmModule],
+      imports: [TestTypeOrmModule, RedisModule.register({})],
       providers: [IcalService],
     }).compile();
 
     service = module.get<IcalService>(IcalService);
+    redis = module.get<RedisService>(RedisService);
     conn = module.get<Connection>(Connection);
   });
 
   afterAll(async () => {
     await conn.close();
+  });
+
+  describe.only('updateAllCourses', () => {
+    it('calls updateAllCourses once', async () => {
+      let [course1, course2] = await CourseFactory.createList(2);
+
+      // const redisDB = redis.getClient('db');
+      // await redisDB.set('resource', 'test');
+      // console.log(await redisDB.get('resource'));
+
+      service.updateAllCourses().then(() => service.updateAllCourses());
+    });
   });
 
   describe('parseIcal', () => {

@@ -13,6 +13,10 @@ import { QueueModel } from '../queue/queue.entity';
 import { CourseModel } from './course.entity';
 import { OfficeHourModel } from './office-hour.entity';
 import moment = require('moment');
+import { Cron } from '@nestjs/schedule';
+import { RedisService } from 'nestjs-redis';
+import { throwError } from 'rxjs';
+import { Redlock } from 'redlock';
 
 type Moment = moment.Moment;
 
@@ -223,8 +227,71 @@ export class IcalService {
   // TODO: Disable Cron job until Redis issue is resolved
   // @Cron('51 0 * * *')
   public async updateAllCourses(): Promise<void> {
-    console.log('updating course icals');
-    const courses = await CourseModel.find();
-    await Promise.all(courses.map((c) => this.updateCalendarForCourse(c)));
+    console.log('BEGIN');
+
+    let resource = 'locks:icalcron';
+    let ttl = 10000;
+
+    const redisDB = await this.redisService.getClient('db');
+    console.log(redisDB);
+    await redisDB.set(resource, 'test');
+    console.log(await redisDB.get(resource));
+
+    let redlock = new Redlock([redisDB]);
+
+    // redlock.on('clientError', function(err) {
+    //   console.error('A redis error has occurred:', err);
+    // });
+
+    redlock.lock(resource, ttl).then(async (lock) => {
+      console.log('updating course icals');
+      const courses = await CourseModel.find();
+      await Promise.all(courses.map((c) => this.updateCalendarForCourse(c)));
+
+      return lock.unlock().catch(function (err) {
+        // we weren't able to reach redis; your lock will eventually
+        // expire, but you probably want to log this error
+        console.error(err);
+      });
+    });
+
+    // redisDB.watch(resource, function(watchError) {
+    //   if (watchError) throw watchError;
+
+    //   redisDB.get(resource, function(getError, result) {
+    //     if (getError) throw getError;
+
+    //     // Process result
+    //     // Heavy and time consuming operation here to generate "bar"
+
+    //     redisDB
+    //       .multi()
+    //       .set(resource, 'bar')
+    //       .exec(async function(execError, results) {
+    //         /**
+    //          * If err is null, it means Redis successfully attempted
+    //          * the operation.
+    //          */
+    //         if (execError) throw 'exec error';
+
+    //         /**
+    //          * If results === null, it means that a concurrent client
+    //          * changed the key while we were processing it and thus
+    //          * the execution of the MULTI command was not performed.
+    //          *
+    //          * NOTICE: Failing an execution of MULTI is not considered
+    //          * an error. So you will have err === null and results === null
+    //          */
+
+    //         if (results !== null) {
+    //           console.log('updating course icals');
+    //           const courses = await CourseModel.find();
+    //           await Promise.all(
+    //             courses.map(c => this.updateCalendarForCourse(c)),
+    //           );
+    //         }
+    //       });
+    //   });
+    // });
   }
 }
