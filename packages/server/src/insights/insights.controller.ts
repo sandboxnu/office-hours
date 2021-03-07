@@ -72,7 +72,7 @@ export class InsightsController {
       });
     }
 
-    const insight = await this.insightsService.generateInsight({
+    const insight = await this.insightsService.computeOutput({
       insight: INSIGHTS_MAP[insightName],
       filters,
     });

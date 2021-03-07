@@ -1,22 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { INSIGHTS_MAP } from './insight-classes';
-import { InsightPartial, ListInsightsResponse } from '@koh/common';
+import { Filter, InsightInterface, INSIGHTS_MAP } from './insight-classes';
+import { ListInsightsResponse } from '@koh/common';
 import { UserModel } from 'profile/user.entity';
+
+type GenerateOutputParams = {
+  insight: InsightInterface,
+  filters: Filter[]
+}
 
 @Injectable()
 export class InsightsService {
   constructor(private connection: Connection) {}
 
-  // Generate the output data for an insight by calling its compute function
-  async generateOutput({ insight, filters }): Promise<any> {
+  // Compute the output data for an insight and add it to the insight response
+  async computeOutput({ insight, filters }: GenerateOutputParams): Promise<any> {
     const output = await insight.compute(filters);
-    return output;
-  }
-
-  // Compute the output data for an insight and add it to the insight object
-  async generateInsight({ insight, filters }): Promise<any> {
-    const output = await this.generateOutput({ insight, filters });
     return { output, ...insight };
   }
 

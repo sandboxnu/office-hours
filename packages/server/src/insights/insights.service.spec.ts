@@ -35,13 +35,13 @@ describe('InsightsService', () => {
     await conn.synchronize(true);
   });
 
-  describe('generateInsight', () => {
+  describe('computeOutput', () => {
     it('totalStudents', async () => {
       const course = await CourseFactory.create();
       await UserCourseFactory.createList(4, { course });
       await UserCourseFactory.create();
 
-      const res = await service.generateInsight({
+      const res = await service.computeOutput({
         insight: INSIGHTS_MAP.TotalStudents,
         filters: [
           {
@@ -64,7 +64,7 @@ describe('InsightsService', () => {
       // question right now
       await QuestionFactory.create({ queue });
 
-      const res = await service.generateInsight({
+      const res = await service.computeOutput({
         insight: INSIGHTS_MAP.TotalQuestionsAsked,
         filters: [
           {
@@ -87,7 +87,7 @@ describe('InsightsService', () => {
         helpedAt: new Date(Date.now() - 25 * 60 * 1000),
       });
 
-      const res = await service.generateInsight({
+      const res = await service.computeOutput({
         insight: INSIGHTS_MAP.AverageWaitTime,
         filters: [
           {
@@ -112,7 +112,7 @@ describe('InsightsService', () => {
         queue: question.queue,
       });
 
-      const res = await service.generateInsight({
+      const res = await service.computeOutput({
         insight: INSIGHTS_MAP.AverageHelpingTime,
         filters: [
           {
@@ -137,7 +137,7 @@ describe('InsightsService', () => {
       // students in the class
       await UserCourseFactory.createList(4, { course });
 
-      const res = await service.generateInsight({
+      const res = await service.computeOutput({
         insight: INSIGHTS_MAP.QuestionToStudentRatio,
         filters: [
           {
@@ -170,7 +170,7 @@ describe('InsightsService', () => {
       questionType: QuestionType.Testing,
       queue,
     });
-    const res = await service.generateInsight({
+    const res = await service.computeOutput({
       insight: INSIGHTS_MAP.QuestionTypeBreakdown,
       filters: [
         {
@@ -229,7 +229,7 @@ describe('InsightsService', () => {
       creator: user4,
       queue,
     });
-    const res = await service.generateInsight({
+    const res = await service.computeOutput({
       insight: INSIGHTS_MAP.MostActiveStudents,
       filters: [
         {
