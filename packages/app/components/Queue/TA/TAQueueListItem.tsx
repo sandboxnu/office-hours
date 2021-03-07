@@ -14,7 +14,7 @@ function truncate(string: string, length: number) {
   return string;
 }
 
-const Container = styled.div<{ selected: boolean }>`
+export const Container = styled.div<{ selected: boolean }>`
   display: flex;
   align-items: flex-start;
 

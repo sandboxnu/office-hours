@@ -7,6 +7,7 @@ import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { SettingsOptions } from "../../Settings/SettingsPage";
+import EmptyGroupList from "./EmptyGroupList";
 import { SPLIT_DETAIL_BKPT } from "./TAQueueBreakpoints";
 import TAQueueDetail from "./TAQueueDetail";
 import TAQueueListSection from "./TAQueueListSection";
@@ -114,6 +115,16 @@ export default function TAQueueListDetail({
           questions={helpingQuestions}
           onClickQuestion={setSelectedQuestionId}
           selectedQuestionId={selectedQuestionId}
+        />
+      </div>
+      <div data-cy="list-group">
+        <TAQueueListSection
+          title="Group Students"
+          questions={[]} // a cheat for now
+          onClickQuestion={setSelectedQuestionId}
+          selectedQuestionId={selectedQuestionId}
+          collapsible
+          emptyDisplay={<EmptyGroupList onClick={()=>{}}/>}
         />
       </div>
       <div data-cy="list-priority">
