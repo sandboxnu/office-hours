@@ -100,16 +100,14 @@ export default function SettingsPage({
                 mutate();
               }}
             >
-              <ProfilePicButton
-                icon={<UploadOutlined />}
-              >
+              <ProfilePicButton icon={<UploadOutlined />}>
                 Upload a Profile Picture
               </ProfilePicButton>
             </Upload>
             {profile?.photoURL && (
               <ProfilePicButton
                 icon={<DeleteOutlined />}
-                style={{ marginTop: "10px"}}
+                style={{ marginTop: "10px" }}
                 onClick={async () => {
                   try {
                     await API.profile.deleteProfilePicture();
