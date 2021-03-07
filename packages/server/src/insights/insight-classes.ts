@@ -17,12 +17,11 @@ export interface InsightInterface {
   description: string;
   roles: Role[];
   component: InsightDisplay;
-  possibleFilters: string[];
+  size: 'default' | 'small';
   compute: (
     insightFilters: any,
   ) => Promise<PossibleOutputTypes>;
   output?: Promise<PossibleOutputTypes>;
-  size: 'default' | 'small';
 }
 
 export type Filter = {
@@ -33,18 +32,18 @@ export type Filter = {
 type AddFiltersParams = {
   queryBuilder: SelectQueryBuilder<any>;
   modelName: string;
+  allowedFilters: string[];
   filters: Filter[];
-  possibleFilters: string[];
 }
 
 function addFilters({
   queryBuilder,
   modelName,
+  allowedFilters,
   filters,
-  possibleFilters,
 }: AddFiltersParams): SelectQueryBuilder<QuestionModel> {
   for (const filter of filters) {
-    if (possibleFilters.includes(filter.type)) {
+    if (allowedFilters.includes(filter.type)) {
       FILTER_MAP[modelName][filter.type](queryBuilder, filter);
     }
   }
@@ -81,13 +80,12 @@ export const TotalStudents: InsightInterface = {
   description: 'Gets the total number of students',
   roles: [Role.PROFESSOR],
   component: InsightDisplay.SimpleDisplay,
-  possibleFilters: ['courseId', 'role'],
   size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
     return await addFilters({
       queryBuilder: createQueryBuilder(UserCourseModel).where("role = 'student'"),
       modelName: UserCourseModel.name,
-      possibleFilters: this.possibleFilters,
+      allowedFilters: ['courseId', 'role'],
       filters,
     }).getCount();
   }
@@ -98,13 +96,12 @@ export const TotalQuestionsAsked: InsightInterface = {
   description: 'Gets the total number questions asked',
   roles: [Role.PROFESSOR],
   component: InsightDisplay.SimpleDisplay,
-  possibleFilters: ['courseId', 'timeframe'],
   size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
     return await addFilters({
       queryBuilder: createQueryBuilder(QuestionModel).where('TRUE'),
       modelName: QuestionModel.name,
-      possibleFilters: this.possibleFilters,
+      allowedFilters: ['courseId', 'timeframe'],
       filters,
     }).getCount();
   }
@@ -115,19 +112,18 @@ export const MostActiveStudents: InsightInterface = {
   description: 'Returns a table of the students who have asked the most questions in Office Hours',
   roles: [Role.PROFESSOR],
   component: InsightDisplay.SimpleTable,
-  possibleFilters: ['courseId', 'timeframe'],
   size: 'default' as const,
   async compute(filters): Promise<SimpleTableOutputType> {
     const dataSource = await addFilters({
       queryBuilder: createQueryBuilder()
-        .select('"QuestionModel"."creatorId"', 'studentId')
-        .addSelect('"UserModel"."name"', 'name')
-        .addSelect('"UserModel"."email"', 'email')
-        .addSelect('COUNT(*)', 'questionsAsked')
-        .from(QuestionModel, 'QuestionModel')
-        .where('"QuestionModel"."questionType" IS NOT NULL'),
+      .select('"QuestionModel"."creatorId"', 'studentId')
+      .addSelect('"UserModel"."name"', 'name')
+      .addSelect('"UserModel"."email"', 'email')
+      .addSelect('COUNT(*)', 'questionsAsked')
+      .from(QuestionModel, 'QuestionModel')
+      .where('"QuestionModel"."questionType" IS NOT NULL'),
       modelName: QuestionModel.name,
-      possibleFilters: this.possibleFilters,
+      allowedFilters: ['courseId', 'timeframe'],
       filters,
     })
       .innerJoin(
@@ -165,16 +161,15 @@ export const QuestionTypeBreakdown: InsightInterface = {
   description: 'Returns a table of each question type and how many questions of that type were asked',
   roles: [Role.PROFESSOR],
   component: InsightDisplay.BarChart,
-  possibleFilters: ['courseId', 'timeframe'],
   size: 'default' as const,
   async compute(filters): Promise<BarChartOutputType> {
     const info = await addFilters({
       queryBuilder: createQueryBuilder(QuestionModel)
-        .select('"QuestionModel"."questionType"', 'questionType')
-        .addSelect('COUNT(*)', 'totalQuestions')
-        .andWhere('"QuestionModel"."questionType" IS NOT NULL'),
+      .select('"QuestionModel"."questionType"', 'questionType')
+      .addSelect('COUNT(*)', 'totalQuestions')
+      .andWhere('"QuestionModel"."questionType" IS NOT NULL'),
       modelName: QuestionModel.name,
-      possibleFilters: this.possibleFilters,
+      allowedFilters: ['courseId', 'timeframe'],
       filters,
     })
       .groupBy('"QuestionModel"."questionType"')
@@ -211,20 +206,19 @@ export const AverageWaitTime: InsightInterface = {
   description: 'Gets the average wait time',
   roles: [Role.PROFESSOR],
   component: InsightDisplay.SimpleDisplay,
-  possibleFilters: ['courseId', 'timeframe'],
   size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
     const waitTime = await addFilters({
       queryBuilder: createQueryBuilder(QuestionModel)
-        .select(
-          'EXTRACT(EPOCH FROM AVG(QuestionModel.helpedAt - QuestionModel.createdAt)::INTERVAL)/60',
-          'avgWaitTimeInMinutes',
+      .select(
+        'EXTRACT(EPOCH FROM AVG(QuestionModel.helpedAt - QuestionModel.createdAt)::INTERVAL)/60',
+        'avgWaitTimeInMinutes',
         )
         .where('QuestionModel.helpedAt IS NOT NULL'),
-      modelName: QuestionModel.name,
-      possibleFilters: this.possibleFilters,
-      filters,
-    }).getRawOne();
+        modelName: QuestionModel.name,
+        allowedFilters: ['courseId', 'timeframe'],
+        filters,
+      }).getRawOne();
     return `${Math.floor(waitTime.avgWaitTimeInMinutes)} min`;
   }
 }
@@ -234,24 +228,23 @@ export const AverageHelpingTime: InsightInterface = {
   description: 'Gets the average helping time',
   roles: [Role.PROFESSOR],
   component: InsightDisplay.SimpleDisplay,
-  possibleFilters: ['courseId', 'timeframe'],
   size: 'small' as const,
-
+  
   async compute(filters): Promise<SimpleDisplayOutputType> {
     const helpTime = await addFilters({
       queryBuilder: createQueryBuilder(QuestionModel)
-        .select(
-          'EXTRACT(EPOCH FROM AVG(QuestionModel.closedAt - QuestionModel.helpedAt)::INTERVAL)/60',
-          'avgHelpTimeInMinutes',
+      .select(
+        'EXTRACT(EPOCH FROM AVG(QuestionModel.closedAt - QuestionModel.helpedAt)::INTERVAL)/60',
+        'avgHelpTimeInMinutes',
         )
         .where(
           'QuestionModel.helpedAt IS NOT NULL AND QuestionModel.closedAt IS NOT NULL',
-        ),
-      modelName: QuestionModel.name,
-      possibleFilters: this.possibleFilters,
-      filters,
-    }).getRawOne();
-    return `${Math.floor(helpTime.avgHelpTimeInMinutes)} min`;
+          ),
+          modelName: QuestionModel.name,
+          allowedFilters: ['courseId', 'timeframe'],
+          filters,
+        }).getRawOne();
+        return `${Math.floor(helpTime.avgHelpTimeInMinutes)} min`;
   }
 }
 
@@ -260,14 +253,13 @@ export const QuestionToStudentRatio: InsightInterface = {
   description: 'How many questions were asked per student on average?',
   roles: [Role.PROFESSOR],
   component: InsightDisplay.SimpleDisplay,
-  possibleFilters: ['courseId', 'timeframe'],
   size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
     const totalQuestions = await TotalQuestionsAsked.compute(filters);
     const totalStudents = await TotalStudents.compute(filters);
     return totalStudents !== 0
-      ? (totalQuestions as number) / (totalStudents as number)
-      : '0 students';
+    ? (totalQuestions as number) / (totalStudents as number)
+    : '0 students';
   }
 }
 
