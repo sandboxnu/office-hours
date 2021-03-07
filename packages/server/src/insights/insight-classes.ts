@@ -30,45 +30,45 @@ export type Filter = {
 }
 
 type AddFiltersParams = {
-  queryBuilder: SelectQueryBuilder<any>;
+  query: SelectQueryBuilder<any>;
   modelName: string;
   allowedFilters: string[];
   filters: Filter[];
 }
 
 function addFilters({
-  queryBuilder,
+  query,
   modelName,
   allowedFilters,
   filters,
 }: AddFiltersParams): SelectQueryBuilder<QuestionModel> {
   for (const filter of filters) {
     if (allowedFilters.includes(filter.type)) {
-      FILTER_MAP[modelName][filter.type](queryBuilder, filter);
+      FILTER_MAP[modelName][filter.type](query, filter);
     }
   }
-  return queryBuilder;
+  return query;
 }
 
 const FILTER_MAP = {
   QuestionModel: {
-    courseId: (queryBuilder, filter) => {
-      queryBuilder
+    courseId: (query, filter) => {
+      query
         .innerJoin('QuestionModel.queue', 'queue')
         .andWhere('queue."courseId" = :courseId', {
           courseId: filter.courseId,
         });
     },
-    timeframe: (queryBuilder, filter) => {
-      queryBuilder.andWhere('QuestionModel.createdAt BETWEEN :start AND :end', {
+    timeframe: (query, filter) => {
+      query.andWhere('QuestionModel.createdAt BETWEEN :start AND :end', {
         start: filter.start,
         end: filter.end,
       });
     },
   },
   UserCourseModel: {
-    courseId: (queryBuilder, filter) => {
-      queryBuilder.andWhere('"courseId" = :courseId', {
+    courseId: (query, filter) => {
+      query.andWhere('"courseId" = :courseId', {
         courseId: filter.courseId,
       });
     },
@@ -83,7 +83,7 @@ export const TotalStudents: InsightInterface = {
   size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
     return await addFilters({
-      queryBuilder: createQueryBuilder(UserCourseModel).where("role = 'student'"),
+      query: createQueryBuilder(UserCourseModel).where("role = 'student'"),
       modelName: UserCourseModel.name,
       allowedFilters: ['courseId', 'role'],
       filters,
@@ -99,7 +99,7 @@ export const TotalQuestionsAsked: InsightInterface = {
   size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
     return await addFilters({
-      queryBuilder: createQueryBuilder(QuestionModel).where('TRUE'),
+      query: createQueryBuilder(QuestionModel).where('TRUE'),
       modelName: QuestionModel.name,
       allowedFilters: ['courseId', 'timeframe'],
       filters,
@@ -115,7 +115,7 @@ export const MostActiveStudents: InsightInterface = {
   size: 'default' as const,
   async compute(filters): Promise<SimpleTableOutputType> {
     const dataSource = await addFilters({
-      queryBuilder: createQueryBuilder()
+      query: createQueryBuilder()
       .select('"QuestionModel"."creatorId"', 'studentId')
       .addSelect('"UserModel"."name"', 'name')
       .addSelect('"UserModel"."email"', 'email')
@@ -164,7 +164,7 @@ export const QuestionTypeBreakdown: InsightInterface = {
   size: 'default' as const,
   async compute(filters): Promise<BarChartOutputType> {
     const info = await addFilters({
-      queryBuilder: createQueryBuilder(QuestionModel)
+      query: createQueryBuilder(QuestionModel)
       .select('"QuestionModel"."questionType"', 'questionType')
       .addSelect('COUNT(*)', 'totalQuestions')
       .andWhere('"QuestionModel"."questionType" IS NOT NULL'),
@@ -209,7 +209,7 @@ export const AverageWaitTime: InsightInterface = {
   size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
     const waitTime = await addFilters({
-      queryBuilder: createQueryBuilder(QuestionModel)
+      query: createQueryBuilder(QuestionModel)
       .select(
         'EXTRACT(EPOCH FROM AVG(QuestionModel.helpedAt - QuestionModel.createdAt)::INTERVAL)/60',
         'avgWaitTimeInMinutes',
@@ -232,7 +232,7 @@ export const AverageHelpingTime: InsightInterface = {
   
   async compute(filters): Promise<SimpleDisplayOutputType> {
     const helpTime = await addFilters({
-      queryBuilder: createQueryBuilder(QuestionModel)
+      query: createQueryBuilder(QuestionModel)
       .select(
         'EXTRACT(EPOCH FROM AVG(QuestionModel.closedAt - QuestionModel.helpedAt)::INTERVAL)/60',
         'avgHelpTimeInMinutes',
