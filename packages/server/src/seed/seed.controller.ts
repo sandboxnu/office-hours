@@ -32,6 +32,9 @@ export class SeedController {
     await this.seedService.deleteAll(OfficeHourModel);
     await this.seedService.deleteAll(QuestionModel);
     await this.seedService.deleteAll(QueueModel);
+    await this.seedService.deleteAll(UserCourseModel);
+    await this.seedService.deleteAll(UserModel);
+    await this.seedService.deleteAll(CourseModel);
 
     return 'Data successfully reset';
   }
@@ -93,10 +96,11 @@ export class SeedController {
     ];
     course.save();
 
-    const userExsists = await UserModel.findOne();
-    if (!userExsists) {
+    const userExists = await UserModel.findOne();
+    if (!userExists) {
       // Student 1
       const user1 = await UserFactory.create({
+        id: 1,
         email: 'liu.sta@northeastern.edu',
         name: 'Stanley Liu',
         firstName: 'Stanley',
@@ -111,6 +115,7 @@ export class SeedController {
       });
       // Stundent 2
       const user2 = await UserFactory.create({
+        id: 2,
         email: 'takayama.a@northeastern.edu',
         name: 'Alex Takayama',
         firstName: 'Alex',
@@ -125,6 +130,7 @@ export class SeedController {
       });
       // TA 1
       const user3 = await UserFactory.create({
+        id: 3,
         email: 'stenzel.w@northeastern.edu',
         name: 'Will Stenzel',
         firstName: 'Will',
@@ -139,6 +145,7 @@ export class SeedController {
       });
       // TA 2
       const user4 = await UserFactory.create({
+        id: 4,
         email: 'chu.daj@northeastern.edu',
         name: 'Da-Jin Chu',
         firstName: 'Da-Jin',
@@ -153,6 +160,7 @@ export class SeedController {
       });
       // Professor (Snarky!!)
       const user5 = await UserFactory.create({
+        id: 5,
         email: 'li.edwa@northeastern.edu',
         name: 'Eddy Li',
         firstName: 'Eddy',
