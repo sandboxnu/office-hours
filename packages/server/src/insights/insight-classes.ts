@@ -44,22 +44,27 @@ function addFilters({
 }: AddFiltersParams): SelectQueryBuilder<QuestionModel> {
   for (const filter of filters) {
     if (allowedFilters.includes(filter.type)) {
-      FILTER_MAP[modelName][filter.type](query, filter);
+      APPLY_FILTER_MAP[modelName][filter.type]({ query, filter });
     }
   }
   return query;
 }
 
-const FILTER_MAP = {
+type ApplyFilterParams = {
+  query: SelectQueryBuilder<any>,
+  filter: Filter
+}
+
+const APPLY_FILTER_MAP = {
   QuestionModel: {
-    courseId: (query, filter) => {
+    courseId: ({ query, filter }: ApplyFilterParams) => {
       query
         .innerJoin('QuestionModel.queue', 'queue')
         .andWhere('queue."courseId" = :courseId', {
           courseId: filter.courseId,
         });
     },
-    timeframe: (query, filter) => {
+    timeframe: ({ query, filter }: ApplyFilterParams) => {
       query.andWhere('QuestionModel.createdAt BETWEEN :start AND :end', {
         start: filter.start,
         end: filter.end,
@@ -67,7 +72,7 @@ const FILTER_MAP = {
     },
   },
   UserCourseModel: {
-    courseId: (query, filter) => {
+    courseId: ({ query, filter }: ApplyFilterParams) => {
       query.andWhere('"courseId" = :courseId', {
         courseId: filter.courseId,
       });
