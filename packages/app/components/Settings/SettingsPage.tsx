@@ -30,6 +30,10 @@ const VerticalDivider = styled.div`
   }
 `;
 
+const ProfilePicButton = styled(Button)`
+  width: 207px;
+`;
+
 export default function SettingsPage({
   defaultPage,
 }: SettingsPageProps): ReactElement {
@@ -96,19 +100,16 @@ export default function SettingsPage({
                 mutate();
               }}
             >
-              <Button
+              <ProfilePicButton
                 icon={<UploadOutlined />}
-                style={{
-                  width: "207px",
-                }}
               >
                 Upload a Profile Picture
-              </Button>
+              </ProfilePicButton>
             </Upload>
             {profile?.photoURL && (
-              <Button
+              <ProfilePicButton
                 icon={<DeleteOutlined />}
-                style={{ marginTop: "10px", width: "207px" }}
+                style={{ marginTop: "10px"}}
                 onClick={async () => {
                   try {
                     await API.profile.deleteProfilePicture();
@@ -125,7 +126,7 @@ export default function SettingsPage({
                 }}
               >
                 Delete my Profile Picture
-              </Button>
+              </ProfilePicButton>
             )}
             <div style={{ marginBottom: "60px" }} />
           </>
