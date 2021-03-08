@@ -3,10 +3,12 @@ import { CalendarResponse } from 'node-ical';
 import { Connection, DeepPartial } from 'typeorm';
 import { CourseModel } from './course.entity';
 import { OfficeHourModel } from './office-hour.entity';
+import { RedisService } from 'nestjs-redis';
 declare type CreateOfficeHour = DeepPartial<OfficeHourModel>[];
 export declare class IcalService {
     private connection;
-    constructor(connection: Connection);
+    private readonly redisService;
+    constructor(connection: Connection, redisService: RedisService);
     private fixOutlookTZ;
     private rruleToDates;
     parseIcal(icalData: CalendarResponse, courseId: number, testRegex?: RegExp): CreateOfficeHour;
