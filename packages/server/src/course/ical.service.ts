@@ -13,6 +13,9 @@ import { QueueModel } from '../queue/queue.entity';
 import { CourseModel } from './course.entity';
 import { OfficeHourModel } from './office-hour.entity';
 import moment = require('moment');
+import { Cron } from '@nestjs/schedule';
+import { RedisService } from 'nestjs-redis';
+import * as Redlock from 'redlock';
 
 type Moment = moment.Moment;
 
@@ -20,7 +23,10 @@ type CreateOfficeHour = DeepPartial<OfficeHourModel>[];
 
 @Injectable()
 export class IcalService {
-  constructor(private connection: Connection) {}
+  constructor(
+    private connection: Connection,
+    private readonly redisService: RedisService,
+  ) {}
 
   // tz should not be preconverted by findOneIana
   private fixOutlookTZ(date: Moment, tz: string): Moment {
@@ -220,11 +226,27 @@ export class IcalService {
     console.log('done scraping!');
   }
 
-  // TODO: Disable Cron job until Redis issue is resolved
-  // @Cron('51 0 * * *')
+  @Cron('*/5 * * * *')
   public async updateAllCourses(): Promise<void> {
-    console.log('updating course icals');
-    const courses = await CourseModel.find();
-    await Promise.all(courses.map((c) => this.updateCalendarForCourse(c)));
+    const resource = 'locks:icalcron';
+    const ttl = 60000;
+
+    const redisDB = await this.redisService.getClient('db');
+
+    const redlock = new Redlock([redisDB]);
+
+    redlock.on('clientError', function (err) {
+      console.error('A redis error has occurred:', err);
+    });
+
+    await redlock.lock(resource, ttl).then(async (lock) => {
+      console.log('updating course icals');
+      const courses = await CourseModel.find();
+      await Promise.all(courses.map((c) => this.updateCalendarForCourse(c)));
+
+      return lock.unlock().catch(function (err) {
+        console.error(err);
+      });
+    });
   }
 }
