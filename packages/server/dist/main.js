@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"7e5522ee96708230b6671b9c6f488dc377d727ec"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"45f329eeafde3ffa3d5eea3e3c0e85de24abea06"};
 
 /***/ }),
 /* 2 */
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "7e5522ee96708230b6671b9c6f488dc377d727ec",
+        release: "45f329eeafde3ffa3d5eea3e3c0e85de24abea06",
         environment: common_2.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -2936,7 +2936,7 @@ let IcalService = class IcalService {
     }
 };
 __decorate([
-    schedule_1.Cron('*/5 * * * *'),
+    schedule_1.Cron('51 0 * * *'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
