@@ -24,7 +24,7 @@ Khoury Office Hours was developed by [Sandbox](https://www.sandboxnu.com/), Nort
 
 - _[Coming Soon]_ Question grouping
 
-- _[Coming Soon]_ Wait time insights
+- Wait time insights
 
 ## Contribute
 
