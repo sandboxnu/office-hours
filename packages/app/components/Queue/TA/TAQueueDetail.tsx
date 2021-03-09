@@ -5,7 +5,7 @@ import TAQueueDetailButtons from "./TAQueueDetailButtons";
 
 const Container = styled.div``;
 
-const Header = styled.div`
+export const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;

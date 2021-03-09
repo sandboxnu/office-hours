@@ -25,7 +25,7 @@ export default function EmptyGroupList({ onClick }: { onClick: () => void }): Re
       <EmptyGroupListText>
           Add Students
       </EmptyGroupListText>
-      <PlusOutlined style={{paddingRight: "16px;"}}/>
+      <PlusOutlined style={{paddingRight: "16px"}}/>
     </EmptyGroupListContainer>
   );
 }

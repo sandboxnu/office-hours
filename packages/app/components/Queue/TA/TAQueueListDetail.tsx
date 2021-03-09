@@ -8,6 +8,7 @@ import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { SettingsOptions } from "../../Settings/SettingsPage";
 import EmptyGroupList from "./EmptyGroupList";
+import TAGroupDetail from "./TAGroupDetail";
 import { SPLIT_DETAIL_BKPT } from "./TAQueueBreakpoints";
 import TAQueueDetail from "./TAQueueDetail";
 import TAQueueListSection from "./TAQueueListSection";
@@ -73,8 +74,13 @@ export default function TAQueueListDetail({
   const user = useProfile();
   const [selectedQuestionId, setSelectedQuestionId] = useState<number>(null);
   const { questions, questionsError, mutateQuestions } = useQuestions(queueId);
+  const [isGrouping, setIsGrouping] = useState<boolean>(false);
   const isSideBySide = useWindowWidth() >= SPLIT_DETAIL_BKPT;
 
+  const onSelectQuestion = (qId: number) => {
+    setSelectedQuestionId(qId);
+    setIsGrouping(false);
+  }
   const helpingQuestions = questions?.questionsGettingHelp?.filter(
     (q) => q.taHelped.id === user.id
   );
@@ -86,11 +92,11 @@ export default function TAQueueListDetail({
   );
   // set currentQuestion to null if it no longer exists in the queue
   if (selectedQuestionId && !selectedQuestion) {
-    setSelectedQuestionId(null);
+    onSelectQuestion(null);
   }
   // set current question to first helping question if none is selected (used when help next is clicked)
   if (!selectedQuestionId && helpingQuestions.length) {
-    setSelectedQuestionId(helpingQuestions[0].id);
+    onSelectQuestion(helpingQuestions[0].id);
   }
 
   if (!questions) {
@@ -111,9 +117,9 @@ export default function TAQueueListDetail({
     <List>
       <div data-cy="list-helping">
         <TAQueueListSection
-          title={"Currently Helping"}
+          title={'Currently Helping'}
           questions={helpingQuestions}
-          onClickQuestion={setSelectedQuestionId}
+          onClickQuestion={onSelectQuestion}
           selectedQuestionId={selectedQuestionId}
         />
       </div>
@@ -121,10 +127,17 @@ export default function TAQueueListDetail({
         <TAQueueListSection
           title="Group Students"
           questions={[]} // a cheat for now
-          onClickQuestion={setSelectedQuestionId}
+          onClickQuestion={onSelectQuestion}
           selectedQuestionId={selectedQuestionId}
           collapsible
-          emptyDisplay={<EmptyGroupList onClick={()=>{}}/>}
+          emptyDisplay={
+            <EmptyGroupList
+              onClick={() => {
+                setIsGrouping(true);
+                setSelectedQuestionId(null);
+              }}
+            />
+          }
         />
       </div>
       <div data-cy="list-priority">
@@ -138,7 +151,7 @@ export default function TAQueueListDetail({
             </span>
           }
           questions={questions.priorityQueue}
-          onClickQuestion={setSelectedQuestionId}
+          onClickQuestion={onSelectQuestion}
           selectedQuestionId={selectedQuestionId}
           collapsible
         />
@@ -147,7 +160,7 @@ export default function TAQueueListDetail({
         <TAQueueListSection
           title="Waiting In Line"
           questions={questions.queue}
-          onClickQuestion={setSelectedQuestionId}
+          onClickQuestion={onSelectQuestion}
           selectedQuestionId={selectedQuestionId}
           collapsible
           showNumbers
@@ -157,9 +170,8 @@ export default function TAQueueListDetail({
   );
   const detail = (
     <Detail>
-      {selectedQuestion && (
-        <TAQueueDetail queueId={queueId} question={selectedQuestion} />
-      )}
+      {selectedQuestion && <TAQueueDetail queueId={queueId} question={selectedQuestion} />}
+      {isGrouping && <TAGroupDetail queueId={queueId} groupCreator={user} allQuestions={[...questions.queue, ...questions.priorityQueue]}/>}
     </Detail>
   );
 
@@ -173,7 +185,7 @@ export default function TAQueueListDetail({
   } else if (selectedQuestionId) {
     return (
       <Container>
-        <BackToQueue onClick={() => setSelectedQuestionId(null)}>
+        <BackToQueue onClick={() => onSelectQuestion(null)}>
           <span>
             <ArrowLeftOutlined />
             {" Back To Queue"}
