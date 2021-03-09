@@ -18,8 +18,6 @@ If you have any questions, feel free to reach out to a member of the team. If yo
 
 - [nestjs](https://nestjs.com/) runs our backend http api. It gives us controllers and services and helps neaten the code
 
-- [Socket.io](https://socket.io/docs/) manages websocket communication on server and client
-
 - [Typescript](https://www.typescriptlang.org/docs/home.html) lets us write maintainable, scalable Javascript
 
 - [Postgresql](https://www.postgresql.org/docs/11/index.html) is a very reliable and popular SQL database that is great for 99% of applications
