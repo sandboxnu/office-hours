@@ -10,7 +10,12 @@ import {
   UserFactory,
 } from '../../test/util/factories';
 import { INSIGHTS_MAP } from './insight-objects';
-import { BarChartOutputType, PossibleOutputTypes, QuestionType, SimpleTableOutputType } from '@koh/common';
+import {
+  BarChartOutputType,
+  PossibleOutputTypes,
+  QuestionType,
+  SimpleTableOutputType,
+} from '@koh/common';
 import { UserModel } from 'profile/user.entity';
 
 describe('InsightsService', () => {
