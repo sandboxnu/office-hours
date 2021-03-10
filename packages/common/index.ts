@@ -587,10 +587,8 @@ export interface InsightObject {
   description: string;
   roles: Role[];
   component: InsightDisplay;
-  size: 'default' | 'small';
-  compute: (
-    insightFilters: any,
-  ) => Promise<PossibleOutputTypes>;
+  size: "default" | "small";
+  compute: (insightFilters: any) => Promise<PossibleOutputTypes>;
 }
 
 export enum InsightDisplay {

@@ -5,16 +5,19 @@ import { Insight, InsightObject, ListInsightsResponse } from '@koh/common';
 import { UserModel } from 'profile/user.entity';
 
 type GenerateOutputParams = {
-  insight: InsightObject,
-  filters: Filter[]
-}
+  insight: InsightObject;
+  filters: Filter[];
+};
 
 @Injectable()
 export class InsightsService {
   constructor(private connection: Connection) {}
 
   // Compute the output data for an insight and add it to the insight response
-  async computeOutput({ insight, filters }: GenerateOutputParams): Promise<Insight> {
+  async computeOutput({
+    insight,
+    filters,
+  }: GenerateOutputParams): Promise<Insight> {
     const output = await insight.compute(filters);
     return { output, ...insight };
   }
