@@ -14,7 +14,7 @@ export class InsightsService {
   constructor(private connection: Connection) {}
 
   // Compute the output data for an insight and add it to the insight response
-  async computeOutput({ insight, filters }: GenerateOutputParams): Promise<any> {
+  async computeOutput({ insight, filters }: GenerateOutputParams): Promise<Insight> {
     const output = await insight.compute(filters);
     return { output, ...insight };
   }
