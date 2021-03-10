@@ -574,13 +574,23 @@ export type InsightPartial = {
 };
 
 export class Insight {
-  name!: string;
   displayName!: string;
   description!: string;
+  roles!: Role[];
   component!: InsightDisplay;
-  output!: PossibleOutputTypes;
   size!: string;
-  style?: Record<string, any>;
+  output!: PossibleOutputTypes;
+}
+
+export interface InsightObject {
+  displayName: string;
+  description: string;
+  roles: Role[];
+  component: InsightDisplay;
+  size: 'default' | 'small';
+  compute: (
+    insightFilters: any,
+  ) => Promise<PossibleOutputTypes>;
 }
 
 export enum InsightDisplay {

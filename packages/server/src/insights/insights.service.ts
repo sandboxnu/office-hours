@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { Filter, InsightInterface, INSIGHTS_MAP } from './insight-objects';
-import { ListInsightsResponse } from '@koh/common';
+import { Filter, INSIGHTS_MAP } from './insight-objects';
+import { Insight, InsightObject, ListInsightsResponse } from '@koh/common';
 import { UserModel } from 'profile/user.entity';
 
 type GenerateOutputParams = {
-  insight: InsightInterface,
+  insight: InsightObject,
   filters: Filter[]
 }
 

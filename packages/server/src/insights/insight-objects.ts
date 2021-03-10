@@ -1,7 +1,7 @@
 import {
   BarChartOutputType,
   InsightDisplay,
-  PossibleOutputTypes,
+  InsightObject,
   QuestionType,
   Role,
   SimpleDisplayOutputType,
@@ -11,18 +11,6 @@ import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
 import { QuestionModel } from 'question/question.entity';
 import { createQueryBuilder, SelectQueryBuilder } from 'typeorm';
-
-export interface InsightInterface {
-  displayName: string;
-  description: string;
-  roles: Role[];
-  component: InsightDisplay;
-  size: 'default' | 'small';
-  compute: (
-    insightFilters: any,
-  ) => Promise<PossibleOutputTypes>;
-  output?: Promise<PossibleOutputTypes>;
-}
 
 export type Filter = {
   type: string;
@@ -80,7 +68,7 @@ const APPLY_FILTER_MAP = {
   },
 };
 
-export const TotalStudents: InsightInterface = {
+export const TotalStudents: InsightObject = {
   displayName: 'Total Students',
   description: 'Gets the total number of students',
   roles: [Role.PROFESSOR],
@@ -96,7 +84,7 @@ export const TotalStudents: InsightInterface = {
   }
 }
 
-export const TotalQuestionsAsked: InsightInterface = {
+export const TotalQuestionsAsked: InsightObject = {
   displayName: 'Total Questions',
   description: 'Gets the total number questions asked',
   roles: [Role.PROFESSOR],
@@ -112,7 +100,7 @@ export const TotalQuestionsAsked: InsightInterface = {
   }
 }
 
-export const MostActiveStudents: InsightInterface = {
+export const MostActiveStudents: InsightObject = {
   displayName: 'Most Active Students',
   description: 'Returns a table of the students who have asked the most questions in Office Hours',
   roles: [Role.PROFESSOR],
@@ -161,7 +149,7 @@ export const MostActiveStudents: InsightInterface = {
   }
 }
 
-export const QuestionTypeBreakdown: InsightInterface = {
+export const QuestionTypeBreakdown: InsightObject = {
   displayName: 'Question Type Breakdown',
   description: 'Returns a table of each question type and how many questions of that type were asked',
   roles: [Role.PROFESSOR],
@@ -206,7 +194,7 @@ export const QuestionTypeBreakdown: InsightInterface = {
   }
 }
 
-export const AverageWaitTime: InsightInterface = {
+export const AverageWaitTime: InsightObject = {
   displayName: 'Avg Wait Time',
   description: 'Gets the average wait time',
   roles: [Role.PROFESSOR],
@@ -228,7 +216,7 @@ export const AverageWaitTime: InsightInterface = {
   }
 }
 
-export const AverageHelpingTime: InsightInterface = {
+export const AverageHelpingTime: InsightObject = {
   displayName: 'Avg Helping Time',
   description: 'Gets the average helping time',
   roles: [Role.PROFESSOR],
@@ -253,7 +241,7 @@ export const AverageHelpingTime: InsightInterface = {
   }
 }
 
-export const QuestionToStudentRatio: InsightInterface = {
+export const QuestionToStudentRatio: InsightObject = {
   displayName: 'Questions per Student',
   description: 'How many questions were asked per student on average?',
   roles: [Role.PROFESSOR],
