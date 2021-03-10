@@ -201,7 +201,7 @@ function RenderInsight({
         </Space>
       }
     >
-      <InsightComponent key={insight.name} {...insight} />
+      <InsightComponent key={insightName} {...insight} />
     </Card>
   );
 }

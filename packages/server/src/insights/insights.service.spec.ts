@@ -10,7 +10,7 @@ import {
   UserFactory,
 } from '../../test/util/factories';
 import { INSIGHTS_MAP } from './insight-objects';
-import { QuestionType } from '@koh/common';
+import { BarChartOutputType, PossibleOutputTypes, QuestionType, SimpleTableOutputType } from '@koh/common';
 import { UserModel } from 'profile/user.entity';
 
 describe('InsightsService', () => {
@@ -180,7 +180,9 @@ describe('InsightsService', () => {
       ],
     });
 
-    expect(res.output.data).toEqual([
+    const output = res.output as BarChartOutputType;
+
+    expect(output.data).toEqual([
       { questionType: 'Bug', totalQuestions: '8' },
       { questionType: 'Clarification', totalQuestions: '20' },
       { questionType: 'Concept', totalQuestions: 0 },
@@ -239,7 +241,9 @@ describe('InsightsService', () => {
       ],
     });
 
-    expect(res.output.dataSource).toEqual([
+    const output = res.output as SimpleTableOutputType;
+
+    expect(output.dataSource).toEqual([
       {
         studentId: 4,
         name: 'Jean Valjean',
