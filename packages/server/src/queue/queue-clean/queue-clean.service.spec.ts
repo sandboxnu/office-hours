@@ -183,8 +183,14 @@ describe('QueueService', () => {
     it('correctly cleans queues from current course sections', async () => {
       const cleanQueueSpy = jest.spyOn(service, 'cleanQueue');
 
-      const queue1 = await QueueFactory.create({ notes: 'clean me', officeHours: [] });
-      const queue2 = await QueueFactory.create({ notes: 'I could also use a clean', officeHours: [] });
+      const queue1 = await QueueFactory.create({
+        notes: 'clean me',
+        officeHours: [],
+      });
+      const queue2 = await QueueFactory.create({
+        notes: 'I could also use a clean',
+        officeHours: [],
+      });
       const course = await CourseFactory.create({ queues: [queue1, queue2] });
       await CourseSectionFactory.create({ course });
 
@@ -201,7 +207,7 @@ describe('QueueService', () => {
     it('does not clean queues that are not related to current course section', async () => {
       const cleanQueueSpy = jest.spyOn(service, 'cleanQueue');
 
-      await QueueFactory.create({ notes: 'clean me'});
+      await QueueFactory.create({ notes: 'clean me' });
 
       await service.cleanAllQueues();
       expect(cleanQueueSpy).toHaveBeenCalledTimes(0);

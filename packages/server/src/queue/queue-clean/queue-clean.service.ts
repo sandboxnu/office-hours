@@ -25,12 +25,17 @@ export class QueueCleanService {
     const activeCourseSections = await CourseSectionMappingModel.getRepository()
       .createQueryBuilder('course_section')
       .leftJoinAndSelect('course_section.course', 'course')
-      .leftJoinAndSelect('course.queues', 'queues').getMany();
+      .leftJoinAndSelect('course.queues', 'queues')
+      .getMany();
 
-    const uniqueActiveCourses = new Set(activeCourseSections.map(section => section.course));
+    const uniqueActiveCourses = new Set(
+      activeCourseSections.map((section) => section.course),
+    );
 
     const uniqueQueuesToBeCleaned = [];
-    uniqueActiveCourses.forEach(course => uniqueQueuesToBeCleaned.push(...course.queues))
+    uniqueActiveCourses.forEach((course) =>
+      uniqueQueuesToBeCleaned.push(...course.queues),
+    );
 
     await Promise.all(
       uniqueQueuesToBeCleaned.map((queue) => this.cleanQueue(queue.id)),
