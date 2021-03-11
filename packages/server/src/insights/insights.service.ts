@@ -4,7 +4,7 @@ import { Filter, INSIGHTS_MAP } from './insight-objects';
 import { Insight, InsightObject, ListInsightsResponse } from '@koh/common';
 import { UserModel } from 'profile/user.entity';
 
-type GenerateOutputParams = {
+type ComputeOutputParams = {
   insight: InsightObject;
   filters: Filter[];
 };
@@ -22,7 +22,7 @@ export class InsightsService {
   async computeOutput({
     insight,
     filters,
-  }: GenerateOutputParams): Promise<Insight> {
+  }: ComputeOutputParams): Promise<Insight> {
     const output = await insight.compute(filters);
     return { output, ...insight };
   }
