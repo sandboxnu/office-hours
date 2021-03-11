@@ -22,9 +22,9 @@ Khoury Office Hours was developed by [Sandbox](https://www.sandboxnu.com/), Nort
 
 - Web and [Twilio](https://www.twilio.com/) SMS notifications
 
-- _[Coming Soon]_ Question grouping
+- Wait time insights
 
-- _[Coming Soon]_ Wait time insights
+- _[Coming Soon]_ Question grouping
 
 ## Contribute
 

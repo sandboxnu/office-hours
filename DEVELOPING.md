@@ -2,19 +2,21 @@
 
 1. [Get Docker](https://docs.docker.com/get-docker/) so we can automatically run and setup Postgres
 2. Make sure you have [node](https://nodejs.org/en/download/), [yarn](https://classic.yarnpkg.com/en/docs/install), and [psql](https://blog.timescale.com/tutorials/how-to-install-psql-on-mac-ubuntu-debian-windows/) installed. `yarn -v` should be `1.x.x`. Do not get Yarn 2.
+   Node should also be version 14.x.x. If it's not, install [nvm](https://github.com/nvm-sh/nvm)
 3. Run `yarn install` in this directory to get dependencies
 4. Run `yarn dev:db:up` to start the database via docker. `yarn dev:db:down` will stop it.
 5. Run `psql -U postgres -h localhost` to connect to your postgres instance, and run `CREATE database dev;` to initialize your database.
 6. Start the app in development with `yarn dev`
 7. Visit the app at http://localhost:3000
 
+If you have any questions, feel free to reach out to a member of the team. If you think this document can be improved, make a PR!
+
 ## Technologies
 
-- [Next.js](https://nextjs.org/docs/getting-started) lets us do server-side and client-side React rendering, as well as write backend API endpoints. It also gives us developer ergonomics like hot reload in dev.
+- [Next.js](https://nextjs.org/docs/getting-started) lets us do server-side and client-side React rendering, as well as write backend API endpoints (we don't use this for KOH).
+  It also gives us developer ergonomics like hot reload in dev.
 
 - [nestjs](https://nestjs.com/) runs our backend http api. It gives us controllers and services and helps neaten the code
-
-- [Socket.io](https://socket.io/docs/) manages websocket communication on server and client
 
 - [Typescript](https://www.typescriptlang.org/docs/home.html) lets us write maintainable, scalable Javascript
 
@@ -22,19 +24,23 @@
 
 - [TypeORM](https://typeorm.io/) lets us query Postgres easily and with Typescript validating our schema.
 
-- [Docker](https://www.docker.com/products/docker-desktop) sets up a consistent Postgres environment on all developer's machines
+- [Docker](https://www.docker.com/products/docker-desktop) sets up a consistent Postgres + Redis environment on all developer's machines
+
+- [Redis](https://redis.io/) is used to enable 0 downtime deploy
+
+- [Cypress](https://www.cypress.io/) is used for frontend E2E tests
 
 ## File Structure
 
 Source code is in the `packages` folder.
 
-`app` is a the next.js app. Routing is done using the file system. For example, the page `/app/pages/xyz.tsx` would be served at `domain.com/xyz`. Pages are rendered server-side and hydrated client side. Data fetching can happen on the server or client. [Learn more](https://nextjs.org/docs/basic-features/data-fetching)
+`app` is a the next.js app (frontend). Routing is done using the file system. For example, the page `/app/pages/xyz.tsx` would be served at `domain.com/xyz`. Pages are rendered server-side and hydrated client side. Data fetching can happen on the server or client. [Learn more](https://nextjs.org/docs/basic-features/data-fetching)
 
-`server` is the server that runs the REST API and websockets. Each API resource gets a router file inside `/server/api`.
+`server` is the server (backend) that runs the REST API and websockets. Each API route is controlled by a module, with a controller and its modules. [Learn more](https://nestjs.com/)
 
-`api-client` is a library to wrap network calls to the api in a neater, **type-safe** interface.
+`api-client` is a library to wrap network calls to the api in a neater, **type-safe** interface. Every backend route should be accessible through `api-client`
 
-`common` is where common code and types go. It is imported into the other three packages.
+`common` is where common code, globals, and types go. It is imported into the other three packages.
 
 The `infrastructure` folder is for docker and other deployment files. You can mostly ignore it.
 
@@ -51,24 +57,28 @@ If you change an entity, you MUST run `yarn migration:generate`, to make the mig
 ### Adding an API Route
 
 1. Add its request body and response types in `common`
-2. Add routes to the hapi server in `server` (using the `common` types)
+2. Add routes to the NestJS server in `server` (using the `common` types) (to do this, read the NestJS docs, or refer to the wiki written in the future :P )
 3. Add client functions in `api-client` calling the endpoint (using the `common` types)
 
 ### Adding to the frontend app
 
 Every component in `pages` is served publicly. See https://nextjs.org/docs/routing/introduction. Break pages down into components and add to `components` folder.
+Each page should have the `Navbar` up top -- refer to other pages for each page. Consistency, consistency, consistency.
 
 ### Testing
 
 Integration and unit test files should be colocated with the file they test. One exception is app page tests (page folder is public, so tests can't go in there)
 
 End to end (E2E) testing is in it's own folder and done with Cypress. These should be used to test core user flows.
+To run them headlessly (without a graphics server), do `yarn cypress run`.
+To watch them actually run interactively, you can use `yarn cypress open`. Be aware that this is _super slow_ on local machines.
 
 If your tests are failing with a message about "deadlock something whatever", do `yarn test --run-in-band`. This makes the tests run sequentially.
 
 ### Installing new packages
 
-Install packages from `cd` into the project you , then run `yarn add <PACKAGE>`
+Install packages from `cd` into the project you want to install the package for, then run `yarn add <PACKAGE>`. For instance, if you want to install a frontend
+package, `cd packages/app` and then `yarn add <FRONTEND PACKAGE>`
 
 ## Style
 
@@ -76,8 +86,9 @@ Install packages from `cd` into the project you , then run `yarn add <PACKAGE>`
 
 # Production
 
-If you have prod ssh access, deploy master to prod with `yarn deploy production`.
+If you have prod ssh access, deploy master to prod with `./deploy.sh <prod username>`.
 
 On the VM, source code is at `/var/www/source`. From there you can run `yarn cli` commands etc. Make an admin account with `yarn cli create:admin <name>` and give a password. Please auto-generate a random password.
 
 If you need to hotfix something, you can edit the files on prod and run `yarn build && yarn prod:start` to build and restart the server. Try to avoid doing this.
+You can also push something to master, and then use the deploy script. Note that it'll still take about 5 minutes for the changes to propogate to the dist folder
