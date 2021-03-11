@@ -11,6 +11,7 @@ import { Connection, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { QuestionModel } from '../../question/question.entity';
 import { QueueModel } from '../queue.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
+import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 
 /**
  * Clean the queue and mark stale
@@ -20,17 +21,19 @@ export class QueueCleanService {
   constructor(private connection: Connection) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  private async cleanAllQueues(): Promise<void> {
-    const queuesWithOpenQuestions: QueueModel[] = await QueueModel.getRepository()
-      .createQueryBuilder('queue')
-      .leftJoinAndSelect('queue_model.questions', 'question')
-      .where('question.status IN (:...status)', {
-        status: Object.values(OpenQuestionStatus),
-      })
-      .getMany();
+  async cleanAllQueues(): Promise<void> {
+    const activeCourseSections = await CourseSectionMappingModel.getRepository()
+      .createQueryBuilder('course_section')
+      .leftJoinAndSelect('course_section.course', 'course')
+      .leftJoinAndSelect('course.queues', 'queues').getMany();
+
+    const uniqueActiveCourses = new Set(activeCourseSections.map(section => section.course));
+
+    const uniqueQueuesToBeCleaned = [];
+    uniqueActiveCourses.forEach(course => uniqueQueuesToBeCleaned.push(...course.queues))
 
     await Promise.all(
-      queuesWithOpenQuestions.map((queue) => this.cleanQueue(queue.id)),
+      uniqueQueuesToBeCleaned.map((queue) => this.cleanQueue(queue.id)),
     );
   }
 

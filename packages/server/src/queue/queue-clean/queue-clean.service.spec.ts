@@ -1,13 +1,13 @@
 import { OpenQuestionStatus, LimboQuestionStatus } from '@koh/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseModel } from 'course/course.entity';
-import { OfficeHourModel } from 'course/office-hour.entity';
 import moment = require('moment');
 import { EventModel } from 'profile/event-model.entity';
 import { QueueModel } from 'queue/queue.entity';
 import { Connection } from 'typeorm';
 import {
   ClosedOfficeHourFactory,
+  CourseFactory,
+  CourseSectionFactory,
   OfficeHourFactory,
   QuestionFactory,
   QueueFactory,
@@ -36,6 +36,7 @@ describe('QueueService', () => {
 
   beforeEach(async () => {
     await conn.synchronize(true);
+    jest.resetAllMocks();
   });
 
   describe('shouldCleanQueue', () => {
@@ -176,6 +177,34 @@ describe('QueueService', () => {
       await service.cleanQueue(queue.id);
       await queue.reload();
       expect(queue.notes).toBe('');
+    });
+  });
+  describe('cleanAllQueues', () => {
+    it('correctly cleans queues from current course sections', async () => {
+      const cleanQueueSpy = jest.spyOn(service, 'cleanQueue');
+
+      const queue1 = await QueueFactory.create({ notes: 'clean me', officeHours: [] });
+      const queue2 = await QueueFactory.create({ notes: 'I could also use a clean', officeHours: [] });
+      const course = await CourseFactory.create({ queues: [queue1, queue2] });
+      await CourseSectionFactory.create({ course });
+
+      await service.cleanAllQueues();
+
+      await queue1.reload();
+      await queue2.reload();
+      expect(queue1.notes).toEqual('');
+      expect(queue2.notes).toEqual('');
+
+      expect(cleanQueueSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not clean queues that are not related to current course section', async () => {
+      const cleanQueueSpy = jest.spyOn(service, 'cleanQueue');
+
+      await QueueFactory.create({ notes: 'clean me'});
+
+      await service.cleanAllQueues();
+      expect(cleanQueueSpy).toHaveBeenCalledTimes(0);
     });
   });
 });
