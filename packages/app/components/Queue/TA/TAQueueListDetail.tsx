@@ -110,7 +110,7 @@ export default function TAQueueListDetail({ queueId, courseId }: { queueId: numb
       <div data-cy="list-group">
         <TAQueueListSection
           title="Group Students"
-          questions={questions.queue} // TODO: q's in the group - a cheat for now
+          questions={[]} // TODO: q's in the group - a cheat for now
           onClickQuestion={() => {
             setIsGrouping(true);
             setSelectedQuestionId(null);

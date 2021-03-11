@@ -13,12 +13,17 @@ export default function TAGroupDetail({
   allQuestions: Question[];
   queueId: number;
 }): ReactElement {
-  const [isCalling, setIsCalling] = useState<boolean>(true);
+  const [isCalling, setIsCalling] = useState<boolean>(false);
   // TODO: possibly get rid of isCalling and just pass in groupedQuestions > check if there are any q's
 
-  return isCalling ? ( 
+  return isCalling ? (
     <CurrentGroupList questions={allQuestions} groupCreator={groupCreator} queueId={queueId} />
   ) : (
-    <AllQuestionsCheckList allQuestions={allQuestions} groupCreator={groupCreator} queueId={queueId} />
+    <AllQuestionsCheckList
+      allQuestions={allQuestions}
+      groupCreator={groupCreator}
+      queueId={queueId}
+      onStartCall={() => setIsCalling(true)}
+    />
   );
 }

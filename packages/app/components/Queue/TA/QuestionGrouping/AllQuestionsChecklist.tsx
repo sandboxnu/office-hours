@@ -1,11 +1,12 @@
 import { User, Question } from '@koh/common';
-import { Checkbox } from 'antd';
+import { Checkbox, Tooltip } from 'antd';
+import { PhoneOutlined } from '@ant-design/icons';
 import React, { ReactElement, useState } from 'react';
 import styled from 'styled-components';
 import { Header } from '../TAQueueDetail';
 import TAQueueListItem from '../TAQueueListItem';
-import {GroupCreationButton} from './TAGroupDetailButtons';
-
+import { useTAInQueueInfo } from '../../../../hooks/useTAInQueueInfo';
+import { BannerPrimaryButton } from '../../Banner';
 
 export const Description = styled.div`
   font-size: 12px;
@@ -16,7 +17,6 @@ const QuestionsList = styled.div`
   display: flex;
   flex-direction: column;
 `;
-
 const QuestionCheckbox = styled.div`
   display: flex;
   align-items: center;
@@ -27,12 +27,24 @@ export default function AllQuestionsCheckList({
   groupCreator,
   allQuestions,
   queueId,
+  onStartCall,
 }: {
   groupCreator: User;
   allQuestions: Question[];
   queueId: number;
+  onStartCall: () => void;
 }): ReactElement {
   const [checkedQuestions, setCheckedQuestions] = useState<Set<number>>(new Set());
+  const { isCheckedIn, isHelping } = useTAInQueueInfo(queueId);
+  const [canHelp, helpTooltip] = ((): [boolean, string] => {
+    if (!isCheckedIn) {
+      return [false, 'You must check in to help students!'];
+    } else if (isHelping) {
+      return [false, 'You are already helping a student'];
+    } else {
+      return [true, 'Create Group & Call'];
+    }
+  })();
 
   const onQuestionChecked = (q) => {
     if (!checkedQuestions.has(q.id)) {
@@ -51,7 +63,19 @@ export default function AllQuestionsCheckList({
           <Description>Select Students to Create Group</Description>
         </div>
         <div>
-          <GroupCreationButton queueId={queueId} />
+          <Tooltip title={helpTooltip}>
+            <span>
+              <BannerPrimaryButton
+                icon={<PhoneOutlined />}
+                onClick={() => {
+                  onStartCall();
+                  // TODO: call the student, create group on backend
+                }}
+                disabled={!canHelp || checkedQuestions.size === 0}
+                data-cy="help-student"
+              />
+            </span>
+          </Tooltip>
         </div>
       </Header>
       {/*TODO: think abt the UX for this more
