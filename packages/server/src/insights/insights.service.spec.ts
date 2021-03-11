@@ -297,9 +297,13 @@ describe('InsightsService', () => {
         ],
       });
 
-      const totalStudentsInsight = res.find(insight => insight.displayName === 'Total Students');
+      const totalStudentsInsight = res.find(
+        (insight) => insight.displayName === 'Total Students',
+      );
       expect(totalStudentsInsight.output).toEqual(4);
-      const totalQuestionsAskedInsight = res.find(insight => insight.displayName === 'Total Questions');
+      const totalQuestionsAskedInsight = res.find(
+        (insight) => insight.displayName === 'Total Questions',
+      );
       expect(totalQuestionsAskedInsight.output).toEqual(18);
     });
   });

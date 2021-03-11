@@ -27,9 +27,14 @@ export class InsightsService {
     return { output, ...insight };
   }
 
-  async generateAllInsights({ insights, filters }: GenerateAllInsightParams): Promise<any> {
+  async generateAllInsights({
+    insights,
+    filters,
+  }: GenerateAllInsightParams): Promise<any> {
     return await Promise.all(
-      insights.map(async (insight) => await this.computeOutput({ insight, filters }))
+      insights.map(
+        async (insight) => await this.computeOutput({ insight, filters }),
+      ),
     );
   }
 
