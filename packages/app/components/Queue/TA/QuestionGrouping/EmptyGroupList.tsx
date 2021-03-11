@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-import { Container } from './TAQueueListItem';
+import { Container } from '../TAQueueListItem';
 
 const EmptyGroupListContainer = styled(Container)`
   display: flex;

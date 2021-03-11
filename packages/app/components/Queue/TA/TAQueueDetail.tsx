@@ -18,7 +18,7 @@ const Email = styled.div`
   color: #8895a6;
 `;
 
-const QuestionTextBox = styled.div`
+export const QuestionTextBox = styled.div`
   margin: 12px;
   padding: 16px;
   background: #ecf0f3;
@@ -28,14 +28,14 @@ const QuestionText = styled.div`
   color: #595959;
   margin-bottom: 20px;
 `;
-const QuestionTypePill = styled.span`
+export const QuestionTypePill = styled.span`
   color: #264359;
   background: #abd4f3;
   padding: 3px 8px;
   border-radius: 4px;
 `;
 
-const StillDrafting = styled.div`
+export const StillDrafting = styled.div`
   margin: 12px 30px;
   text-align: center;
   font-size: 16px;
