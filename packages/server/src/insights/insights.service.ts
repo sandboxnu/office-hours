@@ -9,6 +9,11 @@ type GenerateOutputParams = {
   filters: Filter[];
 };
 
+type GenerateAllInsightParams = {
+  insights: InsightObject[];
+  filters: Filter[];
+};
+
 @Injectable()
 export class InsightsService {
   constructor(private connection: Connection) {}
@@ -20,6 +25,12 @@ export class InsightsService {
   }: GenerateOutputParams): Promise<Insight> {
     const output = await insight.compute(filters);
     return { output, ...insight };
+  }
+
+  async generateAllInsights({ insights, filters }: GenerateAllInsightParams): Promise<any> {
+    return await Promise.all(
+      insights.map(async (insight) => await this.computeOutput({ insight, filters }))
+    );
   }
 
   convertToInsightsListResponse(insightNames: string[]): ListInsightsResponse {
