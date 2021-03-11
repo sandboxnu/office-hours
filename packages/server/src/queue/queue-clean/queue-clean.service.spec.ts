@@ -1,7 +1,5 @@
 import { OpenQuestionStatus, LimboQuestionStatus } from '@koh/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseModel } from 'course/course.entity';
-import { OfficeHourModel } from 'course/office-hour.entity';
 import moment = require('moment');
 import { EventModel } from 'profile/event-model.entity';
 import { QueueModel } from 'queue/queue.entity';

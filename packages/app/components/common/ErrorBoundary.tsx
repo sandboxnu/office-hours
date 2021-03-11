@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { Result } from "antd";
 import React, { ReactNode } from "react";
 import * as Sentry from "@sentry/node";

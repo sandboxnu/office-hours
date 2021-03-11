@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   BaseEntity,
   Column,
   Entity,
   JoinColumn,
-  PrimaryGeneratedColumn,
   OneToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserModel } from '../profile/user.entity';
 

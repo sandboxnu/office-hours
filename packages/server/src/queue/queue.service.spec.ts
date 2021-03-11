@@ -1,21 +1,15 @@
-import {
-  ListQuestionsResponse,
-  Question,
-  QuestionStatusKeys,
-  Role,
-} from '@koh/common';
-import { TestingModule, Test } from '@nestjs/testing';
+import { ListQuestionsResponse, QuestionStatusKeys, Role } from '@koh/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { mapValues, zip } from 'lodash';
 import { QuestionModel } from 'question/question.entity';
 import { Connection } from 'typeorm';
 import {
   QuestionFactory,
   QueueFactory,
-  StudentCourseFactory,
-  TACourseFactory,
   UserFactory,
 } from '../../test/util/factories';
-import { TestTypeOrmModule, TestConfigModule } from '../../test/util/testUtils';
+import { TestConfigModule, TestTypeOrmModule } from '../../test/util/testUtils';
+import { QueueModel } from './queue.entity';
 import { QueueService } from './queue.service';
 
 describe('QueueService', () => {
@@ -42,7 +36,9 @@ describe('QueueService', () => {
   });
 
   // create 1 question for each status that exists, and put them all in a queue
-  async function createQuestionsEveryStatus(queue): Promise<QuestionModel[]> {
+  async function createQuestionsEveryStatus(
+    queue: QueueModel,
+  ): Promise<QuestionModel[]> {
     const allStatuses = Object.values(QuestionStatusKeys);
     const questions = await QuestionFactory.createList(allStatuses.length, {
       queue,

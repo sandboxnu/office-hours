@@ -1,11 +1,12 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  BaseEntity,
-  OneToMany,
-} from 'typeorm';
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Season } from '@koh/common';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { CourseModel } from './course.entity';
 
 @Entity('semester_model')

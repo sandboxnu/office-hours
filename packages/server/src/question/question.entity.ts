@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { QuestionStatus, QuestionType, Role, StatusInQueue } from '@koh/common';
 import { Exclude } from 'class-transformer';
 import {

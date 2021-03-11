@@ -24,7 +24,7 @@ const DeviceAddHeader = styled.div`
 `;
 
 export default function NotificationsSettings(): ReactElement {
-  const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
+  const { data: profile, mutate } = useSWR(`api/v1/profile`, async () =>
     API.profile.index()
   );
 

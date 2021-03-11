@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Exclude } from 'class-transformer';
 import {
   AfterLoad,
@@ -63,7 +64,7 @@ export class UserModel extends BaseEntity {
   name: string;
 
   @AfterLoad()
-  setFullNames() {
+  setFullNames(): void {
     this.name = this.firstName + ' ' + this.lastName;
   }
 }

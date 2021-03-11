@@ -1,15 +1,15 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  BaseEntity,
-  ManyToOne,
-  JoinColumn,
-  OneToMany,
-} from 'typeorm';
-import { CourseModel } from './course.entity';
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Exclude, Expose } from 'class-transformer';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { QueueModel } from '../queue/queue.entity';
+import { CourseModel } from './course.entity';
 
 @Entity('office_hour')
 export class OfficeHourModel extends BaseEntity {
