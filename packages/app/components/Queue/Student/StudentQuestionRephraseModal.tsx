@@ -11,10 +11,12 @@ import { RephraseQuestionPayload } from "@koh/common";
 type StudentQuestionRephraseModalProps = {
   courseId: number;
   payload: RephraseQuestionPayload;
+  handelClose: (number) => void;
 };
 export default function StudentQuestionRephraseModal({
   courseId,
   payload,
+  handelClose,
 }: StudentQuestionRephraseModalProps): ReactElement {
   const { course } = useCourse(courseId);
   const queues = course?.queues;
@@ -38,7 +40,7 @@ export default function StudentQuestionRephraseModal({
           Edit Question
         </Button>,
       ]}
-      closable={true}
+      onCancel={handelClose}
     >
       You have been requested to add more detail to your question by a member of
       the course staff. While you elaborate on your question your place in line

@@ -13,6 +13,10 @@ export default function AlertsContainer({ courseId }: AlertsContainerProps) {
   });
   const alerts = data.alerts;
 
+  const handleClose = async (alertId) => {
+    await API.alerts.close(alertId);
+  };
+
   alerts.map((alert) => {
     switch (alert.alertType) {
       case AlertType.REPHRASE_QUESTION:
@@ -20,6 +24,9 @@ export default function AlertsContainer({ courseId }: AlertsContainerProps) {
           <StudentQuestionRephraseModal
             courseId={courseId}
             payload={alert.payload as RephraseQuestionPayload}
+            handelClose={async (alertId) => {
+              await API.alerts.close(alertId);
+            }}
           />
         );
     }
