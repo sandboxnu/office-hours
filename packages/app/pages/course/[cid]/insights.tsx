@@ -12,7 +12,7 @@ import {
   Row,
 } from "antd";
 import { CardSize } from "antd/lib/card";
-import { InfoCircleOutlined } from "@ant-design/icons";
+import { InfoCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
 import { DateRangeType, InsightDisplay } from "@koh/common";
@@ -73,11 +73,12 @@ export default function Insights(): ReactElement {
         <NavBar courseId={Number(cid)} />
         <Row align={"middle"} justify={"space-between"} style={{margin: "12px 0px"}}>
           <h1 style={{display: "inline", margin: "0px"}}>Insights Dashboard</h1>
-          {/* <div style={{ margin: "2px", fontSize: "24px" }}>Insights Dashboard</div> */}
-
         <Row>
         <div style={{ maxWidth: "200 px"}}>
-          <b style={{ display: "inline-block", marginRight: "12px" }}>
+          <Tooltip title={"If no date range is selected results are from the data for the full semester so far"}>
+            <QuestionCircleOutlined />
+          </Tooltip>
+          <b style={{ display: "inline-block", marginRight: "12px", marginLeft: "8px" }}>
             Date Range
           </b>
           <RangePicker
@@ -109,7 +110,6 @@ export default function Insights(): ReactElement {
             toggleInsightOff={toggleInsightOff}
           />
         </Drawer>
-
         <InsightsRowContainer>
           {smallInsights?.map((insightName: string) => {
             return (
@@ -188,7 +188,7 @@ function RenderInsight({
       }}
       extra={
         <Space>
-          <Tooltip placement="topRight" title={insight.description}>
+          <Tooltip title={insight.description}>
             <InfoCircleOutlined />
           </Tooltip>
         </Space>
