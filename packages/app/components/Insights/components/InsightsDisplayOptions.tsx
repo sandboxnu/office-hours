@@ -23,9 +23,8 @@ export default function InsightsDisplayOptions({
   toggleInsightOff,
 }: InsightsDisplayOptionsProps): ReactElement {
   const profile = useProfile();
-  const { data: insightsList } = useSWR(
-    `api/v1/insights`,
-    async () => API.insights.list()
+  const { data: insightsList } = useSWR(`api/v1/insights`, async () =>
+    API.insights.list()
   );
 
   return (
@@ -33,22 +32,22 @@ export default function InsightsDisplayOptions({
       <div>
         {insightsList &&
           Object.entries(insightsList)?.map(([insightName, insightPartial]) => (
-            <div  key={insightName}>
-            <Row>
-              <div>{insightPartial.displayName}</div>
-              <Switch
-                checked={profile?.insights?.includes(insightName)}
-                onChange={(checked) => {
-                  if (checked) {
-                    toggleInsightOn(insightName);
-                  } else {
-                    toggleInsightOff(insightName);
-                  }
-                }}
-              />
+            <div key={insightName}>
+              <Row>
+                <div>{insightPartial.displayName}</div>
+                <Switch
+                  checked={profile?.insights?.includes(insightName)}
+                  onChange={(checked) => {
+                    if (checked) {
+                      toggleInsightOn(insightName);
+                    } else {
+                      toggleInsightOff(insightName);
+                    }
+                  }}
+                />
               </Row>
               <Divider />
-              </div>
+            </div>
           ))}
       </div>
     </>
