@@ -582,6 +582,8 @@ export class GetAlertsResponse {
   alerts!: Alert[];
 }
 
+export class CloseAlertResponse extends Alert {}
+
 export class SSEQueueResponse {
   queue?: GetQueueResponse;
   questions?: ListQuestionsResponse;
@@ -679,5 +681,6 @@ export const ERROR_MESSAGES = {
   },
   alertController: {
     duplicateAlert: "This alert has already been sent",
+    notActiveAlert: "This is not an alert that's open for the current user",
   },
 };

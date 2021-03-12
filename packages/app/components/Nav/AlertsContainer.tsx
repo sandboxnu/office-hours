@@ -1,7 +1,7 @@
 import React from "react";
 import useSWR from "swr/esm/use-swr";
 import { API } from "@koh/api-client";
-import { AlertType } from "@koh/common";
+import { AlertType, RephraseQuestionPayload } from "@koh/common";
 import StudentQuestionRephraseModal from "../Queue/Student/StudentQuestionRephraseModal";
 
 type AlertsContainerProps = {
@@ -19,7 +19,7 @@ export default function AlertsContainer({ courseId }: AlertsContainerProps) {
         return (
           <StudentQuestionRephraseModal
             courseId={courseId}
-            payload={alert.payload as RepharseQuestionPayload}
+            payload={alert.payload as RephraseQuestionPayload}
           />
         );
     }

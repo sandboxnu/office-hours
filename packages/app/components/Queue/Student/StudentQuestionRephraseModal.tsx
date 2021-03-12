@@ -14,6 +14,7 @@ type StudentQuestionRephraseModalProps = {
 };
 export default function StudentQuestionRephraseModal({
   courseId,
+  payload,
 }: StudentQuestionRephraseModalProps): ReactElement {
   const { course } = useCourse(courseId);
   const queues = course?.queues;

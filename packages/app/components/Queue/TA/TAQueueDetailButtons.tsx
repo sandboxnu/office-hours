@@ -7,11 +7,13 @@ import {
 } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import {
+  AlertType,
   ClosedQuestionStatus,
   LimboQuestionStatus,
   OpenQuestionStatus,
   Question,
   QuestionStatus,
+  RephraseQuestionPayload,
 } from "@koh/common";
 import { message, Popconfirm, Tooltip } from "antd";
 import React, { ReactElement, useCallback } from "react";
@@ -29,13 +31,16 @@ const PRORITY_QUEUED_MESSAGE_TEXT =
   "This student has been temporarily removed from the queue. They must select to rejoin the queue and will then be placed in the Priority Queue.";
 
 export default function TAQueueDetailButtons({
+  courseId,
   queueId,
   question,
 }: {
+  courseId: number;
   queueId: number;
   question: Question;
 }): ReactElement {
   const { mutateQuestions } = useQuestions(queueId);
+
   const changeStatus = useCallback(
     async (status: QuestionStatus) => {
       await API.questions.update(question.id, { status });
@@ -44,6 +49,21 @@ export default function TAQueueDetailButtons({
     [question.id, mutateQuestions]
   );
   const { isCheckedIn, isHelping } = useTAInQueueInfo(queueId);
+
+  const sendRephraseAlert = async () => {
+    try {
+      const payload: RephraseQuestionPayload = {
+        question: question,
+      };
+
+      await API.alerts.create({
+        alertType: AlertType.REPHRASE_QUESTION,
+        courseId,
+        payload,
+      });
+    } catch (e) {}
+  };
+
   if (question.status === OpenQuestionStatus.Helping) {
     return (
       <>
@@ -136,7 +156,7 @@ export default function TAQueueDetailButtons({
           </Tooltip>
         </Popconfirm>
         <Tooltip title="Ask the student to rework their question">
-          <button onClick={async () => {}}>Rephrase</button>
+          <button onClick={sendRephraseAlert}>Rephrase</button>
         </Tooltip>
         <Tooltip title={helpTooltip}>
           <span>

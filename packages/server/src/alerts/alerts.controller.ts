@@ -5,6 +5,7 @@ import {
   Post,
   Body,
   BadRequestException,
+  Patch,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { User } from 'profile/user.decorator';
@@ -12,6 +13,7 @@ import { UserModel } from 'profile/user.entity';
 import { AlertModel } from './alerts.entity';
 import {
   AlertType,
+  CloseAlertResponse,
   CreateAlertParams,
   CreateAlertResponse,
   ERROR_MESSAGES,
@@ -65,6 +67,7 @@ export class AlertsController {
         type: alertType,
         user: user,
         payload: payload,
+        resolved: null,
       },
     });
 
@@ -84,6 +87,30 @@ export class AlertsController {
       payload,
     });
 
+    return alert;
+  }
+
+  @Patch(':alertId')
+  @Roles(Role.STUDENT, Role.TA, Role.PROFESSOR)
+  async closeAlert(
+    @Param(':alertId') alertId: number,
+    @User() user: UserModel,
+  ): Promise<CloseAlertResponse> {
+    const alert = await AlertModel.findOne({
+      where: {
+        alertId: alertId,
+        user: user,
+        resolved: null,
+      },
+    });
+
+    if (!alert) {
+      throw new BadRequestException(
+        ERROR_MESSAGES.alertController.notActiveAlert,
+      );
+    }
+
+    alert.resolved = new Date();
     return alert;
   }
 }
