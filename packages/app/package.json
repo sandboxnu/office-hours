@@ -12,7 +12,6 @@
   "dependencies": {
     "@ant-design/charts": "^1.0.13",
     "@ant-design/icons": "^4.2.1",
-    "@elastic/apm-rum": "^5.4.0",
     "@koh/api-client": "0.1.0",
     "@koh/common": "0.1.0",
     "@react-hook/window-size": "^3.0.7",
@@ -40,6 +39,7 @@
     "react": "16.13.1",
     "react-big-calendar": "^0.24.6",
     "react-dom": "16.13.1",
+    "react-linkify": "^1.0.0-alpha",
     "react-notion": "^0.8.1",
     "reconnecting-eventsource": "^1.1.0",
     "styled-components": "^5.1.0",

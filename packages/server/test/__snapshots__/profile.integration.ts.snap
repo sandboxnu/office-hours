@@ -17,8 +17,8 @@ Object {
   "firstName": "User",
   "id": 1,
   "insights": null,
-  "lastName": null,
-  "name": "User",
+  "lastName": "Person",
+  "name": "User Person",
   "phoneNotifsEnabled": false,
   "photoURL": null,
 }

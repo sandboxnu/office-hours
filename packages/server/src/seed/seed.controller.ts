@@ -104,16 +104,13 @@ export class SeedController {
     ];
     course.save();
 
-    const userExsists = await UserModel.findOne();
-    if (!userExsists) {
+    const userExists = await UserModel.findOne();
+    if (!userExists) {
       // Student 1
       const user1 = await UserFactory.create({
         email: 'liu.sta@northeastern.edu',
-        name: 'Stanley Liu',
         firstName: 'Stanley',
         lastName: 'Liu',
-        photoURL:
-          'https://ca.slack-edge.com/TE565NU79-UR20CG36E-cf0f375252bd-512',
       });
       await UserCourseFactory.create({
         user: user1,
@@ -123,11 +120,8 @@ export class SeedController {
       // Stundent 2
       const user2 = await UserFactory.create({
         email: 'takayama.a@northeastern.edu',
-        name: 'Alex Takayama',
         firstName: 'Alex',
         lastName: 'Takayama',
-        photoURL:
-          'https://ca.slack-edge.com/TE565NU79-UJL97443D-50121339686b-512',
       });
       await UserCourseFactory.create({
         user: user2,
@@ -139,11 +133,8 @@ export class SeedController {
       // TA 1
       const user3 = await UserFactory.create({
         email: 'stenzel.w@northeastern.edu',
-        name: 'Will Stenzel',
         firstName: 'Will',
         lastName: 'Stenzel',
-        photoURL:
-          'https://ca.slack-edge.com/TE565NU79-URF256KRT-d10098e879da-512',
       });
       await UserCourseFactory.create({
         user: user3,
@@ -153,11 +144,8 @@ export class SeedController {
       // TA 2
       const user4 = await UserFactory.create({
         email: 'chu.daj@northeastern.edu',
-        name: 'Da-Jin Chu',
         firstName: 'Da-Jin',
         lastName: 'Chu',
-        photoURL:
-          'https://ca.slack-edge.com/TE565NU79-UE56Y5UT1-85db59a474f4-512',
       });
       await UserCourseFactory.create({
         user: user4,
@@ -167,7 +155,6 @@ export class SeedController {
       // Professor (Snarky!!)
       const user5 = await UserFactory.create({
         email: 'li.edwa@northeastern.edu',
-        name: 'Eddy Li',
         firstName: 'Eddy',
         lastName: 'Li',
         photoURL:

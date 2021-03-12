@@ -1,7 +1,6 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { each } from 'async';
 import { serialize } from 'class-transformer';
-import * as apm from 'elastic-apm-node';
 import { Response } from 'express';
 import { RedisService } from 'nestjs-redis';
 
@@ -113,12 +112,10 @@ export class SSEService<T> implements OnModuleDestroy {
       const clients: RedisClientInfo<T>[] = roomInfo.map((s) => JSON.parse(s));
       console.log(`sending sse to ${clients.length} clients in ${room}`);
       console.time(`sending sse time: `);
-      apm.startTransaction('sse');
       await each(clients, async ({ clientId, metadata }) => {
         const toSend = serialize(await payload(metadata));
         await redisPub.publish(this.idToChannel(clientId), toSend);
       });
-      apm.endTransaction();
       console.timeEnd(`sending sse time: `);
     }
   }

@@ -7,7 +7,7 @@ import { useQueue } from "../../../hooks/useQueue";
 import { UpdateQueueParams } from "@koh/common";
 import { pick } from "lodash";
 
-const NotesInput = styled(Input)`
+const NotesInput = styled(Input.TextArea)`
   border-radius: 6px;
   border: 1px solid #b8c4ce;
 `;

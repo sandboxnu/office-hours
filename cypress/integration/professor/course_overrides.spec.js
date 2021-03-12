@@ -12,7 +12,7 @@ describe("Professor can create an override", () => {
     cy.get(".ant-select-selector").click();
     cy.contains("TA").click();
     cy.get("button").contains("Add Override").click();
-    cy.contains(this.student.user.name);
+    cy.contains(this.student.user.firstName + " " + this.student.user.lastName);
     cy.contains(this.student.user.email);
     cy.contains("ta");
 

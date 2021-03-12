@@ -1,5 +1,6 @@
 import { Exclude } from 'class-transformer';
 import {
+  AfterLoad,
   BaseEntity,
   Column,
   Entity,
@@ -21,9 +22,6 @@ export class UserModel extends BaseEntity {
 
   @Column('text')
   email: string;
-
-  @Column('text')
-  name: string;
 
   @Column('text', { nullable: true })
   firstName: string;
@@ -65,4 +63,10 @@ export class UserModel extends BaseEntity {
   @Exclude()
   @Column({ type: 'simple-array', nullable: true })
   insights: string[];
+  name: string;
+
+  @AfterLoad()
+  setFullNames() {
+    this.name = this.firstName + ' ' + this.lastName;
+  }
 }
