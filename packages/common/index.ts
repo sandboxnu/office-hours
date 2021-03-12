@@ -545,11 +545,6 @@ export enum AlertType {
   REPHRASE_QUESTION = "rephraseQuestion",
 }
 
-export class GetAlertsResponse {
-  @Type(() => Alert)
-  alerts!: Alert[];
-}
-
 export class Alert {
   @IsEnum(AlertType)
   alertType!: AlertType;
@@ -566,6 +561,25 @@ export interface AlertPayload {}
 export class RephraseQuestionPayload implements AlertPayload {
   @Type(() => Question)
   question!: Question;
+}
+
+export class CreateAlertParams {
+  @IsEnum(AlertType)
+  alertType!: AlertType;
+
+  @IsInt()
+  courseId!: number;
+
+  @Type(() => AlertPayload)
+  @IsOptional()
+  payload?: AlertPayload;
+}
+
+export class CreateAlertResponse extends Alert {}
+
+export class GetAlertsResponse {
+  @Type(() => Alert)
+  alerts!: Alert[];
 }
 
 export class SSEQueueResponse {
@@ -662,5 +676,8 @@ export const ERROR_MESSAGES = {
   profileController: {
     noDiskSpace:
       "There is no disk space left to store an image. Please immediately contact your course staff and let them know. They will contact the Khoury Office Hours team as soon as possible.",
+  },
+  alertController: {
+    duplicateAlert: "This alert has already been sent",
   },
 };

@@ -135,14 +135,8 @@ export default function TAQueueDetailButtons({
             </span>
           </Tooltip>
         </Popconfirm>
-        <Tooltip title="Send student back to draft their question more clearly">
-          <button
-            onClick={async () => {
-              await changeStatus(OpenQuestionStatus.Rephrasing);
-            }}
-          >
-            Rephrase
-          </button>
+        <Tooltip title="Ask the student to rework their question">
+          <button onClick={async () => {}}>Rephrase</button>
         </Tooltip>
         <Tooltip title={helpTooltip}>
           <span>
