@@ -1,9 +1,18 @@
-import { ReactElement } from "react";
+import React, { ReactElement } from "react";
 import { API } from "@koh/api-client";
 import useSWR from "swr";
-import { Form, Switch } from "antd";
+import { Divider, Switch } from "antd";
 import { useProfile } from "../../../hooks/useProfile";
+import styled from "styled-components";
 
+const Row = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-size: 18px;
+  align-items: center;
+  margin-bottom: 16px;
+`;
 interface InsightsDisplayOptionsProps {
   toggleInsightOn: (insightName: string) => void;
   toggleInsightOff: (insightName: string) => void;
@@ -21,18 +30,14 @@ export default function InsightsDisplayOptions({
 
   return (
     <>
-      <br />
-      <Form form={null} initialValues={null}>
+      <div>
         {insightsList &&
           Object.entries(insightsList)?.map(([insightName, insightPartial]) => (
-            <Form.Item
-              key={insightName}
-              label={insightPartial.displayName}
-              initialValue={profile?.insights?.includes(insightName)}
-              valuePropName="checked"
-              name={insightName}
-            >
+            <div  key={insightName}>
+            <Row>
+              <div>{insightPartial.displayName}</div>
               <Switch
+                checked={profile?.insights?.includes(insightName)}
                 onChange={(checked) => {
                   if (checked) {
                     toggleInsightOn(insightName);
@@ -41,9 +46,11 @@ export default function InsightsDisplayOptions({
                   }
                 }}
               />
-            </Form.Item>
+              </Row>
+              <Divider />
+              </div>
           ))}
-      </Form>
+      </div>
     </>
   );
 }
