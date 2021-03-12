@@ -21,7 +21,7 @@ import {
   Role,
 } from '@koh/common';
 import { User } from '../profile/user.decorator';
-import { INSIGHTS_MAP } from './insight-classes';
+import { INSIGHTS_MAP } from './insight-objects';
 import { UserModel } from 'profile/user.entity';
 import { Roles } from 'profile/roles.decorator';
 import { CourseRole } from './course-role.decorator';
@@ -72,7 +72,7 @@ export class InsightsController {
       });
     }
 
-    const insight = await this.insightsService.generateInsight({
+    const insight = await this.insightsService.computeOutput({
       insight: INSIGHTS_MAP[insightName],
       filters,
     });

@@ -1,40 +1,41 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { InsightInterface, INSIGHTS_MAP } from './insight-classes';
-import { InsightPartial, ListInsightsResponse } from '@koh/common';
+import { Filter, INSIGHTS_MAP } from './insight-objects';
+import { Insight, InsightObject, ListInsightsResponse } from '@koh/common';
 import { UserModel } from 'profile/user.entity';
 
-// interface generateAllInsightsParams {
-//   insights: InsightInterface<any>[];
-//   filters: any;  // TODO
-// }
+type ComputeOutputParams = {
+  insight: InsightObject;
+  filters: Filter[];
+};
+
+type GenerateAllInsightParams = {
+  insights: InsightObject[];
+  filters: Filter[];
+};
 
 @Injectable()
 export class InsightsService {
   constructor(private connection: Connection) {}
 
-  // Generate the output data for an insight by calling its compute function
-  async generateOutput({ insight, filters }): Promise<any> {
+  // Compute the output data for an insight and add it to the insight response
+  async computeOutput({
+    insight,
+    filters,
+  }: ComputeOutputParams): Promise<Insight> {
     const output = await insight.compute(filters);
-    return output;
-  }
-
-  // Compute the output data for an insight and add it to the insight object
-  async generateInsight({ insight, filters }): Promise<any> {
-    const output = await this.generateOutput({ insight, filters });
     return { output, ...insight };
   }
 
-  // Generate a map of insights that where the output has been computed
-  async generateAllInsights({ insights, filters }): Promise<any> {
-    const insightsWithOutput = {};
-    await Promise.all(
-      insights.map(async (insight) => {
-        const output = await this.generateOutput({ insight, filters });
-        insightsWithOutput[insight.constructor.name] = { output, ...insight };
-      }),
+  async generateAllInsights({
+    insights,
+    filters,
+  }: GenerateAllInsightParams): Promise<any> {
+    return await Promise.all(
+      insights.map(
+        async (insight) => await this.computeOutput({ insight, filters }),
+      ),
     );
-    return insightsWithOutput;
   }
 
   convertToInsightsListResponse(insightNames: string[]): ListInsightsResponse {

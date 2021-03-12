@@ -9,8 +9,13 @@ import {
   QueueFactory,
   UserFactory,
 } from '../../test/util/factories';
-import { INSIGHTS_MAP } from './insight-classes';
-import { QuestionType } from '@koh/common';
+import { INSIGHTS_MAP } from './insight-objects';
+import {
+  BarChartOutputType,
+  PossibleOutputTypes,
+  QuestionType,
+  SimpleTableOutputType,
+} from '@koh/common';
 import { UserModel } from 'profile/user.entity';
 
 describe('InsightsService', () => {
@@ -35,13 +40,13 @@ describe('InsightsService', () => {
     await conn.synchronize(true);
   });
 
-  describe('generateInsight', () => {
+  describe('computeOutput', () => {
     it('totalStudents', async () => {
       const course = await CourseFactory.create();
       await UserCourseFactory.createList(4, { course });
       await UserCourseFactory.create();
 
-      const res = await service.generateInsight({
+      const res = await service.computeOutput({
         insight: INSIGHTS_MAP.TotalStudents,
         filters: [
           {
@@ -64,7 +69,7 @@ describe('InsightsService', () => {
       // question right now
       await QuestionFactory.create({ queue });
 
-      const res = await service.generateInsight({
+      const res = await service.computeOutput({
         insight: INSIGHTS_MAP.TotalQuestionsAsked,
         filters: [
           {
@@ -87,7 +92,7 @@ describe('InsightsService', () => {
         helpedAt: new Date(Date.now() - 25 * 60 * 1000),
       });
 
-      const res = await service.generateInsight({
+      const res = await service.computeOutput({
         insight: INSIGHTS_MAP.AverageWaitTime,
         filters: [
           {
@@ -112,7 +117,7 @@ describe('InsightsService', () => {
         queue: question.queue,
       });
 
-      const res = await service.generateInsight({
+      const res = await service.computeOutput({
         insight: INSIGHTS_MAP.AverageHelpingTime,
         filters: [
           {
@@ -137,7 +142,7 @@ describe('InsightsService', () => {
       // students in the class
       await UserCourseFactory.createList(4, { course });
 
-      const res = await service.generateInsight({
+      const res = await service.computeOutput({
         insight: INSIGHTS_MAP.QuestionToStudentRatio,
         filters: [
           {
@@ -170,7 +175,7 @@ describe('InsightsService', () => {
       questionType: QuestionType.Testing,
       queue,
     });
-    const res = await service.generateInsight({
+    const res = await service.computeOutput({
       insight: INSIGHTS_MAP.QuestionTypeBreakdown,
       filters: [
         {
@@ -180,7 +185,9 @@ describe('InsightsService', () => {
       ],
     });
 
-    expect(res.output.data).toEqual([
+    const output = res.output as BarChartOutputType;
+
+    expect(output.data).toEqual([
       { questionType: 'Bug', totalQuestions: '8' },
       { questionType: 'Clarification', totalQuestions: '20' },
       { questionType: 'Concept', totalQuestions: 0 },
@@ -229,7 +236,7 @@ describe('InsightsService', () => {
       creator: user4,
       queue,
     });
-    const res = await service.generateInsight({
+    const res = await service.computeOutput({
       insight: INSIGHTS_MAP.MostActiveStudents,
       filters: [
         {
@@ -239,7 +246,9 @@ describe('InsightsService', () => {
       ],
     });
 
-    expect(res.output.dataSource).toEqual([
+    const output = res.output as SimpleTableOutputType;
+
+    expect(output.dataSource).toEqual([
       {
         studentId: 4,
         name: 'Jean Valjean',
@@ -287,8 +296,15 @@ describe('InsightsService', () => {
           },
         ],
       });
-      expect(res.TotalStudents.output).toEqual(4);
-      expect(res.TotalQuestionsAsked.output).toEqual(18);
+
+      const totalStudentsInsight = res.find(
+        (insight) => insight.displayName === 'Total Students',
+      );
+      expect(totalStudentsInsight.output).toEqual(4);
+      const totalQuestionsAskedInsight = res.find(
+        (insight) => insight.displayName === 'Total Questions',
+      );
+      expect(totalQuestionsAskedInsight.output).toEqual(18);
     });
   });
 
