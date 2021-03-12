@@ -23,7 +23,7 @@ export default function InsightsDisplayOptions({
   toggleInsightOff,
 }: InsightsDisplayOptionsProps): ReactElement {
   const profile = useProfile();
-  const { data: insightsList, error, mutate } = useSWR(
+  const { data: insightsList } = useSWR(
     `api/v1/insights`,
     async () => API.insights.list()
   );
