@@ -111,7 +111,7 @@ export const MostActiveStudents: InsightObject = {
     const dataSource = await addFilters({
       query: createQueryBuilder()
         .select('"QuestionModel"."creatorId"', 'studentId')
-        .addSelect('"UserModel"."name"', 'name')
+        .addSelect('concat("UserModel"."firstName", \' \',"UserModel"."lastName")', 'name')
         .addSelect('"UserModel"."email"', 'email')
         .addSelect('COUNT(*)', 'questionsAsked')
         .from(QuestionModel, 'QuestionModel')
@@ -126,7 +126,7 @@ export const MostActiveStudents: InsightObject = {
         '"UserModel".id = "QuestionModel"."creatorId"',
       )
       .groupBy('"QuestionModel"."creatorId"')
-      .addGroupBy('"UserModel".name')
+      .addGroupBy('name')
       .addGroupBy('"UserModel".email')
       .orderBy('4', 'DESC')
       .limit(75)
