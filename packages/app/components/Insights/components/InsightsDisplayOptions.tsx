@@ -39,22 +39,22 @@ export default function InsightsDisplayOptions(): ReactElement {
       <div>
         {insightsList &&
           Object.entries(insightsList)?.map(([insightName, insightPartial]) => (
-            <div  key={insightName}>
-            <Row>
-              <div>{insightPartial.displayName}</div>
-              <Switch
-                checked={profile?.insights?.includes(insightName)}
-                onChange={(checked) => {
-                  if (checked) {
-                    toggleInsightOn(insightName);
-                  } else {
-                    toggleInsightOff(insightName);
-                  }
-                }}
-              />
+            <div key={insightName}>
+              <Row>
+                <div>{insightPartial.displayName}</div>
+                <Switch
+                  checked={profile?.insights?.includes(insightName)}
+                  onChange={(checked) => {
+                    if (checked) {
+                      toggleInsightOn(insightName);
+                    } else {
+                      toggleInsightOff(insightName);
+                    }
+                  }}
+                />
               </Row>
               <Divider />
-              </div>
+            </div>
           ))}
       </div>
     </>

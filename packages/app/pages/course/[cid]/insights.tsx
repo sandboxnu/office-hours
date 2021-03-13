@@ -27,7 +27,7 @@ import styled from "styled-components";
 const InsightsRowContainer = styled.div`
   display: flex;
   direction: ltr;
-`
+`;
 
 export default function Insights(): ReactElement {
   const profile = useProfile();
@@ -59,29 +59,45 @@ export default function Insights(): ReactElement {
     <>
       <StandardPageContainer>
         <NavBar courseId={Number(cid)} />
-        <Row align={"middle"} justify={"space-between"} style={{margin: "12px 0px"}}>
-          <h1 style={{display: "inline", margin: "0px"}}>Insights Dashboard</h1>
-        <Row>
-        <div style={{ maxWidth: "200 px"}}>
-          <Tooltip title={"If no date range is selected results are from the data for the full semester so far"}>
-            <QuestionCircleOutlined />
-          </Tooltip>
-          <b style={{ display: "inline-block", marginRight: "12px", marginLeft: "8px" }}>
-            Date Range
-          </b>
-          <RangePicker
-            onChange={(_, dateString) =>
-              setDateRange({ start: dateString[0], end: dateString[1] })
-            }
-            />
-        </div>
-        <Button
-          style={{ marginLeft: "24px" }}
-          onClick={() => setSettingsVisible(true)}
-          >
-          Edit Insights
-        </Button>
-        </Row>
+        <Row
+          align={"middle"}
+          justify={"space-between"}
+          style={{ margin: "12px 0px" }}
+        >
+          <h1 style={{ display: "inline", margin: "0px" }}>
+            Insights Dashboard
+          </h1>
+          <Row>
+            <div style={{ maxWidth: "200 px" }}>
+              <Tooltip
+                title={
+                  "If no date range is selected results are from the data for the full semester so far"
+                }
+              >
+                <QuestionCircleOutlined />
+              </Tooltip>
+              <b
+                style={{
+                  display: "inline-block",
+                  marginRight: "12px",
+                  marginLeft: "8px",
+                }}
+              >
+                Date Range
+              </b>
+              <RangePicker
+                onChange={(_, dateString) =>
+                  setDateRange({ start: dateString[0], end: dateString[1] })
+                }
+              />
+            </div>
+            <Button
+              style={{ marginLeft: "24px" }}
+              onClick={() => setSettingsVisible(true)}
+            >
+              Edit Insights
+            </Button>
+          </Row>
         </Row>
         <Divider style={{ margin: "0 0 16px 0" }} />
         <Drawer
@@ -99,28 +115,28 @@ export default function Insights(): ReactElement {
           {smallInsights?.map((insightName: string) => {
             return (
               <RenderInsight
-              key={insightName}
-              insightName={insightName}
-              dateRange={dateRange}
+                key={insightName}
+                insightName={insightName}
+                dateRange={dateRange}
               />
-              );
-            })}
+            );
+          })}
         </InsightsRowContainer>
         <InsightsRowContainer>
           {defaultInsights?.map((insightName: string) => {
             return (
               <RenderInsight
-              key={insightName}
-              insightName={insightName}
-              dateRange={dateRange}
+                key={insightName}
+                insightName={insightName}
+                dateRange={dateRange}
               />
-              );
-            })}
+            );
+          })}
         </InsightsRowContainer>
       </StandardPageContainer>
     </>
-    );
-  }
+  );
+}
 
 interface RenderInsightProps {
   insightName: string;
