@@ -13,20 +13,26 @@ const Row = styled.div`
   align-items: center;
   margin-bottom: 16px;
 `;
-interface InsightsDisplayOptionsProps {
-  toggleInsightOn: (insightName: string) => void;
-  toggleInsightOff: (insightName: string) => void;
-}
 
-export default function InsightsDisplayOptions({
-  toggleInsightOn,
-  toggleInsightOff,
-}: InsightsDisplayOptionsProps): ReactElement {
-  const profile = useProfile();
+export default function InsightsDisplayOptions(): ReactElement {
+  const { data: profile, mutate: mutateProfile } = useSWR(
+    `api/v1/profile`,
+    async () => API.profile.index()
+  );
   const { data: insightsList } = useSWR(
     `api/v1/insights`,
     async () => API.insights.list()
   );
+
+  const toggleInsightOn = async (insightName: string) => {
+    await API.insights.toggleOn(insightName);
+    mutateProfile();
+  };
+
+  const toggleInsightOff = async (insightName: string) => {
+    await API.insights.toggleOff(insightName);
+    mutateProfile();
+  };
 
   return (
     <>

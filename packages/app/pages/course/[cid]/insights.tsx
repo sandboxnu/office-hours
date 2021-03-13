@@ -13,6 +13,7 @@ import {
 } from "antd";
 import { CardSize } from "antd/lib/card";
 import { InfoCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { useProfile } from "../../../hooks/useProfile";
 import { useRouter } from "next/router";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
 import { DateRangeType, InsightDisplay } from "@koh/common";
@@ -29,12 +30,9 @@ const InsightsRowContainer = styled.div`
 `
 
 export default function Insights(): ReactElement {
+  const profile = useProfile();
   const router = useRouter();
   const { cid } = router.query;
-  const { data: profile, mutate: mutateProfile } = useSWR(
-    `api/v1/profile`,
-    async () => API.profile.index()
-  );
 
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
 
@@ -42,16 +40,6 @@ export default function Insights(): ReactElement {
     API.insights.list()
   );
   const [settingsVisible, setSettingsVisible] = useState(false);
-
-  const toggleInsightOn = async (insightName: string) => {
-    await API.insights.toggleOn(insightName);
-    mutateProfile();
-  };
-
-  const toggleInsightOff = async (insightName: string) => {
-    await API.insights.toggleOff(insightName);
-    mutateProfile();
-  };
 
   if (!allInsights || !profile?.insights) {
     return null;
@@ -105,10 +93,7 @@ export default function Insights(): ReactElement {
           visible={settingsVisible}
           width={400}
         >
-          <InsightsDisplayOptions
-            toggleInsightOn={toggleInsightOn}
-            toggleInsightOff={toggleInsightOff}
-          />
+          <InsightsDisplayOptions/>
         </Drawer>
         <InsightsRowContainer>
           {smallInsights?.map((insightName: string) => {
