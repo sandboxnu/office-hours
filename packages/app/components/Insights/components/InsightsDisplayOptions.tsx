@@ -1,49 +1,61 @@
-import { ReactElement } from "react";
+import React, { ReactElement } from "react";
 import { API } from "@koh/api-client";
 import useSWR from "swr";
-import { Form, Switch } from "antd";
+import { Divider, Switch } from "antd";
 import { useProfile } from "../../../hooks/useProfile";
+import styled from "styled-components";
 
-interface InsightsDisplayOptionsProps {
-  toggleInsightOn: (insightName: string) => void;
-  toggleInsightOff: (insightName: string) => void;
-}
+const Row = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-size: 18px;
+  align-items: center;
+  margin-bottom: 16px;
+`;
 
-export default function InsightsDisplayOptions({
-  toggleInsightOn,
-  toggleInsightOff,
-}: InsightsDisplayOptionsProps): ReactElement {
-  const profile = useProfile();
-  const { data: insightsList, error, mutate } = useSWR(
-    `api/v1/insights`,
-    async () => API.insights.list()
+export default function InsightsDisplayOptions(): ReactElement {
+  const { data: profile, mutate: mutateProfile } = useSWR(
+    `api/v1/profile`,
+    async () => API.profile.index()
   );
+  const { data: insightsList } = useSWR(`api/v1/insights`, async () =>
+    API.insights.list()
+  );
+
+  const toggleInsightOn = async (insightName: string) => {
+    await API.insights.toggleOn(insightName);
+    mutateProfile();
+  };
+
+  const toggleInsightOff = async (insightName: string) => {
+    await API.insights.toggleOff(insightName);
+    mutateProfile();
+  };
 
   return (
     <>
-      <br />
-      <Form form={null} initialValues={null}>
+      <div>
         {insightsList &&
           Object.entries(insightsList)?.map(([insightName, insightPartial]) => (
-            <Form.Item
-              key={insightName}
-              label={insightPartial.displayName}
-              initialValue={profile?.insights?.includes(insightName)}
-              valuePropName="checked"
-              name={insightName}
-            >
-              <Switch
-                onChange={(checked) => {
-                  if (checked) {
-                    toggleInsightOn(insightName);
-                  } else {
-                    toggleInsightOff(insightName);
-                  }
-                }}
-              />
-            </Form.Item>
+            <div key={insightName}>
+              <Row>
+                <div>{insightPartial.displayName}</div>
+                <Switch
+                  checked={profile?.insights?.includes(insightName)}
+                  onChange={(checked) => {
+                    if (checked) {
+                      toggleInsightOn(insightName);
+                    } else {
+                      toggleInsightOff(insightName);
+                    }
+                  }}
+                />
+              </Row>
+              <Divider />
+            </div>
           ))}
-      </Form>
+      </div>
     </>
   );
 }

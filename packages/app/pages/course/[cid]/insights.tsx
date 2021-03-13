@@ -9,9 +9,11 @@ import {
   Button,
   DatePicker,
   Divider,
+  Row,
 } from "antd";
 import { CardSize } from "antd/lib/card";
-import { InfoCircleOutlined, MinusSquareOutlined } from "@ant-design/icons";
+import { InfoCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { useProfile } from "../../../hooks/useProfile";
 import { useRouter } from "next/router";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
 import { DateRangeType, InsightDisplay } from "@koh/common";
@@ -22,20 +24,15 @@ import InsightsDisplayOptions from "../../../components/Insights/components/Insi
 import { SimpleTable } from "../../../components/Insights/components/SimpleTable";
 import styled from "styled-components";
 
-const InsightContainer = styled.div`
-  margin: "12px 12px 0px";
-  display: "flex";
-  align-items: "center";
-  justify-content: "space-between";
+const InsightsRowContainer = styled.div`
+  display: flex;
+  direction: ltr;
 `;
 
 export default function Insights(): ReactElement {
+  const profile = useProfile();
   const router = useRouter();
   const { cid } = router.query;
-  const { data: profile, mutate: mutateProfile } = useSWR(
-    `api/v1/profile`,
-    async () => API.profile.index()
-  );
 
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
 
@@ -43,16 +40,6 @@ export default function Insights(): ReactElement {
     API.insights.list()
   );
   const [settingsVisible, setSettingsVisible] = useState(false);
-
-  const toggleInsightOn = async (insightName) => {
-    await API.insights.toggleOn(insightName);
-    mutateProfile();
-  };
-
-  const toggleInsightOff = async (insightName) => {
-    await API.insights.toggleOff(insightName);
-    mutateProfile();
-  };
 
   if (!allInsights || !profile?.insights) {
     return null;
@@ -72,22 +59,47 @@ export default function Insights(): ReactElement {
     <>
       <StandardPageContainer>
         <NavBar courseId={Number(cid)} />
-        <InsightContainer>
-          <h1 style={{ margin: "2px" }}>Insights Dashboard - Alpha</h1>
-
-          <div style={{ maxWidth: "200 px" }}>
-            <b style={{ display: "inline-block", marginRight: "12px" }}>
-              Date Range
-            </b>
-            <RangePicker
-              onChange={(_, dateString) =>
-                setDateRange({ start: dateString[0], end: dateString[1] })
-              }
-            />
-          </div>
-        </InsightContainer>
-        <Divider style={{ margin: "0 0 8px 0" }} />
-
+        <Row
+          align={"middle"}
+          justify={"space-between"}
+          style={{ margin: "12px 0px" }}
+        >
+          <h1 style={{ display: "inline", margin: "0px" }}>
+            Insights Dashboard
+          </h1>
+          <Row>
+            <div style={{ maxWidth: "200 px" }}>
+              <Tooltip
+                title={
+                  "If no date range is selected results are from the data for the full semester so far"
+                }
+              >
+                <QuestionCircleOutlined />
+              </Tooltip>
+              <b
+                style={{
+                  display: "inline-block",
+                  marginRight: "12px",
+                  marginLeft: "8px",
+                }}
+              >
+                Date Range
+              </b>
+              <RangePicker
+                onChange={(_, dateString) =>
+                  setDateRange({ start: dateString[0], end: dateString[1] })
+                }
+              />
+            </div>
+            <Button
+              style={{ marginLeft: "24px" }}
+              onClick={() => setSettingsVisible(true)}
+            >
+              Edit Insights
+            </Button>
+          </Row>
+        </Row>
+        <Divider style={{ margin: "0 0 16px 0" }} />
         <Drawer
           title="Display Options"
           placement="left"
@@ -97,42 +109,30 @@ export default function Insights(): ReactElement {
           visible={settingsVisible}
           width={400}
         >
-          <InsightsDisplayOptions
-            toggleInsightOn={toggleInsightOn}
-            toggleInsightOff={toggleInsightOff}
-          />
+          <InsightsDisplayOptions />
         </Drawer>
-
-        <div style={{ display: "flex", direction: "ltr" }}>
+        <InsightsRowContainer>
           {smallInsights?.map((insightName: string) => {
             return (
               <RenderInsight
                 key={insightName}
                 insightName={insightName}
                 dateRange={dateRange}
-                toggleInsightOff={toggleInsightOff}
               />
             );
           })}
-        </div>
-        <div style={{ display: "flex", direction: "ltr" }}>
+        </InsightsRowContainer>
+        <InsightsRowContainer>
           {defaultInsights?.map((insightName: string) => {
             return (
               <RenderInsight
                 key={insightName}
                 insightName={insightName}
                 dateRange={dateRange}
-                toggleInsightOff={toggleInsightOff}
               />
             );
           })}
-        </div>
-        <Button
-          style={{ marginLeft: "24px", width: "256px" }}
-          onClick={() => setSettingsVisible(true)}
-        >
-          Open Insights Display Options
-        </Button>
+        </InsightsRowContainer>
       </StandardPageContainer>
     </>
   );
@@ -141,13 +141,11 @@ export default function Insights(): ReactElement {
 interface RenderInsightProps {
   insightName: string;
   dateRange: DateRangeType;
-  toggleInsightOff: (insightName: string) => void;
 }
 
 function RenderInsight({
   insightName,
   dateRange,
-  toggleInsightOff,
 }: RenderInsightProps): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
@@ -185,17 +183,13 @@ function RenderInsight({
       title={insight.displayName}
       style={{
         margin: "0.5%",
-        width: insight.size === "default" ? "50%" : "16%",
+        padding: "2px",
+        width: insight.size === "default" ? "50%" : "16.66%",
         maxWidth: insight.size === "default" ? "625px" : "200px",
       }}
       extra={
         <Space>
-          <Tooltip placement="topRight" title="Hide">
-            <MinusSquareOutlined
-              onClick={() => toggleInsightOff(insightName)}
-            />
-          </Tooltip>
-          <Tooltip placement="topRight" title={insight.description}>
+          <Tooltip title={insight.description}>
             <InfoCircleOutlined />
           </Tooltip>
         </Space>
