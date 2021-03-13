@@ -109,7 +109,7 @@ export default function Insights(): ReactElement {
           visible={settingsVisible}
           width={400}
         >
-          <InsightsDisplayOptions/>
+          <InsightsDisplayOptions />
         </Drawer>
         <InsightsRowContainer>
           {smallInsights?.map((insightName: string) => {

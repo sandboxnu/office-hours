@@ -19,9 +19,8 @@ export default function InsightsDisplayOptions(): ReactElement {
     `api/v1/profile`,
     async () => API.profile.index()
   );
-  const { data: insightsList } = useSWR(
-    `api/v1/insights`,
-    async () => API.insights.list()
+  const { data: insightsList } = useSWR(`api/v1/insights`, async () =>
+    API.insights.list()
   );
 
   const toggleInsightOn = async (insightName: string) => {

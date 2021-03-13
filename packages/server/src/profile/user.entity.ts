@@ -63,7 +63,7 @@ export class UserModel extends BaseEntity {
   @Exclude()
   @Column({ type: 'simple-array', nullable: true })
   insights: string[];
-  
+
   name: string;
 
   @AfterLoad()
