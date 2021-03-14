@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"6c6ee4032801957342b4ca2462b2e971e5db030d"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"a94552e572a4d521c451f190225ce89a6c620431"};
 
 /***/ }),
 /* 2 */
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "6c6ee4032801957342b4ca2462b2e971e5db030d",
+        release: "a94552e572a4d521c451f190225ce89a6c620431",
         environment: common_2.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
