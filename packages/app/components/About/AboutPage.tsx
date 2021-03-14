@@ -15,8 +15,6 @@ const Description = styled.div`
   margin-top: 15px;
 `;
 
-// TODO: test on large monitor
-
 export default function AboutPage(): ReactElement {
   return (
     <Row style={{ padding: '20px 0px', flexFlow: 'unset' }}>
@@ -44,8 +42,7 @@ export default function AboutPage(): ReactElement {
 }
 
 // TODO: store images on front or backend?
-// frontend might be good if we also do logo stuff eventually
-const sadcat = 'https://i1.sndcdn.com/avatars-000883401889-t1pc2e-t240x240.jpg';
+const sadcat = 'https://www.vettedpetcare.com/vetted-blog/wp-content/uploads/2017/09/How-To-Travel-With-a-Super-Anxious-Cat-square.jpeg';
 
 const PROFILES = [
   { name: 'Stanley Liu', role: 'Project Lead', image: sadcat, linkedin: '', email: '' },
