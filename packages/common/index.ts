@@ -570,9 +570,8 @@ export class CreateAlertParams {
   @IsInt()
   courseId!: number;
 
-  @Type(() => AlertPayload)
-  @IsOptional()
-  payload?: AlertPayload;
+  @IsObject()
+  payload!: AlertPayload;
 }
 
 export class CreateAlertResponse extends Alert {}

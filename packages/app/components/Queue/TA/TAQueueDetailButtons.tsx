@@ -55,13 +55,20 @@ export default function TAQueueDetailButtons({
       const payload: RephraseQuestionPayload = {
         question: question,
       };
+      console.log({
+        alertType: AlertType.REPHRASE_QUESTION,
+        courseId,
+        payload,
+      });
 
       await API.alerts.create({
         alertType: AlertType.REPHRASE_QUESTION,
         courseId,
         payload,
       });
-    } catch (e) {}
+    } catch (e) {
+      console.log("ligma", e);
+    }
   };
 
   if (question.status === OpenQuestionStatus.Helping) {

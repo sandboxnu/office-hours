@@ -55,11 +55,12 @@ export class AlertsController {
   }
 
   @Post()
-  @Roles(Role.TA)
+  @Roles(Role.TA, Role.PROFESSOR)
   async createAlert(
     @Body() body: CreateAlertParams,
     @User() user: UserModel,
   ): Promise<CreateAlertResponse> {
+    console.log('here', body);
     const { alertType, courseId, payload } = body;
 
     const anotherAlert = await AlertModel.findOne({
@@ -85,8 +86,9 @@ export class AlertsController {
       user: user,
       courseId,
       payload,
-    });
+    }).save();
 
+    console.log('ligma4');
     return alert;
   }
 

@@ -234,7 +234,7 @@ export class CourseController {
       data: resp.map((row) => ({
         id: row.id,
         role: row.role,
-        name: `${row.user.firstName} ${row.user.lastName}`,
+        name: row.user.name,
         email: row.user.email,
       })),
     };
@@ -272,7 +272,7 @@ export class CourseController {
     return {
       id: userCourse.id,
       role: userCourse.role,
-      name: `${user.firstName} ${user.lastName}`,
+      name: user.name,
       email: user.email,
     };
   }

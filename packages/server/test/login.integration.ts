@@ -148,7 +148,10 @@ describe('Login Integration', () => {
         });
       });
       it('overwrites courses but not names of existing users', async () => {
-        let user = await UserFactory.create();
+        let user = await UserFactory.create({
+          firstName: 'Bill',
+          lastName: 'Benzel',
+        });
 
         const res = await supertest()
           .post('/khoury_login')
@@ -171,6 +174,7 @@ describe('Login Integration', () => {
             ta_courses: [],
           })
           .expect(201);
+
         user = await UserModel.findOne(user, { relations: ['courses'] });
 
         expect(user.courses).toHaveLength(1);
