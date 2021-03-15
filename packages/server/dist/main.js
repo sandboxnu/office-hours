@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"ee470658c6f783af63d9014a7d90594069d4edaf"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"5fc05c7b16f90d4faa7bcbbf60348fa16f830980"};
 
 /***/ }),
 /* 2 */
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "ee470658c6f783af63d9014a7d90594069d4edaf",
+        release: "5fc05c7b16f90d4faa7bcbbf60348fa16f830980",
         environment: common_2.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -2971,7 +2971,7 @@ let IcalService = class IcalService {
         const resource = 'locks:icalcron';
         const ttl = 60000;
         const redisDB = await this.redisService.getClient('db');
-        const redlock = new Redlock([redisDB]);
+        const redlock = new Redlock([redisDB], { retryCount: 0 });
         redlock.on('clientError', function (err) {
             console.error('A redis error has occurred:', err);
         });
