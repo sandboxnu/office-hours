@@ -1,12 +1,12 @@
-import { User, Question } from '@koh/common';
-import { Checkbox, Tooltip } from 'antd';
-import { PhoneOutlined } from '@ant-design/icons';
-import React, { ReactElement, useState } from 'react';
-import styled from 'styled-components';
-import { Header } from '../TAQueueDetail';
-import TAQueueListItem from '../TAQueueListItem';
-import { useTAInQueueInfo } from '../../../../hooks/useTAInQueueInfo';
-import { BannerPrimaryButton } from '../../Banner';
+import { User, Question } from "@koh/common";
+import { Checkbox, Tooltip } from "antd";
+import { PhoneOutlined } from "@ant-design/icons";
+import React, { ReactElement, useState } from "react";
+import styled from "styled-components";
+import { Header } from "../TAQueueDetail";
+import TAQueueListItem from "../TAQueueListItem";
+import { useTAInQueueInfo } from "../../../../hooks/useTAInQueueInfo";
+import { BannerPrimaryButton } from "../../Banner";
 
 export const Description = styled.div`
   font-size: 12px;
@@ -37,15 +37,17 @@ export default function AllQuestionsCheckList({
   queueId: number;
   onStartCall: () => void;
 }): ReactElement {
-  const [checkedQuestions, setCheckedQuestions] = useState<Set<number>>(new Set());
+  const [checkedQuestions, setCheckedQuestions] = useState<Set<number>>(
+    new Set()
+  );
   const { isCheckedIn, isHelping } = useTAInQueueInfo(queueId);
   const [canHelp, helpTooltip] = ((): [boolean, string] => {
     if (!isCheckedIn) {
-      return [false, 'You must check in to help students!'];
+      return [false, "You must check in to help students!"];
     } else if (isHelping) {
-      return [false, 'You are already helping a student'];
+      return [false, "You are already helping a student"];
     } else {
-      return [true, 'Create Group & Call'];
+      return [true, "Create Group & Call"];
     }
   })();
 
@@ -91,17 +93,23 @@ export default function AllQuestionsCheckList({
       <SelectAllContainer>
         <Checkbox
           checked={allQuestions.length === checkedQuestions.size}
-          indeterminate={checkedQuestions.size && checkedQuestions.size !== allQuestions.length}
+          indeterminate={
+            checkedQuestions.size &&
+            checkedQuestions.size !== allQuestions.length
+          }
           onChange={onToggleSelectAll}
         >
-          <span style={{paddingLeft: '9px'}}>Select All</span>
+          <span style={{ paddingLeft: "9px" }}>Select All</span>
         </Checkbox>
       </SelectAllContainer>
       <QuestionsList>
         {allQuestions.map((q, i) => (
           <QuestionCheckbox key={q.id}>
-            <Checkbox checked={checkedQuestions.has(q.id)} onChange={(e) => onQuestionChecked(q)} />
-            <div style={{ flexGrow: 1, marginLeft: '5px' }}>
+            <Checkbox
+              checked={checkedQuestions.has(q.id)}
+              onChange={(e) => onQuestionChecked(q)}
+            />
+            <div style={{ flexGrow: 1, marginLeft: "5px" }}>
               <TAQueueListItem
                 question={q}
                 index={i + 1}

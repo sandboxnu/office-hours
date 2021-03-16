@@ -1,8 +1,8 @@
-import { Question } from '@koh/common';
-import { Collapse } from 'antd';
-import React, { ReactElement, ReactNode } from 'react';
-import styled from 'styled-components';
-import TAQueueListItem from './TAQueueListItem';
+import { Question } from "@koh/common";
+import { Collapse } from "antd";
+import React, { ReactElement, ReactNode } from "react";
+import styled from "styled-components";
+import TAQueueListItem from "./TAQueueListItem";
 
 const OverrideCollapse = styled.div`
   & .ant-collapse-header {

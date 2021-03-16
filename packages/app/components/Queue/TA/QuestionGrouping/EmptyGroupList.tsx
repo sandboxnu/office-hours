@@ -1,7 +1,7 @@
-import { ReactElement } from 'react';
-import { PlusOutlined } from '@ant-design/icons';
-import styled from 'styled-components';
-import { Container } from '../TAQueueListItem';
+import { ReactElement } from "react";
+import { PlusOutlined } from "@ant-design/icons";
+import styled from "styled-components";
+import { Container } from "../TAQueueListItem";
 
 const EmptyGroupListContainer = styled(Container)`
   display: flex;
@@ -19,13 +19,19 @@ const EmptyGroupListText = styled.div`
 /**
  * Component to add participants to an empty Question Group
  */
-export default function EmptyGroupList({ onClick }: { onClick: () => void }): ReactElement {
+export default function EmptyGroupList({
+  onClick,
+}: {
+  onClick: () => void;
+}): ReactElement {
   return (
-    <EmptyGroupListContainer onClick={onClick} selected={false} data-cy={`queue-list-item-question-group`}>
-      <EmptyGroupListText>
-          Add Students
-      </EmptyGroupListText>
-      <PlusOutlined style={{paddingRight: "16px"}}/>
+    <EmptyGroupListContainer
+      onClick={onClick}
+      selected={false}
+      data-cy={`queue-list-item-question-group`}
+    >
+      <EmptyGroupListText>Add Students</EmptyGroupListText>
+      <PlusOutlined style={{ paddingRight: "16px" }} />
     </EmptyGroupListContainer>
   );
 }
