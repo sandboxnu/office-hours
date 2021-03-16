@@ -1,9 +1,13 @@
-prod = open('prod.sql', 'r') 
+import os
+
+os.system('pg_dump prod > prod.sql')
+
+prod = open('prod.sql', 'r')
 anonomized_prod = open('anonomized_prod.sql', 'w')
 
-lines = prod.readlines()
-
 anonymizing = False
+
+lines = prod.readlines()
 
 for line in lines:
   newLine = line
@@ -28,3 +32,5 @@ for line in lines:
 
 prod.close()
 anonomized_prod.close()
+
+os.remove('prod.sql')
