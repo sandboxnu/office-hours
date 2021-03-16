@@ -79,7 +79,7 @@ export default function AllQuestionsCheckList({
                 icon={<PhoneOutlined />}
                 onClick={() => {
                   onStartCall();
-                  // TODO: call the student, create group on backend
+                  // TODO: call the student, create group on backend etc
                 }}
                 disabled={!canHelp || checkedQuestions.size === 0}
                 data-cy="help-student"
