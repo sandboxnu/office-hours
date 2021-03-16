@@ -1,17 +1,17 @@
-import { ArrowLeftOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { useWindowWidth } from '@react-hook/window-size';
-import { Button, Skeleton, Tooltip } from 'antd';
-import Link from 'next/link';
-import React, { useState, ReactElement } from 'react';
-import styled from 'styled-components';
-import { useProfile } from '../../../hooks/useProfile';
-import { useQuestions } from '../../../hooks/useQuestions';
-import { SettingsOptions } from '../../Settings/SettingsPage';
-import EmptyGroupList from './QuestionGrouping/EmptyGroupList';
-import TAGroupDetail from './QuestionGrouping/TAGroupDetail';
-import { SPLIT_DETAIL_BKPT } from './TAQueueBreakpoints';
-import TAQueueDetail from './TAQueueDetail';
-import TAQueueListSection from './TAQueueListSection';
+import { ArrowLeftOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { useWindowWidth } from "@react-hook/window-size";
+import { Button, Skeleton, Tooltip } from "antd";
+import Link from "next/link";
+import React, { useState, ReactElement } from "react";
+import styled from "styled-components";
+import { useProfile } from "../../../hooks/useProfile";
+import { useQuestions } from "../../../hooks/useQuestions";
+import { SettingsOptions } from "../../Settings/SettingsPage";
+import EmptyGroupList from "./QuestionGrouping/EmptyGroupList";
+import TAGroupDetail from "./QuestionGrouping/TAGroupDetail";
+import { SPLIT_DETAIL_BKPT } from "./TAQueueBreakpoints";
+import TAQueueDetail from "./TAQueueDetail";
+import TAQueueListSection from "./TAQueueListSection";
 
 const Container = styled.div`
   flex: 1;
@@ -26,7 +26,9 @@ const Container = styled.div`
     margin-bottom: 0px;
     display: flex;
     flex-direction: row;
-    min-height: calc(100vh - 46px - 67px); // - (height of footer) - (height of navbar)
+    min-height: calc(
+      100vh - 46px - 67px
+    ); // - (height of footer) - (height of navbar)
   }
 `;
 
@@ -62,7 +64,13 @@ const BackToQueue = styled.div`
 /**
  * List and detail panel of the TA queue
  */
-export default function TAQueueListDetail({ queueId, courseId }: { queueId: number; courseId: number }): ReactElement {
+export default function TAQueueListDetail({
+  queueId,
+  courseId,
+}: {
+  queueId: number;
+  courseId: number;
+}): ReactElement {
   const user = useProfile();
   const [selectedQuestionId, setSelectedQuestionId] = useState<number>(null);
   const { questions, questionsError, mutateQuestions } = useQuestions(queueId);
@@ -73,9 +81,15 @@ export default function TAQueueListDetail({ queueId, courseId }: { queueId: numb
     setSelectedQuestionId(qId);
     setIsGrouping(false);
   };
-  const helpingQuestions = questions?.questionsGettingHelp?.filter((q) => q.taHelped.id === user.id);
-  const allQuestionsList = questions ? [...helpingQuestions, ...questions.queue, ...questions.priorityQueue] : [];
-  const selectedQuestion = allQuestionsList.find((q) => q.id === selectedQuestionId);
+  const helpingQuestions = questions?.questionsGettingHelp?.filter(
+    (q) => q.taHelped.id === user.id
+  );
+  const allQuestionsList = questions
+    ? [...helpingQuestions, ...questions.queue, ...questions.priorityQueue]
+    : [];
+  const selectedQuestion = allQuestionsList.find(
+    (q) => q.id === selectedQuestionId
+  );
   // set currentQuestion to null if it no longer exists in the queue
   if (selectedQuestionId && !selectedQuestion) {
     onSelectQuestion(null);
@@ -93,7 +107,9 @@ export default function TAQueueListDetail({ queueId, courseId }: { queueId: numb
     return (
       <EmptyQueueInfo>
         <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
-        {!user.phoneNotifsEnabled && !user.desktopNotifsEnabled && <NotifReminderButton courseId={courseId} />}
+        {!user.phoneNotifsEnabled && !user.desktopNotifsEnabled && (
+          <NotifReminderButton courseId={courseId} />
+        )}
       </EmptyQueueInfo>
     );
   }
@@ -101,7 +117,7 @@ export default function TAQueueListDetail({ queueId, courseId }: { queueId: numb
     <List>
       <div data-cy="list-helping">
         <TAQueueListSection
-          title={'Currently Helping'}
+          title={"Currently Helping"}
           questions={helpingQuestions}
           onClickQuestion={onSelectQuestion}
           selectedQuestionId={selectedQuestionId}
@@ -156,7 +172,9 @@ export default function TAQueueListDetail({ queueId, courseId }: { queueId: numb
   );
   const detail = (
     <Detail>
-      {selectedQuestion && <TAQueueDetail queueId={queueId} question={selectedQuestion} />}
+      {selectedQuestion && (
+        <TAQueueDetail queueId={queueId} question={selectedQuestion} />
+      )}
       {isGrouping && (
         <TAGroupDetail
           queueId={queueId}
@@ -181,7 +199,7 @@ export default function TAQueueListDetail({ queueId, courseId }: { queueId: numb
         <BackToQueue onClick={() => onSelectQuestion(null)}>
           <span>
             <ArrowLeftOutlined />
-            {' Back To Queue'}
+            {" Back To Queue"}
           </span>
         </BackToQueue>
         {detail}
@@ -217,7 +235,7 @@ function NotifReminderButton({ courseId }: { courseId: number }) {
     <>
       <Link
         href={{
-          pathname: '/settings',
+          pathname: "/settings",
           query: { cid: courseId, defaultPage: SettingsOptions.NOTIFICATIONS },
         }}
       >
