@@ -12,7 +12,10 @@ export const Description = styled.div`
   font-size: 12px;
   color: #8895a6;
 `;
-
+const SelectAllContainer = styled.div`
+  padding: 3px 8px;
+  border-bottom: 1px solid #cfd6de;
+`;
 const QuestionsList = styled.div`
   display: flex;
   flex-direction: column;
@@ -54,6 +57,13 @@ export default function AllQuestionsCheckList({
       setCheckedQuestions(new Set(checkedQuestions));
     }
   };
+  const onToggleSelectAll = (e) => {
+    if (e.target.checked) {
+      setCheckedQuestions(new Set(allQuestions.map((q) => q.id)));
+    } else {
+      setCheckedQuestions(new Set());
+    }
+  };
 
   return (
     <div>
@@ -78,9 +88,15 @@ export default function AllQuestionsCheckList({
           </Tooltip>
         </div>
       </Header>
-      {/*TODO: think abt the UX for this more
-       <Checkbox onChange={() => setCheckedQuestions(new Set(allQuestions.map(q => q.id)))}>Select All</Checkbox>
-          <Checkbox onChange={() => setCheckedQuestions(new Set())}>Deselect All</Checkbox> */}
+      <SelectAllContainer>
+        <Checkbox
+          checked={allQuestions.length === checkedQuestions.size}
+          indeterminate={checkedQuestions.size && checkedQuestions.size !== allQuestions.length}
+          onChange={onToggleSelectAll}
+        >
+          <span style={{paddingLeft: '9px'}}>Select All</span>
+        </Checkbox>
+      </SelectAllContainer>
       <QuestionsList>
         {allQuestions.map((q, i) => (
           <QuestionCheckbox key={q.id}>
