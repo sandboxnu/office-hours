@@ -561,8 +561,11 @@ export class Alert {
 }
 
 export class RephraseQuestionPayload extends AlertPayload {
-  @Type(() => Question)
-  question!: Question;
+  @IsInt()
+  questionId!: number;
+
+  @IsInt()
+  queueId!: number;
 }
 
 export class CreateAlertParams {

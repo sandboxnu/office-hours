@@ -10,7 +10,7 @@ type AlertsContainerProps = {
 export default function AlertsContainer({
   courseId,
 }: AlertsContainerProps): ReactElement {
-  const { data } = useSWR("/api/v1/alerts", async () => {
+  const { data, mutate: mutateAlerts } = useSWR("/api/v1/alerts", async () => {
     console.log("ligma 1", courseId);
     return await API.alerts.get(courseId);
   });
@@ -18,6 +18,7 @@ export default function AlertsContainer({
 
   const handleClose = async (alertId) => {
     await API.alerts.close(alertId);
+    mutateAlerts();
   };
 
   const alertDivs = alerts?.map((alert) => {
@@ -28,8 +29,8 @@ export default function AlertsContainer({
             courseId={courseId}
             payload={alert.payload as RephraseQuestionPayload}
             handleClose={async () => {
-              console.log("ligma", alert, alert.id);
               await API.alerts.close(alert.id);
+              mutateAlerts();
             }}
           />
         );

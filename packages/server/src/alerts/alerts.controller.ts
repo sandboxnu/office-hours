@@ -1,10 +1,8 @@
 import {
-  AlertType,
   CreateAlertParams,
   CreateAlertResponse,
   ERROR_MESSAGES,
   GetAlertsResponse,
-  RephraseQuestionPayload,
   Role,
 } from '@koh/common';
 import {
@@ -40,17 +38,11 @@ export class AlertsController {
           resolved: null,
         },
       })
-    ).map((alert) => {
-      return pick(alert, ['sent', 'alertType', 'payload', 'id']);
-    });
+    ).map((alert) => pick(alert, ['sent', 'alertType', 'payload', 'id']));
 
-    alerts.forEach((alert) => {
-      switch (alert.alertType) {
-        case AlertType.REPHRASE_QUESTION:
-          alert.payload = alert.payload as RephraseQuestionPayload;
-          break;
-      }
-    });
+    // TODO: service to process each type of alertType... wish we had ocaml pattern matching for once
+    // TODO: mostly for the rephrase question modal, should close the alert automatically if either the queue
+    // is closed, or the question is old
 
     return { alerts };
   }
@@ -90,8 +82,7 @@ export class AlertsController {
 
   @Patch(':alertId')
   @Roles(Role.STUDENT, Role.TA, Role.PROFESSOR)
-  async closeAlert(@Param(':alertId') alertId: number): Promise<void> {
-    console.log('ligma', alertId);
+  async closeAlert(@Param('alertId') alertId: number): Promise<void> {
     const alert = await AlertModel.findOne({
       where: {
         id: alertId,
@@ -105,5 +96,6 @@ export class AlertsController {
     }
 
     alert.resolved = new Date();
+    await alert.save();
   }
 }

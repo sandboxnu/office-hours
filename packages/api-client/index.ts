@@ -12,7 +12,6 @@ import {
   GetQuestionResponse,
   GetQueueResponse,
   GetReleaseNotesResponse,
-  GetStudentQuestionResponse,
   ListQuestionsResponse,
   TACheckoutResponse,
   TAUpdateStatusResponse,
@@ -119,12 +118,6 @@ class APIClient {
       this.req("POST", `/api/v1/questions`, CreateQuestionResponse, params),
     get: async (questionId: number): Promise<GetQuestionResponse> =>
       this.req("GET", `/api/v1/questions/${questionId}`, GetQuestionResponse),
-    getStudentQuestion: async (): Promise<GetStudentQuestionResponse> =>
-      this.req(
-        "GET",
-        `/api/v1/questions/get_student_question/`,
-        GetStudentQuestionResponse
-      ),
     update: async (questionId: number, params: UpdateQuestionParams) =>
       this.req(
         "PATCH",
