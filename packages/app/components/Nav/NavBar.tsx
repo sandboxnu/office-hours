@@ -116,8 +116,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     courseId = profile?.courses[0].course.id;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [defaultCourse, setDefaultCourse] = useLocalStorage(
+  const [_defaultCourse, setDefaultCourse] = useLocalStorage(
     "defaultCourse",
     null
   );

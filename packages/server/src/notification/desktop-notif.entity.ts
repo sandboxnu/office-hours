@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   BaseEntity,
   Column,
@@ -27,7 +26,6 @@ export class DesktopNotifModel extends BaseEntity {
   @Column('text')
   auth: string;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   @ManyToOne((type) => UserModel, (user) => user.desktopNotifs)
   @JoinColumn({ name: 'userId' })
   user: UserModel;

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Exclude, Expose } from 'class-transformer';
 import {
   BaseEntity,

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Heatmap } from '@koh/common';
 import { Exclude } from 'class-transformer';
 import {

@@ -22,5 +22,15 @@ module.exports = {
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "no-only-tests/no-only-tests": "error",
+    // if you have a variable that needs to exist but is unused, prepend it with an underscore
+    "@typescript-eslint/no-unused-vars": ["error", { varsIgnorePattern: "^_" }],
   },
+  overrides: [
+    {
+      files: ["*.entity.ts"],
+      rules: {
+        "@typescript-eslint/no-unused-vars": "off",
+      },
+    },
+  ],
 };
