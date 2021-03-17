@@ -1,5 +1,4 @@
 import React from "react";
-import styled from "styled-components";
 import { Question, User } from "@koh/common";
 import { Header } from "../TAQueueDetail";
 import { Description } from "./AllQuestionsChecklist";
