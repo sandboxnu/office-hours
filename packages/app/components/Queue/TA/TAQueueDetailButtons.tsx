@@ -51,20 +51,16 @@ export default function TAQueueDetailButtons({
   const { isCheckedIn, isHelping } = useTAInQueueInfo(queueId);
 
   const sendRephraseAlert = async () => {
-    try {
-      const payload: RephraseQuestionPayload = {
-        queueId,
-        questionId: question.id,
-      };
-      await API.alerts.create({
-        alertType: AlertType.REPHRASE_QUESTION,
-        courseId,
-        payload,
-        targetUserId: question.creator.id,
-      });
-    } catch (e) {
-      console.log("ligma", e);
-    }
+    const payload: RephraseQuestionPayload = {
+      queueId,
+      questionId: question.id,
+    };
+    await API.alerts.create({
+      alertType: AlertType.REPHRASE_QUESTION,
+      courseId,
+      payload,
+      targetUserId: question.creator.id,
+    });
   };
 
   if (question.status === OpenQuestionStatus.Helping) {
