@@ -1,7 +1,7 @@
-import React from 'react';
-import styled from 'styled-components';
-import { OpenQuestionStatus, Question } from '@koh/common';
-import TAQueueDetailButtons from './TAQueueDetailButtons';
+import React from "react";
+import styled from "styled-components";
+import { OpenQuestionStatus, Question } from "@koh/common";
+import TAQueueDetailButtons from "./TAQueueDetailButtons";
 
 const QuestionCardBox = styled.div`
   display: flex;
@@ -49,7 +49,9 @@ export default function TAQueueDetailQuestion({
   showButtons?: boolean;
 }) {
   return question.status === OpenQuestionStatus.Drafting ? (
-    <StillDrafting>{question.creator.name} is drafting their question...</StillDrafting>
+    <StillDrafting>
+      {question.creator.name} is drafting their question...
+    </StillDrafting>
   ) : (
     <QuestionCardBox>
       <div>
@@ -69,7 +71,11 @@ export default function TAQueueDetailQuestion({
           <p>No question details</p>
         )}
       </div>
-      <div>{showButtons && <TAQueueDetailButtons queueId={queueId} question={question} />}</div>
+      <div>
+        {showButtons && (
+          <TAQueueDetailButtons queueId={queueId} question={question} />
+        )}
+      </div>
     </QuestionCardBox>
   );
 }

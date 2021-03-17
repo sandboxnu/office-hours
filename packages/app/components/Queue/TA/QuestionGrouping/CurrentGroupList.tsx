@@ -1,12 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import {
-  Question,
-  User,
-} from "@koh/common";
-import {
-  Header
-} from "../TAQueueDetail";
+import { Question, User } from "@koh/common";
+import { Header } from "../TAQueueDetail";
 import { Description } from "./AllQuestionsChecklist";
 import { CheckOutlined } from "@ant-design/icons";
 import { Tooltip } from "antd";
@@ -43,7 +38,12 @@ export function CurrentGroupList({
       </Header>
       {questions.map((q) => (
         <div key={q.id}>
-          <TAQueueDetailQuestion question={q} queueId={queueId} showName showButtons />
+          <TAQueueDetailQuestion
+            question={q}
+            queueId={queueId}
+            showName
+            showButtons
+          />
         </div>
       ))}
     </div>
