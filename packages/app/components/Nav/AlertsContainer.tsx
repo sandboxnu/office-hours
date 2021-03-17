@@ -10,10 +10,10 @@ type AlertsContainerProps = {
 export default function AlertsContainer({
   courseId,
 }: AlertsContainerProps): ReactElement {
-  const { data, mutate: mutateAlerts } = useSWR("/api/v1/alerts", async () => {
-    console.log("ligma 1", courseId);
-    return await API.alerts.get(courseId);
-  });
+  const { data, mutate: mutateAlerts } = useSWR(
+    "/api/v1/alerts",
+    async () => await API.alerts.get(courseId)
+  );
   const alerts = data?.alerts;
 
   const handleClose = async (alertId) => {
@@ -28,14 +28,12 @@ export default function AlertsContainer({
           <StudentQuestionRephraseModal
             courseId={courseId}
             payload={alert.payload as RephraseQuestionPayload}
-            handleClose={async () => {
-              await API.alerts.close(alert.id);
-              mutateAlerts();
-            }}
+            handleClose={handleClose}
           />
         );
     }
   });
 
+  // probably want some better way of handling multiple alerts
   return <div>{alertDivs}</div>;
 }

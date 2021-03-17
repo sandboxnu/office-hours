@@ -21,10 +21,13 @@ import { User } from 'profile/user.decorator';
 import { UserModel } from 'profile/user.entity';
 import { Roles } from '../profile/roles.decorator';
 import { AlertModel } from './alerts.entity';
+import { AlertsService } from './alerts.service';
 
 @Controller('alerts')
 @UseGuards(JwtAuthGuard)
 export class AlertsController {
+  constructor(private alertsService: AlertsService) {}
+
   @Get(':courseId')
   async getAlerts(
     @Param('courseId') courseId: number,
@@ -40,11 +43,7 @@ export class AlertsController {
       })
     ).map((alert) => pick(alert, ['sent', 'alertType', 'payload', 'id']));
 
-    // TODO: service to process each type of alertType... wish we had ocaml pattern matching for once
-    // TODO: mostly for the rephrase question modal, should close the alert automatically if either the queue
-    // is closed, or the question is old
-
-    return { alerts };
+    return { alerts: await this.alertsService.removeStaleAlerts(alerts) };
   }
 
   @Post()

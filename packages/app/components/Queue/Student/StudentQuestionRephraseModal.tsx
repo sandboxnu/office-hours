@@ -16,6 +16,7 @@ export default function StudentQuestionRephraseModal({
   return (
     <Modal
       visible={true}
+      closable={false}
       footer={[
         <Button
           type={"primary"}
