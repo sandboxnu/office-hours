@@ -1,6 +1,6 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserModel } from '../profile/user.entity';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { RolesGuard } from '../guards/role.guard';
+import { UserModel } from '../profile/user.entity';
 
 @Injectable()
 export class CourseRolesGuard extends RolesGuard {
