@@ -1,22 +1,20 @@
+import { API } from "@koh/api-client";
+import { RephraseQuestionPayload } from "@koh/common";
 import { Button } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import React, { ReactElement } from "react";
+import useSWR from "swr";
 import { useCourse } from "../../../hooks/useCourse";
-import { useQuestions } from "../../../hooks/useQuestions";
-import { useQueue } from "../../../hooks/useQueue";
-import useSWR from "swr/esm/use-swr";
-import { API } from "@koh/api-client";
-import { RephraseQuestionPayload } from "@koh/common";
 
 type StudentQuestionRephraseModalProps = {
   courseId: number;
   payload: RephraseQuestionPayload;
-  handelClose: (number) => void;
+  handleClose: (number) => void;
 };
 export default function StudentQuestionRephraseModal({
   courseId,
   payload,
-  handelClose,
+  handleClose,
 }: StudentQuestionRephraseModalProps): ReactElement {
   const { course } = useCourse(courseId);
   const queues = course?.queues;
@@ -35,12 +33,12 @@ export default function StudentQuestionRephraseModal({
         <Button
           type={"primary"}
           key={"continue"}
-          target={`/course/${courseId}/queue/${question.queueId}`}
+          target={`/course/${courseId}/queue/${question?.queueId}`}
         >
           Edit Question
         </Button>,
       ]}
-      onCancel={handelClose}
+      onCancel={handleClose}
     >
       You have been requested to add more detail to your question by a member of
       the course staff. While you elaborate on your question your place in line

@@ -55,16 +55,11 @@ export default function TAQueueDetailButtons({
       const payload: RephraseQuestionPayload = {
         question: question,
       };
-      console.log({
-        alertType: AlertType.REPHRASE_QUESTION,
-        courseId,
-        payload,
-      });
-
       await API.alerts.create({
         alertType: AlertType.REPHRASE_QUESTION,
         courseId,
         payload,
+        targetUserId: question.creator.id,
       });
     } catch (e) {
       console.log("ligma", e);

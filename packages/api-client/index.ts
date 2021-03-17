@@ -1,5 +1,4 @@
 import {
-  CloseAlertResponse,
   CreateAlertParams,
   CreateAlertResponse,
   CreateQuestionParams,
@@ -123,7 +122,7 @@ class APIClient {
     getStudentQuestion: async (): Promise<GetStudentQuestionResponse> =>
       this.req(
         "GET",
-        `/api/v1/get_student_question/`,
+        `/api/v1/questions/get_student_question/`,
         GetStudentQuestionResponse
       ),
     update: async (questionId: number, params: UpdateQuestionParams) =>
@@ -179,14 +178,15 @@ class APIClient {
     get: async (): Promise<GetReleaseNotesResponse> =>
       this.req("GET", `/api/v1/release_notes`),
   };
-
   alerts = {
     get: async (courseId: number): Promise<GetAlertsResponse> =>
       this.req("GET", `/api/v1/alerts/${courseId}`),
     create: async (params: CreateAlertParams): Promise<CreateAlertResponse> =>
       this.req("POST", `/api/v1/alerts`, CreateAlertResponse, params),
-    close: async (alertId: number): Promise<CloseAlertResponse> =>
-      this.req("PATCH", `/api/v1/alerts/${alertId}`, CloseAlertResponse),
+    close: async (alertId: number): Promise<void> => {
+      console.log("balls", alertId);
+      this.req("PATCH", `/api/v1/alerts/${alertId}`);
+    },
   };
 
   constructor(baseURL = "") {

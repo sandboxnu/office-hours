@@ -3,7 +3,6 @@ import {
   IsBoolean,
   IsDate,
   IsDefined,
-  isEnum,
   IsEnum,
   IsInt,
   IsNotEmpty,
@@ -556,6 +555,9 @@ export class Alert {
 
   @IsObject()
   payload!: AlertPayload;
+
+  @IsInt()
+  id!: number;
 }
 
 export class RephraseQuestionPayload extends AlertPayload {
@@ -572,6 +574,9 @@ export class CreateAlertParams {
 
   @IsObject()
   payload!: AlertPayload;
+
+  @IsInt()
+  targetUserId!: number;
 }
 
 export class CreateAlertResponse extends Alert {}
@@ -580,8 +585,6 @@ export class GetAlertsResponse {
   @Type(() => Alert)
   alerts!: Alert[];
 }
-
-export class CloseAlertResponse extends Alert {}
 
 export class SSEQueueResponse {
   queue?: GetQueueResponse;

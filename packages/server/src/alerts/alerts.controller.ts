@@ -1,19 +1,5 @@
 import {
-  Get,
-  Param,
-  Controller,
-  Post,
-  Body,
-  BadRequestException,
-  Patch,
-} from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { User } from 'profile/user.decorator';
-import { UserModel } from 'profile/user.entity';
-import { AlertModel } from './alerts.entity';
-import {
   AlertType,
-  CloseAlertResponse,
   CreateAlertParams,
   CreateAlertResponse,
   ERROR_MESSAGES,
@@ -21,10 +7,25 @@ import {
   RephraseQuestionPayload,
   Role,
 } from '@koh/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { pick } from 'lodash';
+import { JwtAuthGuard } from 'login/jwt-auth.guard';
+import { User } from 'profile/user.decorator';
+import { UserModel } from 'profile/user.entity';
 import { Roles } from '../profile/roles.decorator';
+import { AlertModel } from './alerts.entity';
 
 @Controller('alerts')
+@UseGuards(JwtAuthGuard)
 export class AlertsController {
   @Get(':courseId')
   async getAlerts(
@@ -40,7 +41,7 @@ export class AlertsController {
         },
       })
     ).map((alert) => {
-      return pick(alert, ['sent', 'alertType', 'payload']);
+      return pick(alert, ['sent', 'alertType', 'payload', 'id']);
     });
 
     alerts.forEach((alert) => {
@@ -58,16 +59,13 @@ export class AlertsController {
   @Roles(Role.TA, Role.PROFESSOR)
   async createAlert(
     @Body() body: CreateAlertParams,
-    @User() user: UserModel,
   ): Promise<CreateAlertResponse> {
-    console.log('here', body);
-    const { alertType, courseId, payload } = body;
+    const { alertType, courseId, payload, targetUserId } = body;
 
     const anotherAlert = await AlertModel.findOne({
       where: {
-        type: alertType,
-        user: user,
-        payload: payload,
+        alertType,
+        userId: targetUserId,
         resolved: null,
       },
     });
@@ -82,27 +80,21 @@ export class AlertsController {
     const alert = await AlertModel.create({
       alertType,
       sent: new Date(),
-      resolved: null,
-      user: user,
+      userId: targetUserId,
       courseId,
       payload,
     }).save();
 
-    console.log('ligma4');
     return alert;
   }
 
   @Patch(':alertId')
   @Roles(Role.STUDENT, Role.TA, Role.PROFESSOR)
-  async closeAlert(
-    @Param(':alertId') alertId: number,
-    @User() user: UserModel,
-  ): Promise<CloseAlertResponse> {
+  async closeAlert(@Param(':alertId') alertId: number): Promise<void> {
+    console.log('ligma', alertId);
     const alert = await AlertModel.findOne({
       where: {
-        alertId: alertId,
-        user: user,
-        resolved: null,
+        id: alertId,
       },
     });
 
@@ -113,6 +105,5 @@ export class AlertsController {
     }
 
     alert.resolved = new Date();
-    return alert;
   }
 }
