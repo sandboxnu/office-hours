@@ -15,13 +15,12 @@ for line in lines:
   if "\.\n" == line:
     anonymizing = False
   
-  if anonymizing:
-    elements = line.split()
-    id = elements[0]
-    elements[1] = id + '@northeastern.edu'
-    elements[2] = ''
-    elements[5] = 'user' + id
-    elements[6] = 'person' + id
+  elements = line.split()
+  id = elements[0] # user id
+  elements[1] = id + '@northeastern.edu' #email
+  elements[2] = '' # photoURL
+  elements[5] = 'user' + id # first name
+  elements[6] = 'person' + id # last name
 
     newLine = " ".join(elements) + '\n'
 
