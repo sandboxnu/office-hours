@@ -545,6 +545,8 @@ export enum AlertType {
   REPHRASE_QUESTION = "rephraseQuestion",
 }
 
+export class AlertPayload {}
+
 export class Alert {
   @IsEnum(AlertType)
   alertType!: AlertType;
@@ -556,9 +558,7 @@ export class Alert {
   payload!: AlertPayload;
 }
 
-export interface AlertPayload {}
-
-export class RephraseQuestionPayload implements AlertPayload {
+export class RephraseQuestionPayload extends AlertPayload {
   @Type(() => Question)
   question!: Question;
 }
