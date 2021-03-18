@@ -547,6 +547,11 @@ export enum AlertType {
 
 export class AlertPayload {}
 
+export class RephraseQuestionPayload extends AlertPayload {
+  @Type(() => Question)
+  question!: Question;
+}
+
 export class Alert {
   @IsEnum(AlertType)
   alertType!: AlertType;
@@ -554,13 +559,8 @@ export class Alert {
   @IsDate()
   sent!: Date;
 
-  @IsObject()
+  @Type(() => AlertPayload)
   payload!: AlertPayload;
-}
-
-export class RephraseQuestionPayload extends AlertPayload {
-  @Type(() => Question)
-  question!: Question;
 }
 
 export class CreateAlertParams {

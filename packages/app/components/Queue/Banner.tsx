@@ -99,6 +99,17 @@ export const BannerDangerButton = styled(BannerButton)`
   }
 `;
 
+export const BannerOrangeButton = styled(BannerButton)`
+  ${({ disabled }) => disabled && "pointer-events: none"};
+  background: #ff8c00;
+  color: #fff;
+  &:hover,
+  &:focus {
+    background: #ffa700;
+    color: #fff;
+  }
+`;
+
 export const FinishHelpingButton = styled(BannerButton)`
   border: 0;
   background: #66bb6a;

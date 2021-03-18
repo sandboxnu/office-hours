@@ -3,6 +3,7 @@ import {
   CloseOutlined,
   DeleteOutlined,
   PhoneOutlined,
+  QuestionOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
 import { API } from "@koh/api-client";
@@ -21,6 +22,7 @@ import { useQuestions } from "../../../hooks/useQuestions";
 import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
 import {
   BannerDangerButton,
+  BannerOrangeButton,
   BannerPrimaryButton,
   CantFindButton,
   FinishHelpingButton,
@@ -156,7 +158,13 @@ export default function TAQueueDetailButtons({
           </Tooltip>
         </Popconfirm>
         <Tooltip title="Ask the student to rework their question">
-          <button onClick={sendRephraseAlert}>Rephrase</button>
+          <BannerOrangeButton
+            shape="circle"
+            icon={<QuestionOutlined />}
+            onClick={sendRephraseAlert}
+            data-cy="request-rephrase-question"
+            disabled={!isCheckedIn}
+          />
         </Tooltip>
         <Tooltip title={helpTooltip}>
           <span>
