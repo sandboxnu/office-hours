@@ -4,7 +4,6 @@ import {
   CreateQuestionResponse,
   ERROR_MESSAGES,
   GetQuestionResponse,
-  GetStudentQuestionResponse,
   LimboQuestionStatus,
   OpenQuestionStatus,
   QuestionStatusKeys,
@@ -54,21 +53,6 @@ export class QuestionController {
     @Param('questionId') questionId: number,
   ): Promise<GetQuestionResponse> {
     const question = await QuestionModel.findOne(questionId, {
-      relations: ['creator', 'taHelped'],
-    });
-
-    if (question === undefined) {
-      throw new NotFoundException();
-    }
-    return question;
-  }
-
-  @Get('get_student_question')
-  async getStudentQuestion(
-    @User() user: UserModel,
-  ): Promise<GetStudentQuestionResponse> {
-    const question = await QuestionModel.findOne({
-      where: { creator: user.id },
       relations: ['creator', 'taHelped'],
     });
 

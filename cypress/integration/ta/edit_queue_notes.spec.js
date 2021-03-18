@@ -13,7 +13,9 @@ describe("Edit Queue Notes", () => {
     cy.get(".ant-modal-close-x").click();
 
     cy.get("button[class*='EditNotesButton']").click();
-    cy.get("input").click().type("alex has a smooth brain{enter}");
+    cy.get("textarea").click().type("alex has a smooth brain");
+    cy.contains("button", "Save Changes").click();
+
     cy.get("body").contains("alex has a smooth brain");
   });
 
@@ -22,7 +24,7 @@ describe("Edit Queue Notes", () => {
 
     cy.get("[data-cy='editQueue']").click();
 
-    cy.get("input").type("read the question!{enter}");
+    cy.get("textarea").type("read the question!{enter}");
 
     cy.get("body").should("contain", "OK");
     cy.contains("button", "OK").click();

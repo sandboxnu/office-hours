@@ -1,4 +1,4 @@
-import { AlertType, AlertPayload } from '@koh/common';
+import { AlertPayload, AlertType } from '@koh/common';
 import { Exclude } from 'class-transformer';
 import {
   BaseEntity,
@@ -6,11 +6,10 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { UserModel } from '../profile/user.entity';
 import { CourseModel } from '../course/course.entity';
+import { UserModel } from '../profile/user.entity';
 
 @Entity('alert_model')
 export class AlertModel extends BaseEntity {

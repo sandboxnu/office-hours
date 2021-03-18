@@ -1,5 +1,4 @@
 import {
-  CloseAlertResponse,
   CreateAlertParams,
   CreateAlertResponse,
   CreateQuestionParams,
@@ -13,7 +12,6 @@ import {
   GetQuestionResponse,
   GetQueueResponse,
   GetReleaseNotesResponse,
-  GetStudentQuestionResponse,
   ListQuestionsResponse,
   TACheckoutResponse,
   TAUpdateStatusResponse,
@@ -62,6 +60,8 @@ class APIClient {
       this.req("GET", `/api/v1/profile`, GetProfileResponse),
     patch: async (body: UpdateProfileParams): Promise<GetProfileResponse> =>
       this.req("PATCH", `/api/v1/profile`, undefined, body),
+    deleteProfilePicture: async (): Promise<void> =>
+      this.req("DELETE", `/api/v1/profile/delete_profile_picture`),
   };
   course = {
     get: async (courseId: number) =>
@@ -118,12 +118,6 @@ class APIClient {
       this.req("POST", `/api/v1/questions`, CreateQuestionResponse, params),
     get: async (questionId: number): Promise<GetQuestionResponse> =>
       this.req("GET", `/api/v1/questions/${questionId}`, GetQuestionResponse),
-    getStudentQuestion: async (): Promise<GetStudentQuestionResponse> =>
-      this.req(
-        "GET",
-        `/api/v1/get_student_question/`,
-        GetStudentQuestionResponse
-      ),
     update: async (questionId: number, params: UpdateQuestionParams) =>
       this.req(
         "PATCH",
@@ -177,14 +171,15 @@ class APIClient {
     get: async (): Promise<GetReleaseNotesResponse> =>
       this.req("GET", `/api/v1/release_notes`),
   };
-
   alerts = {
     get: async (courseId: number): Promise<GetAlertsResponse> =>
       this.req("GET", `/api/v1/alerts/${courseId}`),
     create: async (params: CreateAlertParams): Promise<CreateAlertResponse> =>
       this.req("POST", `/api/v1/alerts`, CreateAlertResponse, params),
-    close: async (alertId: number): Promise<CloseAlertResponse> =>
-      this.req("PATCH", `/api/v1/alerts/${alertId}`, CloseAlertResponse),
+    close: async (alertId: number): Promise<void> => {
+      console.log("balls", alertId);
+      this.req("PATCH", `/api/v1/alerts/${alertId}`);
+    },
   };
 
   constructor(baseURL = "") {

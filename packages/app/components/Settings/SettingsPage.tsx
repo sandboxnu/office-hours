@@ -1,4 +1,9 @@
-import { BellOutlined, EditOutlined, UploadOutlined } from "@ant-design/icons";
+import {
+  BellOutlined,
+  EditOutlined,
+  UploadOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import { useWindowWidth } from "@react-hook/window-size";
 import { Button, Col, Menu, message, Row, Skeleton, Space, Upload } from "antd";
@@ -23,6 +28,10 @@ const VerticalDivider = styled.div`
     border-right: 1px solid #cfd6de;
     margin-right: 32px;
   }
+`;
+
+const ProfilePicButton = styled(Button)`
+  width: 207px;
 `;
 
 export default function SettingsPage({
@@ -50,6 +59,7 @@ export default function SettingsPage({
     if (!isLt1M) {
       message.error("Image must smaller than 1MB!");
     }
+
     return isJpgOrPng && isLt1M;
   };
 
@@ -82,24 +92,41 @@ export default function SettingsPage({
               />
             )}
             <Upload
-              style={{ marginBottom: "60px" }}
               action={"/api/v1/profile/upload_picture"}
               beforeUpload={beforeUpload}
               showUploadList={false}
               onChange={(info) => {
-                info.file.status === "uploading"
-                  ? setUploading(true)
-                  : setUploading(false);
+                setUploading(info.file.status === "uploading");
                 mutate();
               }}
             >
-              <Button
-                icon={<UploadOutlined />}
-                style={{ marginBottom: "60px" }}
-              >
+              <ProfilePicButton icon={<UploadOutlined />}>
                 Upload a Profile Picture
-              </Button>
+              </ProfilePicButton>
             </Upload>
+            {profile?.photoURL && (
+              <ProfilePicButton
+                icon={<DeleteOutlined />}
+                style={{ marginTop: "10px" }}
+                onClick={async () => {
+                  try {
+                    await API.profile.deleteProfilePicture();
+                    message.success(
+                      "You've successfully deleted your profile picture"
+                    );
+                    mutate();
+                  } catch (e) {
+                    message.error(
+                      "There was an error with deleting your profile picture, please contact the Khoury Office Hours team for assistance"
+                    );
+                    throw e;
+                  }
+                }}
+              >
+                Delete my Profile Picture
+              </ProfilePicButton>
+            )}
+            <div style={{ marginTop: "60px" }} />
           </>
         ) : null}
         <Menu
