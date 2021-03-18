@@ -1,6 +1,5 @@
-import { Question, Role } from "@koh/common";
+import { Question } from "@koh/common";
 import { Badge, Col, Row } from "antd";
-import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { useQuestions } from "../../hooks/useQuestions";
@@ -17,7 +16,6 @@ interface StatusRowProps {
  */
 export function TAStatuses({ queueId }: StatusRowProps): ReactElement {
   const { questions } = useQuestions(queueId);
-
   const {
     queue: { staffList },
   } = useQueue(queueId);
