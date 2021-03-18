@@ -3,8 +3,8 @@ import {
   Column,
   Entity,
   JoinColumn,
-  PrimaryGeneratedColumn,
   OneToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserModel } from '../profile/user.entity';
 

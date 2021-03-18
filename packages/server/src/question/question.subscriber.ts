@@ -1,6 +1,4 @@
-import { ClosedQuestionStatus, OpenQuestionStatus } from '@koh/common';
-import { QueueSSEService } from '../queue/queue-sse.service';
-import { QueueModel } from '../queue/queue.entity';
+import { ClosedQuestionStatus } from '@koh/common';
 import {
   Connection,
   EntitySubscriberInterface,
@@ -13,6 +11,8 @@ import {
   NotificationService,
   NotifMsgs,
 } from '../notification/notification.service';
+import { QueueSSEService } from '../queue/queue-sse.service';
+import { QueueModel } from '../queue/queue.entity';
 import { QuestionModel } from './question.entity';
 
 @EventSubscriber()

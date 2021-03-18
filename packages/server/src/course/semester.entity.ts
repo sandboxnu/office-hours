@@ -1,11 +1,11 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  BaseEntity,
-  OneToMany,
-} from 'typeorm';
 import { Season } from '@koh/common';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { CourseModel } from './course.entity';
 
 @Entity('semester_model')
