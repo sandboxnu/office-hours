@@ -1,6 +1,6 @@
 import { BaseEntity } from 'typeorm';
-import { CourseModel } from './course.entity';
 import { QueueModel } from '../queue/queue.entity';
+import { CourseModel } from './course.entity';
 export declare class OfficeHourModel extends BaseEntity {
     id: number;
     course: CourseModel;

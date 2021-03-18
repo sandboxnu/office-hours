@@ -1,4 +1,4 @@
-import { EntitySubscriberInterface, Connection, InsertEvent } from 'typeorm';
+import { Connection, EntitySubscriberInterface, InsertEvent } from 'typeorm';
 import { DesktopNotifModel } from './desktop-notif.entity';
 import { NotificationService } from './notification.service';
 export declare class DesktopNotifSubscriber implements EntitySubscriberInterface<DesktopNotifModel> {

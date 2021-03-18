@@ -8,7 +8,7 @@ export declare type ModuleModifier = (t: TestingModuleBuilder) => TestingModuleB
 export declare const TestTypeOrmModule: import("@nestjs/common").DynamicModule;
 export declare const mockTwilio: {
     getFullPhoneNumber: (s: string) => Promise<string>;
-    sendSMS: () => Promise<any>;
+    sendSMS: () => Promise<null>;
 };
 export declare const TestConfigModule: import("@nestjs/common").DynamicModule;
 export declare function setupIntegrationTest(module: Type<any>, modifyModule?: ModuleModifier): (u?: SupertestOptions) => supertest.SuperTest<supertest.Test>;

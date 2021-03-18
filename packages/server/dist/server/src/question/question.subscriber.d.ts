@@ -1,6 +1,6 @@
-import { QueueSSEService } from '../queue/queue-sse.service';
 import { Connection, EntitySubscriberInterface, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
 import { NotificationService } from '../notification/notification.service';
+import { QueueSSEService } from '../queue/queue-sse.service';
 import { QuestionModel } from './question.entity';
 export declare class QuestionSubscriber implements EntitySubscriberInterface<QuestionModel> {
     private notifService;
