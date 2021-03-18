@@ -1,4 +1,6 @@
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { RedisModule } from 'nestjs-redis';
 import * as iCal from 'node-ical';
 import { mocked } from 'ts-jest/utils';
 import { Connection } from 'typeorm';
@@ -426,18 +428,29 @@ END:VEVENT
 describe('IcalService', () => {
   let service: IcalService;
   let conn: Connection;
+  let app: INestApplication;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TestTypeOrmModule],
+      imports: [
+        TestTypeOrmModule,
+        RedisModule.register([
+          { name: 'pub' },
+          { name: 'sub' },
+          { name: 'db' },
+        ]),
+      ],
       providers: [IcalService],
     }).compile();
 
     service = module.get<IcalService>(IcalService);
     conn = module.get<Connection>(Connection);
+    app = module.createNestApplication();
+    await app.init();
   });
 
   afterAll(async () => {
+    await app.close();
     await conn.close();
   });
 

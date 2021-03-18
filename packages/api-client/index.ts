@@ -57,6 +57,8 @@ class APIClient {
       this.req("GET", `/api/v1/profile`, GetProfileResponse),
     patch: async (body: UpdateProfileParams): Promise<GetProfileResponse> =>
       this.req("PATCH", `/api/v1/profile`, undefined, body),
+    deleteProfilePicture: async (): Promise<void> =>
+      this.req("DELETE", `/api/v1/profile/delete_profile_picture`),
   };
   course = {
     get: async (courseId: number) =>
