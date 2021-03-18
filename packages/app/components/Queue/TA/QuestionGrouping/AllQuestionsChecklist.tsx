@@ -20,11 +20,6 @@ const QuestionsList = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const QuestionCheckbox = styled.div`
-  display: flex;
-  align-items: center;
-  margin-left: 8px;
-`;
 
 export default function AllQuestionsCheckList({
   groupCreator,
@@ -104,20 +99,15 @@ export default function AllQuestionsCheckList({
       </SelectAllContainer>
       <QuestionsList>
         {allQuestions.map((q, i) => (
-          <QuestionCheckbox key={q.id}>
-            <Checkbox
-              checked={checkedQuestions.has(q.id)}
-              onChange={(e) => onQuestionChecked(q)}
+          <div key={q.id}>
+            <TAQueueListItem
+              question={q}
+              index={i + 1}
+              selected={checkedQuestions.has(q.id)}
+              onClick={() => onQuestionChecked(q)}
+              showCheckbox
             />
-            <div style={{ flexGrow: 1, marginLeft: "5px" }}>
-              <TAQueueListItem
-                question={q}
-                index={i + 1}
-                selected={checkedQuestions.has(q.id)}
-                onClick={() => onQuestionChecked(q)}
-              />
-            </div>
-          </QuestionCheckbox>
+          </div>
         ))}
       </QuestionsList>
     </div>

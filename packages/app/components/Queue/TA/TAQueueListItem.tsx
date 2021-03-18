@@ -1,6 +1,6 @@
 import { HourglassOutlined, QuestionOutlined } from "@ant-design/icons";
 import { OpenQuestionStatus, Question } from "@koh/common";
-import { Badge } from "antd";
+import { Badge, Checkbox } from "antd";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { getWaitTime } from "../../../utils/TimeUtil";
@@ -16,7 +16,8 @@ function truncate(string: string, length: number) {
 
 export const Container = styled.div<{ selected: boolean }>`
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  width: 100%;
 
   padding-top: 16px;
   padding-bottom: 12px;
@@ -27,6 +28,13 @@ export const Container = styled.div<{ selected: boolean }>`
   &:hover {
     background: ${({ selected }) => (selected ? "#EFF8FF" : "#ECF0F3")};
   }
+`;
+const StyledCheckbox = styled(Checkbox)`
+  margin-left: 8px;
+`;
+const BodyContainer = styled.div`
+  display: flex;
+  align-items: flex-start;
 `;
 const AvatarContainer = styled.div`
   margin: 10px 12px 0 25px;
@@ -47,11 +55,13 @@ export default function TAQueueListItem({
   selected,
   question,
   onClick,
+  showCheckbox,
 }: {
   index: number | false;
   selected: boolean;
   question: Question;
   onClick: () => void;
+  showCheckbox?: boolean;
 }): ReactElement {
   const isDrafting = question.status === OpenQuestionStatus.Drafting;
 
@@ -67,27 +77,36 @@ export default function TAQueueListItem({
       selected={selected}
       data-cy={`queue-list-item-${question.id}`}
     >
-      <AvatarContainer>
-        <Badge
-          // 0 is not displayed, hide if no index
-          count={index ? `#${index}` : 0}
-          style={{ backgroundColor: "#3684c6" }}
-          offset={[-40, 0]}
-        >
-          <KOHAvatar
-            size={40}
-            name={question.creator.name}
-            photoURL={question.creator.photoURL}
-          />
-        </Badge>
-      </AvatarContainer>
-      <QuestionInfoContainer>
-        <Name>{question.creator.name}</Name>
-        <QuestionText>
-          {isDrafting ? <i>Still Drafting...</i> : truncate(question.text, 80)}
-        </QuestionText>
-        <QuestionMetaRow info={metaInfo} />
-      </QuestionInfoContainer>
+      {showCheckbox && (
+        <StyledCheckbox checked={selected} onChange={() => onClick()} />
+      )}
+      <BodyContainer>
+        <AvatarContainer>
+          <Badge
+            // 0 is not displayed, hide if no index
+            count={index ? `#${index}` : 0}
+            style={{ backgroundColor: "#3684c6" }}
+            offset={[-40, 0]}
+          >
+            <KOHAvatar
+              size={40}
+              name={question.creator.name}
+              photoURL={question.creator.photoURL}
+            />
+          </Badge>
+        </AvatarContainer>
+        <QuestionInfoContainer>
+          <Name>{question.creator.name}</Name>
+          <QuestionText>
+            {isDrafting ? (
+              <i>Still Drafting...</i>
+            ) : (
+              truncate(question.text, 80)
+            )}
+          </QuestionText>
+          <QuestionMetaRow info={metaInfo} />
+        </QuestionInfoContainer>
+      </BodyContainer>
     </Container>
   );
 }
