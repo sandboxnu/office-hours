@@ -8,7 +8,7 @@ import {
   StatusSentToCreator,
 } from '@koh/common';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { classToClass, classToPlain } from 'class-transformer';
+import { classToClass } from 'class-transformer';
 import { pick } from 'lodash';
 import { QuestionModel } from 'question/question.entity';
 import { Connection, In } from 'typeorm';

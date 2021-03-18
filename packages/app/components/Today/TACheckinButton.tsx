@@ -21,11 +21,6 @@ export const CheckOutButton = styled(Button)`
   border-radius: 6px;
 `;
 
-const CheckoutModalButtonRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
-
 type CheckInButtonState =
   | "CheckedIn"
   | "CheckedOut"

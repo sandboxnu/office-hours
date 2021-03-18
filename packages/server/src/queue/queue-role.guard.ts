@@ -6,8 +6,8 @@ import { QueueModel } from './queue.entity';
 
 @Injectable()
 export class QueueRolesGuard extends RolesGuard {
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   async setupData(
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     request: any,
   ): Promise<{ courseId: number; user: UserModel }> {
     const queue = await QueueModel.findOne(request.params.queueId);

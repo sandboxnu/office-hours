@@ -13,6 +13,7 @@ import { QuestionModel } from './question.entity';
 export class QuestionRolesGuard extends RolesGuard {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   async setupData(
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     request: any,
   ): Promise<{ courseId: number; user: UserModel }> {
     let queueId;

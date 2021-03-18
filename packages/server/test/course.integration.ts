@@ -184,7 +184,7 @@ describe('Course Integration', () => {
         course: queue1.course,
       });
 
-      const response = await supertest({ userId: ta.id })
+      await supertest({ userId: ta.id })
         .post(`/courses/${queue1.courseId}/ta_location/${queue1.room}`)
         .expect(201);
 
