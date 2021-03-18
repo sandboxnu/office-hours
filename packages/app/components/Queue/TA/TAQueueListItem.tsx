@@ -71,15 +71,9 @@ export default function TAQueueListItem({
     metaInfo.push([<QuestionOutlined key="q" />, question.questionType]);
   }
   return (
-    <Container
-      onClick={onClick}
-      selected={selected}
-      data-cy={`queue-list-item-${question.id}`}
-    >
-      {showCheckbox && (
-        <StyledCheckbox checked={selected} onChange={() => onClick()} />
-      )}
-      <BodyContainer>
+    <Container selected={selected} data-cy={`queue-list-item-${question.id}`}>
+      {showCheckbox && <StyledCheckbox checked={selected} onChange={onClick} />}
+      <BodyContainer onClick={onClick}>
         <AvatarContainer>
           <Badge
             // 0 is not displayed, hide if no index
