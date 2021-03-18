@@ -7,8 +7,9 @@ type Hook = () => User;
 
 export const useProfile: Hook = () => {
   const { pathname } = useRouter();
-  const { data, error } = useSWR(`api/v1/profile`, async () =>
-    API.profile.index()
+  const { data, error } = useSWR(
+    `api/v1/profile`,
+    async () => await API.profile.index()
   );
 
   // Redirect to login page (later Khoury Admin login) if API request returns an error or empty object

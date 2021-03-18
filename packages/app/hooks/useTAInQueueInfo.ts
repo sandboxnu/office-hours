@@ -15,9 +15,9 @@ interface TAInQueueInfo {
 export function useTAInQueueInfo(queueId: number): TAInQueueInfo {
   const user = useProfile();
 
-  const { queue, mutateQueue } = useQueue(queueId);
+  const { queue } = useQueue(queueId);
 
-  const { questions, mutateQuestions } = useQuestions(queueId);
+  const { questions } = useQuestions(queueId);
   const helpingQuestions = questions?.questionsGettingHelp?.filter(
     (question) => question.taHelped?.id === user?.id
   );

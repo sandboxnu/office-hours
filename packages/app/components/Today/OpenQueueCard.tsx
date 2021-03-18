@@ -81,12 +81,6 @@ const SaveButton = styled(Button)`
   font-size: 14px;
 `;
 
-const ExtraText = styled.div`
-  color: #8895a6;
-  font-size: 14px;
-  font-weight: normal;
-`;
-
 const NotesInput = styled(Input.TextArea)`
   border-radius: 6px;
   border: 1px solid #b8c4ce;

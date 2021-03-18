@@ -24,7 +24,7 @@ export class ApmInterceptor implements NestInterceptor {
     );
   }
 
-  addRouteToSentry(context: ExecutionContext) {
+  addRouteToSentry(context: ExecutionContext): void {
     // Sentry has issues grouping transactions by route. (as of 12/14/2020)
     // ex: /courses/1 and /courses/2 end up two different transactions.
     // This code groups them both to /courses/:id using nest.js

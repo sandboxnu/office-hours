@@ -1,16 +1,16 @@
-import { Connection } from 'typeorm';
-import { ConfigModule } from '@nestjs/config';
 import { INestApplication, Type } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModuleBuilder } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import * as supertest from 'supertest';
-import { LoginModule } from '../../src/login/login.module';
-import { JwtService } from '@nestjs/jwt';
-import { addGlobalsToApp } from '../../src/bootstrap';
-import { TwilioService } from '../../src/notification/twilio/twilio.service';
-import { mocked } from 'ts-jest/utils';
-import { NotificationService } from 'notification/notification.service';
 import { RedisModule } from 'nestjs-redis';
+import { NotificationService } from 'notification/notification.service';
+import * as supertest from 'supertest';
+import { mocked } from 'ts-jest/utils';
+import { Connection } from 'typeorm';
+import { addGlobalsToApp } from '../../src/bootstrap';
+import { LoginModule } from '../../src/login/login.module';
+import { TwilioService } from '../../src/notification/twilio/twilio.service';
 
 export interface SupertestOptions {
   userId?: number;
@@ -29,9 +29,10 @@ export const TestTypeOrmModule = TypeOrmModule.forRoot({
 
 // Fake twilio so we don't try to text people in tests
 export const mockTwilio = {
-  getFullPhoneNumber: async (s: string) =>
-    s.startsWith('real') ? s : 'real' + s,
-  sendSMS: async () => null,
+  getFullPhoneNumber: async (s: string): Promise<string> => {
+    return s.startsWith('real') ? s : 'real' + s;
+  },
+  sendSMS: async (): Promise<null> => null,
 };
 
 export const TestConfigModule = ConfigModule.forRoot({
