@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"6fbb0e840391a6bb2f6cf8c9ea5ceb5f3686bfd0"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"e7a0c1c7eb3f9be706f2594d7a3eff9479716e46"};
 
 /***/ }),
 /* 2 */
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "6fbb0e840391a6bb2f6cf8c9ea5ceb5f3686bfd0",
+        release: "e7a0c1c7eb3f9be706f2594d7a3eff9479716e46",
         environment: common_1.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -2496,6 +2496,12 @@ let QueueService = class QueueService {
             const newLQR = new common_1.ListQuestionsResponse();
             Object.assign(newLQR, questions);
             newLQR.queue = questions.queue.map((question) => {
+                const creator = question.creator.id === userId
+                    ? question.creator
+                    : lodash_1.pick(question.creator, ['id']);
+                return class_transformer_1.classToClass(question_entity_1.QuestionModel.create(Object.assign(Object.assign({}, question), { creator })));
+            });
+            newLQR.questionsGettingHelp = questions.questionsGettingHelp.map((question) => {
                 const creator = question.creator.id === userId
                     ? question.creator
                     : lodash_1.pick(question.creator, ['id']);
