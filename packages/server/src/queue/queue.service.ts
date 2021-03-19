@@ -94,8 +94,6 @@ export class QueueService {
 
       newLQR.questionsGettingHelp = questions.questionsGettingHelp.map(
         (question) => {
-          const newQ = new Question();
-          Object.assign(newQ, question);
           const creator =
             question.creator.id === userId
               ? question.creator
