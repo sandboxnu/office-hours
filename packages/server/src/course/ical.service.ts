@@ -233,7 +233,7 @@ export class IcalService {
 
     const redisDB = await this.redisService.getClient('db');
 
-    const redlock = new Redlock([redisDB], { retryCount: 0 });
+    const redlock = new Redlock([redisDB]);
 
     redlock.on('clientError', function (err) {
       console.error('A redis error has occurred:', err);
