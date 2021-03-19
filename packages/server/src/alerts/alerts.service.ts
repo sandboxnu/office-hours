@@ -1,7 +1,7 @@
 import { Alert, AlertType, RephraseQuestionPayload } from '@koh/common';
 import { Injectable } from '@nestjs/common';
 import { QuestionModel } from 'question/question.entity';
-import { QueueModel } from 'queue/queue.entity';
+import { QueueModel } from '../queue/queue.entity';
 import { Connection } from 'typeorm';
 
 @Injectable()
