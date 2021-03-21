@@ -21,7 +21,7 @@ export class QueueCleanService {
   constructor(private connection: Connection) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  private async cleanAllQueues(): Promise<void> {
+  async cleanAllQueues(): Promise<void> {
     const queuesWithOpenQuestions: QueueModel[] = await QueueModel.getRepository()
       .createQueryBuilder('queue')
       .leftJoinAndSelect('queue_model.questions', 'question')
