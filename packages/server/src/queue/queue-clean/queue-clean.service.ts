@@ -21,24 +21,17 @@ export class QueueCleanService {
   constructor(private connection: Connection) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  async cleanAllQueues(): Promise<void> {
-    const activeCourseSections = await CourseSectionMappingModel.getRepository()
-      .createQueryBuilder('course_section')
-      .leftJoinAndSelect('course_section.course', 'course')
-      .leftJoinAndSelect('course.queues', 'queues')
+  private async cleanAllQueues(): Promise<void> {
+    const queuesWithOpenQuestions: QueueModel[] = await QueueModel.getRepository()
+      .createQueryBuilder('queue')
+      .leftJoinAndSelect('queue_model.questions', 'question')
+      .where('question.status IN (:...status)', {
+        status: Object.values(OpenQuestionStatus),
+      })
       .getMany();
 
-    const uniqueActiveCourses = new Set(
-      activeCourseSections.map((section) => section.course),
-    );
-
-    const uniqueQueuesToBeCleaned = [];
-    uniqueActiveCourses.forEach((course) =>
-      uniqueQueuesToBeCleaned.push(...course.queues),
-    );
-
     await Promise.all(
-      uniqueQueuesToBeCleaned.map((queue) => this.cleanQueue(queue.id)),
+      queuesWithOpenQuestions.map((queue) => this.cleanQueue(queue.id)),
     );
   }
 
