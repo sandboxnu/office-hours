@@ -70,6 +70,7 @@ export const QuestionFactory = new Factory(QuestionModel)
   .attr('text', 'question description')
   .attr('status', 'Queued')
   .attr('questionType', QuestionType.Other)
+  .attr('groupable', true)
   .assocOne('queue', QueueFactory)
   .assocOne('creator', UserFactory)
   .attr('createdAt', new Date());

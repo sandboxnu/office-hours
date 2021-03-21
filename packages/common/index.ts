@@ -220,6 +220,7 @@ export class Question {
   @Type(() => Date)
   closedAt?: Date;
   questionType?: QuestionType;
+  groupable!: boolean;
   status!: QuestionStatus;
   location?: string;
   isOnline?: boolean;
@@ -467,6 +468,9 @@ export class CreateQuestionParams {
   @IsOptional()
   questionType?: QuestionType;
 
+  @IsBoolean()
+  groupable!: boolean;
+
   @IsInt()
   queueId!: number;
 
@@ -491,6 +495,9 @@ export class UpdateQuestionParams {
   @IsEnum(QuestionType)
   @IsOptional()
   questionType?: QuestionType;
+
+  @IsBoolean()
+  groupable?: boolean;
 
   @IsInt()
   @IsOptional()

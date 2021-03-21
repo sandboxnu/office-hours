@@ -42,6 +42,7 @@ interface QuestionFormProps {
   finishQuestion: (
     text: string,
     questionType: QuestionType,
+    groupable: boolean,
     router: NextRouter,
     courseId: number
   ) => void;
@@ -72,8 +73,9 @@ export default function QuestionForm({
   const [questionText, setQuestionText] = useState<string>(
     question?.text || ""
   );
-  const [questionGroupable, setQuestionGroupable] = useState<boolean>(true);
-  // TODO: get the actual groupable field after the Question type has been modified
+  const [questionGroupable, setQuestionGroupable] = useState<boolean>(
+    question?.groupable === undefined || question?.groupable
+  );
 
   useEffect(() => {
     if (question && !visible) {
@@ -112,20 +114,27 @@ export default function QuestionForm({
   // on question groupable change, update the question groupable state
   const onGroupableChange = (e: RadioChangeEvent) => {
     setQuestionGroupable(e.target.value);
+    console.log(e.target.value);
 
     const questionFromStorage = storageQuestion ?? {};
 
     setStoredQuestion({
       id: question?.id,
       ...questionFromStorage,
-      // TODO: set the groupable field when it exists
+      groupable: e.target.value,
     });
   };
 
   // on button submit click, conditionally choose to go back to the queue
   const onClickSubmit = () => {
     if (questionTypeInput && questionText && questionText !== "") {
-      finishQuestion(questionText, questionTypeInput, router, Number(courseId));
+      finishQuestion(
+        questionText,
+        questionTypeInput,
+        questionGroupable,
+        router,
+        Number(courseId)
+      );
     }
   };
 

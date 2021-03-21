@@ -255,9 +255,7 @@ function QuestionDetailRow({ studentQuestion }: { studentQuestion: Question }) {
       <Col flex="0 0 89px">
         <InfoHeader>groupable</InfoHeader>
         <div>
-          {/* <CheckOutlined /> */}
-          <CloseOutlined />
-          {/* TODO: use studentQuestion.groupable */}
+          {studentQuestion.groupable ? <CheckOutlined /> : <CloseOutlined />}
         </div>
       </Col>
     </QuestionDetails>

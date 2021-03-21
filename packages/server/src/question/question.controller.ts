@@ -68,7 +68,7 @@ export class QuestionController {
     @Body() body: CreateQuestionParams,
     @User() user: UserModel,
   ): Promise<CreateQuestionResponse> {
-    const { text, questionType, queueId, force } = body;
+    const { text, questionType, groupable, queueId, force } = body;
 
     const queue = await QueueModel.findOne({
       where: { id: queueId },
@@ -115,6 +115,7 @@ export class QuestionController {
       creator: user,
       text,
       questionType,
+      groupable,
       status: QuestionStatusKeys.Drafting,
       createdAt: new Date(),
       isOnline: true,
