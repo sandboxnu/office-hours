@@ -1,6 +1,5 @@
 import { User, Question } from "@koh/common";
 import React, { ReactElement, useState } from "react";
-import styled from "styled-components";
 import AllQuestionsCheckList from "./AllQuestionsChecklist";
 import { CurrentGroupList } from "./CurrentGroupList";
 
