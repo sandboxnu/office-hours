@@ -28,7 +28,7 @@ export default function AlertsContainer({
           <StudentQuestionRephraseModal
             courseId={courseId}
             payload={alert.payload as RephraseQuestionPayload}
-            handleClose={handleClose}
+            handleClose={async () => handleClose(alert.id)}
           />
         );
     }

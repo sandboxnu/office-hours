@@ -177,7 +177,7 @@ class APIClient {
     create: async (params: CreateAlertParams): Promise<CreateAlertResponse> =>
       this.req("POST", `/api/v1/alerts`, CreateAlertResponse, params),
     close: async (alertId: number): Promise<void> => {
-      console.log("balls", alertId);
+      console.log("eddy", alertId);
       this.req("PATCH", `/api/v1/alerts/${alertId}`);
     },
   };

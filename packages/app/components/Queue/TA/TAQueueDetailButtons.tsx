@@ -57,12 +57,16 @@ export default function TAQueueDetailButtons({
       queueId,
       questionId: question.id,
     };
-    await API.alerts.create({
-      alertType: AlertType.REPHRASE_QUESTION,
-      courseId,
-      payload,
-      targetUserId: question.creator.id,
-    });
+    try {
+      await API.alerts.create({
+        alertType: AlertType.REPHRASE_QUESTION,
+        courseId,
+        payload,
+        targetUserId: question.creator.id,
+      });
+    } catch (e) {
+      //If the ta creates an alert that already exists the error is caught and nothing happens
+    }
   };
 
   if (question.status === OpenQuestionStatus.Helping) {

@@ -6,7 +6,7 @@ import React, { ReactElement } from "react";
 type StudentQuestionRephraseModalProps = {
   courseId: number;
   payload: RephraseQuestionPayload;
-  handleClose: (number) => void;
+  handleClose: () => void;
 };
 export default function StudentQuestionRephraseModal({
   courseId,
@@ -16,7 +16,6 @@ export default function StudentQuestionRephraseModal({
   return (
     <Modal
       visible={true}
-      closable={false}
       footer={[
         <Button
           type={"primary"}
@@ -27,6 +26,7 @@ export default function StudentQuestionRephraseModal({
           Edit Question
         </Button>,
       ]}
+      closable={false}
     >
       You have been requested to add more detail to your question by a member of
       the course staff. While you elaborate on your question your place in line
