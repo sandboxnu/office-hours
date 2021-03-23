@@ -29,10 +29,13 @@ for line in lines:
     if anonymizing_user:
         elements = line.split()
         id = elements[0]  # user id
-        elements[1] = id + '@northeastern.edu'  # email
-        elements[2] = ''  # photoURL
-        elements[5] = 'user' + id  # first name
-        elements[6] = 'person' + id  # last name
+        elements[1] = id + '@northeastern.edu'  # email            
+        elements[-2] = 'user' + id  # first name
+        elements[-1] = 'person' + id  # last name
+        if len(elements) == 7:
+            elements[2] = ''  # photoURL
+        elif len(elements) < 6:
+            raise ValueError('The number of elements was less than 6')
 
         newLine = " ".join(elements) + '\n'
 
