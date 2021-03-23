@@ -10,7 +10,7 @@ describe("Login", () => {
     createAndLoginTA();
     cy.visit(`/`);
     cy.get(".ant-modal-close-x").click();
-    cy.get(".ant-avatar").click();
+    cy.get(".ant-avatar").click({ force: true });
     cy.get(":nth-child(4) > :nth-child(2) > a").click();
     cy.get("body").should("contain", "You are currently not logged in");
   });
