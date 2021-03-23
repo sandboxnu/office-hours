@@ -26,7 +26,7 @@ export class QueueCleanService {
       .createQueryBuilder('queue')
       .leftJoinAndSelect('queue_model.questions', 'question')
       .where('question.status IN (:...status)', {
-        status: Object.values(OpenQuestionStatus),
+        status: [...Object.values(OpenQuestionStatus), ...Object.values(LimboQuestionStatus)],
       })
       .getMany();
 
