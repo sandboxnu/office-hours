@@ -11,7 +11,6 @@ import { Connection, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { QuestionModel } from '../../question/question.entity';
 import { QueueModel } from '../queue.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
-import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 
 /**
  * Clean the queue and mark stale
