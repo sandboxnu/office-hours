@@ -6,13 +6,16 @@ import React, { ReactElement } from "react";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
 import NavBar from "../../../components/Nav/NavBar";
 import { Container } from "../../../components/Queue/QueueListSharedComponents";
-import CourseOverrideSettings from "../../../components/Settings/CourseOverrideSettings";
+import CourseAdminSettings, {
+  CourseAdminOptions,
+} from "../../../components/Settings/CourseAdminSettings";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 
 export default function CourseOverride(): ReactElement {
   const router = useRouter();
   const courseId = router.query["cid"];
   const role = useRoleInCourse(Number(courseId));
+  const defaultPage = router.query["defaultPage"];
 
   if (role !== Role.PROFESSOR) {
     return <DefaultErrorPage statusCode={404} />;
@@ -21,11 +24,16 @@ export default function CourseOverride(): ReactElement {
   return (
     <StandardPageContainer>
       <Head>
-        <title>Override Settings | Khoury Office Hours</title>
+        <title>Course Admin Settings | Khoury Office Hours</title>
       </Head>
       <NavBar courseId={Number(courseId)} />
       <Container>
-        {courseId && <CourseOverrideSettings courseId={Number(courseId)} />}
+        {courseId && (
+          <CourseAdminSettings
+            courseId={Number(courseId)}
+            defaultPage={defaultPage as CourseAdminOptions}
+          />
+        )}
       </Container>
     </StandardPageContainer>
   );
