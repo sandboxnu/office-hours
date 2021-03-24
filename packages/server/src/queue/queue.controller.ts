@@ -1,6 +1,7 @@
 import {
   GetQueueResponse,
   ListQuestionsResponse,
+  Question,
   Role,
   UpdateQueueParams,
 } from '@koh/common';
@@ -18,7 +19,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { UserId } from 'profile/user.decorator';
+import { User, UserId } from 'profile/user.decorator';
 import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { Roles } from '../profile/roles.decorator';
@@ -28,6 +29,8 @@ import { QueueSSEService } from './queue-sse.service';
 import { QueueModel } from './queue.entity';
 import { QueueService } from './queue.service';
 import { QueueCleanService } from './queue-clean/queue-clean.service';
+import { UserModel } from '../profile/user.entity';
+import { QuestionGroupModel } from '../question/question-group.entity';
 
 @Controller('queues')
 @UseGuards(JwtAuthGuard, QueueRolesGuard)
@@ -105,5 +108,23 @@ export class QueueController {
     });
 
     this.queueSSEService.subscribeClient(queueId, res, { role, userId });
+  }
+
+  @Post(':queueId/group')
+  @Roles(Role.TA, Role.PROFESSOR)
+  async createGroup(
+    @Param('queueId') queueId: number,
+    @Body() body: Array<Question>,
+    @User() user: UserModel,
+  ): Promise<void> {
+    body.forEach((question) => {});
+
+    const group = await QuestionGroupModel.create({
+      queueId,
+      creatorId: user.id,
+      questions: body,
+    }).save();
+
+    return group;
   }
 }

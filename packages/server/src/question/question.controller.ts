@@ -6,6 +6,7 @@ import {
   GetQuestionResponse,
   LimboQuestionStatus,
   OpenQuestionStatus,
+  Question,
   QuestionStatusKeys,
   Role,
   UpdateQuestionParams,

@@ -1,5 +1,6 @@
 import { Type } from "class-transformer";
 import {
+  IsArray,
   IsBoolean,
   IsDefined,
   IsEnum,
@@ -206,6 +207,7 @@ export class Question {
 
   @Type(() => UserPartial)
   creator!: UserPartial;
+
   text?: string;
 
   @Type(() => UserPartial)
@@ -283,6 +285,19 @@ export const QuestionStatusKeys = {
   ...ClosedQuestionStatus,
   ...LimboQuestionStatus,
 };
+
+export class QuestionGroup {
+  @IsInt()
+  id!: number;
+
+  @Type(() => Question)
+  questions!: Array<Question>;
+
+  @Type(() => UserPartial)
+  creator!: UserPartial;
+
+  //Might want to add a list of students in group so they can be added without a question
+}
 
 // /**
 //  * A Semester object, representing a schedule semester term for the purposes of a course.
@@ -456,6 +471,9 @@ export class ListQuestionsResponse {
 
   @Type(() => Question)
   priorityQueue!: Array<Question>;
+
+  @Type(() => QuestionGroup)
+  groups!: Array<QuestionGroup>;
 }
 
 export class GetQuestionResponse extends Question {}
