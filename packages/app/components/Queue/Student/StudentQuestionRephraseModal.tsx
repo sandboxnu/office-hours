@@ -6,7 +6,7 @@ import React, { ReactElement } from "react";
 type StudentQuestionRephraseModalProps = {
   courseId: number;
   payload: RephraseQuestionPayload;
-  handleClose: () => void;
+  handleClose: (courseId: number, queueId: number) => void;
 };
 export default function StudentQuestionRephraseModal({
   courseId,
@@ -20,8 +20,7 @@ export default function StudentQuestionRephraseModal({
         <Button
           type={"primary"}
           key={"continue"}
-          href={`/course/${courseId}/queue/${payload.queueId}?edit_question=true`}
-          onClick={handleClose}
+          onClick={() => handleClose(courseId, payload.queueId)} // TODO: replace courseId with courseId from payload
         >
           Edit Question
         </Button>,
