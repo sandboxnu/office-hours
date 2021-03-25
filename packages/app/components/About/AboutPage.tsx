@@ -78,9 +78,10 @@ export default function AboutPage(): ReactElement {
 const sadcat =
   "https://www.vettedpetcare.com/vetted-blog/wp-content/uploads/2017/09/How-To-Travel-With-a-Super-Anxious-Cat-square.jpeg";
 
-// these images links are generated from a gdrive sharing link using this tool:
+// These images links are generated from a gdrive sharing link using this tool:
 // https://buildbrothers.com/gdrive-generator/
 // which is described in this article: https://blog.usejournal.com/host-static-images-for-your-apps-or-website-on-google-drive-hotlink-to-gdrive-images-358d6fcf8ef7
+// The images are stored in the drive folder Sandbox Members/Office Hours/About Page Images
 const PROFILES_CURRENT = [
   {
     name: "Stanley Liu",
