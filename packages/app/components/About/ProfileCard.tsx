@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { LinkedinFilled, MailOutlined } from "@ant-design/icons";
+import { LinkedinFilled, LinkOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
 // This is basically ripped from the AntD Card, but with an added animation so the CardContents
@@ -80,29 +80,40 @@ export default function ProfileCard({
   name,
   role,
   linkedin,
+  personalSite,
   imgSrc,
 }: {
   name: string;
   role: string;
-  linkedin: string;
+  linkedin?: string;
+  personalSite?: string;
   imgSrc: string;
 }): ReactElement {
   return (
     <StyledCard>
-      <img
-        width={200}
-        height={200}
-        alt={`${name}'s profile image`}
-        src={imgSrc}
-      />
+      <img width={200} alt={`${name}'s profile image`} src={imgSrc} />
       <ImageOverlay />
       <CardContents>
         <CardTitle>{name}</CardTitle>
         <div>{role}</div>
         <LinkIcons>
-          <NavyLink href={linkedin} target="_blank" rel="noopener noreferrer">
-            <LinkedinFilled style={{ cursor: "pointer" }} />
-          </NavyLink>
+          {linkedin && (
+            <NavyLink href={linkedin} target="_blank" rel="noopener noreferrer">
+              <LinkedinFilled title="LinkedIn" style={{ cursor: "pointer" }} />
+            </NavyLink>
+          )}
+          {personalSite && (
+            <NavyLink
+              href={personalSite}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <LinkOutlined
+                title="Personal Website"
+                style={{ cursor: "pointer" }}
+              />
+            </NavyLink>
+          )}
         </LinkIcons>
       </CardContents>
     </StyledCard>
