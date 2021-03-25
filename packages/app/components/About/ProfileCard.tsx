@@ -1,6 +1,6 @@
-import React, { ReactElement } from 'react';
-import { LinkedinFilled, MailOutlined } from '@ant-design/icons';
-import styled from 'styled-components';
+import React, { ReactElement } from "react";
+import { LinkedinFilled, MailOutlined } from "@ant-design/icons";
+import styled from "styled-components";
 
 // This is basically ripped from the AntD Card, but with an added animation so the CardContents
 // pulls up on hover
@@ -20,7 +20,8 @@ const StyledCard = styled.div`
 
   &:hover {
     border-color: transparent;
-    box-shadow: 0 1px 2px -2px rgb(0 0 0 / 16%), 0 3px 6px 0 rgb(0 0 0 / 12%), 0 5px 12px 4px rgb(0 0 0 / 9%);
+    box-shadow: 0 1px 2px -2px rgb(0 0 0 / 16%), 0 3px 6px 0 rgb(0 0 0 / 12%),
+      0 5px 12px 4px rgb(0 0 0 / 9%);
   }
 `;
 const CardContents = styled.div`
@@ -34,7 +35,7 @@ const CardContents = styled.div`
   z-index: 2;
   position: absolute;
   // top = imageHeight - borderRadius
-  top: 192px; 
+  top: 192px;
   transition: top 0.5s;
 
   ${StyledCard}:hover & {
@@ -68,17 +69,6 @@ const LinkIcons = styled.div`
   display: flex;
   align-items: center;
 `;
-const SquareMailIcon = styled(MailOutlined)`
-  color: white;
-  font-size: 20px;
-  background-color: #2a426b;
-  margin-left: 10px;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
 const NavyLink = styled.a`
   color: #2a426b;
   &:hover {
@@ -90,28 +80,28 @@ export default function ProfileCard({
   name,
   role,
   linkedin,
-  email,
   imgSrc,
 }: {
   name: string;
   role: string;
   linkedin: string;
-  email: string;
   imgSrc: string;
 }): ReactElement {
   return (
     <StyledCard>
-      <img width={200} height={200} alt={`${name}'s profile image`} src={imgSrc} />
+      <img
+        width={200}
+        height={200}
+        alt={`${name}'s profile image`}
+        src={imgSrc}
+      />
       <ImageOverlay />
       <CardContents>
         <CardTitle>{name}</CardTitle>
         <div>{role}</div>
         <LinkIcons>
           <NavyLink href={linkedin} target="_blank" rel="noopener noreferrer">
-            <LinkedinFilled style={{ cursor: 'pointer' }} />
-          </NavyLink>
-          <NavyLink href={`mailto:${email}`}>
-            <SquareMailIcon style={{ cursor: 'pointer' }} />
+            <LinkedinFilled style={{ cursor: "pointer" }} />
           </NavyLink>
         </LinkIcons>
       </CardContents>
