@@ -27,7 +27,7 @@ for line in lines:
         anonymizing_user = False
 
     if anonymizing_user:
-        elements = line.split()
+        elements = line.split('\t')
         id = elements[0]  # user id
         elements[1] = id + '@northeastern.edu'  # email            
         elements[-2] = 'user' + id  # first name
