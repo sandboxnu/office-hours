@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"ed836fb7efd0a061a641b0f6397ba8ad24979533"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"b45e8eae43236bf8b4a1e4301f781b89f648f955"};
 
 /***/ }),
 /* 2 */
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "ed836fb7efd0a061a641b0f6397ba8ad24979533",
+        release: "b45e8eae43236bf8b4a1e4301f781b89f648f955",
         environment: common_1.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -2135,7 +2135,10 @@ let QueueCleanService = class QueueCleanService {
             .createQueryBuilder('queue')
             .leftJoinAndSelect('queue_model.questions', 'question')
             .where('question.status IN (:...status)', {
-            status: Object.values(common_1.OpenQuestionStatus),
+            status: [
+                ...Object.values(common_1.OpenQuestionStatus),
+                ...Object.values(common_1.LimboQuestionStatus),
+            ],
         })
             .getMany();
         await Promise.all(queuesWithOpenQuestions.map((queue) => this.cleanQueue(queue.id)));
