@@ -91,6 +91,15 @@ const Notes = styled.div`
   white-space: pre-wrap;
 `;
 
+const StyledKOHAvatar = styled(KOHAvatar)`
+  margin-right: 25px;
+  margin-top: 10px;
+`;
+
+const QueueCardButtonRow = styled(Row)`
+  padding-top: 10px;
+`;
+
 const OpenQueueCard = ({
   queue,
   isTA,
@@ -178,11 +187,10 @@ const OpenQueueCard = ({
         <div>
           {staffList.map((staffMember) => (
             <Tooltip key={staffMember.id} title={staffMember.name}>
-              <KOHAvatar
+              <StyledKOHAvatar
                 size={96}
                 photoURL={staffMember.photoURL}
                 name={staffMember.name}
-                style={{ marginRight: "25px" }}
               />
             </Tooltip>
           ))}
@@ -193,7 +201,7 @@ const OpenQueueCard = ({
           </SaveButton>
         )}
         {!editingNotes && (
-          <Row>
+          <QueueCardButtonRow>
             {isTA && (
               <EditNotesButton
                 size="large"
@@ -216,7 +224,7 @@ const OpenQueueCard = ({
                 Open Queue
               </OpenQueueButton>
             </Link>
-          </Row>
+          </QueueCardButtonRow>
         )}
       </Row>
     </PaddedCard>
