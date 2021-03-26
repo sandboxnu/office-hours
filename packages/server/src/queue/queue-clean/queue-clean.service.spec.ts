@@ -166,18 +166,6 @@ describe('QueueService', () => {
       await question.reload();
       expect(question.status).toEqual('Stale');
     });
-
-    it('cleaning the queue removes the queue notes', async () => {
-      const ofs = await ClosedOfficeHourFactory.create();
-      const queue = await QueueFactory.create({
-        officeHours: [ofs],
-        notes: 'This note is no longer relevant',
-      });
-
-      await service.cleanQueue(queue.id);
-      await queue.reload();
-      expect(queue.notes).toBe('');
-    });
   });
   describe('cleanAllQueues', () => {
     it.skip('correctly cleans queues from current course sections', async () => {
@@ -198,9 +186,6 @@ describe('QueueService', () => {
 
       await queue1.reload();
       await queue2.reload();
-      expect(queue1.notes).toEqual('');
-      expect(queue2.notes).toEqual('');
-
       expect(cleanQueueSpy).toHaveBeenCalledTimes(2);
     });
 
