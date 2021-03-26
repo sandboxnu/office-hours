@@ -65,8 +65,6 @@ export class QueueCleanService {
     });
 
     if (force || !(await queue.checkIsOpen())) {
-      queue.notes = '';
-      await queue.save();
       await this.unsafeClean(queue.id);
     }
   }
