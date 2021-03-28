@@ -55,16 +55,18 @@ export class InsightsService {
     user: UserModel,
     insightName: string,
   ): Promise<string[]> {
-    if (user.insights === null) {
-      user.insights = [];
-    }
-    user.insights = [insightName, ...user.insights];
+    user.hideInsights = user.hideInsights?.filter(
+      (insight) => insight !== insightName,
+    );
     await user.save();
     return;
   }
 
   async toggleInsightOff(user: UserModel, insightName: string): Promise<void> {
-    user.insights = user.insights?.filter((insight) => insight !== insightName);
+    if (user.hideInsights === null) {
+      user.hideInsights = [];
+    }
+    user.hideInsights = [insightName, ...user.hideInsights];
     await user.save();
     return;
   }

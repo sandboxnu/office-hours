@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import { INSIGHTS_MAP } from 'insights/insight-objects';
 import {
   AfterLoad,
   BaseEntity,
@@ -62,7 +63,17 @@ export class UserModel extends BaseEntity {
 
   @Exclude()
   @Column({ type: 'simple-array', nullable: true })
+  hideInsights: string[];
+
   insights: string[];
+
+  @AfterLoad()
+  computeInsights() {
+    const insightNames = Object.keys(INSIGHTS_MAP);
+    this.insights = insightNames.filter(
+      (name) => !this.hideInsights.includes(name),
+    );
+  }
 
   name: string;
 
