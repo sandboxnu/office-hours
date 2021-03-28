@@ -1,6 +1,7 @@
 import { Type } from "class-transformer";
 import {
   IsBoolean,
+  IsDate,
   IsDefined,
   IsEnum,
   IsInt,
@@ -531,6 +532,33 @@ export class UpdateQueueParams {
 
   @IsBoolean()
   allowQuestions?: boolean;
+}
+
+export class TACheckinTimesResponse {
+  taCheckinTimes!: TaCheckinPair[];
+}
+
+class TaCheckinPair {
+  @IsString()
+  name!: string;
+
+  @IsDate()
+  checkinTime!: Date;
+
+  @IsDate()
+  @IsOptional()
+  checkoutTime?: Date;
+
+  @IsBoolean()
+  completed!: boolean;
+}
+
+export class TACheckinTimesBody {
+  @IsDate()
+  startDate!: Date;
+
+  @IsDate()
+  endDate!: Date;
 }
 
 export class SSEQueueResponse {

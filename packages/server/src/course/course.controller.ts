@@ -4,6 +4,8 @@ import {
   GetCourseResponse,
   QueuePartial,
   Role,
+  TACheckinTimesBody,
+  TACheckinTimesResponse,
   TACheckoutResponse,
   UpdateCourseOverrideBody,
   UpdateCourseOverrideResponse,
@@ -23,10 +25,16 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import async from 'async';
-import moment = require('moment');
+import { partition } from 'lodash';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
-import { Connection, getRepository, MoreThanOrEqual } from 'typeorm';
+import {
+  Between,
+  Connection,
+  getRepository,
+  In,
+  MoreThanOrEqual,
+} from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { Roles } from '../profile/roles.decorator';
 import { User } from '../profile/user.decorator';
@@ -39,6 +47,7 @@ import { CourseModel } from './course.entity';
 import { HeatmapService } from './heatmap.service';
 import { IcalService } from './ical.service';
 import { OfficeHourModel } from './office-hour.entity';
+import moment = require('moment');
 
 @Controller('courses')
 @UseGuards(JwtAuthGuard, CourseRolesGuard)
@@ -295,5 +304,58 @@ export class CourseController {
       where: { courseId, userId, override: true },
     });
     await UserCourseModel.remove(userCourse);
+  }
+
+  @Get(':id/ta_check_in_times')
+  @Roles(Role.PROFESSOR)
+  async taCheckinTimes(
+    @Param('id') courseId: number,
+    @Body() dateRange: TACheckinTimesBody,
+  ): Promise<TACheckinTimesResponse> {
+    const taEvents = await EventModel.find({
+      where: {
+        eventType: In([
+          EventType.TA_CHECKED_IN,
+          EventType.TA_CHECKED_OUT,
+          EventType.TA_CHECKED_OUT_FORCED,
+        ]),
+        time: Between(dateRange.startDate, dateRange.endDate),
+        courseId,
+      },
+    });
+
+    const [checkinEvents, otherEvents] = partition(
+      taEvents,
+      (e) => e.eventType === EventType.TA_CHECKED_IN,
+    );
+
+    const taCheckinTimes = [];
+
+    for (const checkinEvent of checkinEvents) {
+      let closestEvent = null;
+      let mostRecentTime = new Date();
+      const originalDate = mostRecentTime;
+
+      for (const checkoutEvent of otherEvents) {
+        if (
+          checkoutEvent.userId === checkinEvent.userId &&
+          checkoutEvent.time.getUTCMinutes() -
+            checkinEvent.time.getUTCMinutes() <
+            mostRecentTime.getUTCMinutes() - checkinEvent.time.getUTCMinutes()
+        ) {
+          closestEvent = checkoutEvent;
+          mostRecentTime = checkoutEvent.time;
+        }
+      }
+
+      taCheckinTimes.push({
+        name: checkinEvent.user.name,
+        checkinTime: checkinEvent.time,
+        checkoutTime: closestEvent?.time,
+        completed: mostRecentTime !== originalDate,
+      });
+    }
+
+    return { taCheckinTimes };
   }
 }
