@@ -9,7 +9,7 @@ export declare class UserModel extends BaseEntity {
     email: string;
     firstName: string;
     lastName: string;
-    photoURL: string;
+    photoURL: string | null;
     courses: UserCourseModel[];
     desktopNotifsEnabled: boolean;
     phoneNotifsEnabled: boolean;

@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"f96d2098dc8e6fab8e72c07226f399860017b421"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"5036c9f8e8bc513efe262f5ea94046df1ca06010"};
 
 /***/ }),
 /* 2 */
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "f96d2098dc8e6fab8e72c07226f399860017b421",
+        release: "5036c9f8e8bc513efe262f5ea94046df1ca06010",
         environment: common_1.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -5248,7 +5248,7 @@ const common_1 = __webpack_require__(9);
 const nestjs_admin_1 = __webpack_require__(97);
 const credentialValidator_1 = __webpack_require__(98);
 const typeorm_1 = __webpack_require__(18);
-const admin_user_entity_1 = __webpack_require__(99);
+const admin_user_entity_1 = __webpack_require__(100);
 const admin_entities_1 = __webpack_require__(101);
 const admin_command_1 = __webpack_require__(102);
 const session = __webpack_require__(104);
@@ -5308,8 +5308,8 @@ module.exports = require("nestjs-admin");
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.adminCredentialValidator = void 0;
-const admin_user_entity_1 = __webpack_require__(99);
-const bcrypt_1 = __webpack_require__(100);
+const bcrypt_1 = __webpack_require__(99);
+const admin_user_entity_1 = __webpack_require__(100);
 exports.adminCredentialValidator = {
     inject: [],
     useFactory: () => {
@@ -5328,6 +5328,12 @@ exports.adminCredentialValidator = {
 
 /***/ }),
 /* 99 */
+/***/ (function(module, exports) {
+
+module.exports = require("bcrypt");
+
+/***/ }),
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5344,7 +5350,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminUserModel = void 0;
 const typeorm_1 = __webpack_require__(25);
-const bcrypt_1 = __webpack_require__(100);
+const bcrypt_1 = __webpack_require__(99);
 let AdminUserModel = class AdminUserModel extends typeorm_1.BaseEntity {
     setPassword(password) {
         this.passwordHash = bcrypt_1.hashSync(password, 5);
@@ -5367,12 +5373,6 @@ AdminUserModel = __decorate([
 ], AdminUserModel);
 exports.AdminUserModel = AdminUserModel;
 
-
-/***/ }),
-/* 100 */
-/***/ (function(module, exports) {
-
-module.exports = require("bcrypt");
 
 /***/ }),
 /* 101 */
@@ -5471,7 +5471,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminCommand = void 0;
 const nestjs_command_1 = __webpack_require__(49);
 const common_1 = __webpack_require__(9);
-const admin_user_entity_1 = __webpack_require__(99);
+const admin_user_entity_1 = __webpack_require__(100);
 const readline_sync_1 = __webpack_require__(103);
 let AdminCommand = class AdminCommand {
     async create(username) {
@@ -5546,7 +5546,7 @@ module.exports = require("redis");
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __webpack_require__(108);
-const admin_user_entity_1 = __webpack_require__(99);
+const admin_user_entity_1 = __webpack_require__(100);
 const course_entity_1 = __webpack_require__(26);
 const office_hour_entity_1 = __webpack_require__(32);
 const semester_entity_1 = __webpack_require__(35);
