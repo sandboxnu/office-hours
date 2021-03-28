@@ -515,6 +515,7 @@ export class UpdateQuestionParams {
   questionType?: QuestionType;
 
   @IsBoolean()
+  @IsOptional()
   groupable?: boolean;
 
   @IsInt()
@@ -534,6 +535,15 @@ export class UpdateQuestionParams {
   location?: string;
 }
 export class UpdateQuestionResponse extends Question {}
+
+export class HelpQuestionsParams {
+  @IsArray()
+  @Type(() => Number)
+  questionIds!: number[];
+
+  @IsInt()
+  queueId!: number;
+}
 
 export type TAUpdateStatusResponse = QueuePartial;
 export type QueueNotePayloadType = {

@@ -4,9 +4,9 @@ import {
   CreateQuestionResponse,
   ERROR_MESSAGES,
   GetQuestionResponse,
+  HelpQuestionsParams,
   LimboQuestionStatus,
   OpenQuestionStatus,
-  Question,
   QuestionStatusKeys,
   Role,
   UpdateQuestionParams,
@@ -37,8 +37,10 @@ import { UserCourseModel } from '../profile/user-course.entity';
 import { User, UserId } from '../profile/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
+import { QuestionGroupModel } from './question-group.entity';
 import { QuestionRolesGuard } from './question-role.guard';
 import { QuestionModel } from './question.entity';
+import { QuestionService } from './question.service';
 
 @Controller('questions')
 @UseGuards(JwtAuthGuard, QuestionRolesGuard)
@@ -47,6 +49,7 @@ export class QuestionController {
   constructor(
     private connection: Connection,
     private notifService: NotificationService,
+    private questionService: QuestionService,
   ) {}
 
   @Get(':questionId')
@@ -175,68 +178,11 @@ export class QuestionController {
           ERROR_MESSAGES.questionController.updateQuestion.taOnlyEditQuestionStatus,
         );
       }
-      const oldStatus = question.status;
-      const newStatus = body.status;
-      // If the taHelped is already set, make sure the same ta updates the status
-      if (question.taHelped?.id !== userId) {
-        if (oldStatus === OpenQuestionStatus.Helping) {
-          throw new UnauthorizedException(
-            ERROR_MESSAGES.questionController.updateQuestion.otherTAHelping,
-          );
-        }
-        if (oldStatus === ClosedQuestionStatus.Resolved) {
-          throw new UnauthorizedException(
-            ERROR_MESSAGES.questionController.updateQuestion.otherTAResolved,
-          );
-        }
-      }
-
-      const isAlreadyHelpingOne =
-        (await QuestionModel.count({
-          where: {
-            taHelpedId: userId,
-            status: OpenQuestionStatus.Helping,
-          },
-        })) === 1;
-      if (isAlreadyHelpingOne && newStatus === OpenQuestionStatus.Helping) {
-        throw new BadRequestException(
-          ERROR_MESSAGES.questionController.updateQuestion.taHelpingOther,
-        );
-      }
-
-      const validTransition = question.changeStatus(newStatus, Role.TA);
-      if (!validTransition) {
-        throw new UnauthorizedException(
-          ERROR_MESSAGES.questionController.updateQuestion.fsmViolation(
-            'TA',
-            question.status,
-            body.status,
-          ),
-        );
-      }
-
-      // Set TA as taHelped when the TA starts helping the student
-      if (
-        oldStatus !== OpenQuestionStatus.Helping &&
-        newStatus === OpenQuestionStatus.Helping
-      ) {
-        question.taHelped = await UserModel.findOne(userId);
-        question.helpedAt = new Date();
-
-        // Set firstHelpedAt if it hasn't already
-        if (!question.firstHelpedAt) {
-          question.firstHelpedAt = question.helpedAt;
-        }
-        await this.notifService.notifyUser(
-          question.creator.id,
-          NotifMsgs.queue.TA_HIT_HELPED(question.taHelped.name),
-        );
-      }
-      if (newStatus in ClosedQuestionStatus) {
-        question.closedAt = new Date();
-      }
-      await question.save();
-      return question;
+      return await this.questionService.helpQuestion(
+        body.status,
+        question,
+        userId,
+      );
     } else {
       throw new UnauthorizedException(
         ERROR_MESSAGES.questionController.updateQuestion.loginUserCantEdit,
@@ -262,5 +208,35 @@ export class QuestionController {
         NotifMsgs.queue.REMOVED,
       );
     }
+  }
+
+  @Post('help')
+  @Roles(Role.TA, Role.PROFESSOR)
+  async helpQuestions(
+    @Body() body: HelpQuestionsParams,
+    @UserId() instructorId: number,
+  ): Promise<void> {
+    const questions = await QuestionModel.find({
+      where: {
+        id: In(body.questionIds),
+      },
+    });
+
+    for (const question of questions) {
+      await this.questionService.helpQuestion(
+        QuestionStatusKeys.Helping,
+        question,
+        instructorId,
+      );
+    }
+
+    const _newGroup = await QuestionGroupModel.create({
+      creatorId: instructorId,
+      queueId: body.queueId,
+      questions: questions,
+    }).save();
+
+    // TODO: return newGroup???
+    return;
   }
 }

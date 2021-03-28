@@ -71,6 +71,7 @@ describe('QueueService', () => {
         priorityQueue: ['PriorityQueued'],
         questionsGettingHelp: ['Helping'],
         queue: ['Queued', 'Drafting'],
+        groups: [],
       });
     });
 
@@ -140,6 +141,7 @@ describe('QueueService', () => {
         queue: [],
         priorityQueue: [],
         questionsGettingHelp: [],
+        groups: [],
       };
       let lqr = await personalize(blank, user.id, Role.STUDENT);
       expect(lqr.yourQuestion).toEqual(undefined);

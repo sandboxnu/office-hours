@@ -12,6 +12,7 @@ Object {
     "name": "User Person",
     "photoURL": null,
   },
+  "groupable": true,
   "helpedAt": null,
   "id": 1,
   "isOnline": null,

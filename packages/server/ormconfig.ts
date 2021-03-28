@@ -1,4 +1,5 @@
 import { config } from 'dotenv';
+import { QuestionGroupModel } from 'question/question-group.entity';
 import { AdminUserModel } from './src/admin/admin-user.entity';
 import { CourseModel } from './src/course/course.entity';
 import { OfficeHourModel } from './src/course/office-hour.entity';
@@ -38,6 +39,7 @@ const typeorm = {
     PhoneNotifModel,
     AdminUserModel,
     EventModel,
+    QuestionGroupModel,
   ],
   keepConnectionAlive: true,
   logging: !!process.env.TYPEORM_LOGGING,

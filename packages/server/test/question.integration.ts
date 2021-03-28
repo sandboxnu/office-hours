@@ -66,6 +66,7 @@ describe('Question Integration', () => {
         questionType: QuestionType.Concept,
         queueId: queue.id,
         force,
+        groupable: true,
       });
 
     it('posts a new question', async () => {
@@ -84,6 +85,7 @@ describe('Question Integration', () => {
           questionType: null,
           queueId: queue.id,
           force: false,
+          groupable: true,
         })
         .expect(201);
       expect(response.body).toMatchObject({
@@ -92,6 +94,7 @@ describe('Question Integration', () => {
         closedAt: null,
         questionType: null,
         status: 'Drafting',
+        groupable: true,
       });
       expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(1);
     });
@@ -114,6 +117,7 @@ describe('Question Integration', () => {
           questionType: QuestionType.Concept,
           queueId: 999,
           force: false,
+          groupable: true,
         })
         .expect(404);
     });
@@ -161,6 +165,7 @@ describe('Question Integration', () => {
           questionType: 'bad param!',
           queueId: 1, // even with bad params we still need a queue
           force: false,
+          groupable: true,
         })
         .expect(400);
     });
