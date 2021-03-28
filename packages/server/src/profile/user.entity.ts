@@ -30,7 +30,7 @@ export class UserModel extends BaseEntity {
   lastName: string;
 
   @Column('text', { nullable: true })
-  photoURL: string;
+  photoURL: string | null;
 
   @OneToMany((type) => UserCourseModel, (ucm) => ucm.user)
   @Exclude()
