@@ -181,9 +181,9 @@ describe("Checking in and out when there arent scheduled office hours, but the o
     cy.get("[data-cy='clear-queue-btn']").click();
 
     // No TAs should be checked in, and there should not be any student in the queue
-    cy.get("[data-cy='ta-status-card']").should("not.visible");
+    cy.get("[data-cy='ta-status-card']").should("not.exist");
     cy.get(`[data-cy="list-queue"] [data-cy^="queue-list-item"]`).should(
-      "not.visible"
+      "not.exist"
     );
   });
 });
