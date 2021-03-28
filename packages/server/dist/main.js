@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"5036c9f8e8bc513efe262f5ea94046df1ca06010"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"e8d5e5044c7b442a09396f19fb40824f846cc53c"};
 
 /***/ }),
 /* 2 */
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "5036c9f8e8bc513efe262f5ea94046df1ca06010",
+        release: "e8d5e5044c7b442a09396f19fb40824f846cc53c",
         environment: common_1.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -2165,8 +2165,6 @@ let QueueCleanService = class QueueCleanService {
             relations: ['staffList'],
         });
         if (force || !(await queue.checkIsOpen())) {
-            queue.notes = '';
-            await queue.save();
             await this.unsafeClean(queue.id);
         }
     }
