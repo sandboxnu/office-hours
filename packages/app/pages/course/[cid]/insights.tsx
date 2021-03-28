@@ -27,6 +27,8 @@ import styled from "styled-components";
 const InsightsRowContainer = styled.div`
   display: flex;
   direction: ltr;
+  margin-left: -0.5%;
+  margin-right: -0.5%;
 `;
 
 export default function Insights(): ReactElement {
