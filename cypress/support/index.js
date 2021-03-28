@@ -21,7 +21,6 @@ import "./commands";
 
 beforeEach(() => {
   cy.request("/api/v1/seeds/delete");
-  cy.server();
 });
 
 const resizeObserverLoopErrRe = /^[^(ResizeObserver loop limit exceeded)]/;
