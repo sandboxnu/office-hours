@@ -256,7 +256,7 @@ export const QuestionToStudentRatio: InsightObject = {
     const totalQuestions = await TotalQuestionsAsked.compute(filters);
     const totalStudents = await TotalStudents.compute(filters);
     return totalStudents !== 0
-      ? (totalQuestions as number) / (totalStudents as number)
+      ? ((totalQuestions as number) / (totalStudents as number)).toFixed(2)
       : '0 students';
   },
 };
