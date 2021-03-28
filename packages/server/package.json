@@ -88,6 +88,7 @@
     "@types/passport-jwt": "^3.0.3",
     "@types/readline-sync": "^1.4.3",
     "@types/redis": "^2.8.28",
+    "@types/redlock": "^4.0.1",
     "@types/supertest": "^2.0.8",
     "@types/web-push": "^3.3.0",
     "cross-env": "^7.0.2",
