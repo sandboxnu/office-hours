@@ -37,7 +37,7 @@ for line in lines:
         elif len(elements) < 6:
             raise ValueError('The number of elements was less than 6')
 
-        newLine = " ".join(elements) + '\n'
+        newLine = "\t".join(elements) + '\n'
 
     if "COPY public.user_model" in line:
         anonymizing_user = True
