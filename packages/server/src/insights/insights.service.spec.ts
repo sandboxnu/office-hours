@@ -202,22 +202,26 @@ describe('InsightsService', () => {
     const queue = await QueueFactory.create({ course });
     const user1 = await UserFactory.create({
       id: 1,
-      name: 'Derek Jeter',
+      firstName: 'Derek',
+      lastName: 'Jeter',
       email: 'jeter.d@northeastern.edu',
     });
     const user2 = await UserFactory.create({
       id: 2,
-      name: 'David Wright',
+      firstName: 'David',
+      lastName: 'Wright',
       email: 'wright.da@northeastern.edu',
     });
     const user3 = await UserFactory.create({
       id: 3,
-      name: 'Adam Smith',
+      firstName: 'Adam',
+      lastName: 'Smith',
       email: 'smith.a@northeastern.edu',
     });
     const user4 = await UserFactory.create({
       id: 4,
-      name: 'Jean Valjean',
+      firstName: 'Jean',
+      lastName: 'Valjean',
       email: 'valjean.j@protonmail.com',
     });
     await QuestionFactory.createList(8, {
@@ -310,28 +314,30 @@ describe('InsightsService', () => {
 
   describe('toggleInsightOn', () => {
     it('works correctly', async () => {
-      const userFactory = await UserFactory.create();
+      const userFactory = await UserFactory.create({
+        hideInsights: ['averageWaitTime'],
+      });
       const user = await UserModel.findOne(userFactory.id);
-      expect(user.insights).toBeNull();
-      await service.toggleInsightOn(user, 'questionTypeBreakdown');
+      expect(user.hideInsights).toStrictEqual(['averageWaitTime']);
+      await service.toggleInsightOff(user, 'questionTypeBreakdown');
       await user.reload();
-      expect(user.insights).toStrictEqual(['questionTypeBreakdown']);
+      expect(user.hideInsights).toStrictEqual([
+        'questionTypeBreakdown',
+        'averageWaitTime',
+      ]);
     });
   });
 
   describe('toggleInsightOff', () => {
     it('works correctly', async () => {
       const userFactory = await UserFactory.create({
-        insights: ['averageWaitTime', 'questionTypeBreakdown'],
+        hideInsights: ['questionTypeBreakdown'],
       });
       const user = await UserModel.findOne(userFactory.id);
-      expect(user.insights).toStrictEqual([
-        'averageWaitTime',
-        'questionTypeBreakdown',
-      ]);
-      await service.toggleInsightOff(user, 'questionTypeBreakdown');
+      expect(user.hideInsights).toStrictEqual(['questionTypeBreakdown']);
+      await service.toggleInsightOn(user, 'questionTypeBreakdown');
       await user.reload();
-      expect(user.insights).toStrictEqual(['averageWaitTime']);
+      expect(user.hideInsights).toStrictEqual([]);
     });
   });
 });

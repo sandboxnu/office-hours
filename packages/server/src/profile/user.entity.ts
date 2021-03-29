@@ -69,10 +69,12 @@ export class UserModel extends BaseEntity {
 
   @AfterLoad()
   computeInsights() {
-    const insightNames = Object.keys(INSIGHTS_MAP);
-    this.insights = insightNames.filter(
-      (name) => !this.hideInsights.includes(name),
-    );
+    if (this.hideInsights) {
+      const insightNames = Object.keys(INSIGHTS_MAP);
+      this.insights = insightNames.filter(
+        (name) => !this.hideInsights.includes(name),
+      );
+    }
   }
 
   name: string;
