@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import { INSIGHTS_MAP } from 'insights/insight-objects';
+import { INSIGHTS_MAP } from '../insights/insight-objects';
 import {
   AfterLoad,
   BaseEntity,
@@ -62,7 +62,7 @@ export class UserModel extends BaseEntity {
   events: EventModel[];
 
   @Exclude()
-  @Column({ type: 'simple-array', nullable: true })
+  @Column({ type: 'simple-array', nullable: true, default: [] })
   hideInsights: string[];
 
   insights: string[];
