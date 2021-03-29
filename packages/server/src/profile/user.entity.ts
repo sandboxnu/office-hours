@@ -62,19 +62,19 @@ export class UserModel extends BaseEntity {
   events: EventModel[];
 
   @Exclude()
-  @Column({ type: 'simple-array', nullable: true, default: [] })
+  @Column({ type: 'simple-array', nullable: true })
   hideInsights: string[];
 
   insights: string[];
 
   @AfterLoad()
   computeInsights() {
-    if (this.hideInsights) {
-      const insightNames = Object.keys(INSIGHTS_MAP);
-      this.insights = insightNames.filter(
-        (name) => !this.hideInsights.includes(name),
-      );
+    let hideInsights = this.hideInsights;
+    if (!hideInsights) {
+      hideInsights = [];
     }
+    const insightNames = Object.keys(INSIGHTS_MAP);
+    this.insights = insightNames.filter((name) => !hideInsights.includes(name));
   }
 
   name: string;

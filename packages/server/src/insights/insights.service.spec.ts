@@ -314,17 +314,12 @@ describe('InsightsService', () => {
 
   describe('toggleInsightOn', () => {
     it('works correctly', async () => {
-      const userFactory = await UserFactory.create({
-        hideInsights: ['averageWaitTime'],
-      });
+      const userFactory = await UserFactory.create();
       const user = await UserModel.findOne(userFactory.id);
-      expect(user.hideInsights).toStrictEqual(['averageWaitTime']);
+      expect(user.hideInsights).toStrictEqual([]);
       await service.toggleInsightOff(user, 'questionTypeBreakdown');
       await user.reload();
-      expect(user.hideInsights).toStrictEqual([
-        'questionTypeBreakdown',
-        'averageWaitTime',
-      ]);
+      expect(user.hideInsights).toStrictEqual(['questionTypeBreakdown']);
     });
   });
 
