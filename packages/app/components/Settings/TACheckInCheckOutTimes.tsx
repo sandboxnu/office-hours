@@ -9,11 +9,17 @@ interface TACheckInCheckOutTimesProps {
 export default function TACheckInCheckOutTimes({
   courseId,
 }: TACheckInCheckOutTimesProps): ReactElement {
-  const { data, mutate } = useSWR(
+  const { data } = useSWR(
     `/api/v1/course/getTACheckinCheckoutTimes`,
     async () =>
-      await API.course.getTACheckinTimes(courseId, new Date(), new Date())
+      await API.course.getTACheckinTimes(
+        courseId,
+        new Date(Date.now() - 100000000).toISOString(),
+        new Date().toISOString()
+      )
   );
+
+  console.log(data);
 
   return (
     <div>

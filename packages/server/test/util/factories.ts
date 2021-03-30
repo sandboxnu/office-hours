@@ -1,4 +1,5 @@
 import { QuestionType, Role } from '@koh/common';
+import { EventModel, EventType } from 'profile/event-model.entity';
 import { Factory } from 'typeorm-factory';
 import { CourseModel } from '../../src/course/course.entity';
 import { OfficeHourModel } from '../../src/course/office-hour.entity';
@@ -73,3 +74,9 @@ export const QuestionFactory = new Factory(QuestionModel)
   .assocOne('queue', QueueFactory)
   .assocOne('creator', UserFactory)
   .attr('createdAt', new Date());
+
+export const EventFactory = new Factory(EventModel)
+  .attr('time', new Date())
+  .attr('eventType', EventType.TA_CHECKED_IN)
+  .assocOne('user', UserFactory)
+  .assocOne('course', CourseFactory);

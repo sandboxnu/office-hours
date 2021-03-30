@@ -543,22 +543,15 @@ class TaCheckinPair {
   name!: string;
 
   @IsDate()
+  @Type(() => Date)
   checkinTime!: Date;
 
   @IsDate()
-  @IsOptional()
+  @Type(() => Date)
   checkoutTime?: Date;
 
   @IsBoolean()
   completed!: boolean;
-}
-
-export class TACheckinTimesBody {
-  @IsDate()
-  startDate!: Date;
-
-  @IsDate()
-  endDate!: Date;
 }
 
 export class SSEQueueResponse {

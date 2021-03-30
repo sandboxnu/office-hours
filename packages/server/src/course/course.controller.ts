@@ -4,7 +4,6 @@ import {
   GetCourseResponse,
   QueuePartial,
   Role,
-  TACheckinTimesBody,
   TACheckinTimesResponse,
   TACheckoutResponse,
   UpdateCourseOverrideBody,
@@ -20,6 +19,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UnauthorizedException,
   UseGuards,
   UseInterceptors,
@@ -310,7 +310,8 @@ export class CourseController {
   @Roles(Role.PROFESSOR)
   async taCheckinTimes(
     @Param('id') courseId: number,
-    @Body() dateRange: TACheckinTimesBody,
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
   ): Promise<TACheckinTimesResponse> {
     const taEvents = await EventModel.find({
       where: {
@@ -319,15 +320,18 @@ export class CourseController {
           EventType.TA_CHECKED_OUT,
           EventType.TA_CHECKED_OUT_FORCED,
         ]),
-        time: Between(dateRange.startDate, dateRange.endDate),
+        time: Between(startDate, endDate),
         courseId,
       },
+      relations: ['user'],
     });
 
     const [checkinEvents, otherEvents] = partition(
       taEvents,
       (e) => e.eventType === EventType.TA_CHECKED_IN,
     );
+
+    console.log('ligma', checkinEvents, otherEvents);
 
     const taCheckinTimes = [];
 
@@ -339,9 +343,9 @@ export class CourseController {
       for (const checkoutEvent of otherEvents) {
         if (
           checkoutEvent.userId === checkinEvent.userId &&
-          checkoutEvent.time.getUTCMinutes() -
-            checkinEvent.time.getUTCMinutes() <
-            mostRecentTime.getUTCMinutes() - checkinEvent.time.getUTCMinutes()
+          checkoutEvent.time > checkinEvent.time &&
+          checkoutEvent.time.getTime() - checkinEvent.time.getTime() <
+            mostRecentTime.getTime() - checkinEvent.time.getTime()
         ) {
           closestEvent = checkoutEvent;
           mostRecentTime = checkoutEvent.time;

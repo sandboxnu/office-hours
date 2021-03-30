@@ -41,15 +41,18 @@ class APIClient {
     method: Method,
     url: string,
     responseClass?: ClassType<ItemIfArray<T>>,
-    body?: any
+    body?: any,
+    params?: any
   ): Promise<T>;
   private async req<T>(
     method: Method,
     url: string,
     responseClass?: ClassType<T>,
-    body?: any
+    body?: any,
+    params?: any
   ): Promise<T> {
-    const res = (await this.axios.request({ method, url, data: body })).data;
+    const res = (await this.axios.request({ method, url, data: body, params }))
+      .data;
     return responseClass ? plainToClass(responseClass, res) : res;
   }
 
@@ -94,13 +97,14 @@ class APIClient {
       ),
     getTACheckinTimes: async (
       courseId: number,
-      startDate: Date,
-      endDate: Date
+      startDate: string,
+      endDate: string
     ): Promise<TACheckinTimesResponse> =>
       this.req(
         "GET",
         `/api/v1/courses/${courseId}/ta_check_in_times`,
         TACheckinTimesResponse,
+        {},
         { startDate, endDate }
       ),
   };
