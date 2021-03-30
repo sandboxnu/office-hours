@@ -20,7 +20,7 @@ export default function StudentQuestionRephraseModal({
         <Button
           type={"primary"}
           key={"continue"}
-          onClick={() => handleClose(courseId, payload.queueId)} // TODO: replace courseId with courseId from payload
+          onClick={() => handleClose(payload.courseId, payload.queueId)}
         >
           Edit Question
         </Button>,

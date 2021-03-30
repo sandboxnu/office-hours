@@ -566,6 +566,9 @@ export class RephraseQuestionPayload extends AlertPayload {
 
   @IsInt()
   queueId!: number;
+
+  @IsInt()
+  courseId!: number;
 }
 
 export class CreateAlertParams {

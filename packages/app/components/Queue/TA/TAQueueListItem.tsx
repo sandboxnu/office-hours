@@ -1,13 +1,10 @@
 import { HourglassOutlined, QuestionOutlined } from "@ant-design/icons";
-import { OpenQuestionStatus, Question, QuestionStatus } from "@koh/common";
-import { Badge, Tooltip } from "antd";
-import React, { ReactElement, useCallback } from "react";
+import { OpenQuestionStatus, Question } from "@koh/common";
+import { Badge } from "antd";
+import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { getWaitTime } from "../../../utils/TimeUtil";
-import AvatarWithInitials from "../../common/AvatarWithInitials";
 import { KOHAvatar } from "../../common/SelfAvatar";
-import { API } from "@koh/api-client";
-import { useQuestions } from "../../../hooks/useQuestions";
 
 function truncate(string: string, length: number) {
   if (string.length > length) {

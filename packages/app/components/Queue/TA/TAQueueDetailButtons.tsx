@@ -56,6 +56,7 @@ export default function TAQueueDetailButtons({
     const payload: RephraseQuestionPayload = {
       queueId,
       questionId: question.id,
+      courseId,
     };
     try {
       await API.alerts.create({
