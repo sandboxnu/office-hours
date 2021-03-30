@@ -24,6 +24,7 @@ export class LoginCourseService {
         email: neuEmail,
         firstName: info.first_name,
         lastName: info.last_name,
+        hideInsights: [],
       });
     }
 
