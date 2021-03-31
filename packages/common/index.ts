@@ -605,7 +605,7 @@ export type PossibleOutputTypes =
 export type SimpleDisplayOutputType = number | string;
 
 export type BarChartOutputType = {
-  data: StringMap[];
+  data: StringMap<number>[];
   xField: string;
   yField: string;
   seriesField: string;
@@ -614,12 +614,12 @@ export type BarChartOutputType = {
 };
 
 export type SimpleTableOutputType = {
-  dataSource: StringMap[];
-  columns: StringMap[];
+  dataSource: StringMap<string>[];
+  columns: StringMap<string>[];
 };
 
-export type StringMap = {
-  [key: string]: string;
+export type StringMap<T> = {
+  [key: string]: T;
 };
 
 export type DateRangeType = {

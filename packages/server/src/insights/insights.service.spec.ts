@@ -156,7 +156,7 @@ describe('InsightsService', () => {
           },
         ],
       });
-      expect(res.output).toEqual(5);
+      expect((res.output as number) - 5).toBeLessThanOrEqual(0.001);
     });
   });
 
@@ -188,12 +188,12 @@ describe('InsightsService', () => {
     const output = res.output as BarChartOutputType;
 
     expect(output.data).toEqual([
-      { questionType: 'Bug', totalQuestions: '8' },
-      { questionType: 'Clarification', totalQuestions: '20' },
+      { questionType: 'Bug', totalQuestions: 8 },
+      { questionType: 'Clarification', totalQuestions: 20 },
       { questionType: 'Concept', totalQuestions: 0 },
       { questionType: 'Other', totalQuestions: 0 },
       { questionType: 'Setup', totalQuestions: 0 },
-      { questionType: 'Testing', totalQuestions: '10' },
+      { questionType: 'Testing', totalQuestions: 10 },
     ]);
   });
 

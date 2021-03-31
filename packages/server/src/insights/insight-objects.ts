@@ -176,11 +176,16 @@ export const QuestionTypeBreakdown: InsightObject = {
 
     const typesFromInfo = info.map((obj) => obj['questionType']);
 
+    info.forEach((pair) => {
+      pair['totalQuestions'] = Number.parseInt(pair['totalQuestions']);
+    });
+
     Object.values(QuestionType).forEach((v) => {
       if (!typesFromInfo.includes(v)) {
         info.push({ questionType: v, totalQuestions: 0 });
       }
     });
+
     const insightObj = {
       data: info.sort((a, b) =>
         a.questionType === b.questionType
@@ -192,8 +197,8 @@ export const QuestionTypeBreakdown: InsightObject = {
       xField: 'totalQuestions',
       yField: 'questionType',
       seriesField: 'questionType',
-      xAxisName: 'questionType',
-      yAxisName: 'totalQuestions',
+      xAxisName: 'totalQuestions',
+      yAxisName: 'questionType',
     };
     return insightObj;
   },
@@ -201,7 +206,8 @@ export const QuestionTypeBreakdown: InsightObject = {
 
 export const AverageWaitTime: InsightObject = {
   displayName: 'Avg Wait Time',
-  description: 'Gets the average wait time',
+  description:
+    'Gets the average wait time for a student to get help in the queue',
   roles: [Role.PROFESSOR],
   component: InsightDisplay.SimpleDisplay,
   size: 'small' as const,
