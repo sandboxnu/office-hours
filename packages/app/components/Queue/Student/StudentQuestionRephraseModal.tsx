@@ -4,12 +4,10 @@ import Modal from "antd/lib/modal/Modal";
 import React, { ReactElement } from "react";
 
 type StudentQuestionRephraseModalProps = {
-  courseId: number;
   payload: RephraseQuestionPayload;
   handleClose: (courseId: number, queueId: number) => void;
 };
 export default function StudentQuestionRephraseModal({
-  courseId,
   payload,
   handleClose,
 }: StudentQuestionRephraseModalProps): ReactElement {

@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import StudentQuestionRephraseModal from "../Queue/Student/StudentQuestionRephraseModal";
 
 type AlertsContainerProps = {
-  courseId: number; // TODO: replace this with a courseId that comes from the RephraseQuestionPayload
+  courseId: number;
 };
 export default function AlertsContainer({
   courseId,
@@ -28,7 +28,6 @@ export default function AlertsContainer({
       case AlertType.REPHRASE_QUESTION:
         return (
           <StudentQuestionRephraseModal
-            courseId={courseId}
             payload={alert.payload as RephraseQuestionPayload}
             handleClose={async (courseId, queueId) =>
               await handleClose(alert.id, courseId, queueId)
