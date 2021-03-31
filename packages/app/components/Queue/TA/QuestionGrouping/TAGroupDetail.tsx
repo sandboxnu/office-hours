@@ -1,23 +1,26 @@
 import { User, Question } from "@koh/common";
 import React, { ReactElement, useState } from "react";
+import { useQuestions } from "../../../../hooks/useQuestions";
 import AllQuestionsCheckList from "./AllQuestionsChecklist";
 import { CurrentGroupList } from "./CurrentGroupList";
 
 export default function TAGroupDetail({
   groupCreator,
-  allQuestions,
   queueId,
 }: {
   groupCreator: User;
-  allQuestions: Question[];
   queueId: number;
 }): ReactElement {
-  const [isCalling, setIsCalling] = useState<boolean>(false);
-  // TODO: possibly get rid of isCalling and just pass in groupedQuestions > check if there are any q's
+  const { questions, mutateQuestions } = useQuestions(queueId);
+  const allQuestions = [...questions.queue, ...questions.priorityQueue];
+  const myGroup = questions?.groups.find(
+    (group) => group.creator.id === groupCreator.id
+  );
+  const groupedQuestions = myGroup ? myGroup.questions : [];
 
-  return isCalling ? (
+  return groupedQuestions.length ? (
     <CurrentGroupList
-      questions={allQuestions}
+      questions={groupedQuestions}
       groupCreator={groupCreator}
       queueId={queueId}
     />
@@ -26,7 +29,9 @@ export default function TAGroupDetail({
       allQuestions={allQuestions}
       groupCreator={groupCreator}
       queueId={queueId}
-      onStartCall={() => setIsCalling(true)}
+      onStartCall={() => {
+        mutateQuestions();
+      }}
     />
   );
 }

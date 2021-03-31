@@ -23,6 +23,8 @@ export function useTAInQueueInfo(queueId: number): TAInQueueInfo {
   );
   const isHelping = helpingQuestions?.length > 0;
 
+  // TODO handle TA groups as well since grouped q's are not in helping q's
+
   const isCheckedIn = queue?.staffList.some((e) => e.id === user?.id);
 
   return { helpingQuestions, isHelping, isCheckedIn };

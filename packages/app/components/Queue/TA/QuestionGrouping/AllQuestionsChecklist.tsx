@@ -7,6 +7,7 @@ import { Header } from "../TAQueueDetail";
 import TAQueueListItem from "../TAQueueListItem";
 import { useTAInQueueInfo } from "../../../../hooks/useTAInQueueInfo";
 import { BannerPrimaryButton } from "../../Banner";
+import { API } from "@koh/api-client";
 
 export const Description = styled.div`
   font-size: 12px;
@@ -75,6 +76,10 @@ export default function AllQuestionsCheckList({
               <BannerPrimaryButton
                 icon={<PhoneOutlined />}
                 onClick={() => {
+                  API.questions.help({
+                    questionIds: Array.from(checkedQuestions),
+                    queueId: queueId,
+                  });
                   onStartCall();
                   // TODO: call the student, create group on backend etc
                 }}

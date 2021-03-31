@@ -77,7 +77,8 @@ export class QueueService {
     );
 
     questions.questionsGettingHelp = questionsFromDb.filter(
-      (question) => question.status === OpenQuestionStatus.Helping,
+      (question) =>
+        question.status === OpenQuestionStatus.Helping && !question.groupId,
     );
 
     questions.priorityQueue = questionsFromDb.filter((question) =>

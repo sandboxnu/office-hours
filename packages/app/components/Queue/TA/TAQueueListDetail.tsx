@@ -84,6 +84,10 @@ export default function TAQueueListDetail({
   const helpingQuestions = questions?.questionsGettingHelp?.filter(
     (q) => q.taHelped.id === user.id
   );
+  const myGroup = questions?.groups.find(
+    (group) => group.creator.id === user.id
+  );
+  const groupedQuestions = myGroup ? myGroup.questions : [];
   const allQuestionsList = questions
     ? [...helpingQuestions, ...questions.queue, ...questions.priorityQueue]
     : [];
@@ -126,7 +130,7 @@ export default function TAQueueListDetail({
       <div data-cy="list-group">
         <TAQueueListSection
           title="Group Students"
-          questions={[]} // TODO: q's in the group - a cheat for now
+          questions={groupedQuestions}
           onClickQuestion={() => {
             setIsGrouping(true);
             setSelectedQuestionId(null);
@@ -175,14 +179,7 @@ export default function TAQueueListDetail({
       {selectedQuestion && (
         <TAQueueDetail queueId={queueId} question={selectedQuestion} />
       )}
-      {isGrouping && (
-        <TAGroupDetail
-          queueId={queueId}
-          groupCreator={user}
-          allQuestions={[...questions.queue, ...questions.priorityQueue]}
-          // TODO: probably pass in the grouped questions as well
-        />
-      )}
+      {isGrouping && <TAGroupDetail queueId={queueId} groupCreator={user} />}
     </Detail>
   );
 
