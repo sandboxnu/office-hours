@@ -70,7 +70,8 @@ const APPLY_FILTER_MAP = {
 
 export const TotalStudents: InsightObject = {
   displayName: 'Total Students',
-  description: 'Gets the total number of students',
+  description:
+    'What is the total number of students that are enrolled in the course?',
   roles: [Role.PROFESSOR],
   component: InsightDisplay.SimpleDisplay,
   size: 'small' as const,
@@ -86,7 +87,7 @@ export const TotalStudents: InsightObject = {
 
 export const TotalQuestionsAsked: InsightObject = {
   displayName: 'Total Questions',
-  description: 'Gets the total number questions asked',
+  description: 'How many questions have been asked in total?',
   roles: [Role.PROFESSOR],
   component: InsightDisplay.SimpleDisplay,
   size: 'small' as const,
@@ -103,7 +104,7 @@ export const TotalQuestionsAsked: InsightObject = {
 export const MostActiveStudents: InsightObject = {
   displayName: 'Most Active Students',
   description:
-    'Returns a table of the students who have asked the most questions in Office Hours',
+    'Who are the students who have asked the most questions in Office Hours? (limit 75)',
   roles: [Role.PROFESSOR],
   component: InsightDisplay.SimpleTable,
   size: 'default' as const,
@@ -156,7 +157,7 @@ export const MostActiveStudents: InsightObject = {
 export const QuestionTypeBreakdown: InsightObject = {
   displayName: 'Question Type Breakdown',
   description:
-    'Returns a table of each question type and how many questions of that type were asked',
+    'What is the distribution of student-selected question-types on the question form?',
   roles: [Role.PROFESSOR],
   component: InsightDisplay.BarChart,
   size: 'default' as const,
@@ -207,7 +208,7 @@ export const QuestionTypeBreakdown: InsightObject = {
 export const AverageWaitTime: InsightObject = {
   displayName: 'Avg Wait Time',
   description:
-    'Gets the average wait time for a student to get help in the queue',
+    'What is the average wait time for a student to get help in the queue?',
   roles: [Role.PROFESSOR],
   component: InsightDisplay.SimpleDisplay,
   size: 'small' as const,
@@ -229,7 +230,8 @@ export const AverageWaitTime: InsightObject = {
 
 export const AverageHelpingTime: InsightObject = {
   displayName: 'Avg Helping Time',
-  description: 'Gets the average helping time',
+  description:
+    'What is the average duration that a TA help a student on a call?',
   roles: [Role.PROFESSOR],
   component: InsightDisplay.SimpleDisplay,
   size: 'small' as const,
