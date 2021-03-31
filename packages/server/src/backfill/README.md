@@ -7,6 +7,7 @@ There is nothing special about backfills. They're just scripts that change data!
 Running backfills is just done via `yarn cli` on prod.
 
 If your PR requires backfilled code to function, you should move the backfill to a new PR, merge it, run the backfill, then merge the feature PR!
+Make sure to run the backfill on prod after deployments.
 
 ## Vs. Migrations
 

@@ -31,7 +31,7 @@ export class UserModel extends BaseEntity {
   lastName: string;
 
   @Column('text', { nullable: true })
-  photoURL: string;
+  photoURL: string | null;
 
   @OneToMany((type) => UserCourseModel, (ucm) => ucm.user)
   @Exclude()
@@ -68,7 +68,7 @@ export class UserModel extends BaseEntity {
   name: string;
 
   @AfterLoad()
-  setFullNames() {
+  setFullNames(): void {
     this.name = this.firstName + ' ' + this.lastName;
   }
 }

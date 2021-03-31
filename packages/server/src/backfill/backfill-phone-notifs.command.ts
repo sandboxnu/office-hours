@@ -31,7 +31,7 @@ export class BackfillPhoneNotifs {
     console.log(`found ${dups.length} dups`);
     toDelete.push(...dups);
 
-    const valid = [];
+    const valid: PhoneNotifModel[] = [];
     let changedNum = 0;
     // change to real number
     const all = await PhoneNotifModel.find({ relations: ['user'] });
