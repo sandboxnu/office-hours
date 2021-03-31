@@ -13,6 +13,7 @@ export const SimpleTable = ({ output }: SimpleTableTypes): ReactElement => {
         dataSource={output.dataSource}
         columns={output.columns}
         scroll={{ y: 1500 }}
+        pagination={{ pageSize: 6, simple: true }}
       />
     </>
   );
