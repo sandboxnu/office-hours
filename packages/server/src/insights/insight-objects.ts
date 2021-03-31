@@ -7,9 +7,9 @@ import {
   SimpleDisplayOutputType,
   SimpleTableOutputType,
 } from '@koh/common';
-import { UserCourseModel } from 'profile/user-course.entity';
-import { UserModel } from 'profile/user.entity';
-import { QuestionModel } from 'question/question.entity';
+import { UserCourseModel } from '../profile/user-course.entity';
+import { UserModel } from '../profile/user.entity';
+import { QuestionModel } from '../question/question.entity';
 import { createQueryBuilder, SelectQueryBuilder } from 'typeorm';
 
 export type Filter = {
