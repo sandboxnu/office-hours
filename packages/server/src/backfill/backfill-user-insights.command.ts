@@ -6,13 +6,13 @@ import { UserModel } from 'profile/user.entity';
 export class BackfillUserInsights {
   @Command({
     command: 'backfill:user-insights',
-    describe: "sets a user's insights attribute to null",
+    describe: "sets a user's hidden insights attribute to null",
     autoExit: true,
   })
   async copy(): Promise<void> {
     await UserModel.createQueryBuilder()
       .update()
-      .set({ insights: null })
+      .set({ hideInsights: [] })
       .callListeners(false)
       .execute();
     console.log(`Updated ${await UserModel.count()} users`);
