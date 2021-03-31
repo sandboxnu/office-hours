@@ -86,17 +86,28 @@ const PROFILES_CURRENT = [
   {
     name: "Stanley Liu",
     role: "Project Lead",
-    image: sadcat,
+    image: "https://drive.google.com/uc?id=1u7sWtqg9g16NZm6Ynzzydn4agED7FPSG",
     linkedin: "https://www.linkedin.com/in/stanleyspliu/",
   },
-  { name: "Eddy Li", role: "Developer", image: sadcat, linkedin: "" },
+  {
+    name: "Eddy Li",
+    role: "Developer",
+    image: sadcat,
+    linkedin: "https://www.linkedin.com/in/eddy-li/",
+    personalSite: "https://eddyli.dev/",
+  },
   {
     name: "Will Stenzel",
     role: "Developer",
     image: "https://drive.google.com/uc?id=1r7yxjcxGYWClgb8ps48Ov2KKsHP55H3C",
     personalSite: "https://willstenzel.com/",
   },
-  { name: "Danish Farooq", role: "Developer", image: sadcat, linkedin: "" },
+  {
+    name: "Danish Farooq",
+    role: "Developer",
+    image: sadcat,
+    linkedin: "https://www.linkedin.com/in/danishfarooq610/",
+  },
   { name: "Olivia Floody", role: "Developer", image: sadcat, linkedin: "" },
   {
     name: "Iris Liu",
@@ -107,13 +118,26 @@ const PROFILES_CURRENT = [
   { name: "Alexandra Kopel", role: "Designer", image: sadcat, linkedin: "" },
 ];
 
-// TODO: past members ashlynn, dj, tak
 const PROFILES_PAST = [
   {
+    name: "Aislin Black",
+    role: "Developer",
+    image: "https://drive.google.com/uc?id=1ZFSQxSYKicMSHRr89vUBIxExAm6CD3Wn",
+    linkedin: "https://www.linkedin.com/in/aislin-black-0b6b64180/",
+    personalSite: "",
+  },
+  {
     name: "Da-Jin Chu",
-    role: "Alum",
-    image: sadcat,
-    linkedin: "",
+    role: "Developer",
+    image: "https://drive.google.com/uc?id=1PHdqIBWDXNaZ2oQJq6zWYPkKW-9_m84q",
+    linkedin: "https://www.linkedin.com/in/dajinchu/",
+    personalSite: "",
+  },
+  {
+    name: "Alex Takayama",
+    role: "Developer",
+    image: "https://drive.google.com/uc?id=1UNkfm-Rcl7EqAUlfGY0qldLWMxQWWa9n",
+    linkedin: "https://www.linkedin.com/in/alexander-takayama/",
     personalSite: "",
   },
 ];
