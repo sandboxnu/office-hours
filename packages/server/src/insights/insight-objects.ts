@@ -216,7 +216,7 @@ export const AverageWaitTime: InsightObject = {
     const waitTime = await addFilters({
       query: createQueryBuilder(QuestionModel)
         .select(
-          'EXTRACT(EPOCH FROM AVG(QuestionModel.helpedAt - QuestionModel.createdAt)::INTERVAL)/60',
+          'EXTRACT(EPOCH FROM AVG(QuestionModel.firstHelpedAt - QuestionModel.createdAt)::INTERVAL)/60',
           'avgWaitTimeInMinutes',
         )
         .where('QuestionModel.helpedAt IS NOT NULL'),

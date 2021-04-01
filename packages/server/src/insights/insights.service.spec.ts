@@ -88,7 +88,7 @@ describe('InsightsService', () => {
     it('averageWaitTime', async () => {
       const question = await QuestionFactory.create({
         createdAt: new Date(Date.now() - 30 * 60 * 1000),
-        helpedAt: new Date(Date.now() - 25 * 60 * 1000),
+        firstHelpedAt: new Date(Date.now() - 25 * 60 * 1000),
       });
 
       const res = await service.computeOutput({
@@ -106,12 +106,12 @@ describe('InsightsService', () => {
     it('averageHelpingTime', async () => {
       // 5 min of helping
       const question = await QuestionFactory.create({
-        helpedAt: new Date(Date.now() - 30 * 60 * 1000),
+        firstHelpedAt: new Date(Date.now() - 30 * 60 * 1000),
         closedAt: new Date(Date.now() - 25 * 60 * 1000),
       });
       // 15 min of helping
       await QuestionFactory.create({
-        helpedAt: new Date(Date.now() - 50 * 60 * 1000),
+        firstHelpedAt: new Date(Date.now() - 50 * 60 * 1000),
         closedAt: new Date(Date.now() - 35 * 60 * 1000),
         queue: question.queue,
       });
