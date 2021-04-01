@@ -219,7 +219,7 @@ export const AverageWaitTime: InsightObject = {
           'EXTRACT(EPOCH FROM AVG(QuestionModel.firstHelpedAt - QuestionModel.createdAt)::INTERVAL)/60',
           'avgWaitTimeInMinutes',
         )
-        .where('QuestionModel.helpedAt IS NOT NULL'),
+        .where('QuestionModel.firstHelpedAt IS NOT NULL'),
       modelName: QuestionModel.name,
       allowedFilters: ['courseId', 'timeframe'],
       filters,

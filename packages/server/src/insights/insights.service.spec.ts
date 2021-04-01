@@ -106,12 +106,12 @@ describe('InsightsService', () => {
     it('averageHelpingTime', async () => {
       // 5 min of helping
       const question = await QuestionFactory.create({
-        firstHelpedAt: new Date(Date.now() - 30 * 60 * 1000),
+        helpedAt: new Date(Date.now() - 30 * 60 * 1000),
         closedAt: new Date(Date.now() - 25 * 60 * 1000),
       });
       // 15 min of helping
       await QuestionFactory.create({
-        firstHelpedAt: new Date(Date.now() - 50 * 60 * 1000),
+        helpedAt: new Date(Date.now() - 50 * 60 * 1000),
         closedAt: new Date(Date.now() - 35 * 60 * 1000),
         queue: question.queue,
       });
