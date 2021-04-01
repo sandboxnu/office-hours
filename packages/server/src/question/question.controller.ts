@@ -216,10 +216,16 @@ export class QuestionController {
     @Body() body: HelpQuestionsParams,
     @UserId() instructorId: number,
   ): Promise<void> {
+    console.log(
+      `IN HELP ENDPOINT body: ${JSON.stringify(body)}, questionIds: ${
+        body.questionIds
+      }`,
+    );
     const questions = await QuestionModel.find({
       where: {
         id: In(body.questionIds),
       },
+      relations: ['taHelped', 'creator'],
     });
 
     for (const question of questions) {
@@ -230,8 +236,21 @@ export class QuestionController {
       );
     }
 
+    const queue = await QueueModel.findOne({
+      where: {
+        id: body.queueId,
+      },
+    });
+
+    const creatorUserCourse = await UserCourseModel.findOne({
+      where: {
+        courseId: queue.courseId,
+        userId: instructorId,
+      },
+    });
+
     const _newGroup = await QuestionGroupModel.create({
-      creatorId: instructorId,
+      creatorId: creatorUserCourse.id, // this should be usercourse id
       queueId: body.queueId,
       questions: questions,
     }).save();

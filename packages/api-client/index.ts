@@ -126,7 +126,7 @@ class APIClient {
     notify: async (questionId: number): Promise<void> =>
       this.req("POST", `/api/v1/questions/${questionId}/notify`),
     help: async (params: HelpQuestionsParams): Promise<void> =>
-      this.req("PATCH", "/api/v1/questions/help", undefined, params),
+      this.req("POST", "/api/v1/questions/help", undefined, params),
   };
   queues = {
     get: async (queueId: number): Promise<GetQueueResponse> =>
