@@ -18,21 +18,6 @@ const Container = styled.div<{ selected: boolean }>`
   align-items: flex-start;
 
   padding-top: 16px;
-}
-
-const Container = styled.div<{ selected: boolean }>\`
-  display: flex;
-  align-items: flex-start;
-
-  padding-top: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #cfd6de;
-  background: ${({ selected }) => (selected ? "#EFF8FF" : "white")};
-
-  cursor: pointer;
-  &:hover {
-    background: ${({ selected }) => (selected ? "#EFF8FF" : "#ECF0F3")};
-  }
   padding-bottom: 12px;
   border-bottom: 1px solid #cfd6de;
   background: ${({ selected }) => (selected ? "#EFF8FF" : "white")};
@@ -83,7 +68,7 @@ export default function TAQueueListItem({
     >
       <AvatarContainer>
         <Badge
-          // position in queue ---  0 is not displayed, hide if no index
+          // 0 is not displayed, hide if no index
           count={index ? `#${index}` : 0}
           style={{ backgroundColor: "#3684c6" }}
           offset={[-40, 0]}
