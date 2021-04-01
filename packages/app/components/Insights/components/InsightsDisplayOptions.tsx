@@ -2,7 +2,6 @@ import React, { ReactElement } from "react";
 import { API } from "@koh/api-client";
 import useSWR from "swr";
 import { Divider, Switch } from "antd";
-import { useProfile } from "../../../hooks/useProfile";
 import styled from "styled-components";
 
 const Row = styled.div`

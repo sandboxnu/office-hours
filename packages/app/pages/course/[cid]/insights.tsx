@@ -152,7 +152,7 @@ function RenderInsight({
   const router = useRouter();
   const { cid } = router.query;
 
-  const { data: insight, error, mutate } = useSWR(
+  const { data: insight } = useSWR(
     cid &&
       `api/v1/insights/${cid}/${insightName}?start=${dateRange.start}&end=${dateRange.end}`,
     async () => await API.insights.get(Number(cid), insightName, dateRange)

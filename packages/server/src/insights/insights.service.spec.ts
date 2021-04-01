@@ -12,7 +12,6 @@ import {
 import { INSIGHTS_MAP } from './insight-objects';
 import {
   BarChartOutputType,
-  PossibleOutputTypes,
   QuestionType,
   SimpleTableOutputType,
 } from '@koh/common';
@@ -111,7 +110,7 @@ describe('InsightsService', () => {
         closedAt: new Date(Date.now() - 25 * 60 * 1000),
       });
       // 15 min of helping
-      const question2 = await QuestionFactory.create({
+      await QuestionFactory.create({
         helpedAt: new Date(Date.now() - 50 * 60 * 1000),
         closedAt: new Date(Date.now() - 35 * 60 * 1000),
         queue: question.queue,
