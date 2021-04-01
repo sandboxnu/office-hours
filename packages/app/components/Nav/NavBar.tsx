@@ -116,7 +116,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     courseId = profile?.courses[0].course.id;
   }
 
-  const [defaultCourse, setDefaultCourse] = useLocalStorage(
+  const [_defaultCourse, setDefaultCourse] = useLocalStorage(
     "defaultCourse",
     null
   );

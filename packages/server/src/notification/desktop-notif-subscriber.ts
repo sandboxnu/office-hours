@@ -1,7 +1,7 @@
 import {
-  EventSubscriber,
-  EntitySubscriberInterface,
   Connection,
+  EntitySubscriberInterface,
+  EventSubscriber,
   InsertEvent,
 } from 'typeorm';
 import { DesktopNotifModel } from './desktop-notif.entity';
@@ -16,11 +16,12 @@ export class DesktopNotifSubscriber
     connection.subscribers.push(this);
   }
 
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   listenTo() {
     return DesktopNotifModel;
   }
 
-  async afterInsert(event: InsertEvent<DesktopNotifModel>) {
+  async afterInsert(event: InsertEvent<DesktopNotifModel>): Promise<void> {
     await this.notifService.notifyDesktop(
       event.entity,
       "You've successfully signed up for desktop notifications!",

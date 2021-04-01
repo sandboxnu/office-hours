@@ -11,7 +11,6 @@ import { Connection, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { QuestionModel } from '../../question/question.entity';
 import { QueueModel } from '../queue.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
-import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 
 /**
  * Clean the queue and mark stale
@@ -22,23 +21,19 @@ export class QueueCleanService {
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async cleanAllQueues(): Promise<void> {
-    const activeCourseSections = await CourseSectionMappingModel.getRepository()
-      .createQueryBuilder('course_section')
-      .leftJoinAndSelect('course_section.course', 'course')
-      .leftJoinAndSelect('course.queues', 'queues')
+    const queuesWithOpenQuestions: QueueModel[] = await QueueModel.getRepository()
+      .createQueryBuilder('queue')
+      .leftJoinAndSelect('queue_model.questions', 'question')
+      .where('question.status IN (:...status)', {
+        status: [
+          ...Object.values(OpenQuestionStatus),
+          ...Object.values(LimboQuestionStatus),
+        ],
+      })
       .getMany();
 
-    const uniqueActiveCourses = new Set(
-      activeCourseSections.map((section) => section.course),
-    );
-
-    const uniqueQueuesToBeCleaned = [];
-    uniqueActiveCourses.forEach((course) =>
-      uniqueQueuesToBeCleaned.push(...course.queues),
-    );
-
     await Promise.all(
-      uniqueQueuesToBeCleaned.map((queue) => this.cleanQueue(queue.id)),
+      queuesWithOpenQuestions.map((queue) => this.cleanQueue(queue.id)),
     );
   }
 
@@ -70,8 +65,6 @@ export class QueueCleanService {
     });
 
     if (force || !(await queue.checkIsOpen())) {
-      queue.notes = '';
-      await queue.save();
       await this.unsafeClean(queue.id);
     }
   }
