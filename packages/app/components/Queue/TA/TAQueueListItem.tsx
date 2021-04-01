@@ -18,7 +18,6 @@ const Container = styled.div<{ selected: boolean }>`
   align-items: flex-start;
 
   padding-top: 16px;
-  return string;
 }
 
 const Container = styled.div<{ selected: boolean }>\`
