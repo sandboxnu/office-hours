@@ -1,4 +1,3 @@
-import { AlertModel } from 'alerts/alerts.entity';
 import { config } from 'dotenv';
 import { AdminUserModel } from './src/admin/admin-user.entity';
 import { CourseModel } from './src/course/course.entity';
@@ -12,6 +11,7 @@ import { UserCourseModel } from './src/profile/user-course.entity';
 import { UserModel } from './src/profile/user.entity';
 import { QuestionModel } from './src/question/question.entity';
 import { QueueModel } from './src/queue/queue.entity';
+import { AlertModel } from './src/alerts/alerts.entity';
 config();
 
 // Options only used whe run via CLI

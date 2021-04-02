@@ -6,7 +6,9 @@
     "noEmit": true,
     "isolatedModules": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true
   },
   "exclude": ["**/node_modules", "dist"]
 }

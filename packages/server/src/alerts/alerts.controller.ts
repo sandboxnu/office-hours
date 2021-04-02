@@ -61,15 +61,12 @@ export class AlertsController {
       },
     });
 
-    /*
-
     // If the same user already has an alert for this then don't create a new one
     if (anotherAlert) {
       throw new BadRequestException(
         ERROR_MESSAGES.alertController.duplicateAlert,
       );
     }
-     */
 
     const alert = await AlertModel.create({
       alertType,

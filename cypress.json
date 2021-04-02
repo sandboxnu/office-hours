@@ -2,6 +2,7 @@
   "projectId": "8crkwu",
   "baseUrl": "http://localhost:3000",
   "defaultCommandTimeout": 10000,
+  "experimentalStudio": true,
   "retries": {
     "runMode": 2
   },

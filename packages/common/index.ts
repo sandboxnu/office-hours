@@ -285,15 +285,15 @@ export const QuestionStatusKeys = {
   ...LimboQuestionStatus,
 };
 
-/**
- * A Semester object, representing a schedule semester term for the purposes of a course.
- * @param season - The season of this semester.
- * @param year - The year of this semester.
- */
-interface Semester {
-  season: Season;
-  year: number;
-}
+// /**
+//  * A Semester object, representing a schedule semester term for the purposes of a course.
+//  * @param season - The season of this semester.
+//  * @param year - The year of this semester.
+//  */
+// interface Semester {
+//   season: Season;
+//   year: number;
+// }
 
 /**
  * Represents one of the seasons in which a course can take place.
@@ -566,6 +566,9 @@ export class RephraseQuestionPayload extends AlertPayload {
 
   @IsInt()
   queueId!: number;
+
+  @IsInt()
+  courseId!: number;
 }
 
 export class CreateAlertParams {
@@ -670,6 +673,7 @@ export const ERROR_MESSAGES = {
     queueNotFound: "Queue not found",
   },
   releaseNotesController: {
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     releaseNotesTime: (e: any): string =>
       "Error Parsing release notes time: " + e,
   },

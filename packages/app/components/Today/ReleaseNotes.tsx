@@ -1,9 +1,9 @@
-import useSWR from "swr";
-import { Modal, notification } from "antd";
-import { ReactElement, useState, useEffect } from "react";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { NotionRenderer, BlockMapType } from "react-notion";
 import { API } from "@koh/api-client";
+import { Modal, notification } from "antd";
+import { ReactElement, useState } from "react";
+import { BlockMapType, NotionRenderer } from "react-notion";
+import useSWR from "swr";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
 
 export default function ReleaseNotes(): ReactElement {
   const [releaseNotesLastSeen, setReleaseNotesLastSeen] = useLocalStorage(

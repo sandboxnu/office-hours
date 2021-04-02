@@ -52,7 +52,7 @@ interface TAQueueProps {
 export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
   const user = useProfile();
   const role = useRoleInCourse(courseId);
-  const { queue, mutateQueue } = useQueue(qid);
+  const { queue } = useQueue(qid);
 
   const { questions, mutateQuestions } = useQuestions(qid);
 

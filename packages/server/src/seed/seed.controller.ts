@@ -106,8 +106,8 @@ export class SeedController {
     ];
     course.save();
 
-    const userExsists = await UserModel.findOne();
-    if (!userExsists) {
+    const userExists = await UserModel.findOne();
+    if (!userExists) {
       // Student 1
       const user1 = await UserFactory.create({
         email: 'liu.sta@northeastern.edu',

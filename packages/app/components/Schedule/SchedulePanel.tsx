@@ -46,6 +46,7 @@ export default function SchedulePanel({
         scrollToTime={
           new Date(today.getFullYear(), today.getMonth(), today.getDate(), 8)
         }
+        showMultiDayTimes
       />
       {role === Role.PROFESSOR && <UpdateCalendarButton courseId={courseId} />}
     </div>

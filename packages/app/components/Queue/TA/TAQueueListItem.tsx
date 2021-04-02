@@ -1,13 +1,10 @@
 import { HourglassOutlined, QuestionOutlined } from "@ant-design/icons";
-import { OpenQuestionStatus, Question, QuestionStatus } from "@koh/common";
-import { Badge, Tooltip } from "antd";
-import React, { ReactElement, useCallback } from "react";
+import { OpenQuestionStatus, Question } from "@koh/common";
+import { Badge } from "antd";
+import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { getWaitTime } from "../../../utils/TimeUtil";
-import AvatarWithInitials from "../../common/AvatarWithInitials";
 import { KOHAvatar } from "../../common/SelfAvatar";
-import { API } from "@koh/api-client";
-import { useQuestions } from "../../../hooks/useQuestions";
 
 function truncate(string: string, length: number) {
   if (string.length > length) {
@@ -21,22 +18,6 @@ const Container = styled.div<{ selected: boolean }>`
   align-items: flex-start;
 
   padding-top: 16px;
-  return string;
-}
-
-const Container = styled.div<{ selected: boolean }>\`
-  display: flex;
-  align-items: flex-start;
-
-  padding-top: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #cfd6de;
-  background: ${({ selected }) => (selected ? "#EFF8FF" : "white")};
-
-  cursor: pointer;
-  &:hover {
-    background: ${({ selected }) => (selected ? "#EFF8FF" : "#ECF0F3")};
-  }
   padding-bottom: 12px;
   border-bottom: 1px solid #cfd6de;
   background: ${({ selected }) => (selected ? "#EFF8FF" : "white")};
@@ -87,7 +68,7 @@ export default function TAQueueListItem({
     >
       <AvatarContainer>
         <Badge
-          // position in queue ---  0 is not displayed, hide if no index
+          // 0 is not displayed, hide if no index
           count={index ? `#${index}` : 0}
           style={{ backgroundColor: "#3684c6" }}
           offset={[-40, 0]}
