@@ -70,6 +70,7 @@ const LinkIcons = styled.div`
   align-items: center;
 `;
 const NavyLink = styled.a`
+  margin-right: 10px;
   color: #2a426b;
   &:hover {
     color: #2a426b;

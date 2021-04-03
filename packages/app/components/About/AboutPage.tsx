@@ -5,20 +5,23 @@ import ProfileCard from "./ProfileCard";
 import { VerticalDivider } from "../Settings/SettingsPage";
 
 const Title = styled.div`
+  text-align: center;
   color: #212934;
   font-weight: 500;
   font-size: 30px;
 `;
 const Description = styled.div`
+  text-align: left;
   color: #5f6b79;
   font-size: 14px;
   margin-top: 15px;
 `;
 const ProfilesTitle = styled(Title)`
+  text-align: left;
   border-bottom: 1px solid #cfd6de;
   font-size: 20px;
   margin-bottom: 10px;
-}`;
+`;
 const ProfilesSection = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -29,11 +32,58 @@ const ProfilesSection = styled.div`
 export default function AboutPage(): ReactElement {
   return (
     <Row style={{ padding: "20px 0px", flexFlow: "unset" }}>
-      <Col span={6} style={{ textAlign: "center", paddingRight: "10px" }}>
+      <Col span={7} style={{ margin: "0px 30px" }}>
         <Title>About Us</Title>
         <Description>
-          Khoury Office Hours is an app made by students at Sandbox. TODO:
-          links, whatev
+          <p>
+            Khoury Office Hours is developed and maintained by a group of
+            student developers and designers from
+            <a href="https://www.sandboxnu.com/"> Sandbox</a>, the student-led
+            software consultancy at Northeastern. Our mission is to enhance the
+            student experience by making office hours more efficient and
+            transparent.
+          </p>
+          <p>
+            We began developing Khoury Office Hours in May 2020, and first
+            launched the app in Fall 2020 to 4 courses. As of this semester
+            (Spring 2021), we now support 16 courses, with over 2,500 registered
+            users. Check us out{" "}
+            <a href="https://news.northeastern.edu/2021/02/02/this-app-helps-students-get-more-face-time-with-professors/">
+              {" "}
+              in the news{" "}
+            </a>
+            to learn more.
+          </p>
+          <p>
+            Our team is always working on new features and improvements, and are
+            always open to feedback. If you're interested in contributing or
+            have questions, feel free to take a look at our
+            <a href="https://github.com/sandboxnu/office-hours"> GitHub</a> or
+            email us at
+            <a href="mailto:info@khouryofficehours.com">
+              {" "}
+              info@khouryofficehours.com
+            </a>
+          </p>
+          <p>
+            <strong>Contact: </strong>
+            <a href="mailto:info@khouryofficehours.com">
+              {" "}
+              info@khouryofficehours.com
+            </a>
+          </p>
+          <p>
+            <strong>GitHub: </strong>
+            <a href="https://github.com/sandboxnu/office-hours">
+              https://github.com/sandboxnu/office-hours
+            </a>
+          </p>
+          <p>
+            <strong>Informational Site: </strong>
+            <a href="https://info.khouryofficehours.com/">
+              https://info.khouryofficehours.com/
+            </a>
+          </p>
         </Description>
       </Col>
       <VerticalDivider />
@@ -92,7 +142,7 @@ const PROFILES_CURRENT = [
   {
     name: "Eddy Li",
     role: "Developer",
-    image: sadcat,
+    image: "https://drive.google.com/uc?id=1ym8FmRbxY05PDqDDMp4_8wsLvS_i26OS",
     linkedin: "https://www.linkedin.com/in/eddy-li/",
     personalSite: "https://eddyli.dev/",
   },
@@ -105,7 +155,7 @@ const PROFILES_CURRENT = [
   {
     name: "Danish Farooq",
     role: "Developer",
-    image: sadcat,
+    image: "https://drive.google.com/uc?id=1RE6r1qjhBqffDNjXyAA78vBYBvOCL8nr",
     linkedin: "https://www.linkedin.com/in/danishfarooq610/",
   },
   { name: "Olivia Floody", role: "Developer", image: sadcat, linkedin: "" },
@@ -115,7 +165,12 @@ const PROFILES_CURRENT = [
     image: "https://drive.google.com/uc?id=1ouq2iOsN2q1i6jGSnBcblRyCsAMH8ctX",
     linkedin: "https://www.linkedin.com/in/iris-liu-curiously",
   },
-  { name: "Alexandra Kopel", role: "Designer", image: sadcat, linkedin: "" },
+  {
+    name: "Alexandra Kopel",
+    role: "Designer",
+    image: "https://drive.google.com/uc?id=132RC8z0nnhEqSbgZMPw-JauD9ONp87dT",
+    personalSite: "https://alexkopel.myportfolio.com/",
+  },
 ];
 
 const PROFILES_PAST = [
