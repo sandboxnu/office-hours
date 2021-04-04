@@ -52,11 +52,11 @@ ListQuestionsResponse {
       "insights": Array [
         "TotalStudents",
         "TotalQuestionsAsked",
-        "AverageWaitTime",
+        "MedianWaitTime",
         "QuestionTypeBreakdown",
         "MostActiveStudents",
         "QuestionToStudentRatio",
-        "AverageHelpingTime",
+        "MedianHelpingTime",
       ],
       "lastName": "Person",
       "name": "User Person",
