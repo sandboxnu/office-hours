@@ -58,11 +58,12 @@ export class InsightsController {
     }
 
     // Initialize filters with a courseId filter since all insights are filtered by courseId
-    const filters = [];
-    filters.push({
-      type: 'courseId',
-      courseId,
-    });
+    const filters = [
+      {
+        type: 'courseId',
+        courseId,
+      },
+    ];
     // Check if the time range filters exist and add them if so
     if (start && end) {
       filters.push({
