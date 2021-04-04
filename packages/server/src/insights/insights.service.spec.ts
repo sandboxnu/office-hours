@@ -116,7 +116,7 @@ describe('InsightsService', () => {
           },
         ],
       });
-      expect(res.output).toEqual('10 min');
+      expect(res).toEqual('10 min');
     });
 
     it('medianHelpingTime', async () => {
