@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { Filter, INSIGHTS_MAP } from './insight-objects';
-import { Insight, InsightObject, ListInsightsResponse } from '@koh/common';
+import {
+  PossibleOutputTypes,
+  InsightObject,
+  ListInsightsResponse,
+} from '@koh/common';
 import { UserModel } from 'profile/user.entity';
 
 type ComputeOutputParams = {
@@ -22,7 +26,7 @@ export class InsightsService {
   async computeOutput({
     insight,
     filters,
-  }: ComputeOutputParams): Promise<Insight> {
+  }: ComputeOutputParams): Promise<PossibleOutputTypes> {
     const output = await insight.compute(filters);
     return output;
   }
@@ -30,7 +34,7 @@ export class InsightsService {
   async generateAllInsights({
     insights,
     filters,
-  }: GenerateAllInsightParams): Promise<Insight[]> {
+  }: GenerateAllInsightParams): Promise<PossibleOutputTypes[]> {
     return await Promise.all(
       insights.map(
         async (insight) => await this.computeOutput({ insight, filters }),

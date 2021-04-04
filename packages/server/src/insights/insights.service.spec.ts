@@ -54,7 +54,7 @@ describe('InsightsService', () => {
           },
         ],
       });
-      expect(res.output).toEqual(4);
+      expect(res).toEqual(4);
     });
 
     it('totalQuestionsAsked', async () => {
@@ -82,7 +82,7 @@ describe('InsightsService', () => {
           },
         ],
       });
-      expect(res.output).toEqual(6);
+      expect(res).toEqual(6);
     });
 
     it('averageWaitTime', async () => {
@@ -100,7 +100,7 @@ describe('InsightsService', () => {
           },
         ],
       });
-      expect(res.output).toEqual('5 min');
+      expect(res).toEqual('5 min');
     });
 
     it('averageHelpingTime', async () => {
@@ -125,7 +125,7 @@ describe('InsightsService', () => {
           },
         ],
       });
-      expect(res.output).toEqual('10 min');
+      expect(res).toEqual('10 min');
     });
 
     it('questionToStudentRatio', async () => {
@@ -155,7 +155,7 @@ describe('InsightsService', () => {
           },
         ],
       });
-      expect((res.output as number) - 5).toBeLessThanOrEqual(0.001);
+      expect((res as number) - 5).toBeLessThanOrEqual(0.001);
     });
   });
 
@@ -184,7 +184,7 @@ describe('InsightsService', () => {
       ],
     });
 
-    const output = res.output as BarChartOutputType;
+    const output = res as BarChartOutputType;
 
     expect(output.data).toEqual([
       { questionType: 'Bug', totalQuestions: 8 },
@@ -249,7 +249,7 @@ describe('InsightsService', () => {
       ],
     });
 
-    const output = res.output as SimpleTableOutputType;
+    const output = res as SimpleTableOutputType;
 
     expect(output.dataSource).toEqual([
       {
@@ -277,38 +277,6 @@ describe('InsightsService', () => {
         questionsAsked: '8',
       },
     ]);
-  });
-
-  describe('generateAllInsights', () => {
-    it('multiple insights', async () => {
-      const course = await CourseFactory.create();
-      await UserCourseFactory.createList(4, { course });
-      await UserCourseFactory.create();
-      const queue = await QueueFactory.create({ course });
-      await QuestionFactory.createList(18, { queue });
-
-      const res = await service.generateAllInsights({
-        insights: [
-          INSIGHTS_MAP.TotalStudents,
-          INSIGHTS_MAP.TotalQuestionsAsked,
-        ],
-        filters: [
-          {
-            type: 'courseId',
-            courseId: course.id,
-          },
-        ],
-      });
-
-      const totalStudentsInsight = res.find(
-        (insight) => insight.displayName === 'Total Students',
-      );
-      expect(totalStudentsInsight.output).toEqual(4);
-      const totalQuestionsAskedInsight = res.find(
-        (insight) => insight.displayName === 'Total Questions',
-      );
-      expect(totalQuestionsAskedInsight.output).toEqual(18);
-    });
   });
 
   describe('toggleInsightOn', () => {

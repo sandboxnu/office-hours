@@ -8,7 +8,7 @@ import {
   GetAlertsResponse,
   GetCourseOverridesResponse,
   GetCourseResponse,
-  GetInsightResponse,
+  GetInsightOutputResponse,
   GetProfileResponse,
   GetQuestionResponse,
   GetQueueResponse,
@@ -182,7 +182,7 @@ class APIClient {
       courseId: number,
       insightName: string,
       params: DateRangeType
-    ): Promise<GetInsightResponse> => {
+    ): Promise<GetInsightOutputResponse> => {
       return this.req(
         "GET",
         `/api/v1/insights/${courseId}/${insightName}`,

@@ -15,7 +15,7 @@ import {
 import { JwtAuthGuard } from 'login/jwt-auth.guard';
 import { Connection } from 'typeorm';
 import {
-  GetInsightResponse,
+  GetInsightOutputResponse,
   ERROR_MESSAGES,
   ListInsightsResponse,
   Role,
@@ -43,7 +43,7 @@ export class InsightsController {
     @Param('insightName') insightName: string,
     @Query('start') start: string,
     @Query('end') end: string,
-  ): Promise<GetInsightResponse> {
+  ): Promise<GetInsightOutputResponse> {
     // Check that the insight name is valid
     const insightNames = Object.keys(INSIGHTS_MAP);
     if (!insightNames.includes(insightName)) {
