@@ -1,8 +1,11 @@
 import {
+  CreateAlertParams,
+  CreateAlertResponse,
   CreateQuestionParams,
   CreateQuestionResponse,
   DesktopNotifBody,
   DesktopNotifPartial,
+  GetAlertsResponse,
   GetCourseOverridesResponse,
   GetCourseResponse,
   GetInsightResponse,
@@ -195,6 +198,16 @@ class APIClient {
     toggleOff: async (insightName: string): Promise<void> =>
       this.req("DELETE", `/api/v1/insights`, undefined, { insightName }),
   };
+  alerts = {
+    get: async (courseId: number): Promise<GetAlertsResponse> =>
+      this.req("GET", `/api/v1/alerts/${courseId}`),
+    create: async (params: CreateAlertParams): Promise<CreateAlertResponse> =>
+      this.req("POST", `/api/v1/alerts`, CreateAlertResponse, params),
+    close: async (alertId: number): Promise<void> => {
+      this.req("PATCH", `/api/v1/alerts/${alertId}`);
+    },
+  };
+
   constructor(baseURL = "") {
     this.axios = Axios.create({ baseURL: baseURL });
   }
