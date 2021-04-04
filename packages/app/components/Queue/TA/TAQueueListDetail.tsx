@@ -147,7 +147,11 @@ export default function TAQueueListDetail({
   const detail = (
     <Detail>
       {selectedQuestion && (
-        <TAQueueDetail queueId={queueId} question={selectedQuestion} />
+        <TAQueueDetail
+          courseId={courseId}
+          queueId={queueId}
+          question={selectedQuestion}
+        />
       )}
     </Detail>
   );

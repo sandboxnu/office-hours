@@ -14,6 +14,7 @@ import { UserCourseModel } from '../profile/user-course.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { OfficeHourModel } from './office-hour.entity';
 import { SemesterModel } from './semester.entity';
+import { AlertModel } from '../alerts/alerts.entity';
 
 /**
  * Represents a course in the context of office hours.
@@ -74,4 +75,8 @@ export class CourseModel extends BaseEntity {
   @OneToMany((type) => EventModel, (event) => event.course)
   @Exclude()
   events: EventModel[];
+
+  @OneToMany((type) => AlertModel, (alert) => alert.course)
+  @Exclude()
+  alerts: AlertModel[];
 }
