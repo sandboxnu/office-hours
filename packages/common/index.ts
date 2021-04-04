@@ -564,34 +564,27 @@ export interface GetReleaseNotesResponse {
   lastUpdatedUnixTime: number;
 }
 
-export type GetInsightResponse = Insight;
+export type GetInsightOutputResponse = PossibleOutputTypes;
 
-export type ListInsightsResponse = Record<string, InsightPartial>;
+export type ListInsightsResponse = Record<string, InsightDisplayInfo>;
 
-export type InsightPartial = {
+export type InsightDisplayInfo = {
   displayName: string;
+  description: string;
+  component: InsightComponent;
   size: "small" | "default";
 };
-
-export class Insight {
-  displayName!: string;
-  description!: string;
-  roles!: Role[];
-  component!: InsightDisplay;
-  size!: string;
-  output!: PossibleOutputTypes;
-}
 
 export interface InsightObject {
   displayName: string;
   description: string;
   roles: Role[];
-  component: InsightDisplay;
+  component: InsightComponent;
   size: "default" | "small";
   compute: (insightFilters: any) => Promise<PossibleOutputTypes>;
 }
 
-export enum InsightDisplay {
+export enum InsightComponent {
   SimpleDisplay = "SimpleDisplay",
   BarChart = "BarChart",
   SimpleTable = "SimpleTable",

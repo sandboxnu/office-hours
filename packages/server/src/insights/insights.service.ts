@@ -24,7 +24,7 @@ export class InsightsService {
     filters,
   }: ComputeOutputParams): Promise<Insight> {
     const output = await insight.compute(filters);
-    return { output, ...insight };
+    return output;
   }
 
   async generateAllInsights({
@@ -39,16 +39,20 @@ export class InsightsService {
   }
 
   convertToInsightsListResponse(insightNames: string[]): ListInsightsResponse {
-    return insightNames.reduce(
-      (obj, insightName) => ({
+    return insightNames.reduce((obj, insightName) => {
+      const { displayName, description, component, size } = INSIGHTS_MAP[
+        insightName
+      ];
+      return {
         ...obj,
         [insightName]: {
-          displayName: INSIGHTS_MAP[insightName].displayName,
-          size: INSIGHTS_MAP[insightName].size,
+          displayName,
+          description,
+          component,
+          size,
         },
-      }),
-      {},
-    );
+      };
+    }, {});
   }
 
   async toggleInsightOn(

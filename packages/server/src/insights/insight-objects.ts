@@ -1,6 +1,6 @@
 import {
   BarChartOutputType,
-  InsightDisplay,
+  InsightComponent,
   InsightObject,
   QuestionType,
   Role,
@@ -73,7 +73,7 @@ export const TotalStudents: InsightObject = {
   description:
     'What is the total number of students that are enrolled in the course?',
   roles: [Role.PROFESSOR],
-  component: InsightDisplay.SimpleDisplay,
+  component: InsightComponent.SimpleDisplay,
   size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
     return await addFilters({
@@ -89,7 +89,7 @@ export const TotalQuestionsAsked: InsightObject = {
   displayName: 'Total Questions',
   description: 'How many questions have been asked in total?',
   roles: [Role.PROFESSOR],
-  component: InsightDisplay.SimpleDisplay,
+  component: InsightComponent.SimpleDisplay,
   size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
     return await addFilters({
@@ -106,7 +106,7 @@ export const MostActiveStudents: InsightObject = {
   description:
     'Who are the students who have asked the most questions in Office Hours? (limit 75)',
   roles: [Role.PROFESSOR],
-  component: InsightDisplay.SimpleTable,
+  component: InsightComponent.SimpleTable,
   size: 'default' as const,
   async compute(filters): Promise<SimpleTableOutputType> {
     const dataSource = await addFilters({
@@ -159,7 +159,7 @@ export const QuestionTypeBreakdown: InsightObject = {
   description:
     'What is the distribution of student-selected question-types on the question form?',
   roles: [Role.PROFESSOR],
-  component: InsightDisplay.BarChart,
+  component: InsightComponent.BarChart,
   size: 'default' as const,
   async compute(filters): Promise<BarChartOutputType> {
     const info = await addFilters({
@@ -210,7 +210,7 @@ export const AverageWaitTime: InsightObject = {
   description:
     'What is the average wait time for a student to get help in the queue?',
   roles: [Role.PROFESSOR],
-  component: InsightDisplay.SimpleDisplay,
+  component: InsightComponent.SimpleDisplay,
   size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
     const waitTime = await addFilters({
@@ -233,7 +233,7 @@ export const AverageHelpingTime: InsightObject = {
   description:
     'What is the average duration that a TA help a student on a call?',
   roles: [Role.PROFESSOR],
-  component: InsightDisplay.SimpleDisplay,
+  component: InsightComponent.SimpleDisplay,
   size: 'small' as const,
 
   async compute(filters): Promise<SimpleDisplayOutputType> {
@@ -258,7 +258,7 @@ export const QuestionToStudentRatio: InsightObject = {
   displayName: 'Questions per Student',
   description: 'How many questions were asked per student on average?',
   roles: [Role.PROFESSOR],
-  component: InsightDisplay.SimpleDisplay,
+  component: InsightComponent.SimpleDisplay,
   size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
     const totalQuestions = await TotalQuestionsAsked.compute(filters);
