@@ -27,7 +27,7 @@ describe('Insights Integration', () => {
       const res = await supertest({ userId: user.id })
         .get(`/insights/${course.id}/TotalQuestionsAsked`)
         .expect(200);
-      expect(res.body).toMatchSnapshot();
+      expect(res.text).toEqual('6');
     });
 
     it('returns an error when the user does not have the correct role', async () => {
