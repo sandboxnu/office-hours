@@ -43,15 +43,18 @@ class APIClient {
     method: Method,
     url: string,
     responseClass?: ClassType<ItemIfArray<T>>,
-    body?: any
+    body?: any,
+    params?: any
   ): Promise<T>;
   private async req<T>(
     method: Method,
     url: string,
     responseClass?: ClassType<T>,
-    body?: any
+    body?: any,
+    params?: any
   ): Promise<T> {
-    const res = (await this.axios.request({ method, url, data: body })).data;
+    const res = (await this.axios.request({ method, url, data: body, params }))
+      .data;
     return responseClass ? plainToClass(responseClass, res) : res;
   }
 
@@ -175,17 +178,14 @@ class APIClient {
     get: async (
       courseId: number,
       insightName: string,
-      dateRange: DateRangeType
+      params: DateRangeType
     ): Promise<GetInsightResponse> => {
-      let dateRangeQuery = "";
-      if (dateRange.start.length && dateRange.end.length) {
-        dateRangeQuery = `?start=${encodeURIComponent(
-          dateRange.start
-        )}&end=${encodeURIComponent(dateRange.end)}`;
-      }
       return this.req(
         "GET",
-        `/api/v1/insights/${courseId}/${insightName}${dateRangeQuery}`
+        `/api/v1/insights/${courseId}/${insightName}`,
+        undefined,
+        undefined,
+        params
       );
     },
     list: async (): Promise<ListInsightsResponse> =>

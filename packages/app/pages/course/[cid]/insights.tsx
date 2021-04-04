@@ -155,7 +155,11 @@ function RenderInsight({
   const { data: insight } = useSWR(
     cid &&
       `api/v1/insights/${cid}/${insightName}?start=${dateRange.start}&end=${dateRange.end}`,
-    async () => await API.insights.get(Number(cid), insightName, dateRange)
+    async () =>
+      await API.insights.get(Number(cid), insightName, {
+        start: dateRange.start,
+        end: dateRange.end,
+      })
   );
 
   if (!insight) {
