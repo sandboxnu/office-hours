@@ -10,13 +10,18 @@ import {
   DatePicker,
   Divider,
   Row,
+  Spin,
 } from "antd";
 import { CardSize } from "antd/lib/card";
 import { InfoCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { useProfile } from "../../../hooks/useProfile";
 import { useRouter } from "next/router";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
-import { DateRangeType, InsightDisplay } from "@koh/common";
+import {
+  DateRangeType,
+  InsightComponent,
+  InsightDisplayInfo,
+} from "@koh/common";
 import NavBar from "../../../components/Nav/NavBar";
 import BarChartComponent from "../../../components/Insights/components/BarChartComponent";
 import SimpleDisplayComponent from "../../../components/Insights/components/SimpleDisplayComponent";
@@ -119,6 +124,7 @@ export default function Insights(): ReactElement {
               <RenderInsight
                 key={insightName}
                 insightName={insightName}
+                insightDisplay={allInsights[insightName]}
                 dateRange={dateRange}
               />
             );
@@ -130,6 +136,7 @@ export default function Insights(): ReactElement {
               <RenderInsight
                 key={insightName}
                 insightName={insightName}
+                insightDisplay={allInsights[insightName]}
                 dateRange={dateRange}
               />
             );
@@ -142,17 +149,19 @@ export default function Insights(): ReactElement {
 
 interface RenderInsightProps {
   insightName: string;
+  insightDisplay: InsightDisplayInfo;
   dateRange: DateRangeType;
 }
 
 function RenderInsight({
   insightName,
+  insightDisplay,
   dateRange,
 }: RenderInsightProps): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
 
-  const { data: insight } = useSWR(
+  const { data: insightOutput } = useSWR(
     cid &&
       `api/v1/insights/${cid}/${insightName}?start=${dateRange.start}&end=${dateRange.end}`,
     async () =>
@@ -162,46 +171,47 @@ function RenderInsight({
       })
   );
 
-  if (!insight) {
-    // TODO: Create loading shell
-    return null;
-  }
-
-  let InsightComponent;
-  switch (insight.component) {
-    case InsightDisplay.SimpleDisplay:
-      InsightComponent = SimpleDisplayComponent;
+  let DataComponent;
+  switch (insightDisplay.component) {
+    case InsightComponent.SimpleDisplay:
+      DataComponent = SimpleDisplayComponent;
       break;
-    case InsightDisplay.BarChart:
-      InsightComponent = BarChartComponent;
+    case InsightComponent.BarChart:
+      DataComponent = BarChartComponent;
       break;
-    case InsightDisplay.SimpleTable:
-      InsightComponent = SimpleTable;
+    case InsightComponent.SimpleTable:
+      DataComponent = SimpleTable;
       break;
     default:
       // Line below will show error if switch is not exhaustive of all enum values
-      componentDoesNotExist(insight.component);
+      componentDoesNotExist(insightDisplay.component);
   }
 
   return (
     <Card
-      size={insight.size as CardSize}
-      title={insight.displayName}
+      size={insightDisplay.size as CardSize}
+      title={insightDisplay.displayName}
       style={{
         margin: "0.5%",
         padding: "2px",
-        width: insight.size === "default" ? "50%" : "16.66%",
-        maxWidth: insight.size === "default" ? "625px" : "200px",
+        width: insightDisplay.size === "default" ? "50%" : "16.66%",
+        maxWidth: insightDisplay.size === "default" ? "625px" : "200px",
       }}
+      bodyStyle={{ position: "relative" }}
       extra={
         <Space>
-          <Tooltip title={insight.description}>
+          <Tooltip title={insightDisplay.description}>
             <InfoCircleOutlined />
           </Tooltip>
         </Space>
       }
     >
-      <InsightComponent key={insightName} {...insight} />
+      {/* {true ? <Spin style={{ margin: '20% 45%' }} /> : <DataComponent key={insightName} output={insightOutput} />} */}
+      {!insightOutput ? (
+        <Spin style={{ margin: "10% 45%" }} />
+      ) : (
+        <DataComponent key={insightName} output={insightOutput} />
+      )}
     </Card>
   );
 }

@@ -1,10 +1,12 @@
 import { Type } from "class-transformer";
 import {
   IsBoolean,
+  IsDate,
   IsDefined,
   IsEnum,
   IsInt,
   IsNotEmpty,
+  IsObject,
   IsOptional,
   IsString,
   ValidateIf,
@@ -458,6 +460,11 @@ export class ListQuestionsResponse {
 
 export class GetQuestionResponse extends Question {}
 
+export class GetStudentQuestionResponse extends Question {
+  @IsInt()
+  queueId!: number;
+}
+
 export class CreateQuestionParams {
   @IsString()
   text!: string;
@@ -532,6 +539,58 @@ export class UpdateQueueParams {
   allowQuestions?: boolean;
 }
 
+export enum AlertType {
+  REPHRASE_QUESTION = "rephraseQuestion",
+}
+
+export class AlertPayload {}
+
+export class Alert {
+  @IsEnum(AlertType)
+  alertType!: AlertType;
+
+  @IsDate()
+  sent!: Date;
+
+  @Type(() => AlertPayload)
+  payload!: AlertPayload;
+
+  @IsInt()
+  id!: number;
+}
+
+export class RephraseQuestionPayload extends AlertPayload {
+  @IsInt()
+  questionId!: number;
+
+  @IsInt()
+  queueId!: number;
+
+  @IsInt()
+  courseId!: number;
+}
+
+export class CreateAlertParams {
+  @IsEnum(AlertType)
+  alertType!: AlertType;
+
+  @IsInt()
+  courseId!: number;
+
+  @IsObject()
+  payload!: AlertPayload;
+
+  @IsInt()
+  targetUserId!: number;
+}
+
+export class CreateAlertResponse extends Alert {}
+
+export class GetAlertsResponse {
+  @Type(() => Alert)
+  alerts!: Alert[];
+}
+
 export class SSEQueueResponse {
   queue?: GetQueueResponse;
   questions?: ListQuestionsResponse;
@@ -564,34 +623,27 @@ export interface GetReleaseNotesResponse {
   lastUpdatedUnixTime: number;
 }
 
-export type GetInsightResponse = Insight;
+export type GetInsightOutputResponse = PossibleOutputTypes;
 
-export type ListInsightsResponse = Record<string, InsightPartial>;
+export type ListInsightsResponse = Record<string, InsightDisplayInfo>;
 
-export type InsightPartial = {
+export type InsightDisplayInfo = {
   displayName: string;
+  description: string;
+  component: InsightComponent;
   size: "small" | "default";
 };
-
-export class Insight {
-  displayName!: string;
-  description!: string;
-  roles!: Role[];
-  component!: InsightDisplay;
-  size!: string;
-  output!: PossibleOutputTypes;
-}
 
 export interface InsightObject {
   displayName: string;
   description: string;
   roles: Role[];
-  component: InsightDisplay;
+  component: InsightComponent;
   size: "default" | "small";
   compute: (insightFilters: any) => Promise<PossibleOutputTypes>;
 }
 
-export enum InsightDisplay {
+export enum InsightComponent {
   SimpleDisplay = "SimpleDisplay",
   BarChart = "BarChart",
   SimpleTable = "SimpleTable",
@@ -694,5 +746,9 @@ export const ERROR_MESSAGES = {
   profileController: {
     noDiskSpace:
       "There is no disk space left to store an image. Please immediately contact your course staff and let them know. They will contact the Khoury Office Hours team as soon as possible.",
+  },
+  alertController: {
+    duplicateAlert: "This alert has already been sent",
+    notActiveAlert: "This is not an alert that's open for the current user",
   },
 };

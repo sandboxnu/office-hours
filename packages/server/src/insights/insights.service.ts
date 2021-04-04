@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { Filter, INSIGHTS_MAP } from './insight-objects';
-import { Insight, InsightObject, ListInsightsResponse } from '@koh/common';
+import {
+  PossibleOutputTypes,
+  InsightObject,
+  ListInsightsResponse,
+} from '@koh/common';
 import { UserModel } from 'profile/user.entity';
 
 type ComputeOutputParams = {
@@ -22,15 +26,15 @@ export class InsightsService {
   async computeOutput({
     insight,
     filters,
-  }: ComputeOutputParams): Promise<Insight> {
+  }: ComputeOutputParams): Promise<PossibleOutputTypes> {
     const output = await insight.compute(filters);
-    return { output, ...insight };
+    return output;
   }
 
   async generateAllInsights({
     insights,
     filters,
-  }: GenerateAllInsightParams): Promise<Insight[]> {
+  }: GenerateAllInsightParams): Promise<PossibleOutputTypes[]> {
     return await Promise.all(
       insights.map(
         async (insight) => await this.computeOutput({ insight, filters }),
@@ -39,16 +43,20 @@ export class InsightsService {
   }
 
   convertToInsightsListResponse(insightNames: string[]): ListInsightsResponse {
-    return insightNames.reduce(
-      (obj, insightName) => ({
+    return insightNames.reduce((obj, insightName) => {
+      const { displayName, description, component, size } = INSIGHTS_MAP[
+        insightName
+      ];
+      return {
         ...obj,
         [insightName]: {
-          displayName: INSIGHTS_MAP[insightName].displayName,
-          size: INSIGHTS_MAP[insightName].size,
+          displayName,
+          description,
+          component,
+          size,
         },
-      }),
-      {},
-    );
+      };
+    }, {});
   }
 
   async toggleInsightOn(

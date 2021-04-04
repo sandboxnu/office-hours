@@ -3,15 +3,18 @@ import {
   CloseOutlined,
   DeleteOutlined,
   PhoneOutlined,
+  QuestionOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import {
+  AlertType,
   ClosedQuestionStatus,
   LimboQuestionStatus,
   OpenQuestionStatus,
   Question,
   QuestionStatus,
+  RephraseQuestionPayload,
 } from "@koh/common";
 import { message, Popconfirm, Tooltip } from "antd";
 import React, { ReactElement, useCallback } from "react";
@@ -19,6 +22,7 @@ import { useQuestions } from "../../../hooks/useQuestions";
 import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
 import {
   BannerDangerButton,
+  BannerOrangeButton,
   BannerPrimaryButton,
   CantFindButton,
   FinishHelpingButton,
@@ -29,13 +33,16 @@ const PRORITY_QUEUED_MESSAGE_TEXT =
   "This student has been temporarily removed from the queue. They must select to rejoin the queue and will then be placed in the Priority Queue.";
 
 export default function TAQueueDetailButtons({
+  courseId,
   queueId,
   question,
 }: {
+  courseId: number;
   queueId: number;
   question: Question;
 }): ReactElement {
   const { mutateQuestions } = useQuestions(queueId);
+
   const changeStatus = useCallback(
     async (status: QuestionStatus) => {
       await API.questions.update(question.id, { status });
@@ -44,6 +51,25 @@ export default function TAQueueDetailButtons({
     [question.id, mutateQuestions]
   );
   const { isCheckedIn, isHelping } = useTAInQueueInfo(queueId);
+
+  const sendRephraseAlert = async () => {
+    const payload: RephraseQuestionPayload = {
+      queueId,
+      questionId: question.id,
+      courseId,
+    };
+    try {
+      await API.alerts.create({
+        alertType: AlertType.REPHRASE_QUESTION,
+        courseId,
+        payload,
+        targetUserId: question.creator.id,
+      });
+    } catch (e) {
+      //If the ta creates an alert that already exists the error is caught and nothing happens
+    }
+  };
+
   if (question.status === OpenQuestionStatus.Helping) {
     return (
       <>
@@ -135,6 +161,15 @@ export default function TAQueueDetailButtons({
             </span>
           </Tooltip>
         </Popconfirm>
+        <Tooltip title="Ask the student to add more detail to their question">
+          <BannerOrangeButton
+            shape="circle"
+            icon={<QuestionOutlined />}
+            onClick={sendRephraseAlert}
+            data-cy="request-rephrase-question"
+            disabled={!isCheckedIn}
+          />
+        </Tooltip>
         <Tooltip title={helpTooltip}>
           <span>
             <BannerPrimaryButton
