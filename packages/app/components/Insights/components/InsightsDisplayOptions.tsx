@@ -22,13 +22,15 @@ export default function InsightsDisplayOptions(): ReactElement {
     API.insights.list()
   );
 
-  const toggleInsightOn = async (insightName: string) => {
-    await API.insights.toggleOn(insightName);
-    mutateProfile();
-  };
-
-  const toggleInsightOff = async (insightName: string) => {
-    await API.insights.toggleOff(insightName);
+  const toggleInsightOnOrOff = async (
+    checked: boolean,
+    insightName: string
+  ) => {
+    if (checked) {
+      await API.insights.toggleOn(insightName);
+    } else {
+      await API.insights.toggleOff(insightName);
+    }
     mutateProfile();
   };
 
@@ -42,13 +44,9 @@ export default function InsightsDisplayOptions(): ReactElement {
                 <div>{insightPartial.displayName}</div>
                 <Switch
                   checked={profile?.insights?.includes(insightName)}
-                  onChange={(checked) => {
-                    if (checked) {
-                      toggleInsightOn(insightName);
-                    } else {
-                      toggleInsightOff(insightName);
-                    }
-                  }}
+                  onChange={(checked) =>
+                    toggleInsightOnOrOff(checked, insightName)
+                  }
                 />
               </Row>
               <Divider />
