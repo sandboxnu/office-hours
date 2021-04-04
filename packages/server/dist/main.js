@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"e8d5e5044c7b442a09396f19fb40824f846cc53c"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"6e5e041628c68d12f1c04669368927801790e79f"};
 
 /***/ }),
 /* 2 */
@@ -155,7 +155,7 @@ const Tracing = __webpack_require__(13);
 const cookieParser = __webpack_require__(14);
 const morgan = __webpack_require__(15);
 const app_module_1 = __webpack_require__(16);
-const stripUndefined_pipe_1 = __webpack_require__(120);
+const stripUndefined_pipe_1 = __webpack_require__(124);
 async function bootstrap(hot) {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, {
         logger: ['error', 'warn', 'log', 'debug', 'verbose'],
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "e8d5e5044c7b442a09396f19fb40824f846cc53c",
+        release: "6e5e041628c68d12f1c04669368927801790e79f",
         environment: common_1.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -228,7 +228,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ERROR_MESSAGES = exports.SSEQueueResponse = exports.UpdateQueueParams = exports.TACheckoutResponse = exports.UpdateQuestionResponse = exports.UpdateQuestionParams = exports.CreateQuestionResponse = exports.CreateQuestionParams = exports.GetQuestionResponse = exports.ListQuestionsResponse = exports.GetCourseQueuesResponse = exports.GetQueueResponse = exports.UpdateCourseOverrideResponse = exports.UpdateCourseOverrideBody = exports.GetCourseOverridesResponse = exports.GetCourseOverridesRow = exports.GetCourseResponse = exports.UpdateProfileParams = exports.KhouryTACourse = exports.KhouryStudentCourse = exports.KhouryDataParams = exports.GetProfileResponse = exports.QuestionStatusKeys = exports.StatusSentToCreator = exports.StatusInPriorityQueue = exports.StatusInQueue = exports.ClosedQuestionStatus = exports.LimboQuestionStatus = exports.OpenQuestionStatus = exports.QuestionType = exports.Question = exports.QueuePartial = exports.Role = exports.UserPartial = exports.DesktopNotifPartial = exports.User = exports.timeDiffInMins = exports.isProd = exports.getEnv = exports.STAGING_URL = exports.PROD_URL = void 0;
+exports.ERROR_MESSAGES = exports.SSEQueueResponse = exports.GetAlertsResponse = exports.CreateAlertResponse = exports.CreateAlertParams = exports.RephraseQuestionPayload = exports.Alert = exports.AlertPayload = exports.AlertType = exports.UpdateQueueParams = exports.TACheckoutResponse = exports.UpdateQuestionResponse = exports.UpdateQuestionParams = exports.CreateQuestionResponse = exports.CreateQuestionParams = exports.GetStudentQuestionResponse = exports.GetQuestionResponse = exports.ListQuestionsResponse = exports.GetCourseQueuesResponse = exports.GetQueueResponse = exports.UpdateCourseOverrideResponse = exports.UpdateCourseOverrideBody = exports.GetCourseOverridesResponse = exports.GetCourseOverridesRow = exports.GetCourseResponse = exports.UpdateProfileParams = exports.KhouryTACourse = exports.KhouryStudentCourse = exports.KhouryDataParams = exports.GetProfileResponse = exports.QuestionStatusKeys = exports.StatusSentToCreator = exports.StatusInPriorityQueue = exports.StatusInQueue = exports.ClosedQuestionStatus = exports.LimboQuestionStatus = exports.OpenQuestionStatus = exports.QuestionType = exports.Question = exports.QueuePartial = exports.Role = exports.UserPartial = exports.DesktopNotifPartial = exports.User = exports.timeDiffInMins = exports.isProd = exports.getEnv = exports.STAGING_URL = exports.PROD_URL = void 0;
 const class_transformer_1 = __webpack_require__(6);
 const class_validator_1 = __webpack_require__(7);
 __webpack_require__(8);
@@ -540,6 +540,13 @@ exports.ListQuestionsResponse = ListQuestionsResponse;
 class GetQuestionResponse extends Question {
 }
 exports.GetQuestionResponse = GetQuestionResponse;
+class GetStudentQuestionResponse extends Question {
+}
+__decorate([
+    class_validator_1.IsInt(),
+    __metadata("design:type", Number)
+], GetStudentQuestionResponse.prototype, "queueId", void 0);
+exports.GetStudentQuestionResponse = GetStudentQuestionResponse;
 class CreateQuestionParams {
 }
 __decorate([
@@ -628,6 +635,76 @@ __decorate([
     __metadata("design:type", Boolean)
 ], UpdateQueueParams.prototype, "allowQuestions", void 0);
 exports.UpdateQueueParams = UpdateQueueParams;
+var AlertType;
+(function (AlertType) {
+    AlertType["REPHRASE_QUESTION"] = "rephraseQuestion";
+})(AlertType = exports.AlertType || (exports.AlertType = {}));
+class AlertPayload {
+}
+exports.AlertPayload = AlertPayload;
+class Alert {
+}
+__decorate([
+    class_validator_1.IsEnum(AlertType),
+    __metadata("design:type", String)
+], Alert.prototype, "alertType", void 0);
+__decorate([
+    class_validator_1.IsDate(),
+    __metadata("design:type", Date)
+], Alert.prototype, "sent", void 0);
+__decorate([
+    class_transformer_1.Type(() => AlertPayload),
+    __metadata("design:type", AlertPayload)
+], Alert.prototype, "payload", void 0);
+__decorate([
+    class_validator_1.IsInt(),
+    __metadata("design:type", Number)
+], Alert.prototype, "id", void 0);
+exports.Alert = Alert;
+class RephraseQuestionPayload extends AlertPayload {
+}
+__decorate([
+    class_validator_1.IsInt(),
+    __metadata("design:type", Number)
+], RephraseQuestionPayload.prototype, "questionId", void 0);
+__decorate([
+    class_validator_1.IsInt(),
+    __metadata("design:type", Number)
+], RephraseQuestionPayload.prototype, "queueId", void 0);
+__decorate([
+    class_validator_1.IsInt(),
+    __metadata("design:type", Number)
+], RephraseQuestionPayload.prototype, "courseId", void 0);
+exports.RephraseQuestionPayload = RephraseQuestionPayload;
+class CreateAlertParams {
+}
+__decorate([
+    class_validator_1.IsEnum(AlertType),
+    __metadata("design:type", String)
+], CreateAlertParams.prototype, "alertType", void 0);
+__decorate([
+    class_validator_1.IsInt(),
+    __metadata("design:type", Number)
+], CreateAlertParams.prototype, "courseId", void 0);
+__decorate([
+    class_validator_1.IsObject(),
+    __metadata("design:type", AlertPayload)
+], CreateAlertParams.prototype, "payload", void 0);
+__decorate([
+    class_validator_1.IsInt(),
+    __metadata("design:type", Number)
+], CreateAlertParams.prototype, "targetUserId", void 0);
+exports.CreateAlertParams = CreateAlertParams;
+class CreateAlertResponse extends Alert {
+}
+exports.CreateAlertResponse = CreateAlertResponse;
+class GetAlertsResponse {
+}
+__decorate([
+    class_transformer_1.Type(() => Alert),
+    __metadata("design:type", Array)
+], GetAlertsResponse.prototype, "alerts", void 0);
+exports.GetAlertsResponse = GetAlertsResponse;
 class SSEQueueResponse {
 }
 exports.SSEQueueResponse = SSEQueueResponse;
@@ -683,6 +760,10 @@ exports.ERROR_MESSAGES = {
     },
     profileController: {
         noDiskSpace: "There is no disk space left to store an image. Please immediately contact your course staff and let them know. They will contact the Khoury Office Hours team as soon as possible.",
+    },
+    alertController: {
+        duplicateAlert: "This alert has already been sent",
+        notActiveAlert: "This is not an alert that's open for the current user",
     },
 };
 
@@ -763,23 +844,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = __webpack_require__(9);
 const config_1 = __webpack_require__(17);
-const typeorm_1 = __webpack_require__(18);
-const schedule_1 = __webpack_require__(19);
-const course_module_1 = __webpack_require__(20);
-const notification_module_1 = __webpack_require__(63);
-const login_module_1 = __webpack_require__(70);
-const profile_module_1 = __webpack_require__(79);
-const question_module_1 = __webpack_require__(87);
-const queue_module_1 = __webpack_require__(56);
-const seed_module_1 = __webpack_require__(91);
-const admin_module_1 = __webpack_require__(96);
-const nestjs_command_1 = __webpack_require__(49);
-const sse_module_1 = __webpack_require__(60);
-const typeormConfig = __webpack_require__(107);
-const backfill_module_1 = __webpack_require__(109);
-const release_notes_module_1 = __webpack_require__(115);
-const nestjs_redis_1 = __webpack_require__(44);
-const healthcheck_module_1 = __webpack_require__(117);
+const schedule_1 = __webpack_require__(18);
+const typeorm_1 = __webpack_require__(19);
+const alerts_module_1 = __webpack_require__(20);
+const backfill_module_1 = __webpack_require__(41);
+const nestjs_command_1 = __webpack_require__(50);
+const nestjs_redis_1 = __webpack_require__(55);
+const release_notes_module_1 = __webpack_require__(56);
+const typeormConfig = __webpack_require__(58);
+const admin_module_1 = __webpack_require__(63);
+const course_module_1 = __webpack_require__(72);
+const healthcheck_module_1 = __webpack_require__(96);
+const login_module_1 = __webpack_require__(99);
+const notification_module_1 = __webpack_require__(42);
+const profile_module_1 = __webpack_require__(107);
+const question_module_1 = __webpack_require__(115);
+const queue_module_1 = __webpack_require__(89);
+const seed_module_1 = __webpack_require__(119);
+const sse_module_1 = __webpack_require__(93);
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -808,6 +890,7 @@ AppModule = __decorate([
             release_notes_module_1.ReleaseNotesModule,
             nestjs_redis_1.RedisModule.register([{ name: 'pub' }, { name: 'sub' }, { name: 'db' }]),
             healthcheck_module_1.HealthcheckModule,
+            alerts_module_1.AlertsModule,
         ],
     })
 ], AppModule);
@@ -824,13 +907,13 @@ module.exports = require("@nestjs/config");
 /* 18 */
 /***/ (function(module, exports) {
 
-module.exports = require("@nestjs/typeorm");
+module.exports = require("@nestjs/schedule");
 
 /***/ }),
 /* 19 */
 /***/ (function(module, exports) {
 
-module.exports = require("@nestjs/schedule");
+module.exports = require("@nestjs/typeorm");
 
 /***/ }),
 /* 20 */
@@ -845,23 +928,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CourseModule = void 0;
+exports.AlertsModule = void 0;
 const common_1 = __webpack_require__(9);
-const course_controller_1 = __webpack_require__(21);
-const queue_module_1 = __webpack_require__(56);
-const ical_command_1 = __webpack_require__(62);
-const ical_service_1 = __webpack_require__(50);
-const heatmap_service_1 = __webpack_require__(48);
-let CourseModule = class CourseModule {
+const alerts_controller_1 = __webpack_require__(21);
+const alerts_service_1 = __webpack_require__(40);
+let AlertsModule = class AlertsModule {
 };
-CourseModule = __decorate([
+AlertsModule = __decorate([
     common_1.Module({
-        controllers: [course_controller_1.CourseController],
-        imports: [queue_module_1.QueueModule, common_1.CacheModule.register()],
-        providers: [ical_command_1.ICalCommand, ical_service_1.IcalService, heatmap_service_1.HeatmapService],
+        controllers: [alerts_controller_1.AlertsController],
+        providers: [alerts_service_1.AlertsService],
     })
-], CourseModule);
-exports.CourseModule = CourseModule;
+], AlertsModule);
+exports.AlertsModule = AlertsModule;
 
 
 /***/ }),
@@ -883,26 +962,2490 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AlertsController = void 0;
+const common_1 = __webpack_require__(5);
+const common_2 = __webpack_require__(9);
+const lodash_1 = __webpack_require__(22);
+const jwt_auth_guard_1 = __webpack_require__(23);
+const user_decorator_1 = __webpack_require__(25);
+const user_entity_1 = __webpack_require__(26);
+const roles_decorator_1 = __webpack_require__(39);
+const alerts_entity_1 = __webpack_require__(36);
+const alerts_service_1 = __webpack_require__(40);
+let AlertsController = class AlertsController {
+    constructor(alertsService) {
+        this.alertsService = alertsService;
+    }
+    async getAlerts(courseId, user) {
+        const alerts = (await alerts_entity_1.AlertModel.find({
+            where: {
+                courseId,
+                user,
+                resolved: null,
+            },
+        })).map((alert) => lodash_1.pick(alert, ['sent', 'alertType', 'payload', 'id']));
+        return { alerts: await this.alertsService.removeStaleAlerts(alerts) };
+    }
+    async createAlert(body) {
+        const { alertType, courseId, payload, targetUserId } = body;
+        const anotherAlert = await alerts_entity_1.AlertModel.findOne({
+            where: {
+                alertType,
+                userId: targetUserId,
+                resolved: null,
+            },
+        });
+        if (anotherAlert) {
+            throw new common_2.BadRequestException(common_1.ERROR_MESSAGES.alertController.duplicateAlert);
+        }
+        const alert = await alerts_entity_1.AlertModel.create({
+            alertType,
+            sent: new Date(),
+            userId: targetUserId,
+            courseId,
+            payload,
+        }).save();
+        return alert;
+    }
+    async closeAlert(alertId) {
+        const alert = await alerts_entity_1.AlertModel.findOne({
+            where: {
+                id: alertId,
+            },
+        });
+        if (!alert) {
+            throw new common_2.BadRequestException(common_1.ERROR_MESSAGES.alertController.notActiveAlert);
+        }
+        alert.resolved = new Date();
+        await alert.save();
+    }
+};
+__decorate([
+    common_2.Get(':courseId'),
+    __param(0, common_2.Param('courseId')),
+    __param(1, user_decorator_1.User()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, user_entity_1.UserModel]),
+    __metadata("design:returntype", Promise)
+], AlertsController.prototype, "getAlerts", null);
+__decorate([
+    common_2.Post(),
+    roles_decorator_1.Roles(common_1.Role.TA, common_1.Role.PROFESSOR),
+    __param(0, common_2.Body()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [common_1.CreateAlertParams]),
+    __metadata("design:returntype", Promise)
+], AlertsController.prototype, "createAlert", null);
+__decorate([
+    common_2.Patch(':alertId'),
+    roles_decorator_1.Roles(common_1.Role.STUDENT, common_1.Role.TA, common_1.Role.PROFESSOR),
+    __param(0, common_2.Param('alertId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], AlertsController.prototype, "closeAlert", null);
+AlertsController = __decorate([
+    common_2.Controller('alerts'),
+    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
+    __metadata("design:paramtypes", [alerts_service_1.AlertsService])
+], AlertsController);
+exports.AlertsController = AlertsController;
+
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports) {
+
+module.exports = require("lodash");
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.JwtAuthGuard = void 0;
+const common_1 = __webpack_require__(9);
+const passport_1 = __webpack_require__(24);
+let JwtAuthGuard = class JwtAuthGuard extends passport_1.AuthGuard('jwt') {
+};
+JwtAuthGuard = __decorate([
+    common_1.Injectable()
+], JwtAuthGuard);
+exports.JwtAuthGuard = JwtAuthGuard;
+
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports) {
+
+module.exports = require("@nestjs/passport");
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.UserId = exports.User = void 0;
+const common_1 = __webpack_require__(9);
+const user_entity_1 = __webpack_require__(26);
+exports.User = common_1.createParamDecorator(async (relations, ctx) => {
+    const request = ctx.switchToHttp().getRequest();
+    return await user_entity_1.UserModel.findOne(request.user.userId, { relations });
+});
+exports.UserId = common_1.createParamDecorator((data, ctx) => {
+    const request = ctx.switchToHttp().getRequest();
+    return Number(request.user.userId);
+});
+
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.UserModel = void 0;
+const class_transformer_1 = __webpack_require__(6);
+const typeorm_1 = __webpack_require__(27);
+const desktop_notif_entity_1 = __webpack_require__(28);
+const phone_notif_entity_1 = __webpack_require__(29);
+const queue_entity_1 = __webpack_require__(30);
+const event_model_entity_1 = __webpack_require__(32);
+const user_course_entity_1 = __webpack_require__(33);
+const alerts_entity_1 = __webpack_require__(36);
+let UserModel = class UserModel extends typeorm_1.BaseEntity {
+    setFullNames() {
+        this.name = this.firstName + ' ' + this.lastName;
+    }
+};
+__decorate([
+    typeorm_1.PrimaryGeneratedColumn(),
+    __metadata("design:type", Number)
+], UserModel.prototype, "id", void 0);
+__decorate([
+    typeorm_1.Column('text'),
+    __metadata("design:type", String)
+], UserModel.prototype, "email", void 0);
+__decorate([
+    typeorm_1.Column('text', { nullable: true }),
+    __metadata("design:type", String)
+], UserModel.prototype, "firstName", void 0);
+__decorate([
+    typeorm_1.Column('text', { nullable: true }),
+    __metadata("design:type", String)
+], UserModel.prototype, "lastName", void 0);
+__decorate([
+    typeorm_1.Column('text', { nullable: true }),
+    __metadata("design:type", String)
+], UserModel.prototype, "photoURL", void 0);
+__decorate([
+    typeorm_1.OneToMany((type) => user_course_entity_1.UserCourseModel, (ucm) => ucm.user),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", Array)
+], UserModel.prototype, "courses", void 0);
+__decorate([
+    typeorm_1.Column({ type: 'boolean', default: false }),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", Boolean)
+], UserModel.prototype, "desktopNotifsEnabled", void 0);
+__decorate([
+    typeorm_1.Column({ type: 'boolean', default: false }),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", Boolean)
+], UserModel.prototype, "phoneNotifsEnabled", void 0);
+__decorate([
+    typeorm_1.OneToMany((type) => desktop_notif_entity_1.DesktopNotifModel, (notif) => notif.user),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", Array)
+], UserModel.prototype, "desktopNotifs", void 0);
+__decorate([
+    typeorm_1.OneToOne((type) => phone_notif_entity_1.PhoneNotifModel, (notif) => notif.user),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", phone_notif_entity_1.PhoneNotifModel)
+], UserModel.prototype, "phoneNotif", void 0);
+__decorate([
+    class_transformer_1.Exclude(),
+    typeorm_1.ManyToMany((type) => queue_entity_1.QueueModel, (queue) => queue.staffList),
+    __metadata("design:type", Array)
+], UserModel.prototype, "queues", void 0);
+__decorate([
+    class_transformer_1.Exclude(),
+    typeorm_1.OneToMany((type) => event_model_entity_1.EventModel, (event) => event.user),
+    __metadata("design:type", Array)
+], UserModel.prototype, "events", void 0);
+__decorate([
+    class_transformer_1.Exclude(),
+    typeorm_1.OneToMany((type) => alerts_entity_1.AlertModel, (alert) => alert.user),
+    __metadata("design:type", Array)
+], UserModel.prototype, "alerts", void 0);
+__decorate([
+    typeorm_1.AfterLoad(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], UserModel.prototype, "setFullNames", null);
+UserModel = __decorate([
+    typeorm_1.Entity('user_model')
+], UserModel);
+exports.UserModel = UserModel;
+
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports) {
+
+module.exports = require("typeorm");
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DesktopNotifModel = void 0;
+const typeorm_1 = __webpack_require__(27);
+const user_entity_1 = __webpack_require__(26);
+let DesktopNotifModel = class DesktopNotifModel extends typeorm_1.BaseEntity {
+};
+__decorate([
+    typeorm_1.PrimaryGeneratedColumn(),
+    __metadata("design:type", Number)
+], DesktopNotifModel.prototype, "id", void 0);
+__decorate([
+    typeorm_1.Column('text'),
+    __metadata("design:type", String)
+], DesktopNotifModel.prototype, "endpoint", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    __metadata("design:type", Date)
+], DesktopNotifModel.prototype, "expirationTime", void 0);
+__decorate([
+    typeorm_1.Column('text'),
+    __metadata("design:type", String)
+], DesktopNotifModel.prototype, "p256dh", void 0);
+__decorate([
+    typeorm_1.Column('text'),
+    __metadata("design:type", String)
+], DesktopNotifModel.prototype, "auth", void 0);
+__decorate([
+    typeorm_1.ManyToOne((type) => user_entity_1.UserModel, (user) => user.desktopNotifs),
+    typeorm_1.JoinColumn({ name: 'userId' }),
+    __metadata("design:type", user_entity_1.UserModel)
+], DesktopNotifModel.prototype, "user", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    __metadata("design:type", Number)
+], DesktopNotifModel.prototype, "userId", void 0);
+__decorate([
+    typeorm_1.CreateDateColumn({ type: 'timestamp' }),
+    __metadata("design:type", Date)
+], DesktopNotifModel.prototype, "createdAt", void 0);
+__decorate([
+    typeorm_1.Column({ type: 'text', nullable: true }),
+    __metadata("design:type", String)
+], DesktopNotifModel.prototype, "name", void 0);
+DesktopNotifModel = __decorate([
+    typeorm_1.Entity('desktop_notif_model')
+], DesktopNotifModel);
+exports.DesktopNotifModel = DesktopNotifModel;
+
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PhoneNotifModel = void 0;
+const typeorm_1 = __webpack_require__(27);
+const user_entity_1 = __webpack_require__(26);
+let PhoneNotifModel = class PhoneNotifModel extends typeorm_1.BaseEntity {
+};
+__decorate([
+    typeorm_1.PrimaryGeneratedColumn(),
+    __metadata("design:type", Number)
+], PhoneNotifModel.prototype, "id", void 0);
+__decorate([
+    typeorm_1.Column('text'),
+    __metadata("design:type", String)
+], PhoneNotifModel.prototype, "phoneNumber", void 0);
+__decorate([
+    typeorm_1.OneToOne((type) => user_entity_1.UserModel, (user) => user.phoneNotif),
+    typeorm_1.JoinColumn({ name: 'userId' }),
+    __metadata("design:type", user_entity_1.UserModel)
+], PhoneNotifModel.prototype, "user", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    __metadata("design:type", Number)
+], PhoneNotifModel.prototype, "userId", void 0);
+__decorate([
+    typeorm_1.Column(),
+    __metadata("design:type", Boolean)
+], PhoneNotifModel.prototype, "verified", void 0);
+PhoneNotifModel = __decorate([
+    typeorm_1.Entity('phone_notif_model')
+], PhoneNotifModel);
+exports.PhoneNotifModel = PhoneNotifModel;
+
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.QueueModel = void 0;
+const class_transformer_1 = __webpack_require__(6);
+const typeorm_1 = __webpack_require__(27);
+const course_entity_1 = __webpack_require__(31);
+const office_hour_entity_1 = __webpack_require__(34);
+const user_entity_1 = __webpack_require__(26);
+const question_entity_1 = __webpack_require__(37);
+let QueueModel = class QueueModel extends typeorm_1.BaseEntity {
+    async checkIsOpen() {
+        if (this.staffList && this.staffList.length > 0) {
+            this.isOpen = true;
+            return true;
+        }
+        this.isOpen = await this.areThereOfficeHoursRightNow();
+        return this.isOpen;
+    }
+    async areThereOfficeHoursRightNow(now = new Date()) {
+        const MS_IN_MINUTE = 60000;
+        const ohs = await this.getOfficeHours(now);
+        return !!ohs.find((e) => e.startTime.getTime() - 10 * MS_IN_MINUTE < now.getTime() &&
+            e.endTime.getTime() + 1 * MS_IN_MINUTE > now.getTime());
+    }
+    async addQueueSize() {
+        this.queueSize = await question_entity_1.QuestionModel.waitingInQueue(this.id).getCount();
+    }
+    async addQueueTimes() {
+        const now = new Date();
+        const officeHours = await this.getOfficeHours();
+        const timeIntervals = this.generateMergedTimeIntervals(officeHours);
+        const currTime = timeIntervals.find((group) => {
+            const lowerBound = group.startTime.getTime() - 15 * 60 * 1000;
+            const upperBound = group.endTime.getTime() + 15 * 60 * 1000;
+            return lowerBound <= now.getTime() && upperBound >= now.getTime();
+        });
+        if (currTime) {
+            this.startTime = currTime.startTime;
+            this.endTime = currTime.endTime;
+        }
+    }
+    async getOfficeHours(now = new Date()) {
+        const lowerBound = new Date(now);
+        lowerBound.setUTCHours(now.getUTCHours() - 30);
+        lowerBound.setUTCHours(0, 0, 0, 0);
+        const upperBound = new Date(now);
+        upperBound.setUTCHours(now.getUTCHours() + 30);
+        upperBound.setUTCHours(0, 0, 0, 0);
+        return await office_hour_entity_1.OfficeHourModel.find({
+            where: [
+                {
+                    queueId: this.id,
+                    startTime: typeorm_1.MoreThanOrEqual(lowerBound),
+                    endTime: typeorm_1.LessThanOrEqual(upperBound),
+                },
+            ],
+            order: {
+                startTime: 'ASC',
+            },
+        });
+    }
+    generateMergedTimeIntervals(officeHours) {
+        const timeIntervals = [];
+        officeHours.forEach((officeHour) => {
+            if (timeIntervals.length == 0 ||
+                officeHour.startTime > timeIntervals[timeIntervals.length - 1].endTime) {
+                timeIntervals.push({
+                    startTime: officeHour.startTime,
+                    endTime: officeHour.endTime,
+                });
+                return;
+            }
+            const prevGroup = timeIntervals[timeIntervals.length - 1];
+            prevGroup.endTime =
+                officeHour.endTime > prevGroup.endTime
+                    ? officeHour.endTime
+                    : prevGroup.endTime;
+        });
+        return timeIntervals;
+    }
+};
+__decorate([
+    typeorm_1.PrimaryGeneratedColumn(),
+    __metadata("design:type", Number)
+], QueueModel.prototype, "id", void 0);
+__decorate([
+    typeorm_1.ManyToOne((type) => course_entity_1.CourseModel, (course) => course.queues),
+    typeorm_1.JoinColumn({ name: 'courseId' }),
+    __metadata("design:type", course_entity_1.CourseModel)
+], QueueModel.prototype, "course", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", Number)
+], QueueModel.prototype, "courseId", void 0);
+__decorate([
+    typeorm_1.Column('text'),
+    __metadata("design:type", String)
+], QueueModel.prototype, "room", void 0);
+__decorate([
+    typeorm_1.OneToMany((type) => question_entity_1.QuestionModel, (qm) => qm.queue),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", Array)
+], QueueModel.prototype, "questions", void 0);
+__decorate([
+    typeorm_1.Column('text', { nullable: true }),
+    __metadata("design:type", String)
+], QueueModel.prototype, "notes", void 0);
+__decorate([
+    typeorm_1.ManyToMany((type) => user_entity_1.UserModel, (user) => user.queues),
+    typeorm_1.JoinTable(),
+    __metadata("design:type", Array)
+], QueueModel.prototype, "staffList", void 0);
+__decorate([
+    typeorm_1.Column({ default: false }),
+    __metadata("design:type", Boolean)
+], QueueModel.prototype, "allowQuestions", void 0);
+__decorate([
+    class_transformer_1.Exclude(),
+    typeorm_1.OneToMany((type) => office_hour_entity_1.OfficeHourModel, (oh) => oh.queue),
+    typeorm_1.JoinTable(),
+    __metadata("design:type", Array)
+], QueueModel.prototype, "officeHours", void 0);
+__decorate([
+    typeorm_1.Column({ default: false }),
+    __metadata("design:type", Boolean)
+], QueueModel.prototype, "isProfessorQueue", void 0);
+QueueModel = __decorate([
+    typeorm_1.Entity('queue_model')
+], QueueModel);
+exports.QueueModel = QueueModel;
+
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CourseModel = void 0;
+const class_transformer_1 = __webpack_require__(6);
+const typeorm_1 = __webpack_require__(27);
+const event_model_entity_1 = __webpack_require__(32);
+const user_course_entity_1 = __webpack_require__(33);
+const queue_entity_1 = __webpack_require__(30);
+const office_hour_entity_1 = __webpack_require__(34);
+const semester_entity_1 = __webpack_require__(35);
+const alerts_entity_1 = __webpack_require__(36);
+let CourseModel = class CourseModel extends typeorm_1.BaseEntity {
+};
+__decorate([
+    typeorm_1.PrimaryGeneratedColumn(),
+    __metadata("design:type", Number)
+], CourseModel.prototype, "id", void 0);
+__decorate([
+    typeorm_1.OneToMany((type) => office_hour_entity_1.OfficeHourModel, (oh) => oh.course),
+    __metadata("design:type", Array)
+], CourseModel.prototype, "officeHours", void 0);
+__decorate([
+    typeorm_1.OneToMany((type) => queue_entity_1.QueueModel, (q) => q.course),
+    __metadata("design:type", Array)
+], CourseModel.prototype, "queues", void 0);
+__decorate([
+    typeorm_1.Column('text'),
+    __metadata("design:type", String)
+], CourseModel.prototype, "name", void 0);
+__decorate([
+    typeorm_1.Column('text', { nullable: true }),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", String)
+], CourseModel.prototype, "icalURL", void 0);
+__decorate([
+    typeorm_1.OneToMany((type) => user_course_entity_1.UserCourseModel, (ucm) => ucm.course),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", user_course_entity_1.UserCourseModel)
+], CourseModel.prototype, "userCourses", void 0);
+__decorate([
+    typeorm_1.ManyToOne((type) => semester_entity_1.SemesterModel, (semester) => semester.courses),
+    typeorm_1.JoinColumn({ name: 'semesterId' }),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", semester_entity_1.SemesterModel)
+], CourseModel.prototype, "semester", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", Number)
+], CourseModel.prototype, "semesterId", void 0);
+__decorate([
+    typeorm_1.Column('boolean', { nullable: true }),
+    __metadata("design:type", Boolean)
+], CourseModel.prototype, "enabled", void 0);
+__decorate([
+    typeorm_1.Column('text', { nullable: true }),
+    __metadata("design:type", String)
+], CourseModel.prototype, "timezone", void 0);
+__decorate([
+    typeorm_1.OneToMany((type) => event_model_entity_1.EventModel, (event) => event.course),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", Array)
+], CourseModel.prototype, "events", void 0);
+__decorate([
+    typeorm_1.OneToMany((type) => alerts_entity_1.AlertModel, (alert) => alert.course),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", Array)
+], CourseModel.prototype, "alerts", void 0);
+CourseModel = __decorate([
+    typeorm_1.Entity('course_model')
+], CourseModel);
+exports.CourseModel = CourseModel;
+
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.EventModel = exports.EventType = void 0;
+const class_transformer_1 = __webpack_require__(6);
+const typeorm_1 = __webpack_require__(27);
+const course_entity_1 = __webpack_require__(31);
+const user_entity_1 = __webpack_require__(26);
+var EventType;
+(function (EventType) {
+    EventType["TA_CHECKED_IN"] = "taCheckedIn";
+    EventType["TA_CHECKED_OUT"] = "taCheckedOut";
+    EventType["TA_CHECKED_OUT_FORCED"] = "taCheckedOutForced";
+})(EventType = exports.EventType || (exports.EventType = {}));
+let EventModel = class EventModel extends typeorm_1.BaseEntity {
+};
+__decorate([
+    typeorm_1.PrimaryGeneratedColumn(),
+    __metadata("design:type", Number)
+], EventModel.prototype, "id", void 0);
+__decorate([
+    typeorm_1.Column(),
+    __metadata("design:type", Date)
+], EventModel.prototype, "time", void 0);
+__decorate([
+    typeorm_1.Column({ type: 'enum', enum: EventType }),
+    __metadata("design:type", String)
+], EventModel.prototype, "eventType", void 0);
+__decorate([
+    typeorm_1.ManyToOne((type) => user_entity_1.UserModel, (user) => user.events),
+    typeorm_1.JoinColumn({ name: 'userId' }),
+    __metadata("design:type", user_entity_1.UserModel)
+], EventModel.prototype, "user", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", Number)
+], EventModel.prototype, "userId", void 0);
+__decorate([
+    typeorm_1.ManyToOne((type) => course_entity_1.CourseModel, (course) => course.events),
+    typeorm_1.JoinColumn({ name: 'courseId' }),
+    __metadata("design:type", course_entity_1.CourseModel)
+], EventModel.prototype, "course", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", Number)
+], EventModel.prototype, "courseId", void 0);
+EventModel = __decorate([
+    typeorm_1.Entity('event_model')
+], EventModel);
+exports.EventModel = EventModel;
+
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.UserCourseModel = void 0;
+const common_1 = __webpack_require__(5);
+const typeorm_1 = __webpack_require__(27);
+const course_entity_1 = __webpack_require__(31);
+const user_entity_1 = __webpack_require__(26);
+let UserCourseModel = class UserCourseModel extends typeorm_1.BaseEntity {
+};
+__decorate([
+    typeorm_1.PrimaryGeneratedColumn(),
+    __metadata("design:type", Number)
+], UserCourseModel.prototype, "id", void 0);
+__decorate([
+    typeorm_1.ManyToOne((type) => user_entity_1.UserModel, (user) => user.courses),
+    typeorm_1.JoinColumn({ name: 'userId' }),
+    __metadata("design:type", user_entity_1.UserModel)
+], UserCourseModel.prototype, "user", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    __metadata("design:type", Number)
+], UserCourseModel.prototype, "userId", void 0);
+__decorate([
+    typeorm_1.ManyToOne((type) => course_entity_1.CourseModel, (course) => course.userCourses),
+    typeorm_1.JoinColumn({ name: 'courseId' }),
+    __metadata("design:type", course_entity_1.CourseModel)
+], UserCourseModel.prototype, "course", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    __metadata("design:type", Number)
+], UserCourseModel.prototype, "courseId", void 0);
+__decorate([
+    typeorm_1.Column({ type: 'enum', enum: common_1.Role, default: common_1.Role.STUDENT }),
+    __metadata("design:type", String)
+], UserCourseModel.prototype, "role", void 0);
+__decorate([
+    typeorm_1.Column({ default: false }),
+    __metadata("design:type", Boolean)
+], UserCourseModel.prototype, "override", void 0);
+UserCourseModel = __decorate([
+    typeorm_1.Entity('user_course_model')
+], UserCourseModel);
+exports.UserCourseModel = UserCourseModel;
+
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.OfficeHourModel = void 0;
+const class_transformer_1 = __webpack_require__(6);
+const typeorm_1 = __webpack_require__(27);
+const queue_entity_1 = __webpack_require__(30);
+const course_entity_1 = __webpack_require__(31);
+let OfficeHourModel = class OfficeHourModel extends typeorm_1.BaseEntity {
+    get room() {
+        var _a;
+        return (_a = this.queue) === null || _a === void 0 ? void 0 : _a.room;
+    }
+};
+__decorate([
+    typeorm_1.PrimaryGeneratedColumn(),
+    __metadata("design:type", Number)
+], OfficeHourModel.prototype, "id", void 0);
+__decorate([
+    typeorm_1.ManyToOne((type) => course_entity_1.CourseModel, (course) => course.officeHours),
+    typeorm_1.JoinColumn({ name: 'courseId' }),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", course_entity_1.CourseModel)
+], OfficeHourModel.prototype, "course", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", Number)
+], OfficeHourModel.prototype, "courseId", void 0);
+__decorate([
+    typeorm_1.ManyToOne((type) => queue_entity_1.QueueModel, (queue) => queue.officeHours, {
+        eager: true,
+    }),
+    typeorm_1.JoinColumn({ name: 'queueId' }),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", queue_entity_1.QueueModel)
+], OfficeHourModel.prototype, "queue", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", Number)
+], OfficeHourModel.prototype, "queueId", void 0);
+__decorate([
+    typeorm_1.Column('text'),
+    __metadata("design:type", String)
+], OfficeHourModel.prototype, "title", void 0);
+__decorate([
+    typeorm_1.Column(),
+    __metadata("design:type", Date)
+], OfficeHourModel.prototype, "startTime", void 0);
+__decorate([
+    typeorm_1.Column(),
+    __metadata("design:type", Date)
+], OfficeHourModel.prototype, "endTime", void 0);
+__decorate([
+    class_transformer_1.Expose(),
+    __metadata("design:type", String),
+    __metadata("design:paramtypes", [])
+], OfficeHourModel.prototype, "room", null);
+OfficeHourModel = __decorate([
+    typeorm_1.Entity('office_hour')
+], OfficeHourModel);
+exports.OfficeHourModel = OfficeHourModel;
+
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SemesterModel = void 0;
+const typeorm_1 = __webpack_require__(27);
+const course_entity_1 = __webpack_require__(31);
+let SemesterModel = class SemesterModel extends typeorm_1.BaseEntity {
+};
+__decorate([
+    typeorm_1.PrimaryGeneratedColumn(),
+    __metadata("design:type", Number)
+], SemesterModel.prototype, "id", void 0);
+__decorate([
+    typeorm_1.Column('text'),
+    __metadata("design:type", String)
+], SemesterModel.prototype, "season", void 0);
+__decorate([
+    typeorm_1.Column(),
+    __metadata("design:type", Number)
+], SemesterModel.prototype, "year", void 0);
+__decorate([
+    typeorm_1.OneToMany((type) => course_entity_1.CourseModel, (course) => course.semester),
+    __metadata("design:type", Array)
+], SemesterModel.prototype, "courses", void 0);
+SemesterModel = __decorate([
+    typeorm_1.Entity('semester_model')
+], SemesterModel);
+exports.SemesterModel = SemesterModel;
+
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AlertModel = void 0;
+const common_1 = __webpack_require__(5);
+const class_transformer_1 = __webpack_require__(6);
+const typeorm_1 = __webpack_require__(27);
+const course_entity_1 = __webpack_require__(31);
+const user_entity_1 = __webpack_require__(26);
+let AlertModel = class AlertModel extends typeorm_1.BaseEntity {
+};
+__decorate([
+    typeorm_1.PrimaryGeneratedColumn(),
+    __metadata("design:type", Number)
+], AlertModel.prototype, "id", void 0);
+__decorate([
+    typeorm_1.Column({ type: 'enum', enum: common_1.AlertType }),
+    __metadata("design:type", String)
+], AlertModel.prototype, "alertType", void 0);
+__decorate([
+    typeorm_1.Column(),
+    __metadata("design:type", Date)
+], AlertModel.prototype, "sent", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    __metadata("design:type", Date)
+], AlertModel.prototype, "resolved", void 0);
+__decorate([
+    typeorm_1.ManyToOne((type) => user_entity_1.UserModel, (user) => user.alerts),
+    typeorm_1.JoinColumn({ name: 'userId' }),
+    __metadata("design:type", user_entity_1.UserModel)
+], AlertModel.prototype, "user", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", Number)
+], AlertModel.prototype, "userId", void 0);
+__decorate([
+    typeorm_1.ManyToOne((type) => course_entity_1.CourseModel, (course) => course.alerts),
+    typeorm_1.JoinColumn({ name: 'courseId' }),
+    __metadata("design:type", course_entity_1.CourseModel)
+], AlertModel.prototype, "course", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", Number)
+], AlertModel.prototype, "courseId", void 0);
+__decorate([
+    typeorm_1.Column({ type: 'json' }),
+    __metadata("design:type", common_1.AlertPayload)
+], AlertModel.prototype, "payload", void 0);
+AlertModel = __decorate([
+    typeorm_1.Entity('alert_model')
+], AlertModel);
+exports.AlertModel = AlertModel;
+
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var QuestionModel_1;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.QuestionModel = void 0;
+const common_1 = __webpack_require__(5);
+const class_transformer_1 = __webpack_require__(6);
+const typeorm_1 = __webpack_require__(27);
+const user_entity_1 = __webpack_require__(26);
+const queue_entity_1 = __webpack_require__(30);
+const question_fsm_1 = __webpack_require__(38);
+let QuestionModel = QuestionModel_1 = class QuestionModel extends typeorm_1.BaseEntity {
+    changeStatus(newStatus, role) {
+        if (question_fsm_1.canChangeQuestionStatus(this.status, newStatus, role)) {
+            this.status = newStatus;
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    static inQueueWithStatus(queueId, statuses) {
+        return this.createQueryBuilder('question')
+            .where('question.queueId = :queueId', { queueId })
+            .andWhere('question.status IN (:...statuses)', {
+            statuses,
+        })
+            .orderBy('question.createdAt', 'ASC');
+    }
+    static waitingInQueue(queueId) {
+        return QuestionModel_1.inQueueWithStatus(queueId, common_1.StatusInQueue);
+    }
+};
+__decorate([
+    typeorm_1.PrimaryGeneratedColumn(),
+    __metadata("design:type", Number)
+], QuestionModel.prototype, "id", void 0);
+__decorate([
+    typeorm_1.ManyToOne((type) => queue_entity_1.QueueModel, (q) => q.questions),
+    typeorm_1.JoinColumn({ name: 'queueId' }),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", queue_entity_1.QueueModel)
+], QuestionModel.prototype, "queue", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", Number)
+], QuestionModel.prototype, "queueId", void 0);
+__decorate([
+    typeorm_1.Column('text'),
+    __metadata("design:type", String)
+], QuestionModel.prototype, "text", void 0);
+__decorate([
+    typeorm_1.ManyToOne((type) => user_entity_1.UserModel),
+    typeorm_1.JoinColumn({ name: 'creatorId' }),
+    __metadata("design:type", user_entity_1.UserModel)
+], QuestionModel.prototype, "creator", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", Number)
+], QuestionModel.prototype, "creatorId", void 0);
+__decorate([
+    typeorm_1.ManyToOne((type) => user_entity_1.UserModel),
+    typeorm_1.JoinColumn({ name: 'taHelpedId' }),
+    __metadata("design:type", user_entity_1.UserModel)
+], QuestionModel.prototype, "taHelped", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", Number)
+], QuestionModel.prototype, "taHelpedId", void 0);
+__decorate([
+    typeorm_1.Column(),
+    __metadata("design:type", Date)
+], QuestionModel.prototype, "createdAt", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", Date)
+], QuestionModel.prototype, "firstHelpedAt", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    __metadata("design:type", Date)
+], QuestionModel.prototype, "helpedAt", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    __metadata("design:type", Date)
+], QuestionModel.prototype, "closedAt", void 0);
+__decorate([
+    typeorm_1.Column('text', { nullable: true }),
+    __metadata("design:type", String)
+], QuestionModel.prototype, "questionType", void 0);
+__decorate([
+    typeorm_1.Column('text'),
+    __metadata("design:type", String)
+], QuestionModel.prototype, "status", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    __metadata("design:type", String)
+], QuestionModel.prototype, "location", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    __metadata("design:type", Boolean)
+], QuestionModel.prototype, "isOnline", void 0);
+QuestionModel = QuestionModel_1 = __decorate([
+    typeorm_1.Entity('question_model')
+], QuestionModel);
+exports.QuestionModel = QuestionModel;
+
+
+/***/ }),
+/* 38 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.canChangeQuestionStatus = void 0;
+const common_1 = __webpack_require__(5);
+const QUEUE_TRANSITIONS = {
+    ta: [common_1.OpenQuestionStatus.Helping, common_1.LimboQuestionStatus.TADeleted],
+    student: [common_1.ClosedQuestionStatus.ConfirmedDeleted],
+};
+const QUESTION_STATES = {
+    [common_1.OpenQuestionStatus.Drafting]: {
+        student: [common_1.OpenQuestionStatus.Queued, common_1.ClosedQuestionStatus.ConfirmedDeleted],
+        ta: [common_1.OpenQuestionStatus.Helping, common_1.ClosedQuestionStatus.DeletedDraft],
+    },
+    [common_1.OpenQuestionStatus.Queued]: QUEUE_TRANSITIONS,
+    [common_1.OpenQuestionStatus.PriorityQueued]: QUEUE_TRANSITIONS,
+    [common_1.OpenQuestionStatus.Helping]: {
+        ta: [
+            common_1.LimboQuestionStatus.CantFind,
+            common_1.LimboQuestionStatus.ReQueueing,
+            common_1.ClosedQuestionStatus.Resolved,
+            common_1.LimboQuestionStatus.TADeleted,
+        ],
+        student: [common_1.ClosedQuestionStatus.ConfirmedDeleted],
+    },
+    [common_1.LimboQuestionStatus.CantFind]: {
+        student: [
+            common_1.OpenQuestionStatus.PriorityQueued,
+            common_1.ClosedQuestionStatus.ConfirmedDeleted,
+        ],
+    },
+    [common_1.LimboQuestionStatus.ReQueueing]: {
+        student: [
+            common_1.OpenQuestionStatus.PriorityQueued,
+            common_1.ClosedQuestionStatus.ConfirmedDeleted,
+        ],
+    },
+    [common_1.LimboQuestionStatus.TADeleted]: {
+        student: [common_1.ClosedQuestionStatus.ConfirmedDeleted],
+    },
+    [common_1.ClosedQuestionStatus.Resolved]: {},
+    [common_1.ClosedQuestionStatus.ConfirmedDeleted]: {},
+    [common_1.ClosedQuestionStatus.Stale]: {},
+    [common_1.ClosedQuestionStatus.DeletedDraft]: {},
+};
+function canChangeQuestionStatus(oldStatus, goalStatus, role) {
+    var _a;
+    return (oldStatus === goalStatus || ((_a = QUESTION_STATES[oldStatus][role]) === null || _a === void 0 ? void 0 : _a.includes(goalStatus)));
+}
+exports.canChangeQuestionStatus = canChangeQuestionStatus;
+
+
+/***/ }),
+/* 39 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Roles = void 0;
+const common_1 = __webpack_require__(9);
+exports.Roles = (...roles) => common_1.SetMetadata('roles', roles);
+
+
+/***/ }),
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AlertsService = void 0;
+const common_1 = __webpack_require__(5);
+const common_2 = __webpack_require__(9);
+const question_entity_1 = __webpack_require__(37);
+const typeorm_1 = __webpack_require__(27);
+const queue_entity_1 = __webpack_require__(30);
+let AlertsService = class AlertsService {
+    constructor(connection) {
+        this.connection = connection;
+    }
+    async removeStaleAlerts(alerts) {
+        const nonStaleAlerts = [];
+        for (const alert of alerts) {
+            switch (alert.alertType) {
+                case common_1.AlertType.REPHRASE_QUESTION:
+                    const payload = alert.payload;
+                    const question = await question_entity_1.QuestionModel.findOne(payload.questionId);
+                    const queue = await queue_entity_1.QueueModel.findOne(payload.queueId);
+                    if (question.closedAt || !(await queue.checkIsOpen())) {
+                        console.log(`Rephrase Question alert with id ${alert.id} expired`);
+                        if (!question.closedAt) {
+                            question.closedAt = new Date();
+                        }
+                    }
+                    else {
+                        nonStaleAlerts.push(alert);
+                    }
+            }
+        }
+        return nonStaleAlerts;
+    }
+};
+AlertsService = __decorate([
+    common_2.Injectable(),
+    __metadata("design:paramtypes", [typeorm_1.Connection])
+], AlertsService);
+exports.AlertsService = AlertsService;
+
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.BackfillModule = void 0;
+const common_1 = __webpack_require__(9);
+const notification_module_1 = __webpack_require__(42);
+const backfill_course_timezones_1 = __webpack_require__(49);
+const backfill_husky_emails_to_northeastern_1 = __webpack_require__(51);
+const backfill_phone_notifs_command_1 = __webpack_require__(52);
+const make_empty_photourl_null_command_1 = __webpack_require__(53);
+const question_first_helped_at_command_1 = __webpack_require__(54);
+let BackfillModule = class BackfillModule {
+};
+BackfillModule = __decorate([
+    common_1.Module({
+        imports: [notification_module_1.NotificationModule],
+        providers: [
+            backfill_phone_notifs_command_1.BackfillPhoneNotifs,
+            question_first_helped_at_command_1.BackfillQuestionFirstHelpedAt,
+            make_empty_photourl_null_command_1.BackfillMakeEmptyPhotoURLNull,
+            backfill_course_timezones_1.BackfillCourseTimezones,
+            backfill_husky_emails_to_northeastern_1.BackfillHuskyEmailsAsNortheastern,
+        ],
+    })
+], BackfillModule);
+exports.BackfillModule = BackfillModule;
+
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.NotificationModule = void 0;
+const common_1 = __webpack_require__(9);
+const desktop_notif_subscriber_1 = __webpack_require__(43);
+const notification_controller_1 = __webpack_require__(48);
+const notification_service_1 = __webpack_require__(44);
+const twilio_service_1 = __webpack_require__(46);
+let NotificationModule = class NotificationModule {
+};
+NotificationModule = __decorate([
+    common_1.Module({
+        controllers: [notification_controller_1.NotificationController],
+        providers: [notification_service_1.NotificationService, desktop_notif_subscriber_1.DesktopNotifSubscriber, twilio_service_1.TwilioService],
+        exports: [notification_service_1.NotificationService, twilio_service_1.TwilioService],
+    })
+], NotificationModule);
+exports.NotificationModule = NotificationModule;
+
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DesktopNotifSubscriber = void 0;
+const typeorm_1 = __webpack_require__(27);
+const desktop_notif_entity_1 = __webpack_require__(28);
+const notification_service_1 = __webpack_require__(44);
+let DesktopNotifSubscriber = class DesktopNotifSubscriber {
+    constructor(connection, notifService) {
+        this.notifService = notifService;
+        connection.subscribers.push(this);
+    }
+    listenTo() {
+        return desktop_notif_entity_1.DesktopNotifModel;
+    }
+    async afterInsert(event) {
+        await this.notifService.notifyDesktop(event.entity, "You've successfully signed up for desktop notifications!");
+    }
+};
+DesktopNotifSubscriber = __decorate([
+    typeorm_1.EventSubscriber(),
+    __metadata("design:paramtypes", [typeorm_1.Connection, notification_service_1.NotificationService])
+], DesktopNotifSubscriber);
+exports.DesktopNotifSubscriber = DesktopNotifSubscriber;
+
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.NotificationService = exports.NotifMsgs = void 0;
+const common_1 = __webpack_require__(5);
+const common_2 = __webpack_require__(9);
+const config_1 = __webpack_require__(17);
+const webPush = __webpack_require__(45);
+const user_entity_1 = __webpack_require__(26);
+const desktop_notif_entity_1 = __webpack_require__(28);
+const phone_notif_entity_1 = __webpack_require__(29);
+const twilio_service_1 = __webpack_require__(46);
+exports.NotifMsgs = {
+    phone: {
+        WRONG_MESSAGE: 'Please respond with either YES or NO. Text STOP at any time to stop receiving text messages',
+        COULD_NOT_FIND_NUMBER: 'Could not find an Office Hours account with your phone number.',
+        UNREGISTER: "You've unregistered from text notifications for Khoury Office Hours. Feel free to re-register any time through the website",
+        DUPLICATE: "You've already been verified to receive text notifications from Khoury Office Hours!",
+        OK: 'Thank you for verifying your number with Khoury Office Hours! You are now signed up for text notifications!',
+    },
+    queue: {
+        ALERT_BUTTON: "The TA could't reach you, please have Microsoft Teams open and confirm you are back!",
+        THIRD_PLACE: `You're 3rd in the queue. Be ready for a TA to call you soon!`,
+        TA_HIT_HELPED: (taName) => `${taName} is coming to help you!`,
+        REMOVED: `You've been removed from the queue. Please return to the app for more information.`,
+    },
+    ta: {
+        STUDENT_JOINED_EMPTY_QUEUE: 'A student has joined your (previously empty) queue!',
+    },
+};
+let NotificationService = class NotificationService {
+    constructor(configService, twilioService) {
+        this.configService = configService;
+        this.twilioService = twilioService;
+        webPush.setVapidDetails(this.configService.get('EMAIL'), this.configService.get('PUBLICKEY'), this.configService.get('PRIVATEKEY'));
+        this.desktopPublicKey = this.configService.get('PUBLICKEY');
+    }
+    async registerDesktop(info) {
+        let dn = await desktop_notif_entity_1.DesktopNotifModel.findOne({
+            where: { userId: info.userId, endpoint: info.endpoint },
+        });
+        if (!dn) {
+            dn = await desktop_notif_entity_1.DesktopNotifModel.create(info).save();
+            await dn.reload();
+        }
+        return dn;
+    }
+    async registerPhone(phoneNumber, user) {
+        const fullNumber = await this.twilioService.getFullPhoneNumber(phoneNumber);
+        if (!fullNumber) {
+            throw new common_2.BadRequestException(common_1.ERROR_MESSAGES.notificationService.registerPhone);
+        }
+        let phoneNotifModel = await phone_notif_entity_1.PhoneNotifModel.findOne({
+            userId: user.id,
+        });
+        if (phoneNotifModel) {
+            if (phoneNotifModel.phoneNumber === fullNumber) {
+                return;
+            }
+            else {
+                phoneNotifModel.phoneNumber = fullNumber;
+                phoneNotifModel.verified = false;
+                await phoneNotifModel.save();
+            }
+        }
+        else {
+            phoneNotifModel = await phone_notif_entity_1.PhoneNotifModel.create({
+                phoneNumber: fullNumber,
+                userId: user.id,
+                verified: false,
+            }).save();
+            user.phoneNotif = phoneNotifModel;
+        }
+        await this.notifyPhone(phoneNotifModel, "You've signed up for phone notifications for Khoury Office Hours. To verify your number, please respond to this message with YES. To unsubscribe, respond to this message with NO or STOP", true);
+    }
+    async notifyUser(userId, message) {
+        const notifModelsOfUser = await user_entity_1.UserModel.findOne({
+            where: {
+                id: userId,
+            },
+            relations: ['desktopNotifs', 'phoneNotif'],
+        });
+        if (notifModelsOfUser.desktopNotifsEnabled) {
+            await Promise.all(notifModelsOfUser.desktopNotifs.map(async (nm) => this.notifyDesktop(nm, message)));
+        }
+        if (notifModelsOfUser.phoneNotif && notifModelsOfUser.phoneNotifsEnabled) {
+            this.notifyPhone(notifModelsOfUser.phoneNotif, message, false);
+        }
+    }
+    async notifyDesktop(nm, message) {
+        try {
+            await webPush.sendNotification({
+                endpoint: nm.endpoint,
+                keys: {
+                    p256dh: nm.p256dh,
+                    auth: nm.auth,
+                },
+            }, message);
+        }
+        catch (error) {
+            await desktop_notif_entity_1.DesktopNotifModel.remove(nm);
+        }
+    }
+    async notifyPhone(pn, message, force) {
+        if (force || pn.verified) {
+            try {
+                await this.twilioService.sendSMS(pn.phoneNumber, message);
+            }
+            catch (error) {
+                console.error('problem sending message', error);
+            }
+        }
+    }
+    async verifyPhone(phoneNumber, message) {
+        const phoneNotif = await phone_notif_entity_1.PhoneNotifModel.findOne({
+            where: { phoneNumber: phoneNumber },
+        });
+        if (!phoneNotif) {
+            return exports.NotifMsgs.phone.COULD_NOT_FIND_NUMBER;
+        }
+        else if (message !== 'YES' && message !== 'NO' && message !== 'STOP') {
+            return exports.NotifMsgs.phone.WRONG_MESSAGE;
+        }
+        else if (message === 'NO' || message === 'STOP') {
+            await phone_notif_entity_1.PhoneNotifModel.delete(phoneNotif);
+            return exports.NotifMsgs.phone.UNREGISTER;
+        }
+        else if (phoneNotif.verified) {
+            return exports.NotifMsgs.phone.DUPLICATE;
+        }
+        else {
+            phoneNotif.verified = true;
+            await phoneNotif.save();
+            return exports.NotifMsgs.phone.OK;
+        }
+    }
+};
+NotificationService = __decorate([
+    common_2.Injectable(),
+    __metadata("design:paramtypes", [config_1.ConfigService,
+        twilio_service_1.TwilioService])
+], NotificationService);
+exports.NotificationService = NotificationService;
+
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports) {
+
+module.exports = require("web-push");
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TwilioService = void 0;
+const common_1 = __webpack_require__(9);
+const config_1 = __webpack_require__(17);
+const twilio = __webpack_require__(47);
+let TwilioService = class TwilioService {
+    constructor(configService) {
+        this.configService = configService;
+        this.twilioClient = twilio(this.configService.get('TWILIOACCOUNTSID'), this.configService.get('TWILIOAUTHTOKEN'));
+    }
+    async getFullPhoneNumber(phoneNumber) {
+        try {
+            return (await this.twilioClient.lookups.phoneNumbers(phoneNumber).fetch())
+                .phoneNumber;
+        }
+        catch (err) {
+            return false;
+        }
+    }
+    async sendSMS(phoneNumber, message) {
+        await this.twilioClient.messages.create({
+            body: message,
+            from: this.configService.get('TWILIOPHONENUMBER'),
+            to: phoneNumber,
+        });
+    }
+};
+TwilioService = __decorate([
+    common_1.Injectable(),
+    __metadata("design:paramtypes", [config_1.ConfigService])
+], TwilioService);
+exports.TwilioService = TwilioService;
+
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports) {
+
+module.exports = require("twilio");
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.NotificationController = void 0;
+const common_1 = __webpack_require__(5);
+const common_2 = __webpack_require__(9);
+const config_1 = __webpack_require__(17);
+const twilio = __webpack_require__(47);
+const jwt_auth_guard_1 = __webpack_require__(23);
+const user_decorator_1 = __webpack_require__(25);
+const desktop_notif_entity_1 = __webpack_require__(28);
+const notification_service_1 = __webpack_require__(44);
+let NotificationController = class NotificationController {
+    constructor(notifService, configService) {
+        this.notifService = notifService;
+        this.configService = configService;
+    }
+    getDesktopCredentials() {
+        return JSON.stringify(this.notifService.desktopPublicKey);
+    }
+    async registerDesktopUser(body, userId) {
+        const device = await this.notifService.registerDesktop({
+            endpoint: body.endpoint,
+            expirationTime: body.expirationTime && new Date(body.expirationTime),
+            p256dh: body.keys.p256dh,
+            auth: body.keys.auth,
+            name: body.name,
+            userId: userId,
+        });
+        return {
+            id: device.id,
+            endpoint: device.endpoint,
+            createdAt: device.createdAt,
+            name: device.name,
+        };
+    }
+    async deleteDesktopUser(deviceId, userId) {
+        const dn = await desktop_notif_entity_1.DesktopNotifModel.find({ id: deviceId, userId });
+        if (dn.length > 0) {
+            await desktop_notif_entity_1.DesktopNotifModel.remove(dn);
+        }
+        else {
+            throw new common_2.NotFoundException();
+        }
+    }
+    async verifyPhoneUser(body, twilioSignature) {
+        const message = body.Body.trim().toUpperCase();
+        const senderNumber = body.From;
+        const twilioAuthToken = this.configService.get('TWILIOAUTHTOKEN');
+        const isValidated = twilio.validateRequest(twilioAuthToken, twilioSignature.trim(), `${this.configService.get('DOMAIN')}/api/v1/notifications/phone/verify`, body);
+        if (!isValidated) {
+            throw new common_2.UnauthorizedException(common_1.ERROR_MESSAGES.notificationController.messageNotFromTwilio);
+        }
+        const messageToUser = await this.notifService.verifyPhone(senderNumber, message);
+        const MessagingResponse = twilio.twiml.MessagingResponse;
+        const twiml = new MessagingResponse();
+        twiml.message(messageToUser);
+        return twiml.toString();
+    }
+};
+__decorate([
+    common_2.Get('desktop/credentials'),
+    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", String)
+], NotificationController.prototype, "getDesktopCredentials", null);
+__decorate([
+    common_2.Post('desktop/device'),
+    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, common_2.Body()),
+    __param(1, user_decorator_1.UserId()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Number]),
+    __metadata("design:returntype", Promise)
+], NotificationController.prototype, "registerDesktopUser", null);
+__decorate([
+    common_2.Delete('desktop/device/:deviceId'),
+    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, common_2.Param('deviceId')),
+    __param(1, user_decorator_1.UserId()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number]),
+    __metadata("design:returntype", Promise)
+], NotificationController.prototype, "deleteDesktopUser", null);
+__decorate([
+    common_2.Post('/phone/verify'),
+    common_2.Header('Content-Type', 'text/xml'),
+    __param(0, common_2.Body()),
+    __param(1, common_2.Headers('x-twilio-signature')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], NotificationController.prototype, "verifyPhoneUser", null);
+NotificationController = __decorate([
+    common_2.Controller('notifications'),
+    __metadata("design:paramtypes", [notification_service_1.NotificationService,
+        config_1.ConfigService])
+], NotificationController);
+exports.NotificationController = NotificationController;
+
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.BackfillCourseTimezones = void 0;
+const nestjs_command_1 = __webpack_require__(50);
+const common_1 = __webpack_require__(9);
+const course_entity_1 = __webpack_require__(31);
+let BackfillCourseTimezones = class BackfillCourseTimezones {
+    async copy() {
+        await course_entity_1.CourseModel.createQueryBuilder()
+            .update()
+            .set({ timezone: () => `'America/New_York'` })
+            .callListeners(false)
+            .execute();
+        console.log(`Updated ${await course_entity_1.CourseModel.count()} courses`);
+    }
+};
+__decorate([
+    nestjs_command_1.Command({
+        command: 'backfill:course-timezones',
+        describe: 'set all course timezones from null to "America/New_York"',
+        autoExit: true,
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], BackfillCourseTimezones.prototype, "copy", null);
+BackfillCourseTimezones = __decorate([
+    common_1.Injectable()
+], BackfillCourseTimezones);
+exports.BackfillCourseTimezones = BackfillCourseTimezones;
+
+
+/***/ }),
+/* 50 */
+/***/ (function(module, exports) {
+
+module.exports = require("nestjs-command");
+
+/***/ }),
+/* 51 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.BackfillHuskyEmailsAsNortheastern = void 0;
+const common_1 = __webpack_require__(9);
+const nestjs_command_1 = __webpack_require__(50);
+const user_entity_1 = __webpack_require__(26);
+let BackfillHuskyEmailsAsNortheastern = class BackfillHuskyEmailsAsNortheastern {
+    async fix() {
+        const users = await user_entity_1.UserModel.find();
+        const usersToBeUpdated = users.filter((user) => user.email.includes('@husky.neu.edu'));
+        users.forEach((user) => {
+            user.email = user.email.replace('@husky.neu.edu', '@northeastern.edu');
+        });
+        await user_entity_1.UserModel.save(users);
+        console.log(`Updated the emails of ${usersToBeUpdated.length} users`);
+    }
+};
+__decorate([
+    nestjs_command_1.Command({
+        command: 'backfill:husky-emails-to-northeastern',
+        describe: 'Converts @husky.neu.edu emails to @northeastern.edu emails',
+        autoExit: true,
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], BackfillHuskyEmailsAsNortheastern.prototype, "fix", null);
+BackfillHuskyEmailsAsNortheastern = __decorate([
+    common_1.Injectable()
+], BackfillHuskyEmailsAsNortheastern);
+exports.BackfillHuskyEmailsAsNortheastern = BackfillHuskyEmailsAsNortheastern;
+
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.BackfillPhoneNotifs = void 0;
+const common_1 = __webpack_require__(9);
+const nestjs_command_1 = __webpack_require__(50);
+const phone_notif_entity_1 = __webpack_require__(29);
+const twilio_service_1 = __webpack_require__(46);
+const user_entity_1 = __webpack_require__(26);
+const typeorm_1 = __webpack_require__(27);
+let BackfillPhoneNotifs = class BackfillPhoneNotifs {
+    constructor(twilioService) {
+        this.twilioService = twilioService;
+    }
+    async fix() {
+        const noUser = await phone_notif_entity_1.PhoneNotifModel.delete({ userId: typeorm_1.IsNull() });
+        console.log(`deleted ${noUser.affected} desktopnotifmodels with no userid`);
+        const toDelete = [];
+        const dups = await phone_notif_entity_1.PhoneNotifModel.createQueryBuilder('pnotif')
+            .select([`"phoneNumber"`, 'COUNT(*)'])
+            .groupBy('pnotif.phoneNumber')
+            .having('COUNT(*) > 1')
+            .getRawMany();
+        console.log(`found ${dups.length} dups`);
+        toDelete.push(...dups);
+        const valid = [];
+        let changedNum = 0;
+        const all = await phone_notif_entity_1.PhoneNotifModel.find({ relations: ['user'] });
+        for (const p of all) {
+            const number = await this.twilioService.getFullPhoneNumber(p.phoneNumber);
+            if (number) {
+                if (number !== p.phoneNumber) {
+                    changedNum += 1;
+                }
+                p.phoneNumber = number;
+                p.verified = true;
+                valid.push(p);
+            }
+            else {
+                toDelete.push(p);
+            }
+        }
+        console.log(`Twilio changed ${changedNum} phone numbers to full num`);
+        await phone_notif_entity_1.PhoneNotifModel.save(valid);
+        console.log('deleting phone notifs: ', toDelete.map((d) => d.phoneNumber));
+        if (toDelete.length) {
+            await phone_notif_entity_1.PhoneNotifModel.delete(toDelete.map((d) => d.id));
+        }
+        const usersToDisable = (await user_entity_1.UserModel.find({
+            where: { phoneNotifsEnabled: true },
+            relations: ['phoneNotif'],
+        })).filter((u) => !u.phoneNotif);
+        usersToDisable.forEach((u) => (u.phoneNotifsEnabled = false));
+        await user_entity_1.UserModel.save(usersToDisable);
+        console.log(`disabled phonenotifs for ${usersToDisable.length} users`);
+    }
+};
+__decorate([
+    nestjs_command_1.Command({
+        command: 'backfill:phone-notifs',
+        describe: 'delete phone notifs with no userids, delete duplicate phone notifs, and forcibly set verified on existing phonenotifs',
+        autoExit: true,
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], BackfillPhoneNotifs.prototype, "fix", null);
+BackfillPhoneNotifs = __decorate([
+    common_1.Injectable(),
+    __metadata("design:paramtypes", [twilio_service_1.TwilioService])
+], BackfillPhoneNotifs);
+exports.BackfillPhoneNotifs = BackfillPhoneNotifs;
+
+
+/***/ }),
+/* 53 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.BackfillMakeEmptyPhotoURLNull = void 0;
+const common_1 = __webpack_require__(9);
+const nestjs_command_1 = __webpack_require__(50);
+const user_entity_1 = __webpack_require__(26);
+let BackfillMakeEmptyPhotoURLNull = class BackfillMakeEmptyPhotoURLNull {
+    async fix() {
+        let countOfChanged = 0;
+        const users = await user_entity_1.UserModel.find();
+        users.forEach((user) => {
+            if (user.photoURL === '') {
+                user.photoURL = null;
+                countOfChanged += 1;
+            }
+        });
+        await user_entity_1.UserModel.save(users);
+        console.log(`Updated names for ${countOfChanged} users`);
+    }
+};
+__decorate([
+    nestjs_command_1.Command({
+        command: 'backfill:make-empty-photoURL-null',
+        describe: 'changes empty string photoURLs to null',
+        autoExit: true,
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], BackfillMakeEmptyPhotoURLNull.prototype, "fix", null);
+BackfillMakeEmptyPhotoURLNull = __decorate([
+    common_1.Injectable()
+], BackfillMakeEmptyPhotoURLNull);
+exports.BackfillMakeEmptyPhotoURLNull = BackfillMakeEmptyPhotoURLNull;
+
+
+/***/ }),
+/* 54 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.BackfillQuestionFirstHelpedAt = void 0;
+const nestjs_command_1 = __webpack_require__(50);
+const common_1 = __webpack_require__(9);
+const question_entity_1 = __webpack_require__(37);
+const typeorm_1 = __webpack_require__(27);
+let BackfillQuestionFirstHelpedAt = class BackfillQuestionFirstHelpedAt {
+    async copy() {
+        await question_entity_1.QuestionModel.createQueryBuilder()
+            .update()
+            .set({ firstHelpedAt: () => '"helpedAt"' })
+            .where({ firstHelpedAt: typeorm_1.IsNull() })
+            .callListeners(false)
+            .execute();
+        console.log(`Updated ${await question_entity_1.QuestionModel.createQueryBuilder()
+            .select()
+            .where({ firstHelpedAt: typeorm_1.IsNull() })
+            .getCount()} records`);
+    }
+};
+__decorate([
+    nestjs_command_1.Command({
+        command: 'backfill:question-first-helped-at',
+        describe: 'copy all existing helpedAt to firstHelpedAt',
+        autoExit: true,
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], BackfillQuestionFirstHelpedAt.prototype, "copy", null);
+BackfillQuestionFirstHelpedAt = __decorate([
+    common_1.Injectable()
+], BackfillQuestionFirstHelpedAt);
+exports.BackfillQuestionFirstHelpedAt = BackfillQuestionFirstHelpedAt;
+
+
+/***/ }),
+/* 55 */
+/***/ (function(module, exports) {
+
+module.exports = require("nestjs-redis");
+
+/***/ }),
+/* 56 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ReleaseNotesModule = void 0;
+const common_1 = __webpack_require__(9);
+const release_notes_controller_1 = __webpack_require__(57);
+let ReleaseNotesModule = class ReleaseNotesModule {
+};
+ReleaseNotesModule = __decorate([
+    common_1.Module({
+        controllers: [release_notes_controller_1.ReleaseNotesController],
+        providers: [],
+        imports: [
+            common_1.HttpModule.registerAsync({
+                useFactory: () => ({
+                    timeout: 5000,
+                    maxRedirects: 5,
+                }),
+            }),
+        ],
+    })
+], ReleaseNotesModule);
+exports.ReleaseNotesModule = ReleaseNotesModule;
+
+
+/***/ }),
+/* 57 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ReleaseNotesController = void 0;
+const common_1 = __webpack_require__(5);
+const common_2 = __webpack_require__(9);
+const jwt_auth_guard_1 = __webpack_require__(23);
+const typeorm_1 = __webpack_require__(27);
+let ReleaseNotesController = class ReleaseNotesController {
+    constructor(connection, httpService) {
+        this.connection = connection;
+        this.httpService = httpService;
+    }
+    async getReleaseNotes() {
+        var _a, _b, _c;
+        const response = {
+            lastUpdatedUnixTime: null,
+            releaseNotes: null,
+        };
+        const request = await this.httpService
+            .get('https://notion-api.splitbee.io/v1/page/abba246bfa0847baa2706ab30d0c6c7d')
+            .toPromise();
+        const data = request.data;
+        try {
+            const timeText = (_c = (_b = (_a = data[process.env.RELEASE_NOTE_TIMESTAMP_ID]) === null || _a === void 0 ? void 0 : _a.value) === null || _b === void 0 ? void 0 : _b.properties) === null || _c === void 0 ? void 0 : _c.title[0][0];
+            response.lastUpdatedUnixTime = timeText.split('Unix ')[1] * 1000;
+        }
+        catch (e) {
+            throw new common_2.InternalServerErrorException(common_1.ERROR_MESSAGES.releaseNotesController.releaseNotesTime(e));
+        }
+        data[process.env.RELEASE_NOTE_TIMESTAMP_ID].value.properties.title = [];
+        data[process.env.WANT_TO_SEE_MORE_ID].value.properties.title = [];
+        response.releaseNotes = data;
+        return response;
+    }
+};
+__decorate([
+    common_2.Get(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ReleaseNotesController.prototype, "getReleaseNotes", null);
+ReleaseNotesController = __decorate([
+    common_2.Controller('release_notes'),
+    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
+    __metadata("design:paramtypes", [typeorm_1.Connection,
+        common_2.HttpService])
+], ReleaseNotesController);
+exports.ReleaseNotesController = ReleaseNotesController;
+
+
+/***/ }),
+/* 58 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const dotenv_1 = __webpack_require__(59);
+const admin_user_entity_1 = __webpack_require__(60);
+const course_entity_1 = __webpack_require__(31);
+const office_hour_entity_1 = __webpack_require__(34);
+const semester_entity_1 = __webpack_require__(35);
+const course_section_mapping_entity_1 = __webpack_require__(62);
+const desktop_notif_entity_1 = __webpack_require__(28);
+const phone_notif_entity_1 = __webpack_require__(29);
+const event_model_entity_1 = __webpack_require__(32);
+const user_course_entity_1 = __webpack_require__(33);
+const user_entity_1 = __webpack_require__(26);
+const question_entity_1 = __webpack_require__(37);
+const queue_entity_1 = __webpack_require__(30);
+const alerts_entity_1 = __webpack_require__(36);
+dotenv_1.config();
+const inCLI = {
+    migrations: ['migration/*.ts'],
+    cli: {
+        migrationsDir: 'migration',
+    },
+};
+const typeorm = Object.assign({ type: 'postgres', url: process.env.DB_URL || 'postgres://postgres@localhost:5432/dev', synchronize: process.env.NODE_ENV !== 'production', entities: [
+        course_entity_1.CourseModel,
+        course_section_mapping_entity_1.CourseSectionMappingModel,
+        office_hour_entity_1.OfficeHourModel,
+        semester_entity_1.SemesterModel,
+        user_entity_1.UserModel,
+        user_course_entity_1.UserCourseModel,
+        question_entity_1.QuestionModel,
+        queue_entity_1.QueueModel,
+        desktop_notif_entity_1.DesktopNotifModel,
+        phone_notif_entity_1.PhoneNotifModel,
+        admin_user_entity_1.AdminUserModel,
+        event_model_entity_1.EventModel,
+        alerts_entity_1.AlertModel,
+    ], keepConnectionAlive: true, logging: !!process.env.TYPEORM_LOGGING }, (!!process.env.TYPEORM_CLI ? inCLI : {}));
+module.exports = typeorm;
+
+
+/***/ }),
+/* 59 */
+/***/ (function(module, exports) {
+
+module.exports = require("dotenv");
+
+/***/ }),
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AdminUserModel = void 0;
+const typeorm_1 = __webpack_require__(27);
+const bcrypt_1 = __webpack_require__(61);
+let AdminUserModel = class AdminUserModel extends typeorm_1.BaseEntity {
+    setPassword(password) {
+        this.passwordHash = bcrypt_1.hashSync(password, 5);
+    }
+};
+__decorate([
+    typeorm_1.PrimaryGeneratedColumn(),
+    __metadata("design:type", Number)
+], AdminUserModel.prototype, "id", void 0);
+__decorate([
+    typeorm_1.Column({ length: 128, unique: true, nullable: false }),
+    __metadata("design:type", String)
+], AdminUserModel.prototype, "username", void 0);
+__decorate([
+    typeorm_1.Column({ length: 128, nullable: false }),
+    __metadata("design:type", String)
+], AdminUserModel.prototype, "passwordHash", void 0);
+AdminUserModel = __decorate([
+    typeorm_1.Entity('admin_user_model')
+], AdminUserModel);
+exports.AdminUserModel = AdminUserModel;
+
+
+/***/ }),
+/* 61 */
+/***/ (function(module, exports) {
+
+module.exports = require("bcrypt");
+
+/***/ }),
+/* 62 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CourseSectionMappingModel = void 0;
+const typeorm_1 = __webpack_require__(27);
+const course_entity_1 = __webpack_require__(31);
+let CourseSectionMappingModel = class CourseSectionMappingModel extends typeorm_1.BaseEntity {
+};
+__decorate([
+    typeorm_1.PrimaryGeneratedColumn(),
+    __metadata("design:type", Number)
+], CourseSectionMappingModel.prototype, "id", void 0);
+__decorate([
+    typeorm_1.Column(),
+    __metadata("design:type", String)
+], CourseSectionMappingModel.prototype, "genericCourseName", void 0);
+__decorate([
+    typeorm_1.Column(),
+    __metadata("design:type", Number)
+], CourseSectionMappingModel.prototype, "section", void 0);
+__decorate([
+    typeorm_1.ManyToOne((type) => course_entity_1.CourseModel),
+    typeorm_1.JoinColumn({ name: 'courseId' }),
+    __metadata("design:type", course_entity_1.CourseModel)
+], CourseSectionMappingModel.prototype, "course", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    __metadata("design:type", Number)
+], CourseSectionMappingModel.prototype, "courseId", void 0);
+CourseSectionMappingModel = __decorate([
+    typeorm_1.Entity('course_section_mapping_model')
+], CourseSectionMappingModel);
+exports.CourseSectionMappingModel = CourseSectionMappingModel;
+
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AdminModule = void 0;
+const common_1 = __webpack_require__(9);
+const nestjs_admin_1 = __webpack_require__(64);
+const credentialValidator_1 = __webpack_require__(65);
+const typeorm_1 = __webpack_require__(19);
+const admin_user_entity_1 = __webpack_require__(60);
+const admin_entities_1 = __webpack_require__(66);
+const admin_command_1 = __webpack_require__(67);
+const session = __webpack_require__(69);
+const connectRedis = __webpack_require__(70);
+const redis_1 = __webpack_require__(71);
+const redisClient = redis_1.createClient();
+const RedisStore = connectRedis(session);
+if (process.env.NODE_ENV === 'test') {
+    redisClient.quit();
+}
+const CoreModule = nestjs_admin_1.AdminCoreModuleFactory.createAdminCoreModule({
+    appConfig: {
+        session: {
+            store: new RedisStore({ client: redisClient }),
+        },
+    },
+});
+const AuthModule = nestjs_admin_1.AdminAuthModuleFactory.createAdminAuthModule({
+    adminCoreModule: CoreModule,
+    credentialValidator: credentialValidator_1.adminCredentialValidator,
+    imports: [typeorm_1.TypeOrmModule.forFeature([admin_user_entity_1.AdminUserModel])],
+    providers: [],
+});
+let AdminModule = class AdminModule {
+    constructor(adminSite) {
+        this.adminSite = adminSite;
+        adminSite.register('Course', admin_entities_1.CourseAdmin);
+        adminSite.register('User', admin_entities_1.UserAdmin);
+        adminSite.register('UserCourse', admin_entities_1.UserCourseAdmin);
+        adminSite.register('Queue', admin_entities_1.QueueAdmin);
+        adminSite.register('CourseSectionMapping', admin_entities_1.CourseSectionMappingAdmin);
+        adminSite.register('Semester', admin_entities_1.SemesterAdmin);
+    }
+};
+AdminModule = __decorate([
+    common_1.Module({
+        imports: [CoreModule, AuthModule],
+        exports: [CoreModule, AuthModule],
+        providers: [admin_command_1.AdminCommand],
+    }),
+    __metadata("design:paramtypes", [nestjs_admin_1.DefaultAdminSite])
+], AdminModule);
+exports.AdminModule = AdminModule;
+
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports) {
+
+module.exports = require("nestjs-admin");
+
+/***/ }),
+/* 65 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.adminCredentialValidator = void 0;
+const bcrypt_1 = __webpack_require__(61);
+const admin_user_entity_1 = __webpack_require__(60);
+exports.adminCredentialValidator = {
+    inject: [],
+    useFactory: () => {
+        return async function validateCredentials(username, password) {
+            const user = await admin_user_entity_1.AdminUserModel.findOne({ username });
+            if (user) {
+                if (await bcrypt_1.compare(password, user.passwordHash)) {
+                    return user;
+                }
+            }
+            return null;
+        };
+    },
+};
+
+
+/***/ }),
+/* 66 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SemesterAdmin = exports.CourseSectionMappingAdmin = exports.UserCourseAdmin = exports.UserAdmin = exports.QueueAdmin = exports.CourseAdmin = void 0;
+const nestjs_admin_1 = __webpack_require__(64);
+const course_entity_1 = __webpack_require__(31);
+const queue_entity_1 = __webpack_require__(30);
+const user_entity_1 = __webpack_require__(26);
+const course_section_mapping_entity_1 = __webpack_require__(62);
+const user_course_entity_1 = __webpack_require__(33);
+const semester_entity_1 = __webpack_require__(35);
+class CourseAdmin extends nestjs_admin_1.AdminEntity {
+    constructor() {
+        super(...arguments);
+        this.entity = course_entity_1.CourseModel;
+        this.listDisplay = ['id', 'name'];
+        this.fields = ['id', 'name', 'icalURL', 'semesterId', 'enabled', 'timezone'];
+    }
+}
+exports.CourseAdmin = CourseAdmin;
+class QueueAdmin extends nestjs_admin_1.AdminEntity {
+    constructor() {
+        super(...arguments);
+        this.entity = queue_entity_1.QueueModel;
+        this.listDisplay = ['id', 'room', 'courseId'];
+    }
+}
+exports.QueueAdmin = QueueAdmin;
+class UserAdmin extends nestjs_admin_1.AdminEntity {
+    constructor() {
+        super(...arguments);
+        this.entity = user_entity_1.UserModel;
+        this.listDisplay = ['id', 'email', 'name'];
+        this.searchFields = ['email', 'name'];
+        this.fields = [
+            'id',
+            'email',
+            'name',
+            'desktopNotifsEnabled',
+            'phoneNotifsEnabled',
+            'queues',
+        ];
+    }
+}
+exports.UserAdmin = UserAdmin;
+class UserCourseAdmin extends nestjs_admin_1.AdminEntity {
+    constructor() {
+        super(...arguments);
+        this.entity = user_course_entity_1.UserCourseModel;
+        this.listDisplay = ['id', 'userId', 'courseId'];
+    }
+}
+exports.UserCourseAdmin = UserCourseAdmin;
+class CourseSectionMappingAdmin extends nestjs_admin_1.AdminEntity {
+    constructor() {
+        super(...arguments);
+        this.entity = course_section_mapping_entity_1.CourseSectionMappingModel;
+        this.listDisplay = ['id', 'genericCourseName', 'section', 'courseId'];
+    }
+}
+exports.CourseSectionMappingAdmin = CourseSectionMappingAdmin;
+class SemesterAdmin extends nestjs_admin_1.AdminEntity {
+    constructor() {
+        super(...arguments);
+        this.entity = semester_entity_1.SemesterModel;
+        this.listDisplay = ['id', 'season', 'year'];
+    }
+}
+exports.SemesterAdmin = SemesterAdmin;
+
+
+/***/ }),
+/* 67 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AdminCommand = void 0;
+const nestjs_command_1 = __webpack_require__(50);
+const common_1 = __webpack_require__(9);
+const admin_user_entity_1 = __webpack_require__(60);
+const readline_sync_1 = __webpack_require__(68);
+let AdminCommand = class AdminCommand {
+    async create(username) {
+        let user = await admin_user_entity_1.AdminUserModel.findOne({ username });
+        if (user) {
+            const changePassword = readline_sync_1.keyInYN(`User ${username} already exists. Do you want to change their password?`);
+            if (!changePassword) {
+                return;
+            }
+        }
+        else {
+            user = admin_user_entity_1.AdminUserModel.create({ username });
+        }
+        const password = readline_sync_1.question('Password: ', {
+            hideEchoBack: true,
+        });
+        user.setPassword(password);
+        await user.save();
+        console.log(`Created user: ${user.username}`);
+    }
+};
+__decorate([
+    nestjs_command_1.Command({
+        command: 'create:admin <username>',
+        describe: 'create an admin user',
+        autoExit: true,
+    }),
+    __param(0, nestjs_command_1.Positional({
+        name: 'username',
+        describe: 'the admin username',
+        type: 'string',
+    })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AdminCommand.prototype, "create", null);
+AdminCommand = __decorate([
+    common_1.Injectable()
+], AdminCommand);
+exports.AdminCommand = AdminCommand;
+
+
+/***/ }),
+/* 68 */
+/***/ (function(module, exports) {
+
+module.exports = require("readline-sync");
+
+/***/ }),
+/* 69 */
+/***/ (function(module, exports) {
+
+module.exports = require("express-session");
+
+/***/ }),
+/* 70 */
+/***/ (function(module, exports) {
+
+module.exports = require("connect-redis");
+
+/***/ }),
+/* 71 */
+/***/ (function(module, exports) {
+
+module.exports = require("redis");
+
+/***/ }),
+/* 72 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CourseModule = void 0;
+const common_1 = __webpack_require__(9);
+const course_controller_1 = __webpack_require__(73);
+const queue_module_1 = __webpack_require__(89);
+const ical_command_1 = __webpack_require__(95);
+const ical_service_1 = __webpack_require__(83);
+const heatmap_service_1 = __webpack_require__(82);
+let CourseModule = class CourseModule {
+};
+CourseModule = __decorate([
+    common_1.Module({
+        controllers: [course_controller_1.CourseController],
+        imports: [queue_module_1.QueueModule, common_1.CacheModule.register()],
+        providers: [ical_command_1.ICalCommand, ical_service_1.IcalService, heatmap_service_1.HeatmapService],
+    })
+], CourseModule);
+exports.CourseModule = CourseModule;
+
+
+/***/ }),
+/* 73 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.CourseController = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
-const async_1 = __webpack_require__(22);
-const moment = __webpack_require__(23);
-const event_model_entity_1 = __webpack_require__(24);
-const user_course_entity_1 = __webpack_require__(27);
-const typeorm_1 = __webpack_require__(25);
-const jwt_auth_guard_1 = __webpack_require__(36);
-const roles_decorator_1 = __webpack_require__(38);
-const user_decorator_1 = __webpack_require__(39);
-const user_entity_1 = __webpack_require__(28);
-const queue_clean_service_1 = __webpack_require__(40);
-const queue_sse_service_1 = __webpack_require__(41);
-const queue_entity_1 = __webpack_require__(31);
-const course_roles_guard_1 = __webpack_require__(46);
-const course_entity_1 = __webpack_require__(26);
-const heatmap_service_1 = __webpack_require__(48);
-const ical_service_1 = __webpack_require__(50);
-const office_hour_entity_1 = __webpack_require__(32);
+const async_1 = __webpack_require__(74);
+const moment = __webpack_require__(75);
+const event_model_entity_1 = __webpack_require__(32);
+const user_course_entity_1 = __webpack_require__(33);
+const typeorm_1 = __webpack_require__(27);
+const jwt_auth_guard_1 = __webpack_require__(23);
+const roles_decorator_1 = __webpack_require__(39);
+const user_decorator_1 = __webpack_require__(25);
+const user_entity_1 = __webpack_require__(26);
+const queue_clean_service_1 = __webpack_require__(76);
+const queue_sse_service_1 = __webpack_require__(77);
+const queue_entity_1 = __webpack_require__(30);
+const course_roles_guard_1 = __webpack_require__(80);
+const course_entity_1 = __webpack_require__(31);
+const heatmap_service_1 = __webpack_require__(82);
+const ical_service_1 = __webpack_require__(83);
+const office_hour_entity_1 = __webpack_require__(34);
 let CourseController = class CourseController {
     constructor(connection, queueCleanService, queueSSEService, heatmapService, icalService) {
         this.connection = connection;
@@ -1157,951 +3700,19 @@ exports.CourseController = CourseController;
 
 
 /***/ }),
-/* 22 */
+/* 74 */
 /***/ (function(module, exports) {
 
 module.exports = require("async");
 
 /***/ }),
-/* 23 */
+/* 75 */
 /***/ (function(module, exports) {
 
 module.exports = require("moment");
 
 /***/ }),
-/* 24 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.EventModel = exports.EventType = void 0;
-const class_transformer_1 = __webpack_require__(6);
-const typeorm_1 = __webpack_require__(25);
-const course_entity_1 = __webpack_require__(26);
-const user_entity_1 = __webpack_require__(28);
-var EventType;
-(function (EventType) {
-    EventType["TA_CHECKED_IN"] = "taCheckedIn";
-    EventType["TA_CHECKED_OUT"] = "taCheckedOut";
-    EventType["TA_CHECKED_OUT_FORCED"] = "taCheckedOutForced";
-})(EventType = exports.EventType || (exports.EventType = {}));
-let EventModel = class EventModel extends typeorm_1.BaseEntity {
-};
-__decorate([
-    typeorm_1.PrimaryGeneratedColumn(),
-    __metadata("design:type", Number)
-], EventModel.prototype, "id", void 0);
-__decorate([
-    typeorm_1.Column(),
-    __metadata("design:type", Date)
-], EventModel.prototype, "time", void 0);
-__decorate([
-    typeorm_1.Column({ type: 'enum', enum: EventType }),
-    __metadata("design:type", String)
-], EventModel.prototype, "eventType", void 0);
-__decorate([
-    typeorm_1.ManyToOne((type) => user_entity_1.UserModel, (user) => user.events),
-    typeorm_1.JoinColumn({ name: 'userId' }),
-    __metadata("design:type", user_entity_1.UserModel)
-], EventModel.prototype, "user", void 0);
-__decorate([
-    typeorm_1.Column({ nullable: true }),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", Number)
-], EventModel.prototype, "userId", void 0);
-__decorate([
-    typeorm_1.ManyToOne((type) => course_entity_1.CourseModel, (course) => course.events),
-    typeorm_1.JoinColumn({ name: 'courseId' }),
-    __metadata("design:type", course_entity_1.CourseModel)
-], EventModel.prototype, "course", void 0);
-__decorate([
-    typeorm_1.Column({ nullable: true }),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", Number)
-], EventModel.prototype, "courseId", void 0);
-EventModel = __decorate([
-    typeorm_1.Entity('event_model')
-], EventModel);
-exports.EventModel = EventModel;
-
-
-/***/ }),
-/* 25 */
-/***/ (function(module, exports) {
-
-module.exports = require("typeorm");
-
-/***/ }),
-/* 26 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CourseModel = void 0;
-const class_transformer_1 = __webpack_require__(6);
-const typeorm_1 = __webpack_require__(25);
-const event_model_entity_1 = __webpack_require__(24);
-const user_course_entity_1 = __webpack_require__(27);
-const queue_entity_1 = __webpack_require__(31);
-const office_hour_entity_1 = __webpack_require__(32);
-const semester_entity_1 = __webpack_require__(35);
-let CourseModel = class CourseModel extends typeorm_1.BaseEntity {
-};
-__decorate([
-    typeorm_1.PrimaryGeneratedColumn(),
-    __metadata("design:type", Number)
-], CourseModel.prototype, "id", void 0);
-__decorate([
-    typeorm_1.OneToMany((type) => office_hour_entity_1.OfficeHourModel, (oh) => oh.course),
-    __metadata("design:type", Array)
-], CourseModel.prototype, "officeHours", void 0);
-__decorate([
-    typeorm_1.OneToMany((type) => queue_entity_1.QueueModel, (q) => q.course),
-    __metadata("design:type", Array)
-], CourseModel.prototype, "queues", void 0);
-__decorate([
-    typeorm_1.Column('text'),
-    __metadata("design:type", String)
-], CourseModel.prototype, "name", void 0);
-__decorate([
-    typeorm_1.Column('text', { nullable: true }),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", String)
-], CourseModel.prototype, "icalURL", void 0);
-__decorate([
-    typeorm_1.OneToMany((type) => user_course_entity_1.UserCourseModel, (ucm) => ucm.course),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", user_course_entity_1.UserCourseModel)
-], CourseModel.prototype, "userCourses", void 0);
-__decorate([
-    typeorm_1.ManyToOne((type) => semester_entity_1.SemesterModel, (semester) => semester.courses),
-    typeorm_1.JoinColumn({ name: 'semesterId' }),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", semester_entity_1.SemesterModel)
-], CourseModel.prototype, "semester", void 0);
-__decorate([
-    typeorm_1.Column({ nullable: true }),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", Number)
-], CourseModel.prototype, "semesterId", void 0);
-__decorate([
-    typeorm_1.Column('boolean', { nullable: true }),
-    __metadata("design:type", Boolean)
-], CourseModel.prototype, "enabled", void 0);
-__decorate([
-    typeorm_1.Column('text', { nullable: true }),
-    __metadata("design:type", String)
-], CourseModel.prototype, "timezone", void 0);
-__decorate([
-    typeorm_1.OneToMany((type) => event_model_entity_1.EventModel, (event) => event.course),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", Array)
-], CourseModel.prototype, "events", void 0);
-CourseModel = __decorate([
-    typeorm_1.Entity('course_model')
-], CourseModel);
-exports.CourseModel = CourseModel;
-
-
-/***/ }),
-/* 27 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserCourseModel = void 0;
-const common_1 = __webpack_require__(5);
-const typeorm_1 = __webpack_require__(25);
-const course_entity_1 = __webpack_require__(26);
-const user_entity_1 = __webpack_require__(28);
-let UserCourseModel = class UserCourseModel extends typeorm_1.BaseEntity {
-};
-__decorate([
-    typeorm_1.PrimaryGeneratedColumn(),
-    __metadata("design:type", Number)
-], UserCourseModel.prototype, "id", void 0);
-__decorate([
-    typeorm_1.ManyToOne((type) => user_entity_1.UserModel, (user) => user.courses),
-    typeorm_1.JoinColumn({ name: 'userId' }),
-    __metadata("design:type", user_entity_1.UserModel)
-], UserCourseModel.prototype, "user", void 0);
-__decorate([
-    typeorm_1.Column({ nullable: true }),
-    __metadata("design:type", Number)
-], UserCourseModel.prototype, "userId", void 0);
-__decorate([
-    typeorm_1.ManyToOne((type) => course_entity_1.CourseModel, (course) => course.userCourses),
-    typeorm_1.JoinColumn({ name: 'courseId' }),
-    __metadata("design:type", course_entity_1.CourseModel)
-], UserCourseModel.prototype, "course", void 0);
-__decorate([
-    typeorm_1.Column({ nullable: true }),
-    __metadata("design:type", Number)
-], UserCourseModel.prototype, "courseId", void 0);
-__decorate([
-    typeorm_1.Column({ type: 'enum', enum: common_1.Role, default: common_1.Role.STUDENT }),
-    __metadata("design:type", String)
-], UserCourseModel.prototype, "role", void 0);
-__decorate([
-    typeorm_1.Column({ default: false }),
-    __metadata("design:type", Boolean)
-], UserCourseModel.prototype, "override", void 0);
-UserCourseModel = __decorate([
-    typeorm_1.Entity('user_course_model')
-], UserCourseModel);
-exports.UserCourseModel = UserCourseModel;
-
-
-/***/ }),
-/* 28 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserModel = void 0;
-const class_transformer_1 = __webpack_require__(6);
-const typeorm_1 = __webpack_require__(25);
-const desktop_notif_entity_1 = __webpack_require__(29);
-const phone_notif_entity_1 = __webpack_require__(30);
-const queue_entity_1 = __webpack_require__(31);
-const event_model_entity_1 = __webpack_require__(24);
-const user_course_entity_1 = __webpack_require__(27);
-let UserModel = class UserModel extends typeorm_1.BaseEntity {
-    setFullNames() {
-        this.name = this.firstName + ' ' + this.lastName;
-    }
-};
-__decorate([
-    typeorm_1.PrimaryGeneratedColumn(),
-    __metadata("design:type", Number)
-], UserModel.prototype, "id", void 0);
-__decorate([
-    typeorm_1.Column('text'),
-    __metadata("design:type", String)
-], UserModel.prototype, "email", void 0);
-__decorate([
-    typeorm_1.Column('text', { nullable: true }),
-    __metadata("design:type", String)
-], UserModel.prototype, "firstName", void 0);
-__decorate([
-    typeorm_1.Column('text', { nullable: true }),
-    __metadata("design:type", String)
-], UserModel.prototype, "lastName", void 0);
-__decorate([
-    typeorm_1.Column('text', { nullable: true }),
-    __metadata("design:type", String)
-], UserModel.prototype, "photoURL", void 0);
-__decorate([
-    typeorm_1.OneToMany((type) => user_course_entity_1.UserCourseModel, (ucm) => ucm.user),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", Array)
-], UserModel.prototype, "courses", void 0);
-__decorate([
-    typeorm_1.Column({ type: 'boolean', default: false }),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", Boolean)
-], UserModel.prototype, "desktopNotifsEnabled", void 0);
-__decorate([
-    typeorm_1.Column({ type: 'boolean', default: false }),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", Boolean)
-], UserModel.prototype, "phoneNotifsEnabled", void 0);
-__decorate([
-    typeorm_1.OneToMany((type) => desktop_notif_entity_1.DesktopNotifModel, (notif) => notif.user),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", Array)
-], UserModel.prototype, "desktopNotifs", void 0);
-__decorate([
-    typeorm_1.OneToOne((type) => phone_notif_entity_1.PhoneNotifModel, (notif) => notif.user),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", phone_notif_entity_1.PhoneNotifModel)
-], UserModel.prototype, "phoneNotif", void 0);
-__decorate([
-    class_transformer_1.Exclude(),
-    typeorm_1.ManyToMany((type) => queue_entity_1.QueueModel, (queue) => queue.staffList),
-    __metadata("design:type", Array)
-], UserModel.prototype, "queues", void 0);
-__decorate([
-    class_transformer_1.Exclude(),
-    typeorm_1.OneToMany((type) => event_model_entity_1.EventModel, (event) => event.user),
-    __metadata("design:type", Array)
-], UserModel.prototype, "events", void 0);
-__decorate([
-    typeorm_1.AfterLoad(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], UserModel.prototype, "setFullNames", null);
-UserModel = __decorate([
-    typeorm_1.Entity('user_model')
-], UserModel);
-exports.UserModel = UserModel;
-
-
-/***/ }),
-/* 29 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.DesktopNotifModel = void 0;
-const typeorm_1 = __webpack_require__(25);
-const user_entity_1 = __webpack_require__(28);
-let DesktopNotifModel = class DesktopNotifModel extends typeorm_1.BaseEntity {
-};
-__decorate([
-    typeorm_1.PrimaryGeneratedColumn(),
-    __metadata("design:type", Number)
-], DesktopNotifModel.prototype, "id", void 0);
-__decorate([
-    typeorm_1.Column('text'),
-    __metadata("design:type", String)
-], DesktopNotifModel.prototype, "endpoint", void 0);
-__decorate([
-    typeorm_1.Column({ nullable: true }),
-    __metadata("design:type", Date)
-], DesktopNotifModel.prototype, "expirationTime", void 0);
-__decorate([
-    typeorm_1.Column('text'),
-    __metadata("design:type", String)
-], DesktopNotifModel.prototype, "p256dh", void 0);
-__decorate([
-    typeorm_1.Column('text'),
-    __metadata("design:type", String)
-], DesktopNotifModel.prototype, "auth", void 0);
-__decorate([
-    typeorm_1.ManyToOne((type) => user_entity_1.UserModel, (user) => user.desktopNotifs),
-    typeorm_1.JoinColumn({ name: 'userId' }),
-    __metadata("design:type", user_entity_1.UserModel)
-], DesktopNotifModel.prototype, "user", void 0);
-__decorate([
-    typeorm_1.Column({ nullable: true }),
-    __metadata("design:type", Number)
-], DesktopNotifModel.prototype, "userId", void 0);
-__decorate([
-    typeorm_1.CreateDateColumn({ type: 'timestamp' }),
-    __metadata("design:type", Date)
-], DesktopNotifModel.prototype, "createdAt", void 0);
-__decorate([
-    typeorm_1.Column({ type: 'text', nullable: true }),
-    __metadata("design:type", String)
-], DesktopNotifModel.prototype, "name", void 0);
-DesktopNotifModel = __decorate([
-    typeorm_1.Entity('desktop_notif_model')
-], DesktopNotifModel);
-exports.DesktopNotifModel = DesktopNotifModel;
-
-
-/***/ }),
-/* 30 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PhoneNotifModel = void 0;
-const typeorm_1 = __webpack_require__(25);
-const user_entity_1 = __webpack_require__(28);
-let PhoneNotifModel = class PhoneNotifModel extends typeorm_1.BaseEntity {
-};
-__decorate([
-    typeorm_1.PrimaryGeneratedColumn(),
-    __metadata("design:type", Number)
-], PhoneNotifModel.prototype, "id", void 0);
-__decorate([
-    typeorm_1.Column('text'),
-    __metadata("design:type", String)
-], PhoneNotifModel.prototype, "phoneNumber", void 0);
-__decorate([
-    typeorm_1.OneToOne((type) => user_entity_1.UserModel, (user) => user.phoneNotif),
-    typeorm_1.JoinColumn({ name: 'userId' }),
-    __metadata("design:type", user_entity_1.UserModel)
-], PhoneNotifModel.prototype, "user", void 0);
-__decorate([
-    typeorm_1.Column({ nullable: true }),
-    __metadata("design:type", Number)
-], PhoneNotifModel.prototype, "userId", void 0);
-__decorate([
-    typeorm_1.Column(),
-    __metadata("design:type", Boolean)
-], PhoneNotifModel.prototype, "verified", void 0);
-PhoneNotifModel = __decorate([
-    typeorm_1.Entity('phone_notif_model')
-], PhoneNotifModel);
-exports.PhoneNotifModel = PhoneNotifModel;
-
-
-/***/ }),
-/* 31 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.QueueModel = void 0;
-const class_transformer_1 = __webpack_require__(6);
-const typeorm_1 = __webpack_require__(25);
-const course_entity_1 = __webpack_require__(26);
-const office_hour_entity_1 = __webpack_require__(32);
-const user_entity_1 = __webpack_require__(28);
-const question_entity_1 = __webpack_require__(33);
-let QueueModel = class QueueModel extends typeorm_1.BaseEntity {
-    async checkIsOpen() {
-        if (this.staffList && this.staffList.length > 0) {
-            this.isOpen = true;
-            return true;
-        }
-        this.isOpen = await this.areThereOfficeHoursRightNow();
-        return this.isOpen;
-    }
-    async areThereOfficeHoursRightNow(now = new Date()) {
-        const MS_IN_MINUTE = 60000;
-        const ohs = await this.getOfficeHours(now);
-        return !!ohs.find((e) => e.startTime.getTime() - 10 * MS_IN_MINUTE < now.getTime() &&
-            e.endTime.getTime() + 1 * MS_IN_MINUTE > now.getTime());
-    }
-    async addQueueSize() {
-        this.queueSize = await question_entity_1.QuestionModel.waitingInQueue(this.id).getCount();
-    }
-    async addQueueTimes() {
-        const now = new Date();
-        const officeHours = await this.getOfficeHours();
-        const timeIntervals = this.generateMergedTimeIntervals(officeHours);
-        const currTime = timeIntervals.find((group) => {
-            const lowerBound = group.startTime.getTime() - 15 * 60 * 1000;
-            const upperBound = group.endTime.getTime() + 15 * 60 * 1000;
-            return lowerBound <= now.getTime() && upperBound >= now.getTime();
-        });
-        if (currTime) {
-            this.startTime = currTime.startTime;
-            this.endTime = currTime.endTime;
-        }
-    }
-    async getOfficeHours(now = new Date()) {
-        const lowerBound = new Date(now);
-        lowerBound.setUTCHours(now.getUTCHours() - 30);
-        lowerBound.setUTCHours(0, 0, 0, 0);
-        const upperBound = new Date(now);
-        upperBound.setUTCHours(now.getUTCHours() + 30);
-        upperBound.setUTCHours(0, 0, 0, 0);
-        return await office_hour_entity_1.OfficeHourModel.find({
-            where: [
-                {
-                    queueId: this.id,
-                    startTime: typeorm_1.MoreThanOrEqual(lowerBound),
-                    endTime: typeorm_1.LessThanOrEqual(upperBound),
-                },
-            ],
-            order: {
-                startTime: 'ASC',
-            },
-        });
-    }
-    generateMergedTimeIntervals(officeHours) {
-        const timeIntervals = [];
-        officeHours.forEach((officeHour) => {
-            if (timeIntervals.length == 0 ||
-                officeHour.startTime > timeIntervals[timeIntervals.length - 1].endTime) {
-                timeIntervals.push({
-                    startTime: officeHour.startTime,
-                    endTime: officeHour.endTime,
-                });
-                return;
-            }
-            const prevGroup = timeIntervals[timeIntervals.length - 1];
-            prevGroup.endTime =
-                officeHour.endTime > prevGroup.endTime
-                    ? officeHour.endTime
-                    : prevGroup.endTime;
-        });
-        return timeIntervals;
-    }
-};
-__decorate([
-    typeorm_1.PrimaryGeneratedColumn(),
-    __metadata("design:type", Number)
-], QueueModel.prototype, "id", void 0);
-__decorate([
-    typeorm_1.ManyToOne((type) => course_entity_1.CourseModel, (course) => course.queues),
-    typeorm_1.JoinColumn({ name: 'courseId' }),
-    __metadata("design:type", course_entity_1.CourseModel)
-], QueueModel.prototype, "course", void 0);
-__decorate([
-    typeorm_1.Column({ nullable: true }),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", Number)
-], QueueModel.prototype, "courseId", void 0);
-__decorate([
-    typeorm_1.Column('text'),
-    __metadata("design:type", String)
-], QueueModel.prototype, "room", void 0);
-__decorate([
-    typeorm_1.OneToMany((type) => question_entity_1.QuestionModel, (qm) => qm.queue),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", Array)
-], QueueModel.prototype, "questions", void 0);
-__decorate([
-    typeorm_1.Column('text', { nullable: true }),
-    __metadata("design:type", String)
-], QueueModel.prototype, "notes", void 0);
-__decorate([
-    typeorm_1.ManyToMany((type) => user_entity_1.UserModel, (user) => user.queues),
-    typeorm_1.JoinTable(),
-    __metadata("design:type", Array)
-], QueueModel.prototype, "staffList", void 0);
-__decorate([
-    typeorm_1.Column({ default: false }),
-    __metadata("design:type", Boolean)
-], QueueModel.prototype, "allowQuestions", void 0);
-__decorate([
-    class_transformer_1.Exclude(),
-    typeorm_1.OneToMany((type) => office_hour_entity_1.OfficeHourModel, (oh) => oh.queue),
-    typeorm_1.JoinTable(),
-    __metadata("design:type", Array)
-], QueueModel.prototype, "officeHours", void 0);
-__decorate([
-    typeorm_1.Column({ default: false }),
-    __metadata("design:type", Boolean)
-], QueueModel.prototype, "isProfessorQueue", void 0);
-QueueModel = __decorate([
-    typeorm_1.Entity('queue_model')
-], QueueModel);
-exports.QueueModel = QueueModel;
-
-
-/***/ }),
-/* 32 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.OfficeHourModel = void 0;
-const class_transformer_1 = __webpack_require__(6);
-const typeorm_1 = __webpack_require__(25);
-const queue_entity_1 = __webpack_require__(31);
-const course_entity_1 = __webpack_require__(26);
-let OfficeHourModel = class OfficeHourModel extends typeorm_1.BaseEntity {
-    get room() {
-        var _a;
-        return (_a = this.queue) === null || _a === void 0 ? void 0 : _a.room;
-    }
-};
-__decorate([
-    typeorm_1.PrimaryGeneratedColumn(),
-    __metadata("design:type", Number)
-], OfficeHourModel.prototype, "id", void 0);
-__decorate([
-    typeorm_1.ManyToOne((type) => course_entity_1.CourseModel, (course) => course.officeHours),
-    typeorm_1.JoinColumn({ name: 'courseId' }),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", course_entity_1.CourseModel)
-], OfficeHourModel.prototype, "course", void 0);
-__decorate([
-    typeorm_1.Column({ nullable: true }),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", Number)
-], OfficeHourModel.prototype, "courseId", void 0);
-__decorate([
-    typeorm_1.ManyToOne((type) => queue_entity_1.QueueModel, (queue) => queue.officeHours, {
-        eager: true,
-    }),
-    typeorm_1.JoinColumn({ name: 'queueId' }),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", queue_entity_1.QueueModel)
-], OfficeHourModel.prototype, "queue", void 0);
-__decorate([
-    typeorm_1.Column({ nullable: true }),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", Number)
-], OfficeHourModel.prototype, "queueId", void 0);
-__decorate([
-    typeorm_1.Column('text'),
-    __metadata("design:type", String)
-], OfficeHourModel.prototype, "title", void 0);
-__decorate([
-    typeorm_1.Column(),
-    __metadata("design:type", Date)
-], OfficeHourModel.prototype, "startTime", void 0);
-__decorate([
-    typeorm_1.Column(),
-    __metadata("design:type", Date)
-], OfficeHourModel.prototype, "endTime", void 0);
-__decorate([
-    class_transformer_1.Expose(),
-    __metadata("design:type", String),
-    __metadata("design:paramtypes", [])
-], OfficeHourModel.prototype, "room", null);
-OfficeHourModel = __decorate([
-    typeorm_1.Entity('office_hour')
-], OfficeHourModel);
-exports.OfficeHourModel = OfficeHourModel;
-
-
-/***/ }),
-/* 33 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var QuestionModel_1;
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.QuestionModel = void 0;
-const common_1 = __webpack_require__(5);
-const class_transformer_1 = __webpack_require__(6);
-const typeorm_1 = __webpack_require__(25);
-const user_entity_1 = __webpack_require__(28);
-const queue_entity_1 = __webpack_require__(31);
-const question_fsm_1 = __webpack_require__(34);
-let QuestionModel = QuestionModel_1 = class QuestionModel extends typeorm_1.BaseEntity {
-    changeStatus(newStatus, role) {
-        if (question_fsm_1.canChangeQuestionStatus(this.status, newStatus, role)) {
-            this.status = newStatus;
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-    static inQueueWithStatus(queueId, statuses) {
-        return this.createQueryBuilder('question')
-            .where('question.queueId = :queueId', { queueId })
-            .andWhere('question.status IN (:...statuses)', {
-            statuses,
-        })
-            .orderBy('question.createdAt', 'ASC');
-    }
-    static waitingInQueue(queueId) {
-        return QuestionModel_1.inQueueWithStatus(queueId, common_1.StatusInQueue);
-    }
-};
-__decorate([
-    typeorm_1.PrimaryGeneratedColumn(),
-    __metadata("design:type", Number)
-], QuestionModel.prototype, "id", void 0);
-__decorate([
-    typeorm_1.ManyToOne((type) => queue_entity_1.QueueModel, (q) => q.questions),
-    typeorm_1.JoinColumn({ name: 'queueId' }),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", queue_entity_1.QueueModel)
-], QuestionModel.prototype, "queue", void 0);
-__decorate([
-    typeorm_1.Column({ nullable: true }),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", Number)
-], QuestionModel.prototype, "queueId", void 0);
-__decorate([
-    typeorm_1.Column('text'),
-    __metadata("design:type", String)
-], QuestionModel.prototype, "text", void 0);
-__decorate([
-    typeorm_1.ManyToOne((type) => user_entity_1.UserModel),
-    typeorm_1.JoinColumn({ name: 'creatorId' }),
-    __metadata("design:type", user_entity_1.UserModel)
-], QuestionModel.prototype, "creator", void 0);
-__decorate([
-    typeorm_1.Column({ nullable: true }),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", Number)
-], QuestionModel.prototype, "creatorId", void 0);
-__decorate([
-    typeorm_1.ManyToOne((type) => user_entity_1.UserModel),
-    typeorm_1.JoinColumn({ name: 'taHelpedId' }),
-    __metadata("design:type", user_entity_1.UserModel)
-], QuestionModel.prototype, "taHelped", void 0);
-__decorate([
-    typeorm_1.Column({ nullable: true }),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", Number)
-], QuestionModel.prototype, "taHelpedId", void 0);
-__decorate([
-    typeorm_1.Column(),
-    __metadata("design:type", Date)
-], QuestionModel.prototype, "createdAt", void 0);
-__decorate([
-    typeorm_1.Column({ nullable: true }),
-    class_transformer_1.Exclude(),
-    __metadata("design:type", Date)
-], QuestionModel.prototype, "firstHelpedAt", void 0);
-__decorate([
-    typeorm_1.Column({ nullable: true }),
-    __metadata("design:type", Date)
-], QuestionModel.prototype, "helpedAt", void 0);
-__decorate([
-    typeorm_1.Column({ nullable: true }),
-    __metadata("design:type", Date)
-], QuestionModel.prototype, "closedAt", void 0);
-__decorate([
-    typeorm_1.Column('text', { nullable: true }),
-    __metadata("design:type", String)
-], QuestionModel.prototype, "questionType", void 0);
-__decorate([
-    typeorm_1.Column('text'),
-    __metadata("design:type", String)
-], QuestionModel.prototype, "status", void 0);
-__decorate([
-    typeorm_1.Column({ nullable: true }),
-    __metadata("design:type", String)
-], QuestionModel.prototype, "location", void 0);
-__decorate([
-    typeorm_1.Column({ nullable: true }),
-    __metadata("design:type", Boolean)
-], QuestionModel.prototype, "isOnline", void 0);
-QuestionModel = QuestionModel_1 = __decorate([
-    typeorm_1.Entity('question_model')
-], QuestionModel);
-exports.QuestionModel = QuestionModel;
-
-
-/***/ }),
-/* 34 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.canChangeQuestionStatus = void 0;
-const common_1 = __webpack_require__(5);
-const QUEUE_TRANSITIONS = {
-    ta: [common_1.OpenQuestionStatus.Helping, common_1.LimboQuestionStatus.TADeleted],
-    student: [common_1.ClosedQuestionStatus.ConfirmedDeleted],
-};
-const QUESTION_STATES = {
-    [common_1.OpenQuestionStatus.Drafting]: {
-        student: [common_1.OpenQuestionStatus.Queued, common_1.ClosedQuestionStatus.ConfirmedDeleted],
-        ta: [common_1.OpenQuestionStatus.Helping, common_1.ClosedQuestionStatus.DeletedDraft],
-    },
-    [common_1.OpenQuestionStatus.Queued]: QUEUE_TRANSITIONS,
-    [common_1.OpenQuestionStatus.PriorityQueued]: QUEUE_TRANSITIONS,
-    [common_1.OpenQuestionStatus.Helping]: {
-        ta: [
-            common_1.LimboQuestionStatus.CantFind,
-            common_1.LimboQuestionStatus.ReQueueing,
-            common_1.ClosedQuestionStatus.Resolved,
-            common_1.LimboQuestionStatus.TADeleted,
-        ],
-        student: [common_1.ClosedQuestionStatus.ConfirmedDeleted],
-    },
-    [common_1.LimboQuestionStatus.CantFind]: {
-        student: [
-            common_1.OpenQuestionStatus.PriorityQueued,
-            common_1.ClosedQuestionStatus.ConfirmedDeleted,
-        ],
-    },
-    [common_1.LimboQuestionStatus.ReQueueing]: {
-        student: [
-            common_1.OpenQuestionStatus.PriorityQueued,
-            common_1.ClosedQuestionStatus.ConfirmedDeleted,
-        ],
-    },
-    [common_1.LimboQuestionStatus.TADeleted]: {
-        student: [common_1.ClosedQuestionStatus.ConfirmedDeleted],
-    },
-    [common_1.ClosedQuestionStatus.Resolved]: {},
-    [common_1.ClosedQuestionStatus.ConfirmedDeleted]: {},
-    [common_1.ClosedQuestionStatus.Stale]: {},
-    [common_1.ClosedQuestionStatus.DeletedDraft]: {},
-};
-function canChangeQuestionStatus(oldStatus, goalStatus, role) {
-    var _a;
-    return (oldStatus === goalStatus || ((_a = QUESTION_STATES[oldStatus][role]) === null || _a === void 0 ? void 0 : _a.includes(goalStatus)));
-}
-exports.canChangeQuestionStatus = canChangeQuestionStatus;
-
-
-/***/ }),
-/* 35 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.SemesterModel = void 0;
-const typeorm_1 = __webpack_require__(25);
-const course_entity_1 = __webpack_require__(26);
-let SemesterModel = class SemesterModel extends typeorm_1.BaseEntity {
-};
-__decorate([
-    typeorm_1.PrimaryGeneratedColumn(),
-    __metadata("design:type", Number)
-], SemesterModel.prototype, "id", void 0);
-__decorate([
-    typeorm_1.Column('text'),
-    __metadata("design:type", String)
-], SemesterModel.prototype, "season", void 0);
-__decorate([
-    typeorm_1.Column(),
-    __metadata("design:type", Number)
-], SemesterModel.prototype, "year", void 0);
-__decorate([
-    typeorm_1.OneToMany((type) => course_entity_1.CourseModel, (course) => course.semester),
-    __metadata("design:type", Array)
-], SemesterModel.prototype, "courses", void 0);
-SemesterModel = __decorate([
-    typeorm_1.Entity('semester_model')
-], SemesterModel);
-exports.SemesterModel = SemesterModel;
-
-
-/***/ }),
-/* 36 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.JwtAuthGuard = void 0;
-const common_1 = __webpack_require__(9);
-const passport_1 = __webpack_require__(37);
-let JwtAuthGuard = class JwtAuthGuard extends passport_1.AuthGuard('jwt') {
-};
-JwtAuthGuard = __decorate([
-    common_1.Injectable()
-], JwtAuthGuard);
-exports.JwtAuthGuard = JwtAuthGuard;
-
-
-/***/ }),
-/* 37 */
-/***/ (function(module, exports) {
-
-module.exports = require("@nestjs/passport");
-
-/***/ }),
-/* 38 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Roles = void 0;
-const common_1 = __webpack_require__(9);
-exports.Roles = (...roles) => common_1.SetMetadata('roles', roles);
-
-
-/***/ }),
-/* 39 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserId = exports.User = void 0;
-const common_1 = __webpack_require__(9);
-const user_entity_1 = __webpack_require__(28);
-exports.User = common_1.createParamDecorator(async (relations, ctx) => {
-    const request = ctx.switchToHttp().getRequest();
-    return await user_entity_1.UserModel.findOne(request.user.userId, { relations });
-});
-exports.UserId = common_1.createParamDecorator((data, ctx) => {
-    const request = ctx.switchToHttp().getRequest();
-    return Number(request.user.userId);
-});
-
-
-/***/ }),
-/* 40 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2119,13 +3730,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.QueueCleanService = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
-const schedule_1 = __webpack_require__(19);
-const office_hour_entity_1 = __webpack_require__(32);
-const moment = __webpack_require__(23);
-const typeorm_1 = __webpack_require__(25);
-const question_entity_1 = __webpack_require__(33);
-const queue_entity_1 = __webpack_require__(31);
-const event_model_entity_1 = __webpack_require__(24);
+const schedule_1 = __webpack_require__(18);
+const office_hour_entity_1 = __webpack_require__(34);
+const moment = __webpack_require__(75);
+const typeorm_1 = __webpack_require__(27);
+const question_entity_1 = __webpack_require__(37);
+const queue_entity_1 = __webpack_require__(30);
+const event_model_entity_1 = __webpack_require__(32);
 let QueueCleanService = class QueueCleanService {
     constructor(connection) {
         this.connection = connection;
@@ -2218,7 +3829,7 @@ exports.QueueCleanService = QueueCleanService;
 
 
 /***/ }),
-/* 41 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2235,9 +3846,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.QueueSSEService = void 0;
 const common_1 = __webpack_require__(9);
-const lodash_1 = __webpack_require__(42);
-const sse_service_1 = __webpack_require__(43);
-const queue_service_1 = __webpack_require__(45);
+const lodash_1 = __webpack_require__(22);
+const sse_service_1 = __webpack_require__(78);
+const queue_service_1 = __webpack_require__(79);
 const idToRoom = (queueId) => `q-${queueId}`;
 let QueueSSEService = class QueueSSEService {
     constructor(queueService, sseService) {
@@ -2285,13 +3896,7 @@ exports.QueueSSEService = QueueSSEService;
 
 
 /***/ }),
-/* 42 */
-/***/ (function(module, exports) {
-
-module.exports = require("lodash");
-
-/***/ }),
-/* 43 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2308,9 +3913,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SSEService = void 0;
 const common_1 = __webpack_require__(9);
-const async_1 = __webpack_require__(22);
+const async_1 = __webpack_require__(74);
 const class_transformer_1 = __webpack_require__(6);
-const nestjs_redis_1 = __webpack_require__(44);
+const nestjs_redis_1 = __webpack_require__(55);
 let SSEService = class SSEService {
     constructor(redisService) {
         this.redisService = redisService;
@@ -2379,13 +3984,7 @@ exports.SSEService = SSEService;
 
 
 /***/ }),
-/* 44 */
-/***/ (function(module, exports) {
-
-module.exports = require("nestjs-redis");
-
-/***/ }),
-/* 45 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2404,10 +4003,10 @@ exports.QueueService = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
 const class_transformer_1 = __webpack_require__(6);
-const lodash_1 = __webpack_require__(42);
-const question_entity_1 = __webpack_require__(33);
-const typeorm_1 = __webpack_require__(25);
-const queue_entity_1 = __webpack_require__(31);
+const lodash_1 = __webpack_require__(22);
+const question_entity_1 = __webpack_require__(37);
+const typeorm_1 = __webpack_require__(27);
+const queue_entity_1 = __webpack_require__(30);
 let QueueService = class QueueService {
     constructor(connection) {
         this.connection = connection;
@@ -2480,7 +4079,7 @@ exports.QueueService = QueueService;
 
 
 /***/ }),
-/* 46 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2494,8 +4093,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CourseRolesGuard = void 0;
 const common_1 = __webpack_require__(9);
-const role_guard_1 = __webpack_require__(47);
-const user_entity_1 = __webpack_require__(28);
+const role_guard_1 = __webpack_require__(81);
+const user_entity_1 = __webpack_require__(26);
 let CourseRolesGuard = class CourseRolesGuard extends role_guard_1.RolesGuard {
     async setupData(request) {
         const user = await user_entity_1.UserModel.findOne(request.user.userId, {
@@ -2512,7 +4111,7 @@ exports.CourseRolesGuard = CourseRolesGuard;
 
 
 /***/ }),
-/* 47 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2574,7 +4173,7 @@ exports.RolesGuard = RolesGuard;
 
 
 /***/ }),
-/* 48 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2595,13 +4194,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HeatmapService = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
-const lodash_1 = __webpack_require__(42);
-const moment = __webpack_require__(23);
-const nestjs_command_1 = __webpack_require__(49);
-const question_entity_1 = __webpack_require__(33);
-const typeorm_1 = __webpack_require__(25);
-const office_hour_entity_1 = __webpack_require__(32);
-const course_entity_1 = __webpack_require__(26);
+const lodash_1 = __webpack_require__(22);
+const moment = __webpack_require__(75);
+const nestjs_command_1 = __webpack_require__(50);
+const question_entity_1 = __webpack_require__(37);
+const typeorm_1 = __webpack_require__(27);
+const office_hour_entity_1 = __webpack_require__(34);
+const course_entity_1 = __webpack_require__(31);
 function arrayRotate(arr, count) {
     count -= arr.length * Math.floor(count / arr.length);
     const spliced = arr.splice(0, count);
@@ -2760,13 +4359,7 @@ exports.HeatmapService = HeatmapService;
 
 
 /***/ }),
-/* 49 */
-/***/ (function(module, exports) {
-
-module.exports = require("nestjs-command");
-
-/***/ }),
-/* 50 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2783,18 +4376,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.IcalService = void 0;
 const common_1 = __webpack_require__(9);
-__webpack_require__(51);
-const node_ical_1 = __webpack_require__(52);
-const rrule_1 = __webpack_require__(53);
-const typeorm_1 = __webpack_require__(25);
-const dist_1 = __webpack_require__(54);
-const queue_entity_1 = __webpack_require__(31);
-const course_entity_1 = __webpack_require__(26);
-const office_hour_entity_1 = __webpack_require__(32);
-const moment = __webpack_require__(23);
-const schedule_1 = __webpack_require__(19);
-const nestjs_redis_1 = __webpack_require__(44);
-const Redlock = __webpack_require__(55);
+__webpack_require__(84);
+const node_ical_1 = __webpack_require__(85);
+const rrule_1 = __webpack_require__(86);
+const typeorm_1 = __webpack_require__(27);
+const dist_1 = __webpack_require__(87);
+const queue_entity_1 = __webpack_require__(30);
+const course_entity_1 = __webpack_require__(31);
+const office_hour_entity_1 = __webpack_require__(34);
+const moment = __webpack_require__(75);
+const schedule_1 = __webpack_require__(18);
+const nestjs_redis_1 = __webpack_require__(55);
+const Redlock = __webpack_require__(88);
 let IcalService = class IcalService {
     constructor(connection, redisService) {
         this.connection = connection;
@@ -2957,37 +4550,37 @@ exports.IcalService = IcalService;
 
 
 /***/ }),
-/* 51 */
+/* 84 */
 /***/ (function(module, exports) {
 
 module.exports = require("moment-timezone");
 
 /***/ }),
-/* 52 */
+/* 85 */
 /***/ (function(module, exports) {
 
 module.exports = require("node-ical");
 
 /***/ }),
-/* 53 */
+/* 86 */
 /***/ (function(module, exports) {
 
 module.exports = require("rrule");
 
 /***/ }),
-/* 54 */
+/* 87 */
 /***/ (function(module, exports) {
 
 module.exports = require("windows-iana/dist");
 
 /***/ }),
-/* 55 */
+/* 88 */
 /***/ (function(module, exports) {
 
 module.exports = require("redlock");
 
 /***/ }),
-/* 56 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3001,12 +4594,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.QueueModule = void 0;
 const common_1 = __webpack_require__(9);
-const queue_controller_1 = __webpack_require__(57);
-const queue_clean_service_1 = __webpack_require__(40);
-const sse_module_1 = __webpack_require__(60);
-const queue_service_1 = __webpack_require__(45);
-const queue_sse_service_1 = __webpack_require__(41);
-const queue_subscriber_1 = __webpack_require__(61);
+const queue_controller_1 = __webpack_require__(90);
+const queue_clean_service_1 = __webpack_require__(76);
+const sse_module_1 = __webpack_require__(93);
+const queue_service_1 = __webpack_require__(79);
+const queue_sse_service_1 = __webpack_require__(77);
+const queue_subscriber_1 = __webpack_require__(94);
 let QueueModule = class QueueModule {
 };
 QueueModule = __decorate([
@@ -3026,7 +4619,7 @@ exports.QueueModule = QueueModule;
 
 
 /***/ }),
-/* 57 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3047,15 +4640,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.QueueController = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
-const user_decorator_1 = __webpack_require__(39);
-const typeorm_1 = __webpack_require__(25);
-const jwt_auth_guard_1 = __webpack_require__(36);
-const roles_decorator_1 = __webpack_require__(38);
-const queue_role_decorator_1 = __webpack_require__(58);
-const queue_role_guard_1 = __webpack_require__(59);
-const queue_sse_service_1 = __webpack_require__(41);
-const queue_service_1 = __webpack_require__(45);
-const queue_clean_service_1 = __webpack_require__(40);
+const user_decorator_1 = __webpack_require__(25);
+const typeorm_1 = __webpack_require__(27);
+const jwt_auth_guard_1 = __webpack_require__(23);
+const roles_decorator_1 = __webpack_require__(39);
+const queue_role_decorator_1 = __webpack_require__(91);
+const queue_role_guard_1 = __webpack_require__(92);
+const queue_sse_service_1 = __webpack_require__(77);
+const queue_service_1 = __webpack_require__(79);
+const queue_clean_service_1 = __webpack_require__(76);
 let QueueController = class QueueController {
     constructor(connection, queueSSEService, queueCleanService, queueService) {
         this.connection = connection;
@@ -3154,7 +4747,7 @@ exports.QueueController = QueueController;
 
 
 /***/ }),
-/* 58 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3162,8 +4755,8 @@ exports.QueueController = QueueController;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.QueueRole = void 0;
 const common_1 = __webpack_require__(9);
-const user_entity_1 = __webpack_require__(28);
-const queue_entity_1 = __webpack_require__(31);
+const user_entity_1 = __webpack_require__(26);
+const queue_entity_1 = __webpack_require__(30);
 exports.QueueRole = common_1.createParamDecorator(async (data, ctx) => {
     const request = ctx.switchToHttp().getRequest();
     const queue = await queue_entity_1.QueueModel.findOne(request.params.queueId);
@@ -3182,7 +4775,7 @@ exports.QueueRole = common_1.createParamDecorator(async (data, ctx) => {
 
 
 /***/ }),
-/* 59 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3197,9 +4790,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.QueueRolesGuard = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
-const role_guard_1 = __webpack_require__(47);
-const user_entity_1 = __webpack_require__(28);
-const queue_entity_1 = __webpack_require__(31);
+const role_guard_1 = __webpack_require__(81);
+const user_entity_1 = __webpack_require__(26);
+const queue_entity_1 = __webpack_require__(30);
 let QueueRolesGuard = class QueueRolesGuard extends role_guard_1.RolesGuard {
     async setupData(request) {
         const queue = await queue_entity_1.QueueModel.findOne(request.params.queueId);
@@ -3220,7 +4813,7 @@ exports.QueueRolesGuard = QueueRolesGuard;
 
 
 /***/ }),
-/* 60 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3234,7 +4827,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SSEModule = void 0;
 const common_1 = __webpack_require__(9);
-const sse_service_1 = __webpack_require__(43);
+const sse_service_1 = __webpack_require__(78);
 let SSEModule = class SSEModule {
 };
 SSEModule = __decorate([
@@ -3244,7 +4837,7 @@ exports.SSEModule = SSEModule;
 
 
 /***/ }),
-/* 61 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3260,9 +4853,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.QueueSubscriber = void 0;
-const queue_sse_service_1 = __webpack_require__(41);
-const typeorm_1 = __webpack_require__(25);
-const queue_entity_1 = __webpack_require__(31);
+const queue_sse_service_1 = __webpack_require__(77);
+const typeorm_1 = __webpack_require__(27);
+const queue_entity_1 = __webpack_require__(30);
 let QueueSubscriber = class QueueSubscriber {
     constructor(connection, queueSSEService) {
         this.queueSSEService = queueSSEService;
@@ -3285,7 +4878,7 @@ exports.QueueSubscriber = QueueSubscriber;
 
 
 /***/ }),
-/* 62 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3301,9 +4894,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ICalCommand = void 0;
-const nestjs_command_1 = __webpack_require__(49);
+const nestjs_command_1 = __webpack_require__(50);
 const common_1 = __webpack_require__(9);
-const ical_service_1 = __webpack_require__(50);
+const ical_service_1 = __webpack_require__(83);
 let ICalCommand = class ICalCommand {
     constructor(icalService) {
         this.icalService = icalService;
@@ -3330,7 +4923,7 @@ exports.ICalCommand = ICalCommand;
 
 
 /***/ }),
-/* 63 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3342,26 +4935,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NotificationModule = void 0;
+exports.HealthcheckModule = void 0;
 const common_1 = __webpack_require__(9);
-const desktop_notif_subscriber_1 = __webpack_require__(64);
-const notification_controller_1 = __webpack_require__(69);
-const notification_service_1 = __webpack_require__(65);
-const twilio_service_1 = __webpack_require__(67);
-let NotificationModule = class NotificationModule {
+const healthcheck_controller_1 = __webpack_require__(97);
+let HealthcheckModule = class HealthcheckModule {
 };
-NotificationModule = __decorate([
+HealthcheckModule = __decorate([
     common_1.Module({
-        controllers: [notification_controller_1.NotificationController],
-        providers: [notification_service_1.NotificationService, desktop_notif_subscriber_1.DesktopNotifSubscriber, twilio_service_1.TwilioService],
-        exports: [notification_service_1.NotificationService, twilio_service_1.TwilioService],
+        controllers: [healthcheck_controller_1.HealthcheckController],
     })
-], NotificationModule);
-exports.NotificationModule = NotificationModule;
+], HealthcheckModule);
+exports.HealthcheckModule = HealthcheckModule;
 
 
 /***/ }),
-/* 64 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3376,368 +4964,34 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DesktopNotifSubscriber = void 0;
-const typeorm_1 = __webpack_require__(25);
-const desktop_notif_entity_1 = __webpack_require__(29);
-const notification_service_1 = __webpack_require__(65);
-let DesktopNotifSubscriber = class DesktopNotifSubscriber {
-    constructor(connection, notifService) {
-        this.notifService = notifService;
-        connection.subscribers.push(this);
-    }
-    listenTo() {
-        return desktop_notif_entity_1.DesktopNotifModel;
-    }
-    async afterInsert(event) {
-        await this.notifService.notifyDesktop(event.entity, "You've successfully signed up for desktop notifications!");
-    }
-};
-DesktopNotifSubscriber = __decorate([
-    typeorm_1.EventSubscriber(),
-    __metadata("design:paramtypes", [typeorm_1.Connection, notification_service_1.NotificationService])
-], DesktopNotifSubscriber);
-exports.DesktopNotifSubscriber = DesktopNotifSubscriber;
-
-
-/***/ }),
-/* 65 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.NotificationService = exports.NotifMsgs = void 0;
-const common_1 = __webpack_require__(5);
-const common_2 = __webpack_require__(9);
-const config_1 = __webpack_require__(17);
-const webPush = __webpack_require__(66);
-const user_entity_1 = __webpack_require__(28);
-const desktop_notif_entity_1 = __webpack_require__(29);
-const phone_notif_entity_1 = __webpack_require__(30);
-const twilio_service_1 = __webpack_require__(67);
-exports.NotifMsgs = {
-    phone: {
-        WRONG_MESSAGE: 'Please respond with either YES or NO. Text STOP at any time to stop receiving text messages',
-        COULD_NOT_FIND_NUMBER: 'Could not find an Office Hours account with your phone number.',
-        UNREGISTER: "You've unregistered from text notifications for Khoury Office Hours. Feel free to re-register any time through the website",
-        DUPLICATE: "You've already been verified to receive text notifications from Khoury Office Hours!",
-        OK: 'Thank you for verifying your number with Khoury Office Hours! You are now signed up for text notifications!',
-    },
-    queue: {
-        ALERT_BUTTON: "The TA could't reach you, please have Microsoft Teams open and confirm you are back!",
-        THIRD_PLACE: `You're 3rd in the queue. Be ready for a TA to call you soon!`,
-        TA_HIT_HELPED: (taName) => `${taName} is coming to help you!`,
-        REMOVED: `You've been removed from the queue. Please return to the app for more information.`,
-    },
-    ta: {
-        STUDENT_JOINED_EMPTY_QUEUE: 'A student has joined your (previously empty) queue!',
-    },
-};
-let NotificationService = class NotificationService {
-    constructor(configService, twilioService) {
-        this.configService = configService;
-        this.twilioService = twilioService;
-        webPush.setVapidDetails(this.configService.get('EMAIL'), this.configService.get('PUBLICKEY'), this.configService.get('PRIVATEKEY'));
-        this.desktopPublicKey = this.configService.get('PUBLICKEY');
-    }
-    async registerDesktop(info) {
-        let dn = await desktop_notif_entity_1.DesktopNotifModel.findOne({
-            where: { userId: info.userId, endpoint: info.endpoint },
-        });
-        if (!dn) {
-            dn = await desktop_notif_entity_1.DesktopNotifModel.create(info).save();
-            await dn.reload();
-        }
-        return dn;
-    }
-    async registerPhone(phoneNumber, user) {
-        const fullNumber = await this.twilioService.getFullPhoneNumber(phoneNumber);
-        if (!fullNumber) {
-            throw new common_2.BadRequestException(common_1.ERROR_MESSAGES.notificationService.registerPhone);
-        }
-        let phoneNotifModel = await phone_notif_entity_1.PhoneNotifModel.findOne({
-            userId: user.id,
-        });
-        if (phoneNotifModel) {
-            if (phoneNotifModel.phoneNumber === fullNumber) {
-                return;
-            }
-            else {
-                phoneNotifModel.phoneNumber = fullNumber;
-                phoneNotifModel.verified = false;
-                await phoneNotifModel.save();
-            }
-        }
-        else {
-            phoneNotifModel = await phone_notif_entity_1.PhoneNotifModel.create({
-                phoneNumber: fullNumber,
-                userId: user.id,
-                verified: false,
-            }).save();
-            user.phoneNotif = phoneNotifModel;
-        }
-        await this.notifyPhone(phoneNotifModel, "You've signed up for phone notifications for Khoury Office Hours. To verify your number, please respond to this message with YES. To unsubscribe, respond to this message with NO or STOP", true);
-    }
-    async notifyUser(userId, message) {
-        const notifModelsOfUser = await user_entity_1.UserModel.findOne({
-            where: {
-                id: userId,
-            },
-            relations: ['desktopNotifs', 'phoneNotif'],
-        });
-        if (notifModelsOfUser.desktopNotifsEnabled) {
-            await Promise.all(notifModelsOfUser.desktopNotifs.map(async (nm) => this.notifyDesktop(nm, message)));
-        }
-        if (notifModelsOfUser.phoneNotif && notifModelsOfUser.phoneNotifsEnabled) {
-            this.notifyPhone(notifModelsOfUser.phoneNotif, message, false);
-        }
-    }
-    async notifyDesktop(nm, message) {
-        try {
-            await webPush.sendNotification({
-                endpoint: nm.endpoint,
-                keys: {
-                    p256dh: nm.p256dh,
-                    auth: nm.auth,
-                },
-            }, message);
-        }
-        catch (error) {
-            await desktop_notif_entity_1.DesktopNotifModel.remove(nm);
-        }
-    }
-    async notifyPhone(pn, message, force) {
-        if (force || pn.verified) {
-            try {
-                await this.twilioService.sendSMS(pn.phoneNumber, message);
-            }
-            catch (error) {
-                console.error('problem sending message', error);
-            }
-        }
-    }
-    async verifyPhone(phoneNumber, message) {
-        const phoneNotif = await phone_notif_entity_1.PhoneNotifModel.findOne({
-            where: { phoneNumber: phoneNumber },
-        });
-        if (!phoneNotif) {
-            return exports.NotifMsgs.phone.COULD_NOT_FIND_NUMBER;
-        }
-        else if (message !== 'YES' && message !== 'NO' && message !== 'STOP') {
-            return exports.NotifMsgs.phone.WRONG_MESSAGE;
-        }
-        else if (message === 'NO' || message === 'STOP') {
-            await phone_notif_entity_1.PhoneNotifModel.delete(phoneNotif);
-            return exports.NotifMsgs.phone.UNREGISTER;
-        }
-        else if (phoneNotif.verified) {
-            return exports.NotifMsgs.phone.DUPLICATE;
-        }
-        else {
-            phoneNotif.verified = true;
-            await phoneNotif.save();
-            return exports.NotifMsgs.phone.OK;
-        }
-    }
-};
-NotificationService = __decorate([
-    common_2.Injectable(),
-    __metadata("design:paramtypes", [config_1.ConfigService,
-        twilio_service_1.TwilioService])
-], NotificationService);
-exports.NotificationService = NotificationService;
-
-
-/***/ }),
-/* 66 */
-/***/ (function(module, exports) {
-
-module.exports = require("web-push");
-
-/***/ }),
-/* 67 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.TwilioService = void 0;
+exports.HealthcheckController = void 0;
 const common_1 = __webpack_require__(9);
-const config_1 = __webpack_require__(17);
-const twilio = __webpack_require__(68);
-let TwilioService = class TwilioService {
-    constructor(configService) {
-        this.configService = configService;
-        this.twilioClient = twilio(this.configService.get('TWILIOACCOUNTSID'), this.configService.get('TWILIOAUTHTOKEN'));
-    }
-    async getFullPhoneNumber(phoneNumber) {
-        try {
-            return (await this.twilioClient.lookups.phoneNumbers(phoneNumber).fetch())
-                .phoneNumber;
-        }
-        catch (err) {
-            return false;
-        }
-    }
-    async sendSMS(phoneNumber, message) {
-        await this.twilioClient.messages.create({
-            body: message,
-            from: this.configService.get('TWILIOPHONENUMBER'),
-            to: phoneNumber,
-        });
-    }
-};
-TwilioService = __decorate([
-    common_1.Injectable(),
-    __metadata("design:paramtypes", [config_1.ConfigService])
-], TwilioService);
-exports.TwilioService = TwilioService;
-
-
-/***/ }),
-/* 68 */
-/***/ (function(module, exports) {
-
-module.exports = require("twilio");
-
-/***/ }),
-/* 69 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.NotificationController = void 0;
-const common_1 = __webpack_require__(5);
-const common_2 = __webpack_require__(9);
-const config_1 = __webpack_require__(17);
-const twilio = __webpack_require__(68);
-const jwt_auth_guard_1 = __webpack_require__(36);
-const user_decorator_1 = __webpack_require__(39);
-const desktop_notif_entity_1 = __webpack_require__(29);
-const notification_service_1 = __webpack_require__(65);
-let NotificationController = class NotificationController {
-    constructor(notifService, configService) {
-        this.notifService = notifService;
-        this.configService = configService;
-    }
-    getDesktopCredentials() {
-        return JSON.stringify(this.notifService.desktopPublicKey);
-    }
-    async registerDesktopUser(body, userId) {
-        const device = await this.notifService.registerDesktop({
-            endpoint: body.endpoint,
-            expirationTime: body.expirationTime && new Date(body.expirationTime),
-            p256dh: body.keys.p256dh,
-            auth: body.keys.auth,
-            name: body.name,
-            userId: userId,
-        });
-        return {
-            id: device.id,
-            endpoint: device.endpoint,
-            createdAt: device.createdAt,
-            name: device.name,
-        };
-    }
-    async deleteDesktopUser(deviceId, userId) {
-        const dn = await desktop_notif_entity_1.DesktopNotifModel.find({ id: deviceId, userId });
-        if (dn.length > 0) {
-            await desktop_notif_entity_1.DesktopNotifModel.remove(dn);
-        }
-        else {
-            throw new common_2.NotFoundException();
-        }
-    }
-    async verifyPhoneUser(body, twilioSignature) {
-        const message = body.Body.trim().toUpperCase();
-        const senderNumber = body.From;
-        const twilioAuthToken = this.configService.get('TWILIOAUTHTOKEN');
-        const isValidated = twilio.validateRequest(twilioAuthToken, twilioSignature.trim(), `${this.configService.get('DOMAIN')}/api/v1/notifications/phone/verify`, body);
-        if (!isValidated) {
-            throw new common_2.UnauthorizedException(common_1.ERROR_MESSAGES.notificationController.messageNotFromTwilio);
-        }
-        const messageToUser = await this.notifService.verifyPhone(senderNumber, message);
-        const MessagingResponse = twilio.twiml.MessagingResponse;
-        const twiml = new MessagingResponse();
-        twiml.message(messageToUser);
-        return twiml.toString();
+const decorators_1 = __webpack_require__(98);
+let HealthcheckController = class HealthcheckController {
+    health() {
+        return 'healthy';
     }
 };
 __decorate([
-    common_2.Get('desktop/credentials'),
-    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
+    decorators_1.Get('/'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", String)
-], NotificationController.prototype, "getDesktopCredentials", null);
-__decorate([
-    common_2.Post('desktop/device'),
-    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
-    __param(0, common_2.Body()),
-    __param(1, user_decorator_1.UserId()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Number]),
-    __metadata("design:returntype", Promise)
-], NotificationController.prototype, "registerDesktopUser", null);
-__decorate([
-    common_2.Delete('desktop/device/:deviceId'),
-    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
-    __param(0, common_2.Param('deviceId')),
-    __param(1, user_decorator_1.UserId()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Number]),
-    __metadata("design:returntype", Promise)
-], NotificationController.prototype, "deleteDesktopUser", null);
-__decorate([
-    common_2.Post('/phone/verify'),
-    common_2.Header('Content-Type', 'text/xml'),
-    __param(0, common_2.Body()),
-    __param(1, common_2.Headers('x-twilio-signature')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
-    __metadata("design:returntype", Promise)
-], NotificationController.prototype, "verifyPhoneUser", null);
-NotificationController = __decorate([
-    common_2.Controller('notifications'),
-    __metadata("design:paramtypes", [notification_service_1.NotificationService,
-        config_1.ConfigService])
-], NotificationController);
-exports.NotificationController = NotificationController;
+], HealthcheckController.prototype, "health", null);
+HealthcheckController = __decorate([
+    common_1.Controller('healthcheck')
+], HealthcheckController);
+exports.HealthcheckController = HealthcheckController;
 
 
 /***/ }),
-/* 70 */
+/* 98 */
+/***/ (function(module, exports) {
+
+module.exports = require("@nestjs/common/decorators");
+
+/***/ }),
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3751,11 +5005,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoginModule = void 0;
 const common_1 = __webpack_require__(9);
-const login_controller_1 = __webpack_require__(71);
-const jwt_strategy_1 = __webpack_require__(77);
-const jwt_1 = __webpack_require__(72);
+const login_controller_1 = __webpack_require__(100);
+const jwt_strategy_1 = __webpack_require__(105);
+const jwt_1 = __webpack_require__(101);
 const config_1 = __webpack_require__(17);
-const login_course_service_1 = __webpack_require__(75);
+const login_course_service_1 = __webpack_require__(104);
 let LoginModule = class LoginModule {
 };
 LoginModule = __decorate([
@@ -3777,7 +5031,7 @@ exports.LoginModule = LoginModule;
 
 
 /***/ }),
-/* 71 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3799,12 +5053,12 @@ exports.LoginController = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
 const config_1 = __webpack_require__(17);
-const jwt_1 = __webpack_require__(72);
+const jwt_1 = __webpack_require__(101);
 const Sentry = __webpack_require__(12);
-const httpSignature = __webpack_require__(73);
-const typeorm_1 = __webpack_require__(25);
-const non_production_guard_1 = __webpack_require__(74);
-const login_course_service_1 = __webpack_require__(75);
+const httpSignature = __webpack_require__(102);
+const typeorm_1 = __webpack_require__(27);
+const non_production_guard_1 = __webpack_require__(103);
+const login_course_service_1 = __webpack_require__(104);
 let LoginController = class LoginController {
     constructor(connection, loginCourseService, jwtService, configService) {
         this.connection = connection;
@@ -3910,19 +5164,19 @@ exports.LoginController = LoginController;
 
 
 /***/ }),
-/* 72 */
+/* 101 */
 /***/ (function(module, exports) {
 
 module.exports = require("@nestjs/jwt");
 
 /***/ }),
-/* 73 */
+/* 102 */
 /***/ (function(module, exports) {
 
 module.exports = require("http-signature");
 
 /***/ }),
-/* 74 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3949,7 +5203,7 @@ exports.NonProductionGuard = NonProductionGuard;
 
 
 /***/ }),
-/* 75 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3967,10 +5221,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoginCourseService = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
-const course_section_mapping_entity_1 = __webpack_require__(76);
-const user_course_entity_1 = __webpack_require__(27);
-const user_entity_1 = __webpack_require__(28);
-const typeorm_1 = __webpack_require__(25);
+const course_section_mapping_entity_1 = __webpack_require__(62);
+const user_course_entity_1 = __webpack_require__(33);
+const user_entity_1 = __webpack_require__(26);
+const typeorm_1 = __webpack_require__(27);
 let LoginCourseService = class LoginCourseService {
     constructor(connection) {
         this.connection = connection;
@@ -4061,55 +5315,7 @@ exports.LoginCourseService = LoginCourseService;
 
 
 /***/ }),
-/* 76 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CourseSectionMappingModel = void 0;
-const typeorm_1 = __webpack_require__(25);
-const course_entity_1 = __webpack_require__(26);
-let CourseSectionMappingModel = class CourseSectionMappingModel extends typeorm_1.BaseEntity {
-};
-__decorate([
-    typeorm_1.PrimaryGeneratedColumn(),
-    __metadata("design:type", Number)
-], CourseSectionMappingModel.prototype, "id", void 0);
-__decorate([
-    typeorm_1.Column(),
-    __metadata("design:type", String)
-], CourseSectionMappingModel.prototype, "genericCourseName", void 0);
-__decorate([
-    typeorm_1.Column(),
-    __metadata("design:type", Number)
-], CourseSectionMappingModel.prototype, "section", void 0);
-__decorate([
-    typeorm_1.ManyToOne((type) => course_entity_1.CourseModel),
-    typeorm_1.JoinColumn({ name: 'courseId' }),
-    __metadata("design:type", course_entity_1.CourseModel)
-], CourseSectionMappingModel.prototype, "course", void 0);
-__decorate([
-    typeorm_1.Column({ nullable: true }),
-    __metadata("design:type", Number)
-], CourseSectionMappingModel.prototype, "courseId", void 0);
-CourseSectionMappingModel = __decorate([
-    typeorm_1.Entity('course_section_mapping_model')
-], CourseSectionMappingModel);
-exports.CourseSectionMappingModel = CourseSectionMappingModel;
-
-
-/***/ }),
-/* 77 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4125,8 +5331,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JwtStrategy = void 0;
-const passport_jwt_1 = __webpack_require__(78);
-const passport_1 = __webpack_require__(37);
+const passport_jwt_1 = __webpack_require__(106);
+const passport_1 = __webpack_require__(24);
 const common_1 = __webpack_require__(9);
 const config_1 = __webpack_require__(17);
 let JwtStrategy = class JwtStrategy extends passport_1.PassportStrategy(passport_jwt_1.Strategy) {
@@ -4149,13 +5355,13 @@ exports.JwtStrategy = JwtStrategy;
 
 
 /***/ }),
-/* 78 */
+/* 106 */
 /***/ (function(module, exports) {
 
 module.exports = require("passport-jwt");
 
 /***/ }),
-/* 79 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4169,8 +5375,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProfileModule = void 0;
 const common_1 = __webpack_require__(9);
-const profile_controller_1 = __webpack_require__(80);
-const notification_module_1 = __webpack_require__(63);
+const profile_controller_1 = __webpack_require__(108);
+const notification_module_1 = __webpack_require__(42);
 let ProfileModule = class ProfileModule {
 };
 ProfileModule = __decorate([
@@ -4183,7 +5389,7 @@ exports.ProfileModule = ProfileModule;
 
 
 /***/ }),
-/* 80 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4204,18 +5410,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProfileController = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
-const platform_express_1 = __webpack_require__(81);
-const checkDiskSpace = __webpack_require__(82);
-const fs = __webpack_require__(83);
-const lodash_1 = __webpack_require__(42);
-const multer_1 = __webpack_require__(84);
-const path = __webpack_require__(85);
-const sharp = __webpack_require__(86);
-const typeorm_1 = __webpack_require__(25);
-const jwt_auth_guard_1 = __webpack_require__(36);
-const notification_service_1 = __webpack_require__(65);
-const user_decorator_1 = __webpack_require__(39);
-const user_entity_1 = __webpack_require__(28);
+const platform_express_1 = __webpack_require__(109);
+const checkDiskSpace = __webpack_require__(110);
+const fs = __webpack_require__(111);
+const lodash_1 = __webpack_require__(22);
+const multer_1 = __webpack_require__(112);
+const path = __webpack_require__(113);
+const sharp = __webpack_require__(114);
+const typeorm_1 = __webpack_require__(27);
+const jwt_auth_guard_1 = __webpack_require__(23);
+const notification_service_1 = __webpack_require__(44);
+const user_decorator_1 = __webpack_require__(25);
+const user_entity_1 = __webpack_require__(26);
 let ProfileController = class ProfileController {
     constructor(connection, notifService) {
         this.connection = connection;
@@ -4372,43 +5578,43 @@ exports.ProfileController = ProfileController;
 
 
 /***/ }),
-/* 81 */
+/* 109 */
 /***/ (function(module, exports) {
 
 module.exports = require("@nestjs/platform-express");
 
 /***/ }),
-/* 82 */
+/* 110 */
 /***/ (function(module, exports) {
 
 module.exports = require("check-disk-space");
 
 /***/ }),
-/* 83 */
+/* 111 */
 /***/ (function(module, exports) {
 
 module.exports = require("fs");
 
 /***/ }),
-/* 84 */
+/* 112 */
 /***/ (function(module, exports) {
 
 module.exports = require("multer");
 
 /***/ }),
-/* 85 */
+/* 113 */
 /***/ (function(module, exports) {
 
 module.exports = require("path");
 
 /***/ }),
-/* 86 */
+/* 114 */
 /***/ (function(module, exports) {
 
 module.exports = require("sharp");
 
 /***/ }),
-/* 87 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4422,10 +5628,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.QuestionModule = void 0;
 const common_1 = __webpack_require__(9);
-const notification_module_1 = __webpack_require__(63);
-const question_controller_1 = __webpack_require__(88);
-const question_subscriber_1 = __webpack_require__(90);
-const queue_module_1 = __webpack_require__(56);
+const notification_module_1 = __webpack_require__(42);
+const question_controller_1 = __webpack_require__(116);
+const question_subscriber_1 = __webpack_require__(118);
+const queue_module_1 = __webpack_require__(89);
 let QuestionModule = class QuestionModule {
 };
 QuestionModule = __decorate([
@@ -4439,7 +5645,7 @@ exports.QuestionModule = QuestionModule;
 
 
 /***/ }),
-/* 88 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4460,16 +5666,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.QuestionController = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
-const typeorm_1 = __webpack_require__(25);
-const jwt_auth_guard_1 = __webpack_require__(36);
-const notification_service_1 = __webpack_require__(65);
-const roles_decorator_1 = __webpack_require__(38);
-const user_course_entity_1 = __webpack_require__(27);
-const user_decorator_1 = __webpack_require__(39);
-const user_entity_1 = __webpack_require__(28);
-const queue_entity_1 = __webpack_require__(31);
-const question_role_guard_1 = __webpack_require__(89);
-const question_entity_1 = __webpack_require__(33);
+const typeorm_1 = __webpack_require__(27);
+const jwt_auth_guard_1 = __webpack_require__(23);
+const notification_service_1 = __webpack_require__(44);
+const roles_decorator_1 = __webpack_require__(39);
+const user_course_entity_1 = __webpack_require__(33);
+const user_decorator_1 = __webpack_require__(25);
+const user_entity_1 = __webpack_require__(26);
+const queue_entity_1 = __webpack_require__(30);
+const question_role_guard_1 = __webpack_require__(117);
+const question_entity_1 = __webpack_require__(37);
 let QuestionController = class QuestionController {
     constructor(connection, notifService) {
         this.connection = connection;
@@ -4654,7 +5860,7 @@ exports.QuestionController = QuestionController;
 
 
 /***/ }),
-/* 89 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4669,10 +5875,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.QuestionRolesGuard = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
-const role_guard_1 = __webpack_require__(47);
-const user_entity_1 = __webpack_require__(28);
-const queue_entity_1 = __webpack_require__(31);
-const question_entity_1 = __webpack_require__(33);
+const role_guard_1 = __webpack_require__(81);
+const user_entity_1 = __webpack_require__(26);
+const queue_entity_1 = __webpack_require__(30);
+const question_entity_1 = __webpack_require__(37);
 let QuestionRolesGuard = class QuestionRolesGuard extends role_guard_1.RolesGuard {
     async setupData(request) {
         let queueId;
@@ -4707,7 +5913,7 @@ exports.QuestionRolesGuard = QuestionRolesGuard;
 
 
 /***/ }),
-/* 90 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4724,11 +5930,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.QuestionSubscriber = void 0;
 const common_1 = __webpack_require__(5);
-const typeorm_1 = __webpack_require__(25);
-const notification_service_1 = __webpack_require__(65);
-const queue_sse_service_1 = __webpack_require__(41);
-const queue_entity_1 = __webpack_require__(31);
-const question_entity_1 = __webpack_require__(33);
+const typeorm_1 = __webpack_require__(27);
+const notification_service_1 = __webpack_require__(44);
+const queue_sse_service_1 = __webpack_require__(77);
+const queue_entity_1 = __webpack_require__(30);
+const question_entity_1 = __webpack_require__(37);
 let QuestionSubscriber = class QuestionSubscriber {
     constructor(connection, notifService, queueSSEService) {
         this.notifService = notifService;
@@ -4783,7 +5989,7 @@ exports.QuestionSubscriber = QuestionSubscriber;
 
 
 /***/ }),
-/* 91 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4797,8 +6003,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SeedModule = void 0;
 const common_1 = __webpack_require__(9);
-const seed_controller_1 = __webpack_require__(92);
-const seed_service_1 = __webpack_require__(95);
+const seed_controller_1 = __webpack_require__(120);
+const seed_service_1 = __webpack_require__(123);
 let SeedModule = class SeedModule {
 };
 SeedModule = __decorate([
@@ -4811,7 +6017,7 @@ exports.SeedModule = SeedModule;
 
 
 /***/ }),
-/* 92 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4832,19 +6038,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SeedController = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
-const desktop_notif_entity_1 = __webpack_require__(29);
-const phone_notif_entity_1 = __webpack_require__(30);
-const event_model_entity_1 = __webpack_require__(24);
-const user_course_entity_1 = __webpack_require__(27);
-const user_entity_1 = __webpack_require__(28);
-const typeorm_1 = __webpack_require__(25);
-const factories_1 = __webpack_require__(93);
-const course_entity_1 = __webpack_require__(26);
-const office_hour_entity_1 = __webpack_require__(32);
-const non_production_guard_1 = __webpack_require__(74);
-const question_entity_1 = __webpack_require__(33);
-const queue_entity_1 = __webpack_require__(31);
-const seed_service_1 = __webpack_require__(95);
+const alerts_entity_1 = __webpack_require__(36);
+const desktop_notif_entity_1 = __webpack_require__(28);
+const phone_notif_entity_1 = __webpack_require__(29);
+const event_model_entity_1 = __webpack_require__(32);
+const user_course_entity_1 = __webpack_require__(33);
+const user_entity_1 = __webpack_require__(26);
+const typeorm_1 = __webpack_require__(27);
+const factories_1 = __webpack_require__(121);
+const course_entity_1 = __webpack_require__(31);
+const office_hour_entity_1 = __webpack_require__(34);
+const non_production_guard_1 = __webpack_require__(103);
+const question_entity_1 = __webpack_require__(37);
+const queue_entity_1 = __webpack_require__(30);
+const seed_service_1 = __webpack_require__(123);
 let SeedController = class SeedController {
     constructor(connection, seedService) {
         this.connection = connection;
@@ -4858,6 +6065,7 @@ let SeedController = class SeedController {
         await this.seedService.deleteAll(event_model_entity_1.EventModel);
         await this.seedService.deleteAll(desktop_notif_entity_1.DesktopNotifModel);
         await this.seedService.deleteAll(phone_notif_entity_1.PhoneNotifModel);
+        await this.seedService.deleteAll(alerts_entity_1.AlertModel);
         await this.seedService.deleteAll(user_entity_1.UserModel);
         await this.seedService.deleteAll(course_entity_1.CourseModel);
         const manager = typeorm_1.getManager();
@@ -5127,7 +6335,7 @@ exports.SeedController = SeedController;
 
 
 /***/ }),
-/* 93 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5135,15 +6343,15 @@ exports.SeedController = SeedController;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.QuestionFactory = exports.QueueFactory = exports.UserCourseFactory = exports.CourseSectionFactory = exports.CourseFactory = exports.OfficeHourFactory = exports.ClosedOfficeHourFactory = exports.SemesterFactory = exports.TACourseFactory = exports.StudentCourseFactory = exports.UserFactory = void 0;
 const common_1 = __webpack_require__(5);
-const typeorm_factory_1 = __webpack_require__(94);
-const course_entity_1 = __webpack_require__(26);
-const office_hour_entity_1 = __webpack_require__(32);
+const typeorm_factory_1 = __webpack_require__(122);
+const course_entity_1 = __webpack_require__(31);
+const office_hour_entity_1 = __webpack_require__(34);
 const semester_entity_1 = __webpack_require__(35);
-const course_section_mapping_entity_1 = __webpack_require__(76);
-const user_course_entity_1 = __webpack_require__(27);
-const user_entity_1 = __webpack_require__(28);
-const question_entity_1 = __webpack_require__(33);
-const queue_entity_1 = __webpack_require__(31);
+const course_section_mapping_entity_1 = __webpack_require__(62);
+const user_course_entity_1 = __webpack_require__(33);
+const user_entity_1 = __webpack_require__(26);
+const question_entity_1 = __webpack_require__(37);
+const queue_entity_1 = __webpack_require__(30);
 exports.UserFactory = new typeorm_factory_1.Factory(user_entity_1.UserModel)
     .attr('email', `user@neu.edu`)
     .attr('firstName', 'User')
@@ -5193,13 +6401,13 @@ exports.QuestionFactory = new typeorm_factory_1.Factory(question_entity_1.Questi
 
 
 /***/ }),
-/* 94 */
+/* 122 */
 /***/ (function(module, exports) {
 
 module.exports = require("typeorm-factory");
 
 /***/ }),
-/* 95 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5213,7 +6421,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SeedService = void 0;
 const common_1 = __webpack_require__(9);
-const typeorm_1 = __webpack_require__(25);
+const typeorm_1 = __webpack_require__(27);
 let SeedService = class SeedService {
     async deleteAll(model) {
         await typeorm_1.getConnection().createQueryBuilder().delete().from(model).execute();
@@ -5226,854 +6434,7 @@ exports.SeedService = SeedService;
 
 
 /***/ }),
-/* 96 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.AdminModule = void 0;
-const common_1 = __webpack_require__(9);
-const nestjs_admin_1 = __webpack_require__(97);
-const credentialValidator_1 = __webpack_require__(98);
-const typeorm_1 = __webpack_require__(18);
-const admin_user_entity_1 = __webpack_require__(100);
-const admin_entities_1 = __webpack_require__(101);
-const admin_command_1 = __webpack_require__(102);
-const session = __webpack_require__(104);
-const connectRedis = __webpack_require__(105);
-const redis_1 = __webpack_require__(106);
-const redisClient = redis_1.createClient();
-const RedisStore = connectRedis(session);
-if (process.env.NODE_ENV === 'test') {
-    redisClient.quit();
-}
-const CoreModule = nestjs_admin_1.AdminCoreModuleFactory.createAdminCoreModule({
-    appConfig: {
-        session: {
-            store: new RedisStore({ client: redisClient }),
-        },
-    },
-});
-const AuthModule = nestjs_admin_1.AdminAuthModuleFactory.createAdminAuthModule({
-    adminCoreModule: CoreModule,
-    credentialValidator: credentialValidator_1.adminCredentialValidator,
-    imports: [typeorm_1.TypeOrmModule.forFeature([admin_user_entity_1.AdminUserModel])],
-    providers: [],
-});
-let AdminModule = class AdminModule {
-    constructor(adminSite) {
-        this.adminSite = adminSite;
-        adminSite.register('Course', admin_entities_1.CourseAdmin);
-        adminSite.register('User', admin_entities_1.UserAdmin);
-        adminSite.register('UserCourse', admin_entities_1.UserCourseAdmin);
-        adminSite.register('Queue', admin_entities_1.QueueAdmin);
-        adminSite.register('CourseSectionMapping', admin_entities_1.CourseSectionMappingAdmin);
-        adminSite.register('Semester', admin_entities_1.SemesterAdmin);
-    }
-};
-AdminModule = __decorate([
-    common_1.Module({
-        imports: [CoreModule, AuthModule],
-        exports: [CoreModule, AuthModule],
-        providers: [admin_command_1.AdminCommand],
-    }),
-    __metadata("design:paramtypes", [nestjs_admin_1.DefaultAdminSite])
-], AdminModule);
-exports.AdminModule = AdminModule;
-
-
-/***/ }),
-/* 97 */
-/***/ (function(module, exports) {
-
-module.exports = require("nestjs-admin");
-
-/***/ }),
-/* 98 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.adminCredentialValidator = void 0;
-const bcrypt_1 = __webpack_require__(99);
-const admin_user_entity_1 = __webpack_require__(100);
-exports.adminCredentialValidator = {
-    inject: [],
-    useFactory: () => {
-        return async function validateCredentials(username, password) {
-            const user = await admin_user_entity_1.AdminUserModel.findOne({ username });
-            if (user) {
-                if (await bcrypt_1.compare(password, user.passwordHash)) {
-                    return user;
-                }
-            }
-            return null;
-        };
-    },
-};
-
-
-/***/ }),
-/* 99 */
-/***/ (function(module, exports) {
-
-module.exports = require("bcrypt");
-
-/***/ }),
-/* 100 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.AdminUserModel = void 0;
-const typeorm_1 = __webpack_require__(25);
-const bcrypt_1 = __webpack_require__(99);
-let AdminUserModel = class AdminUserModel extends typeorm_1.BaseEntity {
-    setPassword(password) {
-        this.passwordHash = bcrypt_1.hashSync(password, 5);
-    }
-};
-__decorate([
-    typeorm_1.PrimaryGeneratedColumn(),
-    __metadata("design:type", Number)
-], AdminUserModel.prototype, "id", void 0);
-__decorate([
-    typeorm_1.Column({ length: 128, unique: true, nullable: false }),
-    __metadata("design:type", String)
-], AdminUserModel.prototype, "username", void 0);
-__decorate([
-    typeorm_1.Column({ length: 128, nullable: false }),
-    __metadata("design:type", String)
-], AdminUserModel.prototype, "passwordHash", void 0);
-AdminUserModel = __decorate([
-    typeorm_1.Entity('admin_user_model')
-], AdminUserModel);
-exports.AdminUserModel = AdminUserModel;
-
-
-/***/ }),
-/* 101 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.SemesterAdmin = exports.CourseSectionMappingAdmin = exports.UserCourseAdmin = exports.UserAdmin = exports.QueueAdmin = exports.CourseAdmin = void 0;
-const nestjs_admin_1 = __webpack_require__(97);
-const course_entity_1 = __webpack_require__(26);
-const queue_entity_1 = __webpack_require__(31);
-const user_entity_1 = __webpack_require__(28);
-const course_section_mapping_entity_1 = __webpack_require__(76);
-const user_course_entity_1 = __webpack_require__(27);
-const semester_entity_1 = __webpack_require__(35);
-class CourseAdmin extends nestjs_admin_1.AdminEntity {
-    constructor() {
-        super(...arguments);
-        this.entity = course_entity_1.CourseModel;
-        this.listDisplay = ['id', 'name'];
-        this.fields = ['id', 'name', 'icalURL', 'semesterId', 'enabled', 'timezone'];
-    }
-}
-exports.CourseAdmin = CourseAdmin;
-class QueueAdmin extends nestjs_admin_1.AdminEntity {
-    constructor() {
-        super(...arguments);
-        this.entity = queue_entity_1.QueueModel;
-        this.listDisplay = ['id', 'room', 'courseId'];
-    }
-}
-exports.QueueAdmin = QueueAdmin;
-class UserAdmin extends nestjs_admin_1.AdminEntity {
-    constructor() {
-        super(...arguments);
-        this.entity = user_entity_1.UserModel;
-        this.listDisplay = ['id', 'email', 'name'];
-        this.searchFields = ['email', 'name'];
-        this.fields = [
-            'id',
-            'email',
-            'name',
-            'desktopNotifsEnabled',
-            'phoneNotifsEnabled',
-            'queues',
-        ];
-    }
-}
-exports.UserAdmin = UserAdmin;
-class UserCourseAdmin extends nestjs_admin_1.AdminEntity {
-    constructor() {
-        super(...arguments);
-        this.entity = user_course_entity_1.UserCourseModel;
-        this.listDisplay = ['id', 'userId', 'courseId'];
-    }
-}
-exports.UserCourseAdmin = UserCourseAdmin;
-class CourseSectionMappingAdmin extends nestjs_admin_1.AdminEntity {
-    constructor() {
-        super(...arguments);
-        this.entity = course_section_mapping_entity_1.CourseSectionMappingModel;
-        this.listDisplay = ['id', 'genericCourseName', 'section', 'courseId'];
-    }
-}
-exports.CourseSectionMappingAdmin = CourseSectionMappingAdmin;
-class SemesterAdmin extends nestjs_admin_1.AdminEntity {
-    constructor() {
-        super(...arguments);
-        this.entity = semester_entity_1.SemesterModel;
-        this.listDisplay = ['id', 'season', 'year'];
-    }
-}
-exports.SemesterAdmin = SemesterAdmin;
-
-
-/***/ }),
-/* 102 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.AdminCommand = void 0;
-const nestjs_command_1 = __webpack_require__(49);
-const common_1 = __webpack_require__(9);
-const admin_user_entity_1 = __webpack_require__(100);
-const readline_sync_1 = __webpack_require__(103);
-let AdminCommand = class AdminCommand {
-    async create(username) {
-        let user = await admin_user_entity_1.AdminUserModel.findOne({ username });
-        if (user) {
-            const changePassword = readline_sync_1.keyInYN(`User ${username} already exists. Do you want to change their password?`);
-            if (!changePassword) {
-                return;
-            }
-        }
-        else {
-            user = admin_user_entity_1.AdminUserModel.create({ username });
-        }
-        const password = readline_sync_1.question('Password: ', {
-            hideEchoBack: true,
-        });
-        user.setPassword(password);
-        await user.save();
-        console.log(`Created user: ${user.username}`);
-    }
-};
-__decorate([
-    nestjs_command_1.Command({
-        command: 'create:admin <username>',
-        describe: 'create an admin user',
-        autoExit: true,
-    }),
-    __param(0, nestjs_command_1.Positional({
-        name: 'username',
-        describe: 'the admin username',
-        type: 'string',
-    })),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], AdminCommand.prototype, "create", null);
-AdminCommand = __decorate([
-    common_1.Injectable()
-], AdminCommand);
-exports.AdminCommand = AdminCommand;
-
-
-/***/ }),
-/* 103 */
-/***/ (function(module, exports) {
-
-module.exports = require("readline-sync");
-
-/***/ }),
-/* 104 */
-/***/ (function(module, exports) {
-
-module.exports = require("express-session");
-
-/***/ }),
-/* 105 */
-/***/ (function(module, exports) {
-
-module.exports = require("connect-redis");
-
-/***/ }),
-/* 106 */
-/***/ (function(module, exports) {
-
-module.exports = require("redis");
-
-/***/ }),
-/* 107 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const dotenv_1 = __webpack_require__(108);
-const admin_user_entity_1 = __webpack_require__(100);
-const course_entity_1 = __webpack_require__(26);
-const office_hour_entity_1 = __webpack_require__(32);
-const semester_entity_1 = __webpack_require__(35);
-const course_section_mapping_entity_1 = __webpack_require__(76);
-const desktop_notif_entity_1 = __webpack_require__(29);
-const phone_notif_entity_1 = __webpack_require__(30);
-const event_model_entity_1 = __webpack_require__(24);
-const user_course_entity_1 = __webpack_require__(27);
-const user_entity_1 = __webpack_require__(28);
-const question_entity_1 = __webpack_require__(33);
-const queue_entity_1 = __webpack_require__(31);
-dotenv_1.config();
-const inCLI = {
-    migrations: ['migration/*.ts'],
-    cli: {
-        migrationsDir: 'migration',
-    },
-};
-const typeorm = Object.assign({ type: 'postgres', url: process.env.DB_URL || 'postgres://postgres@localhost:5432/dev', synchronize: process.env.NODE_ENV !== 'production', entities: [
-        course_entity_1.CourseModel,
-        course_section_mapping_entity_1.CourseSectionMappingModel,
-        office_hour_entity_1.OfficeHourModel,
-        semester_entity_1.SemesterModel,
-        user_entity_1.UserModel,
-        user_course_entity_1.UserCourseModel,
-        question_entity_1.QuestionModel,
-        queue_entity_1.QueueModel,
-        desktop_notif_entity_1.DesktopNotifModel,
-        phone_notif_entity_1.PhoneNotifModel,
-        admin_user_entity_1.AdminUserModel,
-        event_model_entity_1.EventModel,
-    ], keepConnectionAlive: true, logging: !!process.env.TYPEORM_LOGGING }, (!!process.env.TYPEORM_CLI ? inCLI : {}));
-module.exports = typeorm;
-
-
-/***/ }),
-/* 108 */
-/***/ (function(module, exports) {
-
-module.exports = require("dotenv");
-
-/***/ }),
-/* 109 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BackfillModule = void 0;
-const common_1 = __webpack_require__(9);
-const notification_module_1 = __webpack_require__(63);
-const backfill_course_timezones_1 = __webpack_require__(110);
-const backfill_husky_emails_to_northeastern_1 = __webpack_require__(111);
-const backfill_phone_notifs_command_1 = __webpack_require__(112);
-const make_empty_photourl_null_command_1 = __webpack_require__(113);
-const question_first_helped_at_command_1 = __webpack_require__(114);
-let BackfillModule = class BackfillModule {
-};
-BackfillModule = __decorate([
-    common_1.Module({
-        imports: [notification_module_1.NotificationModule],
-        providers: [
-            backfill_phone_notifs_command_1.BackfillPhoneNotifs,
-            question_first_helped_at_command_1.BackfillQuestionFirstHelpedAt,
-            make_empty_photourl_null_command_1.BackfillMakeEmptyPhotoURLNull,
-            backfill_course_timezones_1.BackfillCourseTimezones,
-            backfill_husky_emails_to_northeastern_1.BackfillHuskyEmailsAsNortheastern,
-        ],
-    })
-], BackfillModule);
-exports.BackfillModule = BackfillModule;
-
-
-/***/ }),
-/* 110 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BackfillCourseTimezones = void 0;
-const nestjs_command_1 = __webpack_require__(49);
-const common_1 = __webpack_require__(9);
-const course_entity_1 = __webpack_require__(26);
-let BackfillCourseTimezones = class BackfillCourseTimezones {
-    async copy() {
-        await course_entity_1.CourseModel.createQueryBuilder()
-            .update()
-            .set({ timezone: () => `'America/New_York'` })
-            .callListeners(false)
-            .execute();
-        console.log(`Updated ${await course_entity_1.CourseModel.count()} courses`);
-    }
-};
-__decorate([
-    nestjs_command_1.Command({
-        command: 'backfill:course-timezones',
-        describe: 'set all course timezones from null to "America/New_York"',
-        autoExit: true,
-    }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], BackfillCourseTimezones.prototype, "copy", null);
-BackfillCourseTimezones = __decorate([
-    common_1.Injectable()
-], BackfillCourseTimezones);
-exports.BackfillCourseTimezones = BackfillCourseTimezones;
-
-
-/***/ }),
-/* 111 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BackfillHuskyEmailsAsNortheastern = void 0;
-const common_1 = __webpack_require__(9);
-const nestjs_command_1 = __webpack_require__(49);
-const user_entity_1 = __webpack_require__(28);
-let BackfillHuskyEmailsAsNortheastern = class BackfillHuskyEmailsAsNortheastern {
-    async fix() {
-        const users = await user_entity_1.UserModel.find();
-        const usersToBeUpdated = users.filter((user) => user.email.includes('@husky.neu.edu'));
-        users.forEach((user) => {
-            user.email = user.email.replace('@husky.neu.edu', '@northeastern.edu');
-        });
-        await user_entity_1.UserModel.save(users);
-        console.log(`Updated the emails of ${usersToBeUpdated.length} users`);
-    }
-};
-__decorate([
-    nestjs_command_1.Command({
-        command: 'backfill:husky-emails-to-northeastern',
-        describe: 'Converts @husky.neu.edu emails to @northeastern.edu emails',
-        autoExit: true,
-    }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], BackfillHuskyEmailsAsNortheastern.prototype, "fix", null);
-BackfillHuskyEmailsAsNortheastern = __decorate([
-    common_1.Injectable()
-], BackfillHuskyEmailsAsNortheastern);
-exports.BackfillHuskyEmailsAsNortheastern = BackfillHuskyEmailsAsNortheastern;
-
-
-/***/ }),
-/* 112 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BackfillPhoneNotifs = void 0;
-const common_1 = __webpack_require__(9);
-const nestjs_command_1 = __webpack_require__(49);
-const phone_notif_entity_1 = __webpack_require__(30);
-const twilio_service_1 = __webpack_require__(67);
-const user_entity_1 = __webpack_require__(28);
-const typeorm_1 = __webpack_require__(25);
-let BackfillPhoneNotifs = class BackfillPhoneNotifs {
-    constructor(twilioService) {
-        this.twilioService = twilioService;
-    }
-    async fix() {
-        const noUser = await phone_notif_entity_1.PhoneNotifModel.delete({ userId: typeorm_1.IsNull() });
-        console.log(`deleted ${noUser.affected} desktopnotifmodels with no userid`);
-        const toDelete = [];
-        const dups = await phone_notif_entity_1.PhoneNotifModel.createQueryBuilder('pnotif')
-            .select([`"phoneNumber"`, 'COUNT(*)'])
-            .groupBy('pnotif.phoneNumber')
-            .having('COUNT(*) > 1')
-            .getRawMany();
-        console.log(`found ${dups.length} dups`);
-        toDelete.push(...dups);
-        const valid = [];
-        let changedNum = 0;
-        const all = await phone_notif_entity_1.PhoneNotifModel.find({ relations: ['user'] });
-        for (const p of all) {
-            const number = await this.twilioService.getFullPhoneNumber(p.phoneNumber);
-            if (number) {
-                if (number !== p.phoneNumber) {
-                    changedNum += 1;
-                }
-                p.phoneNumber = number;
-                p.verified = true;
-                valid.push(p);
-            }
-            else {
-                toDelete.push(p);
-            }
-        }
-        console.log(`Twilio changed ${changedNum} phone numbers to full num`);
-        await phone_notif_entity_1.PhoneNotifModel.save(valid);
-        console.log('deleting phone notifs: ', toDelete.map((d) => d.phoneNumber));
-        if (toDelete.length) {
-            await phone_notif_entity_1.PhoneNotifModel.delete(toDelete.map((d) => d.id));
-        }
-        const usersToDisable = (await user_entity_1.UserModel.find({
-            where: { phoneNotifsEnabled: true },
-            relations: ['phoneNotif'],
-        })).filter((u) => !u.phoneNotif);
-        usersToDisable.forEach((u) => (u.phoneNotifsEnabled = false));
-        await user_entity_1.UserModel.save(usersToDisable);
-        console.log(`disabled phonenotifs for ${usersToDisable.length} users`);
-    }
-};
-__decorate([
-    nestjs_command_1.Command({
-        command: 'backfill:phone-notifs',
-        describe: 'delete phone notifs with no userids, delete duplicate phone notifs, and forcibly set verified on existing phonenotifs',
-        autoExit: true,
-    }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], BackfillPhoneNotifs.prototype, "fix", null);
-BackfillPhoneNotifs = __decorate([
-    common_1.Injectable(),
-    __metadata("design:paramtypes", [twilio_service_1.TwilioService])
-], BackfillPhoneNotifs);
-exports.BackfillPhoneNotifs = BackfillPhoneNotifs;
-
-
-/***/ }),
-/* 113 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BackfillMakeEmptyPhotoURLNull = void 0;
-const common_1 = __webpack_require__(9);
-const nestjs_command_1 = __webpack_require__(49);
-const user_entity_1 = __webpack_require__(28);
-let BackfillMakeEmptyPhotoURLNull = class BackfillMakeEmptyPhotoURLNull {
-    async fix() {
-        let countOfChanged = 0;
-        const users = await user_entity_1.UserModel.find();
-        users.forEach((user) => {
-            if (user.photoURL === '') {
-                user.photoURL = null;
-                countOfChanged += 1;
-            }
-        });
-        await user_entity_1.UserModel.save(users);
-        console.log(`Updated names for ${countOfChanged} users`);
-    }
-};
-__decorate([
-    nestjs_command_1.Command({
-        command: 'backfill:make-empty-photoURL-null',
-        describe: 'changes empty string photoURLs to null',
-        autoExit: true,
-    }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], BackfillMakeEmptyPhotoURLNull.prototype, "fix", null);
-BackfillMakeEmptyPhotoURLNull = __decorate([
-    common_1.Injectable()
-], BackfillMakeEmptyPhotoURLNull);
-exports.BackfillMakeEmptyPhotoURLNull = BackfillMakeEmptyPhotoURLNull;
-
-
-/***/ }),
-/* 114 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BackfillQuestionFirstHelpedAt = void 0;
-const nestjs_command_1 = __webpack_require__(49);
-const common_1 = __webpack_require__(9);
-const question_entity_1 = __webpack_require__(33);
-const typeorm_1 = __webpack_require__(25);
-let BackfillQuestionFirstHelpedAt = class BackfillQuestionFirstHelpedAt {
-    async copy() {
-        await question_entity_1.QuestionModel.createQueryBuilder()
-            .update()
-            .set({ firstHelpedAt: () => '"helpedAt"' })
-            .where({ firstHelpedAt: typeorm_1.IsNull() })
-            .callListeners(false)
-            .execute();
-        console.log(`Updated ${await question_entity_1.QuestionModel.createQueryBuilder()
-            .select()
-            .where({ firstHelpedAt: typeorm_1.IsNull() })
-            .getCount()} records`);
-    }
-};
-__decorate([
-    nestjs_command_1.Command({
-        command: 'backfill:question-first-helped-at',
-        describe: 'copy all existing helpedAt to firstHelpedAt',
-        autoExit: true,
-    }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], BackfillQuestionFirstHelpedAt.prototype, "copy", null);
-BackfillQuestionFirstHelpedAt = __decorate([
-    common_1.Injectable()
-], BackfillQuestionFirstHelpedAt);
-exports.BackfillQuestionFirstHelpedAt = BackfillQuestionFirstHelpedAt;
-
-
-/***/ }),
-/* 115 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ReleaseNotesModule = void 0;
-const common_1 = __webpack_require__(9);
-const release_notes_controller_1 = __webpack_require__(116);
-let ReleaseNotesModule = class ReleaseNotesModule {
-};
-ReleaseNotesModule = __decorate([
-    common_1.Module({
-        controllers: [release_notes_controller_1.ReleaseNotesController],
-        providers: [],
-        imports: [
-            common_1.HttpModule.registerAsync({
-                useFactory: () => ({
-                    timeout: 5000,
-                    maxRedirects: 5,
-                }),
-            }),
-        ],
-    })
-], ReleaseNotesModule);
-exports.ReleaseNotesModule = ReleaseNotesModule;
-
-
-/***/ }),
-/* 116 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ReleaseNotesController = void 0;
-const common_1 = __webpack_require__(5);
-const common_2 = __webpack_require__(9);
-const jwt_auth_guard_1 = __webpack_require__(36);
-const typeorm_1 = __webpack_require__(25);
-let ReleaseNotesController = class ReleaseNotesController {
-    constructor(connection, httpService) {
-        this.connection = connection;
-        this.httpService = httpService;
-    }
-    async getReleaseNotes() {
-        var _a, _b, _c;
-        const response = {
-            lastUpdatedUnixTime: null,
-            releaseNotes: null,
-        };
-        const request = await this.httpService
-            .get('https://notion-api.splitbee.io/v1/page/abba246bfa0847baa2706ab30d0c6c7d')
-            .toPromise();
-        const data = request.data;
-        try {
-            const timeText = (_c = (_b = (_a = data[process.env.RELEASE_NOTE_TIMESTAMP_ID]) === null || _a === void 0 ? void 0 : _a.value) === null || _b === void 0 ? void 0 : _b.properties) === null || _c === void 0 ? void 0 : _c.title[0][0];
-            response.lastUpdatedUnixTime = timeText.split('Unix ')[1] * 1000;
-        }
-        catch (e) {
-            throw new common_2.InternalServerErrorException(common_1.ERROR_MESSAGES.releaseNotesController.releaseNotesTime(e));
-        }
-        data[process.env.RELEASE_NOTE_TIMESTAMP_ID].value.properties.title = [];
-        data[process.env.WANT_TO_SEE_MORE_ID].value.properties.title = [];
-        response.releaseNotes = data;
-        return response;
-    }
-};
-__decorate([
-    common_2.Get(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ReleaseNotesController.prototype, "getReleaseNotes", null);
-ReleaseNotesController = __decorate([
-    common_2.Controller('release_notes'),
-    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
-    __metadata("design:paramtypes", [typeorm_1.Connection,
-        common_2.HttpService])
-], ReleaseNotesController);
-exports.ReleaseNotesController = ReleaseNotesController;
-
-
-/***/ }),
-/* 117 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.HealthcheckModule = void 0;
-const common_1 = __webpack_require__(9);
-const healthcheck_controller_1 = __webpack_require__(118);
-let HealthcheckModule = class HealthcheckModule {
-};
-HealthcheckModule = __decorate([
-    common_1.Module({
-        controllers: [healthcheck_controller_1.HealthcheckController],
-    })
-], HealthcheckModule);
-exports.HealthcheckModule = HealthcheckModule;
-
-
-/***/ }),
-/* 118 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.HealthcheckController = void 0;
-const common_1 = __webpack_require__(9);
-const decorators_1 = __webpack_require__(119);
-let HealthcheckController = class HealthcheckController {
-    health() {
-        return 'healthy';
-    }
-};
-__decorate([
-    decorators_1.Get('/'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", String)
-], HealthcheckController.prototype, "health", null);
-HealthcheckController = __decorate([
-    common_1.Controller('healthcheck')
-], HealthcheckController);
-exports.HealthcheckController = HealthcheckController;
-
-
-/***/ }),
-/* 119 */
-/***/ (function(module, exports) {
-
-module.exports = require("@nestjs/common/decorators");
-
-/***/ }),
-/* 120 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

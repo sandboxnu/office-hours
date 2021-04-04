@@ -207,6 +207,9 @@ export declare class ListQuestionsResponse {
 }
 export declare class GetQuestionResponse extends Question {
 }
+export declare class GetStudentQuestionResponse extends Question {
+    queueId: number;
+}
 export declare class CreateQuestionParams {
     text: string;
     questionType?: QuestionType;
@@ -239,6 +242,33 @@ export declare class TACheckoutResponse {
 export declare class UpdateQueueParams {
     notes?: string;
     allowQuestions?: boolean;
+}
+export declare enum AlertType {
+    REPHRASE_QUESTION = "rephraseQuestion"
+}
+export declare class AlertPayload {
+}
+export declare class Alert {
+    alertType: AlertType;
+    sent: Date;
+    payload: AlertPayload;
+    id: number;
+}
+export declare class RephraseQuestionPayload extends AlertPayload {
+    questionId: number;
+    queueId: number;
+    courseId: number;
+}
+export declare class CreateAlertParams {
+    alertType: AlertType;
+    courseId: number;
+    payload: AlertPayload;
+    targetUserId: number;
+}
+export declare class CreateAlertResponse extends Alert {
+}
+export declare class GetAlertsResponse {
+    alerts: Alert[];
 }
 export declare class SSEQueueResponse {
     queue?: GetQueueResponse;
@@ -321,6 +351,10 @@ export declare const ERROR_MESSAGES: {
     };
     profileController: {
         noDiskSpace: string;
+    };
+    alertController: {
+        duplicateAlert: string;
+        notActiveAlert: string;
     };
 };
 export {};

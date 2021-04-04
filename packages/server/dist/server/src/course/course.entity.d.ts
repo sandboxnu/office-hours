@@ -5,6 +5,7 @@ import { UserCourseModel } from '../profile/user-course.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { OfficeHourModel } from './office-hour.entity';
 import { SemesterModel } from './semester.entity';
+import { AlertModel } from '../alerts/alerts.entity';
 export declare class CourseModel extends BaseEntity {
     id: number;
     officeHours: OfficeHourModel[];
@@ -18,4 +19,5 @@ export declare class CourseModel extends BaseEntity {
     heatmap: Heatmap | false;
     timezone: string;
     events: EventModel[];
+    alerts: AlertModel[];
 }

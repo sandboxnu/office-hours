@@ -4,6 +4,7 @@ import { PhoneNotifModel } from '../notification/phone-notif.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { EventModel } from './event-model.entity';
 import { UserCourseModel } from './user-course.entity';
+import { AlertModel } from '../alerts/alerts.entity';
 export declare class UserModel extends BaseEntity {
     id: number;
     email: string;
@@ -17,6 +18,7 @@ export declare class UserModel extends BaseEntity {
     phoneNotif: PhoneNotifModel;
     queues: QueueModel[];
     events: EventModel[];
+    alerts: AlertModel[];
     name: string;
     setFullNames(): void;
 }
