@@ -25,6 +25,7 @@ import { INSIGHTS_MAP } from './insight-objects';
 import { UserModel } from 'profile/user.entity';
 import { Roles } from 'profile/roles.decorator';
 import { CourseRole } from './course-role.decorator';
+import { Filter } from './insight-objects';
 
 @Controller('insights')
 @UseGuards(JwtAuthGuard)
@@ -58,7 +59,7 @@ export class InsightsController {
     }
 
     // Initialize filters with a courseId filter since all insights are filtered by courseId
-    const filters = [
+    const filters: Filter[] = [
       {
         type: 'courseId',
         courseId,
