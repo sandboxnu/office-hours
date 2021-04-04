@@ -14,6 +14,7 @@ import { PhoneNotifModel } from '../notification/phone-notif.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { EventModel } from './event-model.entity';
 import { UserCourseModel } from './user-course.entity';
+import { AlertModel } from '../alerts/alerts.entity';
 
 @Entity('user_model')
 export class UserModel extends BaseEntity {
@@ -59,6 +60,10 @@ export class UserModel extends BaseEntity {
   @Exclude()
   @OneToMany((type) => EventModel, (event) => event.user)
   events: EventModel[];
+
+  @Exclude()
+  @OneToMany((type) => AlertModel, (alert) => alert.user)
+  alerts: AlertModel[];
 
   name: string;
 
