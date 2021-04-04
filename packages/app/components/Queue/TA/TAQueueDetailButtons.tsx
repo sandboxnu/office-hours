@@ -161,7 +161,7 @@ export default function TAQueueDetailButtons({
             </span>
           </Tooltip>
         </Popconfirm>
-        <Tooltip title="Ask the student to rework their question">
+        <Tooltip title="Ask the student to add more detail to their question">
           <BannerOrangeButton
             shape="circle"
             icon={<QuestionOutlined />}
