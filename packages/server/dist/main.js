@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"0c52a7a8875bdda9f8bf26236d0a8ef93b0edb71"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"e701d4bbff4aa8a830472c2b1023368b6480ce48"};
 
 /***/ }),
 /* 2 */
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "0c52a7a8875bdda9f8bf26236d0a8ef93b0edb71",
+        release: "e701d4bbff4aa8a830472c2b1023368b6480ce48",
         environment: common_1.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -1173,7 +1173,7 @@ exports.TotalQuestionsAsked = {
     size: 'small',
     async compute(filters) {
         return await addFilters({
-            query: typeorm_1.createQueryBuilder(question_entity_1.QuestionModel).where('TRUE'),
+            query: typeorm_1.createQueryBuilder(question_entity_1.QuestionModel).select(),
             modelName: question_entity_1.QuestionModel.name,
             allowedFilters: ['courseId', 'timeframe'],
             filters,
@@ -1281,6 +1281,9 @@ exports.MedianWaitTime = {
             allowedFilters: ['courseId', 'timeframe'],
             filters,
         }).getMany();
+        if (questions.length === 0) {
+            return `0 min`;
+        }
         const waitTimes = questions.map((question) => Math.floor((question.firstHelpedAt.getTime() - question.createdAt.getTime()) /
             1000) / 60);
         return `${Math.floor(Math.round(median(waitTimes)))} min`;
@@ -1301,6 +1304,9 @@ exports.MedianHelpingTime = {
             allowedFilters: ['courseId', 'timeframe'],
             filters,
         }).getMany();
+        if (questions.length === 0) {
+            return `0 min`;
+        }
         const helpTimes = questions.map((question) => Math.floor((question.closedAt.getTime() - question.helpedAt.getTime()) / 1000) / 60);
         return `${Math.round(median(helpTimes))} min`;
     },
