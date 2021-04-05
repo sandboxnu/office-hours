@@ -11,6 +11,7 @@ import {
   GetReleaseNotesResponse,
   HelpQuestionsParams,
   ListQuestionsResponse,
+  ResolveGroupParams,
   TACheckoutResponse,
   TAUpdateStatusResponse,
   UpdateCourseOverrideBody,
@@ -127,6 +128,8 @@ class APIClient {
       this.req("POST", `/api/v1/questions/${questionId}/notify`),
     help: async (params: HelpQuestionsParams): Promise<void> =>
       this.req("POST", "/api/v1/questions/help", undefined, params),
+    resolveGroup: async (params: ResolveGroupParams): Promise<void> =>
+      this.req("PATCH", "/api/v1/questions/resolveGroup", undefined, params),
   };
   queues = {
     get: async (queueId: number): Promise<GetQueueResponse> =>

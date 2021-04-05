@@ -46,19 +46,6 @@ export class QuestionService {
       }
     }
 
-    const isAlreadyHelpingOne =
-      (await QuestionModel.count({
-        where: {
-          taHelpedId: userId,
-          status: OpenQuestionStatus.Helping,
-        },
-      })) === 1;
-    if (isAlreadyHelpingOne && newStatus === OpenQuestionStatus.Helping) {
-      throw new BadRequestException(
-        ERROR_MESSAGES.questionController.updateQuestion.taHelpingOther,
-      );
-    }
-
     const validTransition = question.changeStatus(newStatus, Role.TA);
     if (!validTransition) {
       throw new UnauthorizedException(
@@ -92,5 +79,20 @@ export class QuestionService {
     }
     await question.save();
     return question;
+  }
+
+  async validateNotHelpingOther(newStatus: QuestionStatus, userId: number) {
+    const isAlreadyHelpingOne =
+      (await QuestionModel.count({
+        where: {
+          taHelpedId: userId,
+          status: OpenQuestionStatus.Helping,
+        },
+      })) === 1;
+    if (isAlreadyHelpingOne && newStatus === OpenQuestionStatus.Helping) {
+      throw new BadRequestException(
+        ERROR_MESSAGES.questionController.updateQuestion.taHelpingOther,
+      );
+    }
   }
 }

@@ -106,22 +106,4 @@ export class QueueController {
 
     this.queueSSEService.subscribeClient(queueId, res, { role, userId });
   }
-
-  // @Post(':queueId/group')
-  // @Roles(Role.TA, Role.PROFESSOR)
-  // async createGroup(
-  //   @Param('queueId') queueId: number,
-  //   @Body() body: Array<Question>,
-  //   @User() user: UserModel,
-  // ): Promise<void> {
-  //   body.forEach((question) => {});
-
-  //   const group = await QuestionGroupModel.create({
-  //     queueId,
-  //     creatorId: user.id,
-  //     questions: body,
-  //   }).save();
-
-  //   return group;
-  // }
 }

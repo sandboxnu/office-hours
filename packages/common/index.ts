@@ -545,6 +545,11 @@ export class HelpQuestionsParams {
   queueId!: number;
 }
 
+export class ResolveGroupParams {
+  @IsInt()
+  groupId!: number;
+}
+
 export type TAUpdateStatusResponse = QueuePartial;
 export type QueueNotePayloadType = {
   notes: string;

@@ -8,6 +8,7 @@ import {
   LimboQuestionStatus,
   OpenQuestionStatus,
   QuestionStatusKeys,
+  ResolveGroupParams,
   Role,
   UpdateQuestionParams,
   UpdateQuestionResponse,
@@ -178,6 +179,7 @@ export class QuestionController {
           ERROR_MESSAGES.questionController.updateQuestion.taOnlyEditQuestionStatus,
         );
       }
+      await this.questionService.validateNotHelpingOther(body.status, userId);
       return await this.questionService.helpQuestion(
         body.status,
         question,
@@ -216,17 +218,17 @@ export class QuestionController {
     @Body() body: HelpQuestionsParams,
     @UserId() instructorId: number,
   ): Promise<void> {
-    console.log(
-      `IN HELP ENDPOINT body: ${JSON.stringify(body)}, questionIds: ${
-        body.questionIds
-      }`,
-    );
     const questions = await QuestionModel.find({
       where: {
         id: In(body.questionIds),
       },
       relations: ['taHelped', 'creator'],
     });
+
+    await this.questionService.validateNotHelpingOther(
+      QuestionStatusKeys.Helping,
+      instructorId,
+    );
 
     for (const question of questions) {
       await this.questionService.helpQuestion(
@@ -256,6 +258,30 @@ export class QuestionController {
     }).save();
 
     // TODO: return newGroup???
+    return;
+  }
+
+  @Post('resolveGroup')
+  @Roles(Role.TA, Role.PROFESSOR)
+  async resolveGroup(
+    @Body() body: ResolveGroupParams,
+    @UserId() instructorId: number,
+  ): Promise<void> {
+    const group = await QuestionGroupModel.findOne({
+      where: {
+        id: body.groupId,
+      },
+    });
+
+    for (const question of group.questions) {
+      await this.questionService.helpQuestion(
+        QuestionStatusKeys.Resolved,
+        question,
+        instructorId,
+      );
+    }
+
+    // TODO: return type??
     return;
   }
 }
