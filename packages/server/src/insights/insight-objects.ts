@@ -92,14 +92,12 @@ export const TotalQuestionsAsked: InsightObject = {
   component: InsightComponent.SimpleDisplay,
   size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
-    const questions = await addFilters({
-      query: createQueryBuilder(QuestionModel).select('*'),
+    return await addFilters({
+      query: createQueryBuilder(QuestionModel).select(),
       modelName: QuestionModel.name,
       allowedFilters: ['courseId', 'timeframe'],
       filters,
-    }).getMany();
-
-    return questions.length;
+    }).getCount();
   },
 };
 
