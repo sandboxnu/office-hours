@@ -77,7 +77,7 @@ export default function ProfileDrawer({
               </Menu.Item>
               <Menu.Item key="4" icon={<LogoutOutlined />}>
                 <Link href={"/api/v1/logout"}>
-                  <a>Logout</a>
+                  <a data-cy="logout-button">Logout</a>
                 </Link>
               </Menu.Item>
             </Menu>
