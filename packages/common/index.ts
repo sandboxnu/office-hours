@@ -535,10 +535,11 @@ export class UpdateQueueParams {
 }
 
 export class TACheckinTimesResponse {
-  taCheckinTimes!: TaCheckinPair[];
+  @Type(() => TACheckinPair)
+  taCheckinTimes!: TACheckinPair[];
 }
 
-class TaCheckinPair {
+export class TACheckinPair {
   @IsString()
   name!: string;
 

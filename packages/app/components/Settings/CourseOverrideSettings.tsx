@@ -12,7 +12,7 @@ const { Column } = Table;
 type CourseOverrideSettingsProps = { courseId: number };
 
 const OverrideContents = styled.div`
-  width: 60%;
+  width: 90%;
   margin-left: auto;
   margin-right: auto;
   padding-top: 50px;

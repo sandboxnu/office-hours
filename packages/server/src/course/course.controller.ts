@@ -331,8 +331,6 @@ export class CourseController {
       (e) => e.eventType === EventType.TA_CHECKED_IN,
     );
 
-    console.log('ligma', checkinEvents, otherEvents);
-
     const taCheckinTimes = [];
 
     for (const checkinEvent of checkinEvents) {
