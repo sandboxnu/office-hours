@@ -552,7 +552,10 @@ export class TACheckinPair {
   checkoutTime?: Date;
 
   @IsBoolean()
-  completed!: boolean;
+  forced!: boolean;
+
+  @IsBoolean()
+  inProgress!: boolean;
 }
 
 export class SSEQueueResponse {

@@ -6,12 +6,12 @@ import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
 import NavBar from "../../../components/Nav/NavBar";
-import CourseAdminSettings, {
+import CourseAdminPanel, {
   CourseAdminOptions,
-} from "../../../components/Settings/CourseAdminSettings";
+} from "../../../components/Settings/CourseAdminPanel";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 
-export default function CourseOverride(): ReactElement {
+export default function CourseAdminPanelPage(): ReactElement {
   const router = useRouter();
   const courseId = router.query["cid"];
   const role = useRoleInCourse(Number(courseId));
@@ -26,11 +26,11 @@ export default function CourseOverride(): ReactElement {
       <StandardPageContainer>
         <Container>
           <Head>
-            <title>Course Admin Settings | Khoury Office Hours</title>
+            <title>Course Admin Panel | Khoury Office Hours</title>
           </Head>
           <NavBar courseId={Number(courseId)} />
           {courseId && (
-            <CourseAdminSettings
+            <CourseAdminPanel
               courseId={Number(courseId)}
               defaultPage={defaultPage as CourseAdminOptions}
             />

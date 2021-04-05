@@ -1,8 +1,20 @@
 import { API } from "@koh/api-client";
 import moment from "moment";
 import React, { ReactElement } from "react";
-import { Calendar, Event, momentLocalizer } from "react-big-calendar";
+import {
+  Calendar,
+  CalendarProps,
+  Event,
+  momentLocalizer,
+} from "react-big-calendar";
+import styled from "styled-components";
 import useSWR from "swr";
+
+const TACheckInCheckOutCalendar = styled(Calendar)<CalendarProps>`
+  height: 70vh;
+  padding-top: 40px;
+  padding-left: 60px;
+`;
 
 interface TACheckInCheckOutTimesProps {
   courseId: number;
@@ -26,19 +38,24 @@ export default function TACheckInCheckOutTimes({
   const calData: Event[] =
     data?.taCheckinTimes.map((e) => ({
       start: e.checkinTime,
-      end: e.checkoutTime,
-      title: e.name,
+      end: e.checkoutTime ? e.checkoutTime : new Date(),
+      title: e.inProgress
+        ? `TA currently holding office hours: ${e.name}`
+        : e.forced
+        ? `TA forgot to check out: ${e.name}`
+        : e.name,
     })) ?? [];
 
-  console.log(calData);
-
   return (
-    <div style={{ minHeight: "500px" }}>
-      <Calendar
-        style={{ height: "70vh" }}
+    <div>
+      <h1 style={{ textAlign: "center", marginTop: "10px" }}>
+        TA Check-In Check-Out Times
+      </h1>
+      <TACheckInCheckOutCalendar
         events={calData}
         localizer={momentLocalizer(moment)}
         showMultiDayTimes={true}
+        defaultView={"week"}
       />
     </div>
   );

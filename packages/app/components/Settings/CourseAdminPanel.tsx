@@ -3,6 +3,7 @@ import { Col, Menu, Row, Space } from "antd";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import CourseOverrideSettings from "./CourseOverrideSettings";
+import { SettingsPanelAvatar } from "./SettingsSharedComponents";
 import TACheckInCheckOutTimes from "./TACheckInCheckOutTimes";
 
 export enum CourseAdminOptions {
@@ -22,7 +23,7 @@ const VerticalDivider = styled.div`
   }
 `;
 
-export default function CourseAdminSettings({
+export default function CourseAdminPanel({
   defaultPage,
   courseId,
 }: CourseAdminPageProps): ReactElement {
@@ -33,10 +34,11 @@ export default function CourseAdminSettings({
   return (
     <Row>
       <Col span={4} style={{ textAlign: "center" }}>
+        <SettingsPanelAvatar />
         <Menu
           defaultSelectedKeys={[currentSettings]}
           onClick={(e) => setCurrentSettings(e.key as CourseAdminOptions)}
-          style={{ background: "#f8f9fb" }}
+          style={{ background: "#f8f9fb", paddingTop: "30px" }}
         >
           <Menu.Item key={CourseAdminOptions.CHECK_IN} icon={<EditOutlined />}>
             TA Check In and Check Out times

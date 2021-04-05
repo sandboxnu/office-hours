@@ -166,9 +166,9 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
 
   if (role === Role.PROFESSOR) {
     tabs.push({
-      href: "/course/[cid]/course_overrides",
-      as: `/course/${courseId}/course_overrides`,
-      text: "Overrides",
+      href: "/course/[cid]/course_admin_panel",
+      as: `/course/${courseId}/course_admin_panel`,
+      text: "Admin Panel",
     });
   }
 

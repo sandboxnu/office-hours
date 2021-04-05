@@ -4,6 +4,7 @@ import {
   GetCourseResponse,
   QueuePartial,
   Role,
+  TACheckinPair,
   TACheckinTimesResponse,
   TACheckoutResponse,
   UpdateCourseOverrideBody,
@@ -331,10 +332,10 @@ export class CourseController {
       (e) => e.eventType === EventType.TA_CHECKED_IN,
     );
 
-    const taCheckinTimes = [];
+    const taCheckinTimes: TACheckinPair[] = [];
 
     for (const checkinEvent of checkinEvents) {
-      let closestEvent = null;
+      let closestEvent: EventModel = null;
       let mostRecentTime = new Date();
       const originalDate = mostRecentTime;
 
@@ -354,7 +355,8 @@ export class CourseController {
         name: checkinEvent.user.name,
         checkinTime: checkinEvent.time,
         checkoutTime: closestEvent?.time,
-        completed: mostRecentTime !== originalDate,
+        inProgress: mostRecentTime === originalDate,
+        forced: closestEvent?.eventType === EventType.TA_CHECKED_OUT_FORCED,
       });
     }
 

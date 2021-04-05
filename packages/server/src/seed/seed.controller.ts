@@ -219,10 +219,13 @@ export class SeedController {
       eventType: EventType.TA_CHECKED_IN,
     });
 
+    const todayAtMidnight = new Date();
+    todayAtMidnight.setHours(0, 0, 0, 0);
+
     await EventFactory.create({
       user: eventTA,
       course: course,
-      time: new Date(Date.now() - 60000),
+      time: todayAtMidnight,
       eventType: EventType.TA_CHECKED_OUT_FORCED,
     });
 
