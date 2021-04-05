@@ -123,19 +123,16 @@ describe('InsightsService', () => {
       const course = await CourseFactory.create();
       const queue = await QueueFactory.create({ course });
       await QuestionFactory.createList(20, {
-        // 5 min
         queue: queue,
         helpedAt: new Date(Date.now() - 30 * 60 * 1000),
         closedAt: new Date(Date.now() - 25 * 60 * 1000),
       });
       await QuestionFactory.createList(20, {
-        // 10 min
         queue: queue,
         helpedAt: new Date(Date.now() - 30 * 60 * 1000),
         closedAt: new Date(Date.now() - 20 * 60 * 1000),
       });
       await QuestionFactory.createList(20, {
-        // 30 min
         queue: queue,
         helpedAt: new Date(Date.now() - 60 * 60 * 1000),
         closedAt: new Date(Date.now() - 30 * 60 * 1000),
