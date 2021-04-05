@@ -125,9 +125,6 @@ export default function AboutPage(): ReactElement {
   );
 }
 
-const sadcat =
-  "https://www.vettedpetcare.com/vetted-blog/wp-content/uploads/2017/09/How-To-Travel-With-a-Super-Anxious-Cat-square.jpeg";
-
 // These images links are generated from a gdrive sharing link using this tool:
 // https://buildbrothers.com/gdrive-generator/
 // which is described in this article: https://blog.usejournal.com/host-static-images-for-your-apps-or-website-on-google-drive-hotlink-to-gdrive-images-358d6fcf8ef7
@@ -158,7 +155,12 @@ const PROFILES_CURRENT = [
     image: "https://drive.google.com/uc?id=1RE6r1qjhBqffDNjXyAA78vBYBvOCL8nr",
     linkedin: "https://www.linkedin.com/in/danishfarooq610/",
   },
-  { name: "Olivia Floody", role: "Developer", image: sadcat, linkedin: "" },
+  {
+    name: "Olivia Floody",
+    role: "Developer",
+    image: "https://drive.google.com/uc?id=1ZwEKAvK2JTZZTXEsi6g3iDdBLaXPq6uu",
+    linkedin: "https://www.linkedin.com/in/olivia-floody-a7b5a4154/",
+  },
   {
     name: "Iris Liu",
     role: "Developer",
