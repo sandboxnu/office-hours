@@ -16,6 +16,7 @@ export declare class User {
     desktopNotifs: DesktopNotifPartial[];
     phoneNotifsEnabled: boolean;
     phoneNumber: string;
+    insights: string[];
 }
 export declare class DesktopNotifPartial {
     id: number;
@@ -299,6 +300,48 @@ export interface GetReleaseNotesResponse {
     releaseNotes: unknown;
     lastUpdatedUnixTime: number;
 }
+export declare type GetInsightOutputResponse = PossibleOutputTypes;
+export declare type ListInsightsResponse = Record<string, InsightDisplayInfo>;
+export declare type InsightDisplayInfo = {
+    displayName: string;
+    description: string;
+    component: InsightComponent;
+    size: "small" | "default";
+};
+export interface InsightObject {
+    displayName: string;
+    description: string;
+    roles: Role[];
+    component: InsightComponent;
+    size: "default" | "small";
+    compute: (insightFilters: any) => Promise<PossibleOutputTypes>;
+}
+export declare enum InsightComponent {
+    SimpleDisplay = "SimpleDisplay",
+    BarChart = "BarChart",
+    SimpleTable = "SimpleTable"
+}
+export declare type PossibleOutputTypes = SimpleDisplayOutputType | BarChartOutputType | SimpleTableOutputType;
+export declare type SimpleDisplayOutputType = number | string;
+export declare type BarChartOutputType = {
+    data: StringMap<number>[];
+    xField: string;
+    yField: string;
+    seriesField: string;
+    xAxisName?: string;
+    yAxisName?: string;
+};
+export declare type SimpleTableOutputType = {
+    dataSource: StringMap<string>[];
+    columns: StringMap<string>[];
+};
+export declare type StringMap<T> = {
+    [key: string]: T;
+};
+export declare type DateRangeType = {
+    start: string;
+    end: string;
+};
 export declare const ERROR_MESSAGES: {
     courseController: {
         checkIn: {
@@ -342,6 +385,10 @@ export declare const ERROR_MESSAGES: {
     };
     releaseNotesController: {
         releaseNotesTime: (e: any) => string;
+    };
+    insightsController: {
+        insightUnathorized: string;
+        insightNameNotFound: string;
     };
     roleGuard: {
         notLoggedIn: string;

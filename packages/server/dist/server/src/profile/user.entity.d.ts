@@ -19,6 +19,9 @@ export declare class UserModel extends BaseEntity {
     queues: QueueModel[];
     events: EventModel[];
     alerts: AlertModel[];
+    hideInsights: string[];
+    insights: string[];
+    computeInsights(): void;
     name: string;
     setFullNames(): void;
 }
