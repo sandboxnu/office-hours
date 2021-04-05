@@ -85,43 +85,65 @@ describe('InsightsService', () => {
       expect(res).toEqual(6);
     });
 
-    it('averageWaitTime', async () => {
-      const question = await QuestionFactory.create({
+    it('medianWaitTime', async () => {
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ course });
+      await QuestionFactory.createList(20, {
+        // 5 min
+        queue: queue,
         createdAt: new Date(Date.now() - 30 * 60 * 1000),
         firstHelpedAt: new Date(Date.now() - 25 * 60 * 1000),
       });
+      await QuestionFactory.createList(20, {
+        // 10 min
+        queue: queue,
+        createdAt: new Date(Date.now() - 30 * 60 * 1000),
+        firstHelpedAt: new Date(Date.now() - 20 * 60 * 1000),
+      });
+      await QuestionFactory.createList(20, {
+        // 30 min
+        queue: queue,
+        createdAt: new Date(Date.now() - 60 * 60 * 1000),
+        firstHelpedAt: new Date(Date.now() - 30 * 60 * 1000),
+      });
 
       const res = await service.computeOutput({
-        insight: INSIGHTS_MAP.AverageWaitTime,
+        insight: INSIGHTS_MAP.MedianWaitTime,
         filters: [
           {
             type: 'courseId',
-            courseId: question.queue.courseId,
+            courseId: course.id,
           },
         ],
       });
-      expect(res).toEqual('5 min');
+      expect(res).toEqual('10 min');
     });
 
-    it('averageHelpingTime', async () => {
-      // 5 min of helping
-      const question = await QuestionFactory.create({
+    it('medianHelpingTime', async () => {
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ course });
+      await QuestionFactory.createList(20, {
+        queue: queue,
         helpedAt: new Date(Date.now() - 30 * 60 * 1000),
         closedAt: new Date(Date.now() - 25 * 60 * 1000),
       });
-      // 15 min of helping
-      await QuestionFactory.create({
-        helpedAt: new Date(Date.now() - 50 * 60 * 1000),
-        closedAt: new Date(Date.now() - 35 * 60 * 1000),
-        queue: question.queue,
+      await QuestionFactory.createList(20, {
+        queue: queue,
+        helpedAt: new Date(Date.now() - 30 * 60 * 1000),
+        closedAt: new Date(Date.now() - 20 * 60 * 1000),
+      });
+      await QuestionFactory.createList(20, {
+        queue: queue,
+        helpedAt: new Date(Date.now() - 60 * 60 * 1000),
+        closedAt: new Date(Date.now() - 30 * 60 * 1000),
       });
 
       const res = await service.computeOutput({
-        insight: INSIGHTS_MAP.AverageHelpingTime,
+        insight: INSIGHTS_MAP.MedianHelpingTime,
         filters: [
           {
             type: 'courseId',
-            courseId: question.queue.courseId,
+            courseId: course.id,
           },
         ],
       });

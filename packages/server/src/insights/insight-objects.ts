@@ -205,58 +205,80 @@ export const QuestionTypeBreakdown: InsightObject = {
   },
 };
 
-export const AverageWaitTime: InsightObject = {
-  displayName: 'Avg Wait Time',
+export const MedianWaitTime: InsightObject = {
+  displayName: 'Median Wait Time',
   description:
-    'What is the average wait time for a student to get help in the queue?',
+    'What is the median wait time for a student to get help in the queue?',
   roles: [Role.PROFESSOR],
   component: InsightComponent.SimpleDisplay,
   size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
-    const waitTime = await addFilters({
+    const questions = await addFilters({
       query: createQueryBuilder(QuestionModel)
-        .select(
-          'EXTRACT(EPOCH FROM AVG(QuestionModel.firstHelpedAt - QuestionModel.createdAt)::INTERVAL)/60',
-          'avgWaitTimeInMinutes',
-        )
+        .select()
         .where('QuestionModel.firstHelpedAt IS NOT NULL'),
       modelName: QuestionModel.name,
       allowedFilters: ['courseId', 'timeframe'],
       filters,
-    }).getRawOne();
-    return `${Math.floor(waitTime.avgWaitTimeInMinutes)} min`;
+    }).getMany();
+
+    const waitTimes = questions.map(
+      (question) =>
+        Math.floor(
+          (question.firstHelpedAt.getTime() - question.createdAt.getTime()) /
+            1000,
+        ) / 60,
+    );
+
+    return `${Math.floor(Math.round(median(waitTimes)))} min`;
   },
 };
 
-export const AverageHelpingTime: InsightObject = {
-  displayName: 'Avg Helping Time',
+export const MedianHelpingTime: InsightObject = {
+  displayName: 'Median Helping Time',
   description:
-    'What is the average duration that a TA help a student on a call?',
+    'What is the median duration that a TA helps a student on a call?',
   roles: [Role.PROFESSOR],
   component: InsightComponent.SimpleDisplay,
   size: 'small' as const,
 
   async compute(filters): Promise<SimpleDisplayOutputType> {
-    const helpTime = await addFilters({
+    const questions = await addFilters({
       query: createQueryBuilder(QuestionModel)
-        .select(
-          'EXTRACT(EPOCH FROM AVG(QuestionModel.closedAt - QuestionModel.helpedAt)::INTERVAL)/60',
-          'avgHelpTimeInMinutes',
-        )
+        .select()
         .where(
           'QuestionModel.helpedAt IS NOT NULL AND QuestionModel.closedAt IS NOT NULL',
         ),
       modelName: QuestionModel.name,
       allowedFilters: ['courseId', 'timeframe'],
       filters,
-    }).getRawOne();
-    return `${Math.floor(helpTime.avgHelpTimeInMinutes)} min`;
+    }).getMany();
+
+    const helpTimes = questions.map(
+      (question) =>
+        Math.floor(
+          (question.closedAt.getTime() - question.helpedAt.getTime()) / 1000,
+        ) / 60,
+    );
+
+    return `${Math.round(median(helpTimes))} min`;
   },
+};
+
+const median = (numbers: number[]) => {
+  const sorted = numbers.slice().sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+
+  if (sorted.length % 2 === 0) {
+    return (sorted[middle - 1] + sorted[middle]) / 2;
+  }
+
+  return sorted[middle];
 };
 
 export const QuestionToStudentRatio: InsightObject = {
   displayName: 'Questions per Student',
-  description: 'How many questions were asked per student on average?',
+  description: 'How many questions were asked per student?',
   roles: [Role.PROFESSOR],
   component: InsightComponent.SimpleDisplay,
   size: 'small' as const,
@@ -272,9 +294,9 @@ export const QuestionToStudentRatio: InsightObject = {
 export const INSIGHTS_MAP = {
   TotalStudents,
   TotalQuestionsAsked,
-  AverageWaitTime,
+  MedianWaitTime,
   QuestionTypeBreakdown,
   MostActiveStudents,
   QuestionToStudentRatio,
-  AverageHelpingTime,
+  MedianHelpingTime,
 };
