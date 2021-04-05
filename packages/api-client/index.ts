@@ -8,6 +8,7 @@ import {
   GetAlertsResponse,
   GetCourseOverridesResponse,
   GetCourseResponse,
+  GetInsightOutputResponse,
   GetProfileResponse,
   GetQuestionResponse,
   GetQueueResponse,
@@ -21,6 +22,8 @@ import {
   UpdateQuestionParams,
   UpdateQuestionResponse,
   UpdateQueueParams,
+  ListInsightsResponse,
+  DateRangeType,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -43,15 +46,18 @@ class APIClient {
     method: Method,
     url: string,
     responseClass?: ClassType<ItemIfArray<T>>,
-    body?: any
+    body?: any,
+    params?: any
   ): Promise<T>;
   private async req<T>(
     method: Method,
     url: string,
     responseClass?: ClassType<T>,
-    body?: any
+    body?: any,
+    params?: any
   ): Promise<T> {
-    const res = (await this.axios.request({ method, url, data: body })).data;
+    const res = (await this.axios.request({ method, url, data: body, params }))
+      .data;
     return responseClass ? plainToClass(responseClass, res) : res;
   }
 
@@ -170,6 +176,27 @@ class APIClient {
   releaseNotes = {
     get: async (): Promise<GetReleaseNotesResponse> =>
       this.req("GET", `/api/v1/release_notes`),
+  };
+  insights = {
+    get: async (
+      courseId: number,
+      insightName: string,
+      params: DateRangeType
+    ): Promise<GetInsightOutputResponse> => {
+      return this.req(
+        "GET",
+        `/api/v1/insights/${courseId}/${insightName}`,
+        undefined,
+        undefined,
+        params
+      );
+    },
+    list: async (): Promise<ListInsightsResponse> =>
+      this.req("GET", `/api/v1/insights/list`),
+    toggleOn: async (insightName: string): Promise<void> =>
+      this.req("PATCH", `/api/v1/insights`, undefined, { insightName }),
+    toggleOff: async (insightName: string): Promise<void> =>
+      this.req("DELETE", `/api/v1/insights`, undefined, { insightName }),
   };
   alerts = {
     get: async (courseId: number): Promise<GetAlertsResponse> =>

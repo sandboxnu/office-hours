@@ -61,12 +61,11 @@ export class User {
   photoURL!: string;
   courses!: UserCourse[];
   desktopNotifsEnabled!: boolean;
-
   @Type(() => DesktopNotifPartial)
   desktopNotifs!: DesktopNotifPartial[];
-
   phoneNotifsEnabled!: boolean;
   phoneNumber!: string;
+  insights!: string[];
 }
 
 export class DesktopNotifPartial {
@@ -624,6 +623,62 @@ export interface GetReleaseNotesResponse {
   lastUpdatedUnixTime: number;
 }
 
+export type GetInsightOutputResponse = PossibleOutputTypes;
+
+export type ListInsightsResponse = Record<string, InsightDisplayInfo>;
+
+export type InsightDisplayInfo = {
+  displayName: string;
+  description: string;
+  component: InsightComponent;
+  size: "small" | "default";
+};
+
+export interface InsightObject {
+  displayName: string;
+  description: string;
+  roles: Role[];
+  component: InsightComponent;
+  size: "default" | "small";
+  compute: (insightFilters: any) => Promise<PossibleOutputTypes>;
+}
+
+export enum InsightComponent {
+  SimpleDisplay = "SimpleDisplay",
+  BarChart = "BarChart",
+  SimpleTable = "SimpleTable",
+}
+
+export type PossibleOutputTypes =
+  | SimpleDisplayOutputType
+  | BarChartOutputType
+  | SimpleTableOutputType;
+
+export type SimpleDisplayOutputType = number | string;
+
+export type BarChartOutputType = {
+  data: StringMap<number>[];
+  xField: string;
+  yField: string;
+  seriesField: string;
+  xAxisName?: string;
+  yAxisName?: string;
+};
+
+export type SimpleTableOutputType = {
+  dataSource: StringMap<string>[];
+  columns: StringMap<string>[];
+};
+
+export type StringMap<T> = {
+  [key: string]: T;
+};
+
+export type DateRangeType = {
+  start: string;
+  end: string;
+};
+
 export const ERROR_MESSAGES = {
   courseController: {
     checkIn: {
@@ -676,6 +731,10 @@ export const ERROR_MESSAGES = {
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     releaseNotesTime: (e: any): string =>
       "Error Parsing release notes time: " + e,
+  },
+  insightsController: {
+    insightUnathorized: "User is not authorized to view this insight",
+    insightNameNotFound: "The insight requested was not found",
   },
   roleGuard: {
     notLoggedIn: "Must be logged in",
