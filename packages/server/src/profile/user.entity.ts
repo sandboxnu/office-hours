@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import { INSIGHTS_MAP } from '../insights/insight-objects';
 import {
   AfterLoad,
   BaseEntity,
@@ -61,9 +62,24 @@ export class UserModel extends BaseEntity {
   @OneToMany((type) => EventModel, (event) => event.user)
   events: EventModel[];
 
-  @Exclude()
   @OneToMany((type) => AlertModel, (alert) => alert.user)
   alerts: AlertModel[];
+
+  @Exclude()
+  @Column({ type: 'simple-array', nullable: true })
+  hideInsights: string[];
+
+  insights: string[];
+
+  @AfterLoad()
+  computeInsights() {
+    let hideInsights = this.hideInsights;
+    if (!hideInsights) {
+      hideInsights = [];
+    }
+    const insightNames = Object.keys(INSIGHTS_MAP);
+    this.insights = insightNames.filter((name) => !hideInsights.includes(name));
+  }
 
   name: string;
 

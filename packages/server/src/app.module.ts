@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { InsightsModule } from 'insights/insights.module';
 import { AlertsModule } from 'alerts/alerts.module';
 import { BackfillModule } from 'backfill/backfill.module';
 import { CommandModule } from 'nestjs-command';
@@ -42,6 +43,7 @@ import { SSEModule } from './sse/sse.module';
     SSEModule,
     BackfillModule,
     ReleaseNotesModule,
+    InsightsModule,
     // Only use 'pub' for publishing events, 'sub' for subscribing, and 'db' for writing to key/value store
     RedisModule.register([{ name: 'pub' }, { name: 'sub' }, { name: 'db' }]),
     HealthcheckModule,
