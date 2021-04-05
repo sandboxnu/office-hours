@@ -1,10 +1,12 @@
 import { Type } from "class-transformer";
 import {
   IsBoolean,
+  IsDate,
   IsDefined,
   IsEnum,
   IsInt,
   IsNotEmpty,
+  IsObject,
   IsOptional,
   IsString,
   ValidateIf,
@@ -59,12 +61,11 @@ export class User {
   photoURL!: string;
   courses!: UserCourse[];
   desktopNotifsEnabled!: boolean;
-
   @Type(() => DesktopNotifPartial)
   desktopNotifs!: DesktopNotifPartial[];
-
   phoneNotifsEnabled!: boolean;
   phoneNumber!: string;
+  insights!: string[];
 }
 
 export class DesktopNotifPartial {
@@ -283,15 +284,15 @@ export const QuestionStatusKeys = {
   ...LimboQuestionStatus,
 };
 
-/**
- * A Semester object, representing a schedule semester term for the purposes of a course.
- * @param season - The season of this semester.
- * @param year - The year of this semester.
- */
-interface Semester {
-  season: Season;
-  year: number;
-}
+// /**
+//  * A Semester object, representing a schedule semester term for the purposes of a course.
+//  * @param season - The season of this semester.
+//  * @param year - The year of this semester.
+//  */
+// interface Semester {
+//   season: Season;
+//   year: number;
+// }
 
 /**
  * Represents one of the seasons in which a course can take place.
@@ -459,6 +460,11 @@ export class ListQuestionsResponse {
 
 export class GetQuestionResponse extends Question {}
 
+export class GetStudentQuestionResponse extends Question {
+  @IsInt()
+  queueId!: number;
+}
+
 export class CreateQuestionParams {
   @IsString()
   text!: string;
@@ -533,6 +539,58 @@ export class UpdateQueueParams {
   allowQuestions?: boolean;
 }
 
+export enum AlertType {
+  REPHRASE_QUESTION = "rephraseQuestion",
+}
+
+export class AlertPayload {}
+
+export class Alert {
+  @IsEnum(AlertType)
+  alertType!: AlertType;
+
+  @IsDate()
+  sent!: Date;
+
+  @Type(() => AlertPayload)
+  payload!: AlertPayload;
+
+  @IsInt()
+  id!: number;
+}
+
+export class RephraseQuestionPayload extends AlertPayload {
+  @IsInt()
+  questionId!: number;
+
+  @IsInt()
+  queueId!: number;
+
+  @IsInt()
+  courseId!: number;
+}
+
+export class CreateAlertParams {
+  @IsEnum(AlertType)
+  alertType!: AlertType;
+
+  @IsInt()
+  courseId!: number;
+
+  @IsObject()
+  payload!: AlertPayload;
+
+  @IsInt()
+  targetUserId!: number;
+}
+
+export class CreateAlertResponse extends Alert {}
+
+export class GetAlertsResponse {
+  @Type(() => Alert)
+  alerts!: Alert[];
+}
+
 export class SSEQueueResponse {
   queue?: GetQueueResponse;
   questions?: ListQuestionsResponse;
@@ -564,6 +622,62 @@ export interface GetReleaseNotesResponse {
   releaseNotes: unknown;
   lastUpdatedUnixTime: number;
 }
+
+export type GetInsightOutputResponse = PossibleOutputTypes;
+
+export type ListInsightsResponse = Record<string, InsightDisplayInfo>;
+
+export type InsightDisplayInfo = {
+  displayName: string;
+  description: string;
+  component: InsightComponent;
+  size: "small" | "default";
+};
+
+export interface InsightObject {
+  displayName: string;
+  description: string;
+  roles: Role[];
+  component: InsightComponent;
+  size: "default" | "small";
+  compute: (insightFilters: any) => Promise<PossibleOutputTypes>;
+}
+
+export enum InsightComponent {
+  SimpleDisplay = "SimpleDisplay",
+  BarChart = "BarChart",
+  SimpleTable = "SimpleTable",
+}
+
+export type PossibleOutputTypes =
+  | SimpleDisplayOutputType
+  | BarChartOutputType
+  | SimpleTableOutputType;
+
+export type SimpleDisplayOutputType = number | string;
+
+export type BarChartOutputType = {
+  data: StringMap<number>[];
+  xField: string;
+  yField: string;
+  seriesField: string;
+  xAxisName?: string;
+  yAxisName?: string;
+};
+
+export type SimpleTableOutputType = {
+  dataSource: StringMap<string>[];
+  columns: StringMap<string>[];
+};
+
+export type StringMap<T> = {
+  [key: string]: T;
+};
+
+export type DateRangeType = {
+  start: string;
+  end: string;
+};
 
 export const ERROR_MESSAGES = {
   courseController: {
@@ -614,8 +728,13 @@ export const ERROR_MESSAGES = {
     queueNotFound: "Queue not found",
   },
   releaseNotesController: {
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     releaseNotesTime: (e: any): string =>
       "Error Parsing release notes time: " + e,
+  },
+  insightsController: {
+    insightUnathorized: "User is not authorized to view this insight",
+    insightNameNotFound: "The insight requested was not found",
   },
   roleGuard: {
     notLoggedIn: "Must be logged in",
@@ -627,5 +746,9 @@ export const ERROR_MESSAGES = {
   profileController: {
     noDiskSpace:
       "There is no disk space left to store an image. Please immediately contact your course staff and let them know. They will contact the Khoury Office Hours team as soon as possible.",
+  },
+  alertController: {
+    duplicateAlert: "This alert has already been sent",
+    notActiveAlert: "This is not an alert that's open for the current user",
   },
 };

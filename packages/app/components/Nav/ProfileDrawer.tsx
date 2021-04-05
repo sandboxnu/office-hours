@@ -5,7 +5,6 @@ import {
   ReadOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-import { isProd } from "@koh/common";
 import { Menu, Popover } from "antd";
 import Link from "next/link";
 import React, { ReactElement, useState } from "react";
@@ -33,7 +32,6 @@ export default function ProfileDrawer({
   courseId,
 }: ProfileDrawerProps): ReactElement {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const loginPath = isProd() ? "/login" : "/dev";
 
   return (
     <>

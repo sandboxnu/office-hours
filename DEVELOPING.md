@@ -5,7 +5,7 @@
    Node should also be version 14.x.x. If it's not, install [nvm](https://github.com/nvm-sh/nvm)
 3. Run `yarn install` in this directory to get dependencies
 4. Run `yarn dev:db:up` to start the database via docker. `yarn dev:db:down` will stop it.
-5. Run `psql -U postgres -h localhost` to connect to your postgres instance, and run `CREATE database dev;` to initialize your database.
+5. Run `psql -U postgres -h localhost` to connect to your postgres instance, and run `CREATE database dev;` and `CREATE database test;` to initialize your databases for development and testing.
 6. Start the app in development with `yarn dev`
 7. Visit the app at http://localhost:3000
 

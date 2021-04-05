@@ -13,7 +13,7 @@ import {
 import { setupIntegrationTest } from './util/testUtils';
 
 const mockJWT = {
-  signAsync: async (payload, options?) => JSON.stringify(payload),
+  signAsync: async (payload) => JSON.stringify(payload),
   verifyAsync: async (payload) => JSON.parse(payload).token !== 'INVALID_TOKEN',
   decode: (payload) => JSON.parse(payload),
 };
@@ -39,7 +39,7 @@ describe('Login Integration', () => {
 
     it('entry as user with courses goes to root page', async () => {
       const user = await UserFactory.create();
-      const usercourse = await UserCourseFactory.create({ user: user });
+      await UserCourseFactory.create({ user: user });
       const token = await mockJWT.signAsync({ userId: user.id });
 
       const res = await supertest()
@@ -53,9 +53,7 @@ describe('Login Integration', () => {
     it('request to entry with invalid jwt returns error', async () => {
       const token = await mockJWT.signAsync({ token: 'INVALID_TOKEN' });
 
-      const res = await supertest()
-        .get(`/login/entry?token=${token}`)
-        .expect(401);
+      await supertest().get(`/login/entry?token=${token}`).expect(401);
     });
   });
 
@@ -94,7 +92,7 @@ describe('Login Integration', () => {
       });
       expect(user).toBeUndefined();
 
-      const res = await supertest().post('/khoury_login').send({
+      await supertest().post('/khoury_login').send({
         email: 'stenzel.w@husky.neu.edu',
         campus: 1,
         first_name: 'Will',
@@ -153,7 +151,7 @@ describe('Login Integration', () => {
           lastName: 'Benzel',
         });
 
-        const res = await supertest()
+        await supertest()
           .post('/khoury_login')
           .send({
             email: user.email,
@@ -174,15 +172,17 @@ describe('Login Integration', () => {
             ta_courses: [],
           })
           .expect(201);
-
-        user = await UserModel.findOne(user, { relations: ['courses'] });
+        user = await UserModel.findOne({
+          where: { id: user.id },
+          relations: ['courses'],
+        });
 
         expect(user.courses).toHaveLength(1);
         expect(user.firstName).not.toEqual('Will');
       });
 
       it('handles student courses and sections correctly', async () => {
-        const res = await supertest()
+        await supertest()
           .post('/khoury_login')
           .send({
             email: 'stenzel.w@northeastern.edu',
@@ -460,7 +460,7 @@ describe('Login Integration', () => {
     it('handles TA courses correctly', async () => {
       await setupTAAndProfessorCourses();
 
-      const res = await supertest()
+      await supertest()
         .post('/khoury_login')
         .send({
           email: 'stenzel.w@northeastern.edu',
@@ -490,7 +490,7 @@ describe('Login Integration', () => {
     it('handles professor courses correctly', async () => {
       await setupTAAndProfessorCourses();
 
-      const res = await supertest()
+      await supertest()
         .post('/khoury_login')
         .send({
           email: 'stenzel.w@northeastern.edu',

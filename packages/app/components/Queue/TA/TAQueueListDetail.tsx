@@ -2,7 +2,7 @@ import { ArrowLeftOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { useWindowWidth } from "@react-hook/window-size";
 import { Button, Skeleton, Tooltip } from "antd";
 import Link from "next/link";
-import React, { useState, ReactElement } from "react";
+import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
@@ -71,7 +71,7 @@ export default function TAQueueListDetail({
 }): ReactElement {
   const user = useProfile();
   const [selectedQuestionId, setSelectedQuestionId] = useState<number>(null);
-  const { questions, questionsError, mutateQuestions } = useQuestions(queueId);
+  const { questions } = useQuestions(queueId);
   const isSideBySide = useWindowWidth() >= SPLIT_DETAIL_BKPT;
 
   const helpingQuestions = questions?.questionsGettingHelp?.filter(
@@ -147,7 +147,11 @@ export default function TAQueueListDetail({
   const detail = (
     <Detail>
       {selectedQuestion && (
-        <TAQueueDetail queueId={queueId} question={selectedQuestion} />
+        <TAQueueDetail
+          courseId={courseId}
+          queueId={queueId}
+          question={selectedQuestion}
+        />
       )}
     </Detail>
   );

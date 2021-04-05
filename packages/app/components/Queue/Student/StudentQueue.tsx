@@ -8,8 +8,8 @@ import {
   QuestionType,
 } from "@koh/common";
 import { Card, Col, notification, Popconfirm, Row } from "antd";
-import { Router } from "next/router";
-import React, { ReactElement, useCallback, useState } from "react";
+import { Router, useRouter } from "next/router";
+import React, { ReactElement, useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { mutate } from "swr";
 import { useDraftQuestion } from "../../../hooks/useDraftQuestion";
@@ -85,8 +85,8 @@ interface StudentQueueProps {
 }
 
 export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
-  const { queue, mutateQueue } = useQueue(qid);
-  const { questions, questionsError, mutateQuestions } = useQuestions(qid);
+  const { queue } = useQueue(qid);
+  const { questions, mutateQuestions } = useQuestions(qid);
   const { studentQuestion, studentQuestionIndex } = useStudentQuestion(qid);
   const [isFirstQuestion, setIsFirstQuestion] = useLocalStorage(
     "isFirstQuestion",
@@ -94,6 +94,24 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
   );
   const [showJoinPopconfirm, setShowJoinPopconfirm] = useState(false);
   const { deleteDraftQuestion } = useDraftQuestion();
+  const [isJoining, setIsJoining] = useState(
+    questions &&
+      studentQuestion &&
+      studentQuestion?.status !== OpenQuestionStatus.Queued
+  );
+  const [popupEditQuestion, setPopupEditQuestion] = useState(false);
+
+  const router = useRouter();
+  const editQuestionQueryParam = Boolean(router.query.edit_question as string);
+  const [firstLanding, setFirstLanding] = useState(true);
+
+  useEffect(() => {
+    if (editQuestionQueryParam && firstLanding && studentQuestion) {
+      mutate(`/api/v1/queues/${qid}/questions`);
+      setPopupEditQuestion(true);
+      setFirstLanding(false);
+    }
+  }, [editQuestionQueryParam, qid, studentQuestion, firstLanding]);
 
   const studentQuestionId = studentQuestion?.id;
   const studentQuestionStatus = studentQuestion?.status;
@@ -163,18 +181,6 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
     });
     await mutateQuestions();
   }, [mutateQuestions, qid, studentQuestion]);
-
-  const [popupEditQuestion, setPopupEditQuestion] = useState(false);
-
-  if (popupEditQuestion && !studentQuestion) {
-    setPopupEditQuestion(false);
-  }
-
-  const [isJoining, setIsJoining] = useState(
-    questions &&
-      studentQuestion &&
-      studentQuestion?.status !== OpenQuestionStatus.Queued
-  );
 
   const openEditModal = useCallback(async () => {
     mutate(`/api/v1/queues/${qid}/questions`);
