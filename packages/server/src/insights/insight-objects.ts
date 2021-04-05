@@ -93,7 +93,7 @@ export const TotalQuestionsAsked: InsightObject = {
   size: 'small' as const,
   async compute(filters): Promise<SimpleDisplayOutputType> {
     return await addFilters({
-      query: createQueryBuilder(QuestionModel).where('TRUE'),
+      query: createQueryBuilder(QuestionModel).select(),
       modelName: QuestionModel.name,
       allowedFilters: ['courseId', 'timeframe'],
       filters,
@@ -222,6 +222,10 @@ export const MedianWaitTime: InsightObject = {
       filters,
     }).getMany();
 
+    if (questions.length === 0) {
+      return `0 min`;
+    }
+
     const waitTimes = questions.map(
       (question) =>
         Math.floor(
@@ -253,6 +257,10 @@ export const MedianHelpingTime: InsightObject = {
       allowedFilters: ['courseId', 'timeframe'],
       filters,
     }).getMany();
+
+    if (questions.length === 0) {
+      return `0 min`;
+    }
 
     const helpTimes = questions.map(
       (question) =>

@@ -207,7 +207,7 @@ function RenderInsight({
       }
     >
       {/* {true ? <Spin style={{ margin: '20% 45%' }} /> : <DataComponent key={insightName} output={insightOutput} />} */}
-      {!insightOutput ? (
+      {insightOutput === undefined ? (
         <Spin style={{ margin: "10% 45%" }} />
       ) : (
         <DataComponent key={insightName} output={insightOutput} />
