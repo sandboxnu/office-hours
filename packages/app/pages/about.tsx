@@ -1,14 +1,14 @@
-import { Container } from 'next/app';
-import Head from 'next/head';
-import { useRouter } from 'next/router';
-import React, { ReactElement } from 'react';
-import AboutPage from '../components/About/AboutPage';
-import { StandardPageContainer } from '../components/common/PageContainer';
-import NavBar from '../components/Nav/NavBar';
+import { Container } from "next/app";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import React, { ReactElement } from "react";
+import AboutPage from "../components/About/AboutPage";
+import { StandardPageContainer } from "../components/common/PageContainer";
+import NavBar from "../components/Nav/NavBar";
 
 export default function About(): ReactElement {
   const router = useRouter();
-  const courseId = router.query['cid'];
+  const courseId = router.query["cid"];
 
   return (
     <StandardPageContainer>
@@ -17,7 +17,7 @@ export default function About(): ReactElement {
       </Head>
       <NavBar courseId={Number(courseId)} />
       <Container>
-          <AboutPage />
+        <AboutPage />
       </Container>
     </StandardPageContainer>
   );
