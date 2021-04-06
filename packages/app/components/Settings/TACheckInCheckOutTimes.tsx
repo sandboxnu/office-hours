@@ -1,5 +1,6 @@
 import { API } from "@koh/api-client";
 import moment from "moment";
+import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
 import {
   Calendar,
@@ -9,6 +10,7 @@ import {
 } from "react-big-calendar";
 import styled from "styled-components";
 import useSWR from "swr";
+import { CourseAdminOptions } from "./CourseAdminPanel";
 
 const TACheckInCheckOutCalendar = styled(Calendar)<CalendarProps>`
   height: 70vh;
@@ -23,6 +25,9 @@ interface TACheckInCheckOutTimesProps {
 export default function TACheckInCheckOutTimes({
   courseId,
 }: TACheckInCheckOutTimesProps): ReactElement {
+  const router = useRouter();
+  router.query["defaultPage"] = CourseAdminOptions.CHECK_IN;
+
   const now = new Date();
 
   const { data } = useSWR(
