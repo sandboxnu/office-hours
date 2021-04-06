@@ -16,6 +16,11 @@ const TACheckInCheckOutCalendar = styled(Calendar)<CalendarProps>`
   padding-left: 60px;
 `;
 
+const CheckinHeader = styled.h1`
+  text-align: center;
+  margin-top: 10px;
+`;
+
 interface TACheckInCheckOutTimesProps {
   courseId: number;
 }
@@ -23,18 +28,28 @@ interface TACheckInCheckOutTimesProps {
 export default function TACheckInCheckOutTimes({
   courseId,
 }: TACheckInCheckOutTimesProps): ReactElement {
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  // there has to be a better way -- right?
+  const sunday = new Date();
+  sunday.setDate(sunday.getDate() - sunday.getDay());
+  sunday.setHours(0, 0, 0, 0);
+  const nextSunday = new Date();
+  nextSunday.setDate(sunday.getDate() + 7);
+  nextSunday.setHours(0, 0, 0, 0);
+
+  const [startDate, setStartDate] = useState(sunday);
+  const [endDate, setEndDate] = useState(nextSunday);
+
+  const fetcher = (_url: string, startDate: Date, endDate: Date) => {
+    return API.course.getTACheckinTimes(
+      courseId,
+      startDate.toISOString(),
+      endDate.toISOString()
+    );
+  };
 
   const { data, mutate } = useSWR(
-    `/api/v1/course/getTACheckinCheckoutTimes`,
-    async () => {
-      return API.course.getTACheckinTimes(
-        courseId,
-        startDate.toISOString(),
-        endDate.toISOString()
-      );
-    }
+    [`/api/v1/course/getTACheckinCheckoutTimes`, startDate, endDate],
+    fetcher
   );
 
   const calData: Event[] =
@@ -50,25 +65,20 @@ export default function TACheckInCheckOutTimes({
 
   return (
     <div>
-      <h1 style={{ textAlign: "center", marginTop: "10px" }}>
-        TA Check-In Check-Out Times
-      </h1>
+      <CheckinHeader>TA Check-In Check-Out Times</CheckinHeader>
       <TACheckInCheckOutCalendar
         events={calData}
         localizer={momentLocalizer(moment)}
         showMultiDayTimes={true}
         defaultView={"week"}
         onRangeChange={(newDates) => {
-          console.log(newDates, Array.isArray(newDates));
           if (Array.isArray(newDates)) {
             setStartDate(newDates[0]);
             setEndDate(newDates[newDates.length - 1]);
-            console.log("set dates", startDate, endDate);
           } else {
             setStartDate(new Date(newDates.start));
             setEndDate(new Date(newDates.end));
           }
-          console.log("fuck", startDate, endDate);
           mutate();
         }}
       />
