@@ -110,7 +110,7 @@ export default function NotificationsSettings(): ReactElement {
             }
           </Form.Item>
         </Form>
-        <Tooltip title="How do notifications work?">
+        <Tooltip title="Click for help guide">
           <QuestionCircleOutlined
             style={{ float: "right", fontSize: "25px" }}
             onClick={() =>

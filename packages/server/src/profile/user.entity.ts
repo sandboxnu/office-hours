@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import { INSIGHTS_MAP } from '../insights/insight-objects';
 import {
   AfterLoad,
   BaseEntity,
@@ -14,6 +15,7 @@ import { PhoneNotifModel } from '../notification/phone-notif.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { EventModel } from './event-model.entity';
 import { UserCourseModel } from './user-course.entity';
+import { AlertModel } from '../alerts/alerts.entity';
 
 @Entity('user_model')
 export class UserModel extends BaseEntity {
@@ -59,6 +61,25 @@ export class UserModel extends BaseEntity {
   @Exclude()
   @OneToMany((type) => EventModel, (event) => event.user)
   events: EventModel[];
+
+  @OneToMany((type) => AlertModel, (alert) => alert.user)
+  alerts: AlertModel[];
+
+  @Exclude()
+  @Column({ type: 'simple-array', nullable: true })
+  hideInsights: string[];
+
+  insights: string[];
+
+  @AfterLoad()
+  computeInsights() {
+    let hideInsights = this.hideInsights;
+    if (!hideInsights) {
+      hideInsights = [];
+    }
+    const insightNames = Object.keys(INSIGHTS_MAP);
+    this.insights = insightNames.filter((name) => !hideInsights.includes(name));
+  }
 
   name: string;
 

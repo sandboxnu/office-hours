@@ -172,8 +172,10 @@ describe('Login Integration', () => {
             ta_courses: [],
           })
           .expect(201);
-
-        user = await UserModel.findOne(user, { relations: ['courses'] });
+        user = await UserModel.findOne({
+          where: { id: user.id },
+          relations: ['courses'],
+        });
 
         expect(user.courses).toHaveLength(1);
         expect(user.firstName).not.toEqual('Will');

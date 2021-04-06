@@ -1,5 +1,6 @@
 import { CreateQuestionParams, Role } from '@koh/common';
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { AlertModel } from 'alerts/alerts.entity';
 import { DesktopNotifModel } from 'notification/desktop-notif.entity';
 import { PhoneNotifModel } from 'notification/phone-notif.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
@@ -40,6 +41,7 @@ export class SeedController {
     await this.seedService.deleteAll(EventModel);
     await this.seedService.deleteAll(DesktopNotifModel);
     await this.seedService.deleteAll(PhoneNotifModel);
+    await this.seedService.deleteAll(AlertModel);
     await this.seedService.deleteAll(UserModel);
     await this.seedService.deleteAll(CourseModel);
     const manager = getManager();
@@ -88,7 +90,7 @@ export class SeedController {
     });
     if (!courseExists) {
       await SemesterFactory.create({ season: 'Fall', year: 2020 });
-      await CourseFactory.create();
+      await CourseFactory.create({ timezone: 'America/New_York' });
     }
 
     const course = await CourseModel.findOne({
@@ -159,6 +161,13 @@ export class SeedController {
         email: 'li.edwa@northeastern.edu',
         firstName: 'Eddy',
         lastName: 'Li',
+        photoURL:
+          'https://ca.slack-edge.com/TE565NU79-UR6P32JBT-a6c89822c544-512',
+        insights: [
+          'QuestionTypeBreakdown',
+          'TotalQuestionsAsked',
+          'TotalStudents',
+        ],
       });
       await UserCourseFactory.create({
         user: user5,
