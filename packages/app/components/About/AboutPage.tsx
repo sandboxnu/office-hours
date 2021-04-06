@@ -55,9 +55,9 @@ export default function AboutPage(): ReactElement {
             to learn more.
           </p>
           <p>
-            Our team is always working on new features and improvements, and are
-            always open to feedback. If you're interested in contributing or
-            have questions, feel free to take a look at our
+            Our team is always open to feedback. If you&apos;re interested in
+            contributing or have questions, feel free to take a look at our have
+            questions, feel free to take a look at our
             <a href="https://github.com/sandboxnu/office-hours"> GitHub</a> or
             email us at
             <a href="mailto:info@khouryofficehours.com">
@@ -146,7 +146,7 @@ const PROFILES_CURRENT = [
   {
     name: "Will Stenzel",
     role: "Developer",
-    image: "https://drive.google.com/uc?id=1r7yxjcxGYWClgb8ps48Ov2KKsHP55H3C",
+    image: "https://drive.google.com/uc?id=1nt95VPtubspwRkHxIkxA0dcXme-zhd3Q",
     personalSite: "https://willstenzel.com/",
   },
   {
