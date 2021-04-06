@@ -35,7 +35,6 @@ export default function SchedulePanel({
       end: e.endTime,
       title: e.title,
     })) ?? [];
-  console.log("ligma", myEvents);
 
   const today: Date = new Date();
   return (

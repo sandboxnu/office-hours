@@ -27,13 +27,6 @@ export default function CourseOverrideSettings({
     API.course.getCourseOverrides(courseId)
   );
 
-  const router = useRouter();
-  router.query["defaultPage"] = CourseAdminOptions.OVERRIDES;
-  router.push({
-    pathname: router.pathname,
-    query: router.query,
-  });
-
   const formattedRoles = {
     student: "Student",
     ta: "TA",

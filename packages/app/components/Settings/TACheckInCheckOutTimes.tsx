@@ -1,7 +1,6 @@
 import { API } from "@koh/api-client";
 import moment from "moment";
-import { useRouter } from "next/router";
-import React, { ReactElement } from "react";
+import React, { ReactElement, useState } from "react";
 import {
   Calendar,
   CalendarProps,
@@ -10,7 +9,6 @@ import {
 } from "react-big-calendar";
 import styled from "styled-components";
 import useSWR from "swr";
-import { CourseAdminOptions } from "./CourseAdminPanel";
 
 const TACheckInCheckOutCalendar = styled(Calendar)<CalendarProps>`
   height: 70vh;
@@ -25,19 +23,18 @@ interface TACheckInCheckOutTimesProps {
 export default function TACheckInCheckOutTimes({
   courseId,
 }: TACheckInCheckOutTimesProps): ReactElement {
-  const router = useRouter();
-  router.query["defaultPage"] = CourseAdminOptions.CHECK_IN;
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
 
-  const now = new Date();
-
-  const { data } = useSWR(
+  const { data, mutate } = useSWR(
     `/api/v1/course/getTACheckinCheckoutTimes`,
-    async () =>
-      await API.course.getTACheckinTimes(
+    async () => {
+      return API.course.getTACheckinTimes(
         courseId,
-        new Date(now.getFullYear(), 3, 1).toISOString(),
-        new Date().toISOString()
-      )
+        startDate.toISOString(),
+        endDate.toISOString()
+      );
+    }
   );
 
   const calData: Event[] =
@@ -61,6 +58,19 @@ export default function TACheckInCheckOutTimes({
         localizer={momentLocalizer(moment)}
         showMultiDayTimes={true}
         defaultView={"week"}
+        onRangeChange={(newDates) => {
+          console.log(newDates, Array.isArray(newDates));
+          if (Array.isArray(newDates)) {
+            setStartDate(newDates[0]);
+            setEndDate(newDates[newDates.length - 1]);
+            console.log("set dates", startDate, endDate);
+          } else {
+            setStartDate(new Date(newDates.start));
+            setEndDate(new Date(newDates.end));
+          }
+          console.log("fuck", startDate, endDate);
+          mutate();
+        }}
       />
     </div>
   );
