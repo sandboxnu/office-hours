@@ -27,7 +27,7 @@ for line in lines:
         anonymizing_user = False
 
     if anonymizing_user:
-        elements = line.split()
+        elements = line.split('\t')
         id = elements[0]  # user id
         elements[1] = id + '@northeastern.edu'  # email            
         elements[-2] = 'user' + id  # first name
@@ -37,7 +37,7 @@ for line in lines:
         elif len(elements) < 6:
             raise ValueError('The number of elements was less than 6')
 
-        newLine = " ".join(elements) + '\n'
+        newLine = "\t".join(elements) + '\n'
 
     if "COPY public.user_model" in line:
         anonymizing_user = True
