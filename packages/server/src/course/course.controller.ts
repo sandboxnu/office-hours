@@ -29,6 +29,7 @@ import async from 'async';
 import { partition } from 'lodash';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
+import { QuestionModel } from 'question/question.entity';
 import {
   Between,
   Connection,
@@ -351,12 +352,20 @@ export class CourseController {
         }
       }
 
+      const numHelped = await QuestionModel.count({
+        where: {
+          taHelpedId: checkinEvent.userId,
+          helpedAt: Between(checkinEvent.time, closestEvent?.time),
+        },
+      });
+
       taCheckinTimes.push({
         name: checkinEvent.user.name,
         checkinTime: checkinEvent.time,
         checkoutTime: closestEvent?.time,
         inProgress: mostRecentTime === originalDate,
         forced: closestEvent?.eventType === EventType.TA_CHECKED_OUT_FORCED,
+        numHelped,
       });
     }
 
