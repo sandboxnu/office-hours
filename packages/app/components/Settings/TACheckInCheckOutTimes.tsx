@@ -52,6 +52,11 @@ export default function TACheckInCheckOutTimes({
     fetcher
   );
 
+  const tasWhoForgotToCheckOut = data?.taCheckinTimes.filter((e) => e.forced);
+  const tasWhoAreCurrentlyInOH = data?.taCheckinTimes.filter(
+    (e) => e.inProgress
+  );
+
   const calData: Event[] =
     data?.taCheckinTimes.map((e) => ({
       start: e.checkinTime,
@@ -82,6 +87,30 @@ export default function TACheckInCheckOutTimes({
           mutate();
         }}
       />
+      {tasWhoAreCurrentlyInOH?.length ? (
+        <div>
+          <h3>People currently holding office hours:</h3>
+          {tasWhoAreCurrentlyInOH.map((ta) => (
+            <p key={ta.name}>{ta.name}</p>
+          ))}
+        </div>
+      ) : null}
+      {tasWhoForgotToCheckOut?.length ? (
+        <div>
+          <h3 style={{ color: "red" }}>
+            The following course staff forgot to check out:
+          </h3>
+          {tasWhoForgotToCheckOut.map((ta) => (
+            <p key={ta.name}>{ta.name}</p>
+          ))}
+          <p style={{ width: "800px" }}>
+            You should remind them to check out at the end of their office
+            hours. This makes it so that students don&apos;t join a queue
+            thinking that there are still office hours when the course staff
+            have already left
+          </p>
+        </div>
+      ) : null}
     </div>
   );
 }

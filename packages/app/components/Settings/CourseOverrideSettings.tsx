@@ -2,12 +2,10 @@ import { DeleteOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import { GetCourseOverridesRow, Role } from "@koh/common";
 import { Button, message, Table } from "antd";
-import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
 import useSWR from "swr";
 import AddOverrideInput from "./AddOverrideInput";
-import { CourseAdminOptions } from "./CourseAdminPanel";
 
 const { Column } = Table;
 
