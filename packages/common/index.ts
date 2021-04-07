@@ -6,6 +6,7 @@ import {
   IsEnum,
   IsInt,
   IsNotEmpty,
+  IsNumber,
   IsObject,
   IsOptional,
   IsString,
@@ -561,6 +562,9 @@ export class TACheckinPair {
 
   @IsBoolean()
   inProgress!: boolean;
+
+  @IsNumber()
+  numHelped!: number;
 }
 
 export enum AlertType {

@@ -66,7 +66,13 @@ export default function TACheckInCheckOutTimes({
         : e.forced
         ? `TA forgot to check out: ${e.name}`
         : e.name,
+      resource: e.numHelped,
     })) ?? [];
+
+  // Could have so many cool metrics, like, click on a ta's name and a modal
+  // comes up with the metrics of who they helped
+  // sinc eit's  acallback, maybe have to make a div that a modal can then
+  // .innerHTML (there's a version of this that's safe in REact) a modal onto it
 
   return (
     <div>
@@ -85,6 +91,11 @@ export default function TACheckInCheckOutTimes({
             setEndDate(new Date(newDates.end));
           }
           mutate();
+        }}
+        onSelectEvent={(event) => {
+          alert(
+            `${event.title} helped ${event.resource} students in their office hours`
+          );
         }}
       />
       {tasWhoAreCurrentlyInOH?.length ? (

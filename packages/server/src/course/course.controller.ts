@@ -355,9 +355,13 @@ export class CourseController {
       const numHelped = await QuestionModel.count({
         where: {
           taHelpedId: checkinEvent.userId,
-          helpedAt: Between(checkinEvent.time, closestEvent?.time),
+          helpedAt: Between(
+            checkinEvent.time,
+            closestEvent?.time || new Date(),
+          ),
         },
       });
+      console.log('ligma', numHelped);
 
       taCheckinTimes.push({
         name: checkinEvent.user.name,
