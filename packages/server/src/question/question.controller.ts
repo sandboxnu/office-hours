@@ -261,7 +261,7 @@ export class QuestionController {
     return;
   }
 
-  @Post('resolveGroup')
+  @Patch('resolveGroup')
   @Roles(Role.TA, Role.PROFESSOR)
   async resolveGroup(
     @Body() body: ResolveGroupParams,
@@ -271,6 +271,7 @@ export class QuestionController {
       where: {
         id: body.groupId,
       },
+      relations: ['questions', 'questions.taHelped', 'questions.creator'],
     });
 
     for (const question of group.questions) {
@@ -282,6 +283,7 @@ export class QuestionController {
     }
 
     // TODO: return type??
+    // this is in question controller bc its using question service, should it be queue controller?
     return;
   }
 }

@@ -1,41 +1,41 @@
 import React from "react";
-import { Question, User } from "@koh/common";
+import { Question, QuestionGroup, User } from "@koh/common";
 import { Header } from "../TAQueueDetail";
 import { Description } from "./AllQuestionsChecklist";
 import { CheckOutlined } from "@ant-design/icons";
 import { Tooltip } from "antd";
 import { FinishHelpingButton } from "../../Banner";
 import TAQueueDetailQuestion from "../TAQueueDetailQuestion";
+import { API } from "@koh/api-client";
 
 export function CurrentGroupList({
-  groupCreator,
-  questions,
+  group,
   queueId,
 }: {
-  groupCreator: User;
-  questions: Question[];
+  group?: QuestionGroup;
   queueId: number;
 }) {
+  console.log(`HELLOOOOO`, group);
   return (
     <div>
       <Header>
         <div>
-          <strong>{`${groupCreator.name}'s Group Session`}</strong>
+          <strong>{`${group?.creator.name}'s Group Session`}</strong>
           <Description>
-            {questions.map((q) => q.creator.name).join(", ")}
+            {group?.questions.map((q) => q.creator.name).join(", ")}
           </Description>
         </div>
         <div>
           <Tooltip title="Finish Helping">
             <FinishHelpingButton
               icon={<CheckOutlined />}
-              // TODO:  onClick={() => changeStatus(ClosedQuestionStatus.Resolved)}
+              onClick={() => API.questions.resolveGroup({ groupId: group?.id })}
               data-cy="finish-helping-button"
             />
           </Tooltip>
         </div>
       </Header>
-      {questions.map((q) => (
+      {group?.questions.map((q) => (
         <div key={q.id}>
           <TAQueueDetailQuestion
             question={q}

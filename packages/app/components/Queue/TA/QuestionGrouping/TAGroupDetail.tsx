@@ -19,11 +19,7 @@ export default function TAGroupDetail({
   const groupedQuestions = myGroup ? myGroup.questions : [];
 
   return groupedQuestions.length ? (
-    <CurrentGroupList
-      questions={groupedQuestions}
-      groupCreator={groupCreator}
-      queueId={queueId}
-    />
+    <CurrentGroupList group={myGroup} queueId={queueId} />
   ) : (
     <AllQuestionsCheckList
       allQuestions={allQuestions}
