@@ -34,8 +34,8 @@ export class SeedController {
   @Get('delete')
   async deleteAll(): Promise<string> {
     await this.seedService.deleteAll(OfficeHourModel);
-    await this.seedService.deleteAll(QuestionGroupModel);
     await this.seedService.deleteAll(QuestionModel);
+    await this.seedService.deleteAll(QuestionGroupModel);
     await this.seedService.deleteAll(QueueModel);
     await this.seedService.deleteAll(UserCourseModel);
     await this.seedService.deleteAll(EventModel);

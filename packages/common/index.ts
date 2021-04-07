@@ -547,7 +547,7 @@ export class HelpQuestionsParams {
 
 export class ResolveGroupParams {
   @IsInt()
-  groupId!: number;
+  queueId!: number;
 }
 
 export type TAUpdateStatusResponse = QueuePartial;

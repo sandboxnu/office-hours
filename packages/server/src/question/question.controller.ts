@@ -8,7 +8,6 @@ import {
   LimboQuestionStatus,
   OpenQuestionStatus,
   QuestionStatusKeys,
-  ResolveGroupParams,
   Role,
   UpdateQuestionParams,
   UpdateQuestionResponse,
@@ -43,6 +42,9 @@ import { QuestionRolesGuard } from './question-role.guard';
 import { QuestionModel } from './question.entity';
 import { QuestionService } from './question.service';
 
+// NOTE: FIXME: EVERY REQUEST INTO QUESTIONCONTROLLER REQUIRES THE BODY TO HAVE A
+// FIELD questionId OR queueId! If not, stupid weird untraceable bugs will happen
+// and you will lose a lot of development time
 @Controller('questions')
 @UseGuards(JwtAuthGuard, QuestionRolesGuard)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -261,15 +263,15 @@ export class QuestionController {
     return;
   }
 
-  @Patch('resolveGroup')
+  @Patch('resolveGroup/:group_id')
   @Roles(Role.TA, Role.PROFESSOR)
   async resolveGroup(
-    @Body() body: ResolveGroupParams,
+    @Param('group_id') groupId: number,
     @UserId() instructorId: number,
   ): Promise<void> {
     const group = await QuestionGroupModel.findOne({
       where: {
-        id: body.groupId,
+        id: groupId,
       },
       relations: ['questions', 'questions.taHelped', 'questions.creator'],
     });

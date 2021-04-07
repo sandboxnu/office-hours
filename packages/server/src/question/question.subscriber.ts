@@ -38,28 +38,34 @@ export class QuestionSubscriber
   async afterUpdate(event: UpdateEvent<QuestionModel>): Promise<void> {
     // TODO: fix this
     // Send all listening clients an update
-    // await this.queueSSEService.updateQuestions(event.entity.queueId);
-    // // Send push notification to students when they are hit 3rd in line
-    // // if status updated to closed
-    // if (
-    //   event.updatedColumns.find((c) => c.propertyName === 'status') &&
-    //   event.entity.status in ClosedQuestionStatus
-    // ) {
-    //   // get 3rd in queue before and after this update
-    //   const previousThird = await QuestionModel.waitingInQueue(
-    //     event.entity.queueId,
-    //   )
-    //     .offset(2)
-    //     .getOne();
-    //   const third = await QuestionModel.waitingInQueue(event.entity.queueId)
-    //     .setQueryRunner(event.queryRunner) // Run in same transaction as the update
-    //     .offset(2)
-    //     .getOne();
-    //   if (third && previousThird?.id !== third?.id) {
-    //     const { creatorId } = third;
-    //     this.notifService.notifyUser(creatorId, NotifMsgs.queue.THIRD_PLACE);
-    //   }
-    // }
+    console.log('ligma', event.metadata);
+
+    if (!event.entity) {
+      return;
+    }
+
+    await this.queueSSEService.updateQuestions(event.entity.queueId);
+    // Send push notification to students when they are hit 3rd in line
+    // if status updated to closed
+    if (
+      event.updatedColumns.find((c) => c.propertyName === 'status') &&
+      event.entity.status in ClosedQuestionStatus
+    ) {
+      // get 3rd in queue before and after this update
+      const previousThird = await QuestionModel.waitingInQueue(
+        event.entity.queueId,
+      )
+        .offset(2)
+        .getOne();
+      const third = await QuestionModel.waitingInQueue(event.entity.queueId)
+        .setQueryRunner(event.queryRunner) // Run in same transaction as the update
+        .offset(2)
+        .getOne();
+      if (third && previousThird?.id !== third?.id) {
+        const { creatorId } = third;
+        this.notifService.notifyUser(creatorId, NotifMsgs.queue.THIRD_PLACE);
+      }
+    }
   }
 
   async afterInsert(event: InsertEvent<QuestionModel>): Promise<void> {

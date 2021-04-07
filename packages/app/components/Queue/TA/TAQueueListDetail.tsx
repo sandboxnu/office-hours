@@ -88,8 +88,13 @@ export default function TAQueueListDetail({
     (group) => group.creator.id === user.id
   );
   const groupedQuestions = myGroup ? myGroup.questions : [];
-  const allQuestionsList = questions
-    ? [...helpingQuestions, ...questions.queue, ...questions.priorityQueue]
+  const allQuestionsList: Question[] = questions
+    ? [
+        ...helpingQuestions,
+        ...questions.queue,
+        ...questions.priorityQueue,
+        ...questions.groups.flatMap((e) => e.questions),
+      ]
     : [];
   const selectedQuestion = allQuestionsList.find(
     (q) => q.id === selectedQuestionId
