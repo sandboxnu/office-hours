@@ -65,7 +65,7 @@ export default function CourseAdminPanel({
           style={{ background: "#f8f9fb", paddingTop: "20px" }}
         >
           <Menu.Item key={CourseAdminOptions.CHECK_IN} icon={<EditOutlined />}>
-            TA Check In and Check Out times
+            TA Check In/Out Times
           </Menu.Item>
           <Menu.Item key={CourseAdminOptions.OVERRIDES} icon={<BellOutlined />}>
             Course Overrides

@@ -72,7 +72,8 @@ export default function TACheckInCheckOutTimes({
   // Could have so many cool metrics, like, click on a ta's name and a modal
   // comes up with the metrics of who they helped
   // sinc eit's  acallback, maybe have to make a div that a modal can then
-  // .innerHTML (there's a version of this that's safe in REact) a modal onto it
+  // portal a modal onto it
+  // https://reactjs.org/docs/react-dom.html#createportal
 
   return (
     <div>
@@ -115,10 +116,9 @@ export default function TACheckInCheckOutTimes({
             <p key={ta.name}>{ta.name}</p>
           ))}
           <p style={{ width: "800px" }}>
-            You should remind them to check out at the end of their office
-            hours. This makes it so that students don&apos;t join a queue
-            thinking that there are still office hours when the course staff
-            have already left
+            Please remind course staff to check out at the end of their office
+            hours. This way students don&apos;t join a queue thinking that there
+            are still oficce horus when the course staff has already left
           </p>
         </div>
       ) : null}

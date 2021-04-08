@@ -1,4 +1,9 @@
-import { ERROR_MESSAGES, Role, TACheckoutResponse } from '@koh/common';
+import {
+  ERROR_MESSAGES,
+  Role,
+  TACheckinTimesResponse,
+  TACheckoutResponse,
+} from '@koh/common';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { CourseModule } from '../src/course/course.module';
@@ -6,6 +11,7 @@ import { QueueModel } from '../src/queue/queue.entity';
 import {
   ClosedOfficeHourFactory,
   CourseFactory,
+  EventFactory,
   OfficeHourFactory,
   QuestionFactory,
   QueueFactory,
@@ -353,6 +359,80 @@ describe('Course Integration', () => {
         },
       });
       expect(ucm).toBeUndefined();
+    });
+  });
+
+  describe('GET /courses/:id/ta_check_in_times', () => {
+    it('tests that events within date range are gotten', async () => {
+      const now = new Date();
+      const yesterday = new Date();
+      yesterday.setUTCHours(now.getUTCHours() - 24);
+
+      const course = await CourseFactory.create();
+      const ta = await UserFactory.create();
+      const professor = await UserFactory.create();
+      await UserCourseFactory.create({
+        user: ta,
+        role: Role.TA,
+        course,
+      });
+      await UserCourseFactory.create({
+        user: professor,
+        role: Role.PROFESSOR,
+        course,
+      });
+
+      await EventFactory.create({
+        user: ta,
+        course: course,
+        time: yesterday,
+        eventType: EventType.TA_CHECKED_IN,
+      });
+
+      await EventFactory.create({
+        user: ta,
+        course: course,
+        time: new Date(Date.now() - 80000000),
+        eventType: EventType.TA_CHECKED_OUT,
+      });
+
+      await EventFactory.create({
+        user: ta,
+        course: course,
+        time: new Date(Date.now() - 70000000),
+        eventType: EventType.TA_CHECKED_IN,
+      });
+
+      const todayAtMidnight = new Date();
+      todayAtMidnight.setHours(0, 0, 0, 0);
+
+      await EventFactory.create({
+        user: ta,
+        course: course,
+        time: todayAtMidnight,
+        eventType: EventType.TA_CHECKED_OUT_FORCED,
+      });
+
+      await EventFactory.create({
+        user: ta,
+        course: course,
+        time: new Date(Date.now() - 1000),
+        eventType: EventType.TA_CHECKED_IN,
+      });
+
+      const data = await supertest({ userId: professor.id })
+        .get(`/courses/${course.id}/ta_check_in_times`)
+        .query({
+          startDate: new Date(Date.now() - 90000000),
+          endDate: new Date(),
+        })
+        .expect(200);
+
+      const checkinTimes = ((data.body as unknown) as TACheckinTimesResponse)
+        .taCheckinTimes;
+
+      expect(checkinTimes.length).toBe(3);
+      expect(checkinTimes).toStrictEqual({});
     });
   });
 });

@@ -361,7 +361,6 @@ export class CourseController {
           ),
         },
       });
-      console.log('ligma', numHelped);
 
       taCheckinTimes.push({
         name: checkinEvent.user.name,
