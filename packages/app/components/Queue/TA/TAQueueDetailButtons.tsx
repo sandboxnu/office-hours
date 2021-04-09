@@ -161,7 +161,7 @@ export default function TAQueueDetailButtons({
             </span>
           </Tooltip>
         </Popconfirm>
-        <Tooltip title="Ask the student to add more detail to their question">
+        {/* TODO: fix this <Tooltip title="Ask the student to add more detail to their question">
           <BannerOrangeButton
             shape="circle"
             icon={<QuestionOutlined />}
@@ -169,7 +169,7 @@ export default function TAQueueDetailButtons({
             data-cy="request-rephrase-question"
             disabled={!isCheckedIn}
           />
-        </Tooltip>
+        </Tooltip> */}
         <Tooltip title={helpTooltip}>
           <span>
             <BannerPrimaryButton
