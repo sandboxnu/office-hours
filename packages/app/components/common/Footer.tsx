@@ -16,7 +16,15 @@ export function Footer(): ReactElement {
   return (
     <FullWidth>
       <div>
-        Made by students @{" "}
+        Made{" "}
+        <a
+          onClick={() => {
+            window.open("/about");
+          }}
+        >
+          by students
+        </a>{" "}
+        @{" "}
         <a
           onClick={() => {
             window.open("https://sandboxnu.com");

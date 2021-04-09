@@ -2,6 +2,7 @@ import {
   FileTextOutlined,
   LogoutOutlined,
   QuestionCircleOutlined,
+  ReadOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
 import { Menu, Popover } from "antd";
@@ -67,9 +68,14 @@ export default function ProfileDrawer({
               >
                 Release Notes
               </Menu.Item>
-              <Menu.Item key="3" icon={<LogoutOutlined />}>
+              <Menu.Item key="3" icon={<ReadOutlined />}>
+                <Link href={"/about"}>
+                  <a>About Us</a>
+                </Link>
+              </Menu.Item>
+              <Menu.Item key="4" icon={<LogoutOutlined />}>
                 <Link href={"/api/v1/logout"}>
-                  <a>Logout</a>
+                  <a data-cy="logout-button">Logout</a>
                 </Link>
               </Menu.Item>
             </Menu>

@@ -23,7 +23,7 @@ interface SettingsPageProps {
   defaultPage: SettingsOptions;
 }
 
-const VerticalDivider = styled.div`
+export const VerticalDivider = styled.div`
   @media (min-width: 767px) {
     border-right: 1px solid #cfd6de;
     margin-right: 32px;
