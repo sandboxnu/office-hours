@@ -118,7 +118,7 @@ export default function TACheckInCheckOutTimes({
           <p style={{ width: "800px" }}>
             Please remind course staff to check out at the end of their office
             hours. This way students don&apos;t join a queue thinking that there
-            are still oficce horus when the course staff has already left
+            are still office hours when the course staff has already left
           </p>
         </div>
       ) : null}

@@ -1,6 +1,10 @@
-import { BellOutlined, EditOutlined } from "@ant-design/icons";
-import { Col, Menu, Row, Space } from "antd";
-import Link from "next/link";
+import {
+  BellOutlined,
+  EditOutlined,
+  QuestionCircleOutlined,
+} from "@ant-design/icons";
+import { Col, Menu, Row, Space, Tooltip } from "antd";
+import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../hooks/useProfile";
@@ -38,27 +42,31 @@ export default function CourseAdminPanel({
     defaultPage || CourseAdminOptions.CHECK_IN
   );
 
+  const router = useRouter();
+
   return (
     <Row>
       <Col span={4} style={{ textAlign: "center" }}>
         <SettingsPanelAvatar />
         <CenteredText>
           Welcome back {profile?.firstName} {profile?.lastName}
-        </CenteredText>
-        {!profile?.photoURL && (
-          <CenteredText>
-            You should consider uploading a{" "}
-            <Link
-              href={{
-                pathname: "/settings",
-                query: { cid: courseId },
-              }}
+          {!profile?.photoURL && (
+            <Tooltip
+              title={
+                "You should consider uploading a profile picture to make yourself more recognizable to students"
+              }
             >
-              Profile Picture
-            </Link>{" "}
-            to make yourself more recognizable to students
-          </CenteredText>
-        )}
+              <span>
+                <QuestionCircleOutlined
+                  style={{ marginLeft: "5px" }}
+                  onClick={() => {
+                    router.push(`/settings?cid=${courseId}`);
+                  }}
+                />
+              </span>
+            </Tooltip>
+          )}
+        </CenteredText>
         <Menu
           defaultSelectedKeys={[currentSettings]}
           onClick={(e) => setCurrentSettings(e.key as CourseAdminOptions)}
