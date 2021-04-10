@@ -52,6 +52,7 @@ export default function TACheckInCheckOutTimes({
     fetcher
   );
 
+  console.log("fuck", data);
   const tasWhoForgotToCheckOut = data?.taCheckinTimes.filter((e) => e.forced);
   const tasWhoAreCurrentlyInOH = data?.taCheckinTimes.filter(
     (e) => e.inProgress

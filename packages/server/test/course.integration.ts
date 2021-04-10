@@ -371,6 +371,7 @@ describe('Course Integration', () => {
       const course = await CourseFactory.create();
       const ta = await UserFactory.create();
       const professor = await UserFactory.create();
+
       await UserCourseFactory.create({
         user: ta,
         role: Role.TA,
@@ -389,41 +390,52 @@ describe('Course Integration', () => {
         eventType: EventType.TA_CHECKED_IN,
       });
 
+      const yesterdayPlusTwoHours = new Date(yesterday);
+      yesterdayPlusTwoHours.setUTCHours(yesterday.getUTCHours() + 2);
+
       await EventFactory.create({
         user: ta,
         course: course,
-        time: new Date(Date.now() - 80000000),
+        time: new Date(yesterdayPlusTwoHours),
         eventType: EventType.TA_CHECKED_OUT,
       });
 
+      const thenThreeMoreHours = new Date(yesterdayPlusTwoHours);
+      thenThreeMoreHours.setUTCHours(yesterday.getUTCHours() + 3);
+
       await EventFactory.create({
         user: ta,
         course: course,
-        time: new Date(Date.now() - 70000000),
+        time: thenThreeMoreHours,
         eventType: EventType.TA_CHECKED_IN,
       });
 
-      const todayAtMidnight = new Date();
-      todayAtMidnight.setHours(0, 0, 0, 0);
+      const twelveHoursAFter = new Date(thenThreeMoreHours);
+      twelveHoursAFter.setUTCHours(thenThreeMoreHours.getUTCHours() + 12);
 
       await EventFactory.create({
         user: ta,
         course: course,
-        time: todayAtMidnight,
+        time: twelveHoursAFter,
         eventType: EventType.TA_CHECKED_OUT_FORCED,
       });
 
+      const justNow = new Date(Date.now() - 1000);
+
       await EventFactory.create({
         user: ta,
         course: course,
-        time: new Date(Date.now() - 1000),
+        time: justNow,
         eventType: EventType.TA_CHECKED_IN,
       });
+
+      const twoDaysAgo = new Date();
+      twoDaysAgo.setUTCDate(twoDaysAgo.getUTCDate() - 2);
 
       const data = await supertest({ userId: professor.id })
         .get(`/courses/${course.id}/ta_check_in_times`)
         .query({
-          startDate: new Date(Date.now() - 90000000),
+          startDate: twoDaysAgo,
           endDate: new Date(),
         })
         .expect(200);
@@ -431,8 +443,34 @@ describe('Course Integration', () => {
       const checkinTimes = ((data.body as unknown) as TACheckinTimesResponse)
         .taCheckinTimes;
 
+      const taName = ta.firstName + ' ' + ta.lastName;
+
       expect(checkinTimes.length).toBe(3);
-      expect(checkinTimes).toStrictEqual({});
+      expect(checkinTimes).toStrictEqual([
+        {
+          checkinTime: yesterday.toISOString(),
+          checkoutTime: yesterdayPlusTwoHours.toISOString(),
+          forced: false,
+          inProgress: false,
+          name: taName,
+          numHelped: 0,
+        },
+        {
+          checkinTime: thenThreeMoreHours.toISOString(),
+          checkoutTime: twelveHoursAFter.toISOString(),
+          forced: true,
+          inProgress: false,
+          name: taName,
+          numHelped: 0,
+        },
+        {
+          checkinTime: justNow.toISOString(),
+          forced: false,
+          inProgress: true,
+          name: taName,
+          numHelped: 0,
+        },
+      ]);
     });
   });
 });

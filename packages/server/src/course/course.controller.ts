@@ -4,7 +4,6 @@ import {
   GetCourseResponse,
   QueuePartial,
   Role,
-  TACheckinPair,
   TACheckinTimesResponse,
   TACheckoutResponse,
   UpdateCourseOverrideBody,
@@ -26,17 +25,9 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import async from 'async';
-import { partition } from 'lodash';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
-import { QuestionModel } from 'question/question.entity';
-import {
-  Between,
-  Connection,
-  getRepository,
-  In,
-  MoreThanOrEqual,
-} from 'typeorm';
+import { Connection, getRepository, MoreThanOrEqual } from 'typeorm';
 import { JwtAuthGuard } from '../login/jwt-auth.guard';
 import { Roles } from '../profile/roles.decorator';
 import { User } from '../profile/user.decorator';
@@ -46,6 +37,7 @@ import { QueueSSEService } from '../queue/queue-sse.service';
 import { QueueModel } from '../queue/queue.entity';
 import { CourseRolesGuard } from './course-roles.guard';
 import { CourseModel } from './course.entity';
+import { CourseService } from './course.service';
 import { HeatmapService } from './heatmap.service';
 import { IcalService } from './ical.service';
 import { OfficeHourModel } from './office-hour.entity';
@@ -61,6 +53,7 @@ export class CourseController {
     private queueSSEService: QueueSSEService,
     private heatmapService: HeatmapService,
     private icalService: IcalService,
+    private courseService: CourseService,
   ) {}
 
   @Get(':id')
@@ -315,63 +308,10 @@ export class CourseController {
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
   ): Promise<TACheckinTimesResponse> {
-    const taEvents = await EventModel.find({
-      where: {
-        eventType: In([
-          EventType.TA_CHECKED_IN,
-          EventType.TA_CHECKED_OUT,
-          EventType.TA_CHECKED_OUT_FORCED,
-        ]),
-        time: Between(startDate, endDate),
-        courseId,
-      },
-      relations: ['user'],
-    });
-
-    const [checkinEvents, otherEvents] = partition(
-      taEvents,
-      (e) => e.eventType === EventType.TA_CHECKED_IN,
+    return await this.courseService.getTACheckInCheckOutTimes(
+      courseId,
+      startDate,
+      endDate,
     );
-
-    const taCheckinTimes: TACheckinPair[] = [];
-
-    for (const checkinEvent of checkinEvents) {
-      let closestEvent: EventModel = null;
-      let mostRecentTime = new Date();
-      const originalDate = mostRecentTime;
-
-      for (const checkoutEvent of otherEvents) {
-        if (
-          checkoutEvent.userId === checkinEvent.userId &&
-          checkoutEvent.time > checkinEvent.time &&
-          checkoutEvent.time.getTime() - checkinEvent.time.getTime() <
-            mostRecentTime.getTime() - checkinEvent.time.getTime()
-        ) {
-          closestEvent = checkoutEvent;
-          mostRecentTime = checkoutEvent.time;
-        }
-      }
-
-      const numHelped = await QuestionModel.count({
-        where: {
-          taHelpedId: checkinEvent.userId,
-          helpedAt: Between(
-            checkinEvent.time,
-            closestEvent?.time || new Date(),
-          ),
-        },
-      });
-
-      taCheckinTimes.push({
-        name: checkinEvent.user.name,
-        checkinTime: checkinEvent.time,
-        checkoutTime: closestEvent?.time,
-        inProgress: mostRecentTime === originalDate,
-        forced: closestEvent?.eventType === EventType.TA_CHECKED_OUT_FORCED,
-        numHelped,
-      });
-    }
-
-    return { taCheckinTimes };
   }
 }
