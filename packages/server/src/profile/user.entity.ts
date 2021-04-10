@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import { INSIGHTS_MAP } from '../insights/insight-objects';
+
 import {
   AfterLoad,
   BaseEntity,
@@ -16,6 +16,7 @@ import { QueueModel } from '../queue/queue.entity';
 import { EventModel } from './event-model.entity';
 import { UserCourseModel } from './user-course.entity';
 import { AlertModel } from '../alerts/alerts.entity';
+import { INSIGHTS_MAP } from 'insights/insights-objects/insight-utils';
 
 @Entity('user_model')
 export class UserModel extends BaseEntity {

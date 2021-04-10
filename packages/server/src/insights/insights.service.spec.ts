@@ -9,13 +9,13 @@ import {
   QueueFactory,
   UserFactory,
 } from '../../test/util/factories';
-import { INSIGHTS_MAP } from './insight-objects';
 import {
   BarChartOutputType,
   QuestionType,
   SimpleTableOutputType,
 } from '@koh/common';
 import { UserModel } from 'profile/user.entity';
+import { INSIGHTS_MAP } from './insights-objects/insight-utils';
 
 describe('InsightsService', () => {
   let service: InsightsService;
