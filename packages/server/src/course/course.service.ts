@@ -14,6 +14,12 @@ export class CourseService {
     startDate: string,
     endDate: string,
   ): Promise<TACheckinTimesResponse> {
+    const startDateAsDate = new Date(startDate);
+    const endDateAsDate = new Date(endDate);
+    if (startDateAsDate.getUTCDate() === endDateAsDate.getUTCDate()) {
+      endDateAsDate.setUTCDate(endDateAsDate.getUTCDate() + 1);
+    }
+
     const taEvents = await EventModel.find({
       where: {
         eventType: In([
@@ -21,7 +27,7 @@ export class CourseService {
           EventType.TA_CHECKED_OUT,
           EventType.TA_CHECKED_OUT_FORCED,
         ]),
-        time: Between(new Date(startDate), new Date(endDate)),
+        time: Between(startDateAsDate, endDateAsDate),
         courseId,
       },
       relations: ['user'],
