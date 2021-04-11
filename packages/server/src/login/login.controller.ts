@@ -44,22 +44,6 @@ export class LoginController {
         Sentry.captureMessage('Invalid request signature: ' + parsedRequest);
         throw new UnauthorizedException('Invalid request signature');
       }
-
-      // TODO: IP validation isn't working on prod, need to look into later
-
-      // This checks if the request is coming from one of the khoury servers
-      // const verifyIP = this.configService
-      //   .get('KHOURY_SERVER_IP')
-      //   .includes(req.ip);
-      // if (!verifyIP) {
-      //   Sentry.captureMessage(
-      //     'The IP of the request does not seem to be coming from the Khoury server: ' +
-      //       req.ip,
-      //   );
-      //   throw new UnauthorizedException(
-      //     'The IP of the request does not seem to be coming from the Khoury server',
-      //   );
-      // }
     }
 
     let user;
