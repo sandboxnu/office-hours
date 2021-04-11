@@ -1,5 +1,5 @@
-import { User, Question } from "@koh/common";
-import React, { ReactElement, useState } from "react";
+import { User } from "@koh/common";
+import React, { ReactElement } from "react";
 import { useQuestions } from "../../../../hooks/useQuestions";
 import AllQuestionsCheckList from "./AllQuestionsChecklist";
 import { CurrentGroupList } from "./CurrentGroupList";

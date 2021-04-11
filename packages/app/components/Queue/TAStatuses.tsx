@@ -26,11 +26,13 @@ export function TAStatuses({ queueId }: StatusRowProps): ReactElement {
   const taToQuestion: Record<number, Question> = {};
   const taIds = staffList.map((t) => t.id);
   const helpingQuestions = questions.questionsGettingHelp;
+  const groups = questions.groups;
   for (const question of helpingQuestions) {
     if (taIds.includes(question.taHelped?.id)) {
       taToQuestion[question.taHelped.id] = question;
     }
   }
+
   return (
     <Col>
       {staffList.map((ta) => (
@@ -40,6 +42,7 @@ export function TAStatuses({ queueId }: StatusRowProps): ReactElement {
             taPhotoURL={ta.photoURL}
             studentName={taToQuestion[ta.id]?.creator?.name}
             helpedAt={taToQuestion[ta.id]?.helpedAt}
+            grouped={groups.some((g) => g.creator.id === ta.id)}
           />
         </Col>
       ))}
@@ -73,6 +76,7 @@ interface StatusCardProps {
   taPhotoURL: string;
   studentName?: string;
   helpedAt?: Date;
+  grouped?: boolean;
 }
 /**
  * View component just renders TA status
@@ -82,8 +86,10 @@ function StatusCard({
   taPhotoURL,
   studentName,
   helpedAt,
+  grouped,
 }: StatusCardProps): ReactElement {
   const isBusy = !!helpedAt;
+  // TODO: figure out why the CSS on the badge is fucky wucky
   return (
     <StyledCard data-cy="ta-status-card">
       <KOHAvatar
@@ -101,7 +107,9 @@ function StatusCard({
           </span>
         </Row>
         <HelpingInfo>
-          {isBusy ? (
+          {grouped ? (
+            "Helping a group"
+          ) : isBusy ? (
             <HelpingFor studentName={studentName} helpedAt={helpedAt} />
           ) : (
             "Looking for my next student..."

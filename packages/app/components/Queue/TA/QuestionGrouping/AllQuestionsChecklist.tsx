@@ -1,13 +1,13 @@
-import { User, Question } from "@koh/common";
-import { Checkbox, Tooltip } from "antd";
 import { PhoneOutlined } from "@ant-design/icons";
+import { API } from "@koh/api-client";
+import { Question, User } from "@koh/common";
+import { Checkbox, Tooltip } from "antd";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
-import { Header } from "../TAQueueDetail";
-import TAQueueListItem from "../TAQueueListItem";
 import { useTAInQueueInfo } from "../../../../hooks/useTAInQueueInfo";
 import { BannerPrimaryButton } from "../../Banner";
-import { API } from "@koh/api-client";
+import { Header } from "../TAQueueDetail";
+import TAQueueListItem from "../TAQueueListItem";
 
 export const Description = styled.div`
   font-size: 12px;
@@ -20,6 +20,10 @@ const SelectAllContainer = styled.div`
 const QuestionsList = styled.div`
   display: flex;
   flex-direction: column;
+`;
+
+const RedText = styled.span`
+  color: red;
 `;
 
 export default function AllQuestionsCheckList({
@@ -63,12 +67,27 @@ export default function AllQuestionsCheckList({
     }
   };
 
+  const anyStudentDidNotConsent = allQuestions.some((q) => !q.groupable);
+
+  const usersInLink = allQuestions
+    .filter((question) => checkedQuestions.has(question.id))
+    .map((question) => question.creator.email)
+    .join(",");
+
   return (
     <div>
       <Header>
         <div>
           <strong>{`${groupCreator.name}'s Group Session`}</strong>
-          <Description>Select Students to Create Group</Description>
+          <Description>
+            Select Students to Create Group
+            {anyStudentDidNotConsent ? (
+              <div>
+                <RedText>Note:</RedText> some students may not show up, as they
+                did not consent to being grouped
+              </div>
+            ) : null}
+          </Description>
         </div>
         <div>
           <Tooltip title={helpTooltip}>
@@ -81,7 +100,9 @@ export default function AllQuestionsCheckList({
                     queueId: queueId,
                   });
                   onStartCall();
-                  // TODO: call the student, create group on backend etc
+                  window.open(
+                    `https://teams.microsoft.com/l/chat/0/0?users=${usersInLink}`
+                  );
                 }}
                 disabled={!canHelp || checkedQuestions.size === 0}
                 data-cy="help-student"
@@ -103,17 +124,19 @@ export default function AllQuestionsCheckList({
         </Checkbox>
       </SelectAllContainer>
       <QuestionsList>
-        {allQuestions.map((q, i) => (
-          <div key={q.id}>
-            <TAQueueListItem
-              question={q}
-              index={i + 1}
-              selected={checkedQuestions.has(q.id)}
-              onClick={() => onQuestionChecked(q)}
-              showCheckbox
-            />
-          </div>
-        ))}
+        {allQuestions
+          .filter((q) => q.groupable)
+          .map((q, i) => (
+            <div key={q.id}>
+              <TAQueueListItem
+                question={q}
+                index={i + 1}
+                selected={checkedQuestions.has(q.id)}
+                onClick={() => onQuestionChecked(q)}
+                showCheckbox
+              />
+            </div>
+          ))}
       </QuestionsList>
     </div>
   );
