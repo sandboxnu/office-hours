@@ -16,7 +16,7 @@ import * as Sentry from '@sentry/node';
 import { Request, Response } from 'express';
 import * as httpSignature from 'http-signature';
 import { Connection } from 'typeorm';
-import { NonProductionGuard } from '../../src/non-production.guard';
+import { NonProductionGuard } from '../guards/non-production.guard';
 import { LoginCourseService } from './login-course.service';
 
 @Controller()

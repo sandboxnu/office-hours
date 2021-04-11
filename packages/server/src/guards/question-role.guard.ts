@@ -4,10 +4,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { RolesGuard } from '../guards/role.guard';
+import { RolesGuard } from './role.guard';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
-import { QuestionModel } from './question.entity';
+import { QuestionModel } from '../question/question.entity';
 
 @Injectable()
 export class QuestionRolesGuard extends RolesGuard {

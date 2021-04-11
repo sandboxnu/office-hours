@@ -18,7 +18,7 @@ import {
 } from '../../test/util/factories';
 import { CourseModel } from '../course/course.entity';
 import { OfficeHourModel } from '../course/office-hour.entity';
-import { NonProductionGuard } from '../non-production.guard';
+import { NonProductionGuard } from '../guards/non-production.guard';
 import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { SeedService } from './seed.service';
