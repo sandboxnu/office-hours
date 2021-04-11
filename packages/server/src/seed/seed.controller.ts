@@ -1,6 +1,7 @@
 import { CreateQuestionParams, Role } from '@koh/common';
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AlertModel } from 'alerts/alerts.entity';
+import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { DesktopNotifModel } from 'notification/desktop-notif.entity';
 import { PhoneNotifModel } from 'notification/phone-notif.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
@@ -43,6 +44,7 @@ export class SeedController {
     await this.seedService.deleteAll(PhoneNotifModel);
     await this.seedService.deleteAll(AlertModel);
     await this.seedService.deleteAll(UserModel);
+    await this.seedService.deleteAll(CourseSectionMappingModel);
     await this.seedService.deleteAll(CourseModel);
     const manager = getManager();
     manager.query('ALTER SEQUENCE user_model_id_seq RESTART WITH 1;');
