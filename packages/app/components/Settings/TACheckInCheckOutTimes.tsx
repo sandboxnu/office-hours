@@ -12,13 +12,14 @@ import useSWR from "swr";
 
 const TACheckInCheckOutCalendar = styled(Calendar)<CalendarProps>`
   height: 70vh;
-  padding-top: 40px;
-  padding-left: 60px;
+  padding-top: 36px;
+  padding-left: 36px;
 `;
 
 const CheckinHeader = styled.h1`
-  text-align: center;
-  margin-top: 10px;
+  margin-top: 12px;
+  margin-bottom: 0;
+  padding-left: 36px;
 `;
 
 interface TACheckInCheckOutTimesProps {

@@ -49,7 +49,9 @@ export default function CourseAdminPanel({
       <Col span={4} style={{ textAlign: "center" }}>
         <SettingsPanelAvatar />
         <CenteredText>
-          Welcome back {profile?.firstName} {profile?.lastName}
+          Welcome back
+          <br />
+          {profile?.firstName} {profile?.lastName}
           {!profile?.photoURL && (
             <Tooltip
               title={
