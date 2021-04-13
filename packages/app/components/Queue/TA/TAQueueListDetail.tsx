@@ -1,4 +1,5 @@
 import { ArrowLeftOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { Question } from "@koh/common";
 import { useWindowWidth } from "@react-hook/window-size";
 import { Button, Skeleton, Tooltip } from "antd";
 import Link from "next/link";

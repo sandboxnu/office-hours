@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import { QuestionGroupModel } from 'question/question-group.entity';
+import { QuestionGroupModel } from '../question/question-group.entity';
 import {
   BaseEntity,
   Column,

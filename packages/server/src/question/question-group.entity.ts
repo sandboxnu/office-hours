@@ -1,4 +1,3 @@
-import { UserCourseModel } from 'profile/user-course.entity';
 import {
   BaseEntity,
   Column,
@@ -8,6 +7,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { UserCourseModel } from '../profile/user-course.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { QuestionModel } from './question.entity';
 

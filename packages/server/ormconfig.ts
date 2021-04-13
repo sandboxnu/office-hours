@@ -1,5 +1,4 @@
 import { config } from 'dotenv';
-import { QuestionGroupModel } from 'question/question-group.entity';
 import { AdminUserModel } from './src/admin/admin-user.entity';
 import { CourseModel } from './src/course/course.entity';
 import { OfficeHourModel } from './src/course/office-hour.entity';
@@ -11,6 +10,7 @@ import { EventModel } from './src/profile/event-model.entity';
 import { UserCourseModel } from './src/profile/user-course.entity';
 import { UserModel } from './src/profile/user.entity';
 import { QuestionModel } from './src/question/question.entity';
+import { QuestionGroupModel } from './src/question/question-group.entity';
 import { QueueModel } from './src/queue/queue.entity';
 config();
 
