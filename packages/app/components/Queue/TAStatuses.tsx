@@ -61,6 +61,7 @@ const StyledCard = styled.div`
 
 const CardContent = styled.div`
   margin-left: 16px;
+  flex-grow: 1;
 `;
 const TAName = styled.div`
   font-weight: bold;
@@ -89,7 +90,6 @@ function StatusCard({
   grouped,
 }: StatusCardProps): ReactElement {
   const isBusy = !!helpedAt;
-  // TODO: figure out why the CSS on the badge is fucky wucky
   return (
     <StyledCard data-cy="ta-status-card">
       <KOHAvatar

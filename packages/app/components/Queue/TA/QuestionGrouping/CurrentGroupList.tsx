@@ -15,7 +15,6 @@ export function CurrentGroupList({
   group?: QuestionGroup;
   queueId: number;
 }): ReactElement {
-  console.log(`HELLOOOOO`, group);
   return (
     <div>
       <Header>
