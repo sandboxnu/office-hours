@@ -25,7 +25,7 @@ export class QuestionService {
     private notifService: NotificationService,
   ) {}
 
-  async helpQuestion(
+  async changeStatus(
     status: QuestionStatus,
     question: QuestionModel,
     userId: number,

@@ -182,7 +182,7 @@ export class QuestionController {
         );
       }
       await this.questionService.validateNotHelpingOther(body.status, userId);
-      return await this.questionService.helpQuestion(
+      return await this.questionService.changeStatus(
         body.status,
         question,
         userId,
@@ -233,7 +233,7 @@ export class QuestionController {
     );
 
     for (const question of questions) {
-      await this.questionService.helpQuestion(
+      await this.questionService.changeStatus(
         QuestionStatusKeys.Helping,
         question,
         instructorId,
@@ -277,11 +277,14 @@ export class QuestionController {
     });
 
     for (const question of group.questions) {
-      await this.questionService.helpQuestion(
-        QuestionStatusKeys.Resolved,
-        question,
-        instructorId,
-      );
+      // only resolve q's that weren't requeued/can't find
+      if (question.status === OpenQuestionStatus.Helping) {
+        await this.questionService.changeStatus(
+          QuestionStatusKeys.Resolved,
+          question,
+          instructorId,
+        );
+      }
     }
 
     // TODO: return type??

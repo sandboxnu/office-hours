@@ -57,7 +57,11 @@ export class QueueService {
     const groupMap: Record<number, QuestionGroup> = {};
 
     questionsFromDb.forEach((question) => {
-      if (question.groupId) {
+      // q's with a group but not in priority queue
+      if (
+        question.groupId &&
+        !StatusInPriorityQueue.includes(question.status as OpenQuestionStatus)
+      ) {
         if (!groupMap[question.groupId]) {
           groupMap[question.groupId] = {
             id: question.groupId,
