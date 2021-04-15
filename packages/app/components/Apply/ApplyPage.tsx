@@ -1,7 +1,7 @@
 import { SubmitCourseParams } from "@koh/common";
 import { API } from "@koh/api-client";
 import React, { ReactElement, useState } from "react";
-import { Form, Input, Tooltip, Row, Select, Button } from "antd";
+import { Form, Input, Tooltip, Row, Select, Button, Result } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
@@ -12,14 +12,58 @@ const HalfFormItem = styled(Form.Item)`
 const { Option } = Select;
 
 export default function ApplyPage(): ReactElement {
+  const [submitted, setSubmitted] = useState(false);
   const [form] = Form.useForm();
 
   const handleSubmit = async () => {
     const value = await form.validateFields();
-    value.sections = value.sections.split(", ").map(Number);
-    console.log(value);
+    value.sections = value.sections.replace(/\s+/g, "").split(",").map(Number);
     await API.course.submitCourse(value as SubmitCourseParams);
+    setSubmitted(true);
   };
+
+  const resubmit = () => {
+    form.resetFields();
+    setSubmitted(false);
+  };
+
+  const validateSections = (value: string): boolean => {
+    const values = value.replace(/\s+/g, "").split(",");
+    for (let val of values) {
+      if (isNaN(Number(val))) return false;
+    }
+    return true;
+  };
+
+  if (submitted) {
+    return (
+      <Result
+        status="success"
+        title="Application successfully submitted!"
+        subTitle={
+          <div>
+            Thanks for applying to use Khoury Office Hours, we'll email you with
+            next steps as the semester gets closer.
+            <br />
+            If you have any questions, feel free to email us at
+            help@khouryofficehours.com
+          </div>
+        }
+        extra={[
+          <Button
+            type="primary"
+            key="info"
+            href="https://info.khouryofficehours.com"
+          >
+            Go to Info Site
+          </Button>,
+          <Button key="submit" onClick={resubmit}>
+            Submit another course
+          </Button>,
+        ]}
+      />
+    );
+  }
 
   return (
     <div style={{ padding: "3% 12%" }}>
@@ -34,7 +78,13 @@ export default function ApplyPage(): ReactElement {
         <Form.Item
           label="Email"
           name="coordinator_email"
-          rules={[{ required: true, message: "Please input your email." }]}
+          rules={[
+            {
+              required: true,
+              type: "email",
+              message: "Please input your email.",
+            },
+          ]}
         >
           <Input placeholder="example@northeastern.edu" />
         </Form.Item>
@@ -58,6 +108,16 @@ export default function ApplyPage(): ReactElement {
                 required: true,
                 message: "Please input your section number(s).",
               },
+              {
+                validator: (_, value) =>
+                  validateSections(value)
+                    ? Promise.resolve()
+                    : Promise.reject(
+                        new Error(
+                          "Please enter a comma separated list of section numbers."
+                        )
+                      ),
+              },
             ]}
           >
             <Input placeholder="Ex: 1, 2, 3" />
@@ -70,7 +130,7 @@ export default function ApplyPage(): ReactElement {
             name="semester"
             rules={[{ required: true, message: "Please select a semester." }]}
           >
-            <Select>
+            <Select defaultValue="Summer_1 2021">
               <Option value="Summer_1 2021">Summer 1 2021</Option>
               <Option value="Summer_2 2021">Summer 2 2021</Option>
               <Option value="Summer_Full 2021">Summer Full 2021</Option>
@@ -88,7 +148,7 @@ export default function ApplyPage(): ReactElement {
               },
             ]}
           >
-            <Select>
+            <Select defaultValue="America/New_York">
               <Option value="America/New_York">Boston / Charlotte</Option>
               <Option value="America/Los_Angeles">
                 San Francisco / Seattle
@@ -125,6 +185,7 @@ export default function ApplyPage(): ReactElement {
           rules={[
             {
               required: true,
+              type: "url",
               message: "Please input your office hours calendar URL.",
             },
           ]}
