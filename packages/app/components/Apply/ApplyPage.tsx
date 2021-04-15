@@ -1,3 +1,5 @@
+import { SubmitCourseParams } from "@koh/common";
+import { API } from "@koh/api-client";
 import React, { ReactElement, useState } from "react";
 import { Form, Input, Tooltip, Row, Select, Button } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
@@ -14,7 +16,9 @@ export default function ApplyPage(): ReactElement {
 
   const handleSubmit = async () => {
     const value = await form.validateFields();
+    value.sections = value.sections.split(", ").map(Number);
     console.log(value);
+    await API.course.submitCourse(value as SubmitCourseParams);
   };
 
   return (
@@ -29,7 +33,7 @@ export default function ApplyPage(): ReactElement {
       <Form form={form} layout="vertical" initialValues={{ remember: true }}>
         <Form.Item
           label="Email"
-          name="email"
+          name="coordinator_email"
           rules={[{ required: true, message: "Please input your email." }]}
         >
           <Input placeholder="example@northeastern.edu" />
@@ -38,7 +42,7 @@ export default function ApplyPage(): ReactElement {
         <Row justify="space-between">
           <HalfFormItem
             label="Course Name"
-            name="courseName"
+            name="name"
             rules={[
               { required: true, message: "Please input your course name." },
             ]}
@@ -48,7 +52,7 @@ export default function ApplyPage(): ReactElement {
 
           <HalfFormItem
             label="Section Number(s)"
-            name="sectionNumbers"
+            name="sections"
             rules={[
               {
                 required: true,
@@ -75,7 +79,7 @@ export default function ApplyPage(): ReactElement {
 
           <HalfFormItem
             label="Campus"
-            name="campus"
+            name="timezone"
             rules={[
               {
                 required: true,
@@ -117,7 +121,7 @@ export default function ApplyPage(): ReactElement {
               </Tooltip>
             </Row>
           }
-          name="calendar"
+          name="icalURL"
           rules={[
             {
               required: true,

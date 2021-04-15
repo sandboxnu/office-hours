@@ -24,6 +24,7 @@ import {
   UpdateQueueParams,
   ListInsightsResponse,
   DateRangeType,
+  SubmitCourseParams,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -100,6 +101,8 @@ class APIClient {
         undefined,
         params
       ),
+    submitCourse: async (params: SubmitCourseParams): Promise<void> =>
+      this.req("POST", `/api/v1/courses/submit_course`, undefined, params),
   };
   taStatus = {
     checkIn: async (

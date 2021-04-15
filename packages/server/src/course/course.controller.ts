@@ -4,6 +4,7 @@ import {
   GetCourseResponse,
   QueuePartial,
   Role,
+  SubmitCourseParams,
   TACheckoutResponse,
   UpdateCourseOverrideBody,
   UpdateCourseOverrideResponse,
@@ -23,6 +24,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import async from 'async';
+import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import moment = require('moment');
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
@@ -39,6 +41,7 @@ import { CourseModel } from './course.entity';
 import { HeatmapService } from './heatmap.service';
 import { IcalService } from './ical.service';
 import { OfficeHourModel } from './office-hour.entity';
+import { SemesterModel } from './semester.entity';
 
 @Controller('courses')
 @UseGuards(JwtAuthGuard, CourseRolesGuard)
@@ -295,5 +298,39 @@ export class CourseController {
       where: { courseId, userId, override: true },
     });
     await UserCourseModel.remove(userCourse);
+  }
+
+  @Post('submit_course')
+  async submitCourse(@Body() body: SubmitCourseParams) {
+    const season = body.semester.split(' ')[0];
+    const year = parseInt(body.semester.split(' ')[1]);
+
+    const semester = await SemesterModel.findOne({
+      where: { season, year },
+    });
+    if (!semester)
+      throw new BadRequestException(
+        ERROR_MESSAGES.courseController.noSemesterFound,
+      );
+
+    // create the submitted course
+    let course = await CourseModel.create({
+      name: body.name,
+      coordinator_email: body.coordinator_email,
+      icalURL: body.icalURL,
+      semesterId: semester.id,
+      enabled: false,
+      pending: true,
+      timezone: body.timezone,
+    }).save();
+
+    // create CourseSectionMappings for each submitted section number
+    body.sections.forEach(async (section) => {
+      await CourseSectionMappingModel.create({
+        genericCourseName: body.name,
+        section,
+        courseId: course.id,
+      }).save();
+    });
   }
 }

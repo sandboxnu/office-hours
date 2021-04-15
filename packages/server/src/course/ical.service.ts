@@ -241,7 +241,7 @@ export class IcalService {
 
     await redlock.lock(resource, ttl).then(async (lock) => {
       console.log('updating course icals');
-      const courses = await CourseModel.find();
+      const courses = await CourseModel.find(); // TODO: only update enabled courses
       await Promise.all(courses.map((c) => this.updateCalendarForCourse(c)));
 
       return lock.unlock().catch(function (err) {
