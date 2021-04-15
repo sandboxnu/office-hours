@@ -244,6 +244,17 @@ export declare class UpdateQueueParams {
     notes?: string;
     allowQuestions?: boolean;
 }
+export declare class TACheckinTimesResponse {
+    taCheckinTimes: TACheckinPair[];
+}
+export declare class TACheckinPair {
+    name: string;
+    checkinTime: Date;
+    checkoutTime?: Date;
+    forced: boolean;
+    inProgress: boolean;
+    numHelped: number;
+}
 export declare enum AlertType {
     REPHRASE_QUESTION = "rephraseQuestion"
 }

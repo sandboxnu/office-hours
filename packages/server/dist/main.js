@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"e6b6c7c500c2f5a826407f61baf2a1fa5d27f3ed"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"45e8db00a13b8f144d4693ed9b2686fb058279e4"};
 
 /***/ }),
 /* 2 */
@@ -155,7 +155,7 @@ const Tracing = __webpack_require__(13);
 const cookieParser = __webpack_require__(14);
 const morgan = __webpack_require__(15);
 const app_module_1 = __webpack_require__(16);
-const stripUndefined_pipe_1 = __webpack_require__(131);
+const stripUndefined_pipe_1 = __webpack_require__(132);
 async function bootstrap(hot) {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, {
         logger: ['error', 'warn', 'log', 'debug', 'verbose'],
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "e6b6c7c500c2f5a826407f61baf2a1fa5d27f3ed",
+        release: "45e8db00a13b8f144d4693ed9b2686fb058279e4",
         environment: common_1.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -228,7 +228,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ERROR_MESSAGES = exports.InsightComponent = exports.SSEQueueResponse = exports.GetAlertsResponse = exports.CreateAlertResponse = exports.CreateAlertParams = exports.RephraseQuestionPayload = exports.Alert = exports.AlertPayload = exports.AlertType = exports.UpdateQueueParams = exports.TACheckoutResponse = exports.UpdateQuestionResponse = exports.UpdateQuestionParams = exports.CreateQuestionResponse = exports.CreateQuestionParams = exports.GetStudentQuestionResponse = exports.GetQuestionResponse = exports.ListQuestionsResponse = exports.GetCourseQueuesResponse = exports.GetQueueResponse = exports.UpdateCourseOverrideResponse = exports.UpdateCourseOverrideBody = exports.GetCourseOverridesResponse = exports.GetCourseOverridesRow = exports.GetCourseResponse = exports.UpdateProfileParams = exports.KhouryTACourse = exports.KhouryStudentCourse = exports.KhouryDataParams = exports.GetProfileResponse = exports.QuestionStatusKeys = exports.StatusSentToCreator = exports.StatusInPriorityQueue = exports.StatusInQueue = exports.ClosedQuestionStatus = exports.LimboQuestionStatus = exports.OpenQuestionStatus = exports.QuestionType = exports.Question = exports.QueuePartial = exports.Role = exports.UserPartial = exports.DesktopNotifPartial = exports.User = exports.timeDiffInMins = exports.isProd = exports.getEnv = exports.STAGING_URL = exports.PROD_URL = void 0;
+exports.ERROR_MESSAGES = exports.InsightComponent = exports.SSEQueueResponse = exports.GetAlertsResponse = exports.CreateAlertResponse = exports.CreateAlertParams = exports.RephraseQuestionPayload = exports.Alert = exports.AlertPayload = exports.AlertType = exports.TACheckinPair = exports.TACheckinTimesResponse = exports.UpdateQueueParams = exports.TACheckoutResponse = exports.UpdateQuestionResponse = exports.UpdateQuestionParams = exports.CreateQuestionResponse = exports.CreateQuestionParams = exports.GetStudentQuestionResponse = exports.GetQuestionResponse = exports.ListQuestionsResponse = exports.GetCourseQueuesResponse = exports.GetQueueResponse = exports.UpdateCourseOverrideResponse = exports.UpdateCourseOverrideBody = exports.GetCourseOverridesResponse = exports.GetCourseOverridesRow = exports.GetCourseResponse = exports.UpdateProfileParams = exports.KhouryTACourse = exports.KhouryStudentCourse = exports.KhouryDataParams = exports.GetProfileResponse = exports.QuestionStatusKeys = exports.StatusSentToCreator = exports.StatusInPriorityQueue = exports.StatusInQueue = exports.ClosedQuestionStatus = exports.LimboQuestionStatus = exports.OpenQuestionStatus = exports.QuestionType = exports.Question = exports.QueuePartial = exports.Role = exports.UserPartial = exports.DesktopNotifPartial = exports.User = exports.timeDiffInMins = exports.isProd = exports.getEnv = exports.STAGING_URL = exports.PROD_URL = void 0;
 const class_transformer_1 = __webpack_require__(6);
 const class_validator_1 = __webpack_require__(7);
 __webpack_require__(8);
@@ -635,6 +635,42 @@ __decorate([
     __metadata("design:type", Boolean)
 ], UpdateQueueParams.prototype, "allowQuestions", void 0);
 exports.UpdateQueueParams = UpdateQueueParams;
+class TACheckinTimesResponse {
+}
+__decorate([
+    class_transformer_1.Type(() => TACheckinPair),
+    __metadata("design:type", Array)
+], TACheckinTimesResponse.prototype, "taCheckinTimes", void 0);
+exports.TACheckinTimesResponse = TACheckinTimesResponse;
+class TACheckinPair {
+}
+__decorate([
+    class_validator_1.IsString(),
+    __metadata("design:type", String)
+], TACheckinPair.prototype, "name", void 0);
+__decorate([
+    class_validator_1.IsDate(),
+    class_transformer_1.Type(() => Date),
+    __metadata("design:type", Date)
+], TACheckinPair.prototype, "checkinTime", void 0);
+__decorate([
+    class_validator_1.IsDate(),
+    class_transformer_1.Type(() => Date),
+    __metadata("design:type", Date)
+], TACheckinPair.prototype, "checkoutTime", void 0);
+__decorate([
+    class_validator_1.IsBoolean(),
+    __metadata("design:type", Boolean)
+], TACheckinPair.prototype, "forced", void 0);
+__decorate([
+    class_validator_1.IsBoolean(),
+    __metadata("design:type", Boolean)
+], TACheckinPair.prototype, "inProgress", void 0);
+__decorate([
+    class_validator_1.IsNumber(),
+    __metadata("design:type", Number)
+], TACheckinPair.prototype, "numHelped", void 0);
+exports.TACheckinPair = TACheckinPair;
 var AlertType;
 (function (AlertType) {
     AlertType["REPHRASE_QUESTION"] = "rephraseQuestion";
@@ -865,14 +901,14 @@ const release_notes_module_1 = __webpack_require__(63);
 const typeormConfig = __webpack_require__(65);
 const admin_module_1 = __webpack_require__(70);
 const course_module_1 = __webpack_require__(79);
-const healthcheck_module_1 = __webpack_require__(103);
-const login_module_1 = __webpack_require__(106);
+const healthcheck_module_1 = __webpack_require__(104);
+const login_module_1 = __webpack_require__(107);
 const notification_module_1 = __webpack_require__(49);
-const profile_module_1 = __webpack_require__(114);
-const question_module_1 = __webpack_require__(122);
-const queue_module_1 = __webpack_require__(96);
-const seed_module_1 = __webpack_require__(126);
-const sse_module_1 = __webpack_require__(100);
+const profile_module_1 = __webpack_require__(115);
+const question_module_1 = __webpack_require__(123);
+const queue_module_1 = __webpack_require__(80);
+const seed_module_1 = __webpack_require__(127);
+const sse_module_1 = __webpack_require__(91);
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -4017,18 +4053,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CourseModule = void 0;
 const common_1 = __webpack_require__(9);
-const course_controller_1 = __webpack_require__(80);
-const queue_module_1 = __webpack_require__(96);
-const ical_command_1 = __webpack_require__(102);
-const ical_service_1 = __webpack_require__(90);
-const heatmap_service_1 = __webpack_require__(89);
+const queue_module_1 = __webpack_require__(80);
+const course_controller_1 = __webpack_require__(93);
+const course_service_1 = __webpack_require__(95);
+const heatmap_service_1 = __webpack_require__(96);
+const ical_command_1 = __webpack_require__(103);
+const ical_service_1 = __webpack_require__(97);
 let CourseModule = class CourseModule {
 };
 CourseModule = __decorate([
     common_1.Module({
         controllers: [course_controller_1.CourseController],
         imports: [queue_module_1.QueueModule, common_1.CacheModule.register()],
-        providers: [ical_command_1.ICalCommand, ical_service_1.IcalService, heatmap_service_1.HeatmapService],
+        providers: [ical_command_1.ICalCommand, ical_service_1.IcalService, heatmap_service_1.HeatmapService, course_service_1.CourseService],
     })
 ], CourseModule);
 exports.CourseModule = CourseModule;
@@ -4036,6 +4073,745 @@ exports.CourseModule = CourseModule;
 
 /***/ }),
 /* 80 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.QueueModule = void 0;
+const common_1 = __webpack_require__(9);
+const queue_controller_1 = __webpack_require__(81);
+const queue_clean_service_1 = __webpack_require__(89);
+const sse_module_1 = __webpack_require__(91);
+const queue_service_1 = __webpack_require__(88);
+const queue_sse_service_1 = __webpack_require__(85);
+const queue_subscriber_1 = __webpack_require__(92);
+let QueueModule = class QueueModule {
+};
+QueueModule = __decorate([
+    common_1.Module({
+        controllers: [queue_controller_1.QueueController],
+        providers: [
+            queue_clean_service_1.QueueCleanService,
+            queue_service_1.QueueService,
+            queue_sse_service_1.QueueSSEService,
+            queue_subscriber_1.QueueSubscriber,
+        ],
+        exports: [queue_clean_service_1.QueueCleanService, queue_sse_service_1.QueueSSEService],
+        imports: [sse_module_1.SSEModule],
+    })
+], QueueModule);
+exports.QueueModule = QueueModule;
+
+
+/***/ }),
+/* 81 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.QueueController = void 0;
+const common_1 = __webpack_require__(5);
+const common_2 = __webpack_require__(9);
+const user_decorator_1 = __webpack_require__(41);
+const typeorm_1 = __webpack_require__(23);
+const jwt_auth_guard_1 = __webpack_require__(39);
+const roles_decorator_1 = __webpack_require__(42);
+const queue_role_decorator_1 = __webpack_require__(82);
+const queue_role_guard_1 = __webpack_require__(83);
+const queue_sse_service_1 = __webpack_require__(85);
+const queue_service_1 = __webpack_require__(88);
+const queue_clean_service_1 = __webpack_require__(89);
+let QueueController = class QueueController {
+    constructor(connection, queueSSEService, queueCleanService, queueService) {
+        this.connection = connection;
+        this.queueSSEService = queueSSEService;
+        this.queueCleanService = queueCleanService;
+        this.queueService = queueService;
+    }
+    async getQueue(queueId) {
+        return this.queueService.getQueue(queueId);
+    }
+    async getQuestions(queueId, role, userId) {
+        const questions = await this.queueService.getQuestions(queueId);
+        return await this.queueService.personalizeQuestions(queueId, questions, userId, role);
+    }
+    async updateQueue(queueId, body) {
+        const queue = await this.queueService.getQueue(queueId);
+        if (queue === undefined) {
+            throw new common_2.NotFoundException();
+        }
+        queue.notes = body.notes;
+        queue.allowQuestions = body.allowQuestions;
+        await queue.save();
+        return queue;
+    }
+    async cleanQueue(queueId) {
+        setTimeout(async () => {
+            await this.queueCleanService.cleanQueue(queueId, true);
+            await this.queueSSEService.updateQueue(queueId);
+        });
+    }
+    sendEvent(queueId, role, userId, res) {
+        res.set({
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'X-Accel-Buffering': 'no',
+            Connection: 'keep-alive',
+        });
+        this.queueSSEService.subscribeClient(queueId, res, { role, userId });
+    }
+};
+__decorate([
+    common_2.Get(':queueId'),
+    roles_decorator_1.Roles(common_1.Role.TA, common_1.Role.PROFESSOR, common_1.Role.STUDENT),
+    __param(0, common_2.Param('queueId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], QueueController.prototype, "getQueue", null);
+__decorate([
+    common_2.Get(':queueId/questions'),
+    roles_decorator_1.Roles(common_1.Role.TA, common_1.Role.PROFESSOR, common_1.Role.STUDENT),
+    __param(0, common_2.Param('queueId')),
+    __param(1, queue_role_decorator_1.QueueRole()),
+    __param(2, user_decorator_1.UserId()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, Number]),
+    __metadata("design:returntype", Promise)
+], QueueController.prototype, "getQuestions", null);
+__decorate([
+    common_2.Patch(':queueId'),
+    roles_decorator_1.Roles(common_1.Role.TA, common_1.Role.PROFESSOR),
+    __param(0, common_2.Param('queueId')),
+    __param(1, common_2.Body()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, common_1.UpdateQueueParams]),
+    __metadata("design:returntype", Promise)
+], QueueController.prototype, "updateQueue", null);
+__decorate([
+    common_2.Post(':queueId/clean'),
+    roles_decorator_1.Roles(common_1.Role.TA, common_1.Role.PROFESSOR),
+    __param(0, common_2.Param('queueId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], QueueController.prototype, "cleanQueue", null);
+__decorate([
+    common_2.Get(':queueId/sse'),
+    __param(0, common_2.Param('queueId')),
+    __param(1, queue_role_decorator_1.QueueRole()),
+    __param(2, user_decorator_1.UserId()),
+    __param(3, common_2.Res()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, Number, Object]),
+    __metadata("design:returntype", void 0)
+], QueueController.prototype, "sendEvent", null);
+QueueController = __decorate([
+    common_2.Controller('queues'),
+    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard, queue_role_guard_1.QueueRolesGuard),
+    common_2.UseInterceptors(common_2.ClassSerializerInterceptor),
+    __metadata("design:paramtypes", [typeorm_1.Connection,
+        queue_sse_service_1.QueueSSEService,
+        queue_clean_service_1.QueueCleanService,
+        queue_service_1.QueueService])
+], QueueController);
+exports.QueueController = QueueController;
+
+
+/***/ }),
+/* 82 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.QueueRole = void 0;
+const common_1 = __webpack_require__(9);
+const user_entity_1 = __webpack_require__(29);
+const queue_entity_1 = __webpack_require__(32);
+exports.QueueRole = common_1.createParamDecorator(async (data, ctx) => {
+    const request = ctx.switchToHttp().getRequest();
+    const queue = await queue_entity_1.QueueModel.findOne(request.params.queueId);
+    const courseId = queue === null || queue === void 0 ? void 0 : queue.courseId;
+    const user = await user_entity_1.UserModel.findOne(request.user.userId, {
+        relations: ['courses'],
+    });
+    const userCourse = user.courses.find((course) => {
+        return Number(course.courseId) === Number(courseId);
+    });
+    if (!userCourse) {
+        throw new common_1.NotFoundException("cannot read propery 'role ' of undefined on user: " + user.id + user);
+    }
+    return userCourse.role;
+});
+
+
+/***/ }),
+/* 83 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.QueueRolesGuard = void 0;
+const common_1 = __webpack_require__(5);
+const common_2 = __webpack_require__(9);
+const role_guard_1 = __webpack_require__(84);
+const user_entity_1 = __webpack_require__(29);
+const queue_entity_1 = __webpack_require__(32);
+let QueueRolesGuard = class QueueRolesGuard extends role_guard_1.RolesGuard {
+    async setupData(request) {
+        const queue = await queue_entity_1.QueueModel.findOne(request.params.queueId);
+        if (!queue) {
+            throw new common_2.NotFoundException(common_1.ERROR_MESSAGES.queueRoleGuard.queueNotFound);
+        }
+        const courseId = queue.courseId;
+        const user = await user_entity_1.UserModel.findOne(request.user.userId, {
+            relations: ['courses'],
+        });
+        return { courseId, user };
+    }
+};
+QueueRolesGuard = __decorate([
+    common_2.Injectable()
+], QueueRolesGuard);
+exports.QueueRolesGuard = QueueRolesGuard;
+
+
+/***/ }),
+/* 84 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.RolesGuard = void 0;
+const common_1 = __webpack_require__(5);
+const common_2 = __webpack_require__(9);
+const core_1 = __webpack_require__(10);
+let RolesGuard = class RolesGuard {
+    constructor(reflector) {
+        this.reflector = reflector;
+    }
+    async canActivate(context) {
+        const roles = this.reflector.get('roles', context.getHandler());
+        if (!roles) {
+            return true;
+        }
+        const request = context.switchToHttp().getRequest();
+        const { courseId, user } = await this.setupData(request);
+        if (!user) {
+            throw new common_2.UnauthorizedException(common_1.ERROR_MESSAGES.roleGuard.notLoggedIn);
+        }
+        if (!courseId) {
+            throw new common_2.NotFoundException(common_1.ERROR_MESSAGES.roleGuard.noCourseIdFound);
+        }
+        return this.matchRoles(roles, user, courseId);
+    }
+    matchRoles(roles, user, courseId) {
+        const userCourse = user.courses.find((course) => {
+            return Number(course.courseId) === Number(courseId);
+        });
+        if (!userCourse) {
+            throw new common_2.NotFoundException(common_1.ERROR_MESSAGES.roleGuard.notInCourse);
+        }
+        const remaining = roles.filter((role) => {
+            return userCourse.role.toString() === role;
+        });
+        if (remaining.length <= 0) {
+            throw new common_2.UnauthorizedException(common_1.ERROR_MESSAGES.roleGuard.mustBeRoleToJoinCourse(roles));
+        }
+        return remaining.length > 0;
+    }
+};
+RolesGuard = __decorate([
+    common_2.Injectable(),
+    __metadata("design:paramtypes", [core_1.Reflector])
+], RolesGuard);
+exports.RolesGuard = RolesGuard;
+
+
+/***/ }),
+/* 85 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.QueueSSEService = void 0;
+const common_1 = __webpack_require__(9);
+const lodash_1 = __webpack_require__(46);
+const sse_service_1 = __webpack_require__(86);
+const queue_service_1 = __webpack_require__(88);
+const idToRoom = (queueId) => `q-${queueId}`;
+let QueueSSEService = class QueueSSEService {
+    constructor(queueService, sseService) {
+        this.queueService = queueService;
+        this.sseService = sseService;
+        this.updateQuestions = this.throttleUpdate(async (queueId) => {
+            const questions = await this.queueService.getQuestions(queueId);
+            if (questions) {
+                this.sendToRoom(queueId, async ({ role, userId }) => ({
+                    questions: await this.queueService.personalizeQuestions(queueId, questions, userId, role),
+                }));
+            }
+        });
+        this.updateQueue = this.throttleUpdate(async (queueId) => {
+            const queue = await this.queueService.getQueue(queueId);
+            if (queue) {
+                await this.sendToRoom(queueId, async () => ({ queue }));
+            }
+        });
+    }
+    subscribeClient(queueId, res, metadata) {
+        this.sseService.subscribeClient(idToRoom(queueId), res, metadata);
+    }
+    async sendToRoom(queueId, data) {
+        await this.sseService.sendEvent(idToRoom(queueId), data);
+    }
+    throttleUpdate(updateFunction) {
+        return lodash_1.throttle(async (queueId) => {
+            try {
+                await updateFunction(queueId);
+            }
+            catch (e) { }
+        }, 1000, {
+            leading: false,
+            trailing: true,
+        });
+    }
+};
+QueueSSEService = __decorate([
+    common_1.Injectable(),
+    __metadata("design:paramtypes", [queue_service_1.QueueService,
+        sse_service_1.SSEService])
+], QueueSSEService);
+exports.QueueSSEService = QueueSSEService;
+
+
+/***/ }),
+/* 86 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SSEService = void 0;
+const common_1 = __webpack_require__(9);
+const async_1 = __webpack_require__(87);
+const class_transformer_1 = __webpack_require__(6);
+const nestjs_redis_1 = __webpack_require__(62);
+let SSEService = class SSEService {
+    constructor(redisService) {
+        this.redisService = redisService;
+        this.directConnnections = {};
+        const redisSub = this.redisService.getClient('sub');
+        redisSub.on('message', (channel, message) => {
+            const id = /sse::client-(\d+)/.exec(channel);
+            if (id && id[1] in this.directConnnections) {
+                this.directConnnections[id[1]].res.write(`data: ${message}\n\n`);
+            }
+        });
+    }
+    async onModuleDestroy() {
+        await async_1.each(Object.values(this.directConnnections), async (conn) => {
+            await conn.cleanup();
+        });
+    }
+    idToChannel(clientId) {
+        return `sse::client-${clientId}`;
+    }
+    async subscribeClient(room, res, metadata) {
+        const redisSub = this.redisService.getClient('sub');
+        const redis = this.redisService.getClient('db');
+        const clientId = await redis.incr('sse::client::id');
+        await redisSub.subscribe(this.idToChannel(clientId));
+        const clientInfo = JSON.stringify({
+            clientId,
+            metadata: metadata,
+        });
+        await redis.sadd(room, clientInfo);
+        this.directConnnections[clientId] = {
+            res,
+            cleanup: async () => {
+                await redis.srem(room, clientInfo);
+                await redisSub.unsubscribe(this.idToChannel(clientId));
+                res.end();
+            },
+        };
+        res.write('\n');
+        res.socket.on('end', async () => {
+            await this.directConnnections[clientId].cleanup();
+            delete this.directConnnections[clientId];
+        });
+    }
+    async sendEvent(room, payload) {
+        const redisPub = this.redisService.getClient('pub');
+        const redis = this.redisService.getClient('db');
+        const roomInfo = await redis.smembers(room);
+        if (room) {
+            const clients = roomInfo.map((s) => JSON.parse(s));
+            console.log(`sending sse to ${clients.length} clients in ${room}`);
+            console.time(`sending sse time: `);
+            await async_1.each(clients, async ({ clientId, metadata }) => {
+                const toSend = class_transformer_1.serialize(await payload(metadata));
+                await redisPub.publish(this.idToChannel(clientId), toSend);
+            });
+            console.timeEnd(`sending sse time: `);
+        }
+    }
+};
+SSEService = __decorate([
+    common_1.Injectable(),
+    __metadata("design:paramtypes", [nestjs_redis_1.RedisService])
+], SSEService);
+exports.SSEService = SSEService;
+
+
+/***/ }),
+/* 87 */
+/***/ (function(module, exports) {
+
+module.exports = require("async");
+
+/***/ }),
+/* 88 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.QueueService = void 0;
+const common_1 = __webpack_require__(5);
+const common_2 = __webpack_require__(9);
+const class_transformer_1 = __webpack_require__(6);
+const lodash_1 = __webpack_require__(46);
+const question_entity_1 = __webpack_require__(34);
+const typeorm_1 = __webpack_require__(23);
+const queue_entity_1 = __webpack_require__(32);
+let QueueService = class QueueService {
+    constructor(connection) {
+        this.connection = connection;
+    }
+    async getQueue(queueId) {
+        const queue = await queue_entity_1.QueueModel.findOne(queueId, {
+            relations: ['staffList'],
+        });
+        await queue.addQueueTimes();
+        await queue.checkIsOpen();
+        await queue.addQueueSize();
+        return queue;
+    }
+    async getQuestions(queueId) {
+        const queueSize = await queue_entity_1.QueueModel.count({
+            where: { id: queueId },
+        });
+        if (queueSize === 0) {
+            throw new common_2.NotFoundException();
+        }
+        const questionsFromDb = await question_entity_1.QuestionModel.inQueueWithStatus(queueId, [
+            ...common_1.StatusInPriorityQueue,
+            ...common_1.StatusInQueue,
+            common_1.OpenQuestionStatus.Helping,
+        ])
+            .leftJoinAndSelect('question.creator', 'creator')
+            .leftJoinAndSelect('question.taHelped', 'taHelped')
+            .getMany();
+        const questions = new common_1.ListQuestionsResponse();
+        questions.queue = questionsFromDb.filter((question) => common_1.StatusInQueue.includes(question.status));
+        questions.questionsGettingHelp = questionsFromDb.filter((question) => question.status === common_1.OpenQuestionStatus.Helping);
+        questions.priorityQueue = questionsFromDb.filter((question) => common_1.StatusInPriorityQueue.includes(question.status));
+        return questions;
+    }
+    async personalizeQuestions(queueId, questions, userId, role) {
+        if (role === common_1.Role.STUDENT) {
+            const newLQR = new common_1.ListQuestionsResponse();
+            Object.assign(newLQR, questions);
+            newLQR.queue = questions.queue.map((question) => {
+                const creator = question.creator.id === userId
+                    ? question.creator
+                    : lodash_1.pick(question.creator, ['id']);
+                return class_transformer_1.classToClass(question_entity_1.QuestionModel.create(Object.assign(Object.assign({}, question), { creator })));
+            });
+            newLQR.questionsGettingHelp = questions.questionsGettingHelp.map((question) => {
+                const creator = question.creator.id === userId
+                    ? question.creator
+                    : lodash_1.pick(question.creator, ['id']);
+                return class_transformer_1.classToClass(question_entity_1.QuestionModel.create(Object.assign(Object.assign({}, question), { creator })));
+            });
+            newLQR.yourQuestion = await question_entity_1.QuestionModel.findOne({
+                relations: ['creator', 'taHelped'],
+                where: {
+                    creatorId: userId,
+                    queueId: queueId,
+                    status: typeorm_1.In(common_1.StatusSentToCreator),
+                },
+            });
+            newLQR.priorityQueue = [];
+            return newLQR;
+        }
+        return questions;
+    }
+};
+QueueService = __decorate([
+    common_2.Injectable(),
+    __metadata("design:paramtypes", [typeorm_1.Connection])
+], QueueService);
+exports.QueueService = QueueService;
+
+
+/***/ }),
+/* 89 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.QueueCleanService = void 0;
+const common_1 = __webpack_require__(5);
+const common_2 = __webpack_require__(9);
+const schedule_1 = __webpack_require__(18);
+const office_hour_entity_1 = __webpack_require__(33);
+const moment = __webpack_require__(90);
+const typeorm_1 = __webpack_require__(23);
+const question_entity_1 = __webpack_require__(34);
+const queue_entity_1 = __webpack_require__(32);
+const event_model_entity_1 = __webpack_require__(28);
+let QueueCleanService = class QueueCleanService {
+    constructor(connection) {
+        this.connection = connection;
+    }
+    async cleanAllQueues() {
+        const queuesWithOpenQuestions = await queue_entity_1.QueueModel.getRepository()
+            .createQueryBuilder('queue')
+            .leftJoinAndSelect('queue_model.questions', 'question')
+            .where('question.status IN (:...status)', {
+            status: [
+                ...Object.values(common_1.OpenQuestionStatus),
+                ...Object.values(common_1.LimboQuestionStatus),
+            ],
+        })
+            .getMany();
+        await Promise.all(queuesWithOpenQuestions.map((queue) => this.cleanQueue(queue.id)));
+    }
+    async checkoutAllStaff() {
+        const queuesWithCheckedInStaff = await queue_entity_1.QueueModel.getRepository().find({ relations: ['staffList'] });
+        queuesWithCheckedInStaff.forEach(async (queue) => {
+            if (!(await queue.areThereOfficeHoursRightNow())) {
+                await queue.staffList.forEach(async (ta) => {
+                    await event_model_entity_1.EventModel.create({
+                        time: new Date(),
+                        eventType: event_model_entity_1.EventType.TA_CHECKED_OUT_FORCED,
+                        userId: ta.id,
+                        courseId: queue.courseId,
+                    }).save();
+                });
+                queue.staffList = [];
+            }
+        });
+        await queue_entity_1.QueueModel.save(queuesWithCheckedInStaff);
+    }
+    async cleanQueue(queueId, force) {
+        const queue = await queue_entity_1.QueueModel.findOne(queueId, {
+            relations: ['staffList'],
+        });
+        if (force || !(await queue.checkIsOpen())) {
+            await this.unsafeClean(queue.id);
+        }
+    }
+    async shouldCleanQueue(queue) {
+        if (queue.staffList.length === 0) {
+            const areAnyQuestionsOpen = (await question_entity_1.QuestionModel.inQueueWithStatus(queue.id, Object.values(common_1.OpenQuestionStatus)).getCount()) > 0;
+            if (areAnyQuestionsOpen) {
+                const soon = moment().add(15, 'minutes').toDate();
+                const areOfficeHourSoon = (await office_hour_entity_1.OfficeHourModel.count({
+                    where: {
+                        startTime: typeorm_1.LessThanOrEqual(soon),
+                        endTime: typeorm_1.MoreThanOrEqual(soon),
+                    },
+                })) > 0;
+                if (!areOfficeHourSoon) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    async unsafeClean(queueId) {
+        const questions = await question_entity_1.QuestionModel.inQueueWithStatus(queueId, [
+            ...Object.values(common_1.OpenQuestionStatus),
+            ...Object.values(common_1.LimboQuestionStatus),
+        ]).getMany();
+        questions.forEach((q) => {
+            q.status = common_1.ClosedQuestionStatus.Stale;
+            q.closedAt = new Date();
+        });
+        await question_entity_1.QuestionModel.save(questions);
+    }
+};
+__decorate([
+    schedule_1.Cron(schedule_1.CronExpression.EVERY_DAY_AT_MIDNIGHT),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], QueueCleanService.prototype, "cleanAllQueues", null);
+__decorate([
+    schedule_1.Cron(schedule_1.CronExpression.EVERY_DAY_AT_3AM),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], QueueCleanService.prototype, "checkoutAllStaff", null);
+QueueCleanService = __decorate([
+    common_2.Injectable(),
+    __metadata("design:paramtypes", [typeorm_1.Connection])
+], QueueCleanService);
+exports.QueueCleanService = QueueCleanService;
+
+
+/***/ }),
+/* 90 */
+/***/ (function(module, exports) {
+
+module.exports = require("moment");
+
+/***/ }),
+/* 91 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SSEModule = void 0;
+const common_1 = __webpack_require__(9);
+const sse_service_1 = __webpack_require__(86);
+let SSEModule = class SSEModule {
+};
+SSEModule = __decorate([
+    common_1.Module({ providers: [sse_service_1.SSEService], exports: [sse_service_1.SSEService] })
+], SSEModule);
+exports.SSEModule = SSEModule;
+
+
+/***/ }),
+/* 92 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.QueueSubscriber = void 0;
+const queue_sse_service_1 = __webpack_require__(85);
+const typeorm_1 = __webpack_require__(23);
+const queue_entity_1 = __webpack_require__(32);
+let QueueSubscriber = class QueueSubscriber {
+    constructor(connection, queueSSEService) {
+        this.queueSSEService = queueSSEService;
+        connection.subscribers.push(this);
+    }
+    listenTo() {
+        return queue_entity_1.QueueModel;
+    }
+    async afterUpdate(event) {
+        if (event.entity) {
+            await this.queueSSEService.updateQueue(event.entity.id);
+        }
+    }
+};
+QueueSubscriber = __decorate([
+    typeorm_1.EventSubscriber(),
+    __metadata("design:paramtypes", [typeorm_1.Connection, queue_sse_service_1.QueueSSEService])
+], QueueSubscriber);
+exports.QueueSubscriber = QueueSubscriber;
+
+
+/***/ }),
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4056,8 +4832,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CourseController = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
-const async_1 = __webpack_require__(81);
-const moment = __webpack_require__(82);
+const async_1 = __webpack_require__(87);
 const event_model_entity_1 = __webpack_require__(28);
 const user_course_entity_1 = __webpack_require__(26);
 const typeorm_1 = __webpack_require__(23);
@@ -4065,21 +4840,24 @@ const jwt_auth_guard_1 = __webpack_require__(39);
 const roles_decorator_1 = __webpack_require__(42);
 const user_decorator_1 = __webpack_require__(41);
 const user_entity_1 = __webpack_require__(29);
-const queue_clean_service_1 = __webpack_require__(83);
-const queue_sse_service_1 = __webpack_require__(84);
+const queue_clean_service_1 = __webpack_require__(89);
+const queue_sse_service_1 = __webpack_require__(85);
 const queue_entity_1 = __webpack_require__(32);
-const course_roles_guard_1 = __webpack_require__(87);
+const course_roles_guard_1 = __webpack_require__(94);
 const course_entity_1 = __webpack_require__(27);
-const heatmap_service_1 = __webpack_require__(89);
-const ical_service_1 = __webpack_require__(90);
+const course_service_1 = __webpack_require__(95);
+const heatmap_service_1 = __webpack_require__(96);
+const ical_service_1 = __webpack_require__(97);
 const office_hour_entity_1 = __webpack_require__(33);
+const moment = __webpack_require__(90);
 let CourseController = class CourseController {
-    constructor(connection, queueCleanService, queueSSEService, heatmapService, icalService) {
+    constructor(connection, queueCleanService, queueSSEService, heatmapService, icalService, courseService) {
         this.connection = connection;
         this.queueCleanService = queueCleanService;
         this.queueSSEService = queueSSEService;
         this.heatmapService = heatmapService;
         this.icalService = icalService;
+        this.courseService = courseService;
     }
     async get(id, user) {
         const course = await course_entity_1.CourseModel.findOne(id, {
@@ -4249,6 +5027,9 @@ let CourseController = class CourseController {
         });
         await user_course_entity_1.UserCourseModel.remove(userCourse);
     }
+    async taCheckinTimes(courseId, startDate, endDate) {
+        return await this.courseService.getTACheckInCheckOutTimes(courseId, startDate, endDate);
+    }
 };
 __decorate([
     common_2.Get(':id'),
@@ -4313,6 +5094,16 @@ __decorate([
     __metadata("design:paramtypes", [Number, common_1.UpdateCourseOverrideBody]),
     __metadata("design:returntype", Promise)
 ], CourseController.prototype, "deleteOverride", null);
+__decorate([
+    common_2.Get(':id/ta_check_in_times'),
+    roles_decorator_1.Roles(common_1.Role.PROFESSOR),
+    __param(0, common_2.Param('id')),
+    __param(1, common_2.Query('startDate')),
+    __param(2, common_2.Query('endDate')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String]),
+    __metadata("design:returntype", Promise)
+], CourseController.prototype, "taCheckinTimes", null);
 CourseController = __decorate([
     common_2.Controller('courses'),
     common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard, course_roles_guard_1.CourseRolesGuard),
@@ -4321,392 +5112,14 @@ CourseController = __decorate([
         queue_clean_service_1.QueueCleanService,
         queue_sse_service_1.QueueSSEService,
         heatmap_service_1.HeatmapService,
-        ical_service_1.IcalService])
+        ical_service_1.IcalService,
+        course_service_1.CourseService])
 ], CourseController);
 exports.CourseController = CourseController;
 
 
 /***/ }),
-/* 81 */
-/***/ (function(module, exports) {
-
-module.exports = require("async");
-
-/***/ }),
-/* 82 */
-/***/ (function(module, exports) {
-
-module.exports = require("moment");
-
-/***/ }),
-/* 83 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.QueueCleanService = void 0;
-const common_1 = __webpack_require__(5);
-const common_2 = __webpack_require__(9);
-const schedule_1 = __webpack_require__(18);
-const office_hour_entity_1 = __webpack_require__(33);
-const moment = __webpack_require__(82);
-const typeorm_1 = __webpack_require__(23);
-const question_entity_1 = __webpack_require__(34);
-const queue_entity_1 = __webpack_require__(32);
-const event_model_entity_1 = __webpack_require__(28);
-let QueueCleanService = class QueueCleanService {
-    constructor(connection) {
-        this.connection = connection;
-    }
-    async cleanAllQueues() {
-        const queuesWithOpenQuestions = await queue_entity_1.QueueModel.getRepository()
-            .createQueryBuilder('queue')
-            .leftJoinAndSelect('queue_model.questions', 'question')
-            .where('question.status IN (:...status)', {
-            status: [
-                ...Object.values(common_1.OpenQuestionStatus),
-                ...Object.values(common_1.LimboQuestionStatus),
-            ],
-        })
-            .getMany();
-        await Promise.all(queuesWithOpenQuestions.map((queue) => this.cleanQueue(queue.id)));
-    }
-    async checkoutAllStaff() {
-        const queuesWithCheckedInStaff = await queue_entity_1.QueueModel.getRepository().find({ relations: ['staffList'] });
-        queuesWithCheckedInStaff.forEach(async (queue) => {
-            if (!(await queue.areThereOfficeHoursRightNow())) {
-                await queue.staffList.forEach(async (ta) => {
-                    await event_model_entity_1.EventModel.create({
-                        time: new Date(),
-                        eventType: event_model_entity_1.EventType.TA_CHECKED_OUT_FORCED,
-                        userId: ta.id,
-                        courseId: queue.courseId,
-                    }).save();
-                });
-                queue.staffList = [];
-            }
-        });
-        await queue_entity_1.QueueModel.save(queuesWithCheckedInStaff);
-    }
-    async cleanQueue(queueId, force) {
-        const queue = await queue_entity_1.QueueModel.findOne(queueId, {
-            relations: ['staffList'],
-        });
-        if (force || !(await queue.checkIsOpen())) {
-            await this.unsafeClean(queue.id);
-        }
-    }
-    async shouldCleanQueue(queue) {
-        if (queue.staffList.length === 0) {
-            const areAnyQuestionsOpen = (await question_entity_1.QuestionModel.inQueueWithStatus(queue.id, Object.values(common_1.OpenQuestionStatus)).getCount()) > 0;
-            if (areAnyQuestionsOpen) {
-                const soon = moment().add(15, 'minutes').toDate();
-                const areOfficeHourSoon = (await office_hour_entity_1.OfficeHourModel.count({
-                    where: {
-                        startTime: typeorm_1.LessThanOrEqual(soon),
-                        endTime: typeorm_1.MoreThanOrEqual(soon),
-                    },
-                })) > 0;
-                if (!areOfficeHourSoon) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    async unsafeClean(queueId) {
-        const questions = await question_entity_1.QuestionModel.inQueueWithStatus(queueId, [
-            ...Object.values(common_1.OpenQuestionStatus),
-            ...Object.values(common_1.LimboQuestionStatus),
-        ]).getMany();
-        questions.forEach((q) => {
-            q.status = common_1.ClosedQuestionStatus.Stale;
-            q.closedAt = new Date();
-        });
-        await question_entity_1.QuestionModel.save(questions);
-    }
-};
-__decorate([
-    schedule_1.Cron(schedule_1.CronExpression.EVERY_DAY_AT_MIDNIGHT),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], QueueCleanService.prototype, "cleanAllQueues", null);
-__decorate([
-    schedule_1.Cron(schedule_1.CronExpression.EVERY_DAY_AT_3AM),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], QueueCleanService.prototype, "checkoutAllStaff", null);
-QueueCleanService = __decorate([
-    common_2.Injectable(),
-    __metadata("design:paramtypes", [typeorm_1.Connection])
-], QueueCleanService);
-exports.QueueCleanService = QueueCleanService;
-
-
-/***/ }),
-/* 84 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.QueueSSEService = void 0;
-const common_1 = __webpack_require__(9);
-const lodash_1 = __webpack_require__(46);
-const sse_service_1 = __webpack_require__(85);
-const queue_service_1 = __webpack_require__(86);
-const idToRoom = (queueId) => `q-${queueId}`;
-let QueueSSEService = class QueueSSEService {
-    constructor(queueService, sseService) {
-        this.queueService = queueService;
-        this.sseService = sseService;
-        this.updateQuestions = this.throttleUpdate(async (queueId) => {
-            const questions = await this.queueService.getQuestions(queueId);
-            if (questions) {
-                this.sendToRoom(queueId, async ({ role, userId }) => ({
-                    questions: await this.queueService.personalizeQuestions(queueId, questions, userId, role),
-                }));
-            }
-        });
-        this.updateQueue = this.throttleUpdate(async (queueId) => {
-            const queue = await this.queueService.getQueue(queueId);
-            if (queue) {
-                await this.sendToRoom(queueId, async () => ({ queue }));
-            }
-        });
-    }
-    subscribeClient(queueId, res, metadata) {
-        this.sseService.subscribeClient(idToRoom(queueId), res, metadata);
-    }
-    async sendToRoom(queueId, data) {
-        await this.sseService.sendEvent(idToRoom(queueId), data);
-    }
-    throttleUpdate(updateFunction) {
-        return lodash_1.throttle(async (queueId) => {
-            try {
-                await updateFunction(queueId);
-            }
-            catch (e) { }
-        }, 1000, {
-            leading: false,
-            trailing: true,
-        });
-    }
-};
-QueueSSEService = __decorate([
-    common_1.Injectable(),
-    __metadata("design:paramtypes", [queue_service_1.QueueService,
-        sse_service_1.SSEService])
-], QueueSSEService);
-exports.QueueSSEService = QueueSSEService;
-
-
-/***/ }),
-/* 85 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.SSEService = void 0;
-const common_1 = __webpack_require__(9);
-const async_1 = __webpack_require__(81);
-const class_transformer_1 = __webpack_require__(6);
-const nestjs_redis_1 = __webpack_require__(62);
-let SSEService = class SSEService {
-    constructor(redisService) {
-        this.redisService = redisService;
-        this.directConnnections = {};
-        const redisSub = this.redisService.getClient('sub');
-        redisSub.on('message', (channel, message) => {
-            const id = /sse::client-(\d+)/.exec(channel);
-            if (id && id[1] in this.directConnnections) {
-                this.directConnnections[id[1]].res.write(`data: ${message}\n\n`);
-            }
-        });
-    }
-    async onModuleDestroy() {
-        await async_1.each(Object.values(this.directConnnections), async (conn) => {
-            await conn.cleanup();
-        });
-    }
-    idToChannel(clientId) {
-        return `sse::client-${clientId}`;
-    }
-    async subscribeClient(room, res, metadata) {
-        const redisSub = this.redisService.getClient('sub');
-        const redis = this.redisService.getClient('db');
-        const clientId = await redis.incr('sse::client::id');
-        await redisSub.subscribe(this.idToChannel(clientId));
-        const clientInfo = JSON.stringify({
-            clientId,
-            metadata: metadata,
-        });
-        await redis.sadd(room, clientInfo);
-        this.directConnnections[clientId] = {
-            res,
-            cleanup: async () => {
-                await redis.srem(room, clientInfo);
-                await redisSub.unsubscribe(this.idToChannel(clientId));
-                res.end();
-            },
-        };
-        res.write('\n');
-        res.socket.on('end', async () => {
-            await this.directConnnections[clientId].cleanup();
-            delete this.directConnnections[clientId];
-        });
-    }
-    async sendEvent(room, payload) {
-        const redisPub = this.redisService.getClient('pub');
-        const redis = this.redisService.getClient('db');
-        const roomInfo = await redis.smembers(room);
-        if (room) {
-            const clients = roomInfo.map((s) => JSON.parse(s));
-            console.log(`sending sse to ${clients.length} clients in ${room}`);
-            console.time(`sending sse time: `);
-            await async_1.each(clients, async ({ clientId, metadata }) => {
-                const toSend = class_transformer_1.serialize(await payload(metadata));
-                await redisPub.publish(this.idToChannel(clientId), toSend);
-            });
-            console.timeEnd(`sending sse time: `);
-        }
-    }
-};
-SSEService = __decorate([
-    common_1.Injectable(),
-    __metadata("design:paramtypes", [nestjs_redis_1.RedisService])
-], SSEService);
-exports.SSEService = SSEService;
-
-
-/***/ }),
-/* 86 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.QueueService = void 0;
-const common_1 = __webpack_require__(5);
-const common_2 = __webpack_require__(9);
-const class_transformer_1 = __webpack_require__(6);
-const lodash_1 = __webpack_require__(46);
-const question_entity_1 = __webpack_require__(34);
-const typeorm_1 = __webpack_require__(23);
-const queue_entity_1 = __webpack_require__(32);
-let QueueService = class QueueService {
-    constructor(connection) {
-        this.connection = connection;
-    }
-    async getQueue(queueId) {
-        const queue = await queue_entity_1.QueueModel.findOne(queueId, {
-            relations: ['staffList'],
-        });
-        await queue.addQueueTimes();
-        await queue.checkIsOpen();
-        await queue.addQueueSize();
-        return queue;
-    }
-    async getQuestions(queueId) {
-        const queueSize = await queue_entity_1.QueueModel.count({
-            where: { id: queueId },
-        });
-        if (queueSize === 0) {
-            throw new common_2.NotFoundException();
-        }
-        const questionsFromDb = await question_entity_1.QuestionModel.inQueueWithStatus(queueId, [
-            ...common_1.StatusInPriorityQueue,
-            ...common_1.StatusInQueue,
-            common_1.OpenQuestionStatus.Helping,
-        ])
-            .leftJoinAndSelect('question.creator', 'creator')
-            .leftJoinAndSelect('question.taHelped', 'taHelped')
-            .getMany();
-        const questions = new common_1.ListQuestionsResponse();
-        questions.queue = questionsFromDb.filter((question) => common_1.StatusInQueue.includes(question.status));
-        questions.questionsGettingHelp = questionsFromDb.filter((question) => question.status === common_1.OpenQuestionStatus.Helping);
-        questions.priorityQueue = questionsFromDb.filter((question) => common_1.StatusInPriorityQueue.includes(question.status));
-        return questions;
-    }
-    async personalizeQuestions(queueId, questions, userId, role) {
-        if (role === common_1.Role.STUDENT) {
-            const newLQR = new common_1.ListQuestionsResponse();
-            Object.assign(newLQR, questions);
-            newLQR.queue = questions.queue.map((question) => {
-                const creator = question.creator.id === userId
-                    ? question.creator
-                    : lodash_1.pick(question.creator, ['id']);
-                return class_transformer_1.classToClass(question_entity_1.QuestionModel.create(Object.assign(Object.assign({}, question), { creator })));
-            });
-            newLQR.questionsGettingHelp = questions.questionsGettingHelp.map((question) => {
-                const creator = question.creator.id === userId
-                    ? question.creator
-                    : lodash_1.pick(question.creator, ['id']);
-                return class_transformer_1.classToClass(question_entity_1.QuestionModel.create(Object.assign(Object.assign({}, question), { creator })));
-            });
-            newLQR.yourQuestion = await question_entity_1.QuestionModel.findOne({
-                relations: ['creator', 'taHelped'],
-                where: {
-                    creatorId: userId,
-                    queueId: queueId,
-                    status: typeorm_1.In(common_1.StatusSentToCreator),
-                },
-            });
-            newLQR.priorityQueue = [];
-            return newLQR;
-        }
-        return questions;
-    }
-};
-QueueService = __decorate([
-    common_2.Injectable(),
-    __metadata("design:paramtypes", [typeorm_1.Connection])
-], QueueService);
-exports.QueueService = QueueService;
-
-
-/***/ }),
-/* 87 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4720,7 +5133,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CourseRolesGuard = void 0;
 const common_1 = __webpack_require__(9);
-const role_guard_1 = __webpack_require__(88);
+const role_guard_1 = __webpack_require__(84);
 const user_entity_1 = __webpack_require__(29);
 let CourseRolesGuard = class CourseRolesGuard extends role_guard_1.RolesGuard {
     async setupData(request) {
@@ -4738,7 +5151,7 @@ exports.CourseRolesGuard = CourseRolesGuard;
 
 
 /***/ }),
-/* 88 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4753,54 +5166,76 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RolesGuard = void 0;
-const common_1 = __webpack_require__(5);
-const common_2 = __webpack_require__(9);
-const core_1 = __webpack_require__(10);
-let RolesGuard = class RolesGuard {
-    constructor(reflector) {
-        this.reflector = reflector;
+exports.CourseService = void 0;
+const common_1 = __webpack_require__(9);
+const lodash_1 = __webpack_require__(46);
+const event_model_entity_1 = __webpack_require__(28);
+const question_entity_1 = __webpack_require__(34);
+const typeorm_1 = __webpack_require__(23);
+let CourseService = class CourseService {
+    constructor(connection) {
+        this.connection = connection;
     }
-    async canActivate(context) {
-        const roles = this.reflector.get('roles', context.getHandler());
-        if (!roles) {
-            return true;
+    async getTACheckInCheckOutTimes(courseId, startDate, endDate) {
+        const startDateAsDate = new Date(startDate);
+        const endDateAsDate = new Date(endDate);
+        if (startDateAsDate.getUTCDate() === endDateAsDate.getUTCDate()) {
+            endDateAsDate.setUTCDate(endDateAsDate.getUTCDate() + 1);
         }
-        const request = context.switchToHttp().getRequest();
-        const { courseId, user } = await this.setupData(request);
-        if (!user) {
-            throw new common_2.UnauthorizedException(common_1.ERROR_MESSAGES.roleGuard.notLoggedIn);
-        }
-        if (!courseId) {
-            throw new common_2.NotFoundException(common_1.ERROR_MESSAGES.roleGuard.noCourseIdFound);
-        }
-        return this.matchRoles(roles, user, courseId);
-    }
-    matchRoles(roles, user, courseId) {
-        const userCourse = user.courses.find((course) => {
-            return Number(course.courseId) === Number(courseId);
+        const taEvents = await event_model_entity_1.EventModel.find({
+            where: {
+                eventType: typeorm_1.In([
+                    event_model_entity_1.EventType.TA_CHECKED_IN,
+                    event_model_entity_1.EventType.TA_CHECKED_OUT,
+                    event_model_entity_1.EventType.TA_CHECKED_OUT_FORCED,
+                ]),
+                time: typeorm_1.Between(startDateAsDate, endDateAsDate),
+                courseId,
+            },
+            relations: ['user'],
         });
-        if (!userCourse) {
-            throw new common_2.NotFoundException(common_1.ERROR_MESSAGES.roleGuard.notInCourse);
+        const [checkinEvents, otherEvents] = lodash_1.partition(taEvents, (e) => e.eventType === event_model_entity_1.EventType.TA_CHECKED_IN);
+        const taCheckinTimes = [];
+        for (const checkinEvent of checkinEvents) {
+            let closestEvent = null;
+            let mostRecentTime = new Date();
+            const originalDate = mostRecentTime;
+            for (const checkoutEvent of otherEvents) {
+                if (checkoutEvent.userId === checkinEvent.userId &&
+                    checkoutEvent.time > checkinEvent.time &&
+                    checkoutEvent.time.getTime() - checkinEvent.time.getTime() <
+                        mostRecentTime.getTime() - checkinEvent.time.getTime()) {
+                    closestEvent = checkoutEvent;
+                    mostRecentTime = checkoutEvent.time;
+                }
+            }
+            const numHelped = await question_entity_1.QuestionModel.count({
+                where: {
+                    taHelpedId: checkinEvent.userId,
+                    helpedAt: typeorm_1.Between(checkinEvent.time, (closestEvent === null || closestEvent === void 0 ? void 0 : closestEvent.time) || new Date()),
+                },
+            });
+            taCheckinTimes.push({
+                name: checkinEvent.user.name,
+                checkinTime: checkinEvent.time,
+                checkoutTime: closestEvent === null || closestEvent === void 0 ? void 0 : closestEvent.time,
+                inProgress: mostRecentTime === originalDate,
+                forced: (closestEvent === null || closestEvent === void 0 ? void 0 : closestEvent.eventType) === event_model_entity_1.EventType.TA_CHECKED_OUT_FORCED,
+                numHelped,
+            });
         }
-        const remaining = roles.filter((role) => {
-            return userCourse.role.toString() === role;
-        });
-        if (remaining.length <= 0) {
-            throw new common_2.UnauthorizedException(common_1.ERROR_MESSAGES.roleGuard.mustBeRoleToJoinCourse(roles));
-        }
-        return remaining.length > 0;
+        return { taCheckinTimes };
     }
 };
-RolesGuard = __decorate([
-    common_2.Injectable(),
-    __metadata("design:paramtypes", [core_1.Reflector])
-], RolesGuard);
-exports.RolesGuard = RolesGuard;
+CourseService = __decorate([
+    common_1.Injectable(),
+    __metadata("design:paramtypes", [typeorm_1.Connection])
+], CourseService);
+exports.CourseService = CourseService;
 
 
 /***/ }),
-/* 89 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4822,7 +5257,7 @@ exports.HeatmapService = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
 const lodash_1 = __webpack_require__(46);
-const moment = __webpack_require__(82);
+const moment = __webpack_require__(90);
 const nestjs_command_1 = __webpack_require__(22);
 const question_entity_1 = __webpack_require__(34);
 const typeorm_1 = __webpack_require__(23);
@@ -4986,7 +5421,7 @@ exports.HeatmapService = HeatmapService;
 
 
 /***/ }),
-/* 90 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5003,18 +5438,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.IcalService = void 0;
 const common_1 = __webpack_require__(9);
-__webpack_require__(91);
-const node_ical_1 = __webpack_require__(92);
-const rrule_1 = __webpack_require__(93);
+__webpack_require__(98);
+const node_ical_1 = __webpack_require__(99);
+const rrule_1 = __webpack_require__(100);
 const typeorm_1 = __webpack_require__(23);
-const dist_1 = __webpack_require__(94);
+const dist_1 = __webpack_require__(101);
 const queue_entity_1 = __webpack_require__(32);
 const course_entity_1 = __webpack_require__(27);
 const office_hour_entity_1 = __webpack_require__(33);
-const moment = __webpack_require__(82);
+const moment = __webpack_require__(90);
 const schedule_1 = __webpack_require__(18);
 const nestjs_redis_1 = __webpack_require__(62);
-const Redlock = __webpack_require__(95);
+const Redlock = __webpack_require__(102);
 let IcalService = class IcalService {
     constructor(connection, redisService) {
         this.connection = connection;
@@ -5177,335 +5612,37 @@ exports.IcalService = IcalService;
 
 
 /***/ }),
-/* 91 */
+/* 98 */
 /***/ (function(module, exports) {
 
 module.exports = require("moment-timezone");
 
 /***/ }),
-/* 92 */
+/* 99 */
 /***/ (function(module, exports) {
 
 module.exports = require("node-ical");
 
 /***/ }),
-/* 93 */
+/* 100 */
 /***/ (function(module, exports) {
 
 module.exports = require("rrule");
 
 /***/ }),
-/* 94 */
+/* 101 */
 /***/ (function(module, exports) {
 
 module.exports = require("windows-iana/dist");
 
 /***/ }),
-/* 95 */
+/* 102 */
 /***/ (function(module, exports) {
 
 module.exports = require("redlock");
 
 /***/ }),
-/* 96 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.QueueModule = void 0;
-const common_1 = __webpack_require__(9);
-const queue_controller_1 = __webpack_require__(97);
-const queue_clean_service_1 = __webpack_require__(83);
-const sse_module_1 = __webpack_require__(100);
-const queue_service_1 = __webpack_require__(86);
-const queue_sse_service_1 = __webpack_require__(84);
-const queue_subscriber_1 = __webpack_require__(101);
-let QueueModule = class QueueModule {
-};
-QueueModule = __decorate([
-    common_1.Module({
-        controllers: [queue_controller_1.QueueController],
-        providers: [
-            queue_clean_service_1.QueueCleanService,
-            queue_service_1.QueueService,
-            queue_sse_service_1.QueueSSEService,
-            queue_subscriber_1.QueueSubscriber,
-        ],
-        exports: [queue_clean_service_1.QueueCleanService, queue_sse_service_1.QueueSSEService],
-        imports: [sse_module_1.SSEModule],
-    })
-], QueueModule);
-exports.QueueModule = QueueModule;
-
-
-/***/ }),
-/* 97 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.QueueController = void 0;
-const common_1 = __webpack_require__(5);
-const common_2 = __webpack_require__(9);
-const user_decorator_1 = __webpack_require__(41);
-const typeorm_1 = __webpack_require__(23);
-const jwt_auth_guard_1 = __webpack_require__(39);
-const roles_decorator_1 = __webpack_require__(42);
-const queue_role_decorator_1 = __webpack_require__(98);
-const queue_role_guard_1 = __webpack_require__(99);
-const queue_sse_service_1 = __webpack_require__(84);
-const queue_service_1 = __webpack_require__(86);
-const queue_clean_service_1 = __webpack_require__(83);
-let QueueController = class QueueController {
-    constructor(connection, queueSSEService, queueCleanService, queueService) {
-        this.connection = connection;
-        this.queueSSEService = queueSSEService;
-        this.queueCleanService = queueCleanService;
-        this.queueService = queueService;
-    }
-    async getQueue(queueId) {
-        return this.queueService.getQueue(queueId);
-    }
-    async getQuestions(queueId, role, userId) {
-        const questions = await this.queueService.getQuestions(queueId);
-        return await this.queueService.personalizeQuestions(queueId, questions, userId, role);
-    }
-    async updateQueue(queueId, body) {
-        const queue = await this.queueService.getQueue(queueId);
-        if (queue === undefined) {
-            throw new common_2.NotFoundException();
-        }
-        queue.notes = body.notes;
-        queue.allowQuestions = body.allowQuestions;
-        await queue.save();
-        return queue;
-    }
-    async cleanQueue(queueId) {
-        setTimeout(async () => {
-            await this.queueCleanService.cleanQueue(queueId, true);
-            await this.queueSSEService.updateQueue(queueId);
-        });
-    }
-    sendEvent(queueId, role, userId, res) {
-        res.set({
-            'Content-Type': 'text/event-stream',
-            'Cache-Control': 'no-cache',
-            'X-Accel-Buffering': 'no',
-            Connection: 'keep-alive',
-        });
-        this.queueSSEService.subscribeClient(queueId, res, { role, userId });
-    }
-};
-__decorate([
-    common_2.Get(':queueId'),
-    roles_decorator_1.Roles(common_1.Role.TA, common_1.Role.PROFESSOR, common_1.Role.STUDENT),
-    __param(0, common_2.Param('queueId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Promise)
-], QueueController.prototype, "getQueue", null);
-__decorate([
-    common_2.Get(':queueId/questions'),
-    roles_decorator_1.Roles(common_1.Role.TA, common_1.Role.PROFESSOR, common_1.Role.STUDENT),
-    __param(0, common_2.Param('queueId')),
-    __param(1, queue_role_decorator_1.QueueRole()),
-    __param(2, user_decorator_1.UserId()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, String, Number]),
-    __metadata("design:returntype", Promise)
-], QueueController.prototype, "getQuestions", null);
-__decorate([
-    common_2.Patch(':queueId'),
-    roles_decorator_1.Roles(common_1.Role.TA, common_1.Role.PROFESSOR),
-    __param(0, common_2.Param('queueId')),
-    __param(1, common_2.Body()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, common_1.UpdateQueueParams]),
-    __metadata("design:returntype", Promise)
-], QueueController.prototype, "updateQueue", null);
-__decorate([
-    common_2.Post(':queueId/clean'),
-    roles_decorator_1.Roles(common_1.Role.TA, common_1.Role.PROFESSOR),
-    __param(0, common_2.Param('queueId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Promise)
-], QueueController.prototype, "cleanQueue", null);
-__decorate([
-    common_2.Get(':queueId/sse'),
-    __param(0, common_2.Param('queueId')),
-    __param(1, queue_role_decorator_1.QueueRole()),
-    __param(2, user_decorator_1.UserId()),
-    __param(3, common_2.Res()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, String, Number, Object]),
-    __metadata("design:returntype", void 0)
-], QueueController.prototype, "sendEvent", null);
-QueueController = __decorate([
-    common_2.Controller('queues'),
-    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard, queue_role_guard_1.QueueRolesGuard),
-    common_2.UseInterceptors(common_2.ClassSerializerInterceptor),
-    __metadata("design:paramtypes", [typeorm_1.Connection,
-        queue_sse_service_1.QueueSSEService,
-        queue_clean_service_1.QueueCleanService,
-        queue_service_1.QueueService])
-], QueueController);
-exports.QueueController = QueueController;
-
-
-/***/ }),
-/* 98 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.QueueRole = void 0;
-const common_1 = __webpack_require__(9);
-const user_entity_1 = __webpack_require__(29);
-const queue_entity_1 = __webpack_require__(32);
-exports.QueueRole = common_1.createParamDecorator(async (data, ctx) => {
-    const request = ctx.switchToHttp().getRequest();
-    const queue = await queue_entity_1.QueueModel.findOne(request.params.queueId);
-    const courseId = queue === null || queue === void 0 ? void 0 : queue.courseId;
-    const user = await user_entity_1.UserModel.findOne(request.user.userId, {
-        relations: ['courses'],
-    });
-    const userCourse = user.courses.find((course) => {
-        return Number(course.courseId) === Number(courseId);
-    });
-    if (!userCourse) {
-        throw new common_1.NotFoundException("cannot read propery 'role ' of undefined on user: " + user.id + user);
-    }
-    return userCourse.role;
-});
-
-
-/***/ }),
-/* 99 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.QueueRolesGuard = void 0;
-const common_1 = __webpack_require__(5);
-const common_2 = __webpack_require__(9);
-const role_guard_1 = __webpack_require__(88);
-const user_entity_1 = __webpack_require__(29);
-const queue_entity_1 = __webpack_require__(32);
-let QueueRolesGuard = class QueueRolesGuard extends role_guard_1.RolesGuard {
-    async setupData(request) {
-        const queue = await queue_entity_1.QueueModel.findOne(request.params.queueId);
-        if (!queue) {
-            throw new common_2.NotFoundException(common_1.ERROR_MESSAGES.queueRoleGuard.queueNotFound);
-        }
-        const courseId = queue.courseId;
-        const user = await user_entity_1.UserModel.findOne(request.user.userId, {
-            relations: ['courses'],
-        });
-        return { courseId, user };
-    }
-};
-QueueRolesGuard = __decorate([
-    common_2.Injectable()
-], QueueRolesGuard);
-exports.QueueRolesGuard = QueueRolesGuard;
-
-
-/***/ }),
-/* 100 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.SSEModule = void 0;
-const common_1 = __webpack_require__(9);
-const sse_service_1 = __webpack_require__(85);
-let SSEModule = class SSEModule {
-};
-SSEModule = __decorate([
-    common_1.Module({ providers: [sse_service_1.SSEService], exports: [sse_service_1.SSEService] })
-], SSEModule);
-exports.SSEModule = SSEModule;
-
-
-/***/ }),
-/* 101 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.QueueSubscriber = void 0;
-const queue_sse_service_1 = __webpack_require__(84);
-const typeorm_1 = __webpack_require__(23);
-const queue_entity_1 = __webpack_require__(32);
-let QueueSubscriber = class QueueSubscriber {
-    constructor(connection, queueSSEService) {
-        this.queueSSEService = queueSSEService;
-        connection.subscribers.push(this);
-    }
-    listenTo() {
-        return queue_entity_1.QueueModel;
-    }
-    async afterUpdate(event) {
-        if (event.entity) {
-            await this.queueSSEService.updateQueue(event.entity.id);
-        }
-    }
-};
-QueueSubscriber = __decorate([
-    typeorm_1.EventSubscriber(),
-    __metadata("design:paramtypes", [typeorm_1.Connection, queue_sse_service_1.QueueSSEService])
-], QueueSubscriber);
-exports.QueueSubscriber = QueueSubscriber;
-
-
-/***/ }),
-/* 102 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5523,7 +5660,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ICalCommand = void 0;
 const nestjs_command_1 = __webpack_require__(22);
 const common_1 = __webpack_require__(9);
-const ical_service_1 = __webpack_require__(90);
+const ical_service_1 = __webpack_require__(97);
 let ICalCommand = class ICalCommand {
     constructor(icalService) {
         this.icalService = icalService;
@@ -5550,7 +5687,7 @@ exports.ICalCommand = ICalCommand;
 
 
 /***/ }),
-/* 103 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5564,7 +5701,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HealthcheckModule = void 0;
 const common_1 = __webpack_require__(9);
-const healthcheck_controller_1 = __webpack_require__(104);
+const healthcheck_controller_1 = __webpack_require__(105);
 let HealthcheckModule = class HealthcheckModule {
 };
 HealthcheckModule = __decorate([
@@ -5576,7 +5713,7 @@ exports.HealthcheckModule = HealthcheckModule;
 
 
 /***/ }),
-/* 104 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5593,7 +5730,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HealthcheckController = void 0;
 const common_1 = __webpack_require__(9);
-const decorators_1 = __webpack_require__(105);
+const decorators_1 = __webpack_require__(106);
 let HealthcheckController = class HealthcheckController {
     health() {
         return 'healthy';
@@ -5612,13 +5749,13 @@ exports.HealthcheckController = HealthcheckController;
 
 
 /***/ }),
-/* 105 */
+/* 106 */
 /***/ (function(module, exports) {
 
 module.exports = require("@nestjs/common/decorators");
 
 /***/ }),
-/* 106 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5632,11 +5769,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoginModule = void 0;
 const common_1 = __webpack_require__(9);
-const login_controller_1 = __webpack_require__(107);
-const jwt_strategy_1 = __webpack_require__(112);
-const jwt_1 = __webpack_require__(108);
+const login_controller_1 = __webpack_require__(108);
+const jwt_strategy_1 = __webpack_require__(113);
+const jwt_1 = __webpack_require__(109);
 const config_1 = __webpack_require__(17);
-const login_course_service_1 = __webpack_require__(111);
+const login_course_service_1 = __webpack_require__(112);
 let LoginModule = class LoginModule {
 };
 LoginModule = __decorate([
@@ -5658,7 +5795,7 @@ exports.LoginModule = LoginModule;
 
 
 /***/ }),
-/* 107 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5680,12 +5817,12 @@ exports.LoginController = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
 const config_1 = __webpack_require__(17);
-const jwt_1 = __webpack_require__(108);
+const jwt_1 = __webpack_require__(109);
 const Sentry = __webpack_require__(12);
-const httpSignature = __webpack_require__(109);
+const httpSignature = __webpack_require__(110);
 const typeorm_1 = __webpack_require__(23);
-const non_production_guard_1 = __webpack_require__(110);
-const login_course_service_1 = __webpack_require__(111);
+const non_production_guard_1 = __webpack_require__(111);
+const login_course_service_1 = __webpack_require__(112);
 let LoginController = class LoginController {
     constructor(connection, loginCourseService, jwtService, configService) {
         this.connection = connection;
@@ -5791,19 +5928,19 @@ exports.LoginController = LoginController;
 
 
 /***/ }),
-/* 108 */
+/* 109 */
 /***/ (function(module, exports) {
 
 module.exports = require("@nestjs/jwt");
 
 /***/ }),
-/* 109 */
+/* 110 */
 /***/ (function(module, exports) {
 
 module.exports = require("http-signature");
 
 /***/ }),
-/* 110 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5830,7 +5967,7 @@ exports.NonProductionGuard = NonProductionGuard;
 
 
 /***/ }),
-/* 111 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5943,7 +6080,7 @@ exports.LoginCourseService = LoginCourseService;
 
 
 /***/ }),
-/* 112 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5959,7 +6096,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JwtStrategy = void 0;
-const passport_jwt_1 = __webpack_require__(113);
+const passport_jwt_1 = __webpack_require__(114);
 const passport_1 = __webpack_require__(40);
 const common_1 = __webpack_require__(9);
 const config_1 = __webpack_require__(17);
@@ -5983,13 +6120,13 @@ exports.JwtStrategy = JwtStrategy;
 
 
 /***/ }),
-/* 113 */
+/* 114 */
 /***/ (function(module, exports) {
 
 module.exports = require("passport-jwt");
 
 /***/ }),
-/* 114 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6003,7 +6140,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProfileModule = void 0;
 const common_1 = __webpack_require__(9);
-const profile_controller_1 = __webpack_require__(115);
+const profile_controller_1 = __webpack_require__(116);
 const notification_module_1 = __webpack_require__(49);
 let ProfileModule = class ProfileModule {
 };
@@ -6017,7 +6154,7 @@ exports.ProfileModule = ProfileModule;
 
 
 /***/ }),
-/* 115 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6038,13 +6175,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProfileController = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
-const platform_express_1 = __webpack_require__(116);
-const checkDiskSpace = __webpack_require__(117);
-const fs = __webpack_require__(118);
+const platform_express_1 = __webpack_require__(117);
+const checkDiskSpace = __webpack_require__(118);
+const fs = __webpack_require__(119);
 const lodash_1 = __webpack_require__(46);
-const multer_1 = __webpack_require__(119);
-const path = __webpack_require__(120);
-const sharp = __webpack_require__(121);
+const multer_1 = __webpack_require__(120);
+const path = __webpack_require__(121);
+const sharp = __webpack_require__(122);
 const typeorm_1 = __webpack_require__(23);
 const jwt_auth_guard_1 = __webpack_require__(39);
 const notification_service_1 = __webpack_require__(51);
@@ -6207,43 +6344,43 @@ exports.ProfileController = ProfileController;
 
 
 /***/ }),
-/* 116 */
+/* 117 */
 /***/ (function(module, exports) {
 
 module.exports = require("@nestjs/platform-express");
 
 /***/ }),
-/* 117 */
+/* 118 */
 /***/ (function(module, exports) {
 
 module.exports = require("check-disk-space");
 
 /***/ }),
-/* 118 */
+/* 119 */
 /***/ (function(module, exports) {
 
 module.exports = require("fs");
 
 /***/ }),
-/* 119 */
+/* 120 */
 /***/ (function(module, exports) {
 
 module.exports = require("multer");
 
 /***/ }),
-/* 120 */
+/* 121 */
 /***/ (function(module, exports) {
 
 module.exports = require("path");
 
 /***/ }),
-/* 121 */
+/* 122 */
 /***/ (function(module, exports) {
 
 module.exports = require("sharp");
 
 /***/ }),
-/* 122 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6258,9 +6395,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.QuestionModule = void 0;
 const common_1 = __webpack_require__(9);
 const notification_module_1 = __webpack_require__(49);
-const question_controller_1 = __webpack_require__(123);
-const question_subscriber_1 = __webpack_require__(125);
-const queue_module_1 = __webpack_require__(96);
+const question_controller_1 = __webpack_require__(124);
+const question_subscriber_1 = __webpack_require__(126);
+const queue_module_1 = __webpack_require__(80);
 let QuestionModule = class QuestionModule {
 };
 QuestionModule = __decorate([
@@ -6274,7 +6411,7 @@ exports.QuestionModule = QuestionModule;
 
 
 /***/ }),
-/* 123 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6303,7 +6440,7 @@ const user_course_entity_1 = __webpack_require__(26);
 const user_decorator_1 = __webpack_require__(41);
 const user_entity_1 = __webpack_require__(29);
 const queue_entity_1 = __webpack_require__(32);
-const question_role_guard_1 = __webpack_require__(124);
+const question_role_guard_1 = __webpack_require__(125);
 const question_entity_1 = __webpack_require__(34);
 let QuestionController = class QuestionController {
     constructor(connection, notifService) {
@@ -6489,7 +6626,7 @@ exports.QuestionController = QuestionController;
 
 
 /***/ }),
-/* 124 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6504,7 +6641,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.QuestionRolesGuard = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
-const role_guard_1 = __webpack_require__(88);
+const role_guard_1 = __webpack_require__(84);
 const user_entity_1 = __webpack_require__(29);
 const queue_entity_1 = __webpack_require__(32);
 const question_entity_1 = __webpack_require__(34);
@@ -6542,7 +6679,7 @@ exports.QuestionRolesGuard = QuestionRolesGuard;
 
 
 /***/ }),
-/* 125 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6561,7 +6698,7 @@ exports.QuestionSubscriber = void 0;
 const common_1 = __webpack_require__(5);
 const typeorm_1 = __webpack_require__(23);
 const notification_service_1 = __webpack_require__(51);
-const queue_sse_service_1 = __webpack_require__(84);
+const queue_sse_service_1 = __webpack_require__(85);
 const queue_entity_1 = __webpack_require__(32);
 const question_entity_1 = __webpack_require__(34);
 let QuestionSubscriber = class QuestionSubscriber {
@@ -6618,7 +6755,7 @@ exports.QuestionSubscriber = QuestionSubscriber;
 
 
 /***/ }),
-/* 126 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6632,8 +6769,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SeedModule = void 0;
 const common_1 = __webpack_require__(9);
-const seed_controller_1 = __webpack_require__(127);
-const seed_service_1 = __webpack_require__(130);
+const seed_controller_1 = __webpack_require__(128);
+const seed_service_1 = __webpack_require__(131);
 let SeedModule = class SeedModule {
 };
 SeedModule = __decorate([
@@ -6646,7 +6783,7 @@ exports.SeedModule = SeedModule;
 
 
 /***/ }),
-/* 127 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6668,19 +6805,20 @@ exports.SeedController = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
 const alerts_entity_1 = __webpack_require__(36);
+const course_section_mapping_entity_1 = __webpack_require__(69);
 const desktop_notif_entity_1 = __webpack_require__(30);
 const phone_notif_entity_1 = __webpack_require__(31);
 const event_model_entity_1 = __webpack_require__(28);
 const user_course_entity_1 = __webpack_require__(26);
 const user_entity_1 = __webpack_require__(29);
 const typeorm_1 = __webpack_require__(23);
-const factories_1 = __webpack_require__(128);
+const factories_1 = __webpack_require__(129);
 const course_entity_1 = __webpack_require__(27);
 const office_hour_entity_1 = __webpack_require__(33);
-const non_production_guard_1 = __webpack_require__(110);
+const non_production_guard_1 = __webpack_require__(111);
 const question_entity_1 = __webpack_require__(34);
 const queue_entity_1 = __webpack_require__(32);
-const seed_service_1 = __webpack_require__(130);
+const seed_service_1 = __webpack_require__(131);
 let SeedController = class SeedController {
     constructor(connection, seedService) {
         this.connection = connection;
@@ -6696,6 +6834,7 @@ let SeedController = class SeedController {
         await this.seedService.deleteAll(phone_notif_entity_1.PhoneNotifModel);
         await this.seedService.deleteAll(alerts_entity_1.AlertModel);
         await this.seedService.deleteAll(user_entity_1.UserModel);
+        await this.seedService.deleteAll(course_section_mapping_entity_1.CourseSectionMappingModel);
         await this.seedService.deleteAll(course_entity_1.CourseModel);
         const manager = typeorm_1.getManager();
         manager.query('ALTER SEQUENCE user_model_id_seq RESTART WITH 1;');
@@ -6829,6 +6968,37 @@ let SeedController = class SeedController {
         await factories_1.QuestionFactory.create({
             queue: queue,
             createdAt: new Date(Date.now() - 1500000),
+        });
+        const eventTA = await user_entity_1.UserModel.findOne({
+            where: {
+                firstName: 'Will',
+            },
+        });
+        await factories_1.EventFactory.create({
+            user: eventTA,
+            course: course,
+            time: yesterday,
+            eventType: event_model_entity_1.EventType.TA_CHECKED_IN,
+        });
+        await factories_1.EventFactory.create({
+            user: eventTA,
+            course: course,
+            time: new Date(Date.now() - 80000000),
+            eventType: event_model_entity_1.EventType.TA_CHECKED_OUT,
+        });
+        await factories_1.EventFactory.create({
+            user: eventTA,
+            course: course,
+            time: new Date(Date.now() - 70000000),
+            eventType: event_model_entity_1.EventType.TA_CHECKED_IN,
+        });
+        const todayAtMidnight = new Date();
+        todayAtMidnight.setHours(0, 0, 0, 0);
+        await factories_1.EventFactory.create({
+            user: eventTA,
+            course: course,
+            time: todayAtMidnight,
+            eventType: event_model_entity_1.EventType.TA_CHECKED_OUT_FORCED,
         });
         const professorQueue = await factories_1.QueueFactory.create({
             room: "Professor Li's Hours",
@@ -6970,15 +7140,16 @@ exports.SeedController = SeedController;
 
 
 /***/ }),
-/* 128 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.QuestionFactory = exports.QueueFactory = exports.UserCourseFactory = exports.CourseSectionFactory = exports.CourseFactory = exports.OfficeHourFactory = exports.ClosedOfficeHourFactory = exports.SemesterFactory = exports.TACourseFactory = exports.StudentCourseFactory = exports.UserFactory = void 0;
+exports.EventFactory = exports.QuestionFactory = exports.QueueFactory = exports.UserCourseFactory = exports.CourseSectionFactory = exports.CourseFactory = exports.OfficeHourFactory = exports.ClosedOfficeHourFactory = exports.SemesterFactory = exports.TACourseFactory = exports.StudentCourseFactory = exports.UserFactory = void 0;
 const common_1 = __webpack_require__(5);
-const typeorm_factory_1 = __webpack_require__(129);
+const event_model_entity_1 = __webpack_require__(28);
+const typeorm_factory_1 = __webpack_require__(130);
 const course_entity_1 = __webpack_require__(27);
 const office_hour_entity_1 = __webpack_require__(33);
 const semester_entity_1 = __webpack_require__(37);
@@ -7034,16 +7205,21 @@ exports.QuestionFactory = new typeorm_factory_1.Factory(question_entity_1.Questi
     .assocOne('queue', exports.QueueFactory)
     .assocOne('creator', exports.UserFactory)
     .attr('createdAt', new Date());
+exports.EventFactory = new typeorm_factory_1.Factory(event_model_entity_1.EventModel)
+    .attr('time', new Date())
+    .attr('eventType', event_model_entity_1.EventType.TA_CHECKED_IN)
+    .assocOne('user', exports.UserFactory)
+    .assocOne('course', exports.CourseFactory);
 
 
 /***/ }),
-/* 129 */
+/* 130 */
 /***/ (function(module, exports) {
 
 module.exports = require("typeorm-factory");
 
 /***/ }),
-/* 130 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7070,7 +7246,7 @@ exports.SeedService = SeedService;
 
 
 /***/ }),
-/* 131 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
