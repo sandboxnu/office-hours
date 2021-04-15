@@ -3,7 +3,6 @@ import {
   CloseOutlined,
   DeleteOutlined,
   PhoneOutlined,
-  QuestionOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
 import { API } from "@koh/api-client";
@@ -22,7 +21,6 @@ import { useQuestions } from "../../../hooks/useQuestions";
 import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
 import {
   BannerDangerButton,
-  BannerOrangeButton,
   BannerPrimaryButton,
   CantFindButton,
   FinishHelpingButton,
