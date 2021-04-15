@@ -14,6 +14,7 @@ import {
   GetQueueResponse,
   GetReleaseNotesResponse,
   ListQuestionsResponse,
+  TACheckinTimesResponse,
   TACheckoutResponse,
   TAUpdateStatusResponse,
   UpdateCourseOverrideBody,
@@ -99,6 +100,18 @@ class APIClient {
         `/api/v1/courses/${courseId}/update_override`,
         undefined,
         params
+      ),
+    getTACheckinTimes: async (
+      courseId: number,
+      startDate: string,
+      endDate: string
+    ): Promise<TACheckinTimesResponse> =>
+      this.req(
+        "GET",
+        `/api/v1/courses/${courseId}/ta_check_in_times`,
+        TACheckinTimesResponse,
+        {},
+        { startDate, endDate }
       ),
   };
   taStatus = {

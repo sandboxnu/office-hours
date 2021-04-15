@@ -1,14 +1,16 @@
 import { CreateQuestionParams, Role } from '@koh/common';
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AlertModel } from 'alerts/alerts.entity';
+import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { DesktopNotifModel } from 'notification/desktop-notif.entity';
 import { PhoneNotifModel } from 'notification/phone-notif.entity';
-import { EventModel } from 'profile/event-model.entity';
+import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
 import { Connection, getManager } from 'typeorm';
 import {
   CourseFactory,
+  EventFactory,
   OfficeHourFactory,
   QuestionFactory,
   QueueFactory,
@@ -42,6 +44,7 @@ export class SeedController {
     await this.seedService.deleteAll(PhoneNotifModel);
     await this.seedService.deleteAll(AlertModel);
     await this.seedService.deleteAll(UserModel);
+    await this.seedService.deleteAll(CourseSectionMappingModel);
     await this.seedService.deleteAll(CourseModel);
     const manager = getManager();
     manager.query('ALTER SEQUENCE user_model_id_seq RESTART WITH 1;');
@@ -119,7 +122,8 @@ export class SeedController {
         role: Role.STUDENT,
         course: course,
       });
-      // Stundent 2
+
+      // Student 2
       const user2 = await UserFactory.create({
         email: 'takayama.a@northeastern.edu',
         firstName: 'Alex',
@@ -197,6 +201,43 @@ export class SeedController {
     await QuestionFactory.create({
       queue: queue,
       createdAt: new Date(Date.now() - 1500000),
+    });
+
+    const eventTA = await UserModel.findOne({
+      where: {
+        firstName: 'Will',
+      },
+    });
+
+    await EventFactory.create({
+      user: eventTA,
+      course: course,
+      time: yesterday,
+      eventType: EventType.TA_CHECKED_IN,
+    });
+
+    await EventFactory.create({
+      user: eventTA,
+      course: course,
+      time: new Date(Date.now() - 80000000),
+      eventType: EventType.TA_CHECKED_OUT,
+    });
+
+    await EventFactory.create({
+      user: eventTA,
+      course: course,
+      time: new Date(Date.now() - 70000000),
+      eventType: EventType.TA_CHECKED_IN,
+    });
+
+    const todayAtMidnight = new Date();
+    todayAtMidnight.setHours(0, 0, 0, 0);
+
+    await EventFactory.create({
+      user: eventTA,
+      course: course,
+      time: todayAtMidnight,
+      eventType: EventType.TA_CHECKED_OUT_FORCED,
     });
 
     const professorQueue = await QueueFactory.create({
