@@ -9,7 +9,7 @@ import {
   GetQuestionResponse,
   GetQueueResponse,
   GetReleaseNotesResponse,
-  HelpQuestionsParams,
+  GroupQuestionsParams,
   ListQuestionsResponse,
   TACheckoutResponse,
   TAUpdateStatusResponse,
@@ -125,8 +125,8 @@ class APIClient {
       ),
     notify: async (questionId: number): Promise<void> =>
       this.req("POST", `/api/v1/questions/${questionId}/notify`),
-    help: async (params: HelpQuestionsParams): Promise<void> =>
-      this.req("POST", "/api/v1/questions/help", undefined, params),
+    group: async (params: GroupQuestionsParams): Promise<void> =>
+      this.req("POST", "/api/v1/questions/group", undefined, params),
     resolveGroup: async (groupId: number, queueId: number): Promise<void> =>
       this.req(
         "PATCH",

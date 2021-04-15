@@ -536,7 +536,7 @@ export class UpdateQuestionParams {
 }
 export class UpdateQuestionResponse extends Question {}
 
-export class HelpQuestionsParams {
+export class GroupQuestionsParams {
   @IsArray()
   @Type(() => Number)
   questionIds!: number[];

@@ -36,11 +36,8 @@ export class QuestionSubscriber
   }
 
   async afterUpdate(event: UpdateEvent<QuestionModel>): Promise<void> {
-    // TODO: fix this
-    // Send all listening clients an update
-    console.log('ligma', event.metadata);
-
     if (!event.entity) {
+      // TODO: this is kinda janky maybe fix
       return;
     }
 

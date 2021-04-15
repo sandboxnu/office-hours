@@ -1,4 +1,5 @@
 import { QuestionType, Role } from '@koh/common';
+import { QuestionGroupModel } from 'question/question-group.entity';
 import { Factory } from 'typeorm-factory';
 import { CourseModel } from '../../src/course/course.entity';
 import { OfficeHourModel } from '../../src/course/office-hour.entity';
@@ -75,3 +76,7 @@ export const QuestionFactory = new Factory(QuestionModel)
   .assocOne('creator', UserFactory)
   .attr('createdAt', new Date())
   .attr('groupable', true);
+
+export const QuestionGroupFactory = new Factory(QuestionGroupModel)
+  .assocOne('creator', UserCourseFactory)
+  .assocOne('queue', QueueFactory);

@@ -95,7 +95,7 @@ export default function AllQuestionsCheckList({
               <BannerPrimaryButton
                 icon={<PhoneOutlined />}
                 onClick={() => {
-                  API.questions.help({
+                  API.questions.group({
                     questionIds: Array.from(checkedQuestions),
                     queueId: queueId,
                   });

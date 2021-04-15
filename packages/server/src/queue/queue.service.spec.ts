@@ -5,6 +5,7 @@ import { QuestionModel } from 'question/question.entity';
 import { Connection } from 'typeorm';
 import {
   QuestionFactory,
+  QuestionGroupFactory,
   QueueFactory,
   UserFactory,
 } from '../../test/util/factories';
@@ -106,6 +107,49 @@ describe('QueueService', () => {
       expect(
         (await service.getQuestions(queue.id)).priorityQueue.map((q) => q.id),
       ).toEqual(questionIds);
+    });
+
+    it('fetches questions in all groups', async () => {
+      const queue = await QueueFactory.create();
+      await createQuestionsEveryStatus(queue);
+      const group1 = await QuestionGroupFactory.create({ queue });
+      const g1q1 = await QuestionFactory.create({
+        queue,
+        groupable: true,
+        group: group1,
+      });
+      const g1q2 = await QuestionFactory.create({
+        queue,
+        groupable: true,
+        group: group1,
+      });
+      // priority queue questions do not get included in result
+      await QuestionFactory.create({
+        queue,
+        groupable: true,
+        group: group1,
+        status: 'PriorityQueued',
+      });
+      const group2 = await QuestionGroupFactory.create({ queue });
+      const g2q1 = await QuestionFactory.create({
+        queue,
+        groupable: true,
+        group: group2,
+      });
+
+      const recievedGroups = (await service.getQuestions(queue.id)).groups;
+
+      expect(recievedGroups.length).toEqual(2);
+      recievedGroups.forEach((group) => {
+        if (group.id === group1.id) {
+          expect(group.questions.length).toEqual(2);
+          expect(group.questions.some((q) => q.id === g1q1.id)).toBeTruthy();
+          expect(group.questions.some((q) => q.id === g1q2.id)).toBeTruthy();
+        } else {
+          expect(group.questions.length).toEqual(1);
+          expect(group.questions.some((q) => q.id === g2q1.id)).toBeTruthy();
+        }
+      });
     });
   });
 

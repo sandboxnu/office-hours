@@ -4,7 +4,7 @@ import {
   CreateQuestionResponse,
   ERROR_MESSAGES,
   GetQuestionResponse,
-  HelpQuestionsParams,
+  GroupQuestionsParams,
   LimboQuestionStatus,
   OpenQuestionStatus,
   QuestionStatusKeys,
@@ -214,10 +214,10 @@ export class QuestionController {
     }
   }
 
-  @Post('help')
+  @Post('group')
   @Roles(Role.TA, Role.PROFESSOR)
-  async helpQuestions(
-    @Body() body: HelpQuestionsParams,
+  async groupQuestions(
+    @Body() body: GroupQuestionsParams,
     @UserId() instructorId: number,
   ): Promise<void> {
     const questions = await QuestionModel.find({
@@ -253,13 +253,12 @@ export class QuestionController {
       },
     });
 
-    const _newGroup = await QuestionGroupModel.create({
+    await QuestionGroupModel.create({
       creatorId: creatorUserCourse.id, // this should be usercourse id
       queueId: body.queueId,
       questions: questions,
     }).save();
 
-    // TODO: return newGroup???
     return;
   }
 
@@ -287,8 +286,6 @@ export class QuestionController {
       }
     }
 
-    // TODO: return type??
-    // this is in question controller bc its using question service, should it be queue controller?
     return;
   }
 }
