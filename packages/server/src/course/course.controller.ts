@@ -305,7 +305,7 @@ export class CourseController {
   }
 
   @Post('submit_course')
-  async submitCourse(@Body() body: SubmitCourseParams) {
+  async submitCourse(@Body() body: SubmitCourseParams): Promise<void> {
     const season = body.semester.split(' ')[0];
     const year = parseInt(body.semester.split(' ')[1]);
 
@@ -318,7 +318,7 @@ export class CourseController {
       );
 
     // create the submitted course
-    let course = await CourseModel.create({
+    const course = await CourseModel.create({
       name: body.name,
       coordinator_email: body.coordinator_email,
       icalURL: body.icalURL,

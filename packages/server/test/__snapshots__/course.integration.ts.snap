@@ -14,6 +14,7 @@ Object {
       "title": "Alex & Stanley",
     },
   ],
+  "pending": null,
   "queues": Array [],
   "timezone": "America/New_York",
 }

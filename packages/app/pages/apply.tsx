@@ -1,6 +1,6 @@
 import { Container } from "next/app";
 import Head from "next/head";
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement } from "react";
 import { StandardPageContainer } from "../components/common/PageContainer";
 import ApplyPage from "../components/Apply/ApplyPage";
 

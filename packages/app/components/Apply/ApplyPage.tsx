@@ -29,7 +29,7 @@ export default function ApplyPage(): ReactElement {
 
   const validateSections = (value: string): boolean => {
     const values = value.replace(/\s+/g, "").split(",");
-    for (let val of values) {
+    for (const val of values) {
       if (isNaN(Number(val))) return false;
     }
     return true;
@@ -42,8 +42,8 @@ export default function ApplyPage(): ReactElement {
         title="Application successfully submitted!"
         subTitle={
           <div>
-            Thanks for applying to use Khoury Office Hours, we'll email you with
-            next steps as the semester gets closer.
+            Thanks for applying to use Khoury Office Hours, we&apos;ll email you
+            with next steps as the semester gets closer.
             <br />
             If you have any questions, feel free to email us at
             help@khouryofficehours.com
@@ -169,6 +169,7 @@ export default function ApplyPage(): ReactElement {
                     See{" "}
                     <a
                       target="_blank"
+                      rel="noreferrer"
                       href="https://info.khouryofficehours.com/coordinators-manual"
                     >
                       here
