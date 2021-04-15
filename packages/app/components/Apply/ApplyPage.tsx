@@ -67,27 +67,30 @@ export default function ApplyPage(): ReactElement {
             rules={[{ required: true, message: "Please select a semester." }]}
           >
             <Select>
-              <Option value="jack">Jack</Option>
-              <Option value="lucy">Lucy</Option>
-              <Option value="disabled" disabled>
-                Disabled
-              </Option>
-              <Option value="Yiminghe">yiminghe</Option>
+              <Option value="Summer_1 2021">Summer 1 2021</Option>
+              <Option value="Summer_2 2021">Summer 2 2021</Option>
+              <Option value="Summer_Full 2021">Summer Full 2021</Option>
             </Select>
           </HalfFormItem>
 
           <HalfFormItem
-            label="Timezone"
-            name="timezone"
-            rules={[{ required: true, message: "Please select a timezone." }]}
+            label="Campus"
+            name="campus"
+            rules={[
+              {
+                required: true,
+                message:
+                  "Please select a Northeastern campus (for purpose of timezone).",
+              },
+            ]}
           >
             <Select>
-              <Option value="jack">Jack</Option>
-              <Option value="lucy">Lucy</Option>
-              <Option value="disabled" disabled>
-                Disabled
+              <Option value="America/New_York">Boston / Charlotte</Option>
+              <Option value="America/Los_Angeles">
+                San Francisco / Seattle
               </Option>
-              <Option value="Yiminghe">yiminghe</Option>
+              <Option value="America/Toronto">Toronto</Option>
+              <Option value="America/Vancouver">Vancouver</Option>
             </Select>
           </HalfFormItem>
         </Row>
