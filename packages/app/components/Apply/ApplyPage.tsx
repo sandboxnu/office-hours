@@ -74,7 +74,15 @@ export default function ApplyPage(): ReactElement {
         Office Hours for.
       </div>
       <br />
-      <Form form={form} layout="vertical" initialValues={{ remember: true }}>
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={{
+          remember: true,
+          semester: "Summer_1 2021",
+          timezone: "America/New_York",
+        }}
+      >
         <Form.Item
           label="Email"
           name="coordinator_email"
@@ -130,7 +138,7 @@ export default function ApplyPage(): ReactElement {
             name="semester"
             rules={[{ required: true, message: "Please select a semester." }]}
           >
-            <Select defaultValue="Summer_1 2021">
+            <Select>
               <Option value="Summer_1 2021">Summer 1 2021</Option>
               <Option value="Summer_2 2021">Summer 2 2021</Option>
               <Option value="Summer_Full 2021">Summer Full 2021</Option>
@@ -148,7 +156,7 @@ export default function ApplyPage(): ReactElement {
               },
             ]}
           >
-            <Select defaultValue="America/New_York">
+            <Select>
               <Option value="America/New_York">Boston / Charlotte</Option>
               <Option value="America/Los_Angeles">
                 San Francisco / Seattle
