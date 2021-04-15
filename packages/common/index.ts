@@ -7,6 +7,7 @@ import {
   IsEnum,
   IsInt,
   IsNotEmpty,
+  IsNumber,
   IsObject,
   IsOptional,
   IsString,
@@ -538,6 +539,33 @@ export class UpdateQueueParams {
 
   @IsBoolean()
   allowQuestions?: boolean;
+}
+
+export class TACheckinTimesResponse {
+  @Type(() => TACheckinPair)
+  taCheckinTimes!: TACheckinPair[];
+}
+
+export class TACheckinPair {
+  @IsString()
+  name!: string;
+
+  @IsDate()
+  @Type(() => Date)
+  checkinTime!: Date;
+
+  @IsDate()
+  @Type(() => Date)
+  checkoutTime?: Date;
+
+  @IsBoolean()
+  forced!: boolean;
+
+  @IsBoolean()
+  inProgress!: boolean;
+
+  @IsNumber()
+  numHelped!: number;
 }
 
 export enum AlertType {
