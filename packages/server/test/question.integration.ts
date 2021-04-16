@@ -545,10 +545,11 @@ describe('Question Integration', () => {
   });
 
   describe('PATCH /resolveGroup/:group_id', () => {
-    it('marks questions in a group (that are not priority queued) as resolved', async () => {
-      const queue = await QueueFactory.create();
+    it.only('marks questions in a group (that are not priority queued) as resolved', async () => {
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ courseId: course.id });
       const ta = await UserFactory.create();
-      await TACourseFactory.create({ courseId: queue.courseId, user: ta });
+      await TACourseFactory.create({ courseId: queue.courseId, userId: ta.id });
       const group1 = await QuestionGroupFactory.create({
         queue,
         creatorId: ta.id,
@@ -577,6 +578,7 @@ describe('Question Integration', () => {
       // TODO: bad request
       await supertest({ userId: ta.id })
         .patch(`/questions/resolveGroup/${group1.id}`)
+        .send({})
         .expect(201);
 
       expect(await QuestionModel.findOne({ id: g1q3.id })).toMatchObject({
