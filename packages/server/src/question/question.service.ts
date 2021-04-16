@@ -81,7 +81,10 @@ export class QuestionService {
     return question;
   }
 
-  async validateNotHelpingOther(newStatus: QuestionStatus, userId: number) {
+  async validateNotHelpingOther(
+    newStatus: QuestionStatus,
+    userId: number,
+  ): Promise<void> {
     const isAlreadyHelpingOne =
       (await QuestionModel.count({
         where: {

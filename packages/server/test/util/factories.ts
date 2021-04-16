@@ -74,8 +74,7 @@ export const QuestionFactory = new Factory(QuestionModel)
   .attr('groupable', true)
   .assocOne('queue', QueueFactory)
   .assocOne('creator', UserFactory)
-  .attr('createdAt', new Date())
-  .attr('groupable', true);
+  .attr('createdAt', new Date());
 
 export const QuestionGroupFactory = new Factory(QuestionGroupModel)
   .assocOne('creator', UserCourseFactory)

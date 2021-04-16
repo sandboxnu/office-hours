@@ -4,6 +4,7 @@ import {
   OpenQuestionStatus,
   QuestionStatusKeys,
   QuestionType,
+  Role,
 } from '@koh/common';
 import { UserModel } from 'profile/user.entity';
 import { QuestionGroupModel } from 'question/question-group.entity';
@@ -545,41 +546,49 @@ describe('Question Integration', () => {
   });
 
   describe('PATCH /resolveGroup/:group_id', () => {
-    it.only('marks questions in a group (that are not priority queued) as resolved', async () => {
+    it('marks questions in a group (that are not priority queued) as resolved', async () => {
       const course = await CourseFactory.create();
-      const queue = await QueueFactory.create({ courseId: course.id });
-      const ta = await UserFactory.create();
-      await TACourseFactory.create({ courseId: queue.courseId, userId: ta.id });
+      const queue = await QueueFactory.create({ course });
+      const ta = await UserFactory.create({
+        firstName: 'TSM',
+        lastName: 'Ninja',
+      });
+      const ucm = await UserCourseFactory.create({
+        course: queue.course,
+        user: ta,
+        role: Role.TA,
+      });
+
       const group1 = await QuestionGroupFactory.create({
         queue,
-        creatorId: ta.id,
+        creator: ucm,
       });
       const g1q1 = await QuestionFactory.create({
         queue,
         groupable: true,
         group: group1,
         status: QuestionStatusKeys.Helping,
+        taHelped: ta,
       });
       const g1q2 = await QuestionFactory.create({
         queue,
         groupable: true,
         group: group1,
         status: QuestionStatusKeys.Helping,
+        taHelped: ta,
       });
       const g1q3 = await QuestionFactory.create({
         queue,
         groupable: true,
         group: group1,
         status: QuestionStatusKeys.PriorityQueued,
+        taHelped: ta,
       });
 
-      console.log(`FOR RESOLVE`, group1.id);
-
-      // TODO: bad request
       await supertest({ userId: ta.id })
         .patch(`/questions/resolveGroup/${group1.id}`)
-        .send({})
-        .expect(201);
+        .send({ queueId: queue.id })
+        .expect(200);
 
       expect(await QuestionModel.findOne({ id: g1q3.id })).toMatchObject({
         groupId: group1.id,
