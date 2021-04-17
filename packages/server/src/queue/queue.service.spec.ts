@@ -123,13 +123,6 @@ describe('QueueService', () => {
         groupable: true,
         group: group1,
       });
-      // priority queue questions do not get included in result
-      await QuestionFactory.create({
-        queue,
-        groupable: true,
-        group: group1,
-        status: 'PriorityQueued',
-      });
       const group2 = await QuestionGroupFactory.create({ queue });
       const g2q1 = await QuestionFactory.create({
         queue,

@@ -1,6 +1,7 @@
 import {
   ClosedQuestionStatus,
   ERROR_MESSAGES,
+  LimboQuestionStatus,
   OpenQuestionStatus,
   QuestionStatus,
   Role,
@@ -76,6 +77,11 @@ export class QuestionService {
     }
     if (newStatus in ClosedQuestionStatus) {
       question.closedAt = new Date();
+    }
+    if (newStatus in LimboQuestionStatus) {
+      // depends on if question was passed in with its group preloaded
+      if (question.group) question.group = null;
+      else question.groupId = null;
     }
     await question.save();
     return question;

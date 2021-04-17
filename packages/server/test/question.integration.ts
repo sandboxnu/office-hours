@@ -476,7 +476,7 @@ describe('Question Integration', () => {
   describe('POST /group', () => {
     it('creates a new group and marks questions as helping', async () => {
       const course = await CourseFactory.create();
-      const queue = await QueueFactory.create({ courseId: course.id });
+      const queue = await QueueFactory.create({ course: course });
       const q1 = await QuestionFactory.create({ queue });
       const q2 = await QuestionFactory.create({ queue });
       const q3 = await QuestionFactory.create({ queue });
@@ -520,7 +520,7 @@ describe('Question Integration', () => {
     });
     it('student cannot create group', async () => {
       const course = await CourseFactory.create();
-      const queue = await QueueFactory.create({ courseId: course.id });
+      const queue = await QueueFactory.create({ course: course });
       const student = await UserFactory.create();
       await StudentCourseFactory.create({
         user: student,
