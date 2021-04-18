@@ -12,6 +12,7 @@ import { UserModel } from './src/profile/user.entity';
 import { QuestionModel } from './src/question/question.entity';
 import { QuestionGroupModel } from './src/question/question-group.entity';
 import { QueueModel } from './src/queue/queue.entity';
+import { AlertModel } from './src/alerts/alerts.entity';
 config();
 
 // Options only used whe run via CLI
@@ -40,6 +41,7 @@ const typeorm = {
     AdminUserModel,
     EventModel,
     QuestionGroupModel,
+    AlertModel,
   ],
   keepConnectionAlive: true,
   logging: !!process.env.TYPEORM_LOGGING,

@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2017",
     "module": "commonjs",
     "strict": true,
     "noEmit": true,
     "isolatedModules": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true
   },
   "exclude": ["**/node_modules", "dist"]
 }

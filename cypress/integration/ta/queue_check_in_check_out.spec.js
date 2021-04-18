@@ -93,9 +93,6 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
     // Click "Check out"
     cy.get("[data-cy='check-out-button']").click();
     cy.get("button").should("contain", "Check In");
-
-    cy.contains("Schedule"); // Wait for nav to reload, then take snapshot
-    cy.percySnapshot("TA Today Page - TA Checked Out");
   });
 });
 
@@ -184,9 +181,9 @@ describe("Checking in and out when there arent scheduled office hours, but the o
     cy.get("[data-cy='clear-queue-btn']").click();
 
     // No TAs should be checked in, and there should not be any student in the queue
-    cy.get("[data-cy='ta-status-card']").should("not.visible");
+    cy.get("[data-cy='ta-status-card']").should("not.exist");
     cy.get(`[data-cy="list-queue"] [data-cy^="queue-list-item"]`).should(
-      "not.visible"
+      "not.exist"
     );
   });
 });

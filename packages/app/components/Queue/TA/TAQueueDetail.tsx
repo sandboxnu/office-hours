@@ -23,9 +23,11 @@ const Email = styled.div`
  *  Details about the stuent's question
  */
 export default function TAQueueDetail({
+  courseId,
   queueId,
   question,
 }: {
+  courseId: number;
   queueId: number;
   question: Question;
 }): ReactElement {
@@ -37,7 +39,11 @@ export default function TAQueueDetail({
           <Email>{question.creator.email}</Email>
         </div>
         <div>
-          <TAQueueDetailButtons queueId={queueId} question={question} />
+          <TAQueueDetailButtons
+            courseId={courseId}
+            queueId={queueId}
+            question={question}
+          />
         </div>
       </Header>
       <TAQueueDetailQuestion question={question} queueId={queueId} />

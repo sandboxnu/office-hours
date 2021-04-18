@@ -4,6 +4,7 @@ import {
   GetCourseResponse,
   QueuePartial,
   Role,
+  TACheckinTimesResponse,
   TACheckoutResponse,
   UpdateCourseOverrideBody,
   UpdateCourseOverrideResponse,
@@ -18,12 +19,12 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UnauthorizedException,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import async from 'async';
-import moment = require('moment');
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { Connection, getRepository, MoreThanOrEqual } from 'typeorm';
@@ -36,9 +37,11 @@ import { QueueSSEService } from '../queue/queue-sse.service';
 import { QueueModel } from '../queue/queue.entity';
 import { CourseRolesGuard } from './course-roles.guard';
 import { CourseModel } from './course.entity';
+import { CourseService } from './course.service';
 import { HeatmapService } from './heatmap.service';
 import { IcalService } from './ical.service';
 import { OfficeHourModel } from './office-hour.entity';
+import moment = require('moment');
 
 @Controller('courses')
 @UseGuards(JwtAuthGuard, CourseRolesGuard)
@@ -50,6 +53,7 @@ export class CourseController {
     private queueSSEService: QueueSSEService,
     private heatmapService: HeatmapService,
     private icalService: IcalService,
+    private courseService: CourseService,
   ) {}
 
   @Get(':id')
@@ -295,5 +299,19 @@ export class CourseController {
       where: { courseId, userId, override: true },
     });
     await UserCourseModel.remove(userCourse);
+  }
+
+  @Get(':id/ta_check_in_times')
+  @Roles(Role.PROFESSOR)
+  async taCheckinTimes(
+    @Param('id') courseId: number,
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+  ): Promise<TACheckinTimesResponse> {
+    return await this.courseService.getTACheckInCheckOutTimes(
+      courseId,
+      startDate,
+      endDate,
+    );
   }
 }

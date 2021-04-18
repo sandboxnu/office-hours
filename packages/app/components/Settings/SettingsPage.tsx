@@ -1,8 +1,8 @@
 import {
   BellOutlined,
+  DeleteOutlined,
   EditOutlined,
   UploadOutlined,
-  DeleteOutlined,
 } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import { useWindowWidth } from "@react-hook/window-size";
@@ -10,9 +10,9 @@ import { Button, Col, Menu, message, Row, Skeleton, Space, Upload } from "antd";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import useSWR from "swr";
-import SelfAvatar from "../common/SelfAvatar";
 import NotificationsSettings from "./NotificationsSettings";
 import ProfileSettings from "./ProfileSettings";
+import { SettingsPanelAvatar } from "./SettingsSharedComponents";
 
 export enum SettingsOptions {
   PROFILE = "PROFILE",
@@ -23,7 +23,7 @@ interface SettingsPageProps {
   defaultPage: SettingsOptions;
 }
 
-const VerticalDivider = styled.div`
+export const VerticalDivider = styled.div`
   @media (min-width: 767px) {
     border-right: 1px solid #cfd6de;
     margin-right: 32px;
@@ -83,13 +83,7 @@ export default function SettingsPage({
                 }}
               />
             ) : (
-              <SelfAvatar
-                size={avatarSize}
-                style={{
-                  marginTop: avatarSize / 6,
-                  marginBottom: avatarSize / 12,
-                }}
-              />
+              <SettingsPanelAvatar />
             )}
             <Upload
               action={"/api/v1/profile/upload_picture"}

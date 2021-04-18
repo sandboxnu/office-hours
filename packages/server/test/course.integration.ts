@@ -1,4 +1,9 @@
-import { ERROR_MESSAGES, Role, TACheckoutResponse } from '@koh/common';
+import {
+  ERROR_MESSAGES,
+  Role,
+  TACheckinTimesResponse,
+  TACheckoutResponse,
+} from '@koh/common';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { CourseModule } from '../src/course/course.module';
@@ -6,6 +11,7 @@ import { QueueModel } from '../src/queue/queue.entity';
 import {
   ClosedOfficeHourFactory,
   CourseFactory,
+  EventFactory,
   OfficeHourFactory,
   QuestionFactory,
   QueueFactory,
@@ -353,6 +359,118 @@ describe('Course Integration', () => {
         },
       });
       expect(ucm).toBeUndefined();
+    });
+  });
+
+  describe('GET /courses/:id/ta_check_in_times', () => {
+    it('tests that events within date range are gotten', async () => {
+      const now = new Date();
+      const yesterday = new Date();
+      yesterday.setUTCHours(now.getUTCHours() - 24);
+
+      const course = await CourseFactory.create();
+      const ta = await UserFactory.create();
+      const professor = await UserFactory.create();
+
+      await UserCourseFactory.create({
+        user: ta,
+        role: Role.TA,
+        course,
+      });
+      await UserCourseFactory.create({
+        user: professor,
+        role: Role.PROFESSOR,
+        course,
+      });
+
+      await EventFactory.create({
+        user: ta,
+        course: course,
+        time: yesterday,
+        eventType: EventType.TA_CHECKED_IN,
+      });
+
+      const yesterdayPlusTwoHours = new Date(yesterday);
+      yesterdayPlusTwoHours.setUTCHours(yesterday.getUTCHours() + 2);
+
+      await EventFactory.create({
+        user: ta,
+        course: course,
+        time: new Date(yesterdayPlusTwoHours),
+        eventType: EventType.TA_CHECKED_OUT,
+      });
+
+      const thenThreeMoreHours = new Date(yesterdayPlusTwoHours);
+      thenThreeMoreHours.setUTCHours(yesterday.getUTCHours() + 3);
+
+      await EventFactory.create({
+        user: ta,
+        course: course,
+        time: thenThreeMoreHours,
+        eventType: EventType.TA_CHECKED_IN,
+      });
+
+      const twelveHoursAFter = new Date(thenThreeMoreHours);
+      twelveHoursAFter.setUTCHours(thenThreeMoreHours.getUTCHours() + 12);
+
+      await EventFactory.create({
+        user: ta,
+        course: course,
+        time: twelveHoursAFter,
+        eventType: EventType.TA_CHECKED_OUT_FORCED,
+      });
+
+      const justNow = new Date(Date.now() - 1000);
+
+      await EventFactory.create({
+        user: ta,
+        course: course,
+        time: justNow,
+        eventType: EventType.TA_CHECKED_IN,
+      });
+
+      const twoDaysAgo = new Date();
+      twoDaysAgo.setUTCDate(twoDaysAgo.getUTCDate() - 2);
+
+      const data = await supertest({ userId: professor.id })
+        .get(`/courses/${course.id}/ta_check_in_times`)
+        .query({
+          startDate: twoDaysAgo,
+          endDate: new Date(),
+        })
+        .expect(200);
+
+      const checkinTimes = ((data.body as unknown) as TACheckinTimesResponse)
+        .taCheckinTimes;
+
+      const taName = ta.firstName + ' ' + ta.lastName;
+
+      expect(checkinTimes.length).toBe(3);
+      expect(checkinTimes).toStrictEqual([
+        {
+          checkinTime: yesterday.toISOString(),
+          checkoutTime: yesterdayPlusTwoHours.toISOString(),
+          forced: false,
+          inProgress: false,
+          name: taName,
+          numHelped: 0,
+        },
+        {
+          checkinTime: thenThreeMoreHours.toISOString(),
+          checkoutTime: twelveHoursAFter.toISOString(),
+          forced: true,
+          inProgress: false,
+          name: taName,
+          numHelped: 0,
+        },
+        {
+          checkinTime: justNow.toISOString(),
+          forced: false,
+          inProgress: true,
+          name: taName,
+          numHelped: 0,
+        },
+      ]);
     });
   });
 });

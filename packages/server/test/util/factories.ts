@@ -1,5 +1,6 @@
 import { QuestionType, Role } from '@koh/common';
 import { QuestionGroupModel } from 'question/question-group.entity';
+import { EventModel, EventType } from 'profile/event-model.entity';
 import { Factory } from 'typeorm-factory';
 import { CourseModel } from '../../src/course/course.entity';
 import { OfficeHourModel } from '../../src/course/office-hour.entity';
@@ -13,7 +14,8 @@ import { QueueModel } from '../../src/queue/queue.entity';
 export const UserFactory = new Factory(UserModel)
   .attr('email', `user@neu.edu`)
   .attr('firstName', 'User')
-  .attr('lastName', 'Person');
+  .attr('lastName', 'Person')
+  .attr('hideInsights', []);
 
 export const StudentCourseFactory = new Factory(UserCourseModel).attr(
   'role',
@@ -79,3 +81,9 @@ export const QuestionFactory = new Factory(QuestionModel)
 export const QuestionGroupFactory = new Factory(QuestionGroupModel)
   .assocOne('creator', UserCourseFactory)
   .assocOne('queue', QueueFactory);
+
+export const EventFactory = new Factory(EventModel)
+  .attr('time', new Date())
+  .attr('eventType', EventType.TA_CHECKED_IN)
+  .assocOne('user', UserFactory)
+  .assocOne('course', CourseFactory);

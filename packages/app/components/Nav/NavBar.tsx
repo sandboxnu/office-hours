@@ -9,6 +9,7 @@ import { useCourse } from "../../hooks/useCourse";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useProfile } from "../../hooks/useProfile";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
+import AlertsContainer from "./AlertsContainer";
 import NavBarTabs, { NavBarTabsItem } from "./NavBarTabs";
 import ProfileDrawer from "./ProfileDrawer";
 
@@ -166,9 +167,9 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
 
   if (role === Role.PROFESSOR) {
     tabs.push({
-      href: "/course/[cid]/course_overrides",
-      as: `/course/${courseId}/course_overrides`,
-      text: "Overrides",
+      href: "/course/[cid]/course_admin_panel",
+      as: `/course/${courseId}/course_admin_panel`,
+      text: "Admin Panel",
     });
   }
 
@@ -179,10 +180,18 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
       text: "Queue",
     });
   }
+  if (role === Role.PROFESSOR) {
+    tabs.push({
+      href: "/course/[cid]/insights",
+      as: `/course/${courseId}/insights`,
+      text: "Insights",
+    });
+  }
 
-  return (
+  return courseId ? (
     <>
       <NavBG />
+      <AlertsContainer courseId={courseId} />
       <Nav>
         <LogoContainer>
           {profile?.courses.length > 1 ? (
@@ -234,5 +243,5 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
         </Drawer>
       </Nav>
     </>
-  );
+  ) : null;
 }

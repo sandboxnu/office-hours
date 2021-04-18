@@ -7,10 +7,11 @@ describe("Professor can create an override", () => {
   });
 
   it("Creates an override and then deletes it", function () {
-    cy.visit(`/course/${this.professor.course.id}/course_overrides`);
+    cy.visit(`/course/${this.professor.course.id}/course_admin_panel`);
+    cy.get(".ant-col-4 > .ant-menu > :nth-child(2)").click();
     cy.get(".ant-input").click().type(this.student.user.email);
     cy.get(".ant-select-selector").click();
-    cy.contains("TA").click();
+    cy.contains(/^TA$/).click();
     cy.get("button").contains("Add Override").click();
     cy.contains(this.student.user.firstName + " " + this.student.user.lastName);
     cy.contains(this.student.user.email);

@@ -112,6 +112,19 @@ export class QueueService {
         );
       });
 
+      newLQR.questionsGettingHelp = questions.questionsGettingHelp.map(
+        (question) => {
+          const creator =
+            question.creator.id === userId
+              ? question.creator
+              : pick(question.creator, ['id']);
+          // classToClass transformer will apply the @Excludes
+          return classToClass<Question>(
+            QuestionModel.create({ ...question, creator }),
+          );
+        },
+      );
+
       newLQR.yourQuestion = await QuestionModel.findOne({
         relations: ['creator', 'taHelped'],
         where: {

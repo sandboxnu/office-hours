@@ -1,16 +1,21 @@
 import {
+  CreateAlertParams,
+  CreateAlertResponse,
   CreateQuestionParams,
   CreateQuestionResponse,
   DesktopNotifBody,
   DesktopNotifPartial,
+  GetAlertsResponse,
   GetCourseOverridesResponse,
   GetCourseResponse,
+  GetInsightOutputResponse,
   GetProfileResponse,
   GetQuestionResponse,
   GetQueueResponse,
   GetReleaseNotesResponse,
   GroupQuestionsParams,
   ListQuestionsResponse,
+  TACheckinTimesResponse,
   TACheckoutResponse,
   TAUpdateStatusResponse,
   UpdateCourseOverrideBody,
@@ -19,6 +24,8 @@ import {
   UpdateQuestionParams,
   UpdateQuestionResponse,
   UpdateQueueParams,
+  ListInsightsResponse,
+  DateRangeType,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -41,15 +48,18 @@ class APIClient {
     method: Method,
     url: string,
     responseClass?: ClassType<ItemIfArray<T>>,
-    body?: any
+    body?: any,
+    params?: any
   ): Promise<T>;
   private async req<T>(
     method: Method,
     url: string,
     responseClass?: ClassType<T>,
-    body?: any
+    body?: any,
+    params?: any
   ): Promise<T> {
-    const res = (await this.axios.request({ method, url, data: body })).data;
+    const res = (await this.axios.request({ method, url, data: body, params }))
+      .data;
     return responseClass ? plainToClass(responseClass, res) : res;
   }
 
@@ -91,6 +101,18 @@ class APIClient {
         `/api/v1/courses/${courseId}/update_override`,
         undefined,
         params
+      ),
+    getTACheckinTimes: async (
+      courseId: number,
+      startDate: string,
+      endDate: string
+    ): Promise<TACheckinTimesResponse> =>
+      this.req(
+        "GET",
+        `/api/v1/courses/${courseId}/ta_check_in_times`,
+        TACheckinTimesResponse,
+        {},
+        { startDate, endDate }
       ),
   };
   taStatus = {
@@ -178,6 +200,37 @@ class APIClient {
     get: async (): Promise<GetReleaseNotesResponse> =>
       this.req("GET", `/api/v1/release_notes`),
   };
+  insights = {
+    get: async (
+      courseId: number,
+      insightName: string,
+      params: DateRangeType
+    ): Promise<GetInsightOutputResponse> => {
+      return this.req(
+        "GET",
+        `/api/v1/insights/${courseId}/${insightName}`,
+        undefined,
+        undefined,
+        params
+      );
+    },
+    list: async (): Promise<ListInsightsResponse> =>
+      this.req("GET", `/api/v1/insights/list`),
+    toggleOn: async (insightName: string): Promise<void> =>
+      this.req("PATCH", `/api/v1/insights`, undefined, { insightName }),
+    toggleOff: async (insightName: string): Promise<void> =>
+      this.req("DELETE", `/api/v1/insights`, undefined, { insightName }),
+  };
+  alerts = {
+    get: async (courseId: number): Promise<GetAlertsResponse> =>
+      this.req("GET", `/api/v1/alerts/${courseId}`),
+    create: async (params: CreateAlertParams): Promise<CreateAlertResponse> =>
+      this.req("POST", `/api/v1/alerts`, CreateAlertResponse, params),
+    close: async (alertId: number): Promise<void> => {
+      this.req("PATCH", `/api/v1/alerts/${alertId}`);
+    },
+  };
+
   constructor(baseURL = "") {
     this.axios = Axios.create({ baseURL: baseURL });
   }

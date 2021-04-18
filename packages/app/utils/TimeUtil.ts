@@ -8,7 +8,7 @@ export function getWaitTime(question: Question): string {
 
 export function formatWaitTime(minutes: number): string {
   const m = Math.floor(minutes);
-  if (!m) {
+  if (m <= 0) {
     return "0 min";
   } else if (m % 60 == 0) {
     return `${Math.floor(m / 60)}hr`;

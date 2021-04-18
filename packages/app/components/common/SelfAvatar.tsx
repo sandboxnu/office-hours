@@ -14,6 +14,7 @@ type KOHAvatarProps = {
   photoURL: string;
   name: string;
   style?: any;
+  className?: string;
 };
 
 export default function SelfAvatar({
@@ -37,6 +38,7 @@ export function KOHAvatar({
   photoURL,
   name,
   style,
+  className,
 }: KOHAvatarProps): ReactElement {
   return photoURL ? (
     <Avatar
@@ -44,6 +46,7 @@ export function KOHAvatar({
       src={"/api/v1/profile/get_picture/" + photoURL}
       size={size}
       style={style}
+      className={className}
     />
   ) : (
     <AvatarWithInitals
@@ -51,6 +54,7 @@ export function KOHAvatar({
       size={size}
       fontSize={(3 / 7) * size}
       style={style}
+      className={className}
     />
   );
 }
