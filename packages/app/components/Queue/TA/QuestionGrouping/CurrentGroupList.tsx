@@ -11,9 +11,11 @@ import { Description } from "./AllQuestionsChecklist";
 export function CurrentGroupList({
   group,
   queueId,
+  courseId,
 }: {
   group?: QuestionGroup;
   queueId: number;
+  courseId: number;
 }): ReactElement {
   return (
     <div>
@@ -37,6 +39,7 @@ export function CurrentGroupList({
       {group?.questions.map((q) => (
         <div key={q.id}>
           <TAQueueDetailQuestion
+            courseId={courseId}
             question={q}
             queueId={queueId}
             showName

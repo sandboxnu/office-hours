@@ -40,11 +40,13 @@ const QuestionTypePill = styled.span`
 export default function TAQueueDetailQuestion({
   question,
   queueId,
+  courseId,
   showName,
   showButtons,
 }: {
   question: Question;
   queueId: number;
+  courseId: number;
   showName?: boolean;
   showButtons?: boolean;
 }) {
@@ -73,7 +75,11 @@ export default function TAQueueDetailQuestion({
       </div>
       <div>
         {showButtons && (
-          <TAQueueDetailButtons queueId={queueId} question={question} />
+          <TAQueueDetailButtons
+            courseId={courseId}
+            queueId={queueId}
+            question={question}
+          />
         )}
       </div>
     </QuestionCardBox>

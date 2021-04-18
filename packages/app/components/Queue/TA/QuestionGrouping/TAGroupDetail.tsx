@@ -7,9 +7,11 @@ import { CurrentGroupList } from "./CurrentGroupList";
 export default function TAGroupDetail({
   groupCreator,
   queueId,
+  courseId,
 }: {
   groupCreator: User;
   queueId: number;
+  courseId: number;
 }): ReactElement {
   const { questions, mutateQuestions } = useQuestions(queueId);
   const allQuestions = [...questions.queue, ...questions.priorityQueue];
@@ -19,7 +21,7 @@ export default function TAGroupDetail({
   const groupedQuestions = myGroup ? myGroup.questions : [];
 
   return groupedQuestions.length ? (
-    <CurrentGroupList group={myGroup} queueId={queueId} />
+    <CurrentGroupList courseId={courseId} group={myGroup} queueId={queueId} />
   ) : (
     <AllQuestionsCheckList
       allQuestions={allQuestions}

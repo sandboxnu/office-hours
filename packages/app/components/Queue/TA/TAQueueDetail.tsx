@@ -46,7 +46,11 @@ export default function TAQueueDetail({
           />
         </div>
       </Header>
-      <TAQueueDetailQuestion question={question} queueId={queueId} />
+      <TAQueueDetailQuestion
+        courseId={courseId}
+        question={question}
+        queueId={queueId}
+      />
     </Container>
   );
 }

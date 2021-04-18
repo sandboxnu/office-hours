@@ -189,7 +189,13 @@ export default function TAQueueListDetail({
           question={selectedQuestion}
         />
       )}
-      {isGrouping && <TAGroupDetail queueId={queueId} groupCreator={user} />}
+      {isGrouping && (
+        <TAGroupDetail
+          courseId={courseId}
+          queueId={queueId}
+          groupCreator={user}
+        />
+      )}
     </Detail>
   );
 
