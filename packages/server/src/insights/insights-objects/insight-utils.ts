@@ -64,6 +64,22 @@ const APPLY_FILTER_MAP = {
       });
     },
   },
+  OfficeHourModel: {
+    courseId: ({ query, filter }: ApplyFilterParams) => {
+      query.andWhere('"courseId" = :courseId', {
+        courseId: filter.courseId,
+      });
+    },
+    timeframe: ({ query, filter }: ApplyFilterParams) => {
+      query.andWhere(
+        'startTime BETWEEN :start AND :end AND endTime BETWEEN :start AND :end',
+        {
+          start: filter.start,
+          end: filter.end,
+        },
+      );
+    },
+  },
 };
 
 export const INSIGHTS_MAP = {

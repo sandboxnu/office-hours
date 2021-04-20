@@ -72,7 +72,7 @@ export default function DevPanel(): ReactElement {
             Login as <b> TA 2</b>
           </DevPageButton>
         </a>
-        <a href="/api/v1/login/dev?userId=5">
+        <a href="/api/v1/login/dev?userId=12">
           <Button type="default" htmlType="submit">
             Login as <b> Professor </b>
           </Button>

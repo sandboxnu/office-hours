@@ -5,6 +5,7 @@ import { QuestionModel } from 'question/question.entity';
 import { Connection } from 'typeorm';
 import { TestTypeOrmModule } from '../../test/util/testUtils';
 import { HeatmapService } from './heatmap.service';
+import { generateHeatMapWithReplay } from './heatmap_utils';
 import { OfficeHourModel } from './office-hour.entity';
 
 describe('HeatmapService', () => {
@@ -85,7 +86,7 @@ describe('HeatmapService', () => {
       questionTimes: [string, string][],
       hoursTimes: [string, string][],
     ): Heatmap {
-      return service._generateHeatMapWithReplay(
+      return generateHeatMapWithReplay(
         questionsFromDates(questionTimes),
         officehoursFromDates(hoursTimes),
         'America/New_York',
@@ -376,7 +377,7 @@ describe('HeatmapService', () => {
 
     it('returns heatmap during a week with daylight savings, but the course is not in a DST timezone', () => {
       // Honolulu doesn't have DST (Pacific/Honolulu)
-      const heatmap = service._generateHeatMapWithReplay(
+      const heatmap = generateHeatMapWithReplay(
         questionsFromDates([
           [`2020-10-25T04:04:00-1000`, `2020-10-25T04:32:00-1000`],
           [`2020-11-01T05:04:00-1000`, `2020-11-01T05:32:00-1000`],
@@ -488,7 +489,7 @@ describe('HeatmapService', () => {
     });
 
     it('works when the bucketsize and sample interval are different', () => {
-      const heatmap = service._generateHeatMapWithReplay(
+      const heatmap = generateHeatMapWithReplay(
         questionsFromDates([OCT4('03:01', '03:11'), OCT8('05:12', '05:22')]),
         officehoursFromDates([OCT4('03:00', '04:00'), OCT8('05:00', '06:00')]),
         'America/New_York',
