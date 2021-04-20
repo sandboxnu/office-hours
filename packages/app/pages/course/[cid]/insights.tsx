@@ -28,6 +28,7 @@ import SimpleDisplayComponent from "../../../components/Insights/components/Simp
 import InsightsDisplayOptions from "../../../components/Insights/components/InsightsDisplayOptions";
 import { SimpleTable } from "../../../components/Insights/components/SimpleTable";
 import styled from "styled-components";
+import { HeatmapInsightComponent } from "../../../components/Insights/components/HeatmapInsightComponent";
 
 const InsightsRowContainer = styled.div`
   display: flex;
@@ -141,6 +142,7 @@ export default function Insights(): ReactElement {
               />
             );
           })}
+          <HeatmapInsightComponent />
         </InsightsRowContainer>
       </StandardPageContainer>
     </>
@@ -181,6 +183,9 @@ function RenderInsight({
       break;
     case InsightComponent.SimpleTable:
       DataComponent = SimpleTable;
+      break;
+    case InsightComponent.InsightHeatmap:
+      DataComponent = HeatmapInsightComponent;
       break;
     default:
       // Line below will show error if switch is not exhaustive of all enum values

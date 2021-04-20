@@ -1,6 +1,7 @@
 import { QuestionModel } from 'question/question.entity';
 import { SelectQueryBuilder } from 'typeorm';
 import { QuestionTypeBreakdown } from './bar-chart-insights';
+import { WeeklyPopularTimes } from './heatmap-insights';
 import {
   MedianHelpingTime,
   MedianWaitTime,
@@ -9,7 +10,6 @@ import {
   TotalStudents,
 } from './simple-display-insights';
 import { MostActiveStudents } from './simple-table-insights';
-
 export type Filter = {
   type: string;
   [x: string]: any;
@@ -74,4 +74,5 @@ export const INSIGHTS_MAP = {
   MostActiveStudents,
   QuestionToStudentRatio,
   MedianHelpingTime,
+  WeeklyPopularTimes,
 };

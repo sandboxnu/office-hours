@@ -647,12 +647,14 @@ export enum InsightComponent {
   SimpleDisplay = "SimpleDisplay",
   BarChart = "BarChart",
   SimpleTable = "SimpleTable",
+  InsightHeatmap = "InsightHeatmap",
 }
 
 export type PossibleOutputTypes =
   | SimpleDisplayOutputType
   | BarChartOutputType
-  | SimpleTableOutputType;
+  | SimpleTableOutputType
+  | HeatmapInsightOutputType;
 
 export type SimpleDisplayOutputType = number | string;
 
@@ -664,6 +666,14 @@ export type BarChartOutputType = {
   xAxisName?: string;
   yAxisName?: string;
 };
+
+export type HeatmapInsightOutputType =
+  | {
+      data: StringMap<number>;
+      xField: string;
+      yField: string;
+    }
+  | false;
 
 export type SimpleTableOutputType = {
   dataSource: StringMap<string>[];
