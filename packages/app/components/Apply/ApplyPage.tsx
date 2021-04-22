@@ -18,7 +18,7 @@ export default function ApplyPage(): ReactElement {
   const [submitted, setSubmitted] = useState(false);
   const router = useRouter();
   const [form] = Form.useForm();
-  const { data: semesters, error } = useSWR("/api/v1/semesters", async () =>
+  const { data: semesters } = useSWR("/api/v1/semesters", async () =>
     API.semesters.get()
   );
 

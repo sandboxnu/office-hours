@@ -6,8 +6,6 @@ import { SemesterModel } from './semester.entity';
 @Controller('semesters')
 @UseGuards(JwtAuthGuard)
 export class SemesterController {
-  constructor() {}
-
   @Get()
   async get(): Promise<SemesterPartial[]> {
     return SemesterModel.find();
