@@ -21,7 +21,6 @@ export default function ApplyPage(): ReactElement {
   const { data: semesters, error } = useSWR("/api/v1/semesters", async () =>
     API.semesters.get()
   );
-  console.log(process.env.APPLY_KEY);
 
   const handleSubmit = async () => {
     const value = await form.validateFields();
