@@ -4,6 +4,7 @@ import React, { ReactElement, useState } from "react";
 import { Form, Input, Tooltip, Row, Select, Button, Result } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import styled from "styled-components";
+import useSWR from "swr";
 
 const HalfFormItem = styled(Form.Item)`
   width: 48%;
@@ -14,6 +15,9 @@ const { Option } = Select;
 export default function ApplyPage(): ReactElement {
   const [submitted, setSubmitted] = useState(false);
   const [form] = Form.useForm();
+  const { data: semesters, error } = useSWR("/api/v1/semesters", async () =>
+    API.semesters.get()
+  );
 
   const handleSubmit = async () => {
     const value = await form.validateFields();
@@ -33,6 +37,16 @@ export default function ApplyPage(): ReactElement {
       if (isNaN(Number(val))) return false;
     }
     return true;
+  };
+
+  const validateCourseName = (value: string): boolean => {
+    const split = value.split(" ");
+    const subject =
+      split[0] == "CS" ||
+      split[0] == "DS" ||
+      split[0] == "CY" ||
+      split[0] == "IS";
+    return split.length == 2 && subject && /^\d+$/.test(split[1]);
   };
 
   if (submitted) {
@@ -103,6 +117,16 @@ export default function ApplyPage(): ReactElement {
             name="name"
             rules={[
               { required: true, message: "Please input your course name." },
+              {
+                validator: (_, value) =>
+                  validateCourseName(value)
+                    ? Promise.resolve()
+                    : Promise.reject(
+                        new Error(
+                          "Please enter a valid course format (e.g. CS 2500)."
+                        )
+                      ),
+              },
             ]}
           >
             <Input placeholder="Ex: CS 2500" />
@@ -139,9 +163,15 @@ export default function ApplyPage(): ReactElement {
             rules={[{ required: true, message: "Please select a semester." }]}
           >
             <Select>
-              <Option value="Summer_1 2021">Summer 1 2021</Option>
-              <Option value="Summer_2 2021">Summer 2 2021</Option>
-              <Option value="Summer_Full 2021">Summer Full 2021</Option>
+              {semesters &&
+                semesters.map((semester) => (
+                  <Option
+                    key={semester.id}
+                    value={`${semester.season} ${semester.year}`}
+                  >
+                    {`${semester.season} ${semester.year}`.replaceAll("_", " ")}
+                  </Option>
+                ))}
             </Select>
           </HalfFormItem>
 
