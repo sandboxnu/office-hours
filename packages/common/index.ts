@@ -640,6 +640,12 @@ export class SubmitCourseParams {
   icalURL!: string;
 }
 
+export class SemesterPartial {
+  id!: number;
+  season!: string;
+  year!: number;
+}
+
 export class SSEQueueResponse {
   queue?: GetQueueResponse;
   questions?: ListQuestionsResponse;

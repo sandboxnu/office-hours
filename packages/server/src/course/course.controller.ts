@@ -43,7 +43,7 @@ import { CourseService } from './course.service';
 import { HeatmapService } from './heatmap.service';
 import { IcalService } from './ical.service';
 import { OfficeHourModel } from './office-hour.entity';
-import { SemesterModel } from './semester.entity';
+import { SemesterModel } from '../semester/semester.entity';
 import moment = require('moment');
 
 @Controller('courses')
@@ -328,8 +328,8 @@ export class CourseController {
       timezone: body.timezone,
     }).save();
 
-    // create CourseSectionMappings for each submitted section number
-    body.sections.forEach(async (section) => {
+    // create CourseSectionMappings for each unique submitted section number
+    new Set(body.sections).forEach(async (section) => {
       await CourseSectionMappingModel.create({
         genericCourseName: body.name,
         section,
@@ -338,6 +338,7 @@ export class CourseController {
     });
   }
 
+  @Get('')
   @Get(':id/ta_check_in_times')
   @Roles(Role.PROFESSOR)
   async taCheckinTimes(
