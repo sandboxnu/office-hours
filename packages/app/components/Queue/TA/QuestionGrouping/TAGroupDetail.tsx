@@ -19,12 +19,14 @@ export default function TAGroupDetail({
     (group) => group.creator.id === groupCreator.id
   );
   const groupedQuestions = myGroup ? myGroup.questions : [];
+  const groupableQuestions = allQuestions.filter((q) => q.groupable);
 
   return groupedQuestions.length ? (
     <CurrentGroupList courseId={courseId} group={myGroup} queueId={queueId} />
   ) : (
     <AllQuestionsCheckList
-      allQuestions={allQuestions}
+      allQuestions={groupableQuestions}
+      hasMissingQuestions={groupableQuestions.length != allQuestions.length}
       groupCreator={groupCreator}
       queueId={queueId}
       onStartCall={() => {

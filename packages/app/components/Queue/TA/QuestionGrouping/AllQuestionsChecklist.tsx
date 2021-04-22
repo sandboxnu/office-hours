@@ -29,11 +29,13 @@ const RedText = styled.span`
 export default function AllQuestionsCheckList({
   groupCreator,
   allQuestions,
+  hasMissingQuestions,
   queueId,
   onStartCall,
 }: {
   groupCreator: User;
   allQuestions: Question[];
+  hasMissingQuestions: boolean;
   queueId: number;
   onStartCall: () => void;
 }): ReactElement {
@@ -67,8 +69,6 @@ export default function AllQuestionsCheckList({
     }
   };
 
-  const anyStudentDidNotConsent = allQuestions.some((q) => !q.groupable);
-
   const usersInLink = allQuestions
     .filter((question) => checkedQuestions.has(question.id))
     .map((question) => question.creator.email)
@@ -81,7 +81,7 @@ export default function AllQuestionsCheckList({
           <strong>{`${groupCreator.name}'s Group Session`}</strong>
           <Description>
             Select Students to Create Group
-            {anyStudentDidNotConsent ? (
+            {hasMissingQuestions ? (
               <div>
                 <RedText>Note:</RedText> some students may not show up, as they
                 did not consent to being grouped
@@ -124,19 +124,17 @@ export default function AllQuestionsCheckList({
         </Checkbox>
       </SelectAllContainer>
       <QuestionsList>
-        {allQuestions
-          .filter((q) => q.groupable)
-          .map((q, i) => (
-            <div key={q.id}>
-              <TAQueueListItem
-                question={q}
-                index={i + 1}
-                selected={checkedQuestions.has(q.id)}
-                onClick={() => onQuestionChecked(q)}
-                showCheckbox
-              />
-            </div>
-          ))}
+        {allQuestions.map((q, i) => (
+          <div key={q.id}>
+            <TAQueueListItem
+              question={q}
+              index={i + 1}
+              selected={checkedQuestions.has(q.id)}
+              onClick={() => onQuestionChecked(q)}
+              showCheckbox
+            />
+          </div>
+        ))}
       </QuestionsList>
     </div>
   );
