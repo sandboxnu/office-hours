@@ -338,7 +338,6 @@ export class CourseController {
     });
   }
 
-  @Get('')
   @Get(':id/ta_check_in_times')
   @Roles(Role.PROFESSOR)
   async taCheckinTimes(
