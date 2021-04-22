@@ -5,6 +5,8 @@ import { Form, Input, Tooltip, Row, Select, Button, Result } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import useSWR from "swr";
+import { useRouter } from "next/router";
+import DefaultErrorPage from "next/error";
 
 const HalfFormItem = styled(Form.Item)`
   width: 48%;
@@ -14,10 +16,12 @@ const { Option } = Select;
 
 export default function ApplyPage(): ReactElement {
   const [submitted, setSubmitted] = useState(false);
+  const router = useRouter();
   const [form] = Form.useForm();
   const { data: semesters, error } = useSWR("/api/v1/semesters", async () =>
     API.semesters.get()
   );
+  console.log(process.env.APPLY_KEY);
 
   const handleSubmit = async () => {
     const value = await form.validateFields();
@@ -48,6 +52,10 @@ export default function ApplyPage(): ReactElement {
       split[0] == "IS";
     return split.length == 2 && subject && /^\d+$/.test(split[1]);
   };
+
+  if (router.query[process.env.APPLY_KEY] !== "") {
+    return <DefaultErrorPage statusCode={404} />;
+  }
 
   if (submitted) {
     return (
