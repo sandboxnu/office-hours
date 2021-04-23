@@ -1,11 +1,13 @@
 import {
+  CheckOutlined,
+  CloseOutlined,
   DeleteRowOutlined,
   EditOutlined,
   TeamOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
 import { API } from "@koh/api-client";
-import { OpenQuestionStatus } from "@koh/common";
+import { OpenQuestionStatus, Question } from "@koh/common";
 import { Button, Col, Popconfirm, Tooltip } from "antd";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
@@ -105,18 +107,7 @@ export default function StudentBanner({
               </Tooltip>
             </>
           }
-          content={
-            <QuestionDetails>
-              <ColWithRightMargin flex="1 1">
-                <InfoHeader>question</InfoHeader>
-                <div>{studentQuestion.text}</div>
-              </ColWithRightMargin>
-              <Col flex="0 0 89px">
-                <InfoHeader>type</InfoHeader>
-                <div>{studentQuestion.questionType}</div>
-              </Col>
-            </QuestionDetails>
-          }
+          content={<QuestionDetailRow studentQuestion={studentQuestion} />}
         />
       );
     case "Helping":
@@ -224,18 +215,7 @@ export default function StudentBanner({
               </Tooltip>
             </>
           }
-          content={
-            <QuestionDetails>
-              <ColWithRightMargin flex="1 1">
-                <InfoHeader>question</InfoHeader>
-                <div>{studentQuestion.text}</div>
-              </ColWithRightMargin>
-              <Col flex="0 0 89px">
-                <InfoHeader>type</InfoHeader>
-                <div>{studentQuestion.questionType}</div>
-              </Col>
-            </QuestionDetails>
-          }
+          content={<QuestionDetailRow studentQuestion={studentQuestion} />}
         />
       );
     default:
@@ -258,5 +238,26 @@ function LeaveQueueButton({ leaveQueue }: { leaveQueue: () => void }) {
         />
       </Tooltip>
     </Popconfirm>
+  );
+}
+
+function QuestionDetailRow({ studentQuestion }: { studentQuestion: Question }) {
+  return (
+    <QuestionDetails>
+      <ColWithRightMargin flex="4 4">
+        <InfoHeader>question</InfoHeader>
+        <div>{studentQuestion.text}</div>
+      </ColWithRightMargin>
+      <Col flex="0.5 0.5 95px">
+        <InfoHeader>type</InfoHeader>
+        <div>{studentQuestion.questionType}</div>
+      </Col>
+      <Col flex="0 0 89px">
+        <InfoHeader>groupable</InfoHeader>
+        <div>
+          {studentQuestion.groupable ? <CheckOutlined /> : <CloseOutlined />}
+        </div>
+      </Col>
+    </QuestionDetails>
   );
 }

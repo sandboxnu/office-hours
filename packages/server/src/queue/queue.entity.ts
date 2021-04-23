@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import { QuestionGroupModel } from '../question/question-group.entity';
 import {
   BaseEntity,
   Column,
@@ -41,6 +42,10 @@ export class QueueModel extends BaseEntity {
   @OneToMany((type) => QuestionModel, (qm) => qm.queue)
   @Exclude()
   questions: QuestionModel[];
+
+  @OneToMany((type) => QuestionGroupModel, (qg) => qg.queue)
+  @Exclude()
+  groups: QuestionGroupModel[];
 
   @Column('text', { nullable: true })
   notes: string;

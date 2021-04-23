@@ -10,6 +10,7 @@ import { EventModel } from './src/profile/event-model.entity';
 import { UserCourseModel } from './src/profile/user-course.entity';
 import { UserModel } from './src/profile/user.entity';
 import { QuestionModel } from './src/question/question.entity';
+import { QuestionGroupModel } from './src/question/question-group.entity';
 import { QueueModel } from './src/queue/queue.entity';
 import { AlertModel } from './src/alerts/alerts.entity';
 config();
@@ -39,6 +40,7 @@ const typeorm = {
     PhoneNotifModel,
     AdminUserModel,
     EventModel,
+    QuestionGroupModel,
     AlertModel,
   ],
   keepConnectionAlive: true,

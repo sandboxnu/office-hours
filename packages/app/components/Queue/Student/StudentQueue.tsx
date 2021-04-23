@@ -132,10 +132,11 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
   }, [mutateQuestions, studentQuestionId]);
 
   const finishQuestion = useCallback(
-    async (text: string, questionType: QuestionType) => {
+    async (text: string, questionType: QuestionType, groupable: boolean) => {
       const updateStudent = {
         text,
         questionType,
+        groupable,
         status:
           studentQuestionStatus === OpenQuestionStatus.Drafting
             ? OpenQuestionStatus.Queued
@@ -175,6 +176,7 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
       isOnline: studentQuestion?.isOnline,
       location: studentQuestion?.location,
       force: true,
+      groupable: true,
     });
     await API.questions.update(newQuestion.id, {
       status: OpenQuestionStatus.Queued,
@@ -207,6 +209,7 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
           text: "",
           force: force,
           questionType: null,
+          groupable: true,
         });
         const newQuestionsInQueue = [...questions?.queue, createdQuestion];
         await mutateQuestions({ ...questions, queue: newQuestionsInQueue });
@@ -228,9 +231,15 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
   );
 
   const finishQuestionAndClose = useCallback(
-    (text: string, qt: QuestionType, router: Router, cid: number) => {
+    (
+      text: string,
+      qt: QuestionType,
+      groupable: true,
+      router: Router,
+      cid: number
+    ) => {
       deleteDraftQuestion();
-      finishQuestion(text, qt);
+      finishQuestion(text, qt, groupable);
       closeEditModal();
       if (isFirstQuestion) {
         notification.warn({

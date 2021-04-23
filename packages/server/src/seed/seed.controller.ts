@@ -7,6 +7,7 @@ import { PhoneNotifModel } from 'notification/phone-notif.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
+import { QuestionGroupModel } from 'question/question-group.entity';
 import { Connection, getManager } from 'typeorm';
 import {
   CourseFactory,
@@ -37,6 +38,7 @@ export class SeedController {
   async deleteAll(): Promise<string> {
     await this.seedService.deleteAll(OfficeHourModel);
     await this.seedService.deleteAll(QuestionModel);
+    await this.seedService.deleteAll(QuestionGroupModel);
     await this.seedService.deleteAll(QueueModel);
     await this.seedService.deleteAll(UserCourseModel);
     await this.seedService.deleteAll(EventModel);
