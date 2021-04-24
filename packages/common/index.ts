@@ -912,6 +912,7 @@ export const ERROR_MESSAGES = {
   alertController: {
     duplicateAlert: "This alert has already been sent",
     notActiveAlert: "This is not an alert that's open for the current user",
+    incorrectPayload: "The payload provided was not of the correct type",
   },
   sseService: {
     getSubClient: "Unable to get the redis subscriber client",
