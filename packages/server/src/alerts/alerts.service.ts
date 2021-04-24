@@ -24,6 +24,7 @@ export class AlertsService {
             console.log(`Rephrase Question alert with id ${alert.id} expired`);
             if (!question.closedAt) {
               question.closedAt = new Date();
+              await question.save();
             }
           } else {
             nonStaleAlerts.push(alert);
