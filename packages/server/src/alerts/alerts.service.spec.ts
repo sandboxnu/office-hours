@@ -1,3 +1,4 @@
+import { AlertType } from '@koh/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Connection } from 'typeorm';
 import {
@@ -81,6 +82,43 @@ describe('Alerts service', () => {
 
       expect(nonStaleAlerts.length).toBe(1);
       expect(nonStaleAlerts[0].id).toBe(openAlert.id);
+    });
+  });
+
+  describe('check payload type', () => {
+    it('correct rephrase question payloads pass', () => {
+      expect(
+        service.assertPayloadType(AlertType.REPHRASE_QUESTION, {
+          courseId: 2,
+          queueId: 1,
+          questionId: 420,
+        }),
+      ).toBeTruthy();
+    });
+
+    it('incorrect rephrase question payloads fail', () => {
+      expect(
+        service.assertPayloadType(AlertType.REPHRASE_QUESTION, {
+          courseId: 'PYHUGYHIF',
+          queueId: 1,
+          questionId: 420,
+        }),
+      ).toBeFalsy();
+
+      expect(
+        service.assertPayloadType(AlertType.REPHRASE_QUESTION, {
+          courseId: 69,
+          questionId: 420,
+        }),
+      ).toBeFalsy();
+
+      expect(
+        service.assertPayloadType(AlertType.REPHRASE_QUESTION, {
+          courseId: 69,
+          queueId: '12',
+          questionId: 420,
+        }),
+      ).toBeFalsy();
     });
   });
 });

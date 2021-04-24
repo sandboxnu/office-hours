@@ -1,4 +1,9 @@
-import { Alert, AlertType, RephraseQuestionPayload } from '@koh/common';
+import {
+  Alert,
+  AlertPayload,
+  AlertType,
+  RephraseQuestionPayload,
+} from '@koh/common';
 import { Injectable } from '@nestjs/common';
 import { QuestionModel } from 'question/question.entity';
 import { Connection } from 'typeorm';
@@ -37,9 +42,26 @@ export class AlertsService {
           } else {
             nonStaleAlerts.push(alert);
           }
+          break;
       }
     }
 
     return nonStaleAlerts;
+  }
+
+  assertPayloadType(alertType: AlertType, payload: AlertPayload): boolean {
+    switch (alertType) {
+      case AlertType.REPHRASE_QUESTION:
+        const castPayload = payload as RephraseQuestionPayload;
+
+        return (
+          !!castPayload.courseId &&
+          !!castPayload.questionId &&
+          !!castPayload.queueId &&
+          typeof castPayload.courseId === 'number' &&
+          typeof castPayload.questionId === 'number' &&
+          typeof castPayload.queueId === 'number'
+        );
+    }
   }
 }

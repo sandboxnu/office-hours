@@ -1,9 +1,12 @@
+import { AlertType, ERROR_MESSAGES } from '@koh/common';
 import { AlertsModule } from 'alerts/alerts.module';
 import {
   AlertFactory,
   CourseFactory,
   QuestionFactory,
   QueueFactory,
+  StudentCourseFactory,
+  TACourseFactory,
   UserCourseFactory,
   UserFactory,
 } from './util/factories';
@@ -104,6 +107,73 @@ describe('Alerts Integration', () => {
           sent: alert2.sent.toISOString(),
         },
       ]);
+    });
+  });
+
+  describe('POST /alerts', () => {
+    it('creates a rephrase question alert, and asserts no duplicates', async () => {
+      const course = await CourseFactory.create();
+
+      const student = await UserFactory.create();
+      await StudentCourseFactory.create({
+        user: student,
+        course,
+      });
+
+      const ta = await UserFactory.create();
+      await TACourseFactory.create({
+        user: ta,
+        course,
+      });
+
+      const queue = await QueueFactory.create({
+        course,
+        staffList: [ta],
+      });
+      const question = await QuestionFactory.create({
+        creator: student,
+        queue,
+      });
+
+      const body = {
+        alertType: AlertType.REPHRASE_QUESTION,
+        courseId: course.id,
+        payload: {
+          courseId: course.id,
+          questionId: question.id,
+          queueId: queue.id,
+        },
+      };
+
+      let res = await supertest({ userId: ta.id })
+        .post(`/alerts`)
+        .send({ ...body, targetUserId: student.id })
+        .expect(201);
+
+      expect(res.body).toMatchObject(body);
+
+      res = await supertest({ userId: ta.id })
+        .post(`/alerts`)
+        .send({ ...body, targetUserId: student.id })
+        .expect(400);
+
+      expect(res.body.message).toStrictEqual(
+        ERROR_MESSAGES.alertController.duplicateAlert,
+      );
+
+      res = await supertest({ userId: ta.id })
+        .post(`/alerts`)
+        .send({
+          alertType: AlertType.REPHRASE_QUESTION,
+          courseId: course.id,
+          targetUserId: student.id,
+          payload: { courseId: course.id, questionId: question.id },
+        })
+        .expect(400);
+
+      expect(res.body.message).toStrictEqual(
+        ERROR_MESSAGES.alertController.incorrectPayload,
+      );
     });
   });
 });
