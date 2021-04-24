@@ -1,4 +1,5 @@
-import { QuestionType, Role } from '@koh/common';
+import { AlertType, QuestionType, Role } from '@koh/common';
+import { AlertModel } from 'alerts/alerts.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { Factory } from 'typeorm-factory';
 import { CourseModel } from '../../src/course/course.entity';
@@ -81,3 +82,10 @@ export const EventFactory = new Factory(EventModel)
   .attr('eventType', EventType.TA_CHECKED_IN)
   .assocOne('user', UserFactory)
   .assocOne('course', CourseFactory);
+
+export const AlertFactory = new Factory(AlertModel)
+  .attr('alertType', AlertType.REPHRASE_QUESTION)
+  .attr('sent', new Date(Date.now() - 86400000))
+  .assocOne('user', UserFactory)
+  .assocOne('course', CourseFactory)
+  .attr('payload', {});
