@@ -21,7 +21,7 @@ export class AlertsService {
           const question = await QuestionModel.findOne(payload.questionId);
 
           const queue = await QueueModel.findOne(payload.queueId);
-          const isQueueOpen = await queue.checkIsOpen();
+          const isQueueOpen = await queue?.checkIsOpen();
           if (question.closedAt || !isQueueOpen) {
             console.log(
               `Rephrase Question alert with id ${
