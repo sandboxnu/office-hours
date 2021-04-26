@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"be020dd7dfa532e116f54a671647d18cf6e61dff"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"4736abc9f676dd6fdc67933c2121c7d3d2cef840"};
 
 /***/ }),
 /* 2 */
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "be020dd7dfa532e116f54a671647d18cf6e61dff",
+        release: "4736abc9f676dd6fdc67933c2121c7d3d2cef840",
         environment: common_1.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -767,6 +767,10 @@ __decorate([
     class_validator_1.IsString(),
     __metadata("design:type", String)
 ], SubmitCourseParams.prototype, "icalURL", void 0);
+__decorate([
+    class_validator_1.IsString(),
+    __metadata("design:type", String)
+], SubmitCourseParams.prototype, "password", void 0);
 exports.SubmitCourseParams = SubmitCourseParams;
 class SemesterPartial {
 }
@@ -788,6 +792,7 @@ exports.ERROR_MESSAGES = {
         },
         noUserFound: "No user found with given email",
         noSemesterFound: "No semester exists for the submitted course",
+        invalidApplyURL: "You are unauthorized to submit an application. Please email help@khouryofficehours.com for the correct URL.",
     },
     questionController: {
         createQuestion: {
@@ -5018,6 +5023,9 @@ let CourseController = class CourseController {
         await user_course_entity_1.UserCourseModel.remove(userCourse);
     }
     async submitCourse(body) {
+        if (body.password !== process.env.APPLY_PASSWORD) {
+            throw new common_2.UnauthorizedException(common_1.ERROR_MESSAGES.courseController.invalidApplyURL);
+        }
         const season = body.semester.split(' ')[0];
         const year = parseInt(body.semester.split(' ')[1]);
         const semester = await semester_entity_1.SemesterModel.findOne({
@@ -5048,6 +5056,7 @@ let CourseController = class CourseController {
 };
 __decorate([
     common_2.Get(':id'),
+    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard, course_roles_guard_1.CourseRolesGuard),
     roles_decorator_1.Roles(common_1.Role.PROFESSOR, common_1.Role.STUDENT, common_1.Role.TA),
     __param(0, common_2.Param('id')),
     __param(1, user_decorator_1.User()),
@@ -5057,6 +5066,7 @@ __decorate([
 ], CourseController.prototype, "get", null);
 __decorate([
     common_2.Post(':id/ta_location/:room'),
+    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard, course_roles_guard_1.CourseRolesGuard),
     roles_decorator_1.Roles(common_1.Role.PROFESSOR, common_1.Role.TA),
     __param(0, common_2.Param('id')),
     __param(1, common_2.Param('room')),
@@ -5067,6 +5077,7 @@ __decorate([
 ], CourseController.prototype, "checkIn", null);
 __decorate([
     common_2.Delete(':id/ta_location/:room'),
+    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard, course_roles_guard_1.CourseRolesGuard),
     roles_decorator_1.Roles(common_1.Role.PROFESSOR, common_1.Role.TA),
     __param(0, common_2.Param('id')),
     __param(1, common_2.Param('room')),
@@ -5077,6 +5088,7 @@ __decorate([
 ], CourseController.prototype, "checkOut", null);
 __decorate([
     common_2.Post(':id/update_calendar'),
+    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard, course_roles_guard_1.CourseRolesGuard),
     roles_decorator_1.Roles(common_1.Role.PROFESSOR),
     __param(0, common_2.Param('id')),
     __metadata("design:type", Function),
@@ -5085,6 +5097,7 @@ __decorate([
 ], CourseController.prototype, "updateCalendar", null);
 __decorate([
     common_2.Get(':id/course_override'),
+    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard, course_roles_guard_1.CourseRolesGuard),
     roles_decorator_1.Roles(common_1.Role.PROFESSOR),
     __param(0, common_2.Param('id')),
     __metadata("design:type", Function),
@@ -5093,6 +5106,7 @@ __decorate([
 ], CourseController.prototype, "getCourseOverrides", null);
 __decorate([
     common_2.Post(':id/update_override'),
+    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard, course_roles_guard_1.CourseRolesGuard),
     roles_decorator_1.Roles(common_1.Role.PROFESSOR),
     __param(0, common_2.Param('id')),
     __param(1, common_2.Body()),
@@ -5102,6 +5116,7 @@ __decorate([
 ], CourseController.prototype, "addOverride", null);
 __decorate([
     common_2.Delete(':id/update_override'),
+    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard, course_roles_guard_1.CourseRolesGuard),
     roles_decorator_1.Roles(common_1.Role.PROFESSOR),
     __param(0, common_2.Param('id')),
     __param(1, common_2.Body()),
@@ -5118,6 +5133,7 @@ __decorate([
 ], CourseController.prototype, "submitCourse", null);
 __decorate([
     common_2.Get(':id/ta_check_in_times'),
+    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard, course_roles_guard_1.CourseRolesGuard),
     roles_decorator_1.Roles(common_1.Role.PROFESSOR),
     __param(0, common_2.Param('id')),
     __param(1, common_2.Query('startDate')),
@@ -5128,7 +5144,6 @@ __decorate([
 ], CourseController.prototype, "taCheckinTimes", null);
 CourseController = __decorate([
     common_2.Controller('courses'),
-    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard, course_roles_guard_1.CourseRolesGuard),
     common_2.UseInterceptors(common_2.ClassSerializerInterceptor),
     __metadata("design:paramtypes", [typeorm_1.Connection,
         queue_clean_service_1.QueueCleanService,
@@ -7314,7 +7329,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SemesterController = void 0;
 const common_1 = __webpack_require__(9);
-const jwt_auth_guard_1 = __webpack_require__(39);
 const semester_entity_1 = __webpack_require__(37);
 let SemesterController = class SemesterController {
     async get() {
@@ -7328,8 +7342,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SemesterController.prototype, "get", null);
 SemesterController = __decorate([
-    common_1.Controller('semesters'),
-    common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard)
+    common_1.Controller('semesters')
 ], SemesterController);
 exports.SemesterController = SemesterController;
 

@@ -289,6 +289,7 @@ export declare class SubmitCourseParams {
     semester: string;
     timezone: string;
     icalURL: string;
+    password: string;
 }
 export declare class SemesterPartial {
     id: number;
@@ -374,6 +375,7 @@ export declare const ERROR_MESSAGES: {
         };
         noUserFound: string;
         noSemesterFound: string;
+        invalidApplyURL: string;
     };
     questionController: {
         createQuestion: {
