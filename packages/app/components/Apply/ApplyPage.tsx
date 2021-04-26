@@ -52,10 +52,6 @@ export default function ApplyPage(): ReactElement {
     return split.length == 2 && subject && /^\d+$/.test(split[1]);
   };
 
-  if (router.query[process.env.NEXT_PUBLIC_APPLY_KEY] !== "") {
-    return <DefaultErrorPage statusCode={404} />;
-  }
-
   if (submitted) {
     return (
       <Result
