@@ -53,11 +53,7 @@ export default function ApplyPage(): ReactElement {
   };
 
   if (router.query[process.env.APPLY_KEY] !== "") {
-    return (
-      <div>
-        {process.env.APPLY_KEY} | {process.env}
-      </div>
-    );
+    return <div>{process.env.APPLY_KEY}</div>;
   }
 
   if (submitted) {
