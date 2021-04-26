@@ -2,6 +2,7 @@
 
 exports[`Course Integration GET /courses/:id gets office hours no queues, since no queue is happening right now 1`] = `
 Object {
+  "coordinator_email": null,
   "enabled": true,
   "heatmap": false,
   "id": 1,
@@ -14,6 +15,7 @@ Object {
       "title": "Alex & Stanley",
     },
   ],
+  "pending": null,
   "queues": Array [],
   "timezone": "America/New_York",
 }

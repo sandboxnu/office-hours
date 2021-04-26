@@ -10,6 +10,7 @@ const {
   NEXT_PUBLIC_SERVICE_VERSION: SERVICE_VERSION,
   SENTRY_AUTH_TOKEN,
   NODE_ENV,
+  APPLY_KEY,
 } = process.env;
 
 const SENTRY_DSN =
@@ -19,6 +20,9 @@ const config = {
   generateInDevMode: true,
   experimental: {
     productionBrowserSourceMaps: true,
+  },
+  env: {
+    APPLY_KEY,
   },
   webpack: (config, options) => {
     // Webpack to replace @sentry/node imports with @sentry/browser when
