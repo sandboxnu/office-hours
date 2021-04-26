@@ -638,6 +638,9 @@ export class SubmitCourseParams {
 
   @IsString()
   icalURL!: string;
+
+  @IsString()
+  password!: string;
 }
 
 export class SemesterPartial {
@@ -744,6 +747,8 @@ export const ERROR_MESSAGES = {
     },
     noUserFound: "No user found with given email",
     noSemesterFound: "No semester exists for the submitted course",
+    invalidApplyURL:
+      "You are unauthorized to submit an application. Please email help@khouryofficehours.com for the correct URL.",
   },
   questionController: {
     createQuestion: {

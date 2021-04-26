@@ -6,7 +6,6 @@ import { InfoCircleOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import useSWR from "swr";
 import { useRouter } from "next/router";
-import DefaultErrorPage from "next/error";
 
 const HalfFormItem = styled(Form.Item)`
   width: 48%;
@@ -16,6 +15,7 @@ const { Option } = Select;
 
 export default function ApplyPage(): ReactElement {
   const [submitted, setSubmitted] = useState(false);
+  const [unauthorized, setUnauthorized] = useState(false);
   const router = useRouter();
   const [form] = Form.useForm();
   const { data: semesters } = useSWR("/api/v1/semesters", async () =>
@@ -25,7 +25,15 @@ export default function ApplyPage(): ReactElement {
   const handleSubmit = async () => {
     const value = await form.validateFields();
     value.sections = value.sections.replace(/\s+/g, "").split(",").map(Number);
-    await API.course.submitCourse(value as SubmitCourseParams);
+    value.password =
+      Object.keys(router.query).length == 1 ? Object.keys(router.query)[0] : "";
+
+    try {
+      await API.course.submitCourse(value as SubmitCourseParams);
+    } catch (error) {
+      setUnauthorized(true);
+    }
+
     setSubmitted(true);
   };
 
@@ -52,6 +60,26 @@ export default function ApplyPage(): ReactElement {
     return split.length == 2 && subject && /^\d+$/.test(split[1]);
   };
 
+  if (unauthorized) {
+    return (
+      <Result
+        status="403"
+        title="403"
+        subTitle={
+          <div>
+            Sorry, you are not authorized to submit an application.
+            <br />
+            Please email{" "}
+            <a href="mailto:help@khouryofficehours.com">
+              help@khouryofficehours.com
+            </a>{" "}
+            for the correct URL.
+          </div>
+        }
+      />
+    );
+  }
+
   if (submitted) {
     return (
       <Result
@@ -62,8 +90,11 @@ export default function ApplyPage(): ReactElement {
             Thanks for applying to use Khoury Office Hours, we&apos;ll email you
             with next steps as the semester gets closer.
             <br />
-            If you have any questions, feel free to email us at
-            help@khouryofficehours.com
+            If you have any questions, feel free to email us at{" "}
+            <a href="mailto:help@khouryofficehours.com">
+              help@khouryofficehours.com
+            </a>
+            .
           </div>
         }
         extra={[
