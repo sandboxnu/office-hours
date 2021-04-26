@@ -1,5 +1,5 @@
 import { SemesterPartial } from '@koh/common';
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { SemesterModel } from './semester.entity';
 
 @Controller('semesters')
