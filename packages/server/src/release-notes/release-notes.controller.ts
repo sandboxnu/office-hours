@@ -6,7 +6,7 @@ import {
   InternalServerErrorException,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from 'login/jwt-auth.guard';
+import { JwtAuthGuard } from 'guards/jwt-auth.guard';
 import { Connection } from 'typeorm';
 
 @Controller('release_notes')

@@ -4,6 +4,7 @@ import {
   GetCourseResponse,
   QueuePartial,
   Role,
+  SubmitCourseParams,
   TACheckinTimesResponse,
   TACheckoutResponse,
   UpdateCourseOverrideBody,
@@ -25,22 +26,24 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import async from 'async';
+import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { Connection, getRepository, MoreThanOrEqual } from 'typeorm';
-import { JwtAuthGuard } from '../login/jwt-auth.guard';
-import { Roles } from '../profile/roles.decorator';
-import { User } from '../profile/user.decorator';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { Roles } from '../decorators/roles.decorator';
+import { User } from '../decorators/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { QueueCleanService } from '../queue/queue-clean/queue-clean.service';
 import { QueueSSEService } from '../queue/queue-sse.service';
 import { QueueModel } from '../queue/queue.entity';
-import { CourseRolesGuard } from './course-roles.guard';
+import { CourseRolesGuard } from '../guards/course-roles.guard';
 import { CourseModel } from './course.entity';
 import { CourseService } from './course.service';
 import { HeatmapService } from './heatmap.service';
 import { IcalService } from './ical.service';
 import { OfficeHourModel } from './office-hour.entity';
+import { SemesterModel } from '../semester/semester.entity';
 import moment = require('moment');
 
 @Controller('courses')
@@ -299,6 +302,40 @@ export class CourseController {
       where: { courseId, userId, override: true },
     });
     await UserCourseModel.remove(userCourse);
+  }
+
+  @Post('submit_course')
+  async submitCourse(@Body() body: SubmitCourseParams): Promise<void> {
+    const season = body.semester.split(' ')[0];
+    const year = parseInt(body.semester.split(' ')[1]);
+
+    const semester = await SemesterModel.findOne({
+      where: { season, year },
+    });
+    if (!semester)
+      throw new BadRequestException(
+        ERROR_MESSAGES.courseController.noSemesterFound,
+      );
+
+    // create the submitted course
+    const course = await CourseModel.create({
+      name: body.name,
+      coordinator_email: body.coordinator_email,
+      icalURL: body.icalURL,
+      semesterId: semester.id,
+      enabled: false,
+      pending: true,
+      timezone: body.timezone,
+    }).save();
+
+    // create CourseSectionMappings for each unique submitted section number
+    new Set(body.sections).forEach(async (section) => {
+      await CourseSectionMappingModel.create({
+        genericCourseName: body.name,
+        section,
+        courseId: course.id,
+      }).save();
+    });
   }
 
   @Get(':id/ta_check_in_times')

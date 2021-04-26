@@ -18,12 +18,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { UserId } from 'profile/user.decorator';
+import { UserId } from 'decorators/user.decorator';
 import { Connection } from 'typeorm';
-import { JwtAuthGuard } from '../login/jwt-auth.guard';
-import { Roles } from '../profile/roles.decorator';
-import { QueueRole } from './queue-role.decorator';
-import { QueueRolesGuard } from './queue-role.guard';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { Roles } from '../decorators/roles.decorator';
+import { QueueRole } from '../decorators/queue-role.decorator';
+import { QueueRolesGuard } from '../guards/queue-role.guard';
 import { QueueSSEService } from './queue-sse.service';
 import { QueueModel } from './queue.entity';
 import { QueueService } from './queue.service';

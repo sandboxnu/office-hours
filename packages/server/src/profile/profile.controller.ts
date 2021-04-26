@@ -29,9 +29,9 @@ import { memoryStorage } from 'multer';
 import * as path from 'path';
 import * as sharp from 'sharp';
 import { Connection } from 'typeorm';
-import { JwtAuthGuard } from '../login/jwt-auth.guard';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { NotificationService } from '../notification/notification.service';
-import { User } from './user.decorator';
+import { User } from '../decorators/user.decorator';
 import { UserModel } from './user.entity';
 
 @Controller('profile')

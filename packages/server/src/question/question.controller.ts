@@ -26,17 +26,17 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { Connection, In } from 'typeorm';
-import { JwtAuthGuard } from '../login/jwt-auth.guard';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import {
   NotificationService,
   NotifMsgs,
 } from '../notification/notification.service';
-import { Roles } from '../profile/roles.decorator';
+import { Roles } from '../decorators/roles.decorator';
 import { UserCourseModel } from '../profile/user-course.entity';
-import { User, UserId } from '../profile/user.decorator';
+import { User, UserId } from '../decorators/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
-import { QuestionRolesGuard } from './question-role.guard';
+import { QuestionRolesGuard } from '../guards/question-role.guard';
 import { QuestionModel } from './question.entity';
 
 @Controller('questions')

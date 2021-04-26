@@ -7,9 +7,11 @@ import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { SettingsOptions } from "../../Settings/SettingsPage";
-import { SPLIT_DETAIL_BKPT } from "./TAQueueBreakpoints";
 import TAQueueDetail from "./TAQueueDetail";
 import TAQueueListSection from "./TAQueueListSection";
+
+// The min screen width at which the list and detail become side-by-side
+const SPLIT_DETAIL_BKPT = 900;
 
 const Container = styled.div`
   flex: 1;

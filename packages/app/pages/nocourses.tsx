@@ -9,7 +9,7 @@ export default function NoCourses(): ReactElement {
     <Result
       status="info"
       title="None of your courses are using the Khoury Office Hours App."
-      subTitle="Please reach out to your professor if you expected your course to be here."
+      subTitle="Please reach out to your course coordinator or professor if you expected your course to be here."
     />
   );
 }

@@ -13,22 +13,8 @@ import { EventModel } from '../profile/event-model.entity';
 import { UserCourseModel } from '../profile/user-course.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { OfficeHourModel } from './office-hour.entity';
-import { SemesterModel } from './semester.entity';
+import { SemesterModel } from '../semester/semester.entity';
 import { AlertModel } from '../alerts/alerts.entity';
-
-/**
- * Represents a course in the context of office hours.
- * @param id - The id number of this Course.
- * @param name - The subject and course number of this course. Ex: "CS 2500"
- * @param semester - The semester of this course.
- */
-/*interface Course {
-    id: number;
-    name: string;
-    url: string;
-    semester: Semester;
-    users: UserCourse[]
-}*/
 
 @Entity('course_model')
 export class CourseModel extends BaseEntity {
@@ -43,6 +29,9 @@ export class CourseModel extends BaseEntity {
 
   @Column('text')
   name: string;
+
+  @Column('text', { nullable: true })
+  coordinator_email: string;
 
   @Column('text', { nullable: true })
   @Exclude()
@@ -64,6 +53,10 @@ export class CourseModel extends BaseEntity {
 
   @Column('boolean', { nullable: true })
   enabled: boolean; // Set to true if the given the course is using our app
+
+  // Set to true if the course is submitted via application and pending approval
+  @Column('boolean', { nullable: true })
+  pending: boolean;
 
   // The heatmap is false when there havent been any questions asked yet or there havent been any office hours
   heatmap: Heatmap | false;

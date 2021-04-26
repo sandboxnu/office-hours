@@ -1,5 +1,6 @@
 import { Type } from "class-transformer";
 import {
+  IsArray,
   IsBoolean,
   IsDate,
   IsDefined,
@@ -298,7 +299,7 @@ export const QuestionStatusKeys = {
 /**
  * Represents one of the seasons in which a course can take place.
  */
-export type Season = "Fall" | "Spring" | "Summer 1" | "Summer 2";
+export type Season = "Fall" | "Spring" | "Summer_1" | "Summer_2";
 
 export type DesktopNotifBody = {
   endpoint: string;
@@ -619,6 +620,32 @@ export class GetAlertsResponse {
   alerts!: Alert[];
 }
 
+export class SubmitCourseParams {
+  @IsString()
+  coordinator_email!: string;
+
+  @IsString()
+  name!: string;
+
+  @IsArray()
+  sections!: number[];
+
+  @IsString()
+  semester!: string;
+
+  @IsString()
+  timezone!: string;
+
+  @IsString()
+  icalURL!: string;
+}
+
+export class SemesterPartial {
+  id!: number;
+  season!: string;
+  year!: number;
+}
+
 export class SSEQueueResponse {
   queue?: GetQueueResponse;
   questions?: ListQuestionsResponse;
@@ -716,6 +743,7 @@ export const ERROR_MESSAGES = {
         "Cannot check into multiple queues at the same time",
     },
     noUserFound: "No user found with given email",
+    noSemesterFound: "No semester exists for the submitted course",
   },
   questionController: {
     createQuestion: {

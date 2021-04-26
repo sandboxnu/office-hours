@@ -25,6 +25,8 @@ import {
   UpdateQueueParams,
   ListInsightsResponse,
   DateRangeType,
+  SubmitCourseParams,
+  SemesterPartial,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -101,6 +103,8 @@ class APIClient {
         undefined,
         params
       ),
+    submitCourse: async (params: SubmitCourseParams): Promise<void> =>
+      this.req("POST", `/api/v1/courses/submit_course`, undefined, params),
     getTACheckinTimes: async (
       courseId: number,
       startDate: string,
@@ -185,6 +189,10 @@ class APIClient {
     delete: async () => this.req("GET", `/api/v1/seeds/delete`),
     create: async () => this.req("GET", `/api/v1/seeds/create`),
     fillQueue: async () => this.req("GET", `/api/v1/seeds/fill_queue`),
+  };
+  semesters = {
+    get: async (): Promise<SemesterPartial[]> =>
+      this.req("GET", `/api/v1/semesters`),
   };
   releaseNotes = {
     get: async (): Promise<GetReleaseNotesResponse> =>

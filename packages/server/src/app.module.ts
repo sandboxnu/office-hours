@@ -19,6 +19,7 @@ import { QuestionModule } from './question/question.module';
 import { QueueModule } from './queue/queue.module';
 import { SeedModule } from './seed/seed.module';
 import { SSEModule } from './sse/sse.module';
+import { SemesterModule } from 'semester/semester.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { SSEModule } from './sse/sse.module';
     RedisModule.register([{ name: 'pub' }, { name: 'sub' }, { name: 'db' }]),
     HealthcheckModule,
     AlertsModule,
+    SemesterModule,
   ],
 })
 export class AppModule {}

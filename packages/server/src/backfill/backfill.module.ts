@@ -5,13 +5,11 @@ import { BackfillHuskyEmailsAsNortheastern } from './backfill-husky-emails-to-no
 import { BackfillPhoneNotifs } from './backfill-phone-notifs.command';
 import { BackfillUserInsights } from './backfill-user-insights.command';
 import { BackfillMakeEmptyPhotoURLNull } from './make-empty-photourl-null.command';
-import { BackfillQuestionFirstHelpedAt } from './question-first-helped-at.command';
 
 @Module({
   imports: [NotificationModule],
   providers: [
     BackfillPhoneNotifs,
-    BackfillQuestionFirstHelpedAt,
     BackfillMakeEmptyPhotoURLNull,
     BackfillCourseTimezones,
     BackfillHuskyEmailsAsNortheastern,

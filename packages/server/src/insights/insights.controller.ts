@@ -12,7 +12,7 @@ import {
   Delete,
   Patch,
 } from '@nestjs/common';
-import { JwtAuthGuard } from 'login/jwt-auth.guard';
+import { JwtAuthGuard } from 'guards/jwt-auth.guard';
 import { Connection } from 'typeorm';
 import {
   GetInsightOutputResponse,
@@ -20,11 +20,11 @@ import {
   ListInsightsResponse,
   Role,
 } from '@koh/common';
-import { User } from '../profile/user.decorator';
+import { User } from '../decorators/user.decorator';
 import { INSIGHTS_MAP } from './insight-objects';
 import { UserModel } from 'profile/user.entity';
-import { Roles } from 'profile/roles.decorator';
-import { CourseRole } from './course-role.decorator';
+import { Roles } from 'decorators/roles.decorator';
+import { CourseRole } from '../decorators/course-role.decorator';
 import { Filter } from './insight-objects';
 
 @Controller('insights')

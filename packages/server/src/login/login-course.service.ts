@@ -48,9 +48,12 @@ export class LoginCourseService {
 
     for (const c of info.ta_courses) {
       // Query for all the courses which match the name of the generic course from Khoury
-      const courseMappings = await CourseSectionMappingModel.find({
-        where: { genericCourseName: c.course }, // TODO: Add semester support
-      });
+      const courseMappings = (
+        await CourseSectionMappingModel.find({
+          where: { genericCourseName: c.course }, // TODO: Add semester support
+          relations: ['course'],
+        })
+      ).filter((cm) => cm.course.enabled);
 
       for (const courseMapping of courseMappings) {
         const taCourse = await this.courseToUserCourse(
@@ -82,13 +85,16 @@ export class LoginCourseService {
   }
 
   public async courseSectionToCourse(
-    couresName: string,
+    courseName: string,
     courseSection: number,
   ): Promise<CourseModel> {
-    const courseSectionModel = await CourseSectionMappingModel.findOne({
-      where: { genericCourseName: couresName, section: courseSection },
-      relations: ['course'],
-    });
+    const courseSectionModel = (
+      await CourseSectionMappingModel.find({
+        where: { genericCourseName: courseName, section: courseSection },
+        relations: ['course'],
+      })
+    ).find((cm) => cm.course.enabled);
+
     return courseSectionModel?.course;
   }
 

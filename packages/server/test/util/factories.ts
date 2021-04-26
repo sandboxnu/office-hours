@@ -3,7 +3,7 @@ import { EventModel, EventType } from 'profile/event-model.entity';
 import { Factory } from 'typeorm-factory';
 import { CourseModel } from '../../src/course/course.entity';
 import { OfficeHourModel } from '../../src/course/office-hour.entity';
-import { SemesterModel } from '../../src/course/semester.entity';
+import { SemesterModel } from '../../src/semester/semester.entity';
 import { CourseSectionMappingModel } from '../../src/login/course-section-mapping.entity';
 import { UserCourseModel } from '../../src/profile/user-course.entity';
 import { UserModel } from '../../src/profile/user.entity';

@@ -6,7 +6,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { CourseModel } from './course.entity';
+import { CourseModel } from '../course/course.entity';
 
 @Entity('semester_model')
 export class SemesterModel extends BaseEntity {
