@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Modal } from "antd";
 import { ReactElement } from "react";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
@@ -14,12 +15,12 @@ export default function WelcomeStudents(): ReactElement {
     >
       <div>
         <h1> Welcome to the Khoury Office Hours app! 🎉</h1>
-        This project was started by students in{" "}
-        <a href="https://www.sandboxnu.com/">Sandbox</a> at the beginning of the
-        summer and is still in development.
+        If you run into any issues while using the app, the help guide can be
+        found in the menu by clicking on the circular profile in the nav bar.
         <br />
         <br />
-        We appreciate your patience with any &quot;rough edges.&quot; 😅
+        Take a look at our <Link href={"/about"}>About Page</Link> to learn more
+        about the team behind the app.
       </div>
     </Modal>
   );
