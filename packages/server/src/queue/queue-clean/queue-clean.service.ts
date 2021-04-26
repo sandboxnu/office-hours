@@ -23,7 +23,7 @@ export class QueueCleanService {
   async cleanAllQueues(): Promise<void> {
     const queuesWithOpenQuestions: QueueModel[] = await QueueModel.getRepository()
       .createQueryBuilder('queue')
-      .leftJoinAndSelect('queue_model.questions', 'question')
+      .leftJoinAndSelect('queue.questions', 'question')
       .where('question.status IN (:...status)', {
         status: [
           ...Object.values(OpenQuestionStatus),

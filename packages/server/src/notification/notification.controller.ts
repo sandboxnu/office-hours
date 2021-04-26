@@ -19,8 +19,8 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as twilio from 'twilio';
-import { JwtAuthGuard } from '../login/jwt-auth.guard';
-import { UserId } from '../profile/user.decorator';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { UserId } from '../decorators/user.decorator';
 import { DesktopNotifModel } from './desktop-notif.entity';
 import { NotificationService } from './notification.service';
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { RolesGuard } from '../guards/role.guard';
+import { RolesGuard } from './role.guard';
 import { UserModel } from '../profile/user.entity';
 
 @Injectable()
