@@ -47,7 +47,6 @@ import { SemesterModel } from '../semester/semester.entity';
 import moment = require('moment');
 
 @Controller('courses')
-@UseGuards(JwtAuthGuard, CourseRolesGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class CourseController {
   constructor(
@@ -60,6 +59,7 @@ export class CourseController {
   ) {}
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
   @Roles(Role.PROFESSOR, Role.STUDENT, Role.TA)
   async get(
     @Param('id') id: number,
@@ -106,6 +106,7 @@ export class CourseController {
   }
 
   @Post(':id/ta_location/:room')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
   @Roles(Role.PROFESSOR, Role.TA)
   async checkIn(
     @Param('id') courseId: number,
@@ -177,6 +178,7 @@ export class CourseController {
   }
 
   @Delete(':id/ta_location/:room')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
   @Roles(Role.PROFESSOR, Role.TA)
   async checkOut(
     @Param('id') courseId: number,
@@ -222,6 +224,7 @@ export class CourseController {
   }
 
   @Post(':id/update_calendar')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
   @Roles(Role.PROFESSOR)
   async updateCalendar(@Param('id') courseId: number): Promise<void> {
     const course = await CourseModel.findOne(courseId);
@@ -229,6 +232,7 @@ export class CourseController {
   }
 
   @Get(':id/course_override')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
   @Roles(Role.PROFESSOR)
   async getCourseOverrides(
     @Param('id') courseId: number,
@@ -248,6 +252,7 @@ export class CourseController {
   }
 
   @Post(':id/update_override')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
   @Roles(Role.PROFESSOR)
   async addOverride(
     @Param('id') courseId: number,
@@ -285,6 +290,7 @@ export class CourseController {
   }
 
   @Delete(':id/update_override')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
   @Roles(Role.PROFESSOR)
   async deleteOverride(
     @Param('id') courseId: number,
@@ -306,6 +312,12 @@ export class CourseController {
 
   @Post('submit_course')
   async submitCourse(@Body() body: SubmitCourseParams): Promise<void> {
+    if (body.password !== process.env.APPLY_PASSWORD) {
+      throw new UnauthorizedException(
+        ERROR_MESSAGES.courseController.invalidApplyURL,
+      );
+    }
+
     const season = body.semester.split(' ')[0];
     const year = parseInt(body.semester.split(' ')[1]);
 
@@ -339,6 +351,7 @@ export class CourseController {
   }
 
   @Get(':id/ta_check_in_times')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
   @Roles(Role.PROFESSOR)
   async taCheckinTimes(
     @Param('id') courseId: number,
