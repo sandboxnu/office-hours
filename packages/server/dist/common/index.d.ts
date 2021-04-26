@@ -127,7 +127,7 @@ export declare const QuestionStatusKeys: {
     Helping: OpenQuestionStatus.Helping;
     PriorityQueued: OpenQuestionStatus.PriorityQueued;
 };
-export declare type Season = "Fall" | "Spring" | "Summer 1" | "Summer 2";
+export declare type Season = "Fall" | "Spring" | "Summer_1" | "Summer_2";
 export declare type DesktopNotifBody = {
     endpoint: string;
     expirationTime?: number;
@@ -282,6 +282,19 @@ export declare class CreateAlertResponse extends Alert {
 export declare class GetAlertsResponse {
     alerts: Alert[];
 }
+export declare class SubmitCourseParams {
+    coordinator_email: string;
+    name: string;
+    sections: number[];
+    semester: string;
+    timezone: string;
+    icalURL: string;
+}
+export declare class SemesterPartial {
+    id: number;
+    season: string;
+    year: number;
+}
 export declare class SSEQueueResponse {
     queue?: GetQueueResponse;
     questions?: ListQuestionsResponse;
@@ -360,6 +373,7 @@ export declare const ERROR_MESSAGES: {
             cannotCheckIntoMultipleQueues: string;
         };
         noUserFound: string;
+        noSemesterFound: string;
     };
     questionController: {
         createQuestion: {

@@ -1,4 +1,4 @@
-import { GetCourseOverridesResponse, GetCourseResponse, QueuePartial, TACheckinTimesResponse, TACheckoutResponse, UpdateCourseOverrideBody, UpdateCourseOverrideResponse } from '@koh/common';
+import { GetCourseOverridesResponse, GetCourseResponse, QueuePartial, SubmitCourseParams, TACheckinTimesResponse, TACheckoutResponse, UpdateCourseOverrideBody, UpdateCourseOverrideResponse } from '@koh/common';
 import { Connection } from 'typeorm';
 import { UserModel } from '../profile/user.entity';
 import { QueueCleanService } from '../queue/queue-clean/queue-clean.service';
@@ -21,5 +21,6 @@ export declare class CourseController {
     getCourseOverrides(courseId: number): Promise<GetCourseOverridesResponse>;
     addOverride(courseId: number, overrideInfo: UpdateCourseOverrideBody): Promise<UpdateCourseOverrideResponse>;
     deleteOverride(courseId: number, overrideInfo: UpdateCourseOverrideBody): Promise<void>;
+    submitCourse(body: SubmitCourseParams): Promise<void>;
     taCheckinTimes(courseId: number, startDate: string, endDate: string): Promise<TACheckinTimesResponse>;
 }
