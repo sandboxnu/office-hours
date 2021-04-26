@@ -53,7 +53,11 @@ export default function ApplyPage(): ReactElement {
   };
 
   if (router.query[process.env.APPLY_KEY] !== "") {
-    return <DefaultErrorPage statusCode={404} />;
+    return (
+      <div>
+        {process.env.APPLY_KEY} | {process.env}
+      </div>
+    );
   }
 
   if (submitted) {
