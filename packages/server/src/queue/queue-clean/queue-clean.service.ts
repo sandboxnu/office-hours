@@ -1,16 +1,16 @@
 import {
   ClosedQuestionStatus,
-  OpenQuestionStatus,
   LimboQuestionStatus,
+  OpenQuestionStatus,
 } from '@koh/common';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { OfficeHourModel } from 'course/office-hour.entity';
-import moment = require('moment');
+import { EventModel, EventType } from 'profile/event-model.entity';
 import { Connection, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { QuestionModel } from '../../question/question.entity';
 import { QueueModel } from '../queue.entity';
-import { EventModel, EventType } from 'profile/event-model.entity';
+import moment = require('moment');
 
 /**
  * Clean the queue and mark stale
@@ -22,8 +22,8 @@ export class QueueCleanService {
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async cleanAllQueues(): Promise<void> {
     const queuesWithOpenQuestions: QueueModel[] = await QueueModel.getRepository()
-      .createQueryBuilder('queue')
-      .leftJoinAndSelect('queue.questions', 'question')
+      .createQueryBuilder('queue_model')
+      .leftJoinAndSelect('queue_model.questions', 'question')
       .where('question.status IN (:...status)', {
         status: [
           ...Object.values(OpenQuestionStatus),
