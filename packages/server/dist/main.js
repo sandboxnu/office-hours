@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"4736abc9f676dd6fdc67933c2121c7d3d2cef840"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"186f23c95ab7e8a6c5567ab5cacef928c6314090"};
 
 /***/ }),
 /* 2 */
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "4736abc9f676dd6fdc67933c2121c7d3d2cef840",
+        release: "186f23c95ab7e8a6c5567ab5cacef928c6314090",
         environment: common_1.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -4636,19 +4636,19 @@ const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
 const schedule_1 = __webpack_require__(18);
 const office_hour_entity_1 = __webpack_require__(33);
-const moment = __webpack_require__(89);
+const event_model_entity_1 = __webpack_require__(28);
 const typeorm_1 = __webpack_require__(23);
 const question_entity_1 = __webpack_require__(34);
 const queue_entity_1 = __webpack_require__(32);
-const event_model_entity_1 = __webpack_require__(28);
+const moment = __webpack_require__(89);
 let QueueCleanService = class QueueCleanService {
     constructor(connection) {
         this.connection = connection;
     }
     async cleanAllQueues() {
         const queuesWithOpenQuestions = await queue_entity_1.QueueModel.getRepository()
-            .createQueryBuilder('queue')
-            .leftJoinAndSelect('queue.questions', 'question')
+            .createQueryBuilder('queue_model')
+            .leftJoinAndSelect('queue_model.questions', 'question')
             .where('question.status IN (:...status)', {
             status: [
                 ...Object.values(common_1.OpenQuestionStatus),
