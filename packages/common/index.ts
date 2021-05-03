@@ -299,7 +299,12 @@ export const QuestionStatusKeys = {
 /**
  * Represents one of the seasons in which a course can take place.
  */
-export type Season = "Fall" | "Spring" | "Summer_1" | "Summer_2";
+export type Season =
+  | "Fall"
+  | "Spring"
+  | "Summer_1"
+  | "Summer_2"
+  | "Summer_Full";
 
 export type DesktopNotifBody = {
   endpoint: string;
