@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"df52819c54b6ae7e782aa0aaeffff4a82bb9e127"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"467e02bef04f4ea6004addc14c46080c5aeacab1"};
 
 /***/ }),
 /* 2 */
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "df52819c54b6ae7e782aa0aaeffff4a82bb9e127",
+        release: "467e02bef04f4ea6004addc14c46080c5aeacab1",
         environment: common_1.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -5624,16 +5624,21 @@ let IcalService = class IcalService {
         redlock.on('clientError', function (err) {
             console.error('A redis error has occurred:', err);
         });
-        await redlock.lock(resource, ttl).then(async (lock) => {
-            console.log('updating course icals');
-            const courses = await course_entity_1.CourseModel.find({
-                where: { enabled: true },
+        try {
+            await redlock.lock(resource, ttl).then(async (lock) => {
+                console.log('updating course icals');
+                const courses = await course_entity_1.CourseModel.find({
+                    where: { enabled: true },
+                });
+                await Promise.all(courses.map((c) => this.updateCalendarForCourse(c)));
+                return lock.unlock().catch(function (err) {
+                    console.error(err);
+                });
             });
-            await Promise.all(courses.map((c) => this.updateCalendarForCourse(c)));
-            return lock.unlock().catch(function (err) {
-                console.error(err);
-            });
-        });
+        }
+        catch (error) {
+            console.error('A problem locking Redlock has occurred:', error);
+        }
     }
 };
 __decorate([
