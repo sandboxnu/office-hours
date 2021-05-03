@@ -127,7 +127,7 @@ export declare const QuestionStatusKeys: {
     Helping: OpenQuestionStatus.Helping;
     PriorityQueued: OpenQuestionStatus.PriorityQueued;
 };
-export declare type Season = "Fall" | "Spring" | "Summer_1" | "Summer_2";
+export declare type Season = "Fall" | "Spring" | "Summer_1" | "Summer_2" | "Summer_Full";
 export declare type DesktopNotifBody = {
     endpoint: string;
     expirationTime?: number;
