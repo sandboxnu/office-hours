@@ -239,20 +239,20 @@ export class IcalService {
       console.error('A redis error has occurred:', err);
     });
 
-    try {
-      await redlock.lock(resource, ttl).then(async (lock) => {
+    await redlock.lock(resource, ttl, async function (err, lock) {
+      if (err) {
+        console.error('A problem locking Redlock has occurred:', err);
+      } else {
         console.log('updating course icals');
         const courses = await CourseModel.find({
           where: { enabled: true },
         });
         await Promise.all(courses.map((c) => this.updateCalendarForCourse(c)));
 
-        return lock.unlock().catch(function (err) {
+        lock.unlock(function (err) {
           console.error(err);
         });
-      });
-    } catch (error) {
-      console.error('A problem locking Redlock has occurred:', error);
-    }
+      }
+    });
   }
 }
