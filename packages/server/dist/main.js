@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"ef17ff59a7335324b292f95be4e712769a341c98"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"998f883fd815b4b45981ac8e36fd2dcd87da3afc"};
 
 /***/ }),
 /* 2 */
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "ef17ff59a7335324b292f95be4e712769a341c98",
+        release: "998f883fd815b4b45981ac8e36fd2dcd87da3afc",
         environment: common_1.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -5484,7 +5484,6 @@ const queue_entity_1 = __webpack_require__(32);
 const course_entity_1 = __webpack_require__(27);
 const office_hour_entity_1 = __webpack_require__(33);
 const moment = __webpack_require__(89);
-const schedule_1 = __webpack_require__(18);
 const nestjs_redis_1 = __webpack_require__(61);
 const Redlock = __webpack_require__(101);
 let IcalService = class IcalService {
@@ -5624,29 +5623,23 @@ let IcalService = class IcalService {
         redlock.on('clientError', function (err) {
             console.error('A redis error has occurred:', err);
         });
-        await redlock.lock(resource, ttl, async function (err, lock) {
-            if (err) {
-                console.error('A problem locking Redlock has occurred:', err);
-            }
-            else {
+        try {
+            await redlock.lock(resource, ttl).then(async (lock) => {
                 console.log('updating course icals');
                 const courses = await course_entity_1.CourseModel.find({
                     where: { enabled: true },
                 });
                 await Promise.all(courses.map((c) => this.updateCalendarForCourse(c)));
-                lock.unlock(function (err) {
+                return lock.unlock().catch(function (err) {
                     console.error(err);
                 });
-            }
-        });
+            });
+        }
+        catch (error) {
+            console.error('A problem locking Redlock has occurred:', error);
+        }
     }
 };
-__decorate([
-    schedule_1.Cron('51 0 * * *'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], IcalService.prototype, "updateAllCourses", null);
 IcalService = __decorate([
     common_1.Injectable(),
     __metadata("design:paramtypes", [typeorm_1.Connection,
