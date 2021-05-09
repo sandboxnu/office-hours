@@ -371,6 +371,10 @@ export class KhouryStudentCourse {
 
   @IsString()
   title!: string;
+
+  @IsString()
+  @IsOptional()
+  campus!: string;
 }
 
 export class KhouryTACourse {
