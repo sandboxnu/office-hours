@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"998f883fd815b4b45981ac8e36fd2dcd87da3afc"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"4c121bb1f4ffd0ddc751e260b09a4fac1eae0265"};
 
 /***/ }),
 /* 2 */
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "998f883fd815b4b45981ac8e36fd2dcd87da3afc",
+        release: "4c121bb1f4ffd0ddc751e260b09a4fac1eae0265",
         environment: common_1.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -431,6 +431,11 @@ __decorate([
     class_validator_1.IsString(),
     __metadata("design:type", String)
 ], KhouryStudentCourse.prototype, "title", void 0);
+__decorate([
+    class_validator_1.IsString(),
+    class_validator_1.IsOptional(),
+    __metadata("design:type", String)
+], KhouryStudentCourse.prototype, "campus", void 0);
 exports.KhouryStudentCourse = KhouryStudentCourse;
 class KhouryTACourse {
 }

@@ -158,6 +158,7 @@ export declare class KhouryStudentCourse {
     section: number;
     semester: string;
     title: string;
+    campus: string;
 }
 export declare class KhouryTACourse {
     course: string;
