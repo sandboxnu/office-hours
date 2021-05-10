@@ -46,22 +46,24 @@ export class LoginCourseService {
       }
     }
 
-    for (const c of info.ta_courses) {
-      // Query for all the courses which match the name of the generic course from Khoury
-      const courseMappings = (
-        await CourseSectionMappingModel.find({
-          where: { genericCourseName: c.course }, // TODO: Add semester support
-          relations: ['course'],
-        })
-      ).filter((cm) => cm.course.enabled);
+    if (info.ta_courses) {
+      for (const c of info.ta_courses) {
+        // Query for all the courses which match the name of the generic course from Khoury
+        const courseMappings = (
+          await CourseSectionMappingModel.find({
+            where: { genericCourseName: c.course }, // TODO: Add semester support
+            relations: ['course'],
+          })
+        ).filter((cm) => cm.course.enabled);
 
-      for (const courseMapping of courseMappings) {
-        const taCourse = await this.courseToUserCourse(
-          user.id,
-          courseMapping.courseId,
-          c.instructor === 1 ? Role.PROFESSOR : Role.TA,
-        );
-        userCourses.push(taCourse);
+        for (const courseMapping of courseMappings) {
+          const taCourse = await this.courseToUserCourse(
+            user.id,
+            courseMapping.courseId,
+            c.instructor === 1 ? Role.PROFESSOR : Role.TA,
+          );
+          userCourses.push(taCourse);
+        }
       }
     }
 
