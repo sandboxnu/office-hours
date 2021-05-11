@@ -47,7 +47,7 @@
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
     "express-session": "^1.17.1",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "moment": "^2.27.0",
     "moment-timezone": "^0.5.31",
     "morgan": "^1.10.0",
