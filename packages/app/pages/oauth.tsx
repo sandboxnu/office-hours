@@ -9,8 +9,10 @@ import { Spin } from "antd";
 const isWindow = typeof window !== "undefined";
 
 async function signUserIn(request: OAuthAccessTokensRequest): Promise<boolean> {
-  const tokens = await API.oauth.tokens(request);
-  if (tokens === null) {
+  let tokens;
+  try {
+    tokens = await API.oauth.tokens(request);
+  } catch (err) {
     return false;
   }
   window.localStorage.setItem("access", tokens.access);

@@ -3,8 +3,11 @@ import {
   KhouryRedirectResponse,
   OAuthAccessTokensRequest,
   OAuthAccessTokensResponse,
-  RefreshTokenRequest,
-  AccessTokenRequest,
+  RefreshToken,
+  AccessToken,
+  ERROR_MESSAGES,
+  OAuthTACourseModel,
+  OAuthUserModel,
 } from '@koh/common';
 import {
   Body,
@@ -15,7 +18,9 @@ import {
   Req,
   Res,
   UnauthorizedException,
+  HttpException,
   UseGuards,
+  HttpStatus,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -26,6 +31,7 @@ import { Connection } from 'typeorm';
 import { NonProductionGuard } from '../guards/non-production.guard';
 import { LoginCourseService } from './login-course.service';
 import axios from 'axios';
+import { request } from 'http';
 
 @Controller()
 export class LoginController {
@@ -43,62 +49,74 @@ export class LoginController {
   ): Promise<OAuthAccessTokensResponse> {
     const authCode = body.code;
     const challenge = body.verifier;
-    const token = await axios.post(
-      `http://localhost:8000/api/oauth/token?client_id=f7af86112c35ba004b25&client_secret=ZJMPI4JXIJRSOG4D&grant_type=authorization_code&redirect_uri=http://localhost:3000/oauth&code=${authCode}&scopes=user.info&scopes=ta.info&scopes=student.courses&verifier=${challenge}`,
-    );
-    if (token.status != 200) {
-      return null;
-    }
-    const tokens = {
-      access: token.data.access,
-      refresh: token.data.refresh,
-    };
-    res.json(tokens);
-    return tokens;
+    const token = axios
+      .post(
+        `http://localhost:8000/api/oauth/token?client_id=f7af86112c35ba004b25&client_secret=ZJMPI4JXIJRSOG4D&grant_type=authorization_code&redirect_uri=http://localhost:3000/oauth&code=${authCode}&scopes=user.info&scopes=ta.info&scopes=student.courses&verifier=${challenge}`,
+      )
+      .then((token) => {
+        const tokens = {
+          access: token.data.access,
+          refresh: token.data.refresh,
+        };
+        res.json(tokens);
+        return tokens;
+      })
+      .catch(() => {
+        throw new HttpException(
+          ERROR_MESSAGES.loginController.unableToGetAccessToken,
+          HttpStatus.BAD_REQUEST,
+        );
+      });
+    return token;
   }
 
   @Post('/oauth/tokens/refresh')
   async refreshAccessTokens(
     @Res() res: Response,
-    @Body() body: RefreshTokenRequest,
-  ): Promise<AccessTokenRequest> {
+    @Body() body: RefreshToken,
+  ): Promise<AccessToken> {
     const refreshToken = body.refresh;
-    const token = await axios
+    const token = axios
       .get(
         `http://localhost:8000/api/oauth/token/refresh?client_id=f7af86112c35ba004b25&client_secret=ZJMPI4JXIJRSOG4D&refresh_token=${refreshToken}&grant_type=refresh_token&scopes=user.info&scopes=ta.info&scopes=student.courses`,
       )
+      .then((token) => {
+        const tokens = {
+          access: token.data.access,
+        };
+        res.json(tokens);
+        return tokens;
+      })
       .catch(() => {
-        return null;
+        throw new HttpException(
+          ERROR_MESSAGES.loginController.unabletoRefreshAccessToken,
+          HttpStatus.BAD_REQUEST,
+        );
       });
-    if (token === null) {
-      res.json({
-        'OAuth Error': 'Error occurred while trying to refresh access token.',
-      });
-    } else {
-      const tokens = {
-        access: token.data.access,
-      };
-      res.json(tokens);
-      return tokens;
-    }
+    return token;
   }
 
   @Post('/oauth/user')
   async getUser(
     @Res() res: Response,
-    @Body() body: AccessTokenRequest,
+    @Body() body: AccessToken,
   ): Promise<void> {
     let authorizationToken = 'Bearer ' + body.access;
-    const request = await axios.get(
-      `http://localhost:8000/api/oauth/userinfo/read/`,
-      {
-        headers: {
-          Authorization: authorizationToken,
+    let request;
+    try {
+      request = await axios.get(
+        `http://localhost:8000/api/oauth/userinfo/read/`,
+        {
+          headers: {
+            Authorization: authorizationToken,
+          },
         },
-      },
-    );
-    if (request.status !== 200) {
-      return null;
+      );
+    } catch (err) {
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.unabletToGetUserInfo,
+        HttpStatus.BAD_REQUEST,
+      );
     }
     let khouryData = {
       first_name: request.data.firstname,
@@ -114,56 +132,24 @@ export class LoginController {
     // this is a student signing in so get the students list of courses
     if (khouryData.accountType.includes('student')) {
       console.log("Getting student's list of courses");
+      // Return a student's list of courses
     }
 
-    // Get the logging in user's ta courses if they are a TA. I think either an instructor or student can have this?
-    const taRequest = await axios.get(
-      `http://localhost:8000/api/oauth/tainfo/read/`,
-      {
-        headers: {
-          Authorization: authorizationToken,
-        },
-      },
-    );
-
-    if (taRequest.status !== 200) {
-      return null;
-    }
-
-    if (taRequest.data.is_ta === true) {
-      console.log('Account is a TA');
-      for (const course of taRequest.data.courses) {
-        console.log(course);
-        khouryData.ta_courses.push({
-          course: course.course,
-          semester: course.semester,
-        });
-      }
-    }
+    // gets the logging in student list of courses they TA if they are a TA
+    khouryData.ta_courses = await this.getTACourses(authorizationToken);
 
     let user;
     try {
       user = await this.loginCourseService.addUserFromKhoury(khouryData);
     } catch (e) {
       Sentry.captureException(e);
-      console.error('Khoury login threw an exception, the body was ', body);
+      console.error(
+        'Khoury login threw an exception, the body was ',
+        khouryData,
+      );
       throw e;
     }
-
-    // Create temporary login token to send user to.
-    const token = await this.jwtService.signAsync(
-      { userId: user.id },
-      { expiresIn: 60 },
-    );
-
-    const isVerified = await this.jwtService.verifyAsync(token);
-
-    if (!isVerified) {
-      throw new UnauthorizedException();
-    }
-
-    const payload = this.jwtService.decode(token) as { userId: number };
-    this.enter(res, payload.userId);
+    this.createUserToken(user.id, res);
   }
 
   // TODO: Remove this endpoint
@@ -259,5 +245,59 @@ export class LoginController {
     res
       .clearCookie('auth_token', { httpOnly: true, secure: isSecure })
       .redirect(302, '/login');
+  }
+
+  private async getStudentCourses(accessToken: string) {
+    // TODO: Make a request to get the logged in user's courses
+  }
+
+  private async getTACourses(
+    accessToken: string,
+  ): Promise<OAuthTACourseModel[]> {
+    let taRequest;
+
+    let courses = [];
+    // Get the logging in user's ta courses if they are a TA. I think either an instructor or student can have this?
+    try {
+      taRequest = await axios.get(
+        `http://localhost:8000/api/oauth/tainfo/read/`,
+        {
+          headers: {
+            Authorization: accessToken,
+          },
+        },
+      );
+    } catch (err) {
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.unableToGetTaInfo,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if (taRequest.data.is_ta === true) {
+      for (const course of taRequest.data.courses) {
+        console.log(course);
+        courses.push({
+          course: course.course,
+          semester: course.semester,
+          campus: course.campus,
+        });
+      }
+    }
+    console.log(courses);
+    return courses;
+  }
+
+  private async createUserToken(userId: string, res: Response) {
+    // Create temporary login token to send user to.
+    const token = await this.jwtService.signAsync(
+      { userId: userId },
+      { expiresIn: 60 },
+    );
+    const isVerified = await this.jwtService.verifyAsync(token);
+    if (!isVerified) {
+      throw new UnauthorizedException();
+    }
+    const payload = this.jwtService.decode(token) as { userId: number };
+    this.enter(res, payload.userId);
   }
 }

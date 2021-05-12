@@ -10,7 +10,6 @@ import {
   IsNumber,
   IsObject,
   IsOptional,
-  isString,
   IsString,
   ValidateIf,
 } from "class-validator";
@@ -336,12 +335,12 @@ export class OAuthAccessTokensResponse {
   refresh!: string;
 }
 
-export class AccessTokenRequest {
+export class AccessToken {
   @IsString()
   access!: string;
 }
 
-export class RefreshTokenRequest {
+export class RefreshToken {
   @IsString()
   refresh!: string;
 }
@@ -354,6 +353,7 @@ export class OAuthAccessTokensRequest {
   verifier!: string;
 }
 
+// TODO: Remove this model
 export class OAuthUserInfoResponse {
   @IsString()
   firstName!: string;
@@ -368,6 +368,7 @@ export class OAuthUserInfoResponse {
   // add photo url
 }
 
+// TODO: Remove this model
 export class OAuthTACourseModel {
   @IsString()
   course!: string;
@@ -379,12 +380,42 @@ export class OAuthTACourseModel {
   campus!: string;
 }
 
+// TODO: Remove this model
 export class OAuthTaInfoResponse {
   @IsBoolean()
   isTa!: boolean;
 
   @IsArray()
   courses!: [OAuthTACourseModel];
+}
+
+export class OAuthUserModel {
+  @IsString()
+  email!: string;
+
+  @IsString()
+  first_name!: string;
+
+  @IsString()
+  last_name!: string;
+
+  @IsInt()
+  campus!: string;
+
+  @IsOptional()
+  @IsString()
+  photo_url!: string;
+
+  @IsOptional()
+  @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
+  courses!: KhouryStudentCourse[];
+
+  @IsOptional()
+  @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
+  ta_courses!: KhouryTACourse[];
+
+  @IsArray()
+  accountType!: string[];
 }
 
 export class KhouryDataParams {
@@ -842,6 +873,10 @@ export const ERROR_MESSAGES = {
   },
   loginController: {
     receiveDataFromKhoury: "Invalid request signature",
+    unableToGetAccessToken: "Unable to retrieve access token",
+    unabletoRefreshAccessToken: "Unable to refresh access token",
+    unabletToGetUserInfo: "Unable to get user data",
+    unableToGetTaInfo: "Unable to get TA data",
   },
   notificationController: {
     messageNotFromTwilio: "Message not from Twilio",

@@ -6,7 +6,6 @@ import { User } from "@koh/common";
 import Router from "next/router";
 import { useProfile } from "../hooks/useProfile";
 import { useSaveStateChallenge } from "../hooks/useSaveStateChallenge";
-import { useLocalStorage } from "../hooks/useLocalStorage";
 let forge = require("node-forge");
 const isWindow = typeof window !== "undefined";
 
