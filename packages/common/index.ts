@@ -10,6 +10,7 @@ import {
   IsNumber,
   IsObject,
   IsOptional,
+  isString,
   IsString,
   ValidateIf,
 } from "class-validator";
@@ -326,6 +327,65 @@ export type PhoneNotifBody = {
 
 // Office Hours Response Types
 export class GetProfileResponse extends User {}
+
+export class OAuthAccessTokensResponse {
+  @IsString()
+  access!: string;
+
+  @IsString()
+  refresh!: string;
+}
+
+export class AccessTokenRequest {
+  @IsString()
+  access!: string;
+}
+
+export class RefreshTokenRequest {
+  @IsString()
+  refresh!: string;
+}
+
+export class OAuthAccessTokensRequest {
+  @IsString()
+  code!: string;
+
+  @IsString()
+  verifier!: string;
+}
+
+export class OAuthUserInfoResponse {
+  @IsString()
+  firstName!: string;
+  @IsString()
+  lastName!: string;
+  @IsString()
+  email!: string;
+  @IsInt()
+  campus!: number;
+  @IsArray()
+  accountType!: string[];
+  // add photo url
+}
+
+export class OAuthTACourseModel {
+  @IsString()
+  course!: string;
+
+  @IsString()
+  semester!: string;
+
+  @IsString()
+  campus!: string;
+}
+
+export class OAuthTaInfoResponse {
+  @IsBoolean()
+  isTa!: boolean;
+
+  @IsArray()
+  courses!: [OAuthTACourseModel];
+}
 
 export class KhouryDataParams {
   @IsString()

@@ -27,6 +27,12 @@ import {
   DateRangeType,
   SubmitCourseParams,
   SemesterPartial,
+  OAuthAccessTokensResponse,
+  OAuthUserInfoResponse,
+  OAuthAccessTokensRequest,
+  AccessTokenRequest,
+  KhouryRedirectResponse,
+  RefreshTokenRequest,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -228,7 +234,28 @@ class APIClient {
       this.req("PATCH", `/api/v1/alerts/${alertId}`);
     },
   };
-
+  oauth = {
+    tokens: async (
+      param: OAuthAccessTokensRequest
+    ): Promise<OAuthAccessTokensResponse> =>
+      this.req(
+        "POST",
+        `/api/v1/oauth/tokens`,
+        OAuthAccessTokensResponse,
+        param
+      ),
+    renewToken: async (
+      param: RefreshTokenRequest
+    ): Promise<AccessTokenRequest> =>
+      this.req(
+        "POST",
+        "/api/v1/oauth/tokens/refresh",
+        AccessTokenRequest,
+        param
+      ),
+    userInfo: async (param: AccessTokenRequest): Promise<void> =>
+      this.req("POST", `/api/v1/oauth/user`, undefined, param),
+  };
   constructor(baseURL = "") {
     this.axios = Axios.create({ baseURL: baseURL });
   }
