@@ -327,6 +327,10 @@ export type PhoneNotifBody = {
 // Office Hours Response Types
 export class GetProfileResponse extends User {}
 
+/**
+ * @param access - represents an access token that can be used to get data from the Khoury Admin OAuth routes
+ * @param refresh - represents a refresh token that can be used to get new access tokens once the access token expires
+ */
 export class OAuthAccessTokensResponse {
   @IsString()
   access!: string;
@@ -335,16 +339,26 @@ export class OAuthAccessTokensResponse {
   refresh!: string;
 }
 
+/**
+ * @param access - represents an access token that can be used to get data from the Khoury Admin OAuth routes
+ */
 export class AccessToken {
   @IsString()
   access!: string;
 }
 
+/**
+ * @param refresh - represents a refresh token that can be used to get new access tokens once the access token expires
+ */
 export class RefreshToken {
   @IsString()
   refresh!: string;
 }
 
+/**
+ * @param code - represents the authorization code that can be used to request access/refresh tokens for a user from the OAuth server
+ * @param verifier - represents the SHA-256 verifier that was passed in the initial OAuth flow
+ */
 export class OAuthAccessTokensRequest {
   @IsString()
   code!: string;
@@ -387,35 +401,6 @@ export class OAuthTaInfoResponse {
 
   @IsArray()
   courses!: [OAuthTACourseModel];
-}
-
-export class OAuthUserModel {
-  @IsString()
-  email!: string;
-
-  @IsString()
-  first_name!: string;
-
-  @IsString()
-  last_name!: string;
-
-  @IsInt()
-  campus!: string;
-
-  @IsOptional()
-  @IsString()
-  photo_url!: string;
-
-  @IsOptional()
-  @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
-  courses!: KhouryStudentCourse[];
-
-  @IsOptional()
-  @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
-  ta_courses!: KhouryTACourse[];
-
-  @IsArray()
-  accountType!: string[];
 }
 
 export class KhouryDataParams {
@@ -877,6 +862,7 @@ export const ERROR_MESSAGES = {
     unabletoRefreshAccessToken: "Unable to refresh access token",
     unabletToGetUserInfo: "Unable to get user data",
     unableToGetTaInfo: "Unable to get TA data",
+    officeHourUserDataError: "Unable to get a user's office hour account",
   },
   notificationController: {
     messageNotFromTwilio: "Message not from Twilio",

@@ -7,7 +7,6 @@ import {
   AccessToken,
   ERROR_MESSAGES,
   OAuthTACourseModel,
-  OAuthUserModel,
 } from '@koh/common';
 import {
   Body,
@@ -31,7 +30,6 @@ import { Connection } from 'typeorm';
 import { NonProductionGuard } from '../guards/non-production.guard';
 import { LoginCourseService } from './login-course.service';
 import axios from 'axios';
-import { request } from 'http';
 
 @Controller()
 export class LoginController {
@@ -49,6 +47,9 @@ export class LoginController {
   ): Promise<OAuthAccessTokensResponse> {
     const authCode = body.code;
     const challenge = body.verifier;
+    const isSecure = this.configService
+      .get<string>('DOMAIN')
+      .startsWith('https://');
     const token = axios
       .post(
         `http://localhost:8000/api/oauth/token?client_id=f7af86112c35ba004b25&client_secret=ZJMPI4JXIJRSOG4D&grant_type=authorization_code&redirect_uri=http://localhost:3000/oauth&code=${authCode}&scopes=user.info&scopes=ta.info&scopes=student.courses&verifier=${challenge}`,
@@ -58,6 +59,14 @@ export class LoginController {
           access: token.data.access,
           refresh: token.data.refresh,
         };
+        res.cookie('oauth_access', tokens.access, {
+          httpOnly: true,
+          secure: isSecure,
+        });
+        res.cookie('oauth_refresh', tokens.refresh, {
+          httpOnly: true,
+          secure: isSecure,
+        });
         res.json(tokens);
         return tokens;
       })
@@ -100,7 +109,12 @@ export class LoginController {
   async getUser(
     @Res() res: Response,
     @Body() body: AccessToken,
+    @Req() req: Request,
   ): Promise<void> {
+    console.log(
+      '!!!!!!!!!!!!! THE NEXT LINE TO PRINT IS THE COOKIES !!!!!!!!!!',
+    );
+    console.log(req.cookies);
     let authorizationToken = 'Bearer ' + body.access;
     let request;
     try {
@@ -138,18 +152,16 @@ export class LoginController {
     // gets the logging in student list of courses they TA if they are a TA
     khouryData.ta_courses = await this.getTACourses(authorizationToken);
 
-    let user;
-    try {
-      user = await this.loginCourseService.addUserFromKhoury(khouryData);
-    } catch (e) {
-      Sentry.captureException(e);
-      console.error(
-        'Khoury login threw an exception, the body was ',
-        khouryData,
-      );
-      throw e;
-    }
-    this.createUserToken(user.id, res);
+    this.signInToOfficeHoursUser(khouryData)
+      .then((id) => {
+        this.createUserToken(id, res);
+      })
+      .catch(() => {
+        throw new HttpException(
+          ERROR_MESSAGES.loginController.officeHourUserDataError,
+          HttpStatus.BAD_REQUEST,
+        );
+      });
   }
 
   // TODO: Remove this endpoint
@@ -299,5 +311,19 @@ export class LoginController {
     }
     const payload = this.jwtService.decode(token) as { userId: number };
     this.enter(res, payload.userId);
+  }
+
+  private async signInToOfficeHoursUser(
+    data: KhouryDataParams,
+  ): Promise<string> {
+    let user;
+    try {
+      user = await this.loginCourseService.addUserFromKhoury(data);
+    } catch (e) {
+      Sentry.captureException(e);
+      console.error('Khoury login threw an exception, the body was ', data);
+      throw e;
+    }
+    return user.id;
   }
 }

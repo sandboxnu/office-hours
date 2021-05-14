@@ -531,4 +531,6 @@ describe('Login Integration', () => {
       expect(res.get('Set-Cookie')[0]).toContain('auth_token=;');
     });
   });
+
+  describe('POST /oauth/tokens', () => {});
 });
