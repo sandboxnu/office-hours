@@ -795,6 +795,9 @@ export const ERROR_MESSAGES = {
       taHelpingOther: "TA is already helping someone else",
       loginUserCantEdit: "Logged-in user does not have edit access",
     },
+    saveQError: "Unable to save a question",
+    notFound: "Question not found",
+    unableToNotifyUser: "Unable to notify user",
   },
   loginController: {
     receiveDataFromKhoury: "Invalid request signature",
