@@ -10,6 +10,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   NotFoundException,
   Param,
   Patch,
@@ -47,6 +49,14 @@ export class ProfileController {
     @User(['courses', 'courses.course', 'phoneNotif', 'desktopNotifs'])
     user: UserModel,
   ): Promise<GetProfileResponse> {
+    if (user === null || user === undefined) {
+      console.error(ERROR_MESSAGES.profileController.accountNotAvailable);
+      throw new HttpException(
+        ERROR_MESSAGES.profileController.accountNotAvailable,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     const courses = user.courses
       .filter((userCourse) => userCourse.course.enabled)
       .map((userCourse) => {
@@ -79,6 +89,15 @@ export class ProfileController {
       'phoneNotifsEnabled',
       'insights',
     ]);
+
+    if (userResponse === null || userResponse === undefined) {
+      console.error(ERROR_MESSAGES.profileController.userResponseNotFound);
+      throw new HttpException(
+        ERROR_MESSAGES.profileController.userResponseNotFound,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     return {
       ...userResponse,
       courses,

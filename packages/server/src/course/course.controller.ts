@@ -18,6 +18,8 @@ import {
   Delete,
   ForbiddenException,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   Post,
   Query,
@@ -70,13 +72,51 @@ export class CourseController {
       relations: ['queues', 'queues.staffList'],
     });
 
+    if (course === null || course === undefined) {
+      console.error(
+        ERROR_MESSAGES.courseController.courseNotFound + 'Course ID: ' + id,
+      );
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.courseNotFound,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     // Use raw query for performance (avoid entity instantiation and serialization)
-    course.officeHours = await getRepository(OfficeHourModel)
-      .createQueryBuilder('oh')
-      .select(['id', 'title', `"startTime"`, `"endTime"`])
-      .where('oh.courseId = :courseId', { courseId: course.id })
-      .getRawMany();
-    course.heatmap = await this.heatmapService.getCachedHeatmapFor(id);
+
+    try {
+      course.officeHours = await getRepository(OfficeHourModel)
+        .createQueryBuilder('oh')
+        .select(['id', 'title', `"startTime"`, `"endTime"`])
+        .where('oh.courseId = :courseId', { courseId: course.id })
+        .getRawMany();
+    } catch (err) {
+      console.error(
+        ERROR_MESSAGES.courseController.courseOfficeHourError +
+          '\n' +
+          'Error message: ' +
+          err,
+      );
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.courseOfficeHourError,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    try {
+      course.heatmap = await this.heatmapService.getCachedHeatmapFor(id);
+    } catch (err) {
+      console.error(
+        ERROR_MESSAGES.courseController.courseOfficeHourError +
+          '\n' +
+          'Error message: ' +
+          err,
+      );
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.courseHeatMapError,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
 
     const userCourseModel = await UserCourseModel.findOne({
       where: {
@@ -84,6 +124,13 @@ export class CourseController {
         courseId: id,
       },
     });
+
+    if (userCourseModel === undefined || userCourseModel === null) {
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.courseModelError,
+        HttpStatus.NOT_FOUND,
+      );
+    }
 
     if (userCourseModel.role === Role.PROFESSOR) {
       course.queues = await async.filter(
@@ -97,10 +144,23 @@ export class CourseController {
       );
     }
 
-    await async.each(course.queues, async (q) => {
-      await q.addQueueTimes();
-      await q.addQueueSize();
-    });
+    try {
+      await async.each(course.queues, async (q) => {
+        await q.addQueueTimes();
+        await q.addQueueSize();
+      });
+    } catch (err) {
+      console.error(
+        ERROR_MESSAGES.courseController.updatedQueueError +
+          '\n' +
+          'Error message: ' +
+          err,
+      );
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.updatedQueueError,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
 
     return course;
   }
@@ -121,10 +181,14 @@ export class CourseController {
       relations: ['staffList'],
     });
 
-    if (queues.some((q) => q.staffList.some((staff) => staff.id === user.id))) {
-      throw new UnauthorizedException(
-        ERROR_MESSAGES.courseController.checkIn.cannotCheckIntoMultipleQueues,
-      );
+    if (queues) {
+      if (
+        queues.some((q) => q.staffList.some((staff) => staff.id === user.id))
+      ) {
+        throw new UnauthorizedException(
+          ERROR_MESSAGES.courseController.checkIn.cannotCheckIntoMultipleQueues,
+        );
+      }
     }
 
     let queue = await QueueModel.findOne(
@@ -142,6 +206,13 @@ export class CourseController {
           courseId,
         },
       });
+
+      if (userCourseModel === null || userCourseModel === undefined) {
+        throw new HttpException(
+          ERROR_MESSAGES.courseController.courseModelError,
+          HttpStatus.NOT_FOUND,
+        );
+      }
 
       if (userCourseModel.role === Role.PROFESSOR) {
         queue = await QueueModel.create({
@@ -164,16 +235,52 @@ export class CourseController {
     }
 
     queue.staffList.push(user);
-    await queue.save();
+    try {
+      await queue.save();
+    } catch (err) {
+      console.error(
+        ERROR_MESSAGES.courseController.saveQueueError +
+          '\nError message: ' +
+          err,
+      );
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.saveQueueError,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
 
-    await EventModel.create({
-      time: new Date(),
-      eventType: EventType.TA_CHECKED_IN,
-      user,
-      courseId,
-    }).save();
+    try {
+      await EventModel.create({
+        time: new Date(),
+        eventType: EventType.TA_CHECKED_IN,
+        user,
+        courseId,
+      }).save();
+    } catch (err) {
+      console.error(
+        ERROR_MESSAGES.courseController.createEventError +
+          '\nError message: ' +
+          err,
+      );
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.createEventError,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
 
-    await this.queueSSEService.updateQueue(queue.id);
+    try {
+      await this.queueSSEService.updateQueue(queue.id);
+    } catch (err) {
+      console.error(
+        ERROR_MESSAGES.courseController.createEventError +
+          '\nError message: ' +
+          err,
+      );
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.updatedQueueError,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
     return queue;
   }
 
@@ -192,20 +299,62 @@ export class CourseController {
       },
       { relations: ['staffList'] },
     );
+
+    if (queue === undefined || queue === null) {
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.queueNotFound,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
     if (queue.staffList.length === 0) {
       queue.allowQuestions = false;
     }
-    await queue.save();
+    try {
+      await queue.save();
+    } catch (err) {
+      console.error(
+        ERROR_MESSAGES.courseController.saveQueueError +
+          '\nError Message: ' +
+          err,
+      );
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.saveQueueError,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
 
-    await EventModel.create({
-      time: new Date(),
-      eventType: EventType.TA_CHECKED_OUT,
-      user,
-      courseId,
-    }).save();
+    try {
+      await EventModel.create({
+        time: new Date(),
+        eventType: EventType.TA_CHECKED_OUT,
+        user,
+        courseId,
+      }).save();
+    } catch (err) {
+      console.error(
+        ERROR_MESSAGES.courseController.createEventError +
+          '\nError message: ' +
+          err,
+      );
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.createEventError,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+    let canClearQueue = null;
 
-    const canClearQueue = await this.queueCleanService.shouldCleanQueue(queue);
+    try {
+      canClearQueue = await this.queueCleanService.shouldCleanQueue(queue);
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.clearQueueError,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
     let nextOfficeHourTime = null;
 
     // find out how long until next office hour
@@ -219,7 +368,19 @@ export class CourseController {
       });
       nextOfficeHourTime = nextOfficeHour?.startTime;
     }
-    await this.queueSSEService.updateQueue(queue.id);
+    try {
+      await this.queueSSEService.updateQueue(queue.id);
+    } catch (err) {
+      console.error(
+        ERROR_MESSAGES.courseController.createEventError +
+          '\nError message: ' +
+          err,
+      );
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.updatedQueueError,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
     return { queueId: queue.id, canClearQueue, nextOfficeHourTime };
   }
 
@@ -228,7 +389,21 @@ export class CourseController {
   @Roles(Role.PROFESSOR)
   async updateCalendar(@Param('id') courseId: number): Promise<void> {
     const course = await CourseModel.findOne(courseId);
-    await this.icalService.updateCalendarForCourse(course);
+    if (course === null || course === undefined) {
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.courseNotFound,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    try {
+      await this.icalService.updateCalendarForCourse(course);
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.icalCalendarUpdate,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Get(':id/course_override')
@@ -241,6 +416,14 @@ export class CourseController {
       where: { courseId, override: true },
       relations: ['user'],
     });
+
+    if (resp === null || resp === undefined) {
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.courseModelError,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     return {
       data: resp.map((row) => ({
         id: row.id,
@@ -270,16 +453,32 @@ export class CourseController {
       where: { courseId, userId },
     });
     if (!userCourse) {
-      userCourse = await UserCourseModel.create({
-        userId,
-        courseId,
-        role: overrideInfo.role,
-        override: true,
-      }).save();
+      try {
+        userCourse = await UserCourseModel.create({
+          userId,
+          courseId,
+          role: overrideInfo.role,
+          override: true,
+        }).save();
+      } catch (err) {
+        console.error(err);
+        throw new HttpException(
+          ERROR_MESSAGES.courseController.createCourse,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     } else {
       userCourse.override = true;
       userCourse.role = overrideInfo.role;
-      await userCourse.save();
+      try {
+        await userCourse.save();
+      } catch (err) {
+        console.error(err);
+        throw new HttpException(
+          ERROR_MESSAGES.courseController.updateCourse,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
     return {
       id: userCourse.id,
@@ -307,7 +506,21 @@ export class CourseController {
     const userCourse = await UserCourseModel.findOne({
       where: { courseId, userId, override: true },
     });
-    await UserCourseModel.remove(userCourse);
+    if (!userCourse) {
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.courseNotFound,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    try {
+      await UserCourseModel.remove(userCourse);
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.removeCourse,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post('submit_course')
@@ -329,25 +542,42 @@ export class CourseController {
         ERROR_MESSAGES.courseController.noSemesterFound,
       );
 
-    // create the submitted course
-    const course = await CourseModel.create({
-      name: body.name,
-      coordinator_email: body.coordinator_email,
-      icalURL: body.icalURL,
-      semesterId: semester.id,
-      enabled: false,
-      pending: true,
-      timezone: body.timezone,
-    }).save();
-
-    // create CourseSectionMappings for each unique submitted section number
-    new Set(body.sections).forEach(async (section) => {
-      await CourseSectionMappingModel.create({
-        genericCourseName: body.name,
-        section,
-        courseId: course.id,
+    let course = null;
+    try {
+      // create the submitted course
+      course = await CourseModel.create({
+        name: body.name,
+        coordinator_email: body.coordinator_email,
+        icalURL: body.icalURL,
+        semesterId: semester.id,
+        enabled: false,
+        pending: true,
+        timezone: body.timezone,
       }).save();
-    });
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.createCourse,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    try {
+      // create CourseSectionMappings for each unique submitted section number
+      new Set(body.sections).forEach(async (section) => {
+        await CourseSectionMappingModel.create({
+          genericCourseName: body.name,
+          section,
+          courseId: course.id,
+        }).save();
+      });
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.createCourseMappings,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Get(':id/ta_check_in_times')
@@ -358,10 +588,18 @@ export class CourseController {
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
   ): Promise<TACheckinTimesResponse> {
-    return await this.courseService.getTACheckInCheckOutTimes(
-      courseId,
-      startDate,
-      endDate,
-    );
+    try {
+      return await this.courseService.getTACheckInCheckOutTimes(
+        courseId,
+        startDate,
+        endDate,
+      );
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.checkInTime,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }
