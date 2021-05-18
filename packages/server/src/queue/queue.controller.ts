@@ -11,7 +11,6 @@ import {
   Controller,
   Get,
   HttpException,
-  HttpService,
   HttpStatus,
   NotFoundException,
   Param,
