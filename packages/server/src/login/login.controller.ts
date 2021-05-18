@@ -85,6 +85,9 @@ export class LoginController {
     @Body() body: RefreshToken,
   ): Promise<AccessToken> {
     const refreshToken = body.refresh;
+    const isSecure = this.configService
+      .get<string>('DOMAIN')
+      .startsWith('https://');
     const token = axios
       .get(
         `http://localhost:8000/api/oauth/token/refresh?client_id=f7af86112c35ba004b25&client_secret=ZJMPI4JXIJRSOG4D&refresh_token=${refreshToken}&grant_type=refresh_token&scopes=user.info&scopes=ta.info&scopes=student.courses`,
@@ -93,6 +96,10 @@ export class LoginController {
         const tokens = {
           access: token.data.access,
         };
+        res.cookie('oauth_access', tokens.access, {
+          httpOnly: true,
+          secure: isSecure,
+        });
         res.json(tokens);
         return tokens;
       })
@@ -111,10 +118,6 @@ export class LoginController {
     @Body() body: AccessToken,
     @Req() req: Request,
   ): Promise<void> {
-    console.log(
-      '!!!!!!!!!!!!! THE NEXT LINE TO PRINT IS THE COOKIES !!!!!!!!!!',
-    );
-    console.log(req.cookies);
     let authorizationToken = 'Bearer ' + body.access;
     let request;
     try {

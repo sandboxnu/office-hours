@@ -532,5 +532,16 @@ describe('Login Integration', () => {
     });
   });
 
-  describe('POST /oauth/tokens', () => {});
+  describe('POST /oauth/tokens/refresh', () => {
+    it('returns a new valid access token if the current one is expired', async () => {
+      const token = await mockJWT.signAsync({
+        scopes: ['user.info'],
+        user: 'jtavera235',
+      });
+      const body = {
+        refresh: token,
+      };
+      await supertest().post(`/oauth/tokens/refresh`).send(body).expect(200);
+    });
+  });
 });
