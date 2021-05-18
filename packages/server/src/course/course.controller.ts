@@ -181,14 +181,13 @@ export class CourseController {
       relations: ['staffList'],
     });
 
-    if (queues) {
-      if (
-        queues.some((q) => q.staffList.some((staff) => staff.id === user.id))
-      ) {
-        throw new UnauthorizedException(
-          ERROR_MESSAGES.courseController.checkIn.cannotCheckIntoMultipleQueues,
-        );
-      }
+    if (
+      queues &&
+      queues.some((q) => q.staffList.some((staff) => staff.id === user.id))
+    ) {
+      throw new UnauthorizedException(
+        ERROR_MESSAGES.courseController.checkIn.cannotCheckIntoMultipleQueues,
+      );
     }
 
     let queue = await QueueModel.findOne(
