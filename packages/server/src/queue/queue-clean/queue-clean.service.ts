@@ -11,6 +11,7 @@ import { Connection, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { QuestionModel } from '../../question/question.entity';
 import { QueueModel } from '../queue.entity';
 import moment = require('moment');
+import async from 'async';
 
 /**
  * Clean the queue and mark stale
@@ -32,9 +33,8 @@ export class QueueCleanService {
       })
       .getMany();
 
-    await Promise.all(
-      queuesWithOpenQuestions.map((queue) => this.cleanQueue(queue.id)),
-    );
+    // Queue clean 1 at a time
+    await async.mapLimit(queuesWithOpenQuestions, 1, (queue) => this.cleanQueue(queue.id));
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_3AM)
