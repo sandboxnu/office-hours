@@ -1,7 +1,8 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class DesktopNotifCreatedAtAndName1601671992912
-  implements MigrationInterface {
+  implements MigrationInterface
+{
   name = 'DesktopNotifCreatedAtAndName1601671992912';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
