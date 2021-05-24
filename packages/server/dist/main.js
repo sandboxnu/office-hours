@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"3ac58bc83c9d6840a0ad776b377f24cf1dc12343"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"291440cb51fef60f525372e96e58b901478f77cf"};
 
 /***/ }),
 /* 2 */
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "3ac58bc83c9d6840a0ad776b377f24cf1dc12343",
+        release: "291440cb51fef60f525372e96e58b901478f77cf",
         environment: common_1.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -795,8 +795,24 @@ exports.ERROR_MESSAGES = {
             cannotCreateNewQueueIfNotProfessor: "You can't create a new queue if you're not a professor",
             cannotCheckIntoMultipleQueues: "Cannot check into multiple queues at the same time",
         },
+        courseNotFound: "The course was not found",
+        courseOfficeHourError: "Unable to find a course's office hours",
+        courseHeatMapError: "Unable to get course's cached heatmap",
+        courseModelError: "Course Model not found",
         noUserFound: "No user found with given email",
         noSemesterFound: "No semester exists for the submitted course",
+        updatedQueueError: "Error updating a course queue",
+        queuesNotFound: "Queues not found",
+        queueNotFound: "Queue not found",
+        saveQueueError: "Unable to save queue",
+        clearQueueError: "Unable to determine if queue can be cleared",
+        createEventError: "An error occurred while creating an event",
+        icalCalendarUpdate: "Unable to update calendar",
+        checkInTime: "Unable to get TA check in times",
+        removeCourse: "Error occurred while trying to remove a course",
+        createCourse: "Error occurred while trying to create a course",
+        updateCourse: "Error occurred while trying to update a course",
+        createCourseMappings: "Unable to create a course mappings",
         invalidApplyURL: "You are unauthorized to submit an application. Please email help@khouryofficehours.com for the correct URL.",
     },
     questionController: {
@@ -814,9 +830,15 @@ exports.ERROR_MESSAGES = {
             taHelpingOther: "TA is already helping someone else",
             loginUserCantEdit: "Logged-in user does not have edit access",
         },
+        saveQError: "Unable to save a question",
+        notFound: "Question not found",
+        unableToNotifyUser: "Unable to notify user",
     },
     loginController: {
         receiveDataFromKhoury: "Invalid request signature",
+        invalidPayload: "The decoded JWT payload is invalid",
+        invalidTempJWTToken: "Error occurred while signing a JWT token",
+        addUserFromKhoury: "Error occurred while translating account from Khoury to Office Hours",
     },
     notificationController: {
         messageNotFromTwilio: "Message not from Twilio",
@@ -828,6 +850,12 @@ exports.ERROR_MESSAGES = {
         questionNotFound: "Question not found",
         queueOfQuestionNotFound: "Cannot find queue of question",
         queueDoesNotExist: "This queue does not exist!",
+    },
+    queueController: {
+        getQueue: "An error occurred while trying to retrieve a Queue",
+        getQuestions: "Unable to get questions from queue",
+        saveQueue: "Unable to save queue",
+        cleanQueue: "Unable to clean queue",
     },
     queueRoleGuard: {
         queueNotFound: "Queue not found",
@@ -846,6 +874,8 @@ exports.ERROR_MESSAGES = {
         mustBeRoleToJoinCourse: (roles) => `You must have one of roles [${roles.join(", ")}] to access this course`,
     },
     profileController: {
+        accountNotAvailable: "The user account is undefined",
+        userResponseNotFound: "The user response was not found",
         noDiskSpace: "There is no disk space left to store an image. Please immediately contact your course staff and let them know. They will contact the Khoury Office Hours team as soon as possible.",
     },
     alertController: {
@@ -4147,11 +4177,23 @@ let QueueController = class QueueController {
         this.queueService = queueService;
     }
     async getQueue(queueId) {
-        return this.queueService.getQueue(queueId);
+        try {
+            return this.queueService.getQueue(queueId);
+        }
+        catch (err) {
+            console.error(err);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.queueController.getQueue, common_2.HttpStatus.NOT_FOUND);
+        }
     }
     async getQuestions(queueId, role, userId) {
-        const questions = await this.queueService.getQuestions(queueId);
-        return await this.queueService.personalizeQuestions(queueId, questions, userId, role);
+        try {
+            const questions = await this.queueService.getQuestions(queueId);
+            return await this.queueService.personalizeQuestions(queueId, questions, userId, role);
+        }
+        catch (err) {
+            console.error(err);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.queueController.getQuestions, common_2.HttpStatus.NOT_FOUND);
+        }
     }
     async updateQueue(queueId, body) {
         const queue = await this.queueService.getQueue(queueId);
@@ -4160,14 +4202,26 @@ let QueueController = class QueueController {
         }
         queue.notes = body.notes;
         queue.allowQuestions = body.allowQuestions;
-        await queue.save();
+        try {
+            await queue.save();
+        }
+        catch (err) {
+            console.error(err);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.queueController.saveQueue, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return queue;
     }
     async cleanQueue(queueId) {
-        setTimeout(async () => {
-            await this.queueCleanService.cleanQueue(queueId, true);
-            await this.queueSSEService.updateQueue(queueId);
-        });
+        try {
+            setTimeout(async () => {
+                await this.queueCleanService.cleanQueue(queueId, true);
+                await this.queueSSEService.updateQueue(queueId);
+            });
+        }
+        catch (err) {
+            console.error(err);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.queueController.cleanQueue, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     sendEvent(queueId, role, userId, res) {
         res.set({
@@ -4863,28 +4917,62 @@ let CourseController = class CourseController {
         const course = await course_entity_1.CourseModel.findOne(id, {
             relations: ['queues', 'queues.staffList'],
         });
-        course.officeHours = await typeorm_1.getRepository(office_hour_entity_1.OfficeHourModel)
-            .createQueryBuilder('oh')
-            .select(['id', 'title', `"startTime"`, `"endTime"`])
-            .where('oh.courseId = :courseId', { courseId: course.id })
-            .getRawMany();
-        course.heatmap = await this.heatmapService.getCachedHeatmapFor(id);
+        if (course === null || course === undefined) {
+            console.error(common_1.ERROR_MESSAGES.courseController.courseNotFound + 'Course ID: ' + id);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.courseNotFound, common_2.HttpStatus.NOT_FOUND);
+        }
+        try {
+            course.officeHours = await typeorm_1.getRepository(office_hour_entity_1.OfficeHourModel)
+                .createQueryBuilder('oh')
+                .select(['id', 'title', `"startTime"`, `"endTime"`])
+                .where('oh.courseId = :courseId', { courseId: course.id })
+                .getRawMany();
+        }
+        catch (err) {
+            console.error(common_1.ERROR_MESSAGES.courseController.courseOfficeHourError +
+                '\n' +
+                'Error message: ' +
+                err);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.courseOfficeHourError, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        try {
+            course.heatmap = await this.heatmapService.getCachedHeatmapFor(id);
+        }
+        catch (err) {
+            console.error(common_1.ERROR_MESSAGES.courseController.courseOfficeHourError +
+                '\n' +
+                'Error message: ' +
+                err);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.courseHeatMapError, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         const userCourseModel = await user_course_entity_1.UserCourseModel.findOne({
             where: {
                 user,
                 courseId: id,
             },
         });
+        if (userCourseModel === undefined || userCourseModel === null) {
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.courseModelError, common_2.HttpStatus.NOT_FOUND);
+        }
         if (userCourseModel.role === common_1.Role.PROFESSOR) {
             course.queues = await async_1.default.filter(course.queues, async (q) => (await q.checkIsOpen()) || q.isProfessorQueue);
         }
         else {
             course.queues = await async_1.default.filter(course.queues, async (q) => await q.checkIsOpen());
         }
-        await async_1.default.each(course.queues, async (q) => {
-            await q.addQueueTimes();
-            await q.addQueueSize();
-        });
+        try {
+            await async_1.default.each(course.queues, async (q) => {
+                await q.addQueueTimes();
+                await q.addQueueSize();
+            });
+        }
+        catch (err) {
+            console.error(common_1.ERROR_MESSAGES.courseController.updatedQueueError +
+                '\n' +
+                'Error message: ' +
+                err);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.updatedQueueError, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return course;
     }
     async checkIn(courseId, room, user) {
@@ -4894,7 +4982,8 @@ let CourseController = class CourseController {
             },
             relations: ['staffList'],
         });
-        if (queues.some((q) => q.staffList.some((staff) => staff.id === user.id))) {
+        if (queues &&
+            queues.some((q) => q.staffList.some((staff) => staff.id === user.id))) {
             throw new common_2.UnauthorizedException(common_1.ERROR_MESSAGES.courseController.checkIn.cannotCheckIntoMultipleQueues);
         }
         let queue = await queue_entity_1.QueueModel.findOne({
@@ -4908,6 +4997,9 @@ let CourseController = class CourseController {
                     courseId,
                 },
             });
+            if (userCourseModel === null || userCourseModel === undefined) {
+                throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.courseModelError, common_2.HttpStatus.NOT_FOUND);
+            }
             if (userCourseModel.role === common_1.Role.PROFESSOR) {
                 queue = await queue_entity_1.QueueModel.create({
                     room,
@@ -4926,14 +5018,38 @@ let CourseController = class CourseController {
             queue.allowQuestions = true;
         }
         queue.staffList.push(user);
-        await queue.save();
-        await event_model_entity_1.EventModel.create({
-            time: new Date(),
-            eventType: event_model_entity_1.EventType.TA_CHECKED_IN,
-            user,
-            courseId,
-        }).save();
-        await this.queueSSEService.updateQueue(queue.id);
+        try {
+            await queue.save();
+        }
+        catch (err) {
+            console.error(common_1.ERROR_MESSAGES.courseController.saveQueueError +
+                '\nError message: ' +
+                err);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.saveQueueError, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        try {
+            await event_model_entity_1.EventModel.create({
+                time: new Date(),
+                eventType: event_model_entity_1.EventType.TA_CHECKED_IN,
+                user,
+                courseId,
+            }).save();
+        }
+        catch (err) {
+            console.error(common_1.ERROR_MESSAGES.courseController.createEventError +
+                '\nError message: ' +
+                err);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.createEventError, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        try {
+            await this.queueSSEService.updateQueue(queue.id);
+        }
+        catch (err) {
+            console.error(common_1.ERROR_MESSAGES.courseController.createEventError +
+                '\nError message: ' +
+                err);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.updatedQueueError, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return queue;
     }
     async checkOut(courseId, room, user) {
@@ -4941,18 +5057,44 @@ let CourseController = class CourseController {
             room,
             courseId,
         }, { relations: ['staffList'] });
+        if (queue === undefined || queue === null) {
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.queueNotFound, common_2.HttpStatus.NOT_FOUND);
+        }
         queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
         if (queue.staffList.length === 0) {
             queue.allowQuestions = false;
         }
-        await queue.save();
-        await event_model_entity_1.EventModel.create({
-            time: new Date(),
-            eventType: event_model_entity_1.EventType.TA_CHECKED_OUT,
-            user,
-            courseId,
-        }).save();
-        const canClearQueue = await this.queueCleanService.shouldCleanQueue(queue);
+        try {
+            await queue.save();
+        }
+        catch (err) {
+            console.error(common_1.ERROR_MESSAGES.courseController.saveQueueError +
+                '\nError Message: ' +
+                err);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.saveQueueError, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        try {
+            await event_model_entity_1.EventModel.create({
+                time: new Date(),
+                eventType: event_model_entity_1.EventType.TA_CHECKED_OUT,
+                user,
+                courseId,
+            }).save();
+        }
+        catch (err) {
+            console.error(common_1.ERROR_MESSAGES.courseController.createEventError +
+                '\nError message: ' +
+                err);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.createEventError, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        let canClearQueue = null;
+        try {
+            canClearQueue = await this.queueCleanService.shouldCleanQueue(queue);
+        }
+        catch (err) {
+            console.error(err);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.clearQueueError, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         let nextOfficeHourTime = null;
         if (canClearQueue) {
             const soon = moment().add(15, 'minutes').toDate();
@@ -4964,18 +5106,38 @@ let CourseController = class CourseController {
             });
             nextOfficeHourTime = nextOfficeHour === null || nextOfficeHour === void 0 ? void 0 : nextOfficeHour.startTime;
         }
-        await this.queueSSEService.updateQueue(queue.id);
+        try {
+            await this.queueSSEService.updateQueue(queue.id);
+        }
+        catch (err) {
+            console.error(common_1.ERROR_MESSAGES.courseController.createEventError +
+                '\nError message: ' +
+                err);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.updatedQueueError, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return { queueId: queue.id, canClearQueue, nextOfficeHourTime };
     }
     async updateCalendar(courseId) {
         const course = await course_entity_1.CourseModel.findOne(courseId);
-        await this.icalService.updateCalendarForCourse(course);
+        if (course === null || course === undefined) {
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.courseNotFound, common_2.HttpStatus.NOT_FOUND);
+        }
+        try {
+            await this.icalService.updateCalendarForCourse(course);
+        }
+        catch (err) {
+            console.error(err);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.icalCalendarUpdate, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     async getCourseOverrides(courseId) {
         const resp = await user_course_entity_1.UserCourseModel.find({
             where: { courseId, override: true },
             relations: ['user'],
         });
+        if (resp === null || resp === undefined) {
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.courseModelError, common_2.HttpStatus.NOT_FOUND);
+        }
         return {
             data: resp.map((row) => ({
                 id: row.id,
@@ -4996,17 +5158,29 @@ let CourseController = class CourseController {
             where: { courseId, userId },
         });
         if (!userCourse) {
-            userCourse = await user_course_entity_1.UserCourseModel.create({
-                userId,
-                courseId,
-                role: overrideInfo.role,
-                override: true,
-            }).save();
+            try {
+                userCourse = await user_course_entity_1.UserCourseModel.create({
+                    userId,
+                    courseId,
+                    role: overrideInfo.role,
+                    override: true,
+                }).save();
+            }
+            catch (err) {
+                console.error(err);
+                throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.createCourse, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
         else {
             userCourse.override = true;
             userCourse.role = overrideInfo.role;
-            await userCourse.save();
+            try {
+                await userCourse.save();
+            }
+            catch (err) {
+                console.error(err);
+                throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.updateCourse, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
         return {
             id: userCourse.id,
@@ -5025,7 +5199,16 @@ let CourseController = class CourseController {
         const userCourse = await user_course_entity_1.UserCourseModel.findOne({
             where: { courseId, userId, override: true },
         });
-        await user_course_entity_1.UserCourseModel.remove(userCourse);
+        if (!userCourse) {
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.courseNotFound, common_2.HttpStatus.NOT_FOUND);
+        }
+        try {
+            await user_course_entity_1.UserCourseModel.remove(userCourse);
+        }
+        catch (err) {
+            console.error(err);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.removeCourse, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     async submitCourse(body) {
         if (body.password !== process.env.APPLY_PASSWORD) {
@@ -5038,25 +5221,44 @@ let CourseController = class CourseController {
         });
         if (!semester)
             throw new common_2.BadRequestException(common_1.ERROR_MESSAGES.courseController.noSemesterFound);
-        const course = await course_entity_1.CourseModel.create({
-            name: body.name,
-            coordinator_email: body.coordinator_email,
-            icalURL: body.icalURL,
-            semesterId: semester.id,
-            enabled: false,
-            pending: true,
-            timezone: body.timezone,
-        }).save();
-        new Set(body.sections).forEach(async (section) => {
-            await course_section_mapping_entity_1.CourseSectionMappingModel.create({
-                genericCourseName: body.name,
-                section,
-                courseId: course.id,
+        let course = null;
+        try {
+            course = await course_entity_1.CourseModel.create({
+                name: body.name,
+                coordinator_email: body.coordinator_email,
+                icalURL: body.icalURL,
+                semesterId: semester.id,
+                enabled: false,
+                pending: true,
+                timezone: body.timezone,
             }).save();
-        });
+        }
+        catch (err) {
+            console.error(err);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.createCourse, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        try {
+            new Set(body.sections).forEach(async (section) => {
+                await course_section_mapping_entity_1.CourseSectionMappingModel.create({
+                    genericCourseName: body.name,
+                    section,
+                    courseId: course.id,
+                }).save();
+            });
+        }
+        catch (err) {
+            console.error(err);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.createCourseMappings, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     async taCheckinTimes(courseId, startDate, endDate) {
-        return await this.courseService.getTACheckInCheckOutTimes(courseId, startDate, endDate);
+        try {
+            return await this.courseService.getTACheckInCheckOutTimes(courseId, startDate, endDate);
+        }
+        catch (err) {
+            console.error(err);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.checkInTime, common_2.HttpStatus.BAD_REQUEST);
+        }
     }
 };
 __decorate([
@@ -5888,9 +6090,14 @@ let LoginController = class LoginController {
         catch (e) {
             Sentry.captureException(e);
             console.error('Khoury login threw an exception, the body was ', body);
-            throw e;
+            console.error(e);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.loginController.addUserFromKhoury, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
         }
         const token = await this.jwtService.signAsync({ userId: user.id }, { expiresIn: 60 });
+        if (token === null || token === undefined) {
+            console.error('Temporary JWT is invalid');
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.loginController.invalidTempJWTToken, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return {
             redirect: this.configService.get('DOMAIN') + `/api/v1/login/entry?token=${token}`,
         };
@@ -5901,6 +6108,10 @@ let LoginController = class LoginController {
             throw new common_2.UnauthorizedException();
         }
         const payload = this.jwtService.decode(token);
+        if (payload === null || payload === undefined) {
+            console.error('Decoded JWT is invalid');
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.loginController.invalidPayload, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         this.enter(res, payload.userId);
     }
     async enterFromDev(res, userId) {
@@ -5911,6 +6122,10 @@ let LoginController = class LoginController {
             userId,
             expiresIn: 60 * 60 * 24 * 30,
         });
+        if (authToken === null || authToken === undefined) {
+            console.error('Authroziation JWT is invalid');
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.loginController.invalidTempJWTToken, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         const isSecure = this.configService
             .get('DOMAIN')
             .startsWith('https://');
@@ -6239,6 +6454,10 @@ let ProfileController = class ProfileController {
     }
     async get(user) {
         var _a;
+        if (user === null || user === undefined) {
+            console.error(common_1.ERROR_MESSAGES.profileController.accountNotAvailable);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.profileController.accountNotAvailable, common_2.HttpStatus.NOT_FOUND);
+        }
         const courses = user.courses
             .filter((userCourse) => userCourse.course.enabled)
             .map((userCourse) => {
@@ -6267,6 +6486,10 @@ let ProfileController = class ProfileController {
             'phoneNotifsEnabled',
             'insights',
         ]);
+        if (userResponse === null || userResponse === undefined) {
+            console.error(common_1.ERROR_MESSAGES.profileController.userResponseNotFound);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.profileController.userResponseNotFound, common_2.HttpStatus.NOT_FOUND);
+        }
         return Object.assign(Object.assign({}, userResponse), { courses, phoneNumber: (_a = user.phoneNotif) === null || _a === void 0 ? void 0 : _a.phoneNumber, desktopNotifs });
     }
     async patch(userPatch, user) {
@@ -6531,16 +6754,22 @@ let QuestionController = class QuestionController {
                 throw new common_2.BadRequestException(common_1.ERROR_MESSAGES.questionController.createQuestion.oneQuestionAtATime);
             }
         }
-        const question = await question_entity_1.QuestionModel.create({
-            queueId: queueId,
-            creator: user,
-            text,
-            questionType,
-            status: common_1.QuestionStatusKeys.Drafting,
-            createdAt: new Date(),
-            isOnline: true,
-        }).save();
-        return question;
+        try {
+            const question = await question_entity_1.QuestionModel.create({
+                queueId: queueId,
+                creator: user,
+                text,
+                questionType,
+                status: common_1.QuestionStatusKeys.Drafting,
+                createdAt: new Date(),
+                isOnline: true,
+            }).save();
+            return question;
+        }
+        catch (err) {
+            console.error(err);
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.questionController.saveQError, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     async updateQuestion(questionId, body, userId) {
         var _a;
@@ -6557,7 +6786,13 @@ let QuestionController = class QuestionController {
                 throw new common_2.UnauthorizedException(common_1.ERROR_MESSAGES.questionController.updateQuestion.fsmViolation('Student', question.status, body.status));
             }
             question = Object.assign(question, body);
-            await question.save();
+            try {
+                await question.save();
+            }
+            catch (err) {
+                console.error(err);
+                throw new common_2.HttpException(common_1.ERROR_MESSAGES.questionController.saveQError, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+            }
             return question;
         }
         const isTaOrProf = (await user_course_entity_1.UserCourseModel.count({
@@ -6606,7 +6841,13 @@ let QuestionController = class QuestionController {
             if (newStatus in common_1.ClosedQuestionStatus) {
                 question.closedAt = new Date();
             }
-            await question.save();
+            try {
+                await question.save();
+            }
+            catch (err) {
+                console.error(err);
+                throw new common_2.HttpException(common_1.ERROR_MESSAGES.questionController.saveQError, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+            }
             return question;
         }
         else {
@@ -6617,11 +6858,26 @@ let QuestionController = class QuestionController {
         const question = await question_entity_1.QuestionModel.findOne(questionId, {
             relations: ['queue'],
         });
+        if (question === undefined || question === null) {
+            throw new common_2.HttpException(common_1.ERROR_MESSAGES.questionController.notFound, common_2.HttpStatus.NOT_FOUND);
+        }
         if (question.status === common_1.LimboQuestionStatus.CantFind) {
-            await this.notifService.notifyUser(question.creatorId, notification_service_1.NotifMsgs.queue.ALERT_BUTTON);
+            try {
+                await this.notifService.notifyUser(question.creatorId, notification_service_1.NotifMsgs.queue.ALERT_BUTTON);
+            }
+            catch (err) {
+                console.error(err);
+                throw new common_2.HttpException(common_1.ERROR_MESSAGES.questionController.unableToNotifyUser, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
         else if (question.status === common_1.LimboQuestionStatus.TADeleted) {
-            await this.notifService.notifyUser(question.creatorId, notification_service_1.NotifMsgs.queue.REMOVED);
+            try {
+                await this.notifService.notifyUser(question.creatorId, notification_service_1.NotifMsgs.queue.REMOVED);
+            }
+            catch (err) {
+                console.error(err);
+                throw new common_2.HttpException(common_1.ERROR_MESSAGES.questionController.unableToNotifyUser, common_2.HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
     }
 };

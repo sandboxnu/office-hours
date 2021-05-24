@@ -374,8 +374,24 @@ export declare const ERROR_MESSAGES: {
             cannotCreateNewQueueIfNotProfessor: string;
             cannotCheckIntoMultipleQueues: string;
         };
+        courseNotFound: string;
+        courseOfficeHourError: string;
+        courseHeatMapError: string;
+        courseModelError: string;
         noUserFound: string;
         noSemesterFound: string;
+        updatedQueueError: string;
+        queuesNotFound: string;
+        queueNotFound: string;
+        saveQueueError: string;
+        clearQueueError: string;
+        createEventError: string;
+        icalCalendarUpdate: string;
+        checkInTime: string;
+        removeCourse: string;
+        createCourse: string;
+        updateCourse: string;
+        createCourseMappings: string;
         invalidApplyURL: string;
     };
     questionController: {
@@ -393,9 +409,15 @@ export declare const ERROR_MESSAGES: {
             taHelpingOther: string;
             loginUserCantEdit: string;
         };
+        saveQError: string;
+        notFound: string;
+        unableToNotifyUser: string;
     };
     loginController: {
         receiveDataFromKhoury: string;
+        invalidPayload: string;
+        invalidTempJWTToken: string;
+        addUserFromKhoury: string;
     };
     notificationController: {
         messageNotFromTwilio: string;
@@ -407,6 +429,12 @@ export declare const ERROR_MESSAGES: {
         questionNotFound: string;
         queueOfQuestionNotFound: string;
         queueDoesNotExist: string;
+    };
+    queueController: {
+        getQueue: string;
+        getQuestions: string;
+        saveQueue: string;
+        cleanQueue: string;
     };
     queueRoleGuard: {
         queueNotFound: string;
@@ -425,6 +453,8 @@ export declare const ERROR_MESSAGES: {
         mustBeRoleToJoinCourse: (roles: string[]) => string;
     };
     profileController: {
+        accountNotAvailable: string;
+        userResponseNotFound: string;
         noDiskSpace: string;
     };
     alertController: {
