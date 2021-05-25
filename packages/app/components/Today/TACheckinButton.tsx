@@ -58,10 +58,11 @@ export default function TACheckinButton({
     );
   }
 
-  const [checkoutModalInfo, setCheckoutModalInfo] = useState<{
-    canClearQueue: boolean;
-    nextOfficeHourTime?: Date;
-  }>(EMPTY_CHECKOUT_INFO);
+  const [checkoutModalInfo, setCheckoutModalInfo] =
+    useState<{
+      canClearQueue: boolean;
+      nextOfficeHourTime?: Date;
+    }>(EMPTY_CHECKOUT_INFO);
   const closeModal = () => setCheckoutModalInfo(EMPTY_CHECKOUT_INFO);
 
   return (

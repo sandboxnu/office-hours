@@ -7,11 +7,8 @@ interface UseDraftQuestionResult {
   deleteDraftQuestion: () => void;
 }
 export function useDraftQuestion(): UseDraftQuestionResult {
-  const [
-    draftQuestion,
-    setDraftQuestion,
-    deleteDraftQuestion,
-  ] = useLocalStorage("draftQuestion", null);
+  const [draftQuestion, setDraftQuestion, deleteDraftQuestion] =
+    useLocalStorage("draftQuestion", null);
   return {
     draftQuestion,
     setDraftQuestion,
