@@ -1,7 +1,8 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class AddIsProfessorQueueColumn1609225767925
-  implements MigrationInterface {
+  implements MigrationInterface
+{
   name = 'AddIsProfessorQueueColumn1609225767925';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
