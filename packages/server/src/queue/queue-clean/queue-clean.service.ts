@@ -34,8 +34,10 @@ export class QueueCleanService {
       .getMany();
 
     // Clean 1 queue at a time
-    await async.mapLimit(queuesWithOpenQuestions, 1, (queue) =>
-      this.cleanQueue(queue.id),
+    await async.mapLimit(
+      queuesWithOpenQuestions,
+      1,
+      async (queue) => await this.cleanQueue(queue.id),
     );
   }
 
