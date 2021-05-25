@@ -866,5 +866,6 @@ export const ERROR_MESSAGES = {
     roomMembers: "Unable to get room members",
     serialize: "Unable to serialize payload",
     publish: "Publisher client is unable to publish",
+    clientIdNotFound: "Client ID not found during subscribing to client",
   },
 };

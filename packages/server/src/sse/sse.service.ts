@@ -84,9 +84,11 @@ export class SSEService<T> implements OnModuleDestroy {
     const redis = this.redisService.getClient('db');
 
     if (!redisSub) {
+      Sentry.captureException(ERROR_MESSAGES.sseService.getSubClient);
       throw new Error(ERROR_MESSAGES.sseService.getSubClient);
     }
     if (!redis) {
+      Sentry.captureException(ERROR_MESSAGES.sseService.getDBClient);
       throw new Error(ERROR_MESSAGES.sseService.getDBClient);
     }
 
@@ -99,7 +101,8 @@ export class SSEService<T> implements OnModuleDestroy {
     // Subscribe to the redis channel for this client
 
     if (!clientId) {
-      throw new Error('Client ID not found during subscribing to client');
+      Sentry.captureException(ERROR_MESSAGES.sseService.clientIdNotFound);
+      throw new Error(ERROR_MESSAGES.sseService.clientIdNotFound);
     }
 
     await redisSub.subscribe(this.idToChannel(clientId)).catch((err) => {
@@ -159,10 +162,12 @@ export class SSEService<T> implements OnModuleDestroy {
     const redis = this.redisService.getClient('db');
 
     if (!redisPub) {
+      Sentry.captureException(ERROR_MESSAGES.sseService.getPubClient);
       throw new Error(ERROR_MESSAGES.sseService.getPubClient);
     }
 
     if (!redis) {
+      Sentry.captureException(ERROR_MESSAGES.sseService.getDBClient);
       throw new Error(ERROR_MESSAGES.sseService.getDBClient);
     }
 
