@@ -1,8 +1,14 @@
-import { KhouryDataParams, KhouryRedirectResponse } from '@koh/common';
+import {
+  KhouryDataParams,
+  KhouryRedirectResponse,
+  ERROR_MESSAGES,
+} from '@koh/common';
 import {
   Body,
   Controller,
   Get,
+  HttpException,
+  HttpStatus,
   Post,
   Query,
   Req,
@@ -52,14 +58,26 @@ export class LoginController {
     } catch (e) {
       Sentry.captureException(e);
       console.error('Khoury login threw an exception, the body was ', body);
-      throw e;
+      console.error(e);
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.addUserFromKhoury,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
-
     // Create temporary login token to send user to.
     const token = await this.jwtService.signAsync(
       { userId: user.id },
       { expiresIn: 60 },
     );
+
+    if (token === null || token === undefined) {
+      console.error('Temporary JWT is invalid');
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.invalidTempJWTToken,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
     return {
       redirect:
         this.configService.get('DOMAIN') + `/api/v1/login/entry?token=${token}`,
@@ -83,6 +101,14 @@ export class LoginController {
 
     const payload = this.jwtService.decode(token) as { userId: number };
 
+    if (payload === null || payload === undefined) {
+      console.error('Decoded JWT is invalid');
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.invalidPayload,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
     this.enter(res, payload.userId);
   }
 
@@ -103,6 +129,15 @@ export class LoginController {
       userId,
       expiresIn: 60 * 60 * 24 * 30,
     });
+
+    if (authToken === null || authToken === undefined) {
+      console.error('Authroziation JWT is invalid');
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.invalidTempJWTToken,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
     const isSecure = this.configService
       .get<string>('DOMAIN')
       .startsWith('https://');
