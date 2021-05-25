@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"291440cb51fef60f525372e96e58b901478f77cf"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"c9d9a4529639bed256f9f01c83fcc9b44b535af4"};
 
 /***/ }),
 /* 2 */
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "291440cb51fef60f525372e96e58b901478f77cf",
+        release: "c9d9a4529639bed256f9f01c83fcc9b44b535af4",
         environment: common_1.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -4700,6 +4700,7 @@ const typeorm_1 = __webpack_require__(23);
 const question_entity_1 = __webpack_require__(34);
 const queue_entity_1 = __webpack_require__(32);
 const moment = __webpack_require__(89);
+const async_1 = __webpack_require__(86);
 let QueueCleanService = class QueueCleanService {
     constructor(connection) {
         this.connection = connection;
@@ -4715,7 +4716,7 @@ let QueueCleanService = class QueueCleanService {
             ],
         })
             .getMany();
-        await Promise.all(queuesWithOpenQuestions.map((queue) => this.cleanQueue(queue.id)));
+        await async_1.default.mapLimit(queuesWithOpenQuestions, 1, async (queue) => await this.cleanQueue(queue.id));
     }
     async checkoutAllStaff() {
         const queuesWithCheckedInStaff = await queue_entity_1.QueueModel.getRepository().find({ relations: ['staffList'] });
