@@ -138,6 +138,10 @@ export class QueueController {
       Connection: 'keep-alive',
     });
 
-    this.queueSSEService.subscribeClient(queueId, res, { role, userId });
+    try {
+      this.queueSSEService.subscribeClient(queueId, res, { role, userId });
+    } catch (err) {
+      console.error(err);
+    }
   }
 }
