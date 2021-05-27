@@ -461,5 +461,21 @@ export declare const ERROR_MESSAGES: {
         duplicateAlert: string;
         notActiveAlert: string;
     };
+    sseService: {
+        getSubClient: string;
+        getDBClient: string;
+        getPubClient: string;
+        moduleDestroy: string;
+        cleanupConnection: string;
+        clientIdSubscribe: string;
+        subscribe: string;
+        unsubscribe: string;
+        removeFromRoom: string;
+        directConnections: string;
+        roomMembers: string;
+        serialize: string;
+        publish: string;
+        clientIdNotFound: string;
+    };
 };
 export {};

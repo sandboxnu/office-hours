@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"c9d9a4529639bed256f9f01c83fcc9b44b535af4"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"82dca438d84c6618ee1cf5f32a9727737431d4b0"};
 
 /***/ }),
 /* 2 */
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "c9d9a4529639bed256f9f01c83fcc9b44b535af4",
+        release: "82dca438d84c6618ee1cf5f32a9727737431d4b0",
         environment: common_1.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -881,6 +881,22 @@ exports.ERROR_MESSAGES = {
     alertController: {
         duplicateAlert: "This alert has already been sent",
         notActiveAlert: "This is not an alert that's open for the current user",
+    },
+    sseService: {
+        getSubClient: "Unable to get the redis subscriber client",
+        getDBClient: "Unable to get the redis database client",
+        getPubClient: "Unable to get publisher client",
+        moduleDestroy: "Unable to destroy the redis module",
+        cleanupConnection: "Unable to cleanup the connection",
+        clientIdSubscribe: "Client ID not found during subscribing to client",
+        subscribe: "Unable to subscribe to the client",
+        unsubscribe: "Unable to unsubscribe from the client",
+        removeFromRoom: "Error removing from redis room",
+        directConnections: "Unable to cleanup direct connections",
+        roomMembers: "Unable to get room members",
+        serialize: "Unable to serialize payload",
+        publish: "Publisher client is unable to publish",
+        clientIdNotFound: "Client ID not found during subscribing to client",
     },
 };
 
@@ -4230,7 +4246,12 @@ let QueueController = class QueueController {
             'X-Accel-Buffering': 'no',
             Connection: 'keep-alive',
         });
-        this.queueSSEService.subscribeClient(queueId, res, { role, userId });
+        try {
+            this.queueSSEService.subscribeClient(queueId, res, { role, userId });
+        }
+        catch (err) {
+            console.error(err);
+        }
     }
 };
 __decorate([
@@ -4506,11 +4527,17 @@ const common_1 = __webpack_require__(9);
 const async_1 = __webpack_require__(86);
 const class_transformer_1 = __webpack_require__(6);
 const nestjs_redis_1 = __webpack_require__(61);
+const common_2 = __webpack_require__(5);
+const Sentry = __webpack_require__(12);
 let SSEService = class SSEService {
     constructor(redisService) {
         this.redisService = redisService;
         this.directConnnections = {};
         const redisSub = this.redisService.getClient('sub');
+        if (!redisSub) {
+            Sentry.captureException(common_2.ERROR_MESSAGES.sseService.getSubClient);
+            throw new Error(common_2.ERROR_MESSAGES.sseService.getSubClient);
+        }
         redisSub.on('message', (channel, message) => {
             const id = /sse::client-(\d+)/.exec(channel);
             if (id && id[1] in this.directConnnections) {
@@ -4520,7 +4547,15 @@ let SSEService = class SSEService {
     }
     async onModuleDestroy() {
         await async_1.each(Object.values(this.directConnnections), async (conn) => {
-            await conn.cleanup();
+            await conn.cleanup().catch((err) => {
+                console.error(common_2.ERROR_MESSAGES.sseService.cleanupConnection);
+                console.error(err);
+                Sentry.captureException(err);
+            });
+        }).catch((err) => {
+            console.error(common_2.ERROR_MESSAGES.sseService.moduleDestroy);
+            console.error(err);
+            Sentry.captureException(err);
         });
     }
     idToChannel(clientId) {
@@ -4529,38 +4564,94 @@ let SSEService = class SSEService {
     async subscribeClient(room, res, metadata) {
         const redisSub = this.redisService.getClient('sub');
         const redis = this.redisService.getClient('db');
-        const clientId = await redis.incr('sse::client::id');
-        await redisSub.subscribe(this.idToChannel(clientId));
+        if (!redisSub) {
+            Sentry.captureException(common_2.ERROR_MESSAGES.sseService.getSubClient);
+            throw new Error(common_2.ERROR_MESSAGES.sseService.getSubClient);
+        }
+        if (!redis) {
+            Sentry.captureException(common_2.ERROR_MESSAGES.sseService.getDBClient);
+            throw new Error(common_2.ERROR_MESSAGES.sseService.getDBClient);
+        }
+        const clientId = await redis.incr('sse::client::id').catch((err) => {
+            console.error(common_2.ERROR_MESSAGES.sseService.clientIdSubscribe);
+            console.error(err);
+            Sentry.captureException(err);
+        });
+        if (!clientId) {
+            Sentry.captureException(common_2.ERROR_MESSAGES.sseService.clientIdNotFound);
+            throw new Error(common_2.ERROR_MESSAGES.sseService.clientIdNotFound);
+        }
+        await redisSub.subscribe(this.idToChannel(clientId)).catch((err) => {
+            console.error(common_2.ERROR_MESSAGES.sseService.subscribe);
+            console.error(err);
+            Sentry.captureException(err);
+        });
         const clientInfo = JSON.stringify({
             clientId,
             metadata: metadata,
         });
-        await redis.sadd(room, clientInfo);
+        await redis.sadd(room, clientInfo).catch((err) => {
+            console.error(err);
+            Sentry.captureException(err);
+        });
         this.directConnnections[clientId] = {
             res,
             cleanup: async () => {
-                await redis.srem(room, clientInfo);
-                await redisSub.unsubscribe(this.idToChannel(clientId));
+                await redis.srem(room, clientInfo).catch((err) => {
+                    console.error(common_2.ERROR_MESSAGES.sseService.removeFromRoom);
+                    console.error(err);
+                });
+                await redisSub.unsubscribe(this.idToChannel(clientId)).catch((err) => {
+                    console.error(common_2.ERROR_MESSAGES.sseService.unsubscribe);
+                    console.error(err);
+                    Sentry.captureException(err);
+                });
                 res.end();
             },
         };
         res.write('\n');
         res.socket.on('end', async () => {
-            await this.directConnnections[clientId].cleanup();
+            await this.directConnnections[clientId].cleanup().catch((err) => {
+                console.error(common_2.ERROR_MESSAGES.sseService.directConnections);
+                console.error(err);
+                Sentry.captureException(err);
+            });
             delete this.directConnnections[clientId];
         });
     }
     async sendEvent(room, payload) {
         const redisPub = this.redisService.getClient('pub');
         const redis = this.redisService.getClient('db');
-        const roomInfo = await redis.smembers(room);
-        if (room) {
+        if (!redisPub) {
+            Sentry.captureException(common_2.ERROR_MESSAGES.sseService.getPubClient);
+            throw new Error(common_2.ERROR_MESSAGES.sseService.getPubClient);
+        }
+        if (!redis) {
+            Sentry.captureException(common_2.ERROR_MESSAGES.sseService.getDBClient);
+            throw new Error(common_2.ERROR_MESSAGES.sseService.getDBClient);
+        }
+        const roomInfo = await redis.smembers(room).catch((err) => {
+            console.error(common_2.ERROR_MESSAGES.sseService.roomMembers);
+            console.error(err);
+            Sentry.captureException(err);
+        });
+        if (room && roomInfo) {
             const clients = roomInfo.map((s) => JSON.parse(s));
             console.log(`sending sse to ${clients.length} clients in ${room}`);
             console.time(`sending sse time: `);
             await async_1.each(clients, async ({ clientId, metadata }) => {
-                const toSend = class_transformer_1.serialize(await payload(metadata));
-                await redisPub.publish(this.idToChannel(clientId), toSend);
+                const toSend = class_transformer_1.serialize(await payload(metadata).catch((err) => {
+                    console.error(common_2.ERROR_MESSAGES.sseService.serialize);
+                    console.error(err);
+                    Sentry.captureException(err);
+                }));
+                await redisPub
+                    .publish(this.idToChannel(clientId), toSend)
+                    .catch((err) => {
+                    console.error(common_2.ERROR_MESSAGES.sseService.publish);
+                    console.error(err);
+                    Sentry.captureException(err);
+                });
             });
             console.timeEnd(`sending sse time: `);
         }
