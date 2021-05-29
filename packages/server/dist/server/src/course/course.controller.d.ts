@@ -23,4 +23,5 @@ export declare class CourseController {
     deleteOverride(courseId: number, overrideInfo: UpdateCourseOverrideBody): Promise<void>;
     submitCourse(body: SubmitCourseParams): Promise<void>;
     taCheckinTimes(courseId: number, startDate: string, endDate: string): Promise<TACheckinTimesResponse>;
+    toggleSelfEnroll(courseId: number): Promise<void>;
 }

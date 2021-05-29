@@ -181,6 +181,10 @@ export declare class GetCourseResponse {
     officeHours: Array<OfficeHourPartial>;
     queues: QueuePartial[];
     heatmap: Heatmap | false;
+    selfEnroll: boolean;
+}
+export declare class GetSelfEnrollResponse {
+    courses: CoursePartial[];
 }
 export declare class GetCourseOverridesRow {
     id: number;

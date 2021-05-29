@@ -1,7 +1,8 @@
-import { KhouryDataParams, KhouryRedirectResponse } from '@koh/common';
+import { GetSelfEnrollResponse, KhouryDataParams, KhouryRedirectResponse } from '@koh/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
+import { UserModel } from 'profile/user.entity';
 import { Connection } from 'typeorm';
 import { LoginCourseService } from './login-course.service';
 export declare class LoginController {
@@ -15,4 +16,6 @@ export declare class LoginController {
     enterFromDev(res: Response, userId: number): Promise<void>;
     private enter;
     logout(res: Response): Promise<void>;
+    selfEnrollEnabledAnywhere(): Promise<GetSelfEnrollResponse>;
+    createSelfEnrollOverride(courseId: number, user: UserModel): Promise<void>;
 }

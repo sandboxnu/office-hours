@@ -5,6 +5,7 @@ export declare class QueueCleanService {
     constructor(connection: Connection);
     cleanAllQueues(): Promise<void>;
     checkoutAllStaff(): Promise<void>;
+    cleanSelfEnrollOverrides(): Promise<void>;
     cleanQueue(queueId: number, force?: boolean): Promise<void>;
     shouldCleanQueue(queue: QueueModel): Promise<boolean>;
     private unsafeClean;

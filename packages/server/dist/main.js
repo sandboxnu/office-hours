@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"82dca438d84c6618ee1cf5f32a9727737431d4b0"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"1058371a335273f38db0e2f8e409b027f4bce86a"};
 
 /***/ }),
 /* 2 */
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "82dca438d84c6618ee1cf5f32a9727737431d4b0",
+        release: "1058371a335273f38db0e2f8e409b027f4bce86a",
         environment: common_1.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -228,7 +228,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ERROR_MESSAGES = exports.InsightComponent = exports.SSEQueueResponse = exports.SemesterPartial = exports.SubmitCourseParams = exports.GetAlertsResponse = exports.CreateAlertResponse = exports.CreateAlertParams = exports.RephraseQuestionPayload = exports.Alert = exports.AlertPayload = exports.AlertType = exports.TACheckinPair = exports.TACheckinTimesResponse = exports.UpdateQueueParams = exports.TACheckoutResponse = exports.UpdateQuestionResponse = exports.UpdateQuestionParams = exports.CreateQuestionResponse = exports.CreateQuestionParams = exports.GetStudentQuestionResponse = exports.GetQuestionResponse = exports.ListQuestionsResponse = exports.GetCourseQueuesResponse = exports.GetQueueResponse = exports.UpdateCourseOverrideResponse = exports.UpdateCourseOverrideBody = exports.GetCourseOverridesResponse = exports.GetCourseOverridesRow = exports.GetCourseResponse = exports.UpdateProfileParams = exports.KhouryTACourse = exports.KhouryStudentCourse = exports.KhouryDataParams = exports.GetProfileResponse = exports.QuestionStatusKeys = exports.StatusSentToCreator = exports.StatusInPriorityQueue = exports.StatusInQueue = exports.ClosedQuestionStatus = exports.LimboQuestionStatus = exports.OpenQuestionStatus = exports.QuestionType = exports.Question = exports.QueuePartial = exports.Role = exports.UserPartial = exports.DesktopNotifPartial = exports.User = exports.timeDiffInMins = exports.isProd = exports.getEnv = exports.STAGING_URL = exports.PROD_URL = void 0;
+exports.ERROR_MESSAGES = exports.InsightComponent = exports.SSEQueueResponse = exports.SemesterPartial = exports.SubmitCourseParams = exports.GetAlertsResponse = exports.CreateAlertResponse = exports.CreateAlertParams = exports.RephraseQuestionPayload = exports.Alert = exports.AlertPayload = exports.AlertType = exports.TACheckinPair = exports.TACheckinTimesResponse = exports.UpdateQueueParams = exports.TACheckoutResponse = exports.UpdateQuestionResponse = exports.UpdateQuestionParams = exports.CreateQuestionResponse = exports.CreateQuestionParams = exports.GetStudentQuestionResponse = exports.GetQuestionResponse = exports.ListQuestionsResponse = exports.GetCourseQueuesResponse = exports.GetQueueResponse = exports.UpdateCourseOverrideResponse = exports.UpdateCourseOverrideBody = exports.GetCourseOverridesResponse = exports.GetCourseOverridesRow = exports.GetSelfEnrollResponse = exports.GetCourseResponse = exports.UpdateProfileParams = exports.KhouryTACourse = exports.KhouryStudentCourse = exports.KhouryDataParams = exports.GetProfileResponse = exports.QuestionStatusKeys = exports.StatusSentToCreator = exports.StatusInPriorityQueue = exports.StatusInQueue = exports.ClosedQuestionStatus = exports.LimboQuestionStatus = exports.OpenQuestionStatus = exports.QuestionType = exports.Question = exports.QueuePartial = exports.Role = exports.UserPartial = exports.DesktopNotifPartial = exports.User = exports.timeDiffInMins = exports.isProd = exports.getEnv = exports.STAGING_URL = exports.PROD_URL = void 0;
 const class_transformer_1 = __webpack_require__(6);
 const class_validator_1 = __webpack_require__(7);
 __webpack_require__(8);
@@ -493,6 +493,9 @@ __decorate([
     __metadata("design:type", Array)
 ], GetCourseResponse.prototype, "queues", void 0);
 exports.GetCourseResponse = GetCourseResponse;
+class GetSelfEnrollResponse {
+}
+exports.GetSelfEnrollResponse = GetSelfEnrollResponse;
 class GetCourseOverridesRow {
 }
 exports.GetCourseOverridesRow = GetCourseOverridesRow;
@@ -1522,6 +1525,10 @@ __decorate([
     typeorm_1.Column({ default: false }),
     __metadata("design:type", Boolean)
 ], UserCourseModel.prototype, "override", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true, default: false }),
+    __metadata("design:type", Boolean)
+], UserCourseModel.prototype, "expires", void 0);
 UserCourseModel = __decorate([
     typeorm_1.Entity('user_course_model')
 ], UserCourseModel);
@@ -1547,12 +1554,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CourseModel = void 0;
 const class_transformer_1 = __webpack_require__(6);
 const typeorm_1 = __webpack_require__(23);
-const event_model_entity_1 = __webpack_require__(28);
+const alerts_entity_1 = __webpack_require__(28);
+const event_model_entity_1 = __webpack_require__(36);
 const user_course_entity_1 = __webpack_require__(26);
 const queue_entity_1 = __webpack_require__(32);
-const office_hour_entity_1 = __webpack_require__(33);
 const semester_entity_1 = __webpack_require__(37);
-const alerts_entity_1 = __webpack_require__(36);
+const office_hour_entity_1 = __webpack_require__(33);
 let CourseModel = class CourseModel extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -1618,6 +1625,10 @@ __decorate([
     class_transformer_1.Exclude(),
     __metadata("design:type", Array)
 ], CourseModel.prototype, "alerts", void 0);
+__decorate([
+    typeorm_1.Column('boolean', { nullable: true, default: false }),
+    __metadata("design:type", Boolean)
+], CourseModel.prototype, "selfEnroll", void 0);
 CourseModel = __decorate([
     typeorm_1.Entity('course_model')
 ], CourseModel);
@@ -1640,55 +1651,58 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EventModel = exports.EventType = void 0;
+exports.AlertModel = void 0;
+const common_1 = __webpack_require__(5);
 const class_transformer_1 = __webpack_require__(6);
 const typeorm_1 = __webpack_require__(23);
 const course_entity_1 = __webpack_require__(27);
 const user_entity_1 = __webpack_require__(29);
-var EventType;
-(function (EventType) {
-    EventType["TA_CHECKED_IN"] = "taCheckedIn";
-    EventType["TA_CHECKED_OUT"] = "taCheckedOut";
-    EventType["TA_CHECKED_OUT_FORCED"] = "taCheckedOutForced";
-})(EventType = exports.EventType || (exports.EventType = {}));
-let EventModel = class EventModel extends typeorm_1.BaseEntity {
+let AlertModel = class AlertModel extends typeorm_1.BaseEntity {
 };
 __decorate([
     typeorm_1.PrimaryGeneratedColumn(),
     __metadata("design:type", Number)
-], EventModel.prototype, "id", void 0);
+], AlertModel.prototype, "id", void 0);
+__decorate([
+    typeorm_1.Column({ type: 'enum', enum: common_1.AlertType }),
+    __metadata("design:type", String)
+], AlertModel.prototype, "alertType", void 0);
 __decorate([
     typeorm_1.Column(),
     __metadata("design:type", Date)
-], EventModel.prototype, "time", void 0);
+], AlertModel.prototype, "sent", void 0);
 __decorate([
-    typeorm_1.Column({ type: 'enum', enum: EventType }),
-    __metadata("design:type", String)
-], EventModel.prototype, "eventType", void 0);
+    typeorm_1.Column({ nullable: true }),
+    __metadata("design:type", Date)
+], AlertModel.prototype, "resolved", void 0);
 __decorate([
-    typeorm_1.ManyToOne((type) => user_entity_1.UserModel, (user) => user.events),
+    typeorm_1.ManyToOne((type) => user_entity_1.UserModel, (user) => user.alerts),
     typeorm_1.JoinColumn({ name: 'userId' }),
     __metadata("design:type", user_entity_1.UserModel)
-], EventModel.prototype, "user", void 0);
+], AlertModel.prototype, "user", void 0);
 __decorate([
     typeorm_1.Column({ nullable: true }),
     class_transformer_1.Exclude(),
     __metadata("design:type", Number)
-], EventModel.prototype, "userId", void 0);
+], AlertModel.prototype, "userId", void 0);
 __decorate([
-    typeorm_1.ManyToOne((type) => course_entity_1.CourseModel, (course) => course.events),
+    typeorm_1.ManyToOne((type) => course_entity_1.CourseModel, (course) => course.alerts),
     typeorm_1.JoinColumn({ name: 'courseId' }),
     __metadata("design:type", course_entity_1.CourseModel)
-], EventModel.prototype, "course", void 0);
+], AlertModel.prototype, "course", void 0);
 __decorate([
     typeorm_1.Column({ nullable: true }),
     class_transformer_1.Exclude(),
     __metadata("design:type", Number)
-], EventModel.prototype, "courseId", void 0);
-EventModel = __decorate([
-    typeorm_1.Entity('event_model')
-], EventModel);
-exports.EventModel = EventModel;
+], AlertModel.prototype, "courseId", void 0);
+__decorate([
+    typeorm_1.Column({ type: 'json' }),
+    __metadata("design:type", common_1.AlertPayload)
+], AlertModel.prototype, "payload", void 0);
+AlertModel = __decorate([
+    typeorm_1.Entity('alert_model')
+], AlertModel);
+exports.AlertModel = AlertModel;
 
 
 /***/ }),
@@ -1714,9 +1728,9 @@ const typeorm_1 = __webpack_require__(23);
 const desktop_notif_entity_1 = __webpack_require__(30);
 const phone_notif_entity_1 = __webpack_require__(31);
 const queue_entity_1 = __webpack_require__(32);
-const event_model_entity_1 = __webpack_require__(28);
+const event_model_entity_1 = __webpack_require__(36);
 const user_course_entity_1 = __webpack_require__(26);
-const alerts_entity_1 = __webpack_require__(36);
+const alerts_entity_1 = __webpack_require__(28);
 let UserModel = class UserModel extends typeorm_1.BaseEntity {
     computeInsights() {
         let hideInsights = this.hideInsights;
@@ -2345,58 +2359,55 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AlertModel = void 0;
-const common_1 = __webpack_require__(5);
+exports.EventModel = exports.EventType = void 0;
 const class_transformer_1 = __webpack_require__(6);
 const typeorm_1 = __webpack_require__(23);
 const course_entity_1 = __webpack_require__(27);
 const user_entity_1 = __webpack_require__(29);
-let AlertModel = class AlertModel extends typeorm_1.BaseEntity {
+var EventType;
+(function (EventType) {
+    EventType["TA_CHECKED_IN"] = "taCheckedIn";
+    EventType["TA_CHECKED_OUT"] = "taCheckedOut";
+    EventType["TA_CHECKED_OUT_FORCED"] = "taCheckedOutForced";
+})(EventType = exports.EventType || (exports.EventType = {}));
+let EventModel = class EventModel extends typeorm_1.BaseEntity {
 };
 __decorate([
     typeorm_1.PrimaryGeneratedColumn(),
     __metadata("design:type", Number)
-], AlertModel.prototype, "id", void 0);
-__decorate([
-    typeorm_1.Column({ type: 'enum', enum: common_1.AlertType }),
-    __metadata("design:type", String)
-], AlertModel.prototype, "alertType", void 0);
+], EventModel.prototype, "id", void 0);
 __decorate([
     typeorm_1.Column(),
     __metadata("design:type", Date)
-], AlertModel.prototype, "sent", void 0);
+], EventModel.prototype, "time", void 0);
 __decorate([
-    typeorm_1.Column({ nullable: true }),
-    __metadata("design:type", Date)
-], AlertModel.prototype, "resolved", void 0);
+    typeorm_1.Column({ type: 'enum', enum: EventType }),
+    __metadata("design:type", String)
+], EventModel.prototype, "eventType", void 0);
 __decorate([
-    typeorm_1.ManyToOne((type) => user_entity_1.UserModel, (user) => user.alerts),
+    typeorm_1.ManyToOne((type) => user_entity_1.UserModel, (user) => user.events),
     typeorm_1.JoinColumn({ name: 'userId' }),
     __metadata("design:type", user_entity_1.UserModel)
-], AlertModel.prototype, "user", void 0);
+], EventModel.prototype, "user", void 0);
 __decorate([
     typeorm_1.Column({ nullable: true }),
     class_transformer_1.Exclude(),
     __metadata("design:type", Number)
-], AlertModel.prototype, "userId", void 0);
+], EventModel.prototype, "userId", void 0);
 __decorate([
-    typeorm_1.ManyToOne((type) => course_entity_1.CourseModel, (course) => course.alerts),
+    typeorm_1.ManyToOne((type) => course_entity_1.CourseModel, (course) => course.events),
     typeorm_1.JoinColumn({ name: 'courseId' }),
     __metadata("design:type", course_entity_1.CourseModel)
-], AlertModel.prototype, "course", void 0);
+], EventModel.prototype, "course", void 0);
 __decorate([
     typeorm_1.Column({ nullable: true }),
     class_transformer_1.Exclude(),
     __metadata("design:type", Number)
-], AlertModel.prototype, "courseId", void 0);
-__decorate([
-    typeorm_1.Column({ type: 'json' }),
-    __metadata("design:type", common_1.AlertPayload)
-], AlertModel.prototype, "payload", void 0);
-AlertModel = __decorate([
-    typeorm_1.Entity('alert_model')
-], AlertModel);
-exports.AlertModel = AlertModel;
+], EventModel.prototype, "courseId", void 0);
+EventModel = __decorate([
+    typeorm_1.Entity('event_model')
+], EventModel);
+exports.EventModel = EventModel;
 
 
 /***/ }),
@@ -2702,7 +2713,7 @@ const jwt_auth_guard_1 = __webpack_require__(39);
 const user_decorator_1 = __webpack_require__(41);
 const user_entity_1 = __webpack_require__(29);
 const roles_decorator_1 = __webpack_require__(42);
-const alerts_entity_1 = __webpack_require__(36);
+const alerts_entity_1 = __webpack_require__(28);
 const alerts_service_1 = __webpack_require__(47);
 let AlertsController = class AlertsController {
     constructor(alertsService) {
@@ -3686,12 +3697,12 @@ const semester_entity_1 = __webpack_require__(37);
 const course_section_mapping_entity_1 = __webpack_require__(68);
 const desktop_notif_entity_1 = __webpack_require__(30);
 const phone_notif_entity_1 = __webpack_require__(31);
-const event_model_entity_1 = __webpack_require__(28);
+const event_model_entity_1 = __webpack_require__(36);
 const user_course_entity_1 = __webpack_require__(26);
 const user_entity_1 = __webpack_require__(29);
 const question_entity_1 = __webpack_require__(34);
 const queue_entity_1 = __webpack_require__(32);
-const alerts_entity_1 = __webpack_require__(36);
+const alerts_entity_1 = __webpack_require__(28);
 dotenv_1.config();
 const inCLI = {
     migrations: ['migration/*.ts'],
@@ -4785,13 +4796,14 @@ exports.QueueCleanService = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
 const schedule_1 = __webpack_require__(18);
+const async_1 = __webpack_require__(86);
 const office_hour_entity_1 = __webpack_require__(33);
-const event_model_entity_1 = __webpack_require__(28);
+const event_model_entity_1 = __webpack_require__(36);
+const user_course_entity_1 = __webpack_require__(26);
 const typeorm_1 = __webpack_require__(23);
 const question_entity_1 = __webpack_require__(34);
 const queue_entity_1 = __webpack_require__(32);
 const moment = __webpack_require__(89);
-const async_1 = __webpack_require__(86);
 let QueueCleanService = class QueueCleanService {
     constructor(connection) {
         this.connection = connection;
@@ -4825,6 +4837,11 @@ let QueueCleanService = class QueueCleanService {
             }
         });
         await queue_entity_1.QueueModel.save(queuesWithCheckedInStaff);
+    }
+    async cleanSelfEnrollOverrides() {
+        await user_course_entity_1.UserCourseModel.delete({
+            expires: true,
+        });
     }
     async cleanQueue(queueId, force) {
         const queue = await queue_entity_1.QueueModel.findOne(queueId, {
@@ -4876,6 +4893,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], QueueCleanService.prototype, "checkoutAllStaff", null);
+__decorate([
+    schedule_1.Cron(schedule_1.CronExpression.EVERY_DAY_AT_3AM),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], QueueCleanService.prototype, "cleanSelfEnrollOverrides", null);
 QueueCleanService = __decorate([
     common_2.Injectable(),
     __metadata("design:paramtypes", [typeorm_1.Connection])
@@ -4978,23 +5001,23 @@ const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
 const async_1 = __webpack_require__(86);
 const course_section_mapping_entity_1 = __webpack_require__(68);
-const event_model_entity_1 = __webpack_require__(28);
+const event_model_entity_1 = __webpack_require__(36);
 const user_course_entity_1 = __webpack_require__(26);
 const typeorm_1 = __webpack_require__(23);
-const jwt_auth_guard_1 = __webpack_require__(39);
 const roles_decorator_1 = __webpack_require__(42);
 const user_decorator_1 = __webpack_require__(41);
+const course_roles_guard_1 = __webpack_require__(93);
+const jwt_auth_guard_1 = __webpack_require__(39);
 const user_entity_1 = __webpack_require__(29);
 const queue_clean_service_1 = __webpack_require__(88);
 const queue_sse_service_1 = __webpack_require__(84);
 const queue_entity_1 = __webpack_require__(32);
-const course_roles_guard_1 = __webpack_require__(93);
+const semester_entity_1 = __webpack_require__(37);
 const course_entity_1 = __webpack_require__(27);
 const course_service_1 = __webpack_require__(94);
 const heatmap_service_1 = __webpack_require__(95);
 const ical_service_1 = __webpack_require__(96);
 const office_hour_entity_1 = __webpack_require__(33);
-const semester_entity_1 = __webpack_require__(37);
 const moment = __webpack_require__(89);
 let CourseController = class CourseController {
     constructor(connection, queueCleanService, queueSSEService, heatmapService, icalService, courseService) {
@@ -5352,6 +5375,11 @@ let CourseController = class CourseController {
             throw new common_2.HttpException(common_1.ERROR_MESSAGES.courseController.checkInTime, common_2.HttpStatus.BAD_REQUEST);
         }
     }
+    async toggleSelfEnroll(courseId) {
+        const course = await course_entity_1.CourseModel.findOne(courseId);
+        course.selfEnroll = !course.selfEnroll;
+        await course.save();
+    }
 };
 __decorate([
     common_2.Get(':id'),
@@ -5441,6 +5469,15 @@ __decorate([
     __metadata("design:paramtypes", [Number, String, String]),
     __metadata("design:returntype", Promise)
 ], CourseController.prototype, "taCheckinTimes", null);
+__decorate([
+    common_2.Post(':id/self_enroll'),
+    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard, course_roles_guard_1.CourseRolesGuard),
+    roles_decorator_1.Roles(common_1.Role.PROFESSOR),
+    __param(0, common_2.Param('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], CourseController.prototype, "toggleSelfEnroll", null);
 CourseController = __decorate([
     common_2.Controller('courses'),
     common_2.UseInterceptors(common_2.ClassSerializerInterceptor),
@@ -5505,7 +5542,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CourseService = void 0;
 const common_1 = __webpack_require__(9);
 const lodash_1 = __webpack_require__(46);
-const event_model_entity_1 = __webpack_require__(28);
+const event_model_entity_1 = __webpack_require__(36);
 const question_entity_1 = __webpack_require__(34);
 const typeorm_1 = __webpack_require__(23);
 let CourseService = class CourseService {
@@ -6155,7 +6192,12 @@ const common_2 = __webpack_require__(9);
 const config_1 = __webpack_require__(17);
 const jwt_1 = __webpack_require__(108);
 const Sentry = __webpack_require__(12);
+const course_entity_1 = __webpack_require__(27);
+const user_decorator_1 = __webpack_require__(41);
+const jwt_auth_guard_1 = __webpack_require__(39);
 const httpSignature = __webpack_require__(109);
+const user_course_entity_1 = __webpack_require__(26);
+const user_entity_1 = __webpack_require__(29);
 const typeorm_1 = __webpack_require__(23);
 const non_production_guard_1 = __webpack_require__(110);
 const login_course_service_1 = __webpack_require__(111);
@@ -6233,6 +6275,32 @@ let LoginController = class LoginController {
             .clearCookie('auth_token', { httpOnly: true, secure: isSecure })
             .redirect(302, '/login');
     }
+    async selfEnrollEnabledAnywhere() {
+        const courses = await course_entity_1.CourseModel.find();
+        return { courses: courses.filter((course) => course.selfEnroll) };
+    }
+    async createSelfEnrollOverride(courseId, user) {
+        const course = await course_entity_1.CourseModel.findOne(courseId);
+        if (!course.selfEnroll) {
+            throw new common_2.UnauthorizedException('Cannot self-enroll to this course currently');
+        }
+        const prevUCM = await user_course_entity_1.UserCourseModel.findOne({
+            where: {
+                courseId,
+                userId: user.id,
+            },
+        });
+        if (prevUCM) {
+            throw new common_2.BadRequestException('User already has an override for this course');
+        }
+        await user_course_entity_1.UserCourseModel.create({
+            userId: user.id,
+            courseId: courseId,
+            role: common_1.Role.STUDENT,
+            override: true,
+            expires: true,
+        }).save();
+    }
 };
 __decorate([
     common_2.Post('/khoury_login'),
@@ -6266,6 +6334,21 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], LoginController.prototype, "logout", null);
+__decorate([
+    common_2.Get('self_enroll_courses'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], LoginController.prototype, "selfEnrollEnabledAnywhere", null);
+__decorate([
+    common_2.Post('create_self_enroll_override/:id'),
+    common_2.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, common_2.Param('id')),
+    __param(1, user_decorator_1.User()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, user_entity_1.UserModel]),
+    __metadata("design:returntype", Promise)
+], LoginController.prototype, "createSelfEnrollOverride", null);
 LoginController = __decorate([
     common_2.Controller(),
     __metadata("design:paramtypes", [typeorm_1.Connection,
@@ -7197,11 +7280,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SeedController = void 0;
 const common_1 = __webpack_require__(5);
 const common_2 = __webpack_require__(9);
-const alerts_entity_1 = __webpack_require__(36);
+const alerts_entity_1 = __webpack_require__(28);
 const course_section_mapping_entity_1 = __webpack_require__(68);
 const desktop_notif_entity_1 = __webpack_require__(30);
 const phone_notif_entity_1 = __webpack_require__(31);
-const event_model_entity_1 = __webpack_require__(28);
+const event_model_entity_1 = __webpack_require__(36);
 const user_course_entity_1 = __webpack_require__(26);
 const user_entity_1 = __webpack_require__(29);
 const typeorm_1 = __webpack_require__(23);
@@ -7541,7 +7624,7 @@ exports.SeedController = SeedController;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventFactory = exports.QuestionFactory = exports.QueueFactory = exports.UserCourseFactory = exports.CourseSectionFactory = exports.CourseFactory = exports.OfficeHourFactory = exports.ClosedOfficeHourFactory = exports.SemesterFactory = exports.TACourseFactory = exports.StudentCourseFactory = exports.UserFactory = void 0;
 const common_1 = __webpack_require__(5);
-const event_model_entity_1 = __webpack_require__(28);
+const event_model_entity_1 = __webpack_require__(36);
 const typeorm_factory_1 = __webpack_require__(129);
 const course_entity_1 = __webpack_require__(27);
 const office_hour_entity_1 = __webpack_require__(33);
