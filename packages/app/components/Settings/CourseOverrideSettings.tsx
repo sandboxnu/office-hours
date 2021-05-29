@@ -1,10 +1,11 @@
 import { DeleteOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import { GetCourseOverridesRow, Role } from "@koh/common";
-import { Button, message, Table } from "antd";
+import { Button, message, Switch, Table } from "antd";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
 import useSWR from "swr";
+import { useCourse } from "../../hooks/useCourse";
 import AddOverrideInput from "./AddOverrideInput";
 
 const { Column } = Table;
@@ -24,6 +25,8 @@ export default function CourseOverrideSettings({
   const { data, mutate } = useSWR(`/api/v1/courses/course_override`, async () =>
     API.course.getCourseOverrides(courseId)
   );
+
+  const { course, mutateCourse } = useCourse(courseId);
 
   const formattedRoles = {
     student: "Student",
@@ -66,6 +69,21 @@ export default function CourseOverrideSettings({
           )}
         />
       </Table>
+      <div>
+        Is Khoury Admin/Banner down? Toggle this to temporarily allow students
+        to join your class.{" "}
+        <Switch
+          onChange={async () => {
+            await API.course.toggleSelfEnroll(courseId);
+            mutateCourse();
+          }}
+          defaultChecked={course.selfEnroll}
+        />
+      </div>
+      <b>
+        You must manually toggle this feature off later, or any student will be
+        allowed to join your class.
+      </b>
     </OverrideContents>
   );
 }
