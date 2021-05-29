@@ -427,6 +427,12 @@ export class GetCourseResponse {
   queues!: QueuePartial[];
 
   heatmap!: Heatmap | false;
+
+  selfEnroll!: boolean;
+}
+
+export class GetSelfEnrollResponse {
+  courses!: CoursePartial[];
 }
 
 export class GetCourseOverridesRow {

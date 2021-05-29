@@ -3,6 +3,7 @@ import {
   CreateAlertResponse,
   CreateQuestionParams,
   CreateQuestionResponse,
+  DateRangeType,
   DesktopNotifBody,
   DesktopNotifPartial,
   GetAlertsResponse,
@@ -13,7 +14,11 @@ import {
   GetQuestionResponse,
   GetQueueResponse,
   GetReleaseNotesResponse,
+  GetSelfEnrollResponse,
+  ListInsightsResponse,
   ListQuestionsResponse,
+  SemesterPartial,
+  SubmitCourseParams,
   TACheckinTimesResponse,
   TACheckoutResponse,
   TAUpdateStatusResponse,
@@ -23,10 +28,6 @@ import {
   UpdateQuestionParams,
   UpdateQuestionResponse,
   UpdateQueueParams,
-  ListInsightsResponse,
-  DateRangeType,
-  SubmitCourseParams,
-  SemesterPartial,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -116,6 +117,15 @@ class APIClient {
         TACheckinTimesResponse,
         {},
         { startDate, endDate }
+      ),
+    toggleSelfEnroll: async (courseId: number): Promise<void> =>
+      this.req("POST", `/api/v1/courses/${courseId}/self_enroll`),
+    selfEnrollCourses: async (): Promise<GetSelfEnrollResponse> =>
+      this.req("GET", "/api/v1/courses/self_enroll_courses"),
+    createSelfEnrollOverride: async (courseId: number): Promise<void> =>
+      this.req(
+        "POST",
+        `/api/v1/courses/${courseId}/create_self_enroll_override`
       ),
   };
   taStatus = {

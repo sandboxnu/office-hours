@@ -5,13 +5,14 @@ import {
 } from '@koh/common';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import async from 'async';
 import { OfficeHourModel } from 'course/office-hour.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
+import { UserCourseModel } from 'profile/user-course.entity';
 import { Connection, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { QuestionModel } from '../../question/question.entity';
 import { QueueModel } from '../queue.entity';
 import moment = require('moment');
-import async from 'async';
 
 /**
  * Clean the queue and mark stale
@@ -22,17 +23,16 @@ export class QueueCleanService {
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async cleanAllQueues(): Promise<void> {
-    const queuesWithOpenQuestions: QueueModel[] =
-      await QueueModel.getRepository()
-        .createQueryBuilder('queue_model')
-        .leftJoinAndSelect('queue_model.questions', 'question')
-        .where('question.status IN (:...status)', {
-          status: [
-            ...Object.values(OpenQuestionStatus),
-            ...Object.values(LimboQuestionStatus),
-          ],
-        })
-        .getMany();
+    const queuesWithOpenQuestions: QueueModel[] = await QueueModel.getRepository()
+      .createQueryBuilder('queue_model')
+      .leftJoinAndSelect('queue_model.questions', 'question')
+      .where('question.status IN (:...status)', {
+        status: [
+          ...Object.values(OpenQuestionStatus),
+          ...Object.values(LimboQuestionStatus),
+        ],
+      })
+      .getMany();
 
     // Clean 1 queue at a time
     await async.mapLimit(
@@ -44,8 +44,9 @@ export class QueueCleanService {
 
   @Cron(CronExpression.EVERY_DAY_AT_3AM)
   public async checkoutAllStaff(): Promise<void> {
-    const queuesWithCheckedInStaff: QueueModel[] =
-      await QueueModel.getRepository().find({ relations: ['staffList'] });
+    const queuesWithCheckedInStaff: QueueModel[] = await QueueModel.getRepository().find(
+      { relations: ['staffList'] },
+    );
 
     queuesWithCheckedInStaff.forEach(async (queue) => {
       if (!(await queue.areThereOfficeHoursRightNow())) {
@@ -61,6 +62,15 @@ export class QueueCleanService {
       }
     });
     await QueueModel.save(queuesWithCheckedInStaff);
+  }
+
+  // TODO: move this to a course-clean service or something. This is just here because
+  // this feature was pushed out in a time crunch.
+  @Cron(CronExpression.EVERY_DAY_AT_3AM)
+  public async cleanSelfEnrollOverrides(): Promise<void> {
+    await UserCourseModel.delete({
+      expires: true,
+    });
   }
 
   public async cleanQueue(queueId: number, force?: boolean): Promise<void> {

@@ -2,6 +2,7 @@ import {
   ERROR_MESSAGES,
   GetCourseOverridesResponse,
   GetCourseResponse,
+  GetSelfEnrollResponse,
   QueuePartial,
   Role,
   SubmitCourseParams,
@@ -32,20 +33,20 @@ import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { Connection, getRepository, MoreThanOrEqual } from 'typeorm';
-import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
+import { CourseRolesGuard } from '../guards/course-roles.guard';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { UserModel } from '../profile/user.entity';
 import { QueueCleanService } from '../queue/queue-clean/queue-clean.service';
 import { QueueSSEService } from '../queue/queue-sse.service';
 import { QueueModel } from '../queue/queue.entity';
-import { CourseRolesGuard } from '../guards/course-roles.guard';
+import { SemesterModel } from '../semester/semester.entity';
 import { CourseModel } from './course.entity';
 import { CourseService } from './course.service';
 import { HeatmapService } from './heatmap.service';
 import { IcalService } from './ical.service';
 import { OfficeHourModel } from './office-hour.entity';
-import { SemesterModel } from '../semester/semester.entity';
 import moment = require('moment');
 
 @Controller('courses')
@@ -600,5 +601,56 @@ export class CourseController {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  @Post(':id/self_enroll')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
+  @Roles(Role.PROFESSOR)
+  async toggleSelfEnroll(@Param('id') courseId: number): Promise<void> {
+    const course = await CourseModel.findOne(courseId);
+    course.selfEnroll = !course.selfEnroll;
+    await course.save();
+  }
+
+  @Get('self_enroll_courses')
+  async selfEnrollEnabledAnywhere(): Promise<GetSelfEnrollResponse> {
+    const courses = await CourseModel.find();
+    return { courses: courses.filter((course) => course.selfEnroll) };
+  }
+
+  @Post(':id/create_self_enroll_override')
+  @UseGuards(JwtAuthGuard)
+  async createSelfEnrollOverride(
+    @Param('id') courseId: number,
+    @User() user: UserModel,
+  ): Promise<void> {
+    const course = await CourseModel.findOne(courseId);
+
+    if (!course.selfEnroll) {
+      throw new UnauthorizedException(
+        'Cannot self-enroll to this course currently',
+      );
+    }
+
+    const prevUCM = await UserCourseModel.findOne({
+      where: {
+        courseId,
+        userId: user.id,
+      },
+    });
+
+    if (prevUCM) {
+      throw new BadRequestException(
+        'User already has an override for this course',
+      );
+    }
+
+    await UserCourseModel.create({
+      userId: user.id,
+      courseId: courseId,
+      role: Role.STUDENT,
+      override: true,
+      expires: true,
+    }).save();
   }
 }
