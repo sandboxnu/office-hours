@@ -9,12 +9,12 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { AlertModel } from '../alerts/alerts.entity';
 import { EventModel } from '../profile/event-model.entity';
 import { UserCourseModel } from '../profile/user-course.entity';
 import { QueueModel } from '../queue/queue.entity';
-import { OfficeHourModel } from './office-hour.entity';
 import { SemesterModel } from '../semester/semester.entity';
-import { AlertModel } from '../alerts/alerts.entity';
+import { OfficeHourModel } from './office-hour.entity';
 
 @Entity('course_model')
 export class CourseModel extends BaseEntity {
@@ -72,4 +72,9 @@ export class CourseModel extends BaseEntity {
   @OneToMany((type) => AlertModel, (alert) => alert.course)
   @Exclude()
   alerts: AlertModel[];
+
+  // Whether or not students are allowed to self-enroll in the class
+  // WARNING: THIS SHOULD ONLY BE USED AS A TEMPORARY MEASURE WHEN THINGS LIKE BANNER ARE DOWN
+  @Column('boolean', { nullable: true, default: false })
+  selfEnroll: boolean;
 }
