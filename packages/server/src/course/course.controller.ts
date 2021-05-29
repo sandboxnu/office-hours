@@ -2,7 +2,6 @@ import {
   ERROR_MESSAGES,
   GetCourseOverridesResponse,
   GetCourseResponse,
-  GetSelfEnrollResponse,
   QueuePartial,
   Role,
   SubmitCourseParams,
@@ -610,47 +609,5 @@ export class CourseController {
     const course = await CourseModel.findOne(courseId);
     course.selfEnroll = !course.selfEnroll;
     await course.save();
-  }
-
-  @Get('self_enroll_courses')
-  async selfEnrollEnabledAnywhere(): Promise<GetSelfEnrollResponse> {
-    const courses = await CourseModel.find();
-    return { courses: courses.filter((course) => course.selfEnroll) };
-  }
-
-  @Post(':id/create_self_enroll_override')
-  @UseGuards(JwtAuthGuard)
-  async createSelfEnrollOverride(
-    @Param('id') courseId: number,
-    @User() user: UserModel,
-  ): Promise<void> {
-    const course = await CourseModel.findOne(courseId);
-
-    if (!course.selfEnroll) {
-      throw new UnauthorizedException(
-        'Cannot self-enroll to this course currently',
-      );
-    }
-
-    const prevUCM = await UserCourseModel.findOne({
-      where: {
-        courseId,
-        userId: user.id,
-      },
-    });
-
-    if (prevUCM) {
-      throw new BadRequestException(
-        'User already has an override for this course',
-      );
-    }
-
-    await UserCourseModel.create({
-      userId: user.id,
-      courseId: courseId,
-      role: Role.STUDENT,
-      override: true,
-      expires: true,
-    }).save();
   }
 }

@@ -19,21 +19,26 @@ export default function NoCourses(): ReactElement {
         title="None of your courses are using the Khoury Office Hours App."
         subTitle="Please reach out to your course coordinator or professor if you expected your course to be here."
       />
-      {data.courses.length > 0 ? (
-        <div>
+      {data?.courses.length > 0 ? (
+        <div style={{ textAlign: "center" }}>
           One of our data sources for student-enrollment is currently
           experiencing an outage. If you think you belong to a class, please
           click on your corresponding class below.
-          {data.courses.map((course) => {
-            <Button
-              onClick={async () => {
-                await API.course.createSelfEnrollOverride(course.id);
-                Router.push("/login");
-              }}
-            >
-              {course.name}
-            </Button>;
-          })}
+          <div>
+            {data?.courses.map((course, i) => {
+              return (
+                <Button
+                  key={i}
+                  onClick={async () => {
+                    await API.course.createSelfEnrollOverride(course.id);
+                    Router.push("/login");
+                  }}
+                >
+                  {course.name}
+                </Button>
+              );
+            })}
+          </div>
         </div>
       ) : null}
     </div>

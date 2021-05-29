@@ -121,12 +121,9 @@ class APIClient {
     toggleSelfEnroll: async (courseId: number): Promise<void> =>
       this.req("POST", `/api/v1/courses/${courseId}/self_enroll`),
     selfEnrollCourses: async (): Promise<GetSelfEnrollResponse> =>
-      this.req("GET", "/api/v1/courses/self_enroll_courses"),
+      this.req("GET", "/api/v1/self_enroll_courses"),
     createSelfEnrollOverride: async (courseId: number): Promise<void> =>
-      this.req(
-        "POST",
-        `/api/v1/courses/${courseId}/create_self_enroll_override`
-      ),
+      this.req("POST", `/api/v1/create_self_enroll_override/${courseId}`),
   };
   taStatus = {
     checkIn: async (
