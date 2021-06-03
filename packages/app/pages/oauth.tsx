@@ -15,8 +15,6 @@ async function signUserIn(request: OAuthAccessTokensRequest): Promise<boolean> {
   } catch (err) {
     return false;
   }
-  window.localStorage.setItem("access", tokens.access);
-  window.localStorage.setItem("refresh", tokens.refresh);
   let params = {
     access: tokens.access,
   };
@@ -32,6 +30,7 @@ async function signUserIn(request: OAuthAccessTokensRequest): Promise<boolean> {
 }
 
 export default function OAuth(): ReactElement {
+  console.log("Made it to the OAuth page");
   const router = useRouter();
   const state = router.query.state;
   const authCode = router.query.code;
@@ -41,7 +40,6 @@ export default function OAuth(): ReactElement {
   if (state && authCode && isWindow) {
     const storedState = window.localStorage.getItem("state");
     const storedChallenge = window.localStorage.getItem("challenge");
-
     if (storedState != state) {
       // if the states are not equal then a CRSF attack may be happening so do not continue with OAuth sign in and return to login
       // also, may want to notify khoury admin page. An error also could have happened so that is another possibility.

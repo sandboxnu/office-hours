@@ -17,6 +17,17 @@ import "reflect-metadata";
 
 export const PROD_URL = "https://officehours.khoury.northeastern.edu";
 export const STAGING_URL = "https://staging.khouryofficehours.com";
+export const KHOURY_ADMIN_OAUTH_API_URL =
+  "https://admin-alpha.khoury.northeastern.edu/api/oauth";
+export const KHOURY_ADMIN_OAUTH_URL =
+  "https://admin-alpha.khoury.northeastern.edu/oauth";
+export const OAUTH_CLIENT_ID = "37dc7f2ce2c6643aa393";
+export const OAUTH_CLIENT_SECRET = "ZI0TTY9TREP6VGZV";
+export const OAUTH_REDIRECT_URI = "http://localhost:3000/oauth";
+export const OAUTH_SCOPES =
+  "scopes=user.info&scopes=ta.info&scopes=student.info&scopes=student.courses&scopes=instructor.courses";
+
+//export const OAUTH_USER_INFO_URI = "";
 // Get domain. works on node and browser
 const domain = (): string | false =>
   process.env.DOMAIN ||
@@ -862,6 +873,8 @@ export const ERROR_MESSAGES = {
     unabletoRefreshAccessToken: "Unable to refresh access token",
     unabletToGetUserInfo: "Unable to get user data",
     unableToGetTaInfo: "Unable to get TA data",
+    unableToGetInstructorCourses: "Unable to get instructor courses",
+    unableToGetStudentCourses: "Unable to get student courses",
     officeHourUserDataError: "Unable to get a user's office hour account",
   },
   notificationController: {

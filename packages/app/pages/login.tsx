@@ -6,6 +6,13 @@ import { User } from "@koh/common";
 import Router from "next/router";
 import { useProfile } from "../hooks/useProfile";
 import { useSaveStateChallenge } from "../hooks/useSaveStateChallenge";
+import {
+  KHOURY_ADMIN_OAUTH_URL,
+  OAUTH_CLIENT_ID,
+  OAUTH_REDIRECT_URI,
+  OAUTH_SCOPES,
+} from "@koh/common";
+
 let forge = require("node-forge");
 const isWindow = typeof window !== "undefined";
 
@@ -31,7 +38,14 @@ function openKhouryOAuthLoginPage() {
   md.update(codeVal);
   const hashedCodeChallenge: string = md.digest().toHex();
   const windowReference = window.open(
-    "http://localhost:8000/oauth/login?response_type=code&client_id=f7af86112c35ba004b25&redirect_uri=http://localhost:3000/oauth&scopes=ta.info&scopes=user.info&scopes=student.courses&state=" +
+    KHOURY_ADMIN_OAUTH_URL +
+      "/login?response_type=code&client_id=" +
+      OAUTH_CLIENT_ID +
+      "&redirect_uri=" +
+      OAUTH_REDIRECT_URI +
+      "&" +
+      OAUTH_SCOPES +
+      "&state=" +
       stateVal +
       "&challenge=" +
       hashedCodeChallenge,

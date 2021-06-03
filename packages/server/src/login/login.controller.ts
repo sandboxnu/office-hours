@@ -7,6 +7,11 @@ import {
   AccessToken,
   ERROR_MESSAGES,
   OAuthTACourseModel,
+  KHOURY_ADMIN_OAUTH_API_URL,
+  OAUTH_CLIENT_ID,
+  OAUTH_CLIENT_SECRET,
+  OAUTH_REDIRECT_URI,
+  OAUTH_SCOPES,
 } from '@koh/common';
 import {
   Body,
@@ -52,7 +57,16 @@ export class LoginController {
       .startsWith('https://');
     const token = axios
       .post(
-        `http://localhost:8000/api/oauth/token?client_id=f7af86112c35ba004b25&client_secret=ZJMPI4JXIJRSOG4D&grant_type=authorization_code&redirect_uri=http://localhost:3000/oauth&code=${authCode}&scopes=user.info&scopes=ta.info&scopes=student.courses&verifier=${challenge}`,
+        KHOURY_ADMIN_OAUTH_API_URL +
+          '/token?client_id=' +
+          OAUTH_CLIENT_ID +
+          '&client_secret=' +
+          OAUTH_CLIENT_SECRET +
+          '&grant_type=authorization_code&redirect_uri=' +
+          OAUTH_REDIRECT_URI +
+          `&code=${authCode}&` +
+          OAUTH_SCOPES +
+          `&verifier=${challenge}`,
       )
       .then((token) => {
         const tokens = {
@@ -90,7 +104,8 @@ export class LoginController {
       .startsWith('https://');
     const token = axios
       .get(
-        `http://localhost:8000/api/oauth/token/refresh?client_id=f7af86112c35ba004b25&client_secret=ZJMPI4JXIJRSOG4D&refresh_token=${refreshToken}&grant_type=refresh_token&scopes=user.info&scopes=ta.info&scopes=student.courses`,
+        KHOURY_ADMIN_OAUTH_API_URL +
+          `/token/refresh?client_id=f7af86112c35ba004b25&client_secret=ZJMPI4JXIJRSOG4D&refresh_token=${refreshToken}&grant_type=refresh_token&scopes=user.info&scopes=ta.info&scopes=student.courses`,
       )
       .then((token) => {
         const tokens = {
@@ -122,7 +137,7 @@ export class LoginController {
     let request;
     try {
       request = await axios.get(
-        `http://localhost:8000/api/oauth/userinfo/read/`,
+        KHOURY_ADMIN_OAUTH_API_URL + `/userinfo/read/`,
         {
           headers: {
             Authorization: authorizationToken,
@@ -130,11 +145,13 @@ export class LoginController {
         },
       );
     } catch (err) {
+      console.error(err);
       throw new HttpException(
         ERROR_MESSAGES.loginController.unabletToGetUserInfo,
         HttpStatus.BAD_REQUEST,
       );
     }
+
     let khouryData = {
       first_name: request.data.firstname,
       last_name: request.data.lastname,
@@ -149,11 +166,18 @@ export class LoginController {
     // this is a student signing in so get the students list of courses
     if (khouryData.accountType.includes('student')) {
       console.log("Getting student's list of courses");
+      khouryData.courses = await this.getStudentCourses(authorizationToken);
+      khouryData.ta_courses = await this.getTACourses(authorizationToken);
+      console.log('TA COURSES IS: ' + khouryData.ta_courses);
+      console.log('STUDENT COURSES IS: ' + khouryData.courses);
       // Return a student's list of courses
+    } else if (khouryData.accountType.includes('faculty')) {
+      console.log("Getting instructor's list of courses");
+      khouryData.ta_courses = await this.getInstructorCourses(
+        authorizationToken,
+      );
+      console.log('INSTRUCTOR COURSES IS: ' + khouryData.ta_courses);
     }
-
-    // gets the logging in student list of courses they TA if they are a TA
-    khouryData.ta_courses = await this.getTACourses(authorizationToken);
 
     this.signInToOfficeHoursUser(khouryData)
       .then((id) => {
@@ -165,76 +189,6 @@ export class LoginController {
           HttpStatus.BAD_REQUEST,
         );
       });
-  }
-
-  // TODO: Remove this endpoint
-  @Post('/khoury_login')
-  async recieveDataFromKhoury(
-    @Req() req: Request,
-    @Body() body: KhouryDataParams,
-  ): Promise<KhouryRedirectResponse> {
-    if (process.env.NODE_ENV === 'production') {
-      // Check that request has come from Khoury
-      const parsedRequest = httpSignature.parseRequest(req);
-      const verifySignature = httpSignature.verifyHMAC(
-        parsedRequest,
-        this.configService.get('KHOURY_PRIVATE_KEY'),
-      );
-      if (!verifySignature) {
-        Sentry.captureMessage('Invalid request signature: ' + parsedRequest);
-        throw new UnauthorizedException('Invalid request signature');
-      }
-    }
-
-    let user;
-    try {
-      user = await this.loginCourseService.addUserFromKhoury(body);
-    } catch (e) {
-      Sentry.captureException(e);
-      console.error('Khoury login threw an exception, the body was ', body);
-      throw e;
-    }
-
-    // Create temporary login token to send user to.
-    const token = await this.jwtService.signAsync(
-      { userId: user.id },
-      { expiresIn: 60 },
-    );
-    return {
-      redirect:
-        this.configService.get('DOMAIN') + `/api/v1/login/entry?token=${token}`,
-    };
-  }
-
-  // TODO: Remove this endpoint
-  // NOTE: Although the two routes below are on the backend,
-  // they are meant to be visited by the browser so a cookie can be set
-
-  // This is the real admin entry point
-  @Get('/login/entry')
-  async enterFromKhoury(
-    @Res() res: Response,
-    @Query('token') token: string,
-  ): Promise<void> {
-    const isVerified = await this.jwtService.verifyAsync(token);
-
-    if (!isVerified) {
-      throw new UnauthorizedException();
-    }
-
-    const payload = this.jwtService.decode(token) as { userId: number };
-
-    this.enter(res, payload.userId);
-  }
-
-  // This is for login on development only
-  @Get('/login/dev')
-  @UseGuards(NonProductionGuard)
-  async enterFromDev(
-    @Res() res: Response,
-    @Query('userId') userId: number,
-  ): Promise<void> {
-    this.enter(res, userId);
   }
 
   // Set cookie and redirect to proper page
@@ -252,30 +206,45 @@ export class LoginController {
       .redirect(302, '/');
   }
 
-  @Get('/logout')
-  async logout(@Res() res: Response): Promise<void> {
-    const isSecure = this.configService
-      .get<string>('DOMAIN')
-      .startsWith('https://');
-    res
-      .clearCookie('auth_token', { httpOnly: true, secure: isSecure })
-      .redirect(302, '/login');
-  }
-
   private async getStudentCourses(accessToken: string) {
-    // TODO: Make a request to get the logged in user's courses
+    let studentCourseRequest;
+    let courses = [];
+    // Get the logging in user's ta courses if they are a TA. I think either an instructor or student can have this?
+    try {
+      studentCourseRequest = await axios.get(
+        KHOURY_ADMIN_OAUTH_API_URL + `/studentcourses/read/`,
+        {
+          headers: {
+            Authorization: accessToken,
+          },
+        },
+      );
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.unableToGetStudentCourses,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    for (const course of studentCourseRequest.data[0].courses) {
+      courses.push({
+        course: course.course,
+        semester: course.semester,
+        campus: course.campus,
+      });
+    }
+    return courses;
   }
 
   private async getTACourses(
     accessToken: string,
   ): Promise<OAuthTACourseModel[]> {
     let taRequest;
-
     let courses = [];
     // Get the logging in user's ta courses if they are a TA. I think either an instructor or student can have this?
     try {
       taRequest = await axios.get(
-        `http://localhost:8000/api/oauth/tainfo/read/`,
+        KHOURY_ADMIN_OAUTH_API_URL + `/tainfo/read/`,
         {
           headers: {
             Authorization: accessToken,
@@ -290,7 +259,6 @@ export class LoginController {
     }
     if (taRequest.data.is_ta === true) {
       for (const course of taRequest.data.courses) {
-        console.log(course);
         courses.push({
           course: course.course,
           semester: course.semester,
@@ -298,7 +266,37 @@ export class LoginController {
         });
       }
     }
-    console.log(courses);
+    return courses;
+  }
+
+  private async getInstructorCourses(
+    accessToken: string,
+  ): Promise<OAuthTACourseModel[]> {
+    let instructorRequest;
+    let courses = [];
+    // Get the logging in user's ta courses if they are a TA. I think either an instructor or student can have this?
+    try {
+      instructorRequest = await axios.get(
+        KHOURY_ADMIN_OAUTH_API_URL + `/instructorcourses/read/`,
+        {
+          headers: {
+            Authorization: accessToken,
+          },
+        },
+      );
+    } catch (err) {
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.unableToGetInstructorCourses,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    for (const course of instructorRequest.data.courses) {
+      courses.push({
+        course: course.course,
+        semester: course.semester,
+        campus: course.campus,
+      });
+    }
     return courses;
   }
 
@@ -328,5 +326,25 @@ export class LoginController {
       throw e;
     }
     return user.id;
+  }
+
+  // This is for login on development only
+  @Get('/login/dev')
+  @UseGuards(NonProductionGuard)
+  async enterFromDev(
+    @Res() res: Response,
+    @Query('userId') userId: number,
+  ): Promise<void> {
+    this.enter(res, userId);
+  }
+
+  @Get('/logout')
+  async logout(@Res() res: Response): Promise<void> {
+    const isSecure = this.configService
+      .get<string>('DOMAIN')
+      .startsWith('https://');
+    res
+      .clearCookie('auth_token', { httpOnly: true, secure: isSecure })
+      .redirect(302, '/login');
   }
 }
