@@ -1,6 +1,5 @@
 import {
   KhouryDataParams,
-  KhouryRedirectResponse,
   OAuthAccessTokensRequest,
   OAuthAccessTokensResponse,
   RefreshToken,
@@ -166,15 +165,19 @@ export class LoginController {
     // this is a student signing in so get the students list of courses
     if (khouryData.accountType.includes('student')) {
       console.log("Getting student's list of courses");
-      khouryData.courses = await this.getStudentCourses(authorizationToken);
+      khouryData.courses = await this.getCourses(
+        authorizationToken,
+        '/studentcourses/read/',
+      );
       khouryData.ta_courses = await this.getTACourses(authorizationToken);
       console.log('TA COURSES IS: ' + khouryData.ta_courses);
       console.log('STUDENT COURSES IS: ' + khouryData.courses);
       // Return a student's list of courses
     } else if (khouryData.accountType.includes('faculty')) {
       console.log("Getting instructor's list of courses");
-      khouryData.ta_courses = await this.getInstructorCourses(
+      khouryData.ta_courses = await this.getCourses(
         authorizationToken,
+        '/instructorcourses/read/',
       );
       console.log('INSTRUCTOR COURSES IS: ' + khouryData.ta_courses);
     }
@@ -206,19 +209,15 @@ export class LoginController {
       .redirect(302, '/');
   }
 
-  private async getStudentCourses(accessToken: string) {
-    let studentCourseRequest;
+  private async getCourses(accessToken: string, url: string) {
+    let request;
     let courses = [];
-    // Get the logging in user's ta courses if they are a TA. I think either an instructor or student can have this?
     try {
-      studentCourseRequest = await axios.get(
-        KHOURY_ADMIN_OAUTH_API_URL + `/studentcourses/read/`,
-        {
-          headers: {
-            Authorization: accessToken,
-          },
+      request = await axios.get(KHOURY_ADMIN_OAUTH_API_URL + url, {
+        headers: {
+          Authorization: accessToken,
         },
-      );
+      });
     } catch (err) {
       console.error(err);
       throw new HttpException(
@@ -226,7 +225,7 @@ export class LoginController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    for (const course of studentCourseRequest.data[0].courses) {
+    for (const course of request.data.courses) {
       courses.push({
         course: course.course,
         semester: course.semester,
@@ -265,37 +264,6 @@ export class LoginController {
           campus: course.campus,
         });
       }
-    }
-    return courses;
-  }
-
-  private async getInstructorCourses(
-    accessToken: string,
-  ): Promise<OAuthTACourseModel[]> {
-    let instructorRequest;
-    let courses = [];
-    // Get the logging in user's ta courses if they are a TA. I think either an instructor or student can have this?
-    try {
-      instructorRequest = await axios.get(
-        KHOURY_ADMIN_OAUTH_API_URL + `/instructorcourses/read/`,
-        {
-          headers: {
-            Authorization: accessToken,
-          },
-        },
-      );
-    } catch (err) {
-      throw new HttpException(
-        ERROR_MESSAGES.loginController.unableToGetInstructorCourses,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    for (const course of instructorRequest.data.courses) {
-      courses.push({
-        course: course.course,
-        semester: course.semester,
-        campus: course.campus,
-      });
     }
     return courses;
   }
