@@ -17,7 +17,7 @@ export default function NoCourses(): ReactElement {
       <Result
         status="info"
         title="None of your courses are using the Khoury Office Hours App."
-        subTitle="Please reach out to your course coordinator or professor if you expected your course to be here."
+        subTitle="If you expected your course to be here, try logging in again. If it still does not appear, please reach out to your course coordinator or professor."
       />
       {data?.courses.length > 0 ? (
         <div style={{ textAlign: "center" }}>
