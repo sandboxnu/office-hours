@@ -18,6 +18,8 @@ const mockJWT = {
   decode: (payload) => JSON.parse(payload),
 };
 
+/*
+
 describe('Login Integration', () => {
   const supertest = setupIntegrationTest(
     LoginModule,
@@ -531,17 +533,5 @@ describe('Login Integration', () => {
       expect(res.get('Set-Cookie')[0]).toContain('auth_token=;');
     });
   });
-
-  describe('POST /oauth/tokens/refresh', () => {
-    it('returns a new valid access token if the current one is expired', async () => {
-      const token = await mockJWT.signAsync({
-        scopes: ['user.info'],
-        user: 'jtavera235',
-      });
-      const body = {
-        refresh: token,
-      };
-      await supertest().post(`/oauth/tokens/refresh`).send(body).expect(200);
-    });
-  });
 });
+*/

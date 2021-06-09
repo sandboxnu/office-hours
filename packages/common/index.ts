@@ -21,8 +21,8 @@ export const KHOURY_ADMIN_OAUTH_API_URL =
   "https://admin-alpha.khoury.northeastern.edu/api/oauth";
 export const KHOURY_ADMIN_OAUTH_URL =
   "https://admin-alpha.khoury.northeastern.edu/oauth";
-export const OAUTH_CLIENT_ID = "37dc7f2ce2c6643aa393";
-export const OAUTH_CLIENT_SECRET = "ZI0TTY9TREP6VGZV";
+export const OAUTH_CLIENT_ID = "08a26d0c2c7ae8c4e166";
+export const OAUTH_CLIENT_SECRET = "0WY0L7CCD6NN9PX5";
 export const OAUTH_REDIRECT_URI = "http://localhost:3000/oauth";
 export const OAUTH_SCOPES =
   "scopes=user.info&scopes=ta.info&scopes=student.info&scopes=student.courses&scopes=instructor.courses";

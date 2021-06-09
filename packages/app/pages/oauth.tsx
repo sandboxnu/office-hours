@@ -1,10 +1,11 @@
 import { API } from "@koh/api-client";
 import { useRouter } from "next/router";
-import { ReactElement } from "react";
+import { ReactElement, useState } from "react";
 import { StandardPageContainer } from "../components/common/PageContainer";
 import Router from "next/router";
 import { OAuthAccessTokensRequest } from "@koh/common";
 import { Spin } from "antd";
+import OAuthErrorPage from "../components/OAuth/OAuthErrorPage";
 
 const isWindow = typeof window !== "undefined";
 
@@ -30,10 +31,10 @@ async function signUserIn(request: OAuthAccessTokensRequest): Promise<boolean> {
 }
 
 export default function OAuth(): ReactElement {
-  console.log("Made it to the OAuth page");
   const router = useRouter();
   const state = router.query.state;
   const authCode = router.query.code;
+  let [hasError, setHasError] = useState(false);
 
   let tokensRequestBody: OAuthAccessTokensRequest;
 
@@ -49,19 +50,23 @@ export default function OAuth(): ReactElement {
         code: authCode as string,
         verifier: storedChallenge,
       };
-      signUserIn(tokensRequestBody).then((result) => {
-        if (result) {
-          Router.push("/nocourses");
-        } else {
-          Router.push("/login");
-        }
-      });
+      signUserIn(tokensRequestBody)
+        .then((result) => {
+          if (result) {
+            Router.push("/nocourses");
+          } else {
+            setHasError(true);
+          }
+        })
+        .catch(() => {
+          setHasError(true);
+        });
     }
   }
 
   return (
     <StandardPageContainer>
-      <Spin style={{ margin: "10% 45%" }} />
+      {hasError ? <OAuthErrorPage /> : <Spin style={{ margin: "10% 45%" }} />}
     </StandardPageContainer>
   );
 }

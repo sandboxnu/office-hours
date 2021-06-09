@@ -164,22 +164,17 @@ export class LoginController {
 
     // this is a student signing in so get the students list of courses
     if (khouryData.accountType.includes('student')) {
-      console.log("Getting student's list of courses");
       khouryData.courses = await this.getCourses(
         authorizationToken,
         '/studentcourses/read/',
       );
       khouryData.ta_courses = await this.getTACourses(authorizationToken);
-      console.log('TA COURSES IS: ' + khouryData.ta_courses);
-      console.log('STUDENT COURSES IS: ' + khouryData.courses);
       // Return a student's list of courses
     } else if (khouryData.accountType.includes('faculty')) {
-      console.log("Getting instructor's list of courses");
       khouryData.ta_courses = await this.getCourses(
         authorizationToken,
         '/instructorcourses/read/',
       );
-      console.log('INSTRUCTOR COURSES IS: ' + khouryData.ta_courses);
     }
 
     this.signInToOfficeHoursUser(khouryData)
@@ -226,10 +221,15 @@ export class LoginController {
       );
     }
     for (const course of request.data.courses) {
+      console.log('Course section is ' + course.section);
+      console.log('Course semester is ' + course.semester);
+      console.log('Course is ' + course.course);
+      console.log('Course campus is ' + course.campus);
       courses.push({
         course: course.course,
         semester: course.semester,
         campus: course.campus,
+        section: course.section,
       });
     }
     return courses;
@@ -289,8 +289,9 @@ export class LoginController {
     try {
       user = await this.loginCourseService.addUserFromKhoury(data);
     } catch (e) {
-      Sentry.captureException(e);
+      //Sentry.captureException(e);
       console.error('Khoury login threw an exception, the body was ', data);
+      console.error(e);
       throw e;
     }
     return user.id;
