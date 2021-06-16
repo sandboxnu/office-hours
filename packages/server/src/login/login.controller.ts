@@ -388,8 +388,16 @@ export class LoginController {
 
   @Get('self_enroll_courses')
   async selfEnrollEnabledAnywhere(): Promise<GetSelfEnrollResponse> {
-    const courses = await CourseModel.find();
-    return { courses: courses.filter((course) => course.selfEnroll) };
+    try {
+      const courses = await CourseModel.find();
+      return { courses: courses.filter((course) => course.selfEnroll) };
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.getUserCourseModel,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post('create_self_enroll_override/:id')
@@ -419,12 +427,20 @@ export class LoginController {
       );
     }
 
-    await UserCourseModel.create({
-      userId: user.id,
-      courseId: courseId,
-      role: Role.STUDENT,
-      override: true,
-      expires: true,
-    }).save();
+    try {
+      await UserCourseModel.create({
+        userId: user.id,
+        courseId: courseId,
+        role: Role.STUDENT,
+        override: true,
+        expires: true,
+      }).save();
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.saveUserCourseModel,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

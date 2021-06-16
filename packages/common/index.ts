@@ -875,6 +875,8 @@ export const ERROR_MESSAGES = {
     invalidTempJWTToken: "Error occurred while signing a JWT token",
     addUserFromKhoury:
       "Error occurred while translating account from Khoury to Office Hours",
+    saveUserCourseModel: "Unable to save user course model",
+    getUserCourseModel: "Unable to get user course model",
   },
   notificationController: {
     messageNotFromTwilio: "Message not from Twilio",
