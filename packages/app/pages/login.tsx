@@ -26,7 +26,10 @@ const Container = styled.div`
 const ContentContainer = styled.div`
   text-align: center;
 `;
-
+/**
+ * Opens a new window that directs a user to the Khoury OAuth login page and passes in
+ * the Office Hour client properties used for verification.
+ */
 function openKhouryOAuthLoginPage() {
   let stateVal = "";
   let codeVal = "";
