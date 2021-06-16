@@ -32,29 +32,22 @@ export class LoginCourseService {
     const userCourses = [];
 
     for (const c of info.courses) {
-      console.log(
-        'Mapping current course ' + c.course + ' with section ' + c.section,
-      );
       const course: CourseModel = await this.courseSectionToCourse(
         c.course,
         c.section,
       );
       if (course) {
-        console.log('Course was mapped to a section');
         const userCourse = await this.courseToUserCourse(
           user.id,
           course.id,
           Role.STUDENT,
         );
         userCourses.push(userCourse);
-      } else {
-        console.log('Course was not mapped to a section');
       }
     }
 
     if (info.ta_courses) {
       for (const c of info.ta_courses) {
-        console.log('mapping current TA course ' + c);
         // Query for all the courses which match the name of the generic course from Khoury
         let courseMappings: CourseSectionMappingModel[];
         try {

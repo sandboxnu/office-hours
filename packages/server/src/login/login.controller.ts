@@ -56,16 +56,14 @@ export class LoginController {
       .startsWith('https://');
     const token = axios
       .post(
-        KHOURY_ADMIN_OAUTH_API_URL +
-          '/token?client_id=' +
-          OAUTH_CLIENT_ID +
-          '&client_secret=' +
-          OAUTH_CLIENT_SECRET +
-          '&grant_type=authorization_code&redirect_uri=' +
-          OAUTH_REDIRECT_URI +
-          `&code=${authCode}&` +
-          OAUTH_SCOPES +
-          `&verifier=${challenge}`,
+        `${KHOURY_ADMIN_OAUTH_API_URL}/token?
+        client_id=${OAUTH_CLIENT_ID}
+        &client_secret=${OAUTH_CLIENT_SECRET}
+        &grant_type=authorization_code
+        &redirect_uri=${OAUTH_REDIRECT_URI}
+        &code=${authCode}
+        &${OAUTH_SCOPES}
+        &verifier=${challenge}`,
       )
       .then((token) => {
         const tokens = {
@@ -105,10 +103,23 @@ export class LoginController {
     const isSecure = this.configService
       .get<string>('DOMAIN')
       .startsWith('https://');
+    `${KHOURY_ADMIN_OAUTH_API_URL}/token/refresh?
+      client_id=${OAUTH_CLIENT_ID}
+      &refresh_token=${refreshToken}
+      &client_secret=${OAUTH_CLIENT_SECRET}
+      &grant_type=refresh_token
+      &redirect_uri=${OAUTH_REDIRECT_URI}
+      &${OAUTH_SCOPES}`;
+
     const token = axios
       .get(
-        KHOURY_ADMIN_OAUTH_API_URL +
-          `/token/refresh?client_id=f7af86112c35ba004b25&client_secret=ZJMPI4JXIJRSOG4D&refresh_token=${refreshToken}&grant_type=refresh_token&scopes=user.info&scopes=ta.info&scopes=student.courses`,
+        `${KHOURY_ADMIN_OAUTH_API_URL}/token/refresh?
+        client_id=${OAUTH_CLIENT_ID}
+        &refresh_token=${refreshToken}
+        &client_secret=${OAUTH_CLIENT_SECRET}
+        &grant_type=refresh_token
+        &redirect_uri=${OAUTH_REDIRECT_URI}
+        &${OAUTH_SCOPES}`,
       )
       .then((token) => {
         const tokens = {
@@ -327,9 +338,11 @@ export class LoginController {
     try {
       user = await this.loginCourseService.addUserFromKhoury(data);
     } catch (e) {
-      //Sentry.captureException(e);
       console.error('Khoury login threw an exception, the body was ', data);
       console.error(e);
+      Sentry.captureException(
+        'Error while performing all the course mappings for the user: ' + e,
+      );
       throw e;
     }
     return user.id;
