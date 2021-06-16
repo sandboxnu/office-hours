@@ -13,6 +13,7 @@ import {
   GetQuestionResponse,
   GetQueueResponse,
   GetReleaseNotesResponse,
+  GetSelfEnrollResponse,
   ListQuestionsResponse,
   TACheckinTimesResponse,
   TACheckoutResponse,
@@ -121,6 +122,12 @@ class APIClient {
         {},
         { startDate, endDate }
       ),
+    toggleSelfEnroll: async (courseId: number): Promise<void> =>
+      this.req("POST", `/api/v1/courses/${courseId}/self_enroll`),
+    selfEnrollCourses: async (): Promise<GetSelfEnrollResponse> =>
+      this.req("GET", "/api/v1/self_enroll_courses"),
+    createSelfEnrollOverride: async (courseId: number): Promise<void> =>
+      this.req("POST", `/api/v1/create_self_enroll_override/${courseId}`),
   };
   taStatus = {
     checkIn: async (

@@ -11,25 +11,34 @@ import {
   OAUTH_CLIENT_SECRET,
   OAUTH_REDIRECT_URI,
   OAUTH_SCOPES,
+  GetSelfEnrollResponse,
+  Role,
 } from '@koh/common';
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
+  HttpException,
+  HttpStatus,
+  Param,
   Post,
   Query,
   Req,
   Res,
   UnauthorizedException,
-  HttpException,
   UseGuards,
-  HttpStatus,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as Sentry from '@sentry/node';
+import { CourseModel } from 'course/course.entity';
+import { User } from 'decorators/user.decorator';
 import { Request, Response } from 'express';
+import { JwtAuthGuard } from 'guards/jwt-auth.guard';
 import * as httpSignature from 'http-signature';
+import { UserCourseModel } from 'profile/user-course.entity';
+import { UserModel } from 'profile/user.entity';
 import { Connection } from 'typeorm';
 import { NonProductionGuard } from '../guards/non-production.guard';
 import { LoginCourseService } from './login-course.service';
@@ -217,21 +226,6 @@ export class LoginController {
       });
   }
 
-  // Set cookie and redirect to proper page
-  private async enter(res: Response, userId: number) {
-    // Expires in 30 days
-    const authToken = await this.jwtService.signAsync({
-      userId,
-      expiresIn: 60 * 60 * 24 * 30,
-    });
-    const isSecure = this.configService
-      .get<string>('DOMAIN')
-      .startsWith('https://');
-    res
-      .cookie('auth_token', authToken, { httpOnly: true, secure: isSecure })
-      .redirect(302, '/');
-  }
-
   private async getCourses(accessToken: string) {
     let request;
     let courses = [];
@@ -358,6 +352,30 @@ export class LoginController {
     this.enter(res, userId);
   }
 
+  // Set cookie and redirect to proper page
+  private async enter(res: Response, userId: number) {
+    // Expires in 30 days
+    const authToken = await this.jwtService.signAsync({
+      userId,
+      expiresIn: 60 * 60 * 24 * 30,
+    });
+
+    if (authToken === null || authToken === undefined) {
+      console.error('Authroziation JWT is invalid');
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.invalidTempJWTToken,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    const isSecure = this.configService
+      .get<string>('DOMAIN')
+      .startsWith('https://');
+    res
+      .cookie('auth_token', authToken, { httpOnly: true, secure: isSecure })
+      .redirect(302, '/');
+  }
+
   @Get('/logout')
   async logout(@Res() res: Response): Promise<void> {
     const isSecure = this.configService
@@ -366,5 +384,47 @@ export class LoginController {
     res
       .clearCookie('auth_token', { httpOnly: true, secure: isSecure })
       .redirect(302, '/login');
+  }
+
+  @Get('self_enroll_courses')
+  async selfEnrollEnabledAnywhere(): Promise<GetSelfEnrollResponse> {
+    const courses = await CourseModel.find();
+    return { courses: courses.filter((course) => course.selfEnroll) };
+  }
+
+  @Post('create_self_enroll_override/:id')
+  @UseGuards(JwtAuthGuard)
+  async createSelfEnrollOverride(
+    @Param('id') courseId: number,
+    @User() user: UserModel,
+  ): Promise<void> {
+    const course = await CourseModel.findOne(courseId);
+
+    if (!course.selfEnroll) {
+      throw new UnauthorizedException(
+        'Cannot self-enroll to this course currently',
+      );
+    }
+
+    const prevUCM = await UserCourseModel.findOne({
+      where: {
+        courseId,
+        userId: user.id,
+      },
+    });
+
+    if (prevUCM) {
+      throw new BadRequestException(
+        'User already has an override for this course',
+      );
+    }
+
+    await UserCourseModel.create({
+      userId: user.id,
+      courseId: courseId,
+      role: Role.STUDENT,
+      override: true,
+      expires: true,
+    }).save();
   }
 }

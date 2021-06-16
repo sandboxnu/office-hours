@@ -484,6 +484,12 @@ export class GetCourseResponse {
   queues!: QueuePartial[];
 
   heatmap!: Heatmap | false;
+
+  selfEnroll!: boolean;
+}
+
+export class GetSelfEnrollResponse {
+  courses!: CoursePartial[];
 }
 
 export class GetCourseOverridesRow {
@@ -811,8 +817,24 @@ export const ERROR_MESSAGES = {
       cannotCheckIntoMultipleQueues:
         "Cannot check into multiple queues at the same time",
     },
+    courseNotFound: "The course was not found",
+    courseOfficeHourError: "Unable to find a course's office hours",
+    courseHeatMapError: "Unable to get course's cached heatmap",
+    courseModelError: "Course Model not found",
     noUserFound: "No user found with given email",
     noSemesterFound: "No semester exists for the submitted course",
+    updatedQueueError: "Error updating a course queue",
+    queuesNotFound: "Queues not found",
+    queueNotFound: "Queue not found",
+    saveQueueError: "Unable to save queue",
+    clearQueueError: "Unable to determine if queue can be cleared",
+    createEventError: "An error occurred while creating an event",
+    icalCalendarUpdate: "Unable to update calendar",
+    checkInTime: "Unable to get TA check in times",
+    removeCourse: "Error occurred while trying to remove a course",
+    createCourse: "Error occurred while trying to create a course",
+    updateCourse: "Error occurred while trying to update a course",
+    createCourseMappings: "Unable to create a course mappings",
     invalidApplyURL:
       "You are unauthorized to submit an application. Please email help@khouryofficehours.com for the correct URL.",
   },
@@ -836,6 +858,9 @@ export const ERROR_MESSAGES = {
       taHelpingOther: "TA is already helping someone else",
       loginUserCantEdit: "Logged-in user does not have edit access",
     },
+    saveQError: "Unable to save a question",
+    notFound: "Question not found",
+    unableToNotifyUser: "Unable to notify user",
   },
   loginController: {
     receiveDataFromKhoury: "Invalid request signature",
@@ -846,6 +871,10 @@ export const ERROR_MESSAGES = {
     unableToGetInstructorCourses: "Unable to get instructor courses",
     unableToGetStudentCourses: "Unable to get student courses",
     officeHourUserDataError: "Unable to get a user's office hour account",
+    invalidPayload: "The decoded JWT payload is invalid",
+    invalidTempJWTToken: "Error occurred while signing a JWT token",
+    addUserFromKhoury:
+      "Error occurred while translating account from Khoury to Office Hours",
   },
   notificationController: {
     messageNotFromTwilio: "Message not from Twilio",
@@ -857,6 +886,12 @@ export const ERROR_MESSAGES = {
     questionNotFound: "Question not found",
     queueOfQuestionNotFound: "Cannot find queue of question",
     queueDoesNotExist: "This queue does not exist!",
+  },
+  queueController: {
+    getQueue: "An error occurred while trying to retrieve a Queue",
+    getQuestions: "Unable to get questions from queue",
+    saveQueue: "Unable to save queue",
+    cleanQueue: "Unable to clean queue",
   },
   queueRoleGuard: {
     queueNotFound: "Queue not found",
@@ -878,11 +913,29 @@ export const ERROR_MESSAGES = {
       `You must have one of roles [${roles.join(", ")}] to access this course`,
   },
   profileController: {
+    accountNotAvailable: "The user account is undefined",
+    userResponseNotFound: "The user response was not found",
     noDiskSpace:
       "There is no disk space left to store an image. Please immediately contact your course staff and let them know. They will contact the Khoury Office Hours team as soon as possible.",
   },
   alertController: {
     duplicateAlert: "This alert has already been sent",
     notActiveAlert: "This is not an alert that's open for the current user",
+  },
+  sseService: {
+    getSubClient: "Unable to get the redis subscriber client",
+    getDBClient: "Unable to get the redis database client",
+    getPubClient: "Unable to get publisher client",
+    moduleDestroy: "Unable to destroy the redis module",
+    cleanupConnection: "Unable to cleanup the connection",
+    clientIdSubscribe: "Client ID not found during subscribing to client",
+    subscribe: "Unable to subscribe to the client",
+    unsubscribe: "Unable to unsubscribe from the client",
+    removeFromRoom: "Error removing from redis room",
+    directConnections: "Unable to cleanup direct connections",
+    roomMembers: "Unable to get room members",
+    serialize: "Unable to serialize payload",
+    publish: "Publisher client is unable to publish",
+    clientIdNotFound: "Client ID not found during subscribing to client",
   },
 };

@@ -13,6 +13,7 @@ import { QueueModel } from '../queue/queue.entity';
 import { CourseModel } from './course.entity';
 import { OfficeHourModel } from './office-hour.entity';
 import moment = require('moment');
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Cron } from '@nestjs/schedule';
 import { RedisService } from 'nestjs-redis';
 import * as Redlock from 'redlock';

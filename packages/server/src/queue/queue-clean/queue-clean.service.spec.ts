@@ -6,8 +6,6 @@ import { QueueModel } from 'queue/queue.entity';
 import { Connection } from 'typeorm';
 import {
   ClosedOfficeHourFactory,
-  CourseFactory,
-  CourseSectionFactory,
   OfficeHourFactory,
   QuestionFactory,
   QueueFactory,

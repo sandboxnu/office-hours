@@ -269,6 +269,7 @@ describe('Login Integration', () => {
           override: false,
           role: 'student',
           userId: 1,
+          expires: false,
         });
 
         const totalUserCourses = await UserCourseModel.count();
@@ -373,6 +374,7 @@ describe('Login Integration', () => {
           override: false,
           role: 'student',
           userId: 1,
+          expires: false,
         });
 
         const totalUserCourses = await UserCourseModel.count();
@@ -425,6 +427,7 @@ describe('Login Integration', () => {
           override: overrideCourse.override,
           role: overrideCourse.role,
           userId: overrideCourse.userId,
+          expires: false,
         });
 
         const totalUserCoursesUpdated = await UserCourseModel.count();
