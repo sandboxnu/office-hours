@@ -53,6 +53,13 @@ export class LoginController {
     private configService: ConfigService,
   ) {}
 
+  /**
+   * Gets Access and Refresh tokens for the current user attempting to login using the passed temporary authorization code.
+   *
+   * @param res The response obkect
+   * @param body The request body that contains the access code that will be used to get access and refresh tokens
+   * @returns A pair value of Access and Refresh tokens
+   */
   @Post('/oauth/tokens')
   async getAccessTokens(
     @Res() res: Response,
@@ -103,6 +110,13 @@ export class LoginController {
     return token;
   }
 
+  /**
+   * Gets a new access token using the paired refresh token.
+   *
+   * @param res The response object
+   * @param body The refresh token being used to request a new access token
+   * @returns A new access token
+   */
   @Post('/oauth/tokens/refresh')
   async refreshAccessTokens(
     @Res() res: Response,
@@ -152,6 +166,13 @@ export class LoginController {
     return token;
   }
 
+  /**
+   * Gets a user from the Khoury server and maps the user's account/courses into the Office Hours database.
+   *
+   * @param res The request object
+   * @param body The Access token used to get a user's information from the Khoury server
+   * @param req The request object
+   */
   @Post('/oauth/user')
   async getUser(
     @Res() res: Response,
@@ -193,9 +214,10 @@ export class LoginController {
       photo_url: '',
     };
 
-    // this is a student signing in so get the students list of courses
+    // This is a student signing in so get the students list of courses
     if (khouryData.accountType.includes('student')) {
       khouryData.courses = await this.getCourses(authorizationToken);
+
       // Get the courses the singing in student TA's for
       khouryData.ta_courses = await this.getTACourses(
         authorizationToken,
@@ -226,6 +248,12 @@ export class LoginController {
       });
   }
 
+  /**
+   * Gets the current student list of courses they are enrolled in
+   *
+   * @param accessToken The token used to get the student's current courses
+   * @returns The list of a student courses
+   */
   private async getCourses(accessToken: string) {
     let request;
     let courses = [];
@@ -262,6 +290,14 @@ export class LoginController {
     return courses;
   }
 
+  /**
+   * Returns the TA courses a student is in or an instructors courses
+   *
+   * @param accessToken The token used to access the courses resource
+   * @param url The URL to make a request to
+   * @param isStudent Whether the user is a student or an instructor
+   * @returns A list of TA courses for the student or instructor
+   */
   private async getTACourses(
     accessToken: string,
     url: string,
@@ -269,7 +305,6 @@ export class LoginController {
   ): Promise<KhouryTACourse[]> {
     let request;
     let courses = [];
-    // Get the logging in user's ta courses if they are a TA. I think either an instructor or student can have this?
     try {
       request = await axios.get(KHOURY_ADMIN_OAUTH_API_URL + url, {
         headers: {
@@ -311,6 +346,12 @@ export class LoginController {
     return courses;
   }
 
+  /**
+   * Creates an Office Hour JWT based on the user ID.
+   *
+   * @param userId The ID of the logging in user
+   * @param res The response object
+   */
   private async createUserToken(userId: string, res: Response) {
     // Create temporary login token to send user to.
     const token = await this.jwtService.signAsync(
@@ -325,6 +366,12 @@ export class LoginController {
     this.enter(res, payload.userId);
   }
 
+  /**
+   * Adds the user from the Khoury server to the Office Hours database
+   *
+   * @param data The data received from the Khoury server regarding the user
+   * @returns The ID of the user
+   */
   private async signInToOfficeHoursUser(
     data: KhouryDataParams,
   ): Promise<string> {
