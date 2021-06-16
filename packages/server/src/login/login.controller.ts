@@ -5,7 +5,7 @@ import {
   RefreshToken,
   AccessToken,
   ERROR_MESSAGES,
-  OAuthTACourseModel,
+  KhouryTACourse,
   KHOURY_ADMIN_OAUTH_API_URL,
   OAUTH_CLIENT_ID,
   OAUTH_CLIENT_SECRET,
@@ -83,7 +83,11 @@ export class LoginController {
         res.json(tokens);
         return tokens;
       })
-      .catch(() => {
+      .catch((e) => {
+        console.error(e);
+        Sentry.captureException(
+          'Error while getting Access and Refresh tokens: ' + e,
+        );
         throw new HttpException(
           ERROR_MESSAGES.loginController.unableToGetAccessToken,
           HttpStatus.BAD_REQUEST,
@@ -117,7 +121,9 @@ export class LoginController {
         res.json(tokens);
         return tokens;
       })
-      .catch(() => {
+      .catch((e) => {
+        console.error(e);
+        Sentry.captureException('Error while getting Refresh token: ' + e);
         throw new HttpException(
           ERROR_MESSAGES.loginController.unabletoRefreshAccessToken,
           HttpStatus.BAD_REQUEST,
@@ -144,7 +150,12 @@ export class LoginController {
         },
       );
     } catch (err) {
-      console.error(err);
+      console.error(
+        'Error while retrieving user data from Khoury server: ' + err,
+      );
+      Sentry.captureException(
+        'Error while retrieving user data from Khoury server: ' + err,
+      );
       throw new HttpException(
         ERROR_MESSAGES.loginController.unabletToGetUserInfo,
         HttpStatus.BAD_REQUEST,
@@ -164,16 +175,20 @@ export class LoginController {
 
     // this is a student signing in so get the students list of courses
     if (khouryData.accountType.includes('student')) {
-      khouryData.courses = await this.getCourses(
+      khouryData.courses = await this.getCourses(authorizationToken);
+      // Get the courses the singing in student TA's for
+      khouryData.ta_courses = await this.getTACourses(
         authorizationToken,
-        '/studentcourses/read/',
+        `/tainfo/read/`,
+        true,
       );
-      khouryData.ta_courses = await this.getTACourses(authorizationToken);
-      // Return a student's list of courses
+
+      // An instructor is signing in, get an instructor's courses and map it as the khoury Data TA courses
     } else if (khouryData.accountType.includes('faculty')) {
-      khouryData.ta_courses = await this.getCourses(
+      khouryData.ta_courses = await this.getTACourses(
         authorizationToken,
         '/instructorcourses/read/',
+        false,
       );
     }
 
@@ -181,7 +196,9 @@ export class LoginController {
       .then((id) => {
         this.createUserToken(id, res);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error('Error while signing user in: ' + err);
+        Sentry.captureException('Error while signing user in: ' + err);
         throw new HttpException(
           ERROR_MESSAGES.loginController.officeHourUserDataError,
           HttpStatus.BAD_REQUEST,
@@ -204,46 +221,12 @@ export class LoginController {
       .redirect(302, '/');
   }
 
-  private async getCourses(accessToken: string, url: string) {
+  private async getCourses(accessToken: string) {
     let request;
     let courses = [];
     try {
-      request = await axios.get(KHOURY_ADMIN_OAUTH_API_URL + url, {
-        headers: {
-          Authorization: accessToken,
-        },
-      });
-    } catch (err) {
-      console.error(err);
-      throw new HttpException(
-        ERROR_MESSAGES.loginController.unableToGetStudentCourses,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    for (const course of request.data.courses) {
-      console.log('Course section is ' + course.section);
-      console.log('Course semester is ' + course.semester);
-      console.log('Course is ' + course.course);
-      console.log('Course campus is ' + course.campus);
-      courses.push({
-        course: course.course,
-        semester: course.semester,
-        campus: course.campus,
-        section: course.section,
-      });
-    }
-    return courses;
-  }
-
-  private async getTACourses(
-    accessToken: string,
-  ): Promise<OAuthTACourseModel[]> {
-    let taRequest;
-    let courses = [];
-    // Get the logging in user's ta courses if they are a TA. I think either an instructor or student can have this?
-    try {
-      taRequest = await axios.get(
-        KHOURY_ADMIN_OAUTH_API_URL + `/tainfo/read/`,
+      request = await axios.get(
+        KHOURY_ADMIN_OAUTH_API_URL + '/studentcourses/read/',
         {
           headers: {
             Authorization: accessToken,
@@ -251,13 +234,68 @@ export class LoginController {
         },
       );
     } catch (err) {
+      console.error("Error while getting a student's courses: " + err);
+      Sentry.captureException(
+        "Error while getting a student's courses: " + err,
+      );
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.unableToGetStudentCourses,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    for (const course of request.data.courses) {
+      courses.push({
+        course: course.course,
+        semester: course.semester,
+        campus: course.campus,
+        section: course.section,
+        crn: course.crn,
+        title: course.title,
+        accelerated: course.accelerated,
+      });
+    }
+    return courses;
+  }
+
+  private async getTACourses(
+    accessToken: string,
+    url: string,
+    isStudent: boolean,
+  ): Promise<KhouryTACourse[]> {
+    let request;
+    let courses = [];
+    // Get the logging in user's ta courses if they are a TA. I think either an instructor or student can have this?
+    try {
+      request = await axios.get(KHOURY_ADMIN_OAUTH_API_URL + url, {
+        headers: {
+          Authorization: accessToken,
+        },
+      });
+    } catch (err) {
+      console.error("Error while getting a TA's courses: " + err);
+      Sentry.captureException("Error while getting a TA's courses: " + err);
       throw new HttpException(
         ERROR_MESSAGES.loginController.unableToGetTaInfo,
         HttpStatus.BAD_REQUEST,
       );
     }
-    if (taRequest.data.is_ta === true) {
-      for (const course of taRequest.data.courses) {
+    if (isStudent) {
+      /* 
+      The 'request.data.is_ta' has to be a separate check because if the account is a student but they are not a TA we do nothing.
+      If we did (isStudent && request.data.is_ta == true) then the above scenario would break as the code will go into the else clause
+      which is meant for ONLY instructors because they do not have the .is_ta check.
+      */
+      if (request.data.is_ta === true) {
+        for (const course of request.data.courses) {
+          courses.push({
+            course: course.course,
+            semester: course.semester,
+            campus: course.campus,
+          });
+        }
+      }
+    } else {
+      for (const course of request.data.courses) {
         courses.push({
           course: course.course,
           semester: course.semester,

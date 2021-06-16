@@ -17,17 +17,22 @@ import "reflect-metadata";
 
 export const PROD_URL = "https://officehours.khoury.northeastern.edu";
 export const STAGING_URL = "https://staging.khouryofficehours.com";
+// https://admin-alpha.khoury.northeastern.edu
+// http://localhost:8000
 export const KHOURY_ADMIN_OAUTH_API_URL =
   "https://admin-alpha.khoury.northeastern.edu/api/oauth";
 export const KHOURY_ADMIN_OAUTH_URL =
   "https://admin-alpha.khoury.northeastern.edu/oauth";
-export const OAUTH_CLIENT_ID = "08a26d0c2c7ae8c4e166";
-export const OAUTH_CLIENT_SECRET = "0WY0L7CCD6NN9PX5";
+// ca9806f9bfcdd3aa446e -> Alpha
+// f7af86112c35ba004b25 -> Local
+export const OAUTH_CLIENT_ID = "ca9806f9bfcdd3aa446e";
+// O0584IK2L3WW8V5I -> Alpha
+// ZJMPI4JXIJRSOG4D -> local
+export const OAUTH_CLIENT_SECRET = "O0584IK2L3WW8V5I";
 export const OAUTH_REDIRECT_URI = "http://localhost:3000/oauth";
 export const OAUTH_SCOPES =
   "scopes=user.info&scopes=ta.info&scopes=student.info&scopes=student.courses&scopes=instructor.courses";
 
-//export const OAUTH_USER_INFO_URI = "";
 // Get domain. works on node and browser
 const domain = (): string | false =>
   process.env.DOMAIN ||
@@ -378,42 +383,6 @@ export class OAuthAccessTokensRequest {
   verifier!: string;
 }
 
-// TODO: Remove this model
-export class OAuthUserInfoResponse {
-  @IsString()
-  firstName!: string;
-  @IsString()
-  lastName!: string;
-  @IsString()
-  email!: string;
-  @IsInt()
-  campus!: number;
-  @IsArray()
-  accountType!: string[];
-  // add photo url
-}
-
-// TODO: Remove this model
-export class OAuthTACourseModel {
-  @IsString()
-  course!: string;
-
-  @IsString()
-  semester!: string;
-
-  @IsString()
-  campus!: string;
-}
-
-// TODO: Remove this model
-export class OAuthTaInfoResponse {
-  @IsBoolean()
-  isTa!: boolean;
-
-  @IsArray()
-  courses!: [OAuthTACourseModel];
-}
-
 export class KhouryDataParams {
   @IsString()
   email!: string;
@@ -476,6 +445,7 @@ export class KhouryTACourse {
   instructor!: number;
 }
 
+// TODO: Get rid of this interface
 export interface KhouryRedirectResponse {
   redirect: string;
 }
