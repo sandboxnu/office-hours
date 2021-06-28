@@ -19,14 +19,14 @@ export const PROD_URL = "https://officehours.khoury.northeastern.edu";
 export const STAGING_URL = "https://staging.khouryofficehours.com";
 
 export const KHOURY_ADMIN_OAUTH_API_URL =
-  "https://admin-alpha.khoury.northeastern.edu/api/oauth";
+  "https://admin.khoury.northeastern.edu/api/oauth";
 export const KHOURY_ADMIN_OAUTH_URL =
-  "https://admin-alpha.khoury.northeastern.edu/oauth";
-export const OAUTH_CLIENT_ID = "10aac8aac0f1f711756f";
-export const OAUTH_CLIENT_SECRET = "ZSLHBL5C5CBP87QL";
-export const OAUTH_REDIRECT_URI = "http://localhost:3000/oauth";
+  "https://admin.khoury.northeastern.edu/oauth";
+export const OAUTH_CLIENT_ID = "<replace_with_khoury_client_id>";
+export const OAUTH_CLIENT_SECRET = "<replace_with_khoury_client_secret>";
+export const OAUTH_REDIRECT_URI = "<replace_with_sandbox_oauth_page>";
 export const OAUTH_SCOPES =
-  "scopes=user.info&scopes=ta.info&scopes=student.info&scopes=student.courses&scopes=instructor.courses";
+  "scopes=user.info&scopes=ta.info&scopes=student.courses&scopes=instructor.courses";
 
 // Get domain. works on node and browser
 const domain = (): string | false =>
