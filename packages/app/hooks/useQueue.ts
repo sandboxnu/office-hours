@@ -72,11 +72,7 @@ export function useQueue(qid: number, onUpdate?: OnUpdate): UseQueueReturn {
     )
   );
 
-  const {
-    data: queue,
-    error: queueError,
-    mutate: mutateQueue,
-  } = useSWR(
+  const { data: queue, error: queueError, mutate: mutateQueue } = useSWR(
     key,
     useCallback(async () => API.queues.get(Number(qid)), [qid]),
     {

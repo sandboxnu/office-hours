@@ -1,8 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateCourseSectionMappingAndRemoveUsername1598733438768
-  implements MigrationInterface
-{
+  implements MigrationInterface {
   name = 'CreateCourseSectionMappingAndRemoveUsername1598733438768';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
