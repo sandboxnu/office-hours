@@ -17,18 +17,13 @@ import "reflect-metadata";
 
 export const PROD_URL = "https://officehours.khoury.northeastern.edu";
 export const STAGING_URL = "https://staging.khouryofficehours.com";
-// https://admin-alpha.khoury.northeastern.edu
-// http://localhost:8000
+
 export const KHOURY_ADMIN_OAUTH_API_URL =
   "https://admin-alpha.khoury.northeastern.edu/api/oauth";
 export const KHOURY_ADMIN_OAUTH_URL =
   "https://admin-alpha.khoury.northeastern.edu/oauth";
-// ca9806f9bfcdd3aa446e -> Alpha
-// f7af86112c35ba004b25 -> Local
-export const OAUTH_CLIENT_ID = "ca9806f9bfcdd3aa446e";
-// O0584IK2L3WW8V5I -> Alpha
-// ZJMPI4JXIJRSOG4D -> local
-export const OAUTH_CLIENT_SECRET = "O0584IK2L3WW8V5I";
+export const OAUTH_CLIENT_ID = "10aac8aac0f1f711756f";
+export const OAUTH_CLIENT_SECRET = "ZSLHBL5C5CBP87QL";
 export const OAUTH_REDIRECT_URI = "http://localhost:3000/oauth";
 export const OAUTH_SCOPES =
   "scopes=user.info&scopes=ta.info&scopes=student.info&scopes=student.courses&scopes=instructor.courses";

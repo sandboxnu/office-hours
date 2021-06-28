@@ -1,7 +1,10 @@
 import { Role } from '@koh/common';
 import { JwtService } from '@nestjs/jwt';
 import { TestingModuleBuilder } from '@nestjs/testing';
+import { LoginCourseService } from 'login/login-course.service';
+import { LoginController } from 'login/login.controller';
 import { UserCourseModel } from 'profile/user-course.entity';
+import { Connection, createConnection } from 'typeorm';
 import { LoginModule } from '../src/login/login.module';
 import { UserModel } from '../src/profile/user.entity';
 import {
@@ -18,8 +21,6 @@ const mockJWT = {
   decode: (payload) => JSON.parse(payload),
 };
 
-/*
-
 describe('Login Integration', () => {
   const supertest = setupIntegrationTest(
     LoginModule,
@@ -27,6 +28,15 @@ describe('Login Integration', () => {
       t.overrideProvider(JwtService).useValue(mockJWT),
   );
 
+  describe('GET /logout', () => {
+    it('makes sure logout endpoint is destroying cookies like a mob boss', async () => {
+      const res = await supertest().get(`/logout`).expect(302);
+      expect(res.header['location']).toBe('/login');
+      expect(res.get('Set-Cookie')[0]).toContain('auth_token=;');
+    });
+  });
+
+  /*
   describe('POST /login/entry', () => {
     it('request to entry with correct jwt payload works', async () => {
       const token = await mockJWT.signAsync({ userId: 1 });
@@ -59,34 +69,7 @@ describe('Login Integration', () => {
     });
   });
 
-  describe('POST /khoury_login', () => {
-    it('creates user and sends back correct redirect', async () => {
-      const user = await UserModel.findOne({
-        where: { email: 'stenzel.w@northeastern.edu' },
-      });
-      expect(user).toBeUndefined();
 
-      const res = await supertest().post('/khoury_login').send({
-        email: 'stenzel.w@northeastern.edu',
-        campus: 1,
-        first_name: 'Will',
-        last_name: 'Stenzel',
-        photo_url: 'sdf',
-        courses: [],
-        ta_courses: [],
-      });
-
-      // Expect that the new user has been created
-      const newUser = await UserModel.findOne({
-        where: { email: 'stenzel.w@northeastern.edu' },
-      });
-      expect(newUser).toBeDefined();
-
-      // And that the redirect is correct
-      expect(res.body).toEqual({
-        redirect: 'http://localhost:3000/api/v1/login/entry?token={"userId":1}',
-      });
-    });
 
     it('converts husky emails to northeastern emails', async () => {
       const user = await UserModel.findOne({
@@ -528,13 +511,5 @@ describe('Login Integration', () => {
       expect(ucms.every((ucm) => ucm.role === Role.PROFESSOR)).toBeTruthy();
     });
   });
-
-  describe('GET /logout', () => {
-    it('makes sure logout endpoint is destroying cookies like a mob boss', async () => {
-      const res = await supertest().get(`/logout`).expect(302);
-      expect(res.header['location']).toBe('/login');
-      expect(res.get('Set-Cookie')[0]).toContain('auth_token=;');
-    });
-  });
-});
 */
+});

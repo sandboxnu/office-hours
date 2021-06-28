@@ -6,13 +6,13 @@ import {
   AccessToken,
   ERROR_MESSAGES,
   KhouryTACourse,
-  KHOURY_ADMIN_OAUTH_API_URL,
-  OAUTH_CLIENT_ID,
-  OAUTH_CLIENT_SECRET,
-  OAUTH_REDIRECT_URI,
-  OAUTH_SCOPES,
   GetSelfEnrollResponse,
   Role,
+  KHOURY_ADMIN_OAUTH_API_URL,
+  OAUTH_CLIENT_ID,
+  OAUTH_REDIRECT_URI,
+  OAUTH_SCOPES,
+  OAUTH_CLIENT_SECRET,
 } from '@koh/common';
 import {
   BadRequestException,
@@ -72,14 +72,7 @@ export class LoginController {
       .startsWith('https://');
     const token = axios
       .post(
-        `${KHOURY_ADMIN_OAUTH_API_URL}/token?
-        client_id=${OAUTH_CLIENT_ID}
-        &client_secret=${OAUTH_CLIENT_SECRET}
-        &grant_type=authorization_code
-        &redirect_uri=${OAUTH_REDIRECT_URI}
-        &code=${authCode}
-        &${OAUTH_SCOPES}
-        &verifier=${challenge}`,
+        `${KHOURY_ADMIN_OAUTH_API_URL}/token?client_id=${OAUTH_CLIENT_ID}&client_secret=${OAUTH_CLIENT_SECRET}&grant_type=authorization_code&redirect_uri=${OAUTH_REDIRECT_URI}&code=${authCode}&${OAUTH_SCOPES}&verifier=${challenge}`,
       )
       .then((token) => {
         const tokens = {
@@ -136,13 +129,7 @@ export class LoginController {
 
     const token = axios
       .get(
-        `${KHOURY_ADMIN_OAUTH_API_URL}/token/refresh?
-        client_id=${OAUTH_CLIENT_ID}
-        &refresh_token=${refreshToken}
-        &client_secret=${OAUTH_CLIENT_SECRET}
-        &grant_type=refresh_token
-        &redirect_uri=${OAUTH_REDIRECT_URI}
-        &${OAUTH_SCOPES}`,
+        `${KHOURY_ADMIN_OAUTH_API_URL}/token/refresh?client_id=${OAUTH_CLIENT_ID}&refresh_token=${refreshToken}&client_secret=${OAUTH_CLIENT_SECRET}&grant_type=refresh_token&redirect_uri=${OAUTH_REDIRECT_URI}&${OAUTH_SCOPES}`,
       )
       .then((token) => {
         const tokens = {
