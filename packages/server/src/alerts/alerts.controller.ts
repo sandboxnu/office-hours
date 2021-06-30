@@ -53,6 +53,12 @@ export class AlertsController {
   ): Promise<CreateAlertResponse> {
     const { alertType, courseId, payload, targetUserId } = body;
 
+    if (!this.alertsService.assertPayloadType(alertType, payload)) {
+      throw new BadRequestException(
+        ERROR_MESSAGES.alertController.incorrectPayload,
+      );
+    }
+
     const anotherAlert = await AlertModel.findOne({
       where: {
         alertType,
