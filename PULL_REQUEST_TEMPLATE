@@ -19,7 +19,7 @@ Please delete options that are not relevant.
 # How Has This Been Tested?
 
 Please describe how you tested this PR (both manually and with tests)
-Provide instructions so we can reproduce. 
+If manually, provide instructions so we can reproduce. 
 
 - [ ] Test A
 - [ ] Test B
