@@ -10,7 +10,7 @@ export default function SimpleDisplayComponent({
 }: SimpleDisplayComponentProps): ReactElement {
   return (
     <>
-      <h1>{output ?? "...loading"}</h1>
+      <h1>{output}</h1>
     </>
   );
 }

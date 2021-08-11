@@ -13,6 +13,7 @@ import { QueueModel } from '../queue/queue.entity';
 import { CourseModel } from './course.entity';
 import { OfficeHourModel } from './office-hour.entity';
 import moment = require('moment');
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Cron } from '@nestjs/schedule';
 import { RedisService } from 'nestjs-redis';
 import * as Redlock from 'redlock';
@@ -226,7 +227,7 @@ export class IcalService {
     console.log('done scraping!');
   }
 
-  @Cron('51 0 * * *')
+  // @Cron('51 0 * * *')
   public async updateAllCourses(): Promise<void> {
     const resource = 'locks:icalcron';
     const ttl = 60000;
@@ -239,14 +240,20 @@ export class IcalService {
       console.error('A redis error has occurred:', err);
     });
 
-    await redlock.lock(resource, ttl).then(async (lock) => {
-      console.log('updating course icals');
-      const courses = await CourseModel.find();
-      await Promise.all(courses.map((c) => this.updateCalendarForCourse(c)));
+    try {
+      await redlock.lock(resource, ttl).then(async (lock) => {
+        console.log('updating course icals');
+        const courses = await CourseModel.find({
+          where: { enabled: true },
+        });
+        await Promise.all(courses.map((c) => this.updateCalendarForCourse(c)));
 
-      return lock.unlock().catch(function (err) {
-        console.error(err);
+        return lock.unlock().catch(function (err) {
+          console.error(err);
+        });
       });
-    });
+    } catch (error) {
+      console.error('A problem locking Redlock has occurred:', error);
+    }
   }
 }

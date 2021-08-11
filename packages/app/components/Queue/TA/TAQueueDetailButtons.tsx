@@ -52,6 +52,7 @@ export default function TAQueueDetailButtons({
   );
   const { isCheckedIn, isHelping } = useTAInQueueInfo(queueId);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const sendRephraseAlert = async () => {
     const payload: RephraseQuestionPayload = {
       queueId,

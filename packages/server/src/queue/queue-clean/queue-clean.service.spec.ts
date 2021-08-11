@@ -6,8 +6,6 @@ import { QueueModel } from 'queue/queue.entity';
 import { Connection } from 'typeorm';
 import {
   ClosedOfficeHourFactory,
-  CourseFactory,
-  CourseSectionFactory,
   OfficeHourFactory,
   QuestionFactory,
   QueueFactory,
@@ -168,7 +166,7 @@ describe('QueueService', () => {
     });
   });
   describe('cleanAllQueues', () => {
-    it.skip('correctly cleans queues from current course sections', async () => {
+    it('correctly cleans queues that have questions in open or limbo state', async () => {
       const cleanQueueSpy = jest.spyOn(service, 'cleanQueue');
 
       const queue1 = await QueueFactory.create({
@@ -179,8 +177,14 @@ describe('QueueService', () => {
         notes: 'I could also use a clean',
         officeHours: [],
       });
-      const course = await CourseFactory.create({ queues: [queue1, queue2] });
-      await CourseSectionFactory.create({ course });
+      await QuestionFactory.create({
+        queue: queue1,
+        status: OpenQuestionStatus.Queued,
+      });
+      await QuestionFactory.create({
+        queue: queue2,
+        status: LimboQuestionStatus.CantFind,
+      });
 
       await service.cleanAllQueues();
 
@@ -189,7 +193,7 @@ describe('QueueService', () => {
       expect(cleanQueueSpy).toHaveBeenCalledTimes(2);
     });
 
-    it.skip('does not clean queues that are not related to current course section', async () => {
+    it('does not clean queue that has no questions in open or limbo state', async () => {
       const cleanQueueSpy = jest.spyOn(service, 'cleanQueue');
 
       await QueueFactory.create({ notes: 'clean me' });

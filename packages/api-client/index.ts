@@ -3,6 +3,7 @@ import {
   CreateAlertResponse,
   CreateQuestionParams,
   CreateQuestionResponse,
+  DateRangeType,
   DesktopNotifBody,
   DesktopNotifPartial,
   GetAlertsResponse,
@@ -13,7 +14,11 @@ import {
   GetQuestionResponse,
   GetQueueResponse,
   GetReleaseNotesResponse,
+  GetSelfEnrollResponse,
+  ListInsightsResponse,
   ListQuestionsResponse,
+  SemesterPartial,
+  SubmitCourseParams,
   TACheckinTimesResponse,
   TACheckoutResponse,
   TAUpdateStatusResponse,
@@ -23,8 +28,6 @@ import {
   UpdateQuestionParams,
   UpdateQuestionResponse,
   UpdateQueueParams,
-  ListInsightsResponse,
-  DateRangeType,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -101,6 +104,8 @@ class APIClient {
         undefined,
         params
       ),
+    submitCourse: async (params: SubmitCourseParams): Promise<void> =>
+      this.req("POST", `/api/v1/courses/submit_course`, undefined, params),
     getTACheckinTimes: async (
       courseId: number,
       startDate: string,
@@ -113,6 +118,12 @@ class APIClient {
         {},
         { startDate, endDate }
       ),
+    toggleSelfEnroll: async (courseId: number): Promise<void> =>
+      this.req("POST", `/api/v1/courses/${courseId}/self_enroll`),
+    selfEnrollCourses: async (): Promise<GetSelfEnrollResponse> =>
+      this.req("GET", "/api/v1/self_enroll_courses"),
+    createSelfEnrollOverride: async (courseId: number): Promise<void> =>
+      this.req("POST", `/api/v1/create_self_enroll_override/${courseId}`),
   };
   taStatus = {
     checkIn: async (
@@ -185,6 +196,10 @@ class APIClient {
     delete: async () => this.req("GET", `/api/v1/seeds/delete`),
     create: async () => this.req("GET", `/api/v1/seeds/create`),
     fillQueue: async () => this.req("GET", `/api/v1/seeds/fill_queue`),
+  };
+  semesters = {
+    get: async (): Promise<SemesterPartial[]> =>
+      this.req("GET", `/api/v1/semesters`),
   };
   releaseNotes = {
     get: async (): Promise<GetReleaseNotesResponse> =>
