@@ -95,7 +95,7 @@ export class IcalService {
   parseIcal(
     icalData: CalendarResponse,
     courseId: number,
-    testRegex = /\b^(OH|Hours)\b/,
+    testRegex = /\b^(Online OH)\b/,
   ): CreateOfficeHour {
     const icalDataValues: Array<CalendarComponent> = Object.values(icalData);
 
