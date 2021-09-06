@@ -337,7 +337,7 @@ LOCATION:
 END:VEVENT
 `;
 
-// Give time on monday, but late enough that in some timezones it becomes tuesday, potentially breaking the BYDAY=MO
+// Give time on Monday, but late enough that in some timezones it becomes Tuesday, potentially breaking the BYDAY=MO
 const VEVENT_OUTLOOK_SPILLOVER = `
 BEGIN:VEVENT
 RRULE:FREQ=WEEKLY;UNTIL=20210221T210000Z;INTERVAL=1;BYDAY=MO;WKST=SU
