@@ -227,7 +227,7 @@ export class IcalService {
     console.log('done scraping!');
   }
 
-  // @Cron('51 0 * * *')
+  @Cron('51 0 * * *')
   public async updateAllCourses(): Promise<void> {
     const resource = 'locks:icalcron';
     const ttl = 60000;
