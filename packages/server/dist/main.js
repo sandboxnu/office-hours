@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"ea6314553f5bf0177b999da5a87603bb752da1df"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"72b0beb87af2b1f31c44621cd0a6d28fd0f4bd7b"};
 
 /***/ }),
 /* 2 */
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "ea6314553f5bf0177b999da5a87603bb752da1df",
+        release: "72b0beb87af2b1f31c44621cd0a6d28fd0f4bd7b",
         environment: common_1.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -5820,6 +5820,7 @@ const queue_entity_1 = __webpack_require__(32);
 const course_entity_1 = __webpack_require__(27);
 const office_hour_entity_1 = __webpack_require__(33);
 const moment = __webpack_require__(89);
+const schedule_1 = __webpack_require__(18);
 const nestjs_redis_1 = __webpack_require__(61);
 const Redlock = __webpack_require__(101);
 let IcalService = class IcalService {
@@ -5865,7 +5866,7 @@ let IcalService = class IcalService {
             .filter((date) => !exdates.includes(date.getTime()))
             .map((d) => fixDST(postRRule(moment(d))).toDate());
     }
-    parseIcal(icalData, courseId, testRegex = /\b^(OH|Hours)\b/) {
+    parseIcal(icalData, courseId, testRegex = /\b^(Online OH)\b/) {
         const icalDataValues = Object.values(icalData);
         const officeHours = icalDataValues.filter((iCalElement) => iCalElement.type === 'VEVENT' &&
             iCalElement.start !== undefined &&
@@ -5976,6 +5977,12 @@ let IcalService = class IcalService {
         }
     }
 };
+__decorate([
+    schedule_1.Cron('51 0 * * *'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], IcalService.prototype, "updateAllCourses", null);
 IcalService = __decorate([
     common_1.Injectable(),
     __metadata("design:paramtypes", [typeorm_1.Connection,
