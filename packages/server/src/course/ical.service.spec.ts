@@ -57,7 +57,7 @@ LAST-MODIFIED:20200513T180615Z
 LOCATION:
 SEQUENCE:0
 STATUS:CONFIRMED
-SUMMARY:OH: Elaina
+SUMMARY:Online OH: Elaina
 TRANSP:OPAQUE
 END:VEVENT`;
 
@@ -73,7 +73,7 @@ LAST-MODIFIED:20200515T190535Z
 LOCATION:308b WVH
 SEQUENCE:0
 STATUS:CONFIRMED
-SUMMARY:OH: Ameya\\, Julia
+SUMMARY:Online OH: Ameya\\, Julia
 TRANSP:OPAQUE
 END:VEVENT`;
 
@@ -98,7 +98,7 @@ DESCRIPTION:\n
 EXDATE;TZID=Romance Standard Time:20201012T120000
 UID:040000008200E00074C5B7101A82E00800000000FFA4A795B686D601000000000000000
  010000000B0F0238BEEA75243B42D6F11B2111977
-SUMMARY:Hours CS3700 - Ishan
+SUMMARY:Online OH CS3700 - Ishan
 DTSTART;TZID=Romance Standard Time:20201114T120000
 DTEND;TZID=Romance Standard Time:20201114T150000
 CLASS:PUBLIC
@@ -125,7 +125,7 @@ DESCRIPTION:\n
 EXDATE;TZID=Romance Standard Time:20201012T120000
 UID:040000008200E00074C5B7101A82E00800000000FFA4A795B686D601000000000000000
  010000000B0F0238BEEA75243B42D6F11B2111977
-SUMMARY:Hours CS3700 - Ishan
+SUMMARY:Online OH CS3700 - Ishan
 DTSTART;TZID=Romance Standard Time:20200914T120000
 DTEND;TZID=Romance Standard Time:20200914T150000
 CLASS:PUBLIC
@@ -150,7 +150,7 @@ LAST-MODIFIED:20200918T063438Z
 LOCATION:
 SEQUENCE:2
 STATUS:CONFIRMED
-SUMMARY:Hours
+SUMMARY:Online OH
 TRANSP:OPAQUE
 END:VEVENT
 `;
@@ -162,7 +162,7 @@ RRULE:FREQ=WEEKLY;UNTIL=20200922T170000Z;INTERVAL=1;BYDAY=MO;WKST=SU
 EXDATE;TZID=Romance Standard Time:20201012T120000
 UID:040000008200E00074C5B7101A82E00800000000FFA4A795B686D601000000000000000
  010000000B0F0238BEEA75243B42D6F11B2111977
-SUMMARY:Hours CS3700 - Ishan
+SUMMARY:Online OH CS3700 - Ishan
 DTSTART;TZID=Romance Standard Time:20200914T120000
 DTEND;TZID=Romance Standard Time:20200914T150000
 CLASS:PUBLIC
@@ -180,7 +180,7 @@ BEGIN:VEVENT
 DESCRIPTION:\n
 RRULE:FREQ=DAILY;INTERVAL=2
 EXDATE;TZID=Romance Standard Time:20201012T120000
-SUMMARY:Hours forever
+SUMMARY:Online OH forever
 DTSTART;TZID=Romance Standard Time:20200914T120000
 DTEND;TZID=Romance Standard Time:20200914T150000
 CLASS:PUBLIC
@@ -205,7 +205,7 @@ LAST-MODIFIED:20200921T140232Z
 LOCATION:
 SEQUENCE:0
 STATUS:CONFIRMED
-SUMMARY:OH- Amit Shesh
+SUMMARY:Online OH- Amit Shesh
 TRANSP:OPAQUE
 END:VEVENT`;
 
@@ -222,7 +222,7 @@ LAST-MODIFIED:20200921T140232Z
 LOCATION:
 SEQUENCE:0
 STATUS:CONFIRMED
-SUMMARY:OH- Cole Stansbury
+SUMMARY:Online OH- Cole Stansbury
 TRANSP:OPAQUE
 END:VEVENT`;
 
@@ -241,7 +241,7 @@ LAST-MODIFIED:20200921T140232Z
 LOCATION:
 SEQUENCE:0
 STATUS:CONFIRMED
-SUMMARY:OH- Amit Shesh
+SUMMARY:Online OH- Amit Shesh
 TRANSP:OPAQUE
 END:VEVENT`;
 
@@ -260,7 +260,7 @@ LAST-MODIFIED:20200921T140232Z
 LOCATION:
 SEQUENCE:0
 STATUS:CONFIRMED
-SUMMARY:OH- Amit Shesh
+SUMMARY:Online OH- Amit Shesh
 TRANSP:OPAQUE
 END:VEVENT`;
 
@@ -270,7 +270,7 @@ RRULE:FREQ=WEEKLY;UNTIL=20201019T170000Z;INTERVAL=1;BYDAY=MO;WKST=SU
 EXDATE;TZID=Eastern Standard Time:20201012T120000
 UID:040000008200E00074C5B7101A82E0080000000015AA42D4B686D601000000000000000
  010000000103558E135B36F4089C2D45B6001924E
-SUMMARY:Hours CS3700 - Ashwin
+SUMMARY:Online OH CS3700 - Ashwin
 DTSTART;TZID=Eastern Standard Time:20200928T120000
 DTEND;TZID=Eastern Standard Time:20200928T140000
 CLASS:PUBLIC
@@ -296,7 +296,7 @@ LAST-MODIFIED:20200910T202032Z
 LOCATION:
 SEQUENCE:0
 STATUS:CONFIRMED
-SUMMARY:OH: Anurag
+SUMMARY:Online OH: Anurag
 TRANSP:OPAQUE
 END:VEVENT
 `;
@@ -307,7 +307,7 @@ RRULE:FREQ=WEEKLY;UNTIL=20200315T210000Z;INTERVAL=1;BYDAY=SA;WKST=SU
 EXDATE;TZID=America/New_York:20200306T210000
 UID:040000008200E00074C5B7101A82E0080000000015AA42D4B686D601000000000000000
  010000000103558E135B36F4089C2D45B6001924E
-SUMMARY:Hours CS3700 - Ashwin
+SUMMARY:Online OH CS3700 - Ashwin
 DTSTART;TZID=America/New_York:20200307T210000
 DTEND;TZID=America/New_York:20200307T230000
 DTSTAMP:20201012T184435Z
@@ -324,7 +324,7 @@ RRULE:FREQ=WEEKLY;UNTIL=20210321T110000Z;INTERVAL=1;BYDAY=MO;WKST=SU
 EXDATE;TZID=Eastern Standard Time:20210307T110000
 UID:040000008200E00074C5B7101A82E0080000000015AA42D4B686D601000000000000000
  010000000103558E135B36F4089C2D45B6001924E
-SUMMARY:Hours CS3700 - Ashwin
+SUMMARY:Online OH CS3700 - Ashwin
 DTSTART;TZID=Eastern Standard Time:20210308T110000
 DTEND;TZID=Eastern Standard Time:20210308T130000
 CLASS:PUBLIC
@@ -337,14 +337,14 @@ LOCATION:
 END:VEVENT
 `;
 
-// Give time on monday, but late enough that in some timezones it becomes tuesday, potentially breaking the BYDAY=MO
+// Give time on Monday, but late enough that in some timezones it becomes Tuesday, potentially breaking the BYDAY=MO
 const VEVENT_OUTLOOK_SPILLOVER = `
 BEGIN:VEVENT
 RRULE:FREQ=WEEKLY;UNTIL=20210221T210000Z;INTERVAL=1;BYDAY=MO;WKST=SU
 EXDATE;TZID=Alaskan Standard Time:20210207T210000
 UID:040000008200E00074C5B7101A82E0080000000015AA42D4B686D601000000000000000
  010000000103558E135B36F4089C2D45B6001924E
-SUMMARY:Hours CS3700 - Ashwin
+SUMMARY:Online OH CS3700 - Ashwin
 DTSTART;TZID=Alaskan Standard Time:20210208T210000
 DTEND;TZID=Alaskan Standard Time:20210208T230000
 CLASS:PUBLIC
@@ -364,7 +364,7 @@ RRULE:FREQ=WEEKLY;UNTIL=20210321T210000Z;INTERVAL=1;BYDAY=MO;WKST=SU
 EXDATE;TZID=Alaskan Standard Time:20210307T210000
 UID:040000008200E00074C5B7101A82E0080000000015AA42D4B686D601000000000000000
  010000000103558E135B36F4089C2D45B6001924E
-SUMMARY:Hours CS3700 - Ashwin
+SUMMARY:Online OH CS3700 - Ashwin
 DTSTART;TZID=Alaskan Standard Time:20210308T210000
 DTEND;TZID=Alaskan Standard Time:20210308T230000
 CLASS:PUBLIC
@@ -462,14 +462,14 @@ describe('IcalService', () => {
       // Note that the lecture event has been filtered out
       expect(endData).toStrictEqual([
         {
-          title: 'OH: Ameya, Julia',
+          title: 'Online OH: Ameya, Julia',
           courseId: 123,
           room: '308b WVH',
           startTime: new Date(1589317200000),
           endTime: new Date(1589324400000),
         },
         {
-          title: 'OH: Elaina',
+          title: 'Online OH: Elaina',
           courseId: 123,
           room: '',
           startTime: new Date(1589475600000),
@@ -489,7 +489,7 @@ describe('IcalService', () => {
       const endData = service.parseIcal(parsedICS, 123);
       expect(endData).toStrictEqual([
         {
-          title: 'Hours CS3700 - Ishan',
+          title: 'Online OH CS3700 - Ishan',
           courseId: 123,
           room: '',
           startTime: new Date('2020-11-14T11:00:00+0000'),
@@ -504,7 +504,7 @@ describe('IcalService', () => {
       const endData = service.parseIcal(parsedICS, 123);
       expect(endData).toStrictEqual([
         {
-          title: 'Hours CS3700 - Ishan',
+          title: 'Online OH CS3700 - Ishan',
           courseId: 123,
           room: '',
           startTime: new Date('2020-09-14T10:00:00+0000'),
@@ -519,21 +519,21 @@ describe('IcalService', () => {
       expect(endData).not;
       expect(endData).toStrictEqual([
         {
-          title: 'Hours CS3700 - Ashwin',
+          title: 'Online OH CS3700 - Ashwin',
           courseId: 123,
           room: '',
           startTime: new Date('2020-09-28T12:00:00-0400'),
           endTime: new Date('2020-09-28T14:00:00-0400'),
         },
         {
-          title: 'Hours CS3700 - Ashwin',
+          title: 'Online OH CS3700 - Ashwin',
           courseId: 123,
           room: '',
           startTime: new Date('2020-10-05T12:00:00-0400'),
           endTime: new Date('2020-10-05T14:00:00-0400'),
         },
         {
-          title: 'Hours CS3700 - Ashwin',
+          title: 'Online OH CS3700 - Ashwin',
           courseId: 123,
           room: '',
           startTime: new Date('2020-10-19T12:00:00-0400'),
@@ -547,14 +547,14 @@ describe('IcalService', () => {
       const endData = service.parseIcal(parsedICS, 123);
       expect(endData).toStrictEqual([
         {
-          title: 'Hours',
+          title: 'Online OH',
           courseId: 123,
           room: '',
           startTime: new Date('2020-09-18T20:15:00-0400'),
           endTime: new Date('2020-09-18T21:15:00-0400'),
         },
         {
-          title: 'Hours',
+          title: 'Online OH',
           courseId: 123,
           room: '',
           startTime: new Date('2020-09-25T20:15:00-0400'),
@@ -569,28 +569,28 @@ describe('IcalService', () => {
       endData.length = 4;
       expect(endData).toStrictEqual([
         {
-          title: 'OH- Amit Shesh',
+          title: 'Online OH- Amit Shesh',
           courseId: 123,
           room: '',
           startTime: new Date('2020-09-21T10:00:00-0400'),
           endTime: new Date('2020-09-21T12:00:00-0400'),
         },
         {
-          title: 'OH- Amit Shesh',
+          title: 'Online OH- Amit Shesh',
           courseId: 123,
           room: '',
           startTime: new Date('2020-09-24T10:00:00-0400'),
           endTime: new Date('2020-09-24T12:00:00-0400'),
         },
         {
-          title: 'OH- Amit Shesh',
+          title: 'Online OH- Amit Shesh',
           courseId: 123,
           room: '',
           startTime: new Date('2020-09-28T10:00:00-0400'),
           endTime: new Date('2020-09-28T12:00:00-0400'),
         },
         {
-          title: 'OH- Amit Shesh',
+          title: 'Online OH- Amit Shesh',
           courseId: 123,
           room: '',
           startTime: new Date('2020-10-01T10:00:00-0400'),
@@ -605,28 +605,28 @@ describe('IcalService', () => {
       endData.length = 4;
       expect(endData).toStrictEqual([
         {
-          title: 'OH- Cole Stansbury',
+          title: 'Online OH- Cole Stansbury',
           courseId: 123,
           room: '',
           startTime: new Date('2020-09-21T20:00:00-0400'),
           endTime: new Date('2020-09-21T22:00:00-0400'),
         },
         {
-          title: 'OH- Cole Stansbury',
+          title: 'Online OH- Cole Stansbury',
           courseId: 123,
           room: '',
           startTime: new Date('2020-09-24T20:00:00-0400'),
           endTime: new Date('2020-09-24T22:00:00-0400'),
         },
         {
-          title: 'OH- Cole Stansbury',
+          title: 'Online OH- Cole Stansbury',
           courseId: 123,
           room: '',
           startTime: new Date('2020-09-28T20:00:00-0400'),
           endTime: new Date('2020-09-28T22:00:00-0400'),
         },
         {
-          title: 'OH- Cole Stansbury',
+          title: 'Online OH- Cole Stansbury',
           courseId: 123,
           room: '',
           startTime: new Date('2020-10-01T20:00:00-0400'),
@@ -641,21 +641,21 @@ describe('IcalService', () => {
       endData.length = 3;
       expect(endData).toStrictEqual([
         {
-          title: 'OH- Amit Shesh',
+          title: 'Online OH- Amit Shesh',
           courseId: 123,
           room: '',
           startTime: new Date('2020-09-21T10:00:00-0400'),
           endTime: new Date('2020-09-21T12:00:00-0400'),
         },
         {
-          title: 'OH- Amit Shesh',
+          title: 'Online OH- Amit Shesh',
           courseId: 123,
           room: '',
           startTime: new Date('2020-10-01T10:00:00-0400'),
           endTime: new Date('2020-10-01T12:00:00-0400'),
         },
         {
-          title: 'OH- Amit Shesh',
+          title: 'Online OH- Amit Shesh',
           courseId: 123,
           room: '',
           startTime: new Date('2020-10-05T10:00:00-0400'),
@@ -669,14 +669,14 @@ describe('IcalService', () => {
       const endData = service.parseIcal(parsedICS, 123);
       expect(endData).toStrictEqual([
         {
-          title: 'OH- Amit Shesh',
+          title: 'Online OH- Amit Shesh',
           courseId: 123,
           room: '',
           startTime: new Date('2020-10-22T10:00:00-0400'),
           endTime: new Date('2020-10-22T12:00:00-0400'),
         },
         {
-          title: 'OH- Amit Shesh',
+          title: 'Online OH- Amit Shesh',
           courseId: 123,
           room: '',
           startTime: new Date('2020-11-12T11:00:00-0400'),
@@ -691,14 +691,14 @@ describe('IcalService', () => {
       const endData = service.parseIcal(parsedICS, 123);
       expect(endData).toStrictEqual([
         {
-          title: 'Hours CS3700 - Ishan',
+          title: 'Online OH CS3700 - Ishan',
           courseId: 123,
           room: '',
           startTime: new Date('2020-09-14T10:00:00+0000'),
           endTime: new Date('2020-09-14T13:00:00+0000'),
         },
         {
-          title: 'Hours CS3700 - Ishan',
+          title: 'Online OH CS3700 - Ishan',
           courseId: 123,
           room: '',
           startTime: new Date('2020-09-21T10:00:00+0000'),
@@ -711,14 +711,14 @@ describe('IcalService', () => {
       const parsedICS = mkCal(VEVENT_RRULE_FOREVER);
       const endData = service.parseIcal(parsedICS, 123);
       expect(endData).toContainEqual({
-        title: 'Hours forever',
+        title: 'Online OH forever',
         courseId: 123,
         room: '',
         startTime: new Date('2020-09-14T10:00:00+0000'),
         endTime: new Date('2020-09-14T13:00:00+0000'),
       });
       expect(endData).toContainEqual({
-        title: 'Hours forever',
+        title: 'Online OH forever',
         courseId: 123,
         room: '',
         startTime: new Date('2020-09-16T10:00:00+0000'),
@@ -731,14 +731,14 @@ describe('IcalService', () => {
       const parsedICS = mkCal(VEVENT_DAYLIGHT_SAVINGS_FALL_BACK);
       const endData = service.parseIcal(parsedICS, 123);
       expect(endData).toContainEqual({
-        title: 'OH: Anurag',
+        title: 'Online OH: Anurag',
         courseId: 123,
         room: '',
         startTime: new Date('2020-10-25T19:00:00+0000'),
         endTime: new Date('2020-10-25T21:00:00+0000'),
       });
       expect(endData).toContainEqual({
-        title: 'OH: Anurag',
+        title: 'Online OH: Anurag',
         courseId: 123,
         room: '',
         startTime: new Date('2020-11-01T20:00:00+0000'),
@@ -750,14 +750,14 @@ describe('IcalService', () => {
       const parsedICS = mkCal(VEVENT_DAYLIGHT_SAVINGS_SPRING_FORWARD);
       const endData = service.parseIcal(parsedICS, 123);
       expect(endData).toContainEqual({
-        title: 'Hours CS3700 - Ashwin',
+        title: 'Online OH CS3700 - Ashwin',
         courseId: 123,
         room: '',
         startTime: new Date('2020-03-08T02:00:00+0000'),
         endTime: new Date('2020-03-08T04:00:00+0000'),
       });
       expect(endData).toContainEqual({
-        title: 'Hours CS3700 - Ashwin',
+        title: 'Online OH CS3700 - Ashwin',
         courseId: 123,
         room: '',
         startTime: new Date('2020-03-15T01:00:00+0000'),
@@ -769,14 +769,14 @@ describe('IcalService', () => {
       const parsedICS = mkCal(VEVENT_DAYLIGHT_SAVINGS_SPRING_FORWARD_OUTLOOK);
       const endData = service.parseIcal(parsedICS, 123);
       expect(endData).toContainEqual({
-        title: 'Hours CS3700 - Ashwin',
+        title: 'Online OH CS3700 - Ashwin',
         courseId: 123,
         room: '',
         startTime: new Date('2021-03-08T16:00:00+0000'),
         endTime: new Date('2021-03-08T18:00:00+0000'),
       });
       expect(endData).toContainEqual({
-        title: 'Hours CS3700 - Ashwin',
+        title: 'Online OH CS3700 - Ashwin',
         courseId: 123,
         room: '',
         startTime: new Date('2021-03-15T15:00:00+0000'),
@@ -788,14 +788,14 @@ describe('IcalService', () => {
       const parsedICS = mkCal(VEVENT_OUTLOOK_SPILLOVER);
       const endData = service.parseIcal(parsedICS, 123);
       expect(endData).toContainEqual({
-        title: 'Hours CS3700 - Ashwin',
+        title: 'Online OH CS3700 - Ashwin',
         courseId: 123,
         room: '',
         startTime: new Date('2021-02-09T06:00:00+0000'),
         endTime: new Date('2021-02-09T08:00:00+0000'),
       });
       expect(endData).toContainEqual({
-        title: 'Hours CS3700 - Ashwin',
+        title: 'Online OH CS3700 - Ashwin',
         courseId: 123,
         room: '',
         startTime: new Date('2021-02-16T06:00:00+0000'),
@@ -807,14 +807,14 @@ describe('IcalService', () => {
       const parsedICS = mkCal(VEVENT_OUTLOOK_SPILLOVER_DST);
       const endData = service.parseIcal(parsedICS, 123);
       expect(endData).toContainEqual({
-        title: 'Hours CS3700 - Ashwin',
+        title: 'Online OH CS3700 - Ashwin',
         courseId: 123,
         room: '',
         startTime: new Date('2021-03-09T06:00:00+0000'),
         endTime: new Date('2021-03-09T08:00:00+0000'),
       });
       expect(endData).toContainEqual({
-        title: 'Hours CS3700 - Ashwin',
+        title: 'Online OH CS3700 - Ashwin',
         courseId: 123,
         room: '',
         startTime: new Date('2021-03-16T05:00:00+0000'),
@@ -894,14 +894,14 @@ describe('IcalService', () => {
             .officeHours,
         ).toMatchObject([
           {
-            title: 'OH: Ameya, Julia',
+            title: 'Online OH: Ameya, Julia',
             courseId: course.id,
             startTime: new Date(1589317200000),
             endTime: new Date(1589324400000),
             queueId: queue.id,
           },
           {
-            title: 'OH: Elaina',
+            title: 'Online OH: Elaina',
             courseId: course.id,
             startTime: new Date(1589475600000),
             endTime: new Date(1589482800000),
