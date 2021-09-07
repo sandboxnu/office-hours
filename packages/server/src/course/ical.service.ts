@@ -95,7 +95,7 @@ export class IcalService {
   parseIcal(
     icalData: CalendarResponse,
     courseId: number,
-    testRegex = /\b^(OH|Hours)\b/,
+    testRegex = /\b^(Online OH)\b/,
   ): CreateOfficeHour {
     const icalDataValues: Array<CalendarComponent> = Object.values(icalData);
 
@@ -227,7 +227,7 @@ export class IcalService {
     console.log('done scraping!');
   }
 
-  // @Cron('51 0 * * *')
+  @Cron('51 0 * * *')
   public async updateAllCourses(): Promise<void> {
     const resource = 'locks:icalcron';
     const ttl = 60000;
