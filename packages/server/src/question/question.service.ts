@@ -81,7 +81,7 @@ export class QuestionService {
       question.closedAt = new Date();
     }
     if (newStatus in LimboQuestionStatus) {
-      // depends on if question was passed in with its group preloaded
+      // depends on if the question was passed in with its group preloaded
       if (question.group) question.group = null;
       else question.groupId = null;
     }
