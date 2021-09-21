@@ -8,6 +8,8 @@ import {
 } from '@koh/common';
 import {
   BadRequestException,
+  HttpException,
+  HttpStatus,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -83,7 +85,15 @@ export class QuestionService {
       if (question.group) question.group = null;
       else question.groupId = null;
     }
-    await question.save();
+    try {
+      await question.save();
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.questionController.saveQError,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
     return question;
   }
 

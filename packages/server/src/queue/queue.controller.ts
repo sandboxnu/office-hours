@@ -1,4 +1,5 @@
 import {
+  ERROR_MESSAGES,
   GetQueueResponse,
   ListQuestionsResponse,
   Role,
@@ -9,6 +10,8 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  HttpException,
+  HttpStatus,
   NotFoundException,
   Param,
   Patch,
@@ -18,13 +21,13 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { UserId } from 'profile/user.decorator';
+import { UserId } from 'decorators/user.decorator';
 import { Connection } from 'typeorm';
-import { JwtAuthGuard } from '../login/jwt-auth.guard';
-import { Roles } from '../profile/roles.decorator';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { Roles } from '../decorators/roles.decorator';
 import { QueueCleanService } from './queue-clean/queue-clean.service';
-import { QueueRole } from './queue-role.decorator';
-import { QueueRolesGuard } from './queue-role.guard';
+import { QueueRole } from '../decorators/queue-role.decorator';
+import { QueueRolesGuard } from '../guards/queue-role.guard';
 import { QueueSSEService } from './queue-sse.service';
 import { QueueModel } from './queue.entity';
 import { QueueService } from './queue.service';
@@ -43,7 +46,15 @@ export class QueueController {
   @Get(':queueId')
   @Roles(Role.TA, Role.PROFESSOR, Role.STUDENT)
   async getQueue(@Param('queueId') queueId: number): Promise<GetQueueResponse> {
-    return this.queueService.getQueue(queueId);
+    try {
+      return this.queueService.getQueue(queueId);
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.queueController.getQueue,
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
 
   @Get(':queueId/questions')
@@ -53,13 +64,21 @@ export class QueueController {
     @QueueRole() role: Role,
     @UserId() userId: number,
   ): Promise<ListQuestionsResponse> {
-    const questions = await this.queueService.getQuestions(queueId);
-    return await this.queueService.personalizeQuestions(
-      queueId,
-      questions,
-      userId,
-      role,
-    );
+    try {
+      const questions = await this.queueService.getQuestions(queueId);
+      return await this.queueService.personalizeQuestions(
+        queueId,
+        questions,
+        userId,
+        role,
+      );
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.queueController.getQuestions,
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
 
   @Patch(':queueId')
@@ -72,10 +91,17 @@ export class QueueController {
     if (queue === undefined) {
       throw new NotFoundException();
     }
-
     queue.notes = body.notes;
     queue.allowQuestions = body.allowQuestions;
-    await queue.save();
+    try {
+      await queue.save();
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.queueController.saveQueue,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
     return queue;
   }
 
@@ -83,10 +109,18 @@ export class QueueController {
   @Roles(Role.TA, Role.PROFESSOR)
   async cleanQueue(@Param('queueId') queueId: number): Promise<void> {
     // Clean up queue if necessary
-    setTimeout(async () => {
-      await this.queueCleanService.cleanQueue(queueId, true);
-      await this.queueSSEService.updateQueue(queueId);
-    });
+    try {
+      setTimeout(async () => {
+        await this.queueCleanService.cleanQueue(queueId, true);
+        await this.queueSSEService.updateQueue(queueId);
+      });
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.queueController.cleanQueue,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   // Endpoint to send frontend receive server-sent events when queue changes
@@ -104,6 +138,10 @@ export class QueueController {
       Connection: 'keep-alive',
     });
 
-    this.queueSSEService.subscribeClient(queueId, res, { role, userId });
+    try {
+      this.queueSSEService.subscribeClient(queueId, res, { role, userId });
+    } catch (err) {
+      console.error(err);
+    }
   }
 }

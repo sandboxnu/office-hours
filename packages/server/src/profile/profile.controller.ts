@@ -10,6 +10,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   NotFoundException,
   Param,
   Patch,
@@ -29,9 +31,9 @@ import { memoryStorage } from 'multer';
 import * as path from 'path';
 import * as sharp from 'sharp';
 import { Connection } from 'typeorm';
-import { JwtAuthGuard } from '../login/jwt-auth.guard';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { NotificationService } from '../notification/notification.service';
-import { User } from './user.decorator';
+import { User } from '../decorators/user.decorator';
 import { UserModel } from './user.entity';
 
 @Controller('profile')
@@ -47,6 +49,14 @@ export class ProfileController {
     @User(['courses', 'courses.course', 'phoneNotif', 'desktopNotifs'])
     user: UserModel,
   ): Promise<GetProfileResponse> {
+    if (user === null || user === undefined) {
+      console.error(ERROR_MESSAGES.profileController.accountNotAvailable);
+      throw new HttpException(
+        ERROR_MESSAGES.profileController.accountNotAvailable,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     const courses = user.courses
       .filter((userCourse) => userCourse.course.enabled)
       .map((userCourse) => {
@@ -79,6 +89,15 @@ export class ProfileController {
       'phoneNotifsEnabled',
       'insights',
     ]);
+
+    if (userResponse === null || userResponse === undefined) {
+      console.error(ERROR_MESSAGES.profileController.userResponseNotFound);
+      throw new HttpException(
+        ERROR_MESSAGES.profileController.userResponseNotFound,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     return {
       ...userResponse,
       courses,

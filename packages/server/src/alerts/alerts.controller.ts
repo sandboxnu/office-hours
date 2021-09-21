@@ -16,10 +16,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { pick } from 'lodash';
-import { JwtAuthGuard } from 'login/jwt-auth.guard';
-import { User } from 'profile/user.decorator';
+import { JwtAuthGuard } from 'guards/jwt-auth.guard';
+import { User } from 'decorators/user.decorator';
 import { UserModel } from 'profile/user.entity';
-import { Roles } from '../profile/roles.decorator';
+import { Roles } from '../decorators/roles.decorator';
 import { AlertModel } from './alerts.entity';
 import { AlertsService } from './alerts.service';
 

@@ -1,8 +1,18 @@
-import { KhouryDataParams, KhouryRedirectResponse } from '@koh/common';
 import {
+  ERROR_MESSAGES,
+  GetSelfEnrollResponse,
+  KhouryDataParams,
+  KhouryRedirectResponse,
+  Role,
+} from '@koh/common';
+import {
+  BadRequestException,
   Body,
   Controller,
   Get,
+  HttpException,
+  HttpStatus,
+  Param,
   Post,
   Query,
   Req,
@@ -13,10 +23,15 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as Sentry from '@sentry/node';
+import { CourseModel } from 'course/course.entity';
+import { User } from 'decorators/user.decorator';
 import { Request, Response } from 'express';
+import { JwtAuthGuard } from 'guards/jwt-auth.guard';
 import * as httpSignature from 'http-signature';
+import { UserCourseModel } from 'profile/user-course.entity';
+import { UserModel } from 'profile/user.entity';
 import { Connection } from 'typeorm';
-import { NonProductionGuard } from '../../src/non-production.guard';
+import { NonProductionGuard } from '../guards/non-production.guard';
 import { LoginCourseService } from './login-course.service';
 
 @Controller()
@@ -44,22 +59,6 @@ export class LoginController {
         Sentry.captureMessage('Invalid request signature: ' + parsedRequest);
         throw new UnauthorizedException('Invalid request signature');
       }
-
-      // TODO: IP validation isn't working on prod, need to look into later
-
-      // This checks if the request is coming from one of the khoury servers
-      // const verifyIP = this.configService
-      //   .get('KHOURY_SERVER_IP')
-      //   .includes(req.ip);
-      // if (!verifyIP) {
-      //   Sentry.captureMessage(
-      //     'The IP of the request does not seem to be coming from the Khoury server: ' +
-      //       req.ip,
-      //   );
-      //   throw new UnauthorizedException(
-      //     'The IP of the request does not seem to be coming from the Khoury server',
-      //   );
-      // }
     }
 
     let user;
@@ -68,14 +67,26 @@ export class LoginController {
     } catch (e) {
       Sentry.captureException(e);
       console.error('Khoury login threw an exception, the body was ', body);
-      throw e;
+      console.error(e);
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.addUserFromKhoury,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
-
     // Create temporary login token to send user to.
     const token = await this.jwtService.signAsync(
       { userId: user.id },
       { expiresIn: 60 },
     );
+
+    if (token === null || token === undefined) {
+      console.error('Temporary JWT is invalid');
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.invalidTempJWTToken,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
     return {
       redirect:
         this.configService.get('DOMAIN') + `/api/v1/login/entry?token=${token}`,
@@ -99,6 +110,14 @@ export class LoginController {
 
     const payload = this.jwtService.decode(token) as { userId: number };
 
+    if (payload === null || payload === undefined) {
+      console.error('Decoded JWT is invalid');
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.invalidPayload,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
     this.enter(res, payload.userId);
   }
 
@@ -119,6 +138,15 @@ export class LoginController {
       userId,
       expiresIn: 60 * 60 * 24 * 30,
     });
+
+    if (authToken === null || authToken === undefined) {
+      console.error('Authroziation JWT is invalid');
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.invalidTempJWTToken,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
     const isSecure = this.configService
       .get<string>('DOMAIN')
       .startsWith('https://');
@@ -135,5 +163,47 @@ export class LoginController {
     res
       .clearCookie('auth_token', { httpOnly: true, secure: isSecure })
       .redirect(302, '/login');
+  }
+
+  @Get('self_enroll_courses')
+  async selfEnrollEnabledAnywhere(): Promise<GetSelfEnrollResponse> {
+    const courses = await CourseModel.find();
+    return { courses: courses.filter((course) => course.selfEnroll) };
+  }
+
+  @Post('create_self_enroll_override/:id')
+  @UseGuards(JwtAuthGuard)
+  async createSelfEnrollOverride(
+    @Param('id') courseId: number,
+    @User() user: UserModel,
+  ): Promise<void> {
+    const course = await CourseModel.findOne(courseId);
+
+    if (!course.selfEnroll) {
+      throw new UnauthorizedException(
+        'Cannot self-enroll to this course currently',
+      );
+    }
+
+    const prevUCM = await UserCourseModel.findOne({
+      where: {
+        courseId,
+        userId: user.id,
+      },
+    });
+
+    if (prevUCM) {
+      throw new BadRequestException(
+        'User already has an override for this course',
+      );
+    }
+
+    await UserCourseModel.create({
+      userId: user.id,
+      courseId: courseId,
+      role: Role.STUDENT,
+      override: true,
+      expires: true,
+    }).save();
   }
 }

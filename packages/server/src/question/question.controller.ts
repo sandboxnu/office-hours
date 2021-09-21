@@ -18,6 +18,8 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  HttpException,
+  HttpStatus,
   NotFoundException,
   Param,
   Patch,
@@ -27,18 +29,18 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { Connection, In } from 'typeorm';
-import { JwtAuthGuard } from '../login/jwt-auth.guard';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import {
   NotificationService,
   NotifMsgs,
 } from '../notification/notification.service';
-import { Roles } from '../profile/roles.decorator';
+import { Roles } from '../decorators/roles.decorator';
 import { UserCourseModel } from '../profile/user-course.entity';
-import { User, UserId } from '../profile/user.decorator';
+import { User, UserId } from '../decorators/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { QuestionGroupModel } from './question-group.entity';
-import { QuestionRolesGuard } from './question-role.guard';
+import { QuestionRolesGuard } from '../guards/question-role.guard';
 import { QuestionModel } from './question.entity';
 import { QuestionService } from './question.service';
 
@@ -117,18 +119,25 @@ export class QuestionController {
       }
     }
 
-    const question = await QuestionModel.create({
-      queueId: queueId,
-      creator: user,
-      text,
-      questionType,
-      groupable,
-      status: QuestionStatusKeys.Drafting,
-      createdAt: new Date(),
-      isOnline: true,
-    }).save();
-
-    return question;
+    try {
+      const question = await QuestionModel.create({
+        queueId: queueId,
+        creator: user,
+        text,
+        questionType,
+        groupable,
+        status: QuestionStatusKeys.Drafting,
+        createdAt: new Date(),
+        isOnline: true,
+      }).save();
+      return question;
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.questionController.saveQError,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Patch(':questionId')
@@ -161,7 +170,15 @@ export class QuestionController {
         );
       }
       question = Object.assign(question, body);
-      await question.save();
+      try {
+        await question.save();
+      } catch (err) {
+        console.error(err);
+        throw new HttpException(
+          ERROR_MESSAGES.questionController.saveQError,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
       return question;
     }
 
@@ -201,16 +218,39 @@ export class QuestionController {
       relations: ['queue'],
     });
 
+    if (question === undefined || question === null) {
+      throw new HttpException(
+        ERROR_MESSAGES.questionController.notFound,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     if (question.status === LimboQuestionStatus.CantFind) {
-      await this.notifService.notifyUser(
-        question.creatorId,
-        NotifMsgs.queue.ALERT_BUTTON,
-      );
+      try {
+        await this.notifService.notifyUser(
+          question.creatorId,
+          NotifMsgs.queue.ALERT_BUTTON,
+        );
+      } catch (err) {
+        console.error(err);
+        throw new HttpException(
+          ERROR_MESSAGES.questionController.unableToNotifyUser,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     } else if (question.status === LimboQuestionStatus.TADeleted) {
-      await this.notifService.notifyUser(
-        question.creatorId,
-        NotifMsgs.queue.REMOVED,
-      );
+      try {
+        await this.notifService.notifyUser(
+          question.creatorId,
+          NotifMsgs.queue.REMOVED,
+        );
+      } catch (err) {
+        console.error(err);
+        throw new HttpException(
+          ERROR_MESSAGES.questionController.unableToNotifyUser,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
 

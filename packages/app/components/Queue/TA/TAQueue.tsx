@@ -1,3 +1,6 @@
+import { API } from "@koh/api-client";
+import { ERROR_MESSAGES, OpenQuestionStatus } from "@koh/common";
+import { notification } from "antd";
 import { QuestionStatusKeys, Role } from "@koh/common";
 import { Tooltip } from "antd";
 import React, { ReactElement, useState } from "react";
@@ -14,8 +17,37 @@ import {
   QueueInfoColumnButton,
 } from "../QueueListSharedComponents";
 import { EditQueueModal } from "./EditQueueModal";
-import onHelpQuestion from "./onHelpQuestion";
 import TAQueueListDetail from "./TAQueueListDetail";
+
+/**
+ * Method to help student and
+ * pop open notification if another TA helped at same time (race condition)
+ */
+async function onHelpQuestion(questionId: number): Promise<void> {
+  try {
+    await API.questions.update(questionId, {
+      status: OpenQuestionStatus.Helping,
+    });
+  } catch (e) {
+    if (
+      e.response?.status === 401 &&
+      e.response?.data?.message ===
+        ERROR_MESSAGES.questionController.updateQuestion.otherTAHelping
+    ) {
+      notification.open({
+        message: "Another TA is currently helping the student",
+        description:
+          "This happens when another TA clicks help at the exact same time",
+        type: "error",
+        duration: 3,
+        className: "hide-in-percy",
+        style: {
+          width: 450,
+        },
+      });
+    }
+  }
+}
 
 const Container = styled.div`
   flex: 1;

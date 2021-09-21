@@ -6,13 +6,11 @@ import { BackfillPhoneNotifs } from './backfill-phone-notifs.command';
 import { BackfillQuestionGroupable } from './backfill-question-groupable';
 import { BackfillUserInsights } from './backfill-user-insights.command';
 import { BackfillMakeEmptyPhotoURLNull } from './make-empty-photourl-null.command';
-import { BackfillQuestionFirstHelpedAt } from './question-first-helped-at.command';
 
 @Module({
   imports: [NotificationModule],
   providers: [
     BackfillPhoneNotifs,
-    BackfillQuestionFirstHelpedAt,
     BackfillMakeEmptyPhotoURLNull,
     BackfillCourseTimezones,
     BackfillHuskyEmailsAsNortheastern,

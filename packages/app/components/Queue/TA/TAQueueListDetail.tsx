@@ -14,6 +14,9 @@ import { SPLIT_DETAIL_BKPT } from "./TAQueueBreakpoints";
 import TAQueueDetail from "./TAQueueDetail";
 import TAQueueListSection from "./TAQueueListSection";
 
+// The min screen width at which the list and detail become side-by-side
+const SPLIT_DETAIL_BKPT = 900;
+
 const Container = styled.div`
   flex: 1;
 

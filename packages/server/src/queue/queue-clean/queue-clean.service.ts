@@ -1,16 +1,18 @@
 import {
   ClosedQuestionStatus,
-  OpenQuestionStatus,
   LimboQuestionStatus,
+  OpenQuestionStatus,
 } from '@koh/common';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import async from 'async';
 import { OfficeHourModel } from 'course/office-hour.entity';
-import moment = require('moment');
+import { EventModel, EventType } from 'profile/event-model.entity';
+import { UserCourseModel } from 'profile/user-course.entity';
 import { Connection, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { QuestionModel } from '../../question/question.entity';
 import { QueueModel } from '../queue.entity';
-import { EventModel, EventType } from 'profile/event-model.entity';
+import moment = require('moment');
 
 /**
  * Clean the queue and mark stale
@@ -22,7 +24,7 @@ export class QueueCleanService {
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async cleanAllQueues(): Promise<void> {
     const queuesWithOpenQuestions: QueueModel[] = await QueueModel.getRepository()
-      .createQueryBuilder('queue')
+      .createQueryBuilder('queue_model')
       .leftJoinAndSelect('queue_model.questions', 'question')
       .where('question.status IN (:...status)', {
         status: [
@@ -32,8 +34,11 @@ export class QueueCleanService {
       })
       .getMany();
 
-    await Promise.all(
-      queuesWithOpenQuestions.map((queue) => this.cleanQueue(queue.id)),
+    // Clean 1 queue at a time
+    await async.mapLimit(
+      queuesWithOpenQuestions,
+      1,
+      async (queue) => await this.cleanQueue(queue.id),
     );
   }
 
@@ -57,6 +62,15 @@ export class QueueCleanService {
       }
     });
     await QueueModel.save(queuesWithCheckedInStaff);
+  }
+
+  // TODO: move this to a course-clean service or something. This is just here because
+  // this feature was pushed out in a time crunch.
+  @Cron(CronExpression.EVERY_DAY_AT_3AM)
+  public async cleanSelfEnrollOverrides(): Promise<void> {
+    await UserCourseModel.delete({
+      expires: true,
+    });
   }
 
   public async cleanQueue(queueId: number, force?: boolean): Promise<void> {

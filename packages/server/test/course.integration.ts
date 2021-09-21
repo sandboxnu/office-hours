@@ -439,6 +439,7 @@ describe('Course Integration', () => {
           endDate: new Date(),
         })
         .expect(200);
+
       const checkinTimes = ((data.body as unknown) as TACheckinTimesResponse)
         .taCheckinTimes;
 

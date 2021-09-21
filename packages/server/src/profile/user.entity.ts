@@ -72,7 +72,7 @@ export class UserModel extends BaseEntity {
   insights: string[];
 
   @AfterLoad()
-  computeInsights() {
+  computeInsights(): void {
     let hideInsights = this.hideInsights;
     if (!hideInsights) {
       hideInsights = [];

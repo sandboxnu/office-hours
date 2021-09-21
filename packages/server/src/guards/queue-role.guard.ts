@@ -1,8 +1,8 @@
 import { ERROR_MESSAGES } from '@koh/common';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { RolesGuard } from '../guards/role.guard';
+import { RolesGuard } from './role.guard';
 import { UserModel } from '../profile/user.entity';
-import { QueueModel } from './queue.entity';
+import { QueueModel } from '../queue/queue.entity';
 
 @Injectable()
 export class QueueRolesGuard extends RolesGuard {

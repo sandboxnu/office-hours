@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UserModel } from 'profile/user.entity';
-import { QueueModel } from './queue.entity';
+import { QueueModel } from '../queue/queue.entity';
 
 export const QueueRole = createParamDecorator(
   async (data: unknown, ctx: ExecutionContext) => {

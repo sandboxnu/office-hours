@@ -34,4 +34,8 @@ export class UserCourseModel extends BaseEntity {
 
   @Column({ default: false })
   override: boolean;
+
+  // If this expires
+  @Column({ nullable: true, default: false })
+  expires: boolean;
 }
