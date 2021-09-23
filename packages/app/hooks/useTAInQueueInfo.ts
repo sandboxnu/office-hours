@@ -22,7 +22,7 @@ export function useTAInQueueInfo(queueId: number): TAInQueueInfo {
   const helpingQuestions = questions?.questionsGettingHelp?.filter(
     (question) => question.taHelped?.id === user?.id
   );
-  const helpingGroup = questions?.groups.find((g) => g.creator.id === user.id);
+  const helpingGroup = questions?.groups?.find((g) => g.creator.id === user.id);
   const isHelping = helpingQuestions?.length > 0 || !!helpingGroup;
 
   const isCheckedIn = queue?.staffList.some((e) => e.id === user?.id);
