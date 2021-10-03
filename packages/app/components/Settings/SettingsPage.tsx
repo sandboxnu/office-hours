@@ -13,10 +13,12 @@ import useSWR from "swr";
 import NotificationsSettings from "./NotificationsSettings";
 import ProfileSettings from "./ProfileSettings";
 import { SettingsPanelAvatar } from "./SettingsSharedComponents";
+import WithdrawCourseSettings from "./WithdrawCourseSettings";
 
 export enum SettingsOptions {
   PROFILE = "PROFILE",
   NOTIFICATIONS = "NOTIFICATIONS",
+  WITHDRAW = "WITHDRAW",
 }
 
 interface SettingsPageProps {
@@ -37,11 +39,9 @@ const ProfilePicButton = styled(Button)`
 export default function SettingsPage({
   defaultPage,
 }: SettingsPageProps): ReactElement {
-  const {
-    data: profile,
-    error,
-    mutate,
-  } = useSWR(`api/v1/profile`, async () => API.profile.index());
+  const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
+    API.profile.index()
+  );
 
   const [currentSettings, setCurrentSettings] = useState(
     defaultPage || SettingsOptions.PROFILE
@@ -139,6 +139,10 @@ export default function SettingsPage({
           >
             Notifications Settings
           </Menu.Item>
+
+          <Menu.Item key={SettingsOptions.WITHDRAW} icon={<DeleteOutlined />}>
+            Withdraw from course
+          </Menu.Item>
         </Menu>
       </Col>
       <VerticalDivider />
@@ -147,6 +151,9 @@ export default function SettingsPage({
           {currentSettings === SettingsOptions.PROFILE && <ProfileSettings />}
           {currentSettings === SettingsOptions.NOTIFICATIONS && (
             <NotificationsSettings />
+          )}
+          {currentSettings === SettingsOptions.WITHDRAW && (
+            <WithdrawCourseSettings />
           )}
         </Col>
       </Space>
