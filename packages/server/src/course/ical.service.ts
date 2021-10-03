@@ -17,10 +17,19 @@ import moment = require('moment');
 import { Cron } from '@nestjs/schedule';
 import { RedisService } from 'nestjs-redis';
 import * as Redlock from 'redlock';
+import { Season } from '../../../common/index';
 
 type Moment = moment.Moment;
 
 type CreateOfficeHour = DeepPartial<OfficeHourModel>[];
+
+const ICalStartDateMap = {
+  Fall: 9,
+  Spring: 1,
+  Summer_1: 5,
+  Summer_2: 7,
+  Summer_Full: 5,
+};
 
 @Injectable()
 export class IcalService {
@@ -113,6 +122,12 @@ export class IcalService {
     let resultOfficeHours = [];
 
     filteredOfficeHours.forEach((oh: VEvent) => {
+      // Filter out events that occur before the current semester
+      const currYear = new Date().getFullYear();
+      const currMonth = new Date().getMonth();
+      const eventYear = oh.dtstamp.getFullYear();
+      const eventMonth = oh.dtstamp.getMonth();
+
       // This office hour timezone. ASSUMING every date field has same timezone as oh.start
       const eventTZ = oh.start.tz;
       const { rrule } = oh as any;
