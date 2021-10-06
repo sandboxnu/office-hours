@@ -1,8 +1,8 @@
 import useSWR from "swr";
 import React, { ReactElement, useState } from "react";
 import { API } from "@koh/api-client";
-import { Button, Dropdown, Form, Menu, message, Modal, Select } from "antd";
-import { Role } from "@koh/common";
+import { Button, message, Modal, Select } from "antd";
+import { Role, UserCourse } from "@koh/common";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 export default function WithdrawCourseSettings(): ReactElement {
@@ -10,10 +10,11 @@ export default function WithdrawCourseSettings(): ReactElement {
     API.profile.index()
   );
 
-  const [toWidthdraw, setWithdraw] = useState<number>(-1);
+  const [toWithdraw, setWithdraw] = useState<number>(undefined);
   const [isValid, setValid] = useState<boolean>(false);
 
   const { Option } = Select;
+  const { confirm } = Modal;
 
   function onWithdrawChange(newCourseId: number) {
     setWithdraw(newCourseId);
@@ -33,10 +34,19 @@ export default function WithdrawCourseSettings(): ReactElement {
     }
   }
 
-  const { confirm } = Modal;
+  async function withdraw(course: UserCourse) {
+    await API.profile.withdrawCourse(course.course.id, {
+      email: profile?.email,
+      role: course.role as Role,
+    });
+    message.success("Successfully deleted the course: " + course.course.name);
+    setWithdraw(undefined);
+    setValid(false);
+    mutate();
+  }
 
   function showConfirm() {
-    const course = profile?.courses.find((c) => c.course.id == toWidthdraw);
+    const course = profile?.courses.find((c) => c.course.id == toWithdraw);
 
     confirm({
       title: `Please Confirm!`,
@@ -47,20 +57,9 @@ export default function WithdrawCourseSettings(): ReactElement {
         course.role
       )}.  The only way to get back is by contacting a professor!`,
       onOk() {
-        return new Promise(async (resolve, reject) => {
-          await API.profile.withdrawCourse(course.course.id, {
-            email: profile?.email,
-            role: course.role as Role,
-          });
-          message.success(
-            "Successfully deleted the override for " + course.course.name
-          );
-          return resolve;
-        });
+        withdraw(course);
       },
-      onCancel() {
-        console.log("Cancel");
-      },
+      onCancel() {},
     });
   }
 
@@ -73,6 +72,7 @@ export default function WithdrawCourseSettings(): ReactElement {
           placeholder="Select a course"
           optionFilterProp="children"
           onChange={onWithdrawChange}
+          value={toWithdraw}
           filterOption={(input, option) => {
             return (
               option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0

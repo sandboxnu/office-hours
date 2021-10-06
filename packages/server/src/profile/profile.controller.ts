@@ -241,7 +241,7 @@ export class ProfileController {
       );
     const userId = user.id;
     const userCourse = await UserCourseModel.findOne({
-      where: { courseId, userId, override: true },
+      where: { courseId, userId },
     });
     if (!userCourse) {
       throw new HttpException(
