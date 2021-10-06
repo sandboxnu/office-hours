@@ -39,7 +39,7 @@ export default function WithdrawCourseSettings(): ReactElement {
       email: profile?.email,
       role: course.role as Role,
     });
-    message.success("Successfully deleted the course: " + course.course.name);
+    message.success("Successfully withdrew from " + course.course.name);
     setWithdraw(undefined);
     setValid(false);
     mutate();
