@@ -72,6 +72,16 @@ class APIClient {
       this.req("PATCH", `/api/v1/profile`, undefined, body),
     deleteProfilePicture: async (): Promise<void> =>
       this.req("DELETE", `/api/v1/profile/delete_profile_picture`),
+    withdrawCourse: async (
+      courseId: number,
+      params: UpdateCourseOverrideBody
+    ): Promise<void> =>
+      this.req(
+        "DELETE",
+        `/api/v1/profile/${courseId}/withdraw_course`,
+        undefined,
+        params
+      ),
   };
   course = {
     get: async (courseId: number) =>
