@@ -2,15 +2,11 @@ import {
   StudentCourseFactory,
   UserFactory,
   CourseFactory,
-  TACourseFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
 import { ProfileModule } from '../src/profile/profile.module';
 import { PhoneNotifModel } from 'notification/phone-notif.entity';
 import { DesktopNotifModel } from 'notification/desktop-notif.entity';
-import { User } from 'decorators/user.decorator';
-import { queue } from 'async';
-import { userInfo } from 'os';
 
 describe('Profile Integration', () => {
   const supertest = setupIntegrationTest(ProfileModule);
