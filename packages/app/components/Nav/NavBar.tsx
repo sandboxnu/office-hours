@@ -121,9 +121,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     "defaultCourse",
     null
   );
-
   const [visible, setVisible] = useState<boolean>(false);
-
   const { pathname } = useRouter();
   const { course } = useCourse(courseId);
   const role = useRoleInCourse(courseId);

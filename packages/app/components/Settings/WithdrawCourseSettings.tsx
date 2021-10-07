@@ -5,6 +5,9 @@ import { Button, message, Modal, Select } from "antd";
 import { Role, UserCourse } from "@koh/common";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 
+const { Option } = Select;
+const { confirm } = Modal;
+
 export default function WithdrawCourseSettings(): ReactElement {
   const { data: profile, mutate } = useSWR(`api/v1/profile`, async () =>
     API.profile.index()
@@ -13,25 +16,15 @@ export default function WithdrawCourseSettings(): ReactElement {
   const [toWithdraw, setWithdraw] = useState<number>(undefined);
   const [isValid, setValid] = useState<boolean>(false);
 
-  const { Option } = Select;
-  const { confirm } = Modal;
+  const formattedRoles = {
+    student: "Student",
+    ta: "TA",
+    professor: "Professor",
+  };
 
   function onWithdrawChange(newCourseId: number) {
     setWithdraw(newCourseId);
     setValid(true);
-  }
-
-  function roleToString(role: Role) {
-    switch (role) {
-      case Role.PROFESSOR:
-        return "Professor";
-      case Role.STUDENT:
-        return "Student";
-      case Role.TA:
-        return "TA";
-      default:
-        return "unknown role";
-    }
   }
 
   async function withdraw(course: UserCourse) {
@@ -53,13 +46,12 @@ export default function WithdrawCourseSettings(): ReactElement {
       icon: <ExclamationCircleOutlined />,
       content: `Please confirm that you want to unenroll from ${
         course.course.name
-      } as ${roleToString(
-        course.role
-      )}.  The only way to get back is by contacting a professor!`,
+      } as ${
+        formattedRoles[course.role]
+      }.  The only way to get back is by contacting a professor!`,
       onOk() {
         withdraw(course);
       },
-      onCancel() {},
     });
   }
 
@@ -80,13 +72,13 @@ export default function WithdrawCourseSettings(): ReactElement {
           }}
         >
           {profile?.courses.map((c) => (
-            <Option value={`${c.course.id}`}>{`${c.course.name} (${roleToString(
-              c.role
-            )})`}</Option>
+            <Option key={c.course.id} value={`${c.course.id}`}>
+              {`${c.course.name} (${formattedRoles[c.role]})`}
+            </Option>
           ))}
         </Select>
         <Button type="primary" disabled={!isValid} onClick={showConfirm} danger>
-          withdraw
+          Withdraw
         </Button>
       </div>
     )

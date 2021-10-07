@@ -2,7 +2,6 @@ import {
   DesktopNotifPartial,
   ERROR_MESSAGES,
   GetProfileResponse,
-  Role,
   UpdateCourseOverrideBody,
   UpdateProfileParams,
 } from '@koh/common';
@@ -37,8 +36,6 @@ import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { NotificationService } from '../notification/notification.service';
 import { User } from '../decorators/user.decorator';
 import { UserModel } from './user.entity';
-import { CourseRolesGuard } from '../guards/course-roles.guard';
-import { Roles } from '../decorators/roles.decorator';
 import { UserCourseModel } from './user-course.entity';
 
 @Controller('profile')
