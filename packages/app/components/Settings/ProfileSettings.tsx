@@ -1,11 +1,17 @@
 import { API } from "@koh/api-client";
-import { UpdateProfileParams } from "@koh/common";
-import { Button, Form, Input, message } from "antd";
+import { Role, UpdateProfileParams } from "@koh/common";
+import { Button, Form, Input, message, Switch } from "antd";
 import { pick } from "lodash";
 import React, { ReactElement } from "react";
 import useSWR from "swr";
+import { useRouter } from "next/router";
+import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 
 export default function ProfileSettings(): ReactElement {
+  const router = useRouter();
+  const { cid } = router.query;
+  const role = useRoleInCourse(Number(cid));
+
   const { data: profile, mutate } = useSWR(`api/v1/profile`, async () =>
     API.profile.index()
   );
@@ -14,7 +20,14 @@ export default function ProfileSettings(): ReactElement {
   const editProfile = async (updateProfile: UpdateProfileParams) => {
     const newProfile = { ...profile, ...updateProfile };
     mutate(newProfile, false);
-    await API.profile.patch(pick(newProfile, ["firstName", "lastName"]));
+    await API.profile.patch(
+      pick(newProfile, [
+        "firstName",
+        "lastName",
+        "defaultMessage",
+        "includeDefaultMessage",
+      ])
+    );
     mutate();
     return newProfile;
   };
@@ -55,6 +68,25 @@ export default function ProfileSettings(): ReactElement {
         >
           <Input />
         </Form.Item>
+        {role === Role.TA && (
+          <div>
+            <Form.Item
+              label="Default TA Teams Message"
+              name="defaultMessage"
+              data-cy="defaultMessageInput"
+            >
+              <Input placeholder="Please Enter Your Message Here :D" />
+            </Form.Item>
+            <Form.Item
+              style={{ marginTop: "30px" }}
+              label="Enter Default Message in Teams"
+              name="includeDefaultMessage"
+              valuePropName="checked"
+            >
+              <Switch />
+            </Form.Item>
+          </div>
+        )}
       </Form>
       <Button key="submit" type="primary" onClick={handleOk}>
         Ok

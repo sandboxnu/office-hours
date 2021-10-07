@@ -1,4 +1,4 @@
-import { OpenQuestionStatus, Question } from "@koh/common";
+import { OpenQuestionStatus, Question, User } from "@koh/common";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
 import TAQueueDetailButtons from "./TAQueueDetailButtons";
@@ -48,10 +48,12 @@ export default function TAQueueDetail({
   courseId,
   queueId,
   question,
+  user,
 }: {
   courseId: number;
   queueId: number;
   question: Question;
+  user: User;
 }): ReactElement {
   return (
     <Container>
@@ -65,6 +67,7 @@ export default function TAQueueDetail({
             courseId={courseId}
             queueId={queueId}
             question={question}
+            user={user}
           />
         </div>
       </Header>

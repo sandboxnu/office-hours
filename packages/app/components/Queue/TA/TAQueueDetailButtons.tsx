@@ -14,6 +14,7 @@ import {
   Question,
   QuestionStatus,
   RephraseQuestionPayload,
+  User,
 } from "@koh/common";
 import { message, Popconfirm, Tooltip } from "antd";
 import React, { ReactElement, useCallback } from "react";
@@ -34,10 +35,12 @@ export default function TAQueueDetailButtons({
   courseId,
   queueId,
   question,
+  user,
 }: {
   courseId: number;
   queueId: number;
   question: Question;
+  user: User;
 }): ReactElement {
   const { mutateQuestions } = useQuestions(queueId);
 
@@ -176,8 +179,20 @@ export default function TAQueueDetailButtons({
               onClick={() => {
                 changeStatus(OpenQuestionStatus.Helping);
                 if (question.isOnline) {
+                  let defaultMessage = "";
+                  if (user.includeDefaultMessage) {
+                    if (!user.defaultMessage) {
+                      defaultMessage =
+                        "Hello! I'm " +
+                        user.firstName +
+                        ". " +
+                        "How can I help you today?";
+                    } else {
+                      defaultMessage = user.defaultMessage;
+                    }
+                  }
                   window.open(
-                    `https://teams.microsoft.com/l/chat/0/0?users=${question.creator.email}`
+                    `https://teams.microsoft.com/l/chat/0/0?users=${question.creator.email}&message=${defaultMessage}`
                   );
                 }
               }}

@@ -153,6 +153,7 @@ export default function TAQueueListDetail({
           courseId={courseId}
           queueId={queueId}
           question={selectedQuestion}
+          user={user}
         />
       )}
     </Detail>
