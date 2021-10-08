@@ -1,6 +1,7 @@
 import {
   StudentCourseFactory,
   UserFactory,
+  TACourseFactory,
   CourseFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
@@ -137,7 +138,8 @@ describe('Profile Integration', () => {
       expect(profile.body?.phoneNumber).toEqual('real0987654321');
     });
     it('lets ta change default teams message', async () => {
-      const user = await UserFactory.create({});
+      const user = await UserFactory.create();
+      await TACourseFactory.create({ user });
       let profile = await supertest({ userId: user.id }).get('/profile');
       expect(profile.body?.defaultMessage).toEqual(null);
       await supertest({ userId: user.id })
@@ -148,7 +150,8 @@ describe('Profile Integration', () => {
       expect(profile.body?.defaultMessage).toEqual("Hello! It's me :D");
     });
     it('lets ta change includeDefaultMessage', async () => {
-      const user = await UserFactory.create({});
+      const user = await UserFactory.create();
+      await TACourseFactory.create({ user });
       let profile = await supertest({ userId: user.id }).get('/profile');
       expect(profile.body?.includeDefaultMessage).toEqual(true);
       await supertest({ userId: user.id })

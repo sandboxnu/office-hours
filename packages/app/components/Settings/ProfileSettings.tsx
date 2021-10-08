@@ -11,6 +11,7 @@ export default function ProfileSettings(): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
   const role = useRoleInCourse(Number(cid));
+  const { TextArea } = Input;
 
   const { data: profile, mutate } = useSWR(`api/v1/profile`, async () =>
     API.profile.index()
@@ -68,23 +69,32 @@ export default function ProfileSettings(): ReactElement {
         >
           <Input />
         </Form.Item>
-        {role === Role.TA && (
+        {(role === Role.TA || role === Role.PROFESSOR) && (
           <div>
             <Form.Item
-              label="Default TA Teams Message"
-              name="defaultMessage"
-              data-cy="defaultMessageInput"
-            >
-              <Input placeholder="Please Enter Your Message Here :D" />
-            </Form.Item>
-            <Form.Item
-              style={{ marginTop: "30px" }}
-              label="Enter Default Message in Teams"
+              label="Open Teams Chat with Default Message"
               name="includeDefaultMessage"
               valuePropName="checked"
             >
               <Switch />
             </Form.Item>
+            {profile?.includeDefaultMessage && (
+              <Form.Item
+                style={{ marginTop: "30px" }}
+                label="Default Teams Message"
+                name="defaultMessage"
+                data-cy="defaultMessageInput"
+              >
+                <TextArea
+                  rows={4}
+                  placeholder={
+                    profile?.defaultMessage
+                      ? profile?.defaultMessage
+                      : "Enter Your Message Here"
+                  }
+                />
+              </Form.Item>
+            )}
           </div>
         )}
       </Form>

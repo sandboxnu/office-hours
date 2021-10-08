@@ -2,6 +2,7 @@ import {
   DesktopNotifPartial,
   ERROR_MESSAGES,
   GetProfileResponse,
+  Role,
   UpdateProfileParams,
 } from '@koh/common';
 import {
@@ -18,6 +19,7 @@ import {
   Post,
   Res,
   ServiceUnavailableException,
+  UnauthorizedException,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -30,11 +32,12 @@ import { pick } from 'lodash';
 import { memoryStorage } from 'multer';
 import * as path from 'path';
 import * as sharp from 'sharp';
-import { Connection } from 'typeorm';
+import { Connection, In } from 'typeorm';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { NotificationService } from '../notification/notification.service';
 import { User } from '../decorators/user.decorator';
 import { UserModel } from './user.entity';
+import { UserCourseModel } from 'profile/user-course.entity';
 
 @Controller('profile')
 @UseGuards(JwtAuthGuard)
@@ -97,6 +100,20 @@ export class ProfileController {
       throw new HttpException(
         ERROR_MESSAGES.profileController.userResponseNotFound,
         HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const isTaOrProf =
+      (await UserCourseModel.count({
+        where: {
+          user,
+          role: In([Role.TA, Role.PROFESSOR]),
+        },
+      })) > 0;
+
+    if (!isTaOrProf && userResponse.defaultMessage) {
+      throw new UnauthorizedException(
+        ERROR_MESSAGES.questionController.updateQuestion.taOnlyEditQuestionStatus,
       );
     }
 

@@ -14,10 +14,10 @@ import {
   Question,
   QuestionStatus,
   RephraseQuestionPayload,
-  User,
 } from "@koh/common";
 import { message, Popconfirm, Tooltip } from "antd";
 import React, { ReactElement, useCallback } from "react";
+import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
 import {
@@ -35,13 +35,12 @@ export default function TAQueueDetailButtons({
   courseId,
   queueId,
   question,
-  user,
 }: {
   courseId: number;
   queueId: number;
   question: Question;
-  user: User;
 }): ReactElement {
+  const profile = useProfile();
   const { mutateQuestions } = useQuestions(queueId);
 
   const changeStatus = useCallback(
@@ -69,6 +68,23 @@ export default function TAQueueDetailButtons({
       });
     } catch (e) {
       //If the ta creates an alert that already exists the error is caught and nothing happens
+    }
+  };
+
+  const helpStudent = () => {
+    changeStatus(OpenQuestionStatus.Helping);
+    if (question.isOnline) {
+      let defaultMessage = "";
+      if (profile.includeDefaultMessage) {
+        if (profile.defaultMessage) {
+          defaultMessage = `Hello! I'm ${profile.firstName}. How can I help you today?`;
+        } else {
+          defaultMessage = profile.defaultMessage;
+        }
+      }
+      window.open(
+        `https://teams.microsoft.com/l/chat/0/0?users=${question.creator.email}&message=${defaultMessage}`
+      );
     }
   };
 
@@ -176,26 +192,7 @@ export default function TAQueueDetailButtons({
           <span>
             <BannerPrimaryButton
               icon={<PhoneOutlined />}
-              onClick={() => {
-                changeStatus(OpenQuestionStatus.Helping);
-                if (question.isOnline) {
-                  let defaultMessage = "";
-                  if (user.includeDefaultMessage) {
-                    if (!user.defaultMessage) {
-                      defaultMessage =
-                        "Hello! I'm " +
-                        user.firstName +
-                        ". " +
-                        "How can I help you today?";
-                    } else {
-                      defaultMessage = user.defaultMessage;
-                    }
-                  }
-                  window.open(
-                    `https://teams.microsoft.com/l/chat/0/0?users=${question.creator.email}&message=${defaultMessage}`
-                  );
-                }
-              }}
+              onClick={() => helpStudent()}
               disabled={!canHelp}
               data-cy="help-student"
             />
