@@ -840,6 +840,9 @@ export const ERROR_MESSAGES = {
       taHelpingOther: "TA is already helping someone else",
       loginUserCantEdit: "Logged-in user does not have edit access",
     },
+    groupQuestions: {
+      notGroupable: "One or more of the questions is not groupable",
+    },
     saveQError: "Unable to save a question",
     notFound: "Question not found",
     unableToNotifyUser: "Unable to notify user",

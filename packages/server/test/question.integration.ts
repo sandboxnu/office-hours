@@ -543,6 +543,24 @@ describe('Question Integration', () => {
         })
         .expect(401);
     });
+    it('disallows grouping questions that have groupable as false', async () => {
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ course: course });
+      const q1 = await QuestionFactory.create({ queue });
+      const q2 = await QuestionFactory.create({ queue, groupable: false });
+      const ta = await UserFactory.create();
+      const usercourse = await TACourseFactory.create({
+        courseId: queue.courseId,
+        user: ta,
+      });
+      await supertest({ userId: ta.id })
+        .post(`/questions/group`)
+        .send({
+          questionIds: [q1.id, q2.id],
+          queueId: queue.id,
+        })
+        .expect(400);
+    });
   });
 
   describe('PATCH /resolveGroup/:group_id', () => {

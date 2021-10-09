@@ -267,6 +267,12 @@ export class QuestionController {
       relations: ['taHelped', 'creator'],
     });
 
+    if (!questions.every((q) => q.groupable)) {
+      throw new BadRequestException(
+        ERROR_MESSAGES.questionController.groupQuestions.notGroupable,
+      );
+    }
+
     await this.questionService.validateNotHelpingOther(
       QuestionStatusKeys.Helping,
       instructorId,
