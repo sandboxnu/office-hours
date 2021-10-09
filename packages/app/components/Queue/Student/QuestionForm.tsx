@@ -114,8 +114,6 @@ export default function QuestionForm({
   // on question groupable change, update the question groupable state
   const onGroupableChange = (e: RadioChangeEvent) => {
     setQuestionGroupable(e.target.value);
-    console.log(e.target.value);
-
     const questionFromStorage = storageQuestion ?? {};
 
     setStoredQuestion({
