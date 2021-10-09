@@ -549,7 +549,7 @@ describe('Question Integration', () => {
       const q1 = await QuestionFactory.create({ queue });
       const q2 = await QuestionFactory.create({ queue, groupable: false });
       const ta = await UserFactory.create();
-      const usercourse = await TACourseFactory.create({
+      await TACourseFactory.create({
         courseId: queue.courseId,
         user: ta,
       });
