@@ -67,7 +67,7 @@ export const QueueFactory = new Factory(QueueModel)
   .attr('isProfessorQueue', false);
 
 // WARNING: DO NOT USE CREATORID. AS YOU SEE HERE, WE ONLY ACCEPT CREATOR
-//TODO: make it accept creatorId as well
+// TODO: make it accept creatorId as well
 export const QuestionFactory = new Factory(QuestionModel)
   .attr('text', 'question description')
   .attr('status', 'Queued')
