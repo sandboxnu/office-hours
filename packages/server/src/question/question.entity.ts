@@ -12,6 +12,7 @@ import {
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { canChangeQuestionStatus } from './question-fsm';
+import { QuestionGroupModel } from './question-group.entity';
 
 @Entity('question_model')
 export class QuestionModel extends BaseEntity {
@@ -73,6 +74,17 @@ export class QuestionModel extends BaseEntity {
 
   @Column({ nullable: true })
   isOnline: boolean;
+
+  @Column({ nullable: true }) //TODO: delete constraint after backfill
+  groupable: boolean;
+
+  @ManyToOne((type) => QuestionGroupModel, { nullable: true })
+  @JoinColumn({ name: 'groupId' })
+  group: QuestionGroupModel;
+
+  @Column({ nullable: true })
+  @Exclude()
+  groupId: number;
 
   /**
    * change the status of the question as the given role

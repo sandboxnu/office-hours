@@ -1,4 +1,4 @@
-import { Question } from "@koh/common";
+import { Question, QuestionGroup } from "@koh/common";
 import { useProfile } from "./useProfile";
 import { useQuestions } from "./useQuestions";
 import { useQueue } from "./useQueue";
@@ -9,6 +9,7 @@ import { useQueue } from "./useQueue";
  */
 interface TAInQueueInfo {
   helpingQuestions: Question[];
+  helpingGroup: QuestionGroup;
   isHelping: boolean;
   isCheckedIn: boolean;
 }
@@ -21,9 +22,10 @@ export function useTAInQueueInfo(queueId: number): TAInQueueInfo {
   const helpingQuestions = questions?.questionsGettingHelp?.filter(
     (question) => question.taHelped?.id === user?.id
   );
-  const isHelping = helpingQuestions?.length > 0;
+  const helpingGroup = questions?.groups?.find((g) => g.creator.id === user.id);
+  const isHelping = helpingQuestions?.length > 0 || !!helpingGroup;
 
   const isCheckedIn = queue?.staffList.some((e) => e.id === user?.id);
 
-  return { helpingQuestions, isHelping, isCheckedIn };
+  return { helpingQuestions, helpingGroup, isHelping, isCheckedIn };
 }

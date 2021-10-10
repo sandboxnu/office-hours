@@ -1,4 +1,5 @@
 import { ArrowLeftOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { Question } from "@koh/common";
 import { useWindowWidth } from "@react-hook/window-size";
 import { Button, Skeleton, Tooltip } from "antd";
 import Link from "next/link";
@@ -7,6 +8,8 @@ import styled from "styled-components";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { SettingsOptions } from "../../Settings/SettingsPage";
+import EmptyGroupList from "./QuestionGrouping/EmptyGroupList";
+import TAGroupDetail from "./QuestionGrouping/TAGroupDetail";
 import TAQueueDetail from "./TAQueueDetail";
 import TAQueueListSection from "./TAQueueListSection";
 
@@ -74,24 +77,38 @@ export default function TAQueueListDetail({
   const user = useProfile();
   const [selectedQuestionId, setSelectedQuestionId] = useState<number>(null);
   const { questions } = useQuestions(queueId);
+  const [isGrouping, setIsGrouping] = useState<boolean>(false);
   const isSideBySide = useWindowWidth() >= SPLIT_DETAIL_BKPT;
 
+  const onSelectQuestion = (qId: number) => {
+    setSelectedQuestionId(qId);
+    setIsGrouping(false);
+  };
   const helpingQuestions = questions?.questionsGettingHelp?.filter(
     (q) => q.taHelped.id === user.id
   );
-  const allQuestionsList = questions
-    ? [...helpingQuestions, ...questions.queue, ...questions.priorityQueue]
+  const myGroup = questions?.groups.find(
+    (group) => group.creator.id === user.id
+  );
+  const groupedQuestions = myGroup ? myGroup.questions : [];
+  const allQuestionsList: Question[] = questions
+    ? [
+        ...helpingQuestions,
+        ...questions.queue,
+        ...questions.priorityQueue,
+        ...questions.groups.flatMap((e) => e.questions),
+      ]
     : [];
   const selectedQuestion = allQuestionsList.find(
     (q) => q.id === selectedQuestionId
   );
   // set currentQuestion to null if it no longer exists in the queue
   if (selectedQuestionId && !selectedQuestion) {
-    setSelectedQuestionId(null);
+    onSelectQuestion(null);
   }
   // set current question to first helping question if none is selected (used when help next is clicked)
   if (!selectedQuestionId && helpingQuestions.length) {
-    setSelectedQuestionId(helpingQuestions[0].id);
+    onSelectQuestion(helpingQuestions[0].id);
   }
 
   if (!questions) {
@@ -114,8 +131,27 @@ export default function TAQueueListDetail({
         <TAQueueListSection
           title={"Currently Helping"}
           questions={helpingQuestions}
-          onClickQuestion={setSelectedQuestionId}
+          onClickQuestion={onSelectQuestion}
           selectedQuestionId={selectedQuestionId}
+        />
+      </div>
+      <div data-cy="list-group">
+        <TAQueueListSection
+          title="Group Students"
+          questions={groupedQuestions}
+          onClickQuestion={() => {
+            setIsGrouping(true);
+            setSelectedQuestionId(null);
+          }}
+          collapsible
+          emptyDisplay={
+            <EmptyGroupList
+              onClick={() => {
+                setIsGrouping(true);
+                setSelectedQuestionId(null);
+              }}
+            />
+          }
         />
       </div>
       <div data-cy="list-priority">
@@ -129,7 +165,7 @@ export default function TAQueueListDetail({
             </span>
           }
           questions={questions.priorityQueue}
-          onClickQuestion={setSelectedQuestionId}
+          onClickQuestion={onSelectQuestion}
           selectedQuestionId={selectedQuestionId}
           collapsible
         />
@@ -138,7 +174,7 @@ export default function TAQueueListDetail({
         <TAQueueListSection
           title="Waiting In Line"
           questions={questions.queue}
-          onClickQuestion={setSelectedQuestionId}
+          onClickQuestion={onSelectQuestion}
           selectedQuestionId={selectedQuestionId}
           collapsible
           showNumbers
@@ -155,6 +191,13 @@ export default function TAQueueListDetail({
           question={selectedQuestion}
         />
       )}
+      {isGrouping && (
+        <TAGroupDetail
+          courseId={courseId}
+          queueId={queueId}
+          groupCreator={user}
+        />
+      )}
     </Detail>
   );
 
@@ -168,7 +211,7 @@ export default function TAQueueListDetail({
   } else if (selectedQuestionId) {
     return (
       <Container>
-        <BackToQueue onClick={() => setSelectedQuestionId(null)}>
+        <BackToQueue onClick={() => onSelectQuestion(null)}>
           <span>
             <ArrowLeftOutlined />
             {" Back To Queue"}
