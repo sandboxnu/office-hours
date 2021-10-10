@@ -25,12 +25,12 @@ import { UserId } from 'decorators/user.decorator';
 import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { Roles } from '../decorators/roles.decorator';
+import { QueueCleanService } from './queue-clean/queue-clean.service';
 import { QueueRole } from '../decorators/queue-role.decorator';
 import { QueueRolesGuard } from '../guards/queue-role.guard';
 import { QueueSSEService } from './queue-sse.service';
 import { QueueModel } from './queue.entity';
 import { QueueService } from './queue.service';
-import { QueueCleanService } from './queue-clean/queue-clean.service';
 
 @Controller('queues')
 @UseGuards(JwtAuthGuard, QueueRolesGuard)

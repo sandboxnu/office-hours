@@ -1,11 +1,12 @@
-import { OpenQuestionStatus, Question } from "@koh/common";
+import { Question } from "@koh/common";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
 import TAQueueDetailButtons from "./TAQueueDetailButtons";
+import TAQueueDetailQuestion from "./TAQueueDetailQuestion";
 
 const Container = styled.div``;
 
-const Header = styled.div`
+export const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -16,29 +17,6 @@ const Header = styled.div`
 const Email = styled.div`
   font-size: 12px;
   color: #8895a6;
-`;
-
-const QuestionTextBox = styled.div`
-  margin: 12px;
-  padding: 16px;
-  background: #ecf0f3;
-`;
-const QuestionText = styled.div`
-  font-size: 18px;
-  color: #595959;
-  margin-bottom: 20px;
-`;
-const QuestionTypePill = styled.span`
-  color: #264359;
-  background: #abd4f3;
-  padding: 3px 8px;
-  border-radius: 4px;
-`;
-
-const StillDrafting = styled.div`
-  margin: 12px 30px;
-  text-align: center;
-  font-size: 16px;
 `;
 
 /**
@@ -68,22 +46,11 @@ export default function TAQueueDetail({
           />
         </div>
       </Header>
-      {question.status === OpenQuestionStatus.Drafting ? (
-        <StillDrafting>
-          {question.creator.name} is drafting their question...
-        </StillDrafting>
-      ) : (
-        <QuestionTextBox>
-          {question.text || question.questionType ? (
-            <>
-              <QuestionText>{question.text}</QuestionText>
-              <QuestionTypePill>{question.questionType}</QuestionTypePill>
-            </>
-          ) : (
-            <p>No question details</p>
-          )}
-        </QuestionTextBox>
-      )}
+      <TAQueueDetailQuestion
+        courseId={courseId}
+        question={question}
+        queueId={queueId}
+      />
     </Container>
   );
 }

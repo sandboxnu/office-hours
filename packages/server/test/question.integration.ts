@@ -4,8 +4,10 @@ import {
   OpenQuestionStatus,
   QuestionStatusKeys,
   QuestionType,
+  Role,
 } from '@koh/common';
 import { UserModel } from 'profile/user.entity';
+import { QuestionGroupModel } from 'question/question-group.entity';
 import { QueueModel } from 'queue/queue.entity';
 import supertest from 'supertest';
 import { QuestionModel } from '../src/question/question.entity';
@@ -14,6 +16,7 @@ import {
   ClosedOfficeHourFactory,
   CourseFactory,
   QuestionFactory,
+  QuestionGroupFactory,
   QueueFactory,
   StudentCourseFactory,
   TACourseFactory,
@@ -66,6 +69,7 @@ describe('Question Integration', () => {
         questionType: QuestionType.Concept,
         queueId: queue.id,
         force,
+        groupable: true,
       });
 
     it('posts a new question', async () => {
@@ -84,6 +88,7 @@ describe('Question Integration', () => {
           questionType: null,
           queueId: queue.id,
           force: false,
+          groupable: true,
         })
         .expect(201);
       expect(response.body).toMatchObject({
@@ -92,6 +97,7 @@ describe('Question Integration', () => {
         closedAt: null,
         questionType: null,
         status: 'Drafting',
+        groupable: true,
       });
       expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(1);
     });
@@ -114,6 +120,7 @@ describe('Question Integration', () => {
           questionType: QuestionType.Concept,
           queueId: 999,
           force: false,
+          groupable: true,
         })
         .expect(404);
     });
@@ -161,6 +168,7 @@ describe('Question Integration', () => {
           questionType: 'bad param!',
           queueId: 1, // even with bad params we still need a queue
           force: false,
+          groupable: true,
         })
         .expect(400);
     });
@@ -462,6 +470,156 @@ describe('Question Integration', () => {
           status: QuestionStatusKeys.Helping,
         })
         .expect(400);
+    });
+  });
+
+  describe('POST /group', () => {
+    it('creates a new group and marks questions as helping', async () => {
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ course: course });
+      const q1 = await QuestionFactory.create({ queue });
+      const q2 = await QuestionFactory.create({ queue });
+      const q3 = await QuestionFactory.create({ queue });
+      const ta = await UserFactory.create();
+      const usercourse = await TACourseFactory.create({
+        courseId: queue.courseId,
+        user: ta,
+      });
+
+      expect(await QuestionModel.count({ where: { groupId: 1 } })).toEqual(0);
+      expect(await QuestionGroupModel.count()).toEqual(0);
+
+      await supertest({ userId: ta.id })
+        .post(`/questions/group`)
+        .send({
+          questionIds: [q1.id, q2.id],
+          queueId: queue.id,
+        })
+        .expect(201);
+
+      const newGroup = await QuestionGroupModel.findOne({
+        where: { creatorId: usercourse.id },
+        relations: ['questions'],
+      });
+      expect(newGroup).toBeDefined();
+      expect(newGroup.questions.length).toEqual(2);
+      expect(newGroup.questions.find((q) => q.id === q1.id)).toBeTruthy();
+      expect(newGroup.questions.find((q) => q.id === q2.id)).toBeTruthy();
+      expect(await QuestionModel.findOne({ id: q3.id })).toMatchObject({
+        groupId: null,
+        status: QuestionStatusKeys.Queued,
+      });
+      expect(await QuestionModel.findOne({ id: q1.id })).toMatchObject({
+        groupId: newGroup.id,
+        status: QuestionStatusKeys.Helping,
+      });
+      expect(await QuestionModel.findOne({ id: q2.id })).toMatchObject({
+        groupId: newGroup.id,
+        status: QuestionStatusKeys.Helping,
+      });
+    });
+    it('student cannot create group', async () => {
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ course: course });
+      const student = await UserFactory.create();
+      await StudentCourseFactory.create({
+        user: student,
+        courseId: queue.courseId,
+      });
+
+      const q = await QuestionFactory.create({
+        creator: student,
+        queue: queue,
+      });
+
+      const ta = await UserFactory.create();
+      await TACourseFactory.create({ course: q.queue.course, user: ta });
+
+      await supertest({ userId: q.creatorId })
+        .post(`/questions/group`)
+        .send({
+          questionIds: [q.id],
+          queueId: queue.id,
+        })
+        .expect(401);
+    });
+    it('disallows grouping questions that have groupable as false', async () => {
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ course: course });
+      const q1 = await QuestionFactory.create({ queue });
+      const q2 = await QuestionFactory.create({ queue, groupable: false });
+      const ta = await UserFactory.create();
+      await TACourseFactory.create({
+        courseId: queue.courseId,
+        user: ta,
+      });
+      await supertest({ userId: ta.id })
+        .post(`/questions/group`)
+        .send({
+          questionIds: [q1.id, q2.id],
+          queueId: queue.id,
+        })
+        .expect(400);
+    });
+  });
+
+  describe('PATCH /resolveGroup/:group_id', () => {
+    it('marks questions in a group (that are not priority queued) as resolved', async () => {
+      const course = await CourseFactory.create();
+      const queue = await QueueFactory.create({ course });
+      const ta = await UserFactory.create({
+        firstName: 'TSM',
+        lastName: 'Ninja',
+      });
+      const ucm = await UserCourseFactory.create({
+        course: queue.course,
+        user: ta,
+        role: Role.TA,
+      });
+
+      const group1 = await QuestionGroupFactory.create({
+        queue,
+        creator: ucm,
+      });
+      const g1q1 = await QuestionFactory.create({
+        queue,
+        groupable: true,
+        group: group1,
+        status: QuestionStatusKeys.Helping,
+        taHelped: ta,
+      });
+      const g1q2 = await QuestionFactory.create({
+        queue,
+        groupable: true,
+        group: group1,
+        status: QuestionStatusKeys.Helping,
+        taHelped: ta,
+      });
+      const g1q3 = await QuestionFactory.create({
+        queue,
+        groupable: true,
+        group: group1,
+        status: QuestionStatusKeys.PriorityQueued,
+        taHelped: ta,
+      });
+
+      await supertest({ userId: ta.id })
+        .patch(`/questions/resolveGroup/${group1.id}`)
+        .send({ queueId: queue.id })
+        .expect(200);
+
+      expect(await QuestionModel.findOne({ id: g1q3.id })).toMatchObject({
+        groupId: group1.id,
+        status: QuestionStatusKeys.PriorityQueued,
+      });
+      expect(await QuestionModel.findOne({ id: g1q1.id })).toMatchObject({
+        groupId: group1.id,
+        status: QuestionStatusKeys.Resolved,
+      });
+      expect(await QuestionModel.findOne({ id: g1q2.id })).toMatchObject({
+        groupId: group1.id,
+        status: QuestionStatusKeys.Resolved,
+      });
     });
   });
 });

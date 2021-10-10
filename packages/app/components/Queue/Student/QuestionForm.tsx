@@ -42,6 +42,7 @@ interface QuestionFormProps {
   finishQuestion: (
     text: string,
     questionType: QuestionType,
+    groupable: boolean,
     router: NextRouter,
     courseId: number
   ) => void;
@@ -71,6 +72,9 @@ export default function QuestionForm({
   );
   const [questionText, setQuestionText] = useState<string>(
     question?.text || ""
+  );
+  const [questionGroupable, setQuestionGroupable] = useState<boolean>(
+    question?.groupable === undefined || question?.groupable
   );
 
   useEffect(() => {
@@ -107,10 +111,28 @@ export default function QuestionForm({
     });
   };
 
+  // on question groupable change, update the question groupable state
+  const onGroupableChange = (e: RadioChangeEvent) => {
+    setQuestionGroupable(e.target.value);
+    const questionFromStorage = storageQuestion ?? {};
+
+    setStoredQuestion({
+      id: question?.id,
+      ...questionFromStorage,
+      groupable: e.target.value,
+    });
+  };
+
   // on button submit click, conditionally choose to go back to the queue
   const onClickSubmit = () => {
     if (questionTypeInput && questionText && questionText !== "") {
-      finishQuestion(questionText, questionTypeInput, router, Number(courseId));
+      finishQuestion(
+        questionText,
+        questionTypeInput,
+        questionGroupable,
+        router,
+        Number(courseId)
+      );
     }
   };
 
@@ -196,6 +218,22 @@ export default function QuestionForm({
           Be as descriptive and specific as possible in your answer. Your name
           will be hidden to other students, but your question will be visible so
           don&apos;t frame your question in a way that gives away the answer.
+        </QuestionCaption>
+
+        <QuestionText>
+          Would you like the option of being helped in a group session?
+        </QuestionText>
+        <Radio.Group
+          value={questionGroupable}
+          onChange={onGroupableChange}
+          style={{ marginBottom: 5 }}
+        >
+          <Radio value={true}>yes</Radio>
+          <Radio value={false}>no</Radio>
+        </Radio.Group>
+        <QuestionCaption>
+          Clicking Yes may result in a shorter wait time if others have the same
+          question as you.
         </QuestionCaption>
       </Container>
     </Modal>

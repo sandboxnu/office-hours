@@ -4,6 +4,7 @@ import {
   CreateQuestionResponse,
   ERROR_MESSAGES,
   GetQuestionResponse,
+  GroupQuestionsParams,
   LimboQuestionStatus,
   OpenQuestionStatus,
   QuestionStatusKeys,
@@ -38,9 +39,14 @@ import { UserCourseModel } from '../profile/user-course.entity';
 import { User, UserId } from '../decorators/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
+import { QuestionGroupModel } from './question-group.entity';
 import { QuestionRolesGuard } from '../guards/question-role.guard';
 import { QuestionModel } from './question.entity';
+import { QuestionService } from './question.service';
 
+// NOTE: FIXME: EVERY REQUEST INTO QUESTIONCONTROLLER REQUIRES THE BODY TO HAVE A
+// FIELD questionId OR queueId! If not, stupid weird untraceable bugs will happen
+// and you will lose a lot of development time
 @Controller('questions')
 @UseGuards(JwtAuthGuard, QuestionRolesGuard)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -48,6 +54,7 @@ export class QuestionController {
   constructor(
     private connection: Connection,
     private notifService: NotificationService,
+    private questionService: QuestionService,
   ) {}
 
   @Get(':questionId')
@@ -70,7 +77,7 @@ export class QuestionController {
     @Body() body: CreateQuestionParams,
     @User() user: UserModel,
   ): Promise<CreateQuestionResponse> {
-    const { text, questionType, queueId, force } = body;
+    const { text, questionType, groupable, queueId, force } = body;
 
     const queue = await QueueModel.findOne({
       where: { id: queueId },
@@ -118,6 +125,7 @@ export class QuestionController {
         creator: user,
         text,
         questionType,
+        groupable,
         status: QuestionStatusKeys.Drafting,
         createdAt: new Date(),
         isOnline: true,
@@ -190,76 +198,12 @@ export class QuestionController {
           ERROR_MESSAGES.questionController.updateQuestion.taOnlyEditQuestionStatus,
         );
       }
-      const oldStatus = question.status;
-      const newStatus = body.status;
-      // If the taHelped is already set, make sure the same ta updates the status
-      if (question.taHelped?.id !== userId) {
-        if (oldStatus === OpenQuestionStatus.Helping) {
-          throw new UnauthorizedException(
-            ERROR_MESSAGES.questionController.updateQuestion.otherTAHelping,
-          );
-        }
-        if (oldStatus === ClosedQuestionStatus.Resolved) {
-          throw new UnauthorizedException(
-            ERROR_MESSAGES.questionController.updateQuestion.otherTAResolved,
-          );
-        }
-      }
-
-      const isAlreadyHelpingOne =
-        (await QuestionModel.count({
-          where: {
-            taHelpedId: userId,
-            status: OpenQuestionStatus.Helping,
-          },
-        })) === 1;
-      if (isAlreadyHelpingOne && newStatus === OpenQuestionStatus.Helping) {
-        throw new BadRequestException(
-          ERROR_MESSAGES.questionController.updateQuestion.taHelpingOther,
-        );
-      }
-
-      const validTransition = question.changeStatus(newStatus, Role.TA);
-      if (!validTransition) {
-        throw new UnauthorizedException(
-          ERROR_MESSAGES.questionController.updateQuestion.fsmViolation(
-            'TA',
-            question.status,
-            body.status,
-          ),
-        );
-      }
-
-      // Set TA as taHelped when the TA starts helping the student
-      if (
-        oldStatus !== OpenQuestionStatus.Helping &&
-        newStatus === OpenQuestionStatus.Helping
-      ) {
-        question.taHelped = await UserModel.findOne(userId);
-        question.helpedAt = new Date();
-
-        // Set firstHelpedAt if it hasn't already
-        if (!question.firstHelpedAt) {
-          question.firstHelpedAt = question.helpedAt;
-        }
-        await this.notifService.notifyUser(
-          question.creator.id,
-          NotifMsgs.queue.TA_HIT_HELPED(question.taHelped.name),
-        );
-      }
-      if (newStatus in ClosedQuestionStatus) {
-        question.closedAt = new Date();
-      }
-      try {
-        await question.save();
-      } catch (err) {
-        console.error(err);
-        throw new HttpException(
-          ERROR_MESSAGES.questionController.saveQError,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
-      return question;
+      await this.questionService.validateNotHelpingOther(body.status, userId);
+      return await this.questionService.changeStatus(
+        body.status,
+        question,
+        userId,
+      );
     } else {
       throw new UnauthorizedException(
         ERROR_MESSAGES.questionController.updateQuestion.loginUserCantEdit,
@@ -308,5 +252,86 @@ export class QuestionController {
         );
       }
     }
+  }
+
+  @Post('group')
+  @Roles(Role.TA, Role.PROFESSOR)
+  async groupQuestions(
+    @Body() body: GroupQuestionsParams,
+    @UserId() instructorId: number,
+  ): Promise<void> {
+    const questions = await QuestionModel.find({
+      where: {
+        id: In(body.questionIds),
+      },
+      relations: ['taHelped', 'creator'],
+    });
+
+    if (!questions.every((q) => q.groupable)) {
+      throw new BadRequestException(
+        ERROR_MESSAGES.questionController.groupQuestions.notGroupable,
+      );
+    }
+
+    await this.questionService.validateNotHelpingOther(
+      QuestionStatusKeys.Helping,
+      instructorId,
+    );
+
+    for (const question of questions) {
+      await this.questionService.changeStatus(
+        QuestionStatusKeys.Helping,
+        question,
+        instructorId,
+      );
+    }
+
+    const queue = await QueueModel.findOne({
+      where: {
+        id: body.queueId,
+      },
+    });
+
+    const creatorUserCourse = await UserCourseModel.findOne({
+      where: {
+        courseId: queue.courseId,
+        userId: instructorId,
+      },
+    });
+
+    await QuestionGroupModel.create({
+      creatorId: creatorUserCourse.id, // this should be usercourse id
+      queueId: body.queueId,
+      questions: questions,
+    }).save();
+
+    return;
+  }
+
+  @Patch('resolveGroup/:group_id')
+  @Roles(Role.TA, Role.PROFESSOR)
+  async resolveGroup(
+    @Param('group_id') groupId: number,
+    @UserId() instructorId: number,
+  ): Promise<void> {
+    const group = await QuestionGroupModel.findOne({
+      where: {
+        id: groupId,
+      },
+      relations: ['questions', 'questions.taHelped', 'questions.creator'],
+    });
+
+    for (const question of group.questions) {
+      // only resolve q's that weren't requeued/can't find
+      if (question.status === OpenQuestionStatus.Helping) {
+        await this.questionService.changeStatus(
+          QuestionStatusKeys.Resolved,
+          question,
+          instructorId,
+        );
+      }
+    }
+
+    return;
   }
 }

@@ -2,6 +2,7 @@ import {
   ListQuestionsResponse,
   OpenQuestionStatus,
   Question,
+  QuestionGroup,
   Role,
   StatusInPriorityQueue,
   StatusInQueue,
@@ -53,6 +54,22 @@ export class QueueService {
       .leftJoinAndSelect('question.taHelped', 'taHelped')
       .getMany();
 
+    const groupMap: Record<number, QuestionGroup> = {};
+
+    questionsFromDb.forEach((question) => {
+      if (question.groupId) {
+        if (!groupMap[question.groupId]) {
+          groupMap[question.groupId] = {
+            id: question.groupId,
+            creator: question.taHelped,
+            questions: [question],
+          };
+        } else {
+          groupMap[question.groupId].questions.push(question);
+        }
+      }
+    });
+
     const questions = new ListQuestionsResponse();
 
     questions.queue = questionsFromDb.filter((question) =>
@@ -60,12 +77,15 @@ export class QueueService {
     );
 
     questions.questionsGettingHelp = questionsFromDb.filter(
-      (question) => question.status === OpenQuestionStatus.Helping,
+      (question) =>
+        question.status === OpenQuestionStatus.Helping && !question.groupId,
     );
 
     questions.priorityQueue = questionsFromDb.filter((question) =>
       StatusInPriorityQueue.includes(question.status as OpenQuestionStatus),
     );
+
+    questions.groups = Object.values(groupMap);
 
     return questions;
   }

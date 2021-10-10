@@ -1,4 +1,5 @@
 import { QuestionType, Role } from '@koh/common';
+import { QuestionGroupModel } from 'question/question-group.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { Factory } from 'typeorm-factory';
 import { CourseModel } from '../../src/course/course.entity';
@@ -72,9 +73,14 @@ export const QuestionFactory = new Factory(QuestionModel)
   .attr('text', 'question description')
   .attr('status', 'Queued')
   .attr('questionType', QuestionType.Other)
+  .attr('groupable', true)
   .assocOne('queue', QueueFactory)
   .assocOne('creator', UserFactory)
   .attr('createdAt', new Date());
+
+export const QuestionGroupFactory = new Factory(QuestionGroupModel)
+  .assocOne('creator', UserCourseFactory)
+  .assocOne('queue', QueueFactory);
 
 export const EventFactory = new Factory(EventModel)
   .attr('time', new Date())
