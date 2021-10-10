@@ -1,3 +1,4 @@
+import { QuestionGroupModel } from '../question/question-group.entity';
 import { BaseEntity } from 'typeorm';
 import { CourseModel } from '../course/course.entity';
 import { OfficeHourModel } from '../course/office-hour.entity';
@@ -9,6 +10,7 @@ export declare class QueueModel extends BaseEntity {
     courseId: number;
     room: string;
     questions: QuestionModel[];
+    groups: QuestionGroupModel[];
     notes: string;
     staffList: UserModel[];
     allowQuestions: boolean;

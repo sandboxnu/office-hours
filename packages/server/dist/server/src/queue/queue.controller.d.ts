@@ -1,10 +1,10 @@
 import { GetQueueResponse, ListQuestionsResponse, Role, UpdateQueueParams } from '@koh/common';
 import { Response } from 'express';
 import { Connection } from 'typeorm';
+import { QueueCleanService } from './queue-clean/queue-clean.service';
 import { QueueSSEService } from './queue-sse.service';
 import { QueueModel } from './queue.entity';
 import { QueueService } from './queue.service';
-import { QueueCleanService } from './queue-clean/queue-clean.service';
 export declare class QueueController {
     private connection;
     private queueSSEService;

@@ -1,3 +1,4 @@
+import { QuestionGroupModel } from 'question/question-group.entity';
 import { EventModel } from 'profile/event-model.entity';
 import { Factory } from 'typeorm-factory';
 import { CourseModel } from '../../src/course/course.entity';
@@ -19,4 +20,5 @@ export declare const CourseSectionFactory: Factory<CourseSectionMappingModel>;
 export declare const UserCourseFactory: Factory<UserCourseModel>;
 export declare const QueueFactory: Factory<QueueModel>;
 export declare const QuestionFactory: Factory<QuestionModel>;
+export declare const QuestionGroupFactory: Factory<QuestionGroupModel>;
 export declare const EventFactory: Factory<EventModel>;

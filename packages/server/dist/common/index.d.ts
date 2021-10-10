@@ -81,6 +81,7 @@ export declare class Question {
     helpedAt?: Date;
     closedAt?: Date;
     questionType?: QuestionType;
+    groupable: boolean;
     status: QuestionStatus;
     location?: string;
     isOnline?: boolean;
@@ -127,6 +128,11 @@ export declare const QuestionStatusKeys: {
     Helping: OpenQuestionStatus.Helping;
     PriorityQueued: OpenQuestionStatus.PriorityQueued;
 };
+export declare class QuestionGroup {
+    id: number;
+    questions: Array<Question>;
+    creator: UserPartial;
+}
 export declare type Season = "Fall" | "Spring" | "Summer_1" | "Summer_2" | "Summer_Full";
 export declare type DesktopNotifBody = {
     endpoint: string;
@@ -210,6 +216,7 @@ export declare class ListQuestionsResponse {
     questionsGettingHelp: Array<Question>;
     queue: Array<Question>;
     priorityQueue: Array<Question>;
+    groups: Array<QuestionGroup>;
 }
 export declare class GetQuestionResponse extends Question {
 }
@@ -219,6 +226,7 @@ export declare class GetStudentQuestionResponse extends Question {
 export declare class CreateQuestionParams {
     text: string;
     questionType?: QuestionType;
+    groupable: boolean;
     queueId: number;
     isOnline?: boolean;
     location?: string;
@@ -229,12 +237,20 @@ export declare class CreateQuestionResponse extends Question {
 export declare class UpdateQuestionParams {
     text?: string;
     questionType?: QuestionType;
+    groupable?: boolean;
     queueId?: number;
     status?: QuestionStatus;
     isOnline?: boolean;
     location?: string;
 }
 export declare class UpdateQuestionResponse extends Question {
+}
+export declare class GroupQuestionsParams {
+    questionIds: number[];
+    queueId: number;
+}
+export declare class ResolveGroupParams {
+    queueId: number;
 }
 export declare type TAUpdateStatusResponse = QueuePartial;
 export declare type QueueNotePayloadType = {
@@ -412,6 +428,9 @@ export declare const ERROR_MESSAGES: {
             otherTAResolved: string;
             taHelpingOther: string;
             loginUserCantEdit: string;
+        };
+        groupQuestions: {
+            notGroupable: string;
         };
         saveQError: string;
         notFound: string;
