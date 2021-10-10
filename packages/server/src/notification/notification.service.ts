@@ -35,7 +35,7 @@ export const NotifMsgs = {
   },
 };
 
-//TODO test this service omg
+//TODO test this service omg!
 @Injectable()
 export class NotificationService {
   desktopPublicKey: string;
