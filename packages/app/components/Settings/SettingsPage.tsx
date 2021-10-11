@@ -37,11 +37,9 @@ const ProfilePicButton = styled(Button)`
 export default function SettingsPage({
   defaultPage,
 }: SettingsPageProps): ReactElement {
-  const {
-    data: profile,
-    error,
-    mutate,
-  } = useSWR(`api/v1/profile`, async () => API.profile.index());
+  const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
+    API.profile.index()
+  );
 
   const [currentSettings, setCurrentSettings] = useState(
     defaultPage || SettingsOptions.PROFILE

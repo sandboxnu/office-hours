@@ -1,9 +1,18 @@
 import {
-  ERROR_MESSAGES,
-  GetSelfEnrollResponse,
   KhouryDataParams,
-  KhouryRedirectResponse,
+  OAuthAccessTokensRequest,
+  OAuthAccessTokensResponse,
+  RefreshToken,
+  AccessToken,
+  ERROR_MESSAGES,
+  KhouryTACourse,
+  GetSelfEnrollResponse,
   Role,
+  KHOURY_ADMIN_OAUTH_API_URL,
+  OAUTH_CLIENT_ID,
+  OAUTH_REDIRECT_URI,
+  OAUTH_SCOPES,
+  OAUTH_CLIENT_SECRET,
 } from '@koh/common';
 import {
   BadRequestException,
@@ -33,6 +42,7 @@ import { UserModel } from 'profile/user.entity';
 import { Connection } from 'typeorm';
 import { NonProductionGuard } from '../guards/non-production.guard';
 import { LoginCourseService } from './login-course.service';
+import axios from 'axios';
 
 @Controller()
 export class LoginController {
@@ -43,82 +53,327 @@ export class LoginController {
     private configService: ConfigService,
   ) {}
 
-  @Post('/khoury_login')
-  async recieveDataFromKhoury(
-    @Req() req: Request,
-    @Body() body: KhouryDataParams,
-  ): Promise<KhouryRedirectResponse> {
-    if (process.env.NODE_ENV === 'production') {
-      // Check that request has come from Khoury
-      const parsedRequest = httpSignature.parseRequest(req);
-      const verifySignature = httpSignature.verifyHMAC(
-        parsedRequest,
-        this.configService.get('KHOURY_PRIVATE_KEY'),
-      );
-      if (!verifySignature) {
-        Sentry.captureMessage('Invalid request signature: ' + parsedRequest);
-        throw new UnauthorizedException('Invalid request signature');
-      }
-    }
-
-    let user;
-    try {
-      user = await this.loginCourseService.addUserFromKhoury(body);
-    } catch (e) {
-      Sentry.captureException(e);
-      console.error('Khoury login threw an exception, the body was ', body);
-      console.error(e);
-      throw new HttpException(
-        ERROR_MESSAGES.loginController.addUserFromKhoury,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-    // Create temporary login token to send user to.
-    const token = await this.jwtService.signAsync(
-      { userId: user.id },
-      { expiresIn: 60 },
-    );
-
-    if (token === null || token === undefined) {
-      console.error('Temporary JWT is invalid');
-      throw new HttpException(
-        ERROR_MESSAGES.loginController.invalidTempJWTToken,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-
-    return {
-      redirect:
-        this.configService.get('DOMAIN') + `/api/v1/login/entry?token=${token}`,
-    };
+  /**
+   * Gets Access and Refresh tokens for the current user attempting to login using the passed temporary authorization code.
+   *
+   * @param res The response obkect
+   * @param body The request body that contains the access code that will be used to get access and refresh tokens
+   * @returns A pair value of Access and Refresh tokens
+   */
+  @Post('/oauth/tokens')
+  async getAccessTokens(
+    @Res() res: Response,
+    @Body() body: OAuthAccessTokensRequest,
+  ): Promise<OAuthAccessTokensResponse> {
+    const authCode = body.code;
+    const challenge = body.verifier;
+    const isSecure = this.configService
+      .get<string>('DOMAIN')
+      .startsWith('https://');
+    const token = axios
+      .post(
+        `${KHOURY_ADMIN_OAUTH_API_URL}/token?client_id=${OAUTH_CLIENT_ID}&client_secret=${OAUTH_CLIENT_SECRET}&grant_type=authorization_code&redirect_uri=${OAUTH_REDIRECT_URI}&code=${authCode}&${OAUTH_SCOPES}&verifier=${challenge}`,
+      )
+      .then((token) => {
+        const tokens = {
+          access: token.data.access,
+          refresh: token.data.refresh,
+        };
+        res.cookie('oauth_access', tokens.access, {
+          httpOnly: true,
+          secure: isSecure,
+        });
+        res.cookie('oauth_refresh', tokens.refresh, {
+          httpOnly: true,
+          secure: isSecure,
+        });
+        res.json(tokens);
+        return tokens;
+      })
+      .catch((e) => {
+        console.error(e);
+        Sentry.captureException(
+          'Error while getting Access and Refresh tokens: ' + e,
+        );
+        throw new HttpException(
+          ERROR_MESSAGES.loginController.unableToGetAccessToken,
+          HttpStatus.BAD_REQUEST,
+        );
+      });
+    return token;
   }
 
-  // NOTE: Although the two routes below are on the backend,
-  // they are meant to be visited by the browser so a cookie can be set
-
-  // This is the real admin entry point
-  @Get('/login/entry')
-  async enterFromKhoury(
+  /**
+   * Gets a new access token using the paired refresh token.
+   *
+   * @param res The response object
+   * @param body The refresh token being used to request a new access token
+   * @returns A new access token
+   */
+  @Post('/oauth/tokens/refresh')
+  async refreshAccessTokens(
     @Res() res: Response,
-    @Query('token') token: string,
-  ): Promise<void> {
-    const isVerified = await this.jwtService.verifyAsync(token);
+    @Body() body: RefreshToken,
+  ): Promise<AccessToken> {
+    const refreshToken = body.refresh;
+    const isSecure = this.configService
+      .get<string>('DOMAIN')
+      .startsWith('https://');
+    `${KHOURY_ADMIN_OAUTH_API_URL}/token/refresh?
+      client_id=${OAUTH_CLIENT_ID}
+      &refresh_token=${refreshToken}
+      &client_secret=${OAUTH_CLIENT_SECRET}
+      &grant_type=refresh_token
+      &redirect_uri=${OAUTH_REDIRECT_URI}
+      &${OAUTH_SCOPES}`;
 
+    const token = axios
+      .get(
+        `${KHOURY_ADMIN_OAUTH_API_URL}/token/refresh?client_id=${OAUTH_CLIENT_ID}&refresh_token=${refreshToken}&client_secret=${OAUTH_CLIENT_SECRET}&grant_type=refresh_token&redirect_uri=${OAUTH_REDIRECT_URI}&${OAUTH_SCOPES}`,
+      )
+      .then((token) => {
+        const tokens = {
+          access: token.data.access,
+        };
+        res.cookie('oauth_access', tokens.access, {
+          httpOnly: true,
+          secure: isSecure,
+        });
+        res.json(tokens);
+        return tokens;
+      })
+      .catch((e) => {
+        console.error(e);
+        Sentry.captureException('Error while getting Refresh token: ' + e);
+        throw new HttpException(
+          ERROR_MESSAGES.loginController.unabletoRefreshAccessToken,
+          HttpStatus.BAD_REQUEST,
+        );
+      });
+    return token;
+  }
+
+  /**
+   * Gets a user from the Khoury server and maps the user's account/courses into the Office Hours database.
+   *
+   * @param res The request object
+   * @param body The Access token used to get a user's information from the Khoury server
+   * @param req The request object
+   */
+  @Post('/oauth/user')
+  async getUser(
+    @Res() res: Response,
+    @Body() body: AccessToken,
+    @Req() req: Request,
+  ): Promise<void> {
+    let authorizationToken = 'Bearer ' + body.access;
+    let request;
+    try {
+      request = await axios.get(
+        KHOURY_ADMIN_OAUTH_API_URL + `/userinfo/read/`,
+        {
+          headers: {
+            Authorization: authorizationToken,
+          },
+        },
+      );
+    } catch (err) {
+      console.error(
+        'Error while retrieving user data from Khoury server: ' + err,
+      );
+      Sentry.captureException(
+        'Error while retrieving user data from Khoury server: ' + err,
+      );
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.unabletToGetUserInfo,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    let khouryData = {
+      first_name: request.data.firstname,
+      last_name: request.data.lastname,
+      email: request.data.email,
+      accountType: request.data.account_type,
+      campus: request.data.campus,
+      ta_courses: [],
+      courses: [],
+      photo_url: '',
+    };
+
+    // This is a student signing in so get the students list of courses
+    if (khouryData.accountType.includes('student')) {
+      khouryData.courses = await this.getCourses(authorizationToken);
+
+      // Get the courses the singing in student TA's for
+      khouryData.ta_courses = await this.getTACourses(
+        authorizationToken,
+        `/tainfo/read/`,
+        true,
+      );
+
+      // An instructor is signing in, get an instructor's courses and map it as the khoury Data TA courses
+    } else if (khouryData.accountType.includes('faculty')) {
+      khouryData.ta_courses = await this.getTACourses(
+        authorizationToken,
+        '/instructorcourses/read/',
+        false,
+      );
+    }
+
+    this.signInToOfficeHoursUser(khouryData)
+      .then((id) => {
+        this.createUserToken(id, res);
+      })
+      .catch((err) => {
+        console.error('Error while signing user in: ' + err);
+        Sentry.captureException('Error while signing user in: ' + err);
+        throw new HttpException(
+          ERROR_MESSAGES.loginController.officeHourUserDataError,
+          HttpStatus.BAD_REQUEST,
+        );
+      });
+  }
+
+  /**
+   * Gets the current student list of courses they are enrolled in
+   *
+   * @param accessToken The token used to get the student's current courses
+   * @returns The list of a student courses
+   */
+  private async getCourses(accessToken: string) {
+    let request;
+    let courses = [];
+    try {
+      request = await axios.get(
+        KHOURY_ADMIN_OAUTH_API_URL + '/studentcourses/read/',
+        {
+          headers: {
+            Authorization: accessToken,
+          },
+        },
+      );
+    } catch (err) {
+      console.error("Error while getting a student's courses: " + err);
+      Sentry.captureException(
+        "Error while getting a student's courses: " + err,
+      );
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.unableToGetStudentCourses,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    for (const course of request.data.courses) {
+      courses.push({
+        course: course.course,
+        semester: course.semester,
+        campus: course.campus,
+        section: course.section,
+        crn: course.crn,
+        title: course.title,
+        accelerated: course.accelerated,
+      });
+    }
+    return courses;
+  }
+
+  /**
+   * Returns the TA courses a student is in or an instructors courses
+   *
+   * @param accessToken The token used to access the courses resource
+   * @param url The URL to make a request to
+   * @param isStudent Whether the user is a student or an instructor
+   * @returns A list of TA courses for the student or instructor
+   */
+  private async getTACourses(
+    accessToken: string,
+    url: string,
+    isStudent: boolean,
+  ): Promise<KhouryTACourse[]> {
+    let request;
+    let courses = [];
+    try {
+      request = await axios.get(KHOURY_ADMIN_OAUTH_API_URL + url, {
+        headers: {
+          Authorization: accessToken,
+        },
+      });
+    } catch (err) {
+      console.error("Error while getting a TA's courses: " + err);
+      Sentry.captureException("Error while getting a TA's courses: " + err);
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.unableToGetTaInfo,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if (isStudent) {
+      /* 
+      The 'request.data.is_ta' has to be a separate check because if the account is a student but they are not a TA we do nothing.
+      If we did (isStudent && request.data.is_ta == true) then the above scenario would break as the code will go into the else clause
+      which is meant for ONLY instructors because they do not have the .is_ta check.
+      */
+      if (request.data.is_ta === true) {
+        for (const course of request.data.courses) {
+          courses.push({
+            course: course.course,
+            semester: course.semester,
+            campus: course.campus,
+          });
+        }
+      }
+    } else {
+      for (const course of request.data.courses) {
+        courses.push({
+          course: course.course,
+          semester: course.semester,
+          campus: course.campus,
+        });
+      }
+    }
+    return courses;
+  }
+
+  /**
+   * Creates an Office Hour JWT based on the user ID.
+   *
+   * @param userId The ID of the logging in user
+   * @param res The response object
+   */
+  private async createUserToken(userId: string, res: Response) {
+    // Create temporary login token to send user to.
+    const token = await this.jwtService.signAsync(
+      { userId: userId },
+      { expiresIn: 60 },
+    );
+    const isVerified = await this.jwtService.verifyAsync(token);
     if (!isVerified) {
       throw new UnauthorizedException();
     }
-
     const payload = this.jwtService.decode(token) as { userId: number };
-
-    if (payload === null || payload === undefined) {
-      console.error('Decoded JWT is invalid');
-      throw new HttpException(
-        ERROR_MESSAGES.loginController.invalidPayload,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-
     this.enter(res, payload.userId);
+  }
+
+  /**
+   * Adds the user from the Khoury server to the Office Hours database
+   *
+   * @param data The data received from the Khoury server regarding the user
+   * @returns The ID of the user
+   */
+  private async signInToOfficeHoursUser(
+    data: KhouryDataParams,
+  ): Promise<string> {
+    let user;
+    try {
+      user = await this.loginCourseService.addUserFromKhoury(data);
+    } catch (e) {
+      console.error('Khoury login threw an exception, the body was ', data);
+      console.error(e);
+      Sentry.captureException(
+        'Error while performing all the course mappings for the user: ' + e,
+      );
+      throw e;
+    }
+    return user.id;
   }
 
   // This is for login on development only
@@ -167,8 +422,16 @@ export class LoginController {
 
   @Get('self_enroll_courses')
   async selfEnrollEnabledAnywhere(): Promise<GetSelfEnrollResponse> {
-    const courses = await CourseModel.find();
-    return { courses: courses.filter((course) => course.selfEnroll) };
+    try {
+      const courses = await CourseModel.find();
+      return { courses: courses.filter((course) => course.selfEnroll) };
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.getUserCourseModel,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post('create_self_enroll_override/:id')
@@ -198,12 +461,20 @@ export class LoginController {
       );
     }
 
-    await UserCourseModel.create({
-      userId: user.id,
-      courseId: courseId,
-      role: Role.STUDENT,
-      override: true,
-      expires: true,
-    }).save();
+    try {
+      await UserCourseModel.create({
+        userId: user.id,
+        courseId: courseId,
+        role: Role.STUDENT,
+        override: true,
+        expires: true,
+      }).save();
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.saveUserCourseModel,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

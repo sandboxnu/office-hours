@@ -1,8 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class AddSubmittedCourseFields1619126213146
-  implements MigrationInterface
-{
+  implements MigrationInterface {
   name = 'AddSubmittedCourseFields1619126213146';
 
   public async up(queryRunner: QueryRunner): Promise<void> {

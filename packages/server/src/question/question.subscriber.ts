@@ -17,8 +17,7 @@ import { QuestionModel } from './question.entity';
 
 @EventSubscriber()
 export class QuestionSubscriber
-  implements EntitySubscriberInterface<QuestionModel>
-{
+  implements EntitySubscriberInterface<QuestionModel> {
   private notifService: NotificationService;
   private queueSSEService: QueueSSEService;
   constructor(

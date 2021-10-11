@@ -17,6 +17,17 @@ import "reflect-metadata";
 
 export const PROD_URL = "https://officehours.khoury.northeastern.edu";
 export const STAGING_URL = "https://staging.khouryofficehours.com";
+
+export const KHOURY_ADMIN_OAUTH_API_URL =
+  "https://admin.khoury.northeastern.edu/api/oauth";
+export const KHOURY_ADMIN_OAUTH_URL =
+  "https://admin.khoury.northeastern.edu/oauth";
+export const OAUTH_CLIENT_ID = "<replace_with_khoury_client_id>";
+export const OAUTH_CLIENT_SECRET = "<replace_with_khoury_client_secret>";
+export const OAUTH_REDIRECT_URI = "<replace_with_sandbox_oauth_page>";
+export const OAUTH_SCOPES =
+  "scopes=user.info&scopes=ta.info&scopes=student.courses&scopes=instructor.courses";
+
 // Get domain. works on node and browser
 const domain = (): string | false =>
   process.env.DOMAIN ||
@@ -342,6 +353,46 @@ export type PhoneNotifBody = {
 // Office Hours Response Types
 export class GetProfileResponse extends User {}
 
+/**
+ * @param access - represents an access token that can be used to get data from the Khoury Admin OAuth routes
+ * @param refresh - represents a refresh token that can be used to get new access tokens once the access token expires
+ */
+export class OAuthAccessTokensResponse {
+  @IsString()
+  access!: string;
+
+  @IsString()
+  refresh!: string;
+}
+
+/**
+ * @param access - represents an access token that can be used to get data from the Khoury Admin OAuth routes
+ */
+export class AccessToken {
+  @IsString()
+  access!: string;
+}
+
+/**
+ * @param refresh - represents a refresh token that can be used to get new access tokens once the access token expires
+ */
+export class RefreshToken {
+  @IsString()
+  refresh!: string;
+}
+
+/**
+ * @param code - represents the authorization code that can be used to request access/refresh tokens for a user from the OAuth server
+ * @param verifier - represents the SHA-256 verifier that was passed in the initial OAuth flow
+ */
+export class OAuthAccessTokensRequest {
+  @IsString()
+  code!: string;
+
+  @IsString()
+  verifier!: string;
+}
+
 export class KhouryDataParams {
   @IsString()
   email!: string;
@@ -404,6 +455,7 @@ export class KhouryTACourse {
   instructor!: number;
 }
 
+// TODO: Get rid of this interface
 export interface KhouryRedirectResponse {
   redirect: string;
 }
@@ -849,10 +901,19 @@ export const ERROR_MESSAGES = {
   },
   loginController: {
     receiveDataFromKhoury: "Invalid request signature",
+    unableToGetAccessToken: "Unable to retrieve access token",
+    unabletoRefreshAccessToken: "Unable to refresh access token",
+    unabletToGetUserInfo: "Unable to get user data",
+    unableToGetTaInfo: "Unable to get TA data",
+    unableToGetInstructorCourses: "Unable to get instructor courses",
+    unableToGetStudentCourses: "Unable to get student courses",
+    officeHourUserDataError: "Unable to get a user's office hour account",
     invalidPayload: "The decoded JWT payload is invalid",
     invalidTempJWTToken: "Error occurred while signing a JWT token",
     addUserFromKhoury:
       "Error occurred while translating account from Khoury to Office Hours",
+    saveUserCourseModel: "Unable to save user course model",
+    getUserCourseModel: "Unable to get user course model",
   },
   notificationController: {
     messageNotFromTwilio: "Message not from Twilio",

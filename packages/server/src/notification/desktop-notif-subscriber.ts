@@ -9,8 +9,7 @@ import { NotificationService } from './notification.service';
 
 @EventSubscriber()
 export class DesktopNotifSubscriber
-  implements EntitySubscriberInterface<DesktopNotifModel>
-{
+  implements EntitySubscriberInterface<DesktopNotifModel> {
   notifService: NotificationService;
   constructor(connection: Connection, notifService: NotificationService) {
     this.notifService = notifService;

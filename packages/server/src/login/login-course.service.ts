@@ -5,6 +5,7 @@ import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
 import { Connection } from 'typeorm';
+import * as Sentry from '@sentry/node';
 
 @Injectable()
 export class LoginCourseService {
@@ -35,7 +36,6 @@ export class LoginCourseService {
         c.course,
         c.section,
       );
-
       if (course) {
         const userCourse = await this.courseToUserCourse(
           user.id,
@@ -49,13 +49,18 @@ export class LoginCourseService {
     if (info.ta_courses) {
       for (const c of info.ta_courses) {
         // Query for all the courses which match the name of the generic course from Khoury
-        const courseMappings = (
-          await CourseSectionMappingModel.find({
-            where: { genericCourseName: c.course }, // TODO: Add semester support
-            relations: ['course'],
-          })
-        ).filter((cm) => cm.course.enabled);
-
+        let courseMappings: CourseSectionMappingModel[];
+        try {
+          courseMappings = (
+            await CourseSectionMappingModel.find({
+              where: { genericCourseName: c.course }, // TODO: Add semester support
+              relations: ['course'],
+            })
+          ).filter((cm) => cm.course.enabled);
+        } catch (err) {
+          Sentry.captureException(err);
+          console.error(err);
+        }
         for (const courseMapping of courseMappings) {
           const taCourse = await this.courseToUserCourse(
             user.id,
@@ -66,7 +71,6 @@ export class LoginCourseService {
         }
       }
     }
-
     // Delete "stale" user courses
     for (const previousCourse of user.courses) {
       if (
@@ -80,7 +84,6 @@ export class LoginCourseService {
         }
       }
     }
-
     user.courses = userCourses;
     await user.save();
     return user;
@@ -90,13 +93,18 @@ export class LoginCourseService {
     courseName: string,
     courseSection: number,
   ): Promise<CourseModel> {
-    const courseSectionModel = (
-      await CourseSectionMappingModel.find({
-        where: { genericCourseName: courseName, section: courseSection },
-        relations: ['course'],
-      })
-    ).find((cm) => cm.course.enabled);
-
+    let courseSectionModel: CourseSectionMappingModel;
+    try {
+      courseSectionModel = (
+        await CourseSectionMappingModel.find({
+          where: { genericCourseName: courseName, section: courseSection },
+          relations: ['course'],
+        })
+      ).find((cm) => cm.course.enabled);
+    } catch (err) {
+      Sentry.captureException(err);
+      console.log(err);
+    }
     return courseSectionModel?.course;
   }
 
@@ -111,14 +119,24 @@ export class LoginCourseService {
     });
     if (userCourse && userCourse.override && userCourse.role === role) {
       userCourse.override = false;
-      await userCourse.save();
+      try {
+        await userCourse.save();
+      } catch (err) {
+        Sentry.captureException(err);
+        console.error(err);
+      }
     }
     if (!userCourse) {
-      userCourse = await UserCourseModel.create({
-        userId,
-        courseId,
-        role,
-      }).save();
+      try {
+        userCourse = await UserCourseModel.create({
+          userId,
+          courseId,
+          role,
+        }).save();
+      } catch (err) {
+        Sentry.captureException(err);
+        console.error(err);
+      }
     }
     return userCourse;
   }

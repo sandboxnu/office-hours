@@ -3,7 +3,6 @@ import {
   CreateAlertResponse,
   CreateQuestionParams,
   CreateQuestionResponse,
-  DateRangeType,
   DesktopNotifBody,
   DesktopNotifPartial,
   GetAlertsResponse,
@@ -16,10 +15,7 @@ import {
   GetReleaseNotesResponse,
   GroupQuestionsParams,
   GetSelfEnrollResponse,
-  ListInsightsResponse,
   ListQuestionsResponse,
-  SemesterPartial,
-  SubmitCourseParams,
   TACheckinTimesResponse,
   TACheckoutResponse,
   TAUpdateStatusResponse,
@@ -29,6 +25,14 @@ import {
   UpdateQuestionParams,
   UpdateQuestionResponse,
   UpdateQueueParams,
+  ListInsightsResponse,
+  DateRangeType,
+  SubmitCourseParams,
+  SemesterPartial,
+  OAuthAccessTokensResponse,
+  OAuthAccessTokensRequest,
+  AccessToken,
+  RefreshToken,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -245,7 +249,21 @@ class APIClient {
       this.req("PATCH", `/api/v1/alerts/${alertId}`);
     },
   };
-
+  oauth = {
+    tokens: async (
+      param: OAuthAccessTokensRequest
+    ): Promise<OAuthAccessTokensResponse> =>
+      this.req(
+        "POST",
+        `/api/v1/oauth/tokens`,
+        OAuthAccessTokensResponse,
+        param
+      ),
+    renewToken: async (param: RefreshToken): Promise<AccessToken> =>
+      this.req("POST", "/api/v1/oauth/tokens/refresh", AccessToken, param),
+    userInfo: async (param: AccessToken): Promise<void> =>
+      this.req("POST", `/api/v1/oauth/user`, undefined, param),
+  };
   constructor(baseURL = "") {
     this.axios = Axios.create({ baseURL: baseURL });
   }
