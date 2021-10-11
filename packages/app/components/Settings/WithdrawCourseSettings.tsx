@@ -23,7 +23,6 @@ export default function WithdrawCourseSettings(): ReactElement {
   };
 
   function onWithdrawChange(newCourseId: number) {
-    debugger;
     setWithdraw(newCourseId);
   }
 
