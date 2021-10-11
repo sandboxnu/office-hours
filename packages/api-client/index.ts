@@ -72,16 +72,6 @@ class APIClient {
       this.req("PATCH", `/api/v1/profile`, undefined, body),
     deleteProfilePicture: async (): Promise<void> =>
       this.req("DELETE", `/api/v1/profile/delete_profile_picture`),
-    withdrawCourse: async (
-      courseId: number,
-      params: UpdateCourseOverrideBody
-    ): Promise<void> =>
-      this.req(
-        "DELETE",
-        `/api/v1/profile/${courseId}/withdraw_course`,
-        undefined,
-        params
-      ),
   };
   course = {
     get: async (courseId: number) =>
@@ -113,6 +103,12 @@ class APIClient {
         `/api/v1/courses/${courseId}/update_override`,
         undefined,
         params
+      ),
+    withdrawCourse: async (courseId: number): Promise<void> =>
+      this.req(
+        "DELETE",
+        `/api/v1/courses/${courseId}/withdraw_course`,
+        undefined
       ),
     submitCourse: async (params: SubmitCourseParams): Promise<void> =>
       this.req("POST", `/api/v1/courses/submit_course`, undefined, params),

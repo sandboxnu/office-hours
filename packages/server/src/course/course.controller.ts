@@ -33,7 +33,7 @@ import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { Connection, getRepository, MoreThanOrEqual } from 'typeorm';
 import { Roles } from '../decorators/roles.decorator';
-import { User } from '../decorators/user.decorator';
+import { User, UserId } from '../decorators/user.decorator';
 import { CourseRolesGuard } from '../guards/course-roles.guard';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { UserModel } from '../profile/user.entity';
@@ -505,21 +505,19 @@ export class CourseController {
     const userCourse = await UserCourseModel.findOne({
       where: { courseId, userId, override: true },
     });
-    if (!userCourse) {
-      throw new HttpException(
-        ERROR_MESSAGES.courseController.courseNotFound,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    try {
-      await UserCourseModel.remove(userCourse);
-    } catch (err) {
-      console.error(err);
-      throw new HttpException(
-        ERROR_MESSAGES.courseController.removeCourse,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    await this.courseService.removeUserFromCourse(userCourse);
+  }
+
+  @Delete(':id/withdraw_course')
+  @UseGuards(JwtAuthGuard)
+  async withdrawCourse(
+    @Param('id') courseId: number,
+    @UserId() userId: number,
+  ): Promise<void> {
+    const userCourse = await UserCourseModel.findOne({
+      where: { courseId, userId },
+    });
+    await this.courseService.removeUserFromCourse(userCourse);
   }
 
   @Post('submit_course')

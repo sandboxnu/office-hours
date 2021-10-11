@@ -2,7 +2,6 @@ import {
   DesktopNotifPartial,
   ERROR_MESSAGES,
   GetProfileResponse,
-  UpdateCourseOverrideBody,
   UpdateProfileParams,
 } from '@koh/common';
 import {
@@ -36,7 +35,6 @@ import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { NotificationService } from '../notification/notification.service';
 import { User } from '../decorators/user.decorator';
 import { UserModel } from './user.entity';
-import { UserCourseModel } from './user-course.entity';
 
 @Controller('profile')
 @UseGuards(JwtAuthGuard)
@@ -219,40 +217,6 @@ export class ProfileController {
             return;
           }
         },
-      );
-    }
-  }
-
-  @Delete(':id/withdraw_course')
-  @UseGuards(JwtAuthGuard)
-  async deleteOverride(
-    @Param('id') courseId: number,
-    @Body() overrideInfo: UpdateCourseOverrideBody,
-  ): Promise<void> {
-    const user = await UserModel.findOne({
-      where: { email: overrideInfo.email },
-    });
-    if (!user)
-      throw new BadRequestException(
-        ERROR_MESSAGES.courseController.noUserFound,
-      );
-    const userId = user.id;
-    const userCourse = await UserCourseModel.findOne({
-      where: { courseId, userId },
-    });
-    if (!userCourse) {
-      throw new HttpException(
-        ERROR_MESSAGES.courseController.courseNotFound,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    try {
-      await UserCourseModel.remove(userCourse);
-    } catch (err) {
-      console.error(err);
-      throw new HttpException(
-        ERROR_MESSAGES.courseController.removeCourse,
-        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }

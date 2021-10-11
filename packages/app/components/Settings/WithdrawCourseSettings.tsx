@@ -2,8 +2,9 @@ import useSWR from "swr";
 import React, { ReactElement, useState } from "react";
 import { API } from "@koh/api-client";
 import { Button, message, Modal, Select } from "antd";
-import { Role, UserCourse } from "@koh/common";
+import { UserCourse } from "@koh/common";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
+import Router from "next/router";
 
 const { Option } = Select;
 const { confirm } = Modal;
@@ -14,7 +15,6 @@ export default function WithdrawCourseSettings(): ReactElement {
   );
 
   const [toWithdraw, setWithdraw] = useState<number>(undefined);
-  const [isValid, setValid] = useState<boolean>(false);
 
   const formattedRoles = {
     student: "Student",
@@ -23,23 +23,20 @@ export default function WithdrawCourseSettings(): ReactElement {
   };
 
   function onWithdrawChange(newCourseId: number) {
+    debugger;
     setWithdraw(newCourseId);
-    setValid(true);
   }
 
   async function withdraw(course: UserCourse) {
-    await API.profile.withdrawCourse(course.course.id, {
-      email: profile?.email,
-      role: course.role as Role,
-    });
+    await API.course.withdrawCourse(course.course.id);
     message.success("Successfully withdrew from " + course.course.name);
     setWithdraw(undefined);
-    setValid(false);
     mutate();
+    await Router.push("/");
   }
 
   function showConfirm() {
-    const course = profile?.courses.find((c) => c.course.id == toWithdraw);
+    const course = profile?.courses.find((c) => c.course.id === toWithdraw);
 
     confirm({
       title: `Please Confirm!`,
@@ -61,7 +58,7 @@ export default function WithdrawCourseSettings(): ReactElement {
         <Select
           showSearch
           style={{ width: 200 }}
-          placeholder="Select a course"
+          placeholder="Select a Course"
           optionFilterProp="children"
           onChange={onWithdrawChange}
           value={toWithdraw}
@@ -72,12 +69,18 @@ export default function WithdrawCourseSettings(): ReactElement {
           }}
         >
           {profile?.courses.map((c) => (
-            <Option key={c.course.id} value={`${c.course.id}`}>
+            <Option key={c.course.id} value={c.course.id}>
               {`${c.course.name} (${formattedRoles[c.role]})`}
             </Option>
           ))}
         </Select>
-        <Button type="primary" disabled={!isValid} onClick={showConfirm} danger>
+        <Button
+          style={{ marginLeft: "20px" }}
+          type="primary"
+          disabled={toWithdraw === undefined}
+          onClick={showConfirm}
+          danger
+        >
           Withdraw
         </Button>
       </div>
