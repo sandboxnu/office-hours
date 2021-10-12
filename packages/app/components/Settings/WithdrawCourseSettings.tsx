@@ -42,7 +42,7 @@ export default function WithdrawCourseSettings(): ReactElement {
       icon: <ExclamationCircleOutlined />,
       content: `Please confirm that you want to unenroll from ${
         course.course.name
-      } as ${
+      } as a ${
         formattedRoles[course.role]
       }.  The only way to get back is by contacting a professor!`,
       onOk() {
