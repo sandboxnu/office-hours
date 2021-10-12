@@ -2,6 +2,7 @@
 
 exports[`QueueService personalizeQuestions hides details of other students 1`] = `
 ListQuestionsResponse {
+  "groups": Array [],
   "priorityQueue": Array [],
   "questionsGettingHelp": Array [],
   "queue": Array [
@@ -15,6 +16,7 @@ ListQuestionsResponse {
         "lastName": "Person",
         "photoURL": null,
       },
+      "groupable": true,
       "helpedAt": null,
       "id": 1,
       "isOnline": null,
@@ -30,6 +32,7 @@ ListQuestionsResponse {
       "creator": UserModel {
         "id": 2,
       },
+      "groupable": true,
       "helpedAt": null,
       "id": 2,
       "isOnline": null,
@@ -65,6 +68,8 @@ ListQuestionsResponse {
     },
     "creatorId": 1,
     "firstHelpedAt": null,
+    "groupId": null,
+    "groupable": true,
     "helpedAt": null,
     "id": 1,
     "isOnline": null,

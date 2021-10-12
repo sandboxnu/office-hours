@@ -14,6 +14,7 @@ import {
   GetQuestionResponse,
   GetQueueResponse,
   GetReleaseNotesResponse,
+  GroupQuestionsParams,
   GetSelfEnrollResponse,
   ListInsightsResponse,
   ListQuestionsResponse,
@@ -163,6 +164,15 @@ class APIClient {
       ),
     notify: async (questionId: number): Promise<void> =>
       this.req("POST", `/api/v1/questions/${questionId}/notify`),
+    group: async (params: GroupQuestionsParams): Promise<void> =>
+      this.req("POST", "/api/v1/questions/group", undefined, params),
+    resolveGroup: async (groupId: number, queueId: number): Promise<void> =>
+      this.req(
+        "PATCH",
+        `/api/v1/questions/resolveGroup/${groupId}`,
+        undefined,
+        { queueId }
+      ),
   };
   queues = {
     get: async (queueId: number): Promise<GetQueueResponse> =>

@@ -10,6 +10,7 @@ Object {
 
 exports[`Queue Integration GET /queues/:id/questions returns questions in the queue 1`] = `
 Object {
+  "groups": Array [],
   "priorityQueue": Array [],
   "questionsGettingHelp": Array [],
   "queue": Array [
@@ -19,6 +20,7 @@ Object {
       "creator": Object {
         "id": 1,
       },
+      "groupable": true,
       "helpedAt": null,
       "id": 1,
       "isOnline": null,

@@ -34,6 +34,7 @@ export default function TAQueueListSection({
   selectedQuestionId,
   showNumbers = false,
   collapsible = false,
+  emptyDisplay = null,
 }: {
   title: ReactNode;
   questions: Question[];
@@ -41,8 +42,9 @@ export default function TAQueueListSection({
   selectedQuestionId?: number;
   showNumbers?: boolean;
   collapsible?: boolean;
+  emptyDisplay?: ReactElement;
 }): ReactElement {
-  if (questions.length === 0) {
+  if (questions.length === 0 && !emptyDisplay) {
     return null;
   }
   return (
@@ -60,17 +62,21 @@ export default function TAQueueListSection({
           showArrow={collapsible}
           disabled={!collapsible}
         >
-          <div>
-            {questions.map((q, i) => (
-              <TAQueueListItem
-                key={q.id}
-                question={q}
-                index={showNumbers && i + 1}
-                selected={selectedQuestionId === q.id}
-                onClick={() => onClickQuestion(q.id)}
-              />
-            ))}
-          </div>
+          {questions.length === 0 ? (
+            emptyDisplay
+          ) : (
+            <div>
+              {questions.map((q, i) => (
+                <TAQueueListItem
+                  key={q.id}
+                  question={q}
+                  index={showNumbers && i + 1}
+                  selected={selectedQuestionId === q.id}
+                  onClick={() => onClickQuestion(q.id)}
+                />
+              ))}
+            </div>
+          )}
         </Collapse.Panel>
       </Collapse>
     </OverrideCollapse>

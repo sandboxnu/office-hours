@@ -209,6 +209,7 @@ export class Question {
 
   @Type(() => UserPartial)
   creator!: UserPartial;
+
   text?: string;
 
   @Type(() => UserPartial)
@@ -223,6 +224,7 @@ export class Question {
   @Type(() => Date)
   closedAt?: Date;
   questionType?: QuestionType;
+  groupable!: boolean;
   status!: QuestionStatus;
   location?: string;
   isOnline?: boolean;
@@ -285,6 +287,19 @@ export const QuestionStatusKeys = {
   ...ClosedQuestionStatus,
   ...LimboQuestionStatus,
 };
+
+export class QuestionGroup {
+  @IsInt()
+  id!: number;
+
+  @Type(() => Question)
+  questions!: Array<Question>;
+
+  @Type(() => UserPartial)
+  creator!: UserPartial;
+
+  //Might want to add a list of students in group so they can be added without a question
+}
 
 // /**
 //  * A Semester object, representing a schedule semester term for the purposes of a course.
@@ -473,6 +488,9 @@ export class ListQuestionsResponse {
 
   @Type(() => Question)
   priorityQueue!: Array<Question>;
+
+  @Type(() => QuestionGroup)
+  groups!: Array<QuestionGroup>;
 }
 
 export class GetQuestionResponse extends Question {}
@@ -489,6 +507,9 @@ export class CreateQuestionParams {
   @IsEnum(QuestionType)
   @IsOptional()
   questionType?: QuestionType;
+
+  @IsBoolean()
+  groupable!: boolean;
 
   @IsInt()
   queueId!: number;
@@ -515,6 +536,10 @@ export class UpdateQuestionParams {
   @IsOptional()
   questionType?: QuestionType;
 
+  @IsBoolean()
+  @IsOptional()
+  groupable?: boolean;
+
   @IsInt()
   @IsOptional()
   queueId?: number;
@@ -532,6 +557,20 @@ export class UpdateQuestionParams {
   location?: string;
 }
 export class UpdateQuestionResponse extends Question {}
+
+export class GroupQuestionsParams {
+  @IsArray()
+  @Type(() => Number)
+  questionIds!: number[];
+
+  @IsInt()
+  queueId!: number;
+}
+
+export class ResolveGroupParams {
+  @IsInt()
+  queueId!: number;
+}
 
 export type TAUpdateStatusResponse = QueuePartial;
 export type QueueNotePayloadType = {
@@ -800,6 +839,9 @@ export const ERROR_MESSAGES = {
       otherTAResolved: "Another TA has already resolved this question",
       taHelpingOther: "TA is already helping someone else",
       loginUserCantEdit: "Logged-in user does not have edit access",
+    },
+    groupQuestions: {
+      notGroupable: "One or more of the questions is not groupable",
     },
     saveQError: "Unable to save a question",
     notFound: "Question not found",

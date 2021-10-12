@@ -37,9 +37,12 @@ export class QuestionSubscriber
   }
 
   async afterUpdate(event: UpdateEvent<QuestionModel>): Promise<void> {
-    // Send all listening clients an update
-    await this.queueSSEService.updateQuestions(event.entity.queueId);
+    if (!event.entity) {
+      // TODO: this is kinda janky maybe fix
+      return;
+    }
 
+    await this.queueSSEService.updateQuestions(event.entity.queueId);
     // Send push notification to students when they are hit 3rd in line
     // if status updated to closed
     if (
