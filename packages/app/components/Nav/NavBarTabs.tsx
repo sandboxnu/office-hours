@@ -15,6 +15,10 @@ const MenuItem = styled(Menu.Item)`
     color: #262626 !important;
     margin: 0 !important;
   }
+  &&&:after {
+    left: 0px;
+    right: 0px;
+  }
 `;
 
 export interface NavBarTabsItem {
