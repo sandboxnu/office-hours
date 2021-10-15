@@ -30,7 +30,7 @@ export default function WithdrawCourseSettings(): ReactElement {
     await API.course.withdrawCourse(course.course.id);
     message.success("Successfully withdrew from " + course.course.name);
     setWithdraw(undefined);
-    mutate();
+    await mutate();
     await Router.push("/");
   }
 
