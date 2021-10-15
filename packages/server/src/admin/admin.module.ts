@@ -20,7 +20,7 @@ import * as session from 'express-session';
 import * as connectRedis from 'connect-redis';
 import { createClient } from 'redis';
 
-const redisClient = createClient();
+const redisClient = createClient({host: 'redis', port: 6379});
 const RedisStore = connectRedis(session);
 
 // This stops redisClient from causing jest tests to hang from an open handler

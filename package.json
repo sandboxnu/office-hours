@@ -11,7 +11,7 @@
     "lint": "eslint packages/ --ext .ts,.tsx --ignore-path .gitignore",
     "test": "yarn workspace @koh/server test",
     "typeorm": "yarn workspace @koh/server typeorm",
-    "dev": "concurrently -n \"server,app,proxy\" \"yarn workspace @koh/server dev\" \"yarn workspace @koh/app dev\" \"yarn dev:proxy\"",
+    "dev": "echo 'do not use, functionality is now managed by docker-compose. Later, please uninstall concurrentlydocke'",
     "dev:proxy": "node infrastructure/dev/devProxy.js",
     "dev:db:up": "docker-compose -p officehours -f infrastructure/dev/docker-compose.yml up -d",
     "dev:db:down": "docker-compose -f infrastructure/dev/docker-compose.yml down",

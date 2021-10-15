@@ -46,7 +46,11 @@ import { SemesterModule } from 'semester/semester.module';
     ReleaseNotesModule,
     InsightsModule,
     // Only use 'pub' for publishing events, 'sub' for subscribing, and 'db' for writing to key/value store
-    RedisModule.register([{ name: 'pub' }, { name: 'sub' }, { name: 'db' }]),
+    RedisModule.register([
+      { name: 'pub', host: 'redis', port: 6379 },
+      { name: 'sub', host: 'redis', port: 6379 },
+      { name: 'db', host: 'redis', port: 6379 }
+    ]),
     HealthcheckModule,
     AlertsModule,
     SemesterModule,

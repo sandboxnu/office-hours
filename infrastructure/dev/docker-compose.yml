@@ -1,10 +1,37 @@
-version: "2"
+# TODO
+# - mount source code for live reload
+# - use separate docker networks
+# - separate project out into individual container images
+# - consider moving this file to project root
+
+version: "3.9"
 
 services:
+
+  proxy:
+    build: ../../
+    command: "yarn run dev:proxy"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+      - app
+  server:
+    build: ../../
+    command: "yarn workspace @koh/server dev"
+    environment:
+      DB_URL: "postgres://postgres@postgresql:5432/dev"
+    depends_on:
+      - postgresql
+      - redis
+  app:
+    build: ../../
+    command: "yarn workspace @koh/app dev"
+    depends_on:
+      - server
+
   postgresql:
     image: postgres:11.5
-    ports:
-      - 5432:5432
     volumes:
       - ./docker-postgresql-multiple-databases:/docker-entrypoint-initdb.d
       - pg:/var/lib/postgresql/data
@@ -14,8 +41,6 @@ services:
       - POSTGRES_PASSWORD=
   redis:
     image: redis:alpine
-    ports:
-      - "6379:6379"
 
 volumes:
   pg:
