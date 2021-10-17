@@ -254,6 +254,7 @@ export class CourseController {
         eventType: EventType.TA_CHECKED_IN,
         user,
         courseId,
+        queueId: queue.id,
       }).save();
     } catch (err) {
       console.error(
@@ -330,6 +331,7 @@ export class CourseController {
         eventType: EventType.TA_CHECKED_OUT,
         user,
         courseId,
+        queueId: queue.id,
       }).save();
     } catch (err) {
       console.error(
