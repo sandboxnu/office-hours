@@ -78,23 +78,33 @@ export default function ProfileSettings(): ReactElement {
             >
               <Switch />
             </Form.Item>
-            {profile?.includeDefaultMessage && (
-              <Form.Item
-                style={{ marginTop: "30px" }}
-                label="Default Teams Message"
-                name="defaultMessage"
-                data-cy="defaultMessageInput"
-              >
-                <TextArea
-                  rows={4}
-                  placeholder={
-                    profile?.defaultMessage
-                      ? profile?.defaultMessage
-                      : "Enter Your Message Here"
-                  }
-                />
-              </Form.Item>
-            )}
+            <Form.Item shouldUpdate noStyle style={{ marginTop: "30px" }}>
+              {() =>
+                form?.getFieldValue("includeDefaultMessage") && (
+                  <Form.Item
+                    label="Default Teams Message"
+                    name="defaultMessage"
+                    data-cy="defaultMessageInput"
+                    rules={[
+                      {
+                        required: true,
+                        message:
+                          "Please input your default message for Teams chat!",
+                      },
+                    ]}
+                  >
+                    <TextArea
+                      rows={4}
+                      placeholder={
+                        profile?.defaultMessage
+                          ? profile?.defaultMessage
+                          : "Enter Your Message Here"
+                      }
+                    />
+                  </Form.Item>
+                )
+              }
+            </Form.Item>
           </div>
         )}
       </Form>

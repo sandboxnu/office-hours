@@ -76,7 +76,7 @@ export default function TAQueueDetailButtons({
     if (question.isOnline) {
       let defaultMessage = "";
       if (profile.includeDefaultMessage) {
-        if (profile.defaultMessage) {
+        if (!profile.defaultMessage) {
           defaultMessage = `Hello! I'm ${profile.firstName}. How can I help you today?`;
         } else {
           defaultMessage = profile.defaultMessage;
