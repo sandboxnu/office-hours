@@ -206,7 +206,7 @@ export const checkInTA = ({ ta = "ta", queue = "queue" } = {}) => {
 
 /**
  * Helps the question with the given id. Keeps the question selected after helping them.
- * @param {number} id - the question id that you want to help.
+ * @param {number} id - the question id that you want to help
  */
 export const helpQuestionWithID = (id) => {
   cy.get(`[data-cy="list-queue"] [data-cy="queue-list-item-${id}"]`)
