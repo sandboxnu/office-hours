@@ -45,6 +45,7 @@ export const CourseFactory = new Factory(CourseModel)
   .attr('name', 'CS 2500')
   .attr('icalURL', 'http://hi.com')
   .attr('enabled', true)
+  .attr('coordinator_email', 'yayeet@test.com')
   .assocOne('semester', SemesterFactory)
   .assocMany('officeHours', OfficeHourFactory, 0);
 

@@ -1,5 +1,6 @@
 import {
   BellOutlined,
+  BookOutlined,
   DeleteOutlined,
   EditOutlined,
   UploadOutlined,
@@ -13,12 +14,12 @@ import useSWR from "swr";
 import NotificationsSettings from "./NotificationsSettings";
 import ProfileSettings from "./ProfileSettings";
 import { SettingsPanelAvatar } from "./SettingsSharedComponents";
-import WithdrawCourseSettings from "./WithdrawCourseSettings";
+import CoursePreferenceSettings from "./CoursePreferenceSettings";
 
 export enum SettingsOptions {
   PROFILE = "PROFILE",
   NOTIFICATIONS = "NOTIFICATIONS",
-  WITHDRAW = "WITHDRAW",
+  PREFERENCES = "PREFERENCES",
 }
 
 interface SettingsPageProps {
@@ -39,11 +40,9 @@ const ProfilePicButton = styled(Button)`
 export default function SettingsPage({
   defaultPage,
 }: SettingsPageProps): ReactElement {
-  const {
-    data: profile,
-    error,
-    mutate,
-  } = useSWR(`api/v1/profile`, async () => API.profile.index());
+  const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
+    API.profile.index()
+  );
 
   const [currentSettings, setCurrentSettings] = useState(
     defaultPage || SettingsOptions.PROFILE
@@ -141,8 +140,8 @@ export default function SettingsPage({
           >
             Notifications Settings
           </Menu.Item>
-          <Menu.Item key={SettingsOptions.WITHDRAW} icon={<DeleteOutlined />}>
-            Withdraw From Course
+          <Menu.Item key={SettingsOptions.PREFERENCES} icon={<BookOutlined />}>
+            Course Preferences
           </Menu.Item>
         </Menu>
       </Col>
@@ -153,8 +152,8 @@ export default function SettingsPage({
           {currentSettings === SettingsOptions.NOTIFICATIONS && (
             <NotificationsSettings />
           )}
-          {currentSettings === SettingsOptions.WITHDRAW && (
-            <WithdrawCourseSettings />
+          {currentSettings === SettingsOptions.PREFERENCES && (
+            <CoursePreferenceSettings />
           )}
         </Col>
       </Space>
