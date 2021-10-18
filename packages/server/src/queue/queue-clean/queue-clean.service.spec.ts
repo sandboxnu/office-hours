@@ -138,18 +138,19 @@ describe('QueueService', () => {
       const updatedQueue3 = await QueueModel.findOne(queue3.id, {
         relations: ['staffList'],
       });
-      const checkoutEvents = (
-        await EventModel.createQueryBuilder().getMany()
-      ).map((em) => em.eventType);
+      const checkoutEvents = await EventModel.createQueryBuilder().getMany();
+      const checkoutEventTypes = checkoutEvents.map((em) => em.eventType);
+      const checkoutQueueIds = checkoutEvents.map((event) => event.queueId);
 
       expect(updatedQueue1.staffList.length).toEqual(0);
       expect(updatedQueue2.staffList.length).toEqual(0);
       expect(updatedQueue3.staffList.length).toEqual(1);
-      expect(checkoutEvents).toEqual([
+      expect(checkoutEventTypes).toEqual([
         'taCheckedOutForced',
         'taCheckedOutForced',
         'taCheckedOutForced',
       ]);
+      expect(checkoutQueueIds).toEqual([queue.id, queue2.id, queue2.id]);
     });
 
     it('if no staff are present all questions with limbo status are marked as stale', async () => {
