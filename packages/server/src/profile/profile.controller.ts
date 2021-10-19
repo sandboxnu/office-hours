@@ -103,20 +103,6 @@ export class ProfileController {
       );
     }
 
-    const isTaOrProf =
-      (await UserCourseModel.count({
-        where: {
-          user,
-          role: In([Role.TA, Role.PROFESSOR]),
-        },
-      })) > 0;
-
-    if (!isTaOrProf && userResponse.defaultMessage) {
-      throw new UnauthorizedException(
-        ERROR_MESSAGES.questionController.updateQuestion.taOnlyEditQuestionStatus,
-      );
-    }
-
     return {
       ...userResponse,
       courses,

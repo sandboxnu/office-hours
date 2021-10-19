@@ -139,7 +139,6 @@ describe('Profile Integration', () => {
     });
     it('lets ta change default teams message', async () => {
       const user = await UserFactory.create();
-      await TACourseFactory.create({ user });
       let profile = await supertest({ userId: user.id }).get('/profile');
       expect(profile.body?.defaultMessage).toEqual(null);
       await supertest({ userId: user.id })
@@ -151,7 +150,6 @@ describe('Profile Integration', () => {
     });
     it('lets ta change includeDefaultMessage', async () => {
       const user = await UserFactory.create();
-      await TACourseFactory.create({ user });
       let profile = await supertest({ userId: user.id }).get('/profile');
       expect(profile.body?.includeDefaultMessage).toEqual(true);
       await supertest({ userId: user.id })

@@ -76,11 +76,7 @@ export default function TAQueueDetailButtons({
     if (question.isOnline) {
       let defaultMessage = "";
       if (profile.includeDefaultMessage) {
-        if (!profile.defaultMessage) {
-          defaultMessage = `Hello! I'm ${profile.firstName}. How can I help you today?`;
-        } else {
-          defaultMessage = profile.defaultMessage;
-        }
+        defaultMessage = profile.defaultMessage;
       }
       window.open(
         `https://teams.microsoft.com/l/chat/0/0?users=${question.creator.email}&message=${defaultMessage}`

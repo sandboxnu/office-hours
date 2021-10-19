@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { NotificationModule } from 'notification/notification.module';
 import { BackfillCourseTimezones } from './backfill-course-timezones';
+import { BackfillDefaultUserTeamsMessages } from './backfill-default-user-teams-messages';
 import { BackfillHuskyEmailsAsNortheastern } from './backfill-husky-emails-to-northeastern';
 import { BackfillPhoneNotifs } from './backfill-phone-notifs.command';
 import { BackfillUserInsights } from './backfill-user-insights.command';
@@ -12,6 +13,7 @@ import { BackfillMakeEmptyPhotoURLNull } from './make-empty-photourl-null.comman
     BackfillPhoneNotifs,
     BackfillMakeEmptyPhotoURLNull,
     BackfillCourseTimezones,
+    BackfillDefaultUserTeamsMessages,
     BackfillHuskyEmailsAsNortheastern,
     BackfillUserInsights,
   ],
