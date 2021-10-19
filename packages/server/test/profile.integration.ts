@@ -1,7 +1,6 @@
 import {
   StudentCourseFactory,
   UserFactory,
-  TACourseFactory,
   CourseFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';

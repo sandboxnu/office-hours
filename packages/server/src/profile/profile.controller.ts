@@ -2,7 +2,6 @@ import {
   DesktopNotifPartial,
   ERROR_MESSAGES,
   GetProfileResponse,
-  Role,
   UpdateProfileParams,
 } from '@koh/common';
 import {
@@ -19,7 +18,6 @@ import {
   Post,
   Res,
   ServiceUnavailableException,
-  UnauthorizedException,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -32,12 +30,11 @@ import { pick } from 'lodash';
 import { memoryStorage } from 'multer';
 import * as path from 'path';
 import * as sharp from 'sharp';
-import { Connection, In } from 'typeorm';
+import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { NotificationService } from '../notification/notification.service';
 import { User } from '../decorators/user.decorator';
 import { UserModel } from './user.entity';
-import { UserCourseModel } from 'profile/user-course.entity';
 
 @Controller('profile')
 @UseGuards(JwtAuthGuard)
