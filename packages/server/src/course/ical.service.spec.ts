@@ -48,11 +48,11 @@ const mockedICal = mocked(iCal, true);
 
 const VEVENT_NOROOM = `
 BEGIN:VEVENT
-DTSTART;TZID=America/New_York:20200514T130000
-DTEND;TZID=America/New_York:20200514T150000
-DTSTAMP:20200519T220522Z
+DTSTART;TZID=America/New_York:20200914T130000
+DTEND;TZID=America/New_York:20200914T150000
+DTSTAMP:20200919T220522Z
 UID:1e6mva12gktah0506vdko3vjd7@google.com
-CREATED:20200513T180615Z
+CREATED:20200913T180615Z
 DESCRIPTION:
 LAST-MODIFIED:20200513T180615Z
 LOCATION:
@@ -64,8 +64,8 @@ END:VEVENT`;
 
 const VEVENT_ROOM = `
 BEGIN:VEVENT
-DTSTART;TZID=America/New_York:20200512T170000
-DTEND;TZID=America/New_York:20200512T190000
+DTSTART;TZID=America/New_York:20200912T170000
+DTEND;TZID=America/New_York:20200912T190000
 DTSTAMP:20200518T220522Z
 UID:6l8vlk6bfr18lkgdqpm4m76ff2@google.com
 CREATED:20200512T192938Z
@@ -462,8 +462,8 @@ describe('IcalService', () => {
       const endData = service.parseIcal(
         parsedICS,
         123,
-        new Date(1589317200000),
-        new Date(1589482800000),
+        new Date(1599418800000),
+        new Date(1600635600000),
       );
       // Note that the lecture event has been filtered out
       expect(endData).toStrictEqual([
@@ -471,15 +471,15 @@ describe('IcalService', () => {
           title: 'Online OH: Ameya, Julia',
           courseId: 123,
           room: '308b WVH',
-          startTime: new Date(1589317200000),
-          endTime: new Date(1589324400000),
+          startTime: new Date('2020-09-12 17:00:00'),
+          endTime: new Date('2020-09-12 19:00:00'),
         },
         {
           title: 'Online OH: Elaina',
           courseId: 123,
           room: '',
-          startTime: new Date(1589475600000),
-          endTime: new Date(1589482800000),
+          startTime: new Date('2020-09-14 13:00:00'),
+          endTime: new Date('2020-09-14 15:00:00'),
         },
       ]);
     });
@@ -971,7 +971,6 @@ describe('IcalService', () => {
           VEVENT_ROOM + VEVENT_NOROOM + VEVENT_WITH_TWO_PROFESSORS,
         );
         mockedICal.fromURL.mockReturnValue(Promise.resolve(parsedICS));
-        console.log('gamburg course: ', course);
 
         await service.updateCalendarForCourse(course);
 
@@ -998,15 +997,15 @@ describe('IcalService', () => {
           {
             title: 'Online OH: Ameya, Julia',
             courseId: course.id,
-            startTime: new Date(1589317200000),
-            endTime: new Date(1589324400000),
+            startTime: new Date('2020-09-12 17:00:00'),
+            endTime: new Date('2020-09-12 19:00:00'),
             queueId: queue.id,
           },
           {
             title: 'Online OH: Elaina',
             courseId: course.id,
-            startTime: new Date(1589475600000),
-            endTime: new Date(1589482800000),
+            startTime: new Date('2020-09-14 13:00:00'),
+            endTime: new Date('2020-09-14 15:00:00'),
             queueId: queue.id,
           },
           {
