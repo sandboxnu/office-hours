@@ -11,7 +11,7 @@ describe("Login", () => {
     cy.visit(`/`);
     cy.get(".ant-modal-close-x").click();
     cy.get(".ant-avatar").click({ force: true });
-    cy.get("[data-cy='logout-button']").click();
+    cy.get("[data-cy='logout-button']").dblclick();
     cy.get("body").should("contain", "You are currently not logged in");
   });
 });
