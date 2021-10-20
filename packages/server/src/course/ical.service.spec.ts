@@ -10,6 +10,7 @@ import { QueueModel } from '../queue/queue.entity';
 import { CourseModel } from './course.entity';
 import { IcalService } from './ical.service';
 import { SemesterModel } from '../semester/semester.entity';
+import { CalendarComponent, CalendarResponse, VEvent } from 'node-ical';
 
 const { parseICS } = jest.requireActual('node-ical');
 
@@ -1181,17 +1182,8 @@ describe('IcalService', () => {
           relations: ['officeHours'],
         });
 
-        const ohServers = cm.officeHours.map((oh) => oh.title);
         const ohDates = cm.officeHours.map((oh) => oh.startTime);
-        expect(ohServers).toContainEqual('Online OH: TA2019');
-        expect(ohServers).toContainEqual('Online OH: TA2019R');
-        expect(
-          ohServers.filter((a) => a === 'Online OH: TA2019').length,
-        ).toEqual(1);
-        expect(
-          ohServers.filter((a) => a === 'Online OH: TA2019R').length,
-        ).toEqual(6);
-        expect(ohServers.length).toEqual(7);
+
         // only generates OH in 2019
         ohDates.map((date) => expect(date.getFullYear()).toBe(2019));
         // 8 is september, 12 is max
@@ -1216,32 +1208,88 @@ describe('IcalService', () => {
       const cm = await CourseModel.findOne(courseSp.id, {
         relations: ['officeHours'],
       });
-
       const ohServers = cm.officeHours.map((oh) => oh.title);
       const ohDates = cm.officeHours.map((oh) => oh.startTime);
-      expect(ohServers).toContainEqual('Online OH: TA2020Spring');
-      expect(ohServers).toContainEqual('Online OH: TA2020SpringR');
-      expect(
-        ohServers.filter((a) => a === 'Online OH: TA2020Spring').length,
-      ).toEqual(1);
-      expect(
-        ohServers.filter((a) => a === 'Online OH: TA2020SpringR').length,
-      ).toEqual(10);
-      expect(ohServers.length).toEqual(11);
+
       // only generates OH in 2020
       ohDates.map((date) => expect(date.getFullYear()).toBe(2020));
       // 0 is jan, 4 is may (max)
       ohDates.map((date) => expect(date.getMonth() >= 0).toBe(true));
       ohDates.map((date) => expect(date.getMonth() <= 4).toBe(true));
     });
+
+    it('creates Summer_FULL 2020 officehours ', async () => {
+      mockedICal.fromURL.mockReturnValue(Promise.resolve(seasonTest));
+      const semS2020 = await SemesterModel.create({
+        season: 'Summer_Full',
+        year: 2020,
+      });
+      const course = await CourseFactory.create({
+        id: 11,
+        semester: semS2020,
+      });
+
+      await service.updateCalendarForCourse(course);
+
+      const cm = await CourseModel.findOne(course.id, {
+        relations: ['officeHours'],
+      });
+
+      const ohDates = cm.officeHours.map((oh) => oh.startTime);
+      // only generates OH in 2020
+      ohDates.map((date) => expect(date.getFullYear()).toBe(2020));
+      // 4 is may, 8 is sept (max)
+      ohDates.map((date) => expect(date.getMonth() >= 4).toBe(true));
+      ohDates.map((date) => expect(date.getMonth() <= 8).toBe(true));
+    });
+
+    it('creates Summer 1 2020 officehours ', async () => {
+      mockedICal.fromURL.mockReturnValue(Promise.resolve(seasonTest));
+      const semSu12020 = await SemesterModel.create({
+        season: 'Summer_1',
+        year: 2020,
+      });
+      const course = await CourseFactory.create({
+        id: 15,
+        semester: semSu12020,
+      });
+
+      await service.updateCalendarForCourse(course);
+
+      const cm = await CourseModel.findOne(course.id, {
+        relations: ['officeHours'],
+      });
+
+      const ohDates = cm.officeHours.map((oh) => oh.startTime);
+      // only generates OH in 2020
+      ohDates.map((date) => expect(date.getFullYear()).toBe(2020));
+      // 4 is may, 6 is july (max)
+
+      ohDates.map((date) => expect(date.getMonth() >= 4).toBe(true));
+      ohDates.map((date) => expect(date.getMonth() <= 6).toBe(true));
+    });
+
+    it('creates Summer 2 2020 officehours ', async () => {
+      mockedICal.fromURL.mockReturnValue(Promise.resolve(seasonTest));
+      const semSu22020 = await SemesterModel.create({
+        season: 'Summer_2',
+        year: 2020,
+      });
+      const course = await CourseFactory.create({
+        id: 18,
+        semester: semSu22020,
+      });
+      await service.updateCalendarForCourse(course);
+      const cm = await CourseModel.findOne(course.id, {
+        relations: ['officeHours'],
+      });
+      const ohDates = cm.officeHours.map((oh) => oh.startTime);
+      // only generates OH in 2020
+      ohDates.map((date) => expect(date.getFullYear()).toBe(2020));
+      // 6 is july, 8 is september (max)
+
+      ohDates.map((date) => expect(date.getMonth() >= 6).toBe(true));
+      ohDates.map((date) => expect(date.getMonth() <= 8).toBe(true));
+    });
   });
 });
-
-/*
-const semSu12020 = await SemesterModel.create({season: "Summer_1", year: 2020});
-const semSu22020 = await SemesterModel.create({season: "Summer_2", year: 2020});
-
-const courseFa = await CourseFactory.create({ id: 10, semester: semF2020 });
-const courseSu1 = await CourseFactory.create({ id: 13, semester: semSu12020 });
-const courseSu2 = await CourseFactory.create({ id: 14, semester: semSu22020});
- */
