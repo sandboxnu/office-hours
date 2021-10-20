@@ -120,7 +120,6 @@ describe('Course Integration', () => {
       const events = await EventModel.find();
       expect(events.length).toBe(1);
       expect(events[0].eventType).toBe(EventType.TA_CHECKED_IN);
-      expect(events[0].queueId).toBe(queue.id);
     });
 
     it("Doesn't allow student to check in", async () => {
@@ -239,7 +238,6 @@ describe('Course Integration', () => {
       const events = await EventModel.find();
       expect(events.length).toBe(1);
       expect(events[0].eventType).toBe(EventType.TA_CHECKED_OUT);
-      expect(events[0].queueId).toBe(queue.id);
     });
 
     it('tests student cant checkout from queue', async () => {

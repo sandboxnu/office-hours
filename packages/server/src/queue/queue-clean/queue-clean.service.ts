@@ -56,7 +56,6 @@ export class QueueCleanService {
             eventType: EventType.TA_CHECKED_OUT_FORCED,
             userId: ta.id,
             courseId: queue.courseId,
-            queueId: queue.id,
           }).save();
         });
         queue.staffList = [];

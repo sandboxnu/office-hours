@@ -9,7 +9,6 @@ import {
 } from 'typeorm';
 import { CourseModel } from '../course/course.entity';
 import { UserModel } from './user.entity';
-import { QueueModel } from '../queue/queue.entity';
 
 /**
  * Represents an Event in the EventModel table, used for advanced metrics.
@@ -46,12 +45,4 @@ export class EventModel extends BaseEntity {
   @Column({ nullable: true })
   @Exclude()
   courseId: number;
-
-  @Column({ nullable: true })
-  @Exclude()
-  queueId: number;
-
-  @ManyToOne((type) => QueueModel)
-  @JoinColumn({ name: 'queueId' })
-  queue: QueueModel;
 }
