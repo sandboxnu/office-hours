@@ -29,12 +29,12 @@ const ICalStartDateMap = {
   Spring: 0,
   Summer_1: 4,
   Summer_2: 6,
-  Summer_Full: 6,
+  Summer_Full: 4,
 };
 
 const ICalEndDateMap = {
   Fall: 11,
-  Spring: 3,
+  Spring: 4,
   Summer_1: 6,
   Summer_2: 8,
   Summer_Full: 8,
@@ -117,7 +117,6 @@ export class IcalService {
     testRegex = /\b^(Online OH)\b/,
   ): CreateOfficeHour {
     const icalDataValues: Array<CalendarComponent> = Object.values(icalData);
-
     const officeHours = icalDataValues.filter(
       (iCalElement): iCalElement is VEvent =>
         iCalElement.type === 'VEVENT' &&
@@ -153,6 +152,7 @@ export class IcalService {
             startTime: date,
             endTime: new Date(date.getTime() + duration),
           }));
+        //console.log("+ "+generatedOfficeHours.length);
         resultOfficeHours = resultOfficeHours.concat(generatedOfficeHours);
       } else {
         const startTime = this.fixOutlookTZ(moment(oh.start), eventTZ).toDate();
@@ -164,6 +164,9 @@ export class IcalService {
             startTime: startTime,
             endTime: this.fixOutlookTZ(moment(oh.end), eventTZ).toDate(),
           });
+          //console.log("+ 1");
+        } else {
+          //console.log("+ 0");
         }
       }
     });
@@ -210,6 +213,7 @@ export class IcalService {
     const icalURL = await fromURL(course.icalURL);
 
     const officeHours = this.parseIcal(icalURL, course.id, semBegin, semEnd);
+
     await OfficeHourModel.delete({ courseId: course.id });
     await OfficeHourModel.save(
       officeHours.map((e) => {

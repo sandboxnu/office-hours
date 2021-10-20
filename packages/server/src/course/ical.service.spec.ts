@@ -4,11 +4,12 @@ import { RedisModule } from 'nestjs-redis';
 import * as iCal from 'node-ical';
 import { mocked } from 'ts-jest/utils';
 import { Connection } from 'typeorm';
-import { CourseFactory } from '../../test/util/factories';
+import { CourseFactory, SemesterFactory } from '../../test/util/factories';
 import { TestTypeOrmModule } from '../../test/util/testUtils';
 import { QueueModel } from '../queue/queue.entity';
 import { CourseModel } from './course.entity';
 import { IcalService } from './ical.service';
+import { SemesterModel } from '../semester/semester.entity';
 
 const { parseICS } = jest.requireActual('node-ical');
 
@@ -425,6 +426,143 @@ SUMMARY:Prof Usyvatsky's Hours
 TRANSP:OPAQUE
 END:VEVENT
 `;
+
+const ex_norecur = (st: string, end: string, name: string) => `BEGIN:VEVENT
+DTSTART;TZID=America/New_York:${st}
+DTEND;TZID=America/New_York:${end}
+DTSTAMP:${st}
+UID:${st}${end}${name}@google.com
+CREATED:20190913T180615Z
+DESCRIPTION:
+LAST-MODIFIED:20190513T180615Z
+LOCATION:
+SEQUENCE:0
+STATUS:CONFIRMED
+SUMMARY:Online OH: ${name}
+TRANSP:OPAQUE
+END:VEVENT
+`;
+
+const ex_recur = (st: string, end: string, until: string, name: string) => `
+BEGIN:VEVENT
+DTSTART;TZID=America/New_York:${st}
+DTEND;TZID=America/New_York:${end}
+RRULE:FREQ=WEEKLY;WKST=SU;UNTIL=${until};BYDAY=FR
+DTSTAMP:20190918T211006Z
+UID:${end}${until}${name}@google.com
+CREATED:20190918T062635Z
+DESCRIPTION:
+LAST-MODIFIED:20190918T063438Z
+LOCATION:
+SEQUENCE:2
+STATUS:CONFIRMED
+SUMMARY:Online OH: ${name}
+TRANSP:OPAQUE
+END:VEVENT
+`;
+
+const VEVENT_F2019_NORECUR = ex_norecur(
+  '20190903T130000',
+  '20190903T150000',
+  'TA2019',
+);
+const VEVENT_F2019_RECUR = ex_recur(
+  '20190918T201500',
+  '20190918T211500',
+  '20191101T045959Z',
+  'TA2019R',
+);
+
+const VEVENT_S2020_NORECUR = ex_norecur(
+  '20200103T130000',
+  '20200103T150000',
+  'TA2020Spring',
+);
+const VEVENT_S2020_RECUR = ex_recur(
+  '20200118T201500',
+  '20200118T211500',
+  '20200401T045959Z',
+  'TA2020SpringR',
+);
+
+const VEVENT_Su2020_NORECUR = ex_norecur(
+  '20200503T130000',
+  '20200503T150000',
+  'TA2020Sum',
+);
+const VEVENT_Su2020_RECUR = ex_recur(
+  '20200518T201500',
+  '20200518T211500',
+  '20200801T045959Z',
+  'TA2020Sum',
+);
+
+const VEVENT_Su12020_NORECUR = ex_norecur(
+  '20200503T130000',
+  '20200503T150000',
+  'TA2020Sum1',
+);
+const VEVENT_Su12020_RECUR = ex_recur(
+  '20200518T201500',
+  '20200518T211500',
+  '20200715T045959Z',
+  'TA2020Sum1',
+);
+
+const VEVENT_Su22020_NORECUR = ex_norecur(
+  '20200803T130000',
+  '20200803T150000',
+  'TA2020Sum2',
+);
+const VEVENT_Su22020_RECUR = ex_recur(
+  '20200818T201500',
+  '20200818T211500',
+  '20200901T045959Z',
+  'TA2020Sum2',
+);
+
+const VEVENT_F2020_NORECUR = ex_norecur(
+  '20200903T130000',
+  '20200903T150000',
+  'TA2020',
+);
+const VEVENT_F2020_RECUR = ex_recur(
+  '20200918T201500',
+  '20200918T211500',
+  '20201101T045959Z',
+  'TA2020R',
+);
+
+const VEVENT_2021_NORECUR = ex_norecur(
+  '20210103T130000',
+  '20210103T150000',
+  'TA2021',
+);
+const VEVENT_2021_RECUR = ex_recur(
+  '20210118T201500',
+  '20210118T211500',
+  '20210401T045959Z',
+  'TA2021',
+);
+
+// for testing different semesters
+// (combine them into one huge calendar, and test different season filters.
+const seasonTest = mkCal(
+  VEVENT_F2019_NORECUR +
+    VEVENT_F2019_RECUR +
+    VEVENT_S2020_NORECUR +
+    VEVENT_S2020_RECUR +
+    VEVENT_Su2020_NORECUR +
+    VEVENT_Su2020_RECUR +
+    VEVENT_Su12020_NORECUR +
+    VEVENT_Su12020_RECUR +
+    VEVENT_Su22020_NORECUR +
+    VEVENT_Su22020_RECUR +
+    VEVENT_F2020_NORECUR +
+    VEVENT_F2020_RECUR +
+    VEVENT_2021_NORECUR +
+    VEVENT_2021_NORECUR,
+);
 
 describe('IcalService', () => {
   let service: IcalService;
@@ -966,10 +1104,10 @@ describe('IcalService', () => {
       });
       it('creates officehours', async () => {
         const course = await CourseFactory.create({ id: 123 });
-
         const parsedICS = mkCal(
           VEVENT_ROOM + VEVENT_NOROOM + VEVENT_WITH_TWO_PROFESSORS,
         );
+
         mockedICal.fromURL.mockReturnValue(Promise.resolve(parsedICS));
 
         await service.updateCalendarForCourse(course);
@@ -1026,6 +1164,84 @@ describe('IcalService', () => {
           },
         ]);
       });
+
+      it('creates FALL 2019 officehours ', async () => {
+        mockedICal.fromURL.mockReturnValue(Promise.resolve(seasonTest));
+        const semF2019 = await SemesterModel.create({
+          season: 'Fall',
+          year: 2019,
+        });
+        const courseYr19 = await CourseFactory.create({
+          id: 15,
+          semester: semF2019,
+        });
+        await service.updateCalendarForCourse(courseYr19);
+
+        const cm = await CourseModel.findOne(courseYr19.id, {
+          relations: ['officeHours'],
+        });
+
+        const ohServers = cm.officeHours.map((oh) => oh.title);
+        const ohDates = cm.officeHours.map((oh) => oh.startTime);
+        expect(ohServers).toContainEqual('Online OH: TA2019');
+        expect(ohServers).toContainEqual('Online OH: TA2019R');
+        expect(
+          ohServers.filter((a) => a === 'Online OH: TA2019').length,
+        ).toEqual(1);
+        expect(
+          ohServers.filter((a) => a === 'Online OH: TA2019R').length,
+        ).toEqual(6);
+        expect(ohServers.length).toEqual(7);
+        // only generates OH in 2019
+        ohDates.map((date) => expect(date.getFullYear()).toBe(2019));
+        // 8 is september, 12 is max
+        ohDates.map((date) => expect(date.getMonth() >= 8).toBe(true));
+        ohDates.map((date) => expect(date.getMonth() <= 12).toBe(true));
+      });
+    });
+
+    it('creates SPRING 2020 officehours ', async () => {
+      mockedICal.fromURL.mockReturnValue(Promise.resolve(seasonTest));
+      const semS2020 = await SemesterModel.create({
+        season: 'Spring',
+        year: 2020,
+      });
+      const courseSp = await CourseFactory.create({
+        id: 11,
+        semester: semS2020,
+      });
+
+      await service.updateCalendarForCourse(courseSp);
+
+      const cm = await CourseModel.findOne(courseSp.id, {
+        relations: ['officeHours'],
+      });
+
+      const ohServers = cm.officeHours.map((oh) => oh.title);
+      const ohDates = cm.officeHours.map((oh) => oh.startTime);
+      expect(ohServers).toContainEqual('Online OH: TA2020Spring');
+      expect(ohServers).toContainEqual('Online OH: TA2020SpringR');
+      expect(
+        ohServers.filter((a) => a === 'Online OH: TA2020Spring').length,
+      ).toEqual(1);
+      expect(
+        ohServers.filter((a) => a === 'Online OH: TA2020SpringR').length,
+      ).toEqual(10);
+      expect(ohServers.length).toEqual(11);
+      // only generates OH in 2020
+      ohDates.map((date) => expect(date.getFullYear()).toBe(2020));
+      // 0 is jan, 4 is may (max)
+      ohDates.map((date) => expect(date.getMonth() >= 0).toBe(true));
+      ohDates.map((date) => expect(date.getMonth() <= 4).toBe(true));
     });
   });
 });
+
+/*
+const semSu12020 = await SemesterModel.create({season: "Summer_1", year: 2020});
+const semSu22020 = await SemesterModel.create({season: "Summer_2", year: 2020});
+
+const courseFa = await CourseFactory.create({ id: 10, semester: semF2020 });
+const courseSu1 = await CourseFactory.create({ id: 13, semester: semSu12020 });
+const courseSu2 = await CourseFactory.create({ id: 14, semester: semSu22020});
+ */
