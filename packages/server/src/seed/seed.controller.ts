@@ -93,6 +93,7 @@ export class SeedController {
       where: { name: 'CS 2500' },
     });
     if (!courseExists) {
+      // possible collision.
       await SemesterFactory.create({ season: 'Fall', year: 2020 });
       await CourseFactory.create({ timezone: 'America/New_York' });
     }
