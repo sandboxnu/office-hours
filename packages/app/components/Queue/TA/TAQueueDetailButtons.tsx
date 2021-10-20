@@ -18,6 +18,7 @@ import {
 import { message, Popconfirm, Tooltip } from "antd";
 import React, { ReactElement, useCallback } from "react";
 import { useQuestions } from "../../../hooks/useQuestions";
+import { useQueue } from "../../../hooks/useQueue";
 import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
 import {
   BannerDangerButton,
@@ -40,6 +41,7 @@ export default function TAQueueDetailButtons({
   question: Question;
 }): ReactElement {
   const { mutateQuestions } = useQuestions(queueId);
+  const isQueueOnline = useQueue(queueId).queue?.room === "Online";
 
   const changeStatus = useCallback(
     async (status: QuestionStatus) => {
@@ -175,7 +177,7 @@ export default function TAQueueDetailButtons({
               icon={<PhoneOutlined />}
               onClick={() => {
                 changeStatus(OpenQuestionStatus.Helping);
-                if (question.isOnline) {
+                if (isQueueOnline) {
                   window.open(
                     `https://teams.microsoft.com/l/chat/0/0?users=${question.creator.email}`
                   );
