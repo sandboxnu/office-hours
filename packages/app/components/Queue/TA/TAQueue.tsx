@@ -108,8 +108,11 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
   const helpNext = async () => {
     await onHelpQuestion(nextQuestion.id);
     mutateQuestions();
+    const defaultMessage = user.includeDefaultMessage
+      ? user.defaultMessage
+      : "";
     window.open(
-      `https://teams.microsoft.com/l/chat/0/0?users=${nextQuestion.creator.email}`
+      `https://teams.microsoft.com/l/chat/0/0?users=${nextQuestion.creator.email}&message=${defaultMessage}`
     );
   };
 

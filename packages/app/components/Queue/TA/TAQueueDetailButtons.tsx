@@ -74,7 +74,9 @@ export default function TAQueueDetailButtons({
   const helpStudent = () => {
     changeStatus(OpenQuestionStatus.Helping);
     if (question.isOnline) {
-      const defaultMessage = profile.includeDefaultMessage ? profile.defaultMessage : "";
+      const defaultMessage = profile.includeDefaultMessage
+        ? profile.defaultMessage
+        : "";
       window.open(
         `https://teams.microsoft.com/l/chat/0/0?users=${question.creator.email}&message=${defaultMessage}`
       );
