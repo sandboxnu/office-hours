@@ -4,7 +4,7 @@ import { RedisModule } from 'nestjs-redis';
 import * as iCal from 'node-ical';
 import { mocked } from 'ts-jest/utils';
 import { Connection } from 'typeorm';
-import { CourseFactory, SemesterFactory } from '../../test/util/factories';
+import { CourseFactory } from '../../test/util/factories';
 import { TestTypeOrmModule } from '../../test/util/testUtils';
 import { QueueModel } from '../queue/queue.entity';
 import { CourseModel } from './course.entity';
@@ -537,12 +537,6 @@ const VEVENT_2021_NORECUR = ex_norecur(
   '20210103T150000',
   'TA2021',
 );
-const VEVENT_2021_RECUR = ex_recur(
-  '20210118T201500',
-  '20210118T211500',
-  '20210401T045959Z',
-  'TA2021',
-);
 
 // for testing different semesters
 // (combine them into one huge calendar, and test different season filters.
@@ -679,7 +673,6 @@ describe('IcalService', () => {
         new Date('2020-09-28T12:00:00-0400'),
         new Date('2020-10-19T14:00:00-0400'),
       );
-      expect(endData).not;
       expect(endData).toStrictEqual([
         {
           title: 'Online OH CS3700 - Ashwin',

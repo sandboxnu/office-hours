@@ -17,7 +17,6 @@ import moment = require('moment');
 import { Cron } from '@nestjs/schedule';
 import { RedisService } from 'nestjs-redis';
 import * as Redlock from 'redlock';
-import { Season } from '../../../common/index';
 import { SemesterModel } from '../semester/semester.entity';
 
 type Moment = moment.Moment;
@@ -132,10 +131,6 @@ export class IcalService {
 
     filteredOfficeHours.forEach((oh: VEvent) => {
       // Filter out events that occur before the current semester
-
-      const eventYear = oh.dtstamp.getFullYear();
-      const eventMonth = oh.dtstamp.getMonth();
-
       // This office hour timezone. ASSUMING every date field has same timezone as oh.start
       const eventTZ = oh.start.tz;
       const { rrule } = oh as any;
