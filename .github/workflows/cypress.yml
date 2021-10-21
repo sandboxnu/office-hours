@@ -4,7 +4,7 @@ on:
   push:
     branches: master
   pull_request:
-    branches: [master, data-insights-WIP]
+    branches: [master, hybrid-queues]
 
 jobs:
   cypress-tests:
