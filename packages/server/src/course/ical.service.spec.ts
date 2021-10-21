@@ -1134,15 +1134,15 @@ describe('IcalService', () => {
           {
             title: 'Online OH: Ameya, Julia',
             courseId: course.id,
-            startTime: new Date('2020-09-12 17:00:00'),
-            endTime: new Date('2020-09-12 19:00:00'),
+            startTime: new Date(1599944400000),
+            endTime: new Date(1599951600000),
             queueId: queue.id,
           },
           {
             title: 'Online OH: Elaina',
             courseId: course.id,
-            startTime: new Date('2020-09-14 13:00:00'),
-            endTime: new Date('2020-09-14 15:00:00'),
+            startTime: new Date(1600102800000),
+            endTime: new Date(1600110000000),
             queueId: queue.id,
           },
           {
