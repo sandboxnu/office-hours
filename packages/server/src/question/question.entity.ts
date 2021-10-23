@@ -87,7 +87,7 @@ export class QuestionModel extends BaseEntity {
   groupId: number;
 
   /**
-   * change the status of the question as the given role
+   * Change the status of the question as the given role
    *
    * @returns whether status change succeeded
    */
