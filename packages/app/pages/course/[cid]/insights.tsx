@@ -36,6 +36,13 @@ const InsightsRowContainer = styled.div`
   margin-right: -0.5%;
 `;
 
+const TempMessage = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: 50px;
+  margin: auto;
+`;
+
 export default function Insights(): ReactElement {
   const profile = useProfile();
   const router = useRouter();
@@ -66,7 +73,9 @@ export default function Insights(): ReactElement {
     <>
       <StandardPageContainer>
         <NavBar courseId={Number(cid)} />
-        Insights are temporarily disabled.
+        <TempMessage>
+          {"Insights are temporarily disabled. Sorry :("}
+        </TempMessage>
         {/*<Row
           align={"middle"}
           justify={"space-between"}
