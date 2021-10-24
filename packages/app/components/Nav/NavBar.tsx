@@ -180,6 +180,8 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
       text: "Queue",
     });
   }
+
+  /**
   if (role === Role.PROFESSOR) {
     tabs.push({
       href: "/course/[cid]/insights",
@@ -187,6 +189,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
       text: "Insights",
     });
   }
+  */
 
   return courseId ? (
     <>
