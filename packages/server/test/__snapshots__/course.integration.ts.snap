@@ -31,9 +31,11 @@ Object {
   "room": "Online",
   "staffList": Array [
     Object {
+      "defaultMessage": null,
       "email": "user@neu.edu",
       "firstName": "User",
       "id": 1,
+      "includeDefaultMessage": true,
       "insights": Array [
         "TotalStudents",
         "TotalQuestionsAsked",
