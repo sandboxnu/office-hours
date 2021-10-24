@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"9995e7e6c9c44fd9bb961aa08667e6ed278ab974"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"d6435da929c901d86b0f41785f5b82be4fa2a70d"};
 
 /***/ }),
 /* 2 */
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "9995e7e6c9c44fd9bb961aa08667e6ed278ab974",
+        release: "d6435da929c901d86b0f41785f5b82be4fa2a70d",
         environment: common_1.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -2490,6 +2490,7 @@ const class_transformer_1 = __webpack_require__(6);
 const typeorm_1 = __webpack_require__(23);
 const course_entity_1 = __webpack_require__(27);
 const user_entity_1 = __webpack_require__(29);
+const queue_entity_1 = __webpack_require__(32);
 var EventType;
 (function (EventType) {
     EventType["TA_CHECKED_IN"] = "taCheckedIn";
@@ -2530,6 +2531,16 @@ __decorate([
     class_transformer_1.Exclude(),
     __metadata("design:type", Number)
 ], EventModel.prototype, "courseId", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    class_transformer_1.Exclude(),
+    __metadata("design:type", Number)
+], EventModel.prototype, "queueId", void 0);
+__decorate([
+    typeorm_1.ManyToOne((type) => queue_entity_1.QueueModel, { onDelete: 'SET NULL' }),
+    typeorm_1.JoinColumn({ name: 'queueId' }),
+    __metadata("design:type", queue_entity_1.QueueModel)
+], EventModel.prototype, "queue", void 0);
 EventModel = __decorate([
     typeorm_1.Entity('event_model')
 ], EventModel);
@@ -4552,6 +4563,7 @@ let QueueCleanService = class QueueCleanService {
                         eventType: event_model_entity_1.EventType.TA_CHECKED_OUT_FORCED,
                         userId: ta.id,
                         courseId: queue.courseId,
+                        queueId: queue.id,
                     }).save();
                 });
                 queue.staffList = [];
@@ -5339,6 +5351,7 @@ let CourseController = class CourseController {
                 eventType: event_model_entity_1.EventType.TA_CHECKED_IN,
                 user,
                 courseId,
+                queueId: queue.id,
             }).save();
         }
         catch (err) {
@@ -5385,6 +5398,7 @@ let CourseController = class CourseController {
                 eventType: event_model_entity_1.EventType.TA_CHECKED_OUT,
                 user,
                 courseId,
+                queueId: queue.id,
             }).save();
         }
         catch (err) {
