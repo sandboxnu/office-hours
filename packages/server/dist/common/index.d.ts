@@ -11,6 +11,8 @@ export declare class User {
     lastName?: string;
     name: string;
     photoURL: string;
+    defaultMessage?: string;
+    includeDefaultMessage: boolean;
     courses: UserCourse[];
     desktopNotifsEnabled: boolean;
     desktopNotifs: DesktopNotifPartial[];
@@ -180,6 +182,8 @@ export declare class UpdateProfileParams {
     phoneNumber?: string;
     firstName?: string;
     lastName?: string;
+    defaultMessage?: string;
+    includeDefaultMessage?: boolean;
 }
 export declare class GetCourseResponse {
     id: number;

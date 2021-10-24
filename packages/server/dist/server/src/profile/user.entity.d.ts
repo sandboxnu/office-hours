@@ -11,6 +11,8 @@ export declare class UserModel extends BaseEntity {
     firstName: string;
     lastName: string;
     photoURL: string | null;
+    defaultMessage: string | null;
+    includeDefaultMessage: boolean;
     courses: UserCourseModel[];
     desktopNotifsEnabled: boolean;
     phoneNotifsEnabled: boolean;
