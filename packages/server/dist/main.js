@@ -96,7 +96,7 @@ module.exports = __webpack_require__(2);
 /* 1 */
 /***/ (function(module, exports) {
 
-(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"d6435da929c901d86b0f41785f5b82be4fa2a70d"};
+(typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}).SENTRY_RELEASE={id:"0ee58e85d1ff30745529100929d99c5e4c109c61"};
 
 /***/ }),
 /* 2 */
@@ -194,7 +194,7 @@ function setupAPM(app) {
             }),
             new integrations_1.RewriteFrames(),
         ],
-        release: "d6435da929c901d86b0f41785f5b82be4fa2a70d",
+        release: "0ee58e85d1ff30745529100929d99c5e4c109c61",
         environment: common_1.getEnv(),
     });
     app.use(Sentry.Handlers.requestHandler());
@@ -2316,7 +2316,7 @@ __decorate([
     __metadata("design:type", Boolean)
 ], QuestionModel.prototype, "isOnline", void 0);
 __decorate([
-    typeorm_1.Column({ nullable: true }),
+    typeorm_1.Column(),
     __metadata("design:type", Boolean)
 ], QuestionModel.prototype, "groupable", void 0);
 __decorate([
