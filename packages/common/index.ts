@@ -61,6 +61,8 @@ export class User {
   lastName?: string;
   name!: string;
   photoURL!: string;
+  defaultMessage?: string;
+  includeDefaultMessage!: boolean;
   courses!: UserCourse[];
   desktopNotifsEnabled!: boolean;
   @Type(() => DesktopNotifPartial)
@@ -429,6 +431,14 @@ export class UpdateProfileParams {
   @IsString()
   @IsOptional()
   lastName?: string;
+
+  @IsString()
+  @IsOptional()
+  defaultMessage?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  includeDefaultMessage?: boolean;
 }
 
 export class GetCourseResponse {

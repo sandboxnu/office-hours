@@ -85,6 +85,8 @@ export class ProfileController {
       'firstName',
       'lastName',
       'photoURL',
+      'defaultMessage',
+      'includeDefaultMessage',
       'desktopNotifsEnabled',
       'phoneNotifsEnabled',
       'insights',

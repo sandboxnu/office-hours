@@ -17,6 +17,7 @@ import {
 } from "@koh/common";
 import { message, Popconfirm, Tooltip } from "antd";
 import React, { ReactElement, useCallback } from "react";
+import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
 import {
@@ -39,6 +40,7 @@ export default function TAQueueDetailButtons({
   queueId: number;
   question: Question;
 }): ReactElement {
+  const profile = useProfile();
   const { mutateQuestions } = useQuestions(queueId);
 
   const changeStatus = useCallback(
@@ -66,6 +68,18 @@ export default function TAQueueDetailButtons({
       });
     } catch (e) {
       //If the ta creates an alert that already exists the error is caught and nothing happens
+    }
+  };
+
+  const helpStudent = () => {
+    changeStatus(OpenQuestionStatus.Helping);
+    if (question.isOnline) {
+      const defaultMessage = profile.includeDefaultMessage
+        ? profile.defaultMessage
+        : "";
+      window.open(
+        `https://teams.microsoft.com/l/chat/0/0?users=${question.creator.email}&message=${defaultMessage}`
+      );
     }
   };
 
@@ -173,14 +187,7 @@ export default function TAQueueDetailButtons({
           <span>
             <BannerPrimaryButton
               icon={<PhoneOutlined />}
-              onClick={() => {
-                changeStatus(OpenQuestionStatus.Helping);
-                if (question.isOnline) {
-                  window.open(
-                    `https://teams.microsoft.com/l/chat/0/0?users=${question.creator.email}`
-                  );
-                }
-              }}
+              onClick={() => helpStudent()}
               disabled={!canHelp}
               data-cy="help-student"
             />

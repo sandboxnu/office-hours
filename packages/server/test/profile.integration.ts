@@ -136,5 +136,27 @@ describe('Profile Integration', () => {
       profile = await supertest({ userId: user.id }).get('/profile');
       expect(profile.body?.phoneNumber).toEqual('real0987654321');
     });
+    it('lets ta change default teams message', async () => {
+      const user = await UserFactory.create();
+      let profile = await supertest({ userId: user.id }).get('/profile');
+      expect(profile.body?.defaultMessage).toEqual(null);
+      await supertest({ userId: user.id })
+        .patch('/profile')
+        .send({ defaultMessage: "Hello! It's me :D" })
+        .expect(200);
+      profile = await supertest({ userId: user.id }).get('/profile');
+      expect(profile.body?.defaultMessage).toEqual("Hello! It's me :D");
+    });
+    it('lets ta change includeDefaultMessage', async () => {
+      const user = await UserFactory.create();
+      let profile = await supertest({ userId: user.id }).get('/profile');
+      expect(profile.body?.includeDefaultMessage).toEqual(true);
+      await supertest({ userId: user.id })
+        .patch('/profile')
+        .send({ includeDefaultMessage: false })
+        .expect(200);
+      profile = await supertest({ userId: user.id }).get('/profile');
+      expect(profile.body?.includeDefaultMessage).toEqual(false);
+    });
   });
 });

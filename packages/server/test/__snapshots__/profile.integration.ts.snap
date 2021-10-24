@@ -11,11 +11,13 @@ Object {
       "role": "student",
     },
   ],
+  "defaultMessage": null,
   "desktopNotifs": Array [],
   "desktopNotifsEnabled": false,
   "email": "user@neu.edu",
   "firstName": "User",
   "id": 1,
+  "includeDefaultMessage": true,
   "insights": Array [
     "TotalStudents",
     "TotalQuestionsAsked",

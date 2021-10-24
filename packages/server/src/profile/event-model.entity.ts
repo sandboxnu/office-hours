@@ -45,4 +45,12 @@ export class EventModel extends BaseEntity {
   @Column({ nullable: true })
   @Exclude()
   courseId: number;
+
+  @Column({ nullable: true })
+  @Exclude()
+  queueId: number;
+
+  @ManyToOne((type) => QueueModel, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'queueId' })
+  queue: QueueModel;
 }
