@@ -41,24 +41,24 @@ export default function Insights(): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
 
-  const [dateRange, setDateRange] = useState({ start: "", end: "" });
+  // const [dateRange, setDateRange] = useState({ start: "", end: "" });
 
-  const { data: allInsights } = useSWR(`api/v1/insights/listAll`, async () =>
-    API.insights.list()
-  );
-  const [settingsVisible, setSettingsVisible] = useState(false);
+  // const { data: allInsights } = useSWR(`api/v1/insights/listAll`, async () =>
+  //   API.insights.list()
+  // );
+  // const [settingsVisible, setSettingsVisible] = useState(false);
 
-  if (!allInsights || !profile?.insights) {
-    return null;
-  }
-  // Group users insights by size (small | default) so they can be rendered correctly
-  const [smallInsights, defaultInsights] = profile.insights.reduce(
-    ([smallInsights, defaultInsights], insight) =>
-      allInsights[insight].size === "small"
-        ? [[...smallInsights, insight], defaultInsights]
-        : [smallInsights, [...defaultInsights, insight]],
-    [[], []]
-  );
+  // if (!allInsights || !profile?.insights) {
+  //   return null;
+  // }
+  // // Group users insights by size (small | default) so they can be rendered correctly
+  // const [smallInsights, defaultInsights] = profile.insights.reduce(
+  //   ([smallInsights, defaultInsights], insight) =>
+  //     allInsights[insight].size === "small"
+  //       ? [[...smallInsights, insight], defaultInsights]
+  //       : [smallInsights, [...defaultInsights, insight]],
+  //   [[], []]
+  // );
 
   const { RangePicker } = DatePicker;
 
@@ -66,7 +66,8 @@ export default function Insights(): ReactElement {
     <>
       <StandardPageContainer>
         <NavBar courseId={Number(cid)} />
-        <Row
+        Insights are temporarily disabled.
+        {/*<Row
           align={"middle"}
           justify={"space-between"}
           style={{ margin: "12px 0px" }}
@@ -141,7 +142,7 @@ export default function Insights(): ReactElement {
               />
             );
           })}
-        </InsightsRowContainer>
+        </InsightsRowContainer> */}
       </StandardPageContainer>
     </>
   );
