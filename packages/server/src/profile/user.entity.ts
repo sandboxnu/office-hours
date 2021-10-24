@@ -34,6 +34,12 @@ export class UserModel extends BaseEntity {
   @Column('text', { nullable: true })
   photoURL: string | null;
 
+  @Column('text', { nullable: true })
+  defaultMessage: string | null;
+
+  @Column({ type: 'boolean', default: true })
+  includeDefaultMessage: boolean;
+
   @OneToMany((type) => UserCourseModel, (ucm) => ucm.user)
   @Exclude()
   courses: UserCourseModel[];
