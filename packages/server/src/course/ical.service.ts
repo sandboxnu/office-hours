@@ -23,6 +23,7 @@ type Moment = moment.Moment;
 
 type CreateOfficeHour = DeepPartial<OfficeHourModel>[];
 
+// months are zero indexed (start date is 9/1/YEAR for fall (ex))
 const ICalStartDateMap = {
   Fall: 8,
   Spring: 0,
@@ -31,6 +32,7 @@ const ICalStartDateMap = {
   Summer_Full: 4,
 };
 
+// end date is the last day of 1+month, ex: fall's end date is 1/1/(YEAR+1)
 const ICalEndDateMap = {
   Fall: 11,
   Spring: 4,
@@ -127,44 +129,41 @@ export class IcalService {
       testRegex.test(event.summary),
     );
 
-    let resultOfficeHours = [];
+    let resultOfficeHours: CreateOfficeHour = [];
 
     filteredOfficeHours.forEach((oh: VEvent) => {
       // Filter out events that occur before the current semester
       // This office hour timezone. ASSUMING every date field has same timezone as oh.start
       const eventTZ = oh.start.tz;
       const { rrule } = oh as any;
+      let generatedOfficeHours: CreateOfficeHour = [];
       if (rrule) {
         const duration = oh.end.getTime() - oh.start.getTime();
-
         const allDates = this.rruleToDates(rrule, eventTZ, oh.exdate);
-        const generatedOfficeHours = allDates
-          .filter((date) => date >= startDate && date <= endDate)
-          .map((date) => ({
-            title: oh.summary,
-            courseId: courseId,
-            room: oh.location,
-            startTime: date,
-            endTime: new Date(date.getTime() + duration),
-          }));
-        //console.log("+ "+generatedOfficeHours.length);
-        resultOfficeHours = resultOfficeHours.concat(generatedOfficeHours);
+        generatedOfficeHours = allDates.map((date) => ({
+          title: oh.summary,
+          courseId: courseId,
+          room: oh.location,
+          startTime: date,
+          endTime: new Date(date.getTime() + duration),
+        }));
       } else {
         const startTime = this.fixOutlookTZ(moment(oh.start), eventTZ).toDate();
-        if (startTime >= startDate && startTime <= endDate) {
-          resultOfficeHours.push({
-            title: oh.summary,
-            courseId: courseId,
-            room: oh.location,
-            startTime: startTime,
-            endTime: this.fixOutlookTZ(moment(oh.end), eventTZ).toDate(),
-          });
-          //console.log("+ 1");
-        } else {
-          //console.log("+ 0");
-        }
+        generatedOfficeHours.push({
+          title: oh.summary,
+          courseId: courseId,
+          room: oh.location,
+          startTime: startTime,
+          endTime: this.fixOutlookTZ(moment(oh.end), eventTZ).toDate(),
+        });
       }
+
+      const filteredHours: CreateOfficeHour = generatedOfficeHours.filter(
+        (date) => date.startTime >= startDate && date.startTime <= endDate,
+      );
+      resultOfficeHours = resultOfficeHours.concat(filteredHours);
     });
+
     return resultOfficeHours;
   }
 

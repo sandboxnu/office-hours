@@ -432,15 +432,6 @@ describe('Course Integration', () => {
       twoDaysAgo.setUTCDate(twoDaysAgo.getUTCDate() - 2);
 
       const dateNow = new Date();
-      /*
-      console.log("yeserday: ", yesterday);
-      console.log("yester_plus2", yesterdayPlusTwoHours);
-      console.log("thenthree: ", thenThreeMoreHours);
-      console.log("12hafter", twelveHoursAFter);
-      console.log("justnow", justNow);
-      console.log("twodaysago", twoDaysAgo);
-      console.log("querying between", twoDaysAgo, dateNow);
-      */
       const data = await supertest({ userId: professor.id })
         .get(`/courses/${course.id}/ta_check_in_times`)
         .query({
@@ -449,12 +440,10 @@ describe('Course Integration', () => {
         })
         .expect(200);
 
-      const checkinTimes = (data.body as unknown as TACheckinTimesResponse)
+      const checkinTimes = ((data.body as unknown) as TACheckinTimesResponse)
         .taCheckinTimes;
 
       const taName = ta.firstName + ' ' + ta.lastName;
-
-      //expect(checkinTimes.length).toBe(3);
       expect(checkinTimes).toStrictEqual([
         {
           checkinTime: yesterday.toISOString(),
