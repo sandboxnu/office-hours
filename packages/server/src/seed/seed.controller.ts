@@ -93,7 +93,12 @@ export class SeedController {
       where: { name: 'CS 2500' },
     });
     if (!courseExists) {
-      // possible collision.
+      // possible collision:
+      // If the dev env is active at midnight, the cron job will rescrape events from the ical which
+      // synthetically creates events centered around your time.
+      // But since the semester is centered in Fall 2020,
+      // the events will get filtered out since they arent in that date.
+      // you will need to reseed data!
       await SemesterFactory.create({ season: 'Fall', year: 2020 });
       await CourseFactory.create({ timezone: 'America/New_York' });
     }
