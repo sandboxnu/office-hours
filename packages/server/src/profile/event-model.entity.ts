@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { CourseModel } from '../course/course.entity';
 import { UserModel } from './user.entity';
+import { QueueModel } from '../queue/queue.entity';
 
 /**
  * Represents an Event in the EventModel table, used for advanced metrics.
