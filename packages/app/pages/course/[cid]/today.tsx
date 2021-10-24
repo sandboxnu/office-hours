@@ -100,8 +100,8 @@ export default function Today(): ReactElement {
               ))
             )}
             {!course && <OpenQueueCardSkeleton />}
-            {/*This only works with UTC offsets in the form N:00, to help with other offsets, the size of the array might have to change to a size of 24*7*4 (for every 15 min interval) */}
-            {course && course.heatmap && (
+            {/*This only works with UTC offsets in the form N:00, to help with other offsets, the size of the array might have to change to a size of 24*7*4 (for every 15 min interval)
+            course && course.heatmap && (
               <PopularTimes
                 heatmap={collapseHeatmap(
                   arrayRotate(
@@ -110,7 +110,7 @@ export default function Today(): ReactElement {
                   )
                 )}
               />
-            )}
+            )*/}
           </Col>
           <Col md={12} sm={24}>
             <SchedulePanel courseId={Number(cid)} defaultView="day" />
