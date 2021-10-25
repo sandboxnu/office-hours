@@ -401,7 +401,7 @@ describe('Course Integration', () => {
       });
 
       const thenThreeMoreHours = new Date(yesterdayPlusTwoHours);
-      thenThreeMoreHours.setUTCHours(yesterday.getUTCHours() + 3);
+      thenThreeMoreHours.setUTCHours(yesterdayPlusTwoHours.getUTCHours() + 3);
 
       await EventFactory.create({
         user: ta,
@@ -440,7 +440,7 @@ describe('Course Integration', () => {
         })
         .expect(200);
 
-      const checkinTimes = (data.body as unknown as TACheckinTimesResponse)
+      const checkinTimes = ((data.body as unknown) as TACheckinTimesResponse)
         .taCheckinTimes;
 
       const taName = ta.firstName + ' ' + ta.lastName;

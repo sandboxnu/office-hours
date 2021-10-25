@@ -1,4 +1,5 @@
 import React, { ReactElement, useState } from "react";
+/*
 import { API } from "@koh/api-client";
 import useSWR from "swr";
 import {
@@ -15,27 +16,32 @@ import {
 import { CardSize } from "antd/lib/card";
 import { InfoCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { useProfile } from "../../../hooks/useProfile";
-import { useRouter } from "next/router";
-import { StandardPageContainer } from "../../../components/common/PageContainer";
 import {
   DateRangeType,
   InsightComponent,
   InsightDisplayInfo,
 } from "@koh/common";
-import NavBar from "../../../components/Nav/NavBar";
+
+
 import BarChartComponent from "../../../components/Insights/components/BarChartComponent";
 import SimpleDisplayComponent from "../../../components/Insights/components/SimpleDisplayComponent";
-import InsightsDisplayOptions from "../../../components/Insights/components/InsightsDisplayOptions";
+//import InsightsDisplayOptions from "../../../components/Insights/components/InsightsDisplayOptions";
 import { SimpleTable } from "../../../components/Insights/components/SimpleTable";
+
+ */
+import NavBar from "../../../components/Nav/NavBar";
+import { StandardPageContainer } from "../../../components/common/PageContainer";
+import { useRouter } from "next/router";
 import styled from "styled-components";
 
+/*
 const InsightsRowContainer = styled.div`
   display: flex;
   direction: ltr;
   margin-left: -0.5%;
   margin-right: -0.5%;
 `;
-
+*/
 const TempMessage = styled.div`
   display: flex;
   align-items: center;
@@ -44,7 +50,7 @@ const TempMessage = styled.div`
 `;
 
 export default function Insights(): ReactElement {
-  const profile = useProfile();
+  //const profile = useProfile();
   const router = useRouter();
   const { cid } = router.query;
 
@@ -67,7 +73,7 @@ export default function Insights(): ReactElement {
   //   [[], []]
   // );
 
-  const { RangePicker } = DatePicker;
+  //const { RangePicker } = DatePicker;
 
   return (
     <>
@@ -157,11 +163,13 @@ export default function Insights(): ReactElement {
   );
 }
 
+/*
 interface RenderInsightProps {
   insightName: string;
   insightDisplay: InsightDisplayInfo;
   dateRange: DateRangeType;
 }
+
 
 function RenderInsight({
   insightName,
@@ -228,3 +236,4 @@ function RenderInsight({
 function componentDoesNotExist(componentName: never): never {
   throw new Error(`Component ${componentName} was unable to be rendered`);
 }
+ */
