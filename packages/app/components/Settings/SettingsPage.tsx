@@ -3,20 +3,27 @@ import {
   DeleteOutlined,
   EditOutlined,
   UploadOutlined,
+  UserOutlined,
+  WindowsOutlined,
 } from "@ant-design/icons";
 import { API } from "@koh/api-client";
+import { Role } from "@koh/common";
 import { useWindowWidth } from "@react-hook/window-size";
 import { Button, Col, Menu, message, Row, Skeleton, Space, Upload } from "antd";
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import styled from "styled-components";
 import useSWR from "swr";
 import NotificationsSettings from "./NotificationsSettings";
 import ProfileSettings from "./ProfileSettings";
+import TeamsSettings from "./TeamsSettings";
 import { SettingsPanelAvatar } from "./SettingsSharedComponents";
+import { useRoleInCourse } from "../../hooks/useRoleInCourse";
+import { useRouter } from "next/router";
 
 export enum SettingsOptions {
   PROFILE = "PROFILE",
   NOTIFICATIONS = "NOTIFICATIONS",
+  TEAMS_SETTINGS = "TEAMS_SETTINGS",
 }
 
 interface SettingsPageProps {
@@ -37,18 +44,28 @@ const ProfilePicButton = styled(Button)`
 export default function SettingsPage({
   defaultPage,
 }: SettingsPageProps): ReactElement {
-  const {
-    data: profile,
-    error,
-    mutate,
-  } = useSWR(`api/v1/profile`, async () => API.profile.index());
+  const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
+    API.profile.index()
+  );
+  const router = useRouter();
+  const { cid } = router.query;
+  const role = useRoleInCourse(Number(cid));
+  const isTAOrProfessor = role === Role.TA || role === Role.PROFESSOR;
 
   const [currentSettings, setCurrentSettings] = useState(
     defaultPage || SettingsOptions.PROFILE
   );
   const [uploading, setUploading] = useState(false);
+  const [isMobile, setMobile] = useState(false);
+  const [isPopUpOpen, setPopUpOpen] = useState(false);
+  const windowWidth = useWindowWidth();
+  const [avatarSize, setAvatarSize] = useState(windowWidth / 2);
 
-  const avatarSize = useWindowWidth() / 10;
+  useEffect(() => {
+    setMobile(window.innerWidth < 768);
+    let widthDivider = isMobile ? 6 : 10;
+    setAvatarSize(windowWidth / widthDivider);
+  });
 
   const beforeUpload = (file) => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
@@ -69,23 +86,35 @@ export default function SettingsPage({
     message.error(error);
   }
 
-  return (
-    <Row>
-      <Col span={4} style={{ textAlign: "center" }}>
-        {avatarSize ? (
-          <>
-            {uploading ? (
-              <Skeleton.Avatar
-                active={true}
-                size={avatarSize}
-                shape="circle"
-                style={{
-                  marginTop: avatarSize / 6,
-                  marginBottom: avatarSize / 12,
-                }}
-              />
-            ) : (
-              <SettingsPanelAvatar />
+  const AvatarSettings = () => (
+    <Col>
+      {avatarSize ? (
+        <Row
+          style={{
+            marginTop: avatarSize / 6,
+            justifyContent: "center",
+          }}
+        >
+          {uploading ? (
+            <Skeleton.Avatar
+              active={true}
+              size={avatarSize}
+              shape="circle"
+              style={{
+                marginTop: avatarSize / 6,
+                marginBottom: avatarSize / 12,
+                marginLeft: avatarSize / 6,
+                marginRight: avatarSize / 6,
+              }}
+            />
+          ) : (
+            <SettingsPanelAvatar avatarSize={avatarSize} />
+          )}
+          <Col>
+            {profile && (
+              <h2>
+                {profile.firstName} {profile.lastName}
+              </h2>
             )}
             <Upload
               action={"/api/v1/profile/upload_picture"}
@@ -97,7 +126,7 @@ export default function SettingsPage({
               }}
             >
               <ProfilePicButton icon={<UploadOutlined />}>
-                Upload a Profile Picture
+                Edit profile picture
               </ProfilePicButton>
             </Upload>
             {profile?.photoURL && (
@@ -122,34 +151,68 @@ export default function SettingsPage({
                 Delete my Profile Picture
               </ProfilePicButton>
             )}
-            <div style={{ marginTop: "60px" }} />
-          </>
-        ) : null}
-        <Menu
-          defaultSelectedKeys={[currentSettings]}
-          onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}
-          style={{ background: "#f8f9fb" }}
+          </Col>
+        </Row>
+      ) : null}
+    </Col>
+  );
+
+  const SettingsMenu = () => (
+    <Menu
+      defaultSelectedKeys={[currentSettings]}
+      onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}
+      style={{ background: "#f8f9fb" }}
+    >
+      <Menu.Item key={SettingsOptions.PROFILE} icon={<UserOutlined />}>
+        Personal information
+      </Menu.Item>
+      {isTAOrProfessor && (
+        <Menu.Item
+          key={SettingsOptions.TEAMS_SETTINGS}
+          icon={<WindowsOutlined />}
         >
-          <Menu.Item key={SettingsOptions.PROFILE} icon={<EditOutlined />}>
-            Edit Profile
-          </Menu.Item>
-          <Menu.Item
-            key={SettingsOptions.NOTIFICATIONS}
-            icon={<BellOutlined />}
-          >
-            Notifications Settings
-          </Menu.Item>
-        </Menu>
-      </Col>
-      <VerticalDivider />
-      <Space direction="vertical" size={40} style={{ flexGrow: 1 }}>
-        <Col span={20}>
-          {currentSettings === SettingsOptions.PROFILE && <ProfileSettings />}
-          {currentSettings === SettingsOptions.NOTIFICATIONS && (
-            <NotificationsSettings />
-          )}
+          Teams settings
+        </Menu.Item>
+      )}
+      <Menu.Item key={SettingsOptions.NOTIFICATIONS} icon={<BellOutlined />}>
+        Notifications
+      </Menu.Item>
+    </Menu>
+  );
+
+  const SettingsSubpage = () => (
+    <Col>
+      {currentSettings === SettingsOptions.PROFILE && <ProfileSettings />}
+      {currentSettings === SettingsOptions.NOTIFICATIONS && (
+        <NotificationsSettings />
+      )}
+      {currentSettings === SettingsOptions.TEAMS_SETTINGS && <TeamsSettings />}
+    </Col>
+  );
+
+  return (
+    <div>
+      {isMobile ? (
+        <Col>
+          <AvatarSettings />
+          <Button onClick={() => setPopUpOpen(!isPopUpOpen)}>
+            Toggle Menu
+          </Button>
+          {isPopUpOpen && <SettingsMenu />}
+          <SettingsSubpage />
         </Col>
-      </Space>
-    </Row>
+      ) : (
+        <Row>
+          <Col span={5} style={{ textAlign: "center" }}>
+            <AvatarSettings />
+            <SettingsMenu />
+          </Col>
+          <VerticalDivider />
+          <Space direction="vertical" size={40} style={{ flexGrow: 1 }}>
+            <SettingsSubpage />
+          </Space>
+        </Row>
+      )}
+    </div>
   );
 }
