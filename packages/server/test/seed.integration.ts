@@ -95,7 +95,6 @@ describe('Seed Integration', () => {
       creatorId: 1,
       helpedAt: null,
       id: 1,
-      isOnline: null,
       location: null,
       questionType: 'Other',
       queueId: 1,

@@ -203,8 +203,7 @@ export type Heatmap = Array<number>;
  * @param questionType - The question type helps distinguish question for TA's and data insights.
  * @param status - The current status of the question in the queue.
  * @param position - The current position of this question in the queue.
- * @param location - The location of the particular student, to help TA's find them
- * @param isOnline - Wether or not the question will helped online or in-person
+ * @param location - The location of the particular student, to help TA's find them.
  */
 export class Question {
   id!: number;
@@ -229,7 +228,6 @@ export class Question {
   groupable!: boolean;
   status!: QuestionStatus;
   location?: string;
-  isOnline?: boolean;
 }
 
 // Question Types
@@ -524,10 +522,6 @@ export class CreateQuestionParams {
   @IsInt()
   queueId!: number;
 
-  @IsBoolean()
-  @IsOptional()
-  isOnline?: boolean;
-
   @IsString()
   @IsOptional()
   location?: string;
@@ -557,10 +551,6 @@ export class UpdateQuestionParams {
   @IsEnum(QuestionStatusKeys)
   @IsOptional()
   status?: QuestionStatus;
-
-  @IsBoolean()
-  @IsOptional()
-  isOnline?: boolean;
 
   @IsString()
   @IsOptional()

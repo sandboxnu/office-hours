@@ -72,9 +72,6 @@ export class QuestionModel extends BaseEntity {
   @Column({ nullable: true })
   location: string;
 
-  @Column({ nullable: true })
-  isOnline: boolean;
-
   @Column()
   groupable: boolean;
 

@@ -19,6 +19,7 @@ import { message, Popconfirm, Tooltip } from "antd";
 import React, { ReactElement, useCallback } from "react";
 import { useProfile } from "../../../hooks/useProfile";
 import { useQuestions } from "../../../hooks/useQuestions";
+import { useQueue } from "../../../hooks/useQueue";
 import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
 import {
   BannerDangerButton,
@@ -42,6 +43,7 @@ export default function TAQueueDetailButtons({
 }): ReactElement {
   const profile = useProfile();
   const { mutateQuestions } = useQuestions(queueId);
+  const isQueueOnline = useQueue(queueId).queue?.room === "Online";
 
   const changeStatus = useCallback(
     async (status: QuestionStatus) => {
@@ -73,7 +75,7 @@ export default function TAQueueDetailButtons({
 
   const helpStudent = () => {
     changeStatus(OpenQuestionStatus.Helping);
-    if (question.isOnline) {
+    if (isQueueOnline) {
       const defaultMessage = profile.includeDefaultMessage
         ? profile.defaultMessage
         : "";
