@@ -84,7 +84,7 @@ export class DesktopNotifPartial {
  * Contains the partial user info needed by the frontend when nested in a response
  * @param id - The unique id of the user in our db.
  * @param name - The full name of this user: First Last.
- * @param photoURL - The URL string of this user photo. This is pulled from the admin site
+ * @param photoURL - The URL string of this user photo. This is pulled from the admin site.
  */
 export class UserPartial {
   id!: number;
