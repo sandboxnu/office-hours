@@ -248,7 +248,7 @@ export enum OpenQuestionStatus {
 }
 
 /**
- * Limbo statuses are awaiting some confirmation from the student
+ * Limbo statuses are awaiting some confirmation from the student.
  */
 export enum LimboQuestionStatus {
   CantFind = "CantFind", // represents when a student can't be found by a TA
