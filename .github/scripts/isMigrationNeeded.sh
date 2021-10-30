@@ -6,6 +6,7 @@ set -e
 SUB='No changes in database schema were found'
 {
   log=$(yarn migration:generate -n CHECK 2>&1)
+  echo "$log"
 } || {
   echo "$log"
   if [[ "$log" == *"$SUB"* ]]; then
