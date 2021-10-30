@@ -1,4 +1,7 @@
 set -e
+# The output for this script is somewhat misleading in the success case; the
+# migration:generate script will print a fail because there is no migration to generate.
+# This is fine because you want there to be no migration generated. 
 
 SUB='No changes in database schema were found'
 {
