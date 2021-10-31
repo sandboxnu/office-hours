@@ -804,8 +804,6 @@ export type DateRangeType = {
 export const ERROR_MESSAGES = {
   courseController: {
     checkIn: {
-      cannotCreateNewQueueIfNotProfessor:
-        "You can't create a new queue if you're not a professor",
       cannotCheckIntoMultipleQueues:
         "Cannot check into multiple queues at the same time",
     },

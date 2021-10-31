@@ -213,20 +213,14 @@ export class CourseController {
         );
       }
 
-      if (userCourseModel.role === Role.PROFESSOR) {
-        queue = await QueueModel.create({
-          room,
-          courseId,
-          staffList: [],
-          questions: [],
-          allowQuestions: true,
-          isProfessorQueue: true, // only professors should be able to make queues
-        }).save();
-      } else {
-        throw new ForbiddenException(
-          ERROR_MESSAGES.courseController.checkIn.cannotCreateNewQueueIfNotProfessor,
-        );
-      }
+      queue = await QueueModel.create({
+        room,
+        courseId,
+        staffList: [],
+        questions: [],
+        allowQuestions: true,
+        isProfessorQueue: userCourseModel.role === Role.PROFESSOR,
+      }).save();
     }
 
     if (queue.staffList.length === 0) {

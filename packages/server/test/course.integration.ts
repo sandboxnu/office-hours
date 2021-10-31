@@ -149,11 +149,6 @@ describe('Course Integration', () => {
         .post(`/courses/${tcf.courseId}/ta_location/The Alamo`)
         .expect(403);
 
-      expect(response.body.message).toBe(
-        ERROR_MESSAGES.courseController.checkIn
-          .cannotCreateNewQueueIfNotProfessor,
-      );
-
       const events = await EventModel.find();
       expect(events.length).toBe(0);
     });
@@ -442,7 +437,7 @@ describe('Course Integration', () => {
         })
         .expect(200);
 
-      const checkinTimes = (data.body as unknown as TACheckinTimesResponse)
+      const checkinTimes = ((data.body as unknown) as TACheckinTimesResponse)
         .taCheckinTimes;
 
       const taName = ta.firstName + ' ' + ta.lastName;
