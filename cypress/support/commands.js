@@ -25,6 +25,7 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 import { checkNavbarLoaded } from "../utils";
+import "@percy/cypress";
 
 Cypress.Commands.overwrite("percySnapshot", (originalFn, snapshotName) => {
   // Check that the nav bar has been laoded
@@ -32,5 +33,3 @@ Cypress.Commands.overwrite("percySnapshot", (originalFn, snapshotName) => {
   // Take the percy snapshot
   originalFn(snapshotName);
 });
-
-import "@percy/cypress";
