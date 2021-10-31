@@ -369,7 +369,6 @@ describe('Course Integration', () => {
       const now = new Date();
       const yesterday = new Date();
       yesterday.setUTCHours(now.getUTCHours() - 24);
-
       const course = await CourseFactory.create();
       const ta = await UserFactory.create();
       const professor = await UserFactory.create();
@@ -403,7 +402,7 @@ describe('Course Integration', () => {
       });
 
       const thenThreeMoreHours = new Date(yesterdayPlusTwoHours);
-      thenThreeMoreHours.setUTCHours(yesterday.getUTCHours() + 3);
+      thenThreeMoreHours.setUTCHours(yesterdayPlusTwoHours.getUTCHours() + 3);
 
       await EventFactory.create({
         user: ta,
@@ -434,11 +433,12 @@ describe('Course Integration', () => {
       const twoDaysAgo = new Date();
       twoDaysAgo.setUTCDate(twoDaysAgo.getUTCDate() - 2);
 
+      const dateNow = new Date();
       const data = await supertest({ userId: professor.id })
         .get(`/courses/${course.id}/ta_check_in_times`)
         .query({
           startDate: twoDaysAgo,
-          endDate: new Date(),
+          endDate: dateNow,
         })
         .expect(200);
 
@@ -446,8 +446,6 @@ describe('Course Integration', () => {
         .taCheckinTimes;
 
       const taName = ta.firstName + ' ' + ta.lastName;
-
-      expect(checkinTimes.length).toBe(3);
       expect(checkinTimes).toStrictEqual([
         {
           checkinTime: yesterday.toISOString(),
