@@ -1,5 +1,6 @@
 import {
   BellOutlined,
+  BookOutlined,
   DeleteOutlined,
   EditOutlined,
   UploadOutlined,
@@ -13,10 +14,12 @@ import useSWR from "swr";
 import NotificationsSettings from "./NotificationsSettings";
 import ProfileSettings from "./ProfileSettings";
 import { SettingsPanelAvatar } from "./SettingsSharedComponents";
+import CoursePreferenceSettings from "./CoursePreferenceSettings";
 
 export enum SettingsOptions {
   PROFILE = "PROFILE",
   NOTIFICATIONS = "NOTIFICATIONS",
+  PREFERENCES = "PREFERENCES",
 }
 
 interface SettingsPageProps {
@@ -138,6 +141,9 @@ export default function SettingsPage({
           >
             Notifications Settings
           </Menu.Item>
+          <Menu.Item key={SettingsOptions.PREFERENCES} icon={<BookOutlined />}>
+            Course Preferences
+          </Menu.Item>
         </Menu>
       </Col>
       <VerticalDivider />
@@ -146,6 +152,9 @@ export default function SettingsPage({
           {currentSettings === SettingsOptions.PROFILE && <ProfileSettings />}
           {currentSettings === SettingsOptions.NOTIFICATIONS && (
             <NotificationsSettings />
+          )}
+          {currentSettings === SettingsOptions.PREFERENCES && (
+            <CoursePreferenceSettings />
           )}
         </Col>
       </Space>
