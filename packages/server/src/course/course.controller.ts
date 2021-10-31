@@ -104,7 +104,8 @@ export class CourseController {
     }
 
     try {
-      course.heatmap = await this.heatmapService.getCachedHeatmapFor(id);
+      course.heatmap = false; // Change this back after queue refactor
+      // to => await this.heatmapService.getCachedHeatmapFor(id);
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.courseOfficeHourError +
