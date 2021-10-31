@@ -441,7 +441,7 @@ export class GetCourseResponse {
   @Type(() => QueuePartial)
   queues!: QueuePartial[];
 
-  heatmap!: Heatmap | false;
+  heatmap!: false; // TODO: Add this back in after queue refactor is done => Heatmap | false;
 
   selfEnroll!: boolean;
 }
