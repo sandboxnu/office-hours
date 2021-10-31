@@ -122,13 +122,12 @@ export default function SettingsPage({
                 Delete my Profile Picture
               </ProfilePicButton>
             )}
-            <div style={{ marginTop: "60px" }} />
           </>
         ) : null}
         <Menu
           defaultSelectedKeys={[currentSettings]}
           onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}
-          style={{ background: "#f8f9fb" }}
+          style={{ background: "#f8f9fb", marginTop: "60px" }}
         >
           <Menu.Item key={SettingsOptions.PROFILE} icon={<EditOutlined />}>
             Edit Profile
