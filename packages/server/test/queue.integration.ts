@@ -175,6 +175,7 @@ describe('Queue Integration', () => {
       const res = await supertest({ userId: userCourse.user.id })
         .get(`/queues/${queue.id}/questions`)
         .expect(200);
+
       expect(res.body).toMatchSnapshot();
       expect(res.body.queue[0].creator).not.toHaveProperty('firstName');
       expect(res.body.queue[0].creator).not.toHaveProperty('lastName');
