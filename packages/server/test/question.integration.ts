@@ -15,7 +15,6 @@ import { QuestionModule } from '../src/question/question.module';
 import {
   ClosedOfficeHourFactory,
   CourseFactory,
-  OfficeHourFactory,
   QuestionFactory,
   QuestionGroupFactory,
   QueueFactory,
