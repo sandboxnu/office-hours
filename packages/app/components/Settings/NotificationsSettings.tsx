@@ -32,6 +32,17 @@ const DeviceAddHeader = styled.div`
   justify-content: space-between;
 `;
 
+const HeaderTitle = styled(Space)`
+  display: none;
+
+  @media (min-width: 768px) {
+    display: block;
+    flex-grow: 1;
+    padding-top: 50px;
+    padding-bottom: 20px;
+  }
+`;
+
 export default function NotificationsSettings(): ReactElement {
   const { data: profile, mutate } = useSWR(`api/v1/profile`, async () =>
     API.profile.index()
@@ -77,12 +88,9 @@ export default function NotificationsSettings(): ReactElement {
   return (
     profile && (
       <>
-        <Space
-          size={40}
-          style={{ flexGrow: 1, paddingTop: 50, paddingBottom: 20 }}
-        >
+        <HeaderTitle>
           <h1>Notifications</h1>
-        </Space>
+        </HeaderTitle>
         <Form wrapperCol={{ span: 10 }} form={form} initialValues={profile}>
           <Form.Item
             style={{ flex: 1 }}

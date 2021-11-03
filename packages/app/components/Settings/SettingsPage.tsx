@@ -1,11 +1,11 @@
 import {
   BellOutlined,
   DeleteOutlined,
-  EditOutlined,
   UploadOutlined,
   UserOutlined,
   WindowsOutlined,
 } from "@ant-design/icons";
+import { Collapse } from "antd";
 import { API } from "@koh/api-client";
 import { Role } from "@koh/common";
 import { useWindowWidth } from "@react-hook/window-size";
@@ -38,8 +38,12 @@ export const VerticalDivider = styled.div`
 `;
 
 const ProfilePicButton = styled(Button)`
-  width: 207px;
+  flex: wrap;
+  width: calc(5vw);
+  min-width: 180px;
 `;
+
+const { Panel } = Collapse;
 
 export default function SettingsPage({
   defaultPage,
@@ -57,7 +61,6 @@ export default function SettingsPage({
   );
   const [uploading, setUploading] = useState(false);
   const [isMobile, setMobile] = useState(false);
-  const [isPopUpOpen, setPopUpOpen] = useState(false);
   const windowWidth = useWindowWidth();
   const [avatarSize, setAvatarSize] = useState(windowWidth / 2);
 
@@ -158,29 +161,50 @@ export default function SettingsPage({
   );
 
   const SettingsMenu = () => (
-    <Menu
-      defaultSelectedKeys={[currentSettings]}
-      onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}
-      style={{ background: "#f8f9fb" }}
-    >
-      <Menu.Item key={SettingsOptions.PROFILE} icon={<UserOutlined />}>
-        Personal information
-      </Menu.Item>
-      {isTAOrProfessor && (
-        <Menu.Item
-          key={SettingsOptions.TEAMS_SETTINGS}
-          icon={<WindowsOutlined />}
+    <>
+      {isMobile ? (
+        <Collapse accordion>
+          <Panel header="Personal Information" key="profile">
+            <ProfileSettings />
+          </Panel>
+          {isTAOrProfessor && (
+            <Panel header="Teams Settings" key="teams_settings">
+              <TeamsSettings />
+            </Panel>
+          )}
+          <Panel header="Notifications" key="notifications">
+            <NotificationsSettings />
+          </Panel>
+        </Collapse>
+      ) : (
+        <Menu
+          style={{ background: "none" }}
+          defaultSelectedKeys={[currentSettings]}
+          onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}
         >
-          Teams settings
-        </Menu.Item>
+          <Menu.Item key={SettingsOptions.PROFILE} icon={<UserOutlined />}>
+            Personal information
+          </Menu.Item>
+          {isTAOrProfessor && (
+            <Menu.Item
+              key={SettingsOptions.TEAMS_SETTINGS}
+              icon={<WindowsOutlined />}
+            >
+              Teams settings
+            </Menu.Item>
+          )}
+          <Menu.Item
+            key={SettingsOptions.NOTIFICATIONS}
+            icon={<BellOutlined />}
+          >
+            Notifications
+          </Menu.Item>
+        </Menu>
       )}
-      <Menu.Item key={SettingsOptions.NOTIFICATIONS} icon={<BellOutlined />}>
-        Notifications
-      </Menu.Item>
-    </Menu>
+    </>
   );
 
-  const SettingsSubpage = () => (
+  const DesktopSettingsSubpage = () => (
     <Col>
       {currentSettings === SettingsOptions.PROFILE && <ProfileSettings />}
       {currentSettings === SettingsOptions.NOTIFICATIONS && (
@@ -195,11 +219,7 @@ export default function SettingsPage({
       {isMobile ? (
         <Col>
           <AvatarSettings />
-          <Button onClick={() => setPopUpOpen(!isPopUpOpen)}>
-            Toggle Menu
-          </Button>
-          {isPopUpOpen && <SettingsMenu />}
-          <SettingsSubpage />
+          <SettingsMenu />
         </Col>
       ) : (
         <Row>
@@ -209,7 +229,7 @@ export default function SettingsPage({
           </Col>
           <VerticalDivider />
           <Space direction="vertical" size={40} style={{ flexGrow: 1 }}>
-            <SettingsSubpage />
+            <DesktopSettingsSubpage />
           </Space>
         </Row>
       )}
