@@ -26,6 +26,7 @@ export default function SchedulePanel({
   courseId,
   defaultView = "week",
 }: ScheduleProps): ReactElement {
+  return null; // TODO: Replace this with something other than the iCal
   const { course } = useCourse(courseId);
   const role = useRoleInCourse(courseId);
 
