@@ -1,6 +1,6 @@
 import { API } from "@koh/api-client";
 import { QueuePartial, Role } from "@koh/common";
-import { Input, Modal, Radio } from "antd";
+import { Form, Input, Modal, Radio } from "antd";
 import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
@@ -23,11 +23,9 @@ export default function TodayPageCheckinButton(): ReactElement {
   const { cid } = router.query;
   const { course } = useCourse(Number(cid));
   const role = useRoleInCourse(Number(cid));
+  const [form] = Form.useForm();
   const queueCheckedIn = course?.queues.find((queue) =>
     queue.staffList.find((staff) => staff.id === profile?.id)
-  );
-  const [queueToBeCreated, setQueueToBeCreated] = useState(
-    `Professor ${profile?.lastName}'s Office Hours`
   );
 
   return (
@@ -39,6 +37,7 @@ export default function TodayPageCheckinButton(): ReactElement {
           onCancel={() => setModalVisible(false)}
           okText="Check In"
           onOk={async () => {
+            const value = await form.validateFields();
             let redirectID: QueuePartial;
             if (queueToCheckInto > -1) {
               redirectID = await API.taStatus.checkIn(
@@ -48,7 +47,7 @@ export default function TodayPageCheckinButton(): ReactElement {
             } else {
               redirectID = await API.taStatus.checkIn(
                 Number(cid),
-                queueToBeCreated
+                value.officeHourName
               );
             }
             router.push(
@@ -62,32 +61,43 @@ export default function TodayPageCheckinButton(): ReactElement {
             value={queueToCheckInto}
             onChange={(e) => setQueueToCheckInto(e.target.value)}
           >
-            {course?.queues.map((q, i) => (
-              <ProfessorModalRadio key={q.id} value={i}>
-                {q.room}
-              </ProfessorModalRadio>
-            ))}
+            {course?.queues
+              .filter((q) => (role === Role.TA ? !q.isProfessorQueue : true))
+              .map((q, i) => (
+                <ProfessorModalRadio key={q.id} value={i}>
+                  {q.room}
+                </ProfessorModalRadio>
+              ))}
             <ProfessorModalRadio value={-1}>
               Other...
               {queueToCheckInto === -1 ? (
-                <Input
-                  defaultValue={`Professor ${profile.lastName}'s Office Hours`}
-                  onChange={(e) => setQueueToBeCreated(e.target.value)}
-                  style={{ width: 400, marginLeft: 10 }}
-                />
+                <Form form={form}>
+                  <Form.Item
+                    name="officeHourName"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please give this room a name.",
+                      },
+                    ]}
+                  >
+                    <Input
+                      defaultValue={
+                        role === Role.TA
+                          ? ""
+                          : `Professor ${profile.lastName}'s Office Hours`
+                      }
+                      placeholder={"Please name the room."}
+                      style={{ width: 400, marginLeft: 10 }}
+                    />
+                  </Form.Item>
+                </Form>
               ) : null}
             </ProfessorModalRadio>
           </Radio.Group>
         </Modal>
       )}
-      {role === Role.TA && (
-        <TACheckinButton
-          courseId={Number(cid)}
-          room={"Online"}
-          state={queueCheckedIn ? "CheckedIn" : "CheckedOut"}
-        />
-      )}
-      {!queueCheckedIn && role === Role.PROFESSOR && (
+      {!queueCheckedIn && (
         <CheckinButton
           type="default"
           size="large"
@@ -96,7 +106,7 @@ export default function TodayPageCheckinButton(): ReactElement {
           Check In
         </CheckinButton>
       )}
-      {queueCheckedIn && role === Role.PROFESSOR && (
+      {queueCheckedIn && (
         <TACheckinButton
           courseId={Number(cid)}
           room={queueCheckedIn.room}
