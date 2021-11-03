@@ -1,9 +1,14 @@
-import { TACheckinPair, TACheckinTimesResponse } from '@koh/common';
-import { Injectable } from '@nestjs/common';
+import {
+  ERROR_MESSAGES,
+  TACheckinPair,
+  TACheckinTimesResponse,
+} from '@koh/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { partition } from 'lodash';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { QuestionModel } from 'question/question.entity';
 import { Between, Connection, In } from 'typeorm';
+import { UserCourseModel } from '../profile/user-course.entity';
 
 @Injectable()
 export class CourseService {
@@ -78,5 +83,23 @@ export class CourseService {
     }
 
     return { taCheckinTimes };
+  }
+
+  async removeUserFromCourse(userCourse: UserCourseModel): Promise<void> {
+    if (!userCourse) {
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.courseNotFound,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    try {
+      await UserCourseModel.remove(userCourse);
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.removeCourse,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }
