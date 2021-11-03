@@ -1,5 +1,6 @@
 import {
   BellOutlined,
+  BookOutlined,
   DeleteOutlined,
   UploadOutlined,
   UserOutlined,
@@ -16,6 +17,7 @@ import useSWR from "swr";
 import NotificationsSettings from "./NotificationsSettings";
 import ProfileSettings from "./ProfileSettings";
 import TeamsSettings from "./TeamsSettings";
+import CoursePreferenceSettings from "./CoursePreferenceSettings";
 import { SettingsPanelAvatar } from "./SettingsSharedComponents";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import { useRouter } from "next/router";
@@ -24,6 +26,7 @@ export enum SettingsOptions {
   PROFILE = "PROFILE",
   NOTIFICATIONS = "NOTIFICATIONS",
   TEAMS_SETTINGS = "TEAMS_SETTINGS",
+  PREFERENCES = "PREFERENCES",
 }
 
 interface SettingsPageProps {
@@ -175,6 +178,9 @@ export default function SettingsPage({
           <Panel header="Notifications" key="notifications">
             <NotificationsSettings />
           </Panel>
+          <Panel header="Course Preferences" key="preferences">
+            <CoursePreferenceSettings />
+          </Panel>
         </Collapse>
       ) : (
         <Menu
@@ -183,14 +189,14 @@ export default function SettingsPage({
           onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}
         >
           <Menu.Item key={SettingsOptions.PROFILE} icon={<UserOutlined />}>
-            Personal information
+            Personal Information
           </Menu.Item>
           {isTAOrProfessor && (
             <Menu.Item
               key={SettingsOptions.TEAMS_SETTINGS}
               icon={<WindowsOutlined />}
             >
-              Teams settings
+              Teams Settings
             </Menu.Item>
           )}
           <Menu.Item
@@ -198,6 +204,9 @@ export default function SettingsPage({
             icon={<BellOutlined />}
           >
             Notifications
+          </Menu.Item>
+          <Menu.Item key={SettingsOptions.PREFERENCES} icon={<BookOutlined />}>
+            Course Preferences
           </Menu.Item>
         </Menu>
       )}
@@ -211,6 +220,9 @@ export default function SettingsPage({
         <NotificationsSettings />
       )}
       {currentSettings === SettingsOptions.TEAMS_SETTINGS && <TeamsSettings />}
+      {currentSettings === SettingsOptions.PREFERENCES && (
+        <CoursePreferenceSettings />
+      )}
     </Col>
   );
 
