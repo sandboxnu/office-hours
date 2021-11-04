@@ -7,14 +7,16 @@ const _ScheduleCalendar = styled(Calendar)<CalendarProps>`
 `;
 
 type ScheduleProps = {
-  _courseId: number;
-  _defaultView?: View;
+  courseId: number;
+  defaultView?: View;
 };
 
 export default function SchedulePanel({
-  _courseId,
-  _defaultView = "week",
+  courseId,
+  defaultView = "week",
 }: ScheduleProps): ReactElement {
+  const _a = courseId;
+  const _d = defaultView;
   return null; // TODO: Replace this with something other than the iCal
   /**
   const { course } = useCourse(courseId);
