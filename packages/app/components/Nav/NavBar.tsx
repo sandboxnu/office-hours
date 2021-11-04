@@ -189,7 +189,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
       as: `/course/${courseId}/insights`,
       text: "Insights",
     });
-  }
+  } 
   */
 
   return courseId ? (
