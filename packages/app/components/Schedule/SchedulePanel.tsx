@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import { ReactElement } from "react";
 import { Calendar, CalendarProps, View } from "react-big-calendar";
 import styled from "styled-components";
 
