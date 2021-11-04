@@ -74,8 +74,10 @@ export default function QuestionForm({
     question?.text || ""
   );
   const [questionGroupable, setQuestionGroupable] = useState<boolean>(
-    question?.groupable === undefined || question?.groupable
+    (question?.groupable !== undefined && question?.groupable) || false
   );
+
+  console.log(question);
 
   useEffect(() => {
     if (question && !visible) {
@@ -228,8 +230,8 @@ export default function QuestionForm({
           onChange={onGroupableChange}
           style={{ marginBottom: 5 }}
         >
-          <Radio value={true}>yes</Radio>
-          <Radio value={false}>no</Radio>
+          <Radio value={true}>Yes</Radio>
+          <Radio value={false}>No</Radio>
         </Radio.Group>
         <QuestionCaption>
           Clicking Yes may result in a shorter wait time if others have the same
