@@ -1,6 +1,9 @@
-const withTM = require("next-transpile-modules")(["@koh"], {
-  unstable_webpack5: true,
-});
+const withTM = require("next-transpile-modules")(
+  ["@koh/app", "@koh/common", "@koh/api-client", "@koh/server"],
+  {
+    unstable_webpack5: true,
+  }
+);
 const withPlugins = require("next-compose-plugins");
 const withOffline = require("next-offline");
 
