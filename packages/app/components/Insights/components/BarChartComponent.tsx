@@ -3,7 +3,14 @@ import dynamic from "next/dynamic";
 import { BarChartOutputType } from "@koh/common";
 import React, { ReactElement } from "react";
 
-const Bar = dynamic(() => import("@ant-design/charts/lib/bar"));
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const Bar = dynamic(
+  () => import("@ant-design/charts").then((charts) => charts.Bar),
+  {
+    ssr: false,
+  }
+);
 
 interface BarChartTypes {
   output: BarChartOutputType;
