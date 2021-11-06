@@ -3,9 +3,9 @@ import dynamic from "next/dynamic";
 import { BarChartOutputType } from "@koh/common";
 import React, { ReactElement } from "react";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 const Bar = dynamic(
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   () => import("@ant-design/charts").then((charts) => charts.Bar),
   {
     ssr: false,
