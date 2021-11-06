@@ -329,7 +329,6 @@ export class CourseController {
     }
 
     try {
-      console.log('create evt');
       await EventModel.create({
         time: new Date(),
         eventType: EventType.TA_CHECKED_OUT,
