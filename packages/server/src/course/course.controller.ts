@@ -307,6 +307,9 @@ export class CourseController {
       );
     }
 
+    // Do nothing if user not already in stafflist
+    if (!queue.staffList.find((e) => e.id === user.id)) return;
+
     queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
     if (queue.staffList.length === 0) {
       queue.allowQuestions = false;
@@ -326,6 +329,7 @@ export class CourseController {
     }
 
     try {
+      console.log('create evt');
       await EventModel.create({
         time: new Date(),
         eventType: EventType.TA_CHECKED_OUT,
