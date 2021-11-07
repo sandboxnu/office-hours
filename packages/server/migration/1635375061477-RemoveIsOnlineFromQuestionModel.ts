@@ -1,7 +1,8 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class RemoveIsOnlineFromQuestionModel1635375061477
-  implements MigrationInterface {
+  implements MigrationInterface
+{
   name = 'RemoveIsOnlineFromQuestionModel1635375061477';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
