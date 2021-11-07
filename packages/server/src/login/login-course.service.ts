@@ -31,38 +31,38 @@ export class LoginCourseService {
     const userCourses = [];
 
     for (const c of info.courses) {
-      const course: CourseModel = await this.courseSectionToCourse(
-        c.course,
-        c.section,
-      );
+      const course: CourseModel = await this.courseCRNToCourse(c.crn);
 
       if (course) {
         const userCourse = await this.courseToUserCourse(
           user.id,
           course.id,
-          Role.STUDENT,
+          c.role,
         );
         userCourses.push(userCourse);
       }
     }
 
-    if (info.ta_courses) {
-      for (const c of info.ta_courses) {
-        // Query for all the courses which match the name of the generic course from Khoury
-        const courseMappings = (
-          await CourseSectionMappingModel.find({
-            where: { genericCourseName: c.course }, // TODO: Add semester support
-            relations: ['course'],
-          })
-        ).filter((cm) => cm.course.enabled);
+    if (info.prof_courses) {
+      // loop through section groups
+      for (const c of info.prof_courses) {
+        // loop through CRNs to create courses
+        for (const courseCRN of c.crns) {
+          const courseMappings = (
+            await CourseSectionMappingModel.find({
+              where: { crn: courseCRN }, // TODO: Add semester support
+              relations: ['course'],
+            })
+          ).filter((cm) => cm.course.enabled);
 
-        for (const courseMapping of courseMappings) {
-          const taCourse = await this.courseToUserCourse(
-            user.id,
-            courseMapping.courseId,
-            c.instructor === 1 ? Role.PROFESSOR : Role.TA,
-          );
-          userCourses.push(taCourse);
+          for (const courseMapping of courseMappings) {
+            const profCourse = await this.courseToUserCourse(
+              user.id,
+              courseMapping.courseId,
+              Role.PROFESSOR,
+            );
+            userCourses.push(profCourse);
+          }
         }
       }
     }
@@ -86,13 +86,10 @@ export class LoginCourseService {
     return user;
   }
 
-  public async courseSectionToCourse(
-    courseName: string,
-    courseSection: number,
-  ): Promise<CourseModel> {
+  public async courseCRNToCourse(courseCRN: number): Promise<CourseModel> {
     const courseSectionModel = (
       await CourseSectionMappingModel.find({
-        where: { genericCourseName: courseName, section: courseSection },
+        where: { crn: courseCRN },
         relations: ['course'],
       })
     ).find((cm) => cm.course.enabled);
