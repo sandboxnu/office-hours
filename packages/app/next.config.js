@@ -48,6 +48,12 @@ const config = {
     }
     return config;
   },
+  eslint: {
+    // Updating to next11 caused linting to break during builds for some reason.
+    // Disabling lint during build should be ok as long as we continue linting in
+    // other github actions
+    ignoreDuringBuilds: true,
+  },
 };
 
 module.exports = withPlugins(plugins, config);
