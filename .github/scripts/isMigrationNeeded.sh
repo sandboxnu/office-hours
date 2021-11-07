@@ -1,6 +1,19 @@
 set -e
+# The output for this script is somewhat misleading in the success case; the
+# migration:generate script will print a fail because there is no migration to generate.
+# This is fine because you want there to be no migration generated. 
 
-yarn migration:generate -n CHECK
+SUB='No changes in database schema were found'
+{
+  log=$(yarn migration:generate -n CHECK 2>&1)
+  echo "$log"
+} || {
+  echo "$log"
+  if [[ "$log" == *"$SUB"* ]]; then
+    echo 'NO MIGRATIONS NEEDED.'
+    exit 0
+  fi
+}
 # Check if migration file exists
 if ls packages/server/migration/*-CHECK.ts 1> /dev/null 2>&1; then
   git fetch origin master

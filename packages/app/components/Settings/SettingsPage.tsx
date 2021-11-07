@@ -1,5 +1,6 @@
 import {
   BellOutlined,
+  BookOutlined,
   DeleteOutlined,
   EditOutlined,
   UploadOutlined,
@@ -13,10 +14,12 @@ import useSWR from "swr";
 import NotificationsSettings from "./NotificationsSettings";
 import ProfileSettings from "./ProfileSettings";
 import { SettingsPanelAvatar } from "./SettingsSharedComponents";
+import CoursePreferenceSettings from "./CoursePreferenceSettings";
 
 export enum SettingsOptions {
   PROFILE = "PROFILE",
   NOTIFICATIONS = "NOTIFICATIONS",
+  PREFERENCES = "PREFERENCES",
 }
 
 interface SettingsPageProps {
@@ -37,11 +40,9 @@ const ProfilePicButton = styled(Button)`
 export default function SettingsPage({
   defaultPage,
 }: SettingsPageProps): ReactElement {
-  const {
-    data: profile,
-    error,
-    mutate,
-  } = useSWR(`api/v1/profile`, async () => API.profile.index());
+  const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
+    API.profile.index()
+  );
 
   const [currentSettings, setCurrentSettings] = useState(
     defaultPage || SettingsOptions.PROFILE
@@ -122,13 +123,12 @@ export default function SettingsPage({
                 Delete my Profile Picture
               </ProfilePicButton>
             )}
-            <div style={{ marginTop: "60px" }} />
           </>
         ) : null}
         <Menu
           defaultSelectedKeys={[currentSettings]}
           onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}
-          style={{ background: "#f8f9fb" }}
+          style={{ background: "#f8f9fb", marginTop: "60px" }}
         >
           <Menu.Item key={SettingsOptions.PROFILE} icon={<EditOutlined />}>
             Edit Profile
@@ -139,6 +139,9 @@ export default function SettingsPage({
           >
             Notifications Settings
           </Menu.Item>
+          <Menu.Item key={SettingsOptions.PREFERENCES} icon={<BookOutlined />}>
+            Course Preferences
+          </Menu.Item>
         </Menu>
       </Col>
       <VerticalDivider />
@@ -147,6 +150,9 @@ export default function SettingsPage({
           {currentSettings === SettingsOptions.PROFILE && <ProfileSettings />}
           {currentSettings === SettingsOptions.NOTIFICATIONS && (
             <NotificationsSettings />
+          )}
+          {currentSettings === SettingsOptions.PREFERENCES && (
+            <CoursePreferenceSettings />
           )}
         </Col>
       </Space>

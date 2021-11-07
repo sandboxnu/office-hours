@@ -120,6 +120,7 @@ describe('Course Integration', () => {
       const events = await EventModel.find();
       expect(events.length).toBe(1);
       expect(events[0].eventType).toBe(EventType.TA_CHECKED_IN);
+      expect(events[0].queueId).toBe(queue.id);
     });
 
     it("Doesn't allow student to check in", async () => {
@@ -238,6 +239,7 @@ describe('Course Integration', () => {
       const events = await EventModel.find();
       expect(events.length).toBe(1);
       expect(events[0].eventType).toBe(EventType.TA_CHECKED_OUT);
+      expect(events[0].queueId).toBe(queue.id);
     });
 
     it('tests student cant checkout from queue', async () => {
@@ -367,7 +369,6 @@ describe('Course Integration', () => {
       const now = new Date();
       const yesterday = new Date();
       yesterday.setUTCHours(now.getUTCHours() - 24);
-
       const course = await CourseFactory.create();
       const ta = await UserFactory.create();
       const professor = await UserFactory.create();
@@ -432,20 +433,19 @@ describe('Course Integration', () => {
       const twoDaysAgo = new Date();
       twoDaysAgo.setUTCDate(twoDaysAgo.getUTCDate() - 2);
 
+      const dateNow = new Date();
       const data = await supertest({ userId: professor.id })
         .get(`/courses/${course.id}/ta_check_in_times`)
         .query({
           startDate: twoDaysAgo,
-          endDate: new Date(),
+          endDate: dateNow,
         })
         .expect(200);
 
-      const checkinTimes = (data.body as unknown as TACheckinTimesResponse)
+      const checkinTimes = ((data.body as unknown) as TACheckinTimesResponse)
         .taCheckinTimes;
 
       const taName = ta.firstName + ' ' + ta.lastName;
-
-      expect(checkinTimes.length).toBe(3);
       expect(checkinTimes).toStrictEqual([
         {
           checkinTime: yesterday.toISOString(),
@@ -471,6 +471,99 @@ describe('Course Integration', () => {
           numHelped: 0,
         },
       ]);
+    });
+  });
+
+  describe('DELETE /courses/:id/withdraw_course', () => {
+    it('tests withdrawing from a nonexistent user course', async () => {
+      await supertest({ userId: 1 })
+        .delete(`/profile/1/withdraw_course`)
+        .send({ email: 'yamsarecool@gmail.com', role: Role.STUDENT })
+        .expect(404);
+    });
+    it('tests the users ability to withdraw from their own course', async () => {
+      const course = await CourseFactory.create();
+      // extranous student, TA, and Professor
+      const userS = await UserFactory.create({
+        firstName: 's',
+        lastName: 's',
+        email: 'stu@neu.edu',
+      });
+      const userT = await UserFactory.create({
+        firstName: 't',
+        lastName: 't',
+        email: 'ta@neu.edu',
+      });
+      const userP = await UserFactory.create({
+        firstName: 'p2',
+        lastName: 'p2',
+        email: 'prof2@neu.edu',
+      });
+      const professor = await UserFactory.create({
+        firstName: 'p',
+        lastName: 'p',
+        email: 'profm@neu.edu',
+      });
+
+      await UserCourseFactory.create({
+        user: professor,
+        role: Role.PROFESSOR,
+        course,
+      });
+
+      await UserCourseFactory.create({
+        user: userS,
+        role: Role.STUDENT,
+        course,
+      });
+      await UserCourseFactory.create({
+        user: userT,
+        role: Role.TA,
+        course,
+      });
+      await UserCourseFactory.create({
+        user: userP,
+        role: Role.PROFESSOR,
+        course,
+      });
+
+      await supertest({ userId: userS.id })
+        .delete(`/courses/${course.id}/withdraw_course`)
+        .send({ email: userS.email, role: Role.STUDENT })
+        .expect(200);
+
+      await supertest({ userId: userT.id })
+        .delete(`/courses/${course.id}/withdraw_course`)
+        .send({ email: userT.email, role: Role.TA })
+        .expect(200);
+
+      await supertest({ userId: userP.id })
+        .delete(`/courses/${course.id}/withdraw_course`)
+        .send({ email: userP.email, role: Role.PROFESSOR })
+        .expect(200);
+
+      const testSPresent = await UserCourseModel.findOne({
+        where: {
+          userId: userS.id,
+        },
+      });
+      const testTPresent = await UserCourseModel.findOne({
+        where: {
+          userId: userT.id,
+        },
+      });
+      const testPPresent = await UserCourseModel.findOne({
+        where: {
+          userId: userP.id,
+        },
+      });
+      const userCourse = await UserCourseModel.findOne({
+        where: { courseId: course.id, userId: professor.id },
+      });
+      expect(testSPresent).toBeUndefined();
+      expect(testTPresent).toBeUndefined();
+      expect(testPPresent).toBeUndefined();
+      expect(userCourse).toBeDefined();
     });
   });
 });

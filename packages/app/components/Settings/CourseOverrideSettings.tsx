@@ -77,7 +77,7 @@ export default function CourseOverrideSettings({
             await API.course.toggleSelfEnroll(courseId);
             mutateCourse();
           }}
-          defaultChecked={course.selfEnroll}
+          defaultChecked={course?.selfEnroll}
         />
       </div>
       <b>

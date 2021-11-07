@@ -2,7 +2,7 @@ name: Lint
 
 on:
   pull_request:
-    branches: [master, data-insights-WIP]
+    branches: [master, hybrid-queues]
 
 jobs:
   prettier:

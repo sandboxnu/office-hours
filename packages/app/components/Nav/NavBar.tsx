@@ -58,6 +58,7 @@ const LeftMenu = styled.div`
   @media (max-width: 650px) {
     display: none;
   }
+  flex-grow: 1;
 `;
 
 const RightMenu = styled.div`
