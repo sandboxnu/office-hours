@@ -363,47 +363,35 @@ export class KhouryDataParams {
 
   @IsOptional()
   @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
-  courses!: KhouryStudentCourse[];
+  courses!: KhouryCourse[];
 
   @IsOptional()
   @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
-  ta_courses!: KhouryTACourse[];
+  prof_courses!: KhouryProfCourse[];
 }
 
-export class KhouryStudentCourse {
+export class KhouryCourse {
   @IsInt()
   crn!: number;
 
   @IsString()
-  course!: string;
-
-  @IsBoolean()
-  accelerated!: boolean;
-
-  @IsInt()
-  section!: number;
-
-  @IsString()
   semester!: string;
 
-  @IsString()
-  title!: string;
-
-  @IsString()
-  @IsOptional()
-  campus!: string;
+  @IsEnum(Role)
+  role!: Role;
 }
 
-export class KhouryTACourse {
-  @IsString()
-  course!: string;
+export class KhouryProfCourse {
+  // List of CRN's in the section group
+  @IsArray()
+  crns!: number[];
 
   @IsString()
   semester!: string;
 
-  @IsInt()
-  @IsOptional()
-  instructor!: number;
+  // Section group name
+  @IsString()
+  name!: string;
 }
 
 export interface KhouryRedirectResponse {
