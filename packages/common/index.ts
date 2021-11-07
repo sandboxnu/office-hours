@@ -449,9 +449,8 @@ export class GetCourseResponse {
   @Type(() => QueuePartial)
   queues!: QueuePartial[];
 
+  heatmap!: false; // TODO: Add this back in after queue refactor is done => Heatmap | false;
   coordinator_email!: string;
-
-  heatmap!: Heatmap | false;
 
   selfEnroll!: boolean;
 }
@@ -884,6 +883,7 @@ export const ERROR_MESSAGES = {
   insightsController: {
     insightUnathorized: "User is not authorized to view this insight",
     insightNameNotFound: "The insight requested was not found",
+    insightsDisabled: "Insights are currently unavailable, sorry :(",
   },
   roleGuard: {
     notLoggedIn: "Must be logged in",
