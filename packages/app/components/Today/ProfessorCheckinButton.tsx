@@ -2,6 +2,7 @@ import { API } from "@koh/api-client";
 import { QueuePartial, Role } from "@koh/common";
 import { Form, Input, Modal, Radio } from "antd";
 import { useRouter } from "next/router";
+import { Row } from "antd";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useCourse } from "../../hooks/useCourse";
@@ -12,7 +13,6 @@ import TACheckinButton, { CheckinButton } from "./TACheckinButton";
 const ProfessorModalRadio = styled(Radio)`
   display: block;
   height: 30px;
-  lineheight: 30px;
 `;
 
 export default function TodayPageCheckinButton(): ReactElement {
@@ -68,8 +68,8 @@ export default function TodayPageCheckinButton(): ReactElement {
                   {q.room}
                 </ProfessorModalRadio>
               ))}
-            <ProfessorModalRadio value={-1}>
-              Other...
+            <Row style={{ flexWrap: "nowrap" }}>
+              <ProfessorModalRadio value={-1}>Other...</ProfessorModalRadio>
               {queueToCheckInto === -1 ? (
                 <Form form={form}>
                   <Form.Item
@@ -88,12 +88,12 @@ export default function TodayPageCheckinButton(): ReactElement {
                           : `Professor ${profile.lastName}'s Office Hours`
                       }
                       placeholder={"Please name the room."}
-                      style={{ width: 400, marginLeft: 10 }}
+                      style={{ width: 350 }}
                     />
                   </Form.Item>
                 </Form>
               ) : null}
-            </ProfessorModalRadio>
+            </Row>
           </Radio.Group>
         </Modal>
       )}
