@@ -5,21 +5,10 @@ import { Button, message, Modal, Table } from "antd";
 import { UserCourse } from "@koh/common";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import Router from "next/router";
-import styled from "styled-components";
+import { HeaderTitle } from "../common/HeaderTitle";
 import { useCourse } from "../../hooks/useCourse";
 
 const { confirm } = Modal;
-
-const HeaderTitle = styled(Space)`
-  display: none;
-
-  @media (min-width: 768px) {
-    display: block;
-    flex-grow: 1;
-    padding-top: 50px;
-    padding-bottom: 20px;
-  }
-`;
 
 export default function CoursePreferenceSettings(): ReactElement {
   const { data: profile, mutate } = useSWR(`api/v1/profile`, async () =>

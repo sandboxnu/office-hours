@@ -1,8 +1,8 @@
 import { API } from "@koh/api-client";
 import { UpdateProfileParams } from "@koh/common";
-import { Button, Col, Form, Input, message, Space, Switch } from "antd";
+import { Button, Col, Form, Input, message, Switch } from "antd";
 import { pick } from "lodash";
-import styled from "styled-components";
+import { HeaderTitle } from "../common/HeaderTitle";
 import React, { ReactElement } from "react";
 import useSWR from "swr";
 
@@ -11,17 +11,6 @@ export default function TeamsSettings(): ReactElement {
   const { data: profile, mutate } = useSWR(`api/v1/profile`, async () =>
     API.profile.index()
   );
-
-  const HeaderTitle = styled(Space)`
-    display: none;
-
-    @media (min-width: 768px) {
-      display: block;
-      flex-grow: 1;
-      padding-top: 50px;
-      padding-bottom: 20px;
-    }
-  `;
 
   const [form] = Form.useForm();
   const editProfile = async (updateProfile: UpdateProfileParams) => {

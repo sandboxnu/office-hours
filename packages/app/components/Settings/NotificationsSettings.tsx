@@ -5,17 +5,9 @@ import {
   ERROR_MESSAGES,
   UpdateProfileParams,
 } from "@koh/common";
-import {
-  Button,
-  Form,
-  Input,
-  List,
-  message,
-  Space,
-  Switch,
-  Tooltip,
-} from "antd";
+import { Button, Form, Input, List, message, Switch, Tooltip } from "antd";
 import { pick } from "lodash";
+import { HeaderTitle } from "../common/HeaderTitle";
 import React, { ReactElement, useEffect, useState } from "react";
 import styled from "styled-components";
 import useSWR from "swr";
@@ -30,17 +22,6 @@ import {
 const DeviceAddHeader = styled.div`
   display: flex;
   justify-content: space-between;
-`;
-
-const HeaderTitle = styled(Space)`
-  display: none;
-
-  @media (min-width: 768px) {
-    display: block;
-    flex-grow: 1;
-    padding-top: 50px;
-    padding-bottom: 20px;
-  }
 `;
 
 export default function NotificationsSettings(): ReactElement {

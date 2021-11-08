@@ -18,6 +18,7 @@ import NotificationsSettings from "./NotificationsSettings";
 import ProfileSettings from "./ProfileSettings";
 import TeamsSettings from "./TeamsSettings";
 import CoursePreferenceSettings from "./CoursePreferenceSettings";
+import { useIsMobile } from "../../hooks/useIsMobile";
 import { SettingsPanelAvatar } from "./SettingsSharedComponents";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import { useRouter } from "next/router";
@@ -63,12 +64,11 @@ export default function SettingsPage({
     defaultPage || SettingsOptions.PROFILE
   );
   const [uploading, setUploading] = useState(false);
-  const [isMobile, setMobile] = useState(false);
+  const isMobile = useIsMobile();
   const windowWidth = useWindowWidth();
   const [avatarSize, setAvatarSize] = useState(windowWidth / 2);
 
   useEffect(() => {
-    setMobile(window.innerWidth < 768);
     let widthDivider = isMobile ? 6 : 10;
     setAvatarSize(windowWidth / widthDivider);
   });

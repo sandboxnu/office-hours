@@ -4,7 +4,7 @@ on:
   push:
     branches: master
   pull_request:
-    branches: [master, hybrid-queues]
+    branches: [master, hybrid-queues, updated-login]
 
 jobs:
   cypress-tests:

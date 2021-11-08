@@ -1,28 +1,19 @@
 import { API } from "@koh/api-client";
 import { UpdateProfileParams } from "@koh/common";
-import { Button, Form, Input, message, Row, Space } from "antd";
+import { Button, Form, Input, message, Row } from "antd";
 import { pick } from "lodash";
+import { useIsMobile } from "../../hooks/useIsMobile";
+import { HeaderTitle } from "../common/HeaderTitle";
 import styled from "styled-components";
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement } from "react";
 import useSWR from "swr";
 
 export default function ProfileSettings(): ReactElement {
-  const [isMobile, setMobile] = useState(false);
   const { data: profile, mutate } = useSWR(`api/v1/profile`, async () =>
     API.profile.index()
   );
+  const isMobile = useIsMobile();
   const [form] = Form.useForm();
-
-  const HeaderTitle = styled(Space)`
-    display: none;
-
-    @media (min-width: 768px) {
-      display: block;
-      flex-grow: 1;
-      padding-top: 50px;
-      padding-bottom: 20px;
-    }
-  `;
 
   const editProfile = async (updateProfile: UpdateProfileParams) => {
     const newProfile = { ...profile, ...updateProfile };
@@ -39,9 +30,9 @@ export default function ProfileSettings(): ReactElement {
     message.success("Your profile settings have been successfully updated");
   };
 
-  useEffect(() => {
-    setMobile(window.innerWidth < 768);
-  });
+  const ResponsiveFormRow = styled(Row)`
+    flexdirection: ${isMobile ? "column" : "row"};
+  `;
 
   return profile ? (
     <div>
@@ -49,68 +40,35 @@ export default function ProfileSettings(): ReactElement {
         <h1>Personal Information</h1>
       </HeaderTitle>
       <Form wrapperCol={{ span: 18 }} form={form} initialValues={profile}>
-        {isMobile ? (
-          <>
-            <Form.Item
-              label="First Name"
-              name="firstName"
-              data-cy="firstNameInput"
-              rules={[
-                {
-                  required: true,
-                  message: "Your name can't be empty!",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              label="Last Name"
-              name="lastName"
-              data-cy="lastNameInput"
-              rules={[
-                {
-                  required: true,
-                  message: "Your name can't be empty!",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-          </>
-        ) : (
-          <Row>
-            <Form.Item
-              label="First Name"
-              name="firstName"
-              data-cy="firstNameInput"
-              rules={[
-                {
-                  required: true,
-                  message: "Your name can't be empty!",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              style={{
-                marginLeft: 10,
-              }}
-              label="Last Name"
-              name="lastName"
-              data-cy="lastNameInput"
-              rules={[
-                {
-                  required: true,
-                  message: "Your name can't be empty!",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-          </Row>
-        )}
+        <ResponsiveFormRow>
+          <Form.Item
+            label="First Name"
+            name="firstName"
+            data-cy="firstNameInput"
+            rules={[
+              {
+                required: true,
+                message: "Your name can't be empty!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            style={{ marginLeft: isMobile ? "10px" : "0" }}
+            label="Last Name"
+            name="lastName"
+            data-cy="lastNameInput"
+            rules={[
+              {
+                required: true,
+                message: "Your name can't be empty!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+        </ResponsiveFormRow>
       </Form>
       <Button
         key="submit"
