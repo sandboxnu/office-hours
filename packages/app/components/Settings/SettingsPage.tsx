@@ -52,9 +52,11 @@ const { Panel } = Collapse;
 export default function SettingsPage({
   defaultPage,
 }: SettingsPageProps): ReactElement {
-  const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
-    API.profile.index()
-  );
+  const {
+    data: profile,
+    error,
+    mutate,
+  } = useSWR(`api/v1/profile`, async () => API.profile.index());
   const router = useRouter();
   const { cid } = router.query;
   const role = useRoleInCourse(Number(cid));
