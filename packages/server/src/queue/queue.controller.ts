@@ -17,7 +17,8 @@ import {
   Param,
   Patch,
   Post,
-  Res, UnauthorizedException,
+  Res,
+  UnauthorizedException,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -158,10 +159,12 @@ export class QueueController {
       throw new NotFoundException();
     }
 
-    if(queue.isProfessorQueue){
-      if(role == Role.TA){
-        throw new HttpException(ERROR_MESSAGES.queueController.cannotCloseQueue,
-            HttpStatus.UNAUTHORIZED);
+    if (queue.isProfessorQueue) {
+      if (role == Role.TA) {
+        throw new HttpException(
+          ERROR_MESSAGES.queueController.cannotCloseQueue,
+          HttpStatus.UNAUTHORIZED,
+        );
       }
     }
 

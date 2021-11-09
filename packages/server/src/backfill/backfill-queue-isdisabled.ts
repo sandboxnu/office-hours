@@ -1,6 +1,6 @@
 import { Command } from 'nestjs-command';
 import { Injectable } from '@nestjs/common';
-import {QueueModel} from "../queue/queue.entity";
+import { QueueModel } from '../queue/queue.entity';
 
 @Injectable()
 export class BackfillQueueIsDisabled {
