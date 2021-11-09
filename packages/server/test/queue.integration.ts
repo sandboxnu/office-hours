@@ -351,7 +351,7 @@ describe('Queue Integration', () => {
       const stu = await StudentCourseFactory.create({
         user: await UserFactory.create(),
       });
-      await supertest({ userId: stu.userId }).delete(`/queues/999`).expect(404);
+      await supertest({ userId: stu.userId }).delete(`/queues/998`).expect(404);
     });
-  }); 
+  });
 });
