@@ -18,7 +18,6 @@ import {
   Patch,
   Post,
   Res,
-  UnauthorizedException,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
