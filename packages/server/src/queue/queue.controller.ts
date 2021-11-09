@@ -17,7 +17,7 @@ import {
   Param,
   Patch,
   Post,
-  Res,
+  Res, UnauthorizedException,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -156,6 +156,13 @@ export class QueueController {
     const queue = await this.queueService.getQueue(queueId);
     if (queue === undefined) {
       throw new NotFoundException();
+    }
+
+    if(queue.isProfessorQueue){
+      if(role == Role.TA){
+        throw new HttpException(ERROR_MESSAGES.queueController.cannotCloseQueue,
+            HttpStatus.UNAUTHORIZED);
+      }
     }
 
     queue.isDisabled = true;

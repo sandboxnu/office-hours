@@ -28,10 +28,6 @@ describe('queue entity', () => {
     await conn.synchronize(true);
   });
 
-  it('checks queues are disabled when disabled', async () => {
-    const queueFactory = await QueueFactory.create();
-  });
-
   it('handles queueSize correctly', async () => {
     const queueFactory = await QueueFactory.create();
 

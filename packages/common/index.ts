@@ -871,6 +871,7 @@ export const ERROR_MESSAGES = {
     getQuestions: "Unable to get questions from queue",
     saveQueue: "Unable to save queue",
     cleanQueue: "Unable to clean queue",
+    cannotCloseQueue : "Unable to close professor queue as a TA"
   },
   queueRoleGuard: {
     queueNotFound: "Queue not found",
