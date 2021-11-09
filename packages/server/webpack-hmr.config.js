@@ -11,7 +11,7 @@ module.exports = function (options) {
   return {
     ...options,
     entry: ['webpack/hot/poll?100', options.entry],
-    // watch: true, // commenting this out gets rid of wbpk warning
+    watch: true,
     cache: {
       type: 'filesystem',
       buildDependencies: {
