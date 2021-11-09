@@ -353,5 +353,5 @@ describe('Queue Integration', () => {
       });
       await supertest({ userId: stu.userId }).delete(`/queues/999`).expect(404);
     });
-  });
+  }); 
 });
