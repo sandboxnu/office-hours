@@ -77,8 +77,6 @@ export default function QuestionForm({
     (question?.groupable !== undefined && question?.groupable) || false
   );
 
-  console.log(question);
-
   useEffect(() => {
     if (question && !visible) {
       setQuestionText(question.text);
