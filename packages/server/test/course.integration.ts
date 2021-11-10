@@ -139,18 +139,25 @@ describe('Course Integration', () => {
       expect(events.length).toBe(0);
     });
 
-    it("Doesn't allow a TA to check into a new queue", async () => {
+    it('Allow a TA to create a new queue', async () => {
       const ta = await UserFactory.create();
       const tcf = await TACourseFactory.create({
         course: await CourseFactory.create(),
         user: ta,
       });
-      await supertest({ userId: ta.id })
-        .post(`/courses/${tcf.courseId}/ta_location/The Alamo`)
-        .expect(403);
+      const response = await supertest({ userId: ta.id })
+        .post(`/courses/${tcf.courseId}/ta_location/WVH 404`)
+        .expect(201);
+
+      expect(response.body).toMatchObject({
+        id: 1,
+        room: 'WVH 404',
+        staffList: [{ id: ta.id }],
+      });
 
       const events = await EventModel.find();
-      expect(events.length).toBe(0);
+      expect(events.length).toBe(1);
+      expect(events[0].eventType).toBe(EventType.TA_CHECKED_IN);
     });
 
     it('Allows a professor to create a new queue', async () => {
