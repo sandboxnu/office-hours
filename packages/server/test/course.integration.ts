@@ -145,7 +145,7 @@ describe('Course Integration', () => {
         course: await CourseFactory.create(),
         user: ta,
       });
-      const response = await supertest({ userId: ta.id })
+      await supertest({ userId: ta.id })
         .post(`/courses/${tcf.courseId}/ta_location/The Alamo`)
         .expect(403);
 
@@ -437,7 +437,7 @@ describe('Course Integration', () => {
         })
         .expect(200);
 
-      const checkinTimes = (data.body as unknown as TACheckinTimesResponse)
+      const checkinTimes = ((data.body as unknown) as TACheckinTimesResponse)
         .taCheckinTimes;
 
       const taName = ta.firstName + ' ' + ta.lastName;
