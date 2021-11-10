@@ -5,19 +5,6 @@ on:
     branches: [master, hybrid-queues, updated-login]
 
 jobs:
-  prettier:
-    name: prettier
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.head_ref }}
-      - name: Prettify code
-        uses: creyD/prettier_action@v3.0
-        with:
-          prettier_options: --write **/*.{js,jsx,ts,tsx}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   lint:
     name: lint
     runs-on: ubuntu-latest

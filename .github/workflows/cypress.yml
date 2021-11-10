@@ -36,6 +36,7 @@ jobs:
           record: ${{ github.event_name == 'pull_request' }}
           start: yarn ci:start
           wait-on: "http://localhost:3000"
+          browser: chrome
           command-prefix: "yarn run percy exec"
         env:
           CYPRESS_USE_LIVE_API: true
