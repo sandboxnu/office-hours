@@ -444,7 +444,7 @@ describe('Course Integration', () => {
         })
         .expect(200);
 
-      const checkinTimes = ((data.body as unknown) as TACheckinTimesResponse)
+      const checkinTimes = (data.body as unknown as TACheckinTimesResponse)
         .taCheckinTimes;
 
       const taName = ta.firstName + ' ' + ta.lastName;
