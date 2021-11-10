@@ -9,6 +9,7 @@ import { TestTypeOrmModule } from '../../test/util/testUtils';
 import { QueueModel } from '../queue/queue.entity';
 import { CourseModel } from './course.entity';
 import { IcalService } from './ical.service';
+import { SemesterModel } from '../semester/semester.entity';
 const { parseICS } = jest.requireActual('node-ical');
 
 const mkCal = (events: string) =>
@@ -47,11 +48,11 @@ const mockedICal = mocked(iCal, true);
 
 const VEVENT_NOROOM = `
 BEGIN:VEVENT
-DTSTART;TZID=America/New_York:20200514T130000
-DTEND;TZID=America/New_York:20200514T150000
-DTSTAMP:20200519T220522Z
+DTSTART;TZID=America/New_York:20200914T130000
+DTEND;TZID=America/New_York:20200914T150000
+DTSTAMP:20200919T220522Z
 UID:1e6mva12gktah0506vdko3vjd7@google.com
-CREATED:20200513T180615Z
+CREATED:20200913T180615Z
 DESCRIPTION:
 LAST-MODIFIED:20200513T180615Z
 LOCATION:
@@ -63,8 +64,8 @@ END:VEVENT`;
 
 const VEVENT_ROOM = `
 BEGIN:VEVENT
-DTSTART;TZID=America/New_York:20200512T170000
-DTEND;TZID=America/New_York:20200512T190000
+DTSTART;TZID=America/New_York:20200912T170000
+DTEND;TZID=America/New_York:20200912T190000
 DTSTAMP:20200518T220522Z
 UID:6l8vlk6bfr18lkgdqpm4m76ff2@google.com
 CREATED:20200512T192938Z
@@ -425,6 +426,137 @@ TRANSP:OPAQUE
 END:VEVENT
 `;
 
+const ex_norecur = (st: string, end: string, name: string) => `BEGIN:VEVENT
+DTSTART;TZID=America/New_York:${st}
+DTEND;TZID=America/New_York:${end}
+DTSTAMP:${st}
+UID:${st}${end}${name}@google.com
+CREATED:20190913T180615Z
+DESCRIPTION:
+LAST-MODIFIED:20190513T180615Z
+LOCATION:
+SEQUENCE:0
+STATUS:CONFIRMED
+SUMMARY:Online OH: ${name}
+TRANSP:OPAQUE
+END:VEVENT
+`;
+
+const ex_recur = (st: string, end: string, until: string, name: string) => `
+BEGIN:VEVENT
+DTSTART;TZID=America/New_York:${st}
+DTEND;TZID=America/New_York:${end}
+RRULE:FREQ=WEEKLY;WKST=SU;UNTIL=${until};BYDAY=FR
+DTSTAMP:20190918T211006Z
+UID:${end}${until}${name}@google.com
+CREATED:20190918T062635Z
+DESCRIPTION:
+LAST-MODIFIED:20190918T063438Z
+LOCATION:
+SEQUENCE:2
+STATUS:CONFIRMED
+SUMMARY:Online OH: ${name}
+TRANSP:OPAQUE
+END:VEVENT
+`;
+
+const VEVENT_F2019_NORECUR = ex_norecur(
+  '20190903T130000',
+  '20190903T150000',
+  'TA2019',
+);
+const VEVENT_F2019_RECUR = ex_recur(
+  '20190918T201500',
+  '20190918T211500',
+  '20191101T045959Z',
+  'TA2019R',
+);
+
+const VEVENT_S2020_NORECUR = ex_norecur(
+  '20200103T130000',
+  '20200103T150000',
+  'TA2020Spring',
+);
+const VEVENT_S2020_RECUR = ex_recur(
+  '20200118T201500',
+  '20200118T211500',
+  '20200401T045959Z',
+  'TA2020SpringR',
+);
+
+const VEVENT_Su2020_NORECUR = ex_norecur(
+  '20200503T130000',
+  '20200503T150000',
+  'TA2020Sum',
+);
+const VEVENT_Su2020_RECUR = ex_recur(
+  '20200518T201500',
+  '20200518T211500',
+  '20200801T045959Z',
+  'TA2020Sum',
+);
+
+const VEVENT_Su12020_NORECUR = ex_norecur(
+  '20200503T130000',
+  '20200503T150000',
+  'TA2020Sum1',
+);
+const VEVENT_Su12020_RECUR = ex_recur(
+  '20200518T201500',
+  '20200518T211500',
+  '20200715T045959Z',
+  'TA2020Sum1',
+);
+
+const VEVENT_Su22020_NORECUR = ex_norecur(
+  '20200803T130000',
+  '20200803T150000',
+  'TA2020Sum2',
+);
+const VEVENT_Su22020_RECUR = ex_recur(
+  '20200818T201500',
+  '20200818T211500',
+  '20200901T045959Z',
+  'TA2020Sum2',
+);
+
+const VEVENT_F2020_NORECUR = ex_norecur(
+  '20200903T130000',
+  '20200903T150000',
+  'TA2020',
+);
+const VEVENT_F2020_RECUR = ex_recur(
+  '20200918T201500',
+  '20200918T211500',
+  '20201101T045959Z',
+  'TA2020R',
+);
+
+const VEVENT_2021_NORECUR = ex_norecur(
+  '20210103T130000',
+  '20210103T150000',
+  'TA2021',
+);
+
+// for testing different semesters
+// (combine them into one huge calendar, and test different season filters.
+const seasonTest = mkCal(
+  VEVENT_F2019_NORECUR +
+    VEVENT_F2019_RECUR +
+    VEVENT_S2020_NORECUR +
+    VEVENT_S2020_RECUR +
+    VEVENT_Su2020_NORECUR +
+    VEVENT_Su2020_RECUR +
+    VEVENT_Su12020_NORECUR +
+    VEVENT_Su12020_RECUR +
+    VEVENT_Su22020_NORECUR +
+    VEVENT_Su22020_RECUR +
+    VEVENT_F2020_NORECUR +
+    VEVENT_F2020_RECUR +
+    VEVENT_2021_NORECUR +
+    VEVENT_2021_NORECUR,
+);
+
 describe('IcalService', () => {
   let service: IcalService;
   let conn: Connection;
@@ -458,35 +590,50 @@ describe('IcalService', () => {
     // NO DB NEEDED
     it('handles a pre-generated subset of CS 2510 classes', () => {
       const parsedICS = mkCal(VEVENT_ROOM + VEVENT_NOROOM);
-      const endData = service.parseIcal(parsedICS, 123);
+      const endData = service.parseIcal(
+        parsedICS,
+        123,
+        new Date(1599418800000),
+        new Date(1600635600000),
+      );
       // Note that the lecture event has been filtered out
       expect(endData).toStrictEqual([
         {
           title: 'Online OH: Ameya, Julia',
           courseId: 123,
           room: '308b WVH',
-          startTime: new Date(1589317200000),
-          endTime: new Date(1589324400000),
+          startTime: new Date(1599944400000),
+          endTime: new Date(1599951600000),
         },
         {
           title: 'Online OH: Elaina',
           courseId: 123,
           room: '',
-          startTime: new Date(1589475600000),
-          endTime: new Date(1589482800000),
+          startTime: new Date(1600102800000),
+          endTime: new Date(1600110000000),
         },
       ]);
     });
 
     it('ignores events with no start/end time', () => {
       const parsedICS = mkCal(VEVENT_NOTIME);
-      const endData = service.parseIcal(parsedICS, 123);
+      const endData = service.parseIcal(
+        parsedICS,
+        123,
+        new Date(1589317200000),
+        new Date(1589317900000),
+      );
       expect(endData).toStrictEqual([]);
     });
 
     it('converts Outlook time zones', () => {
       const parsedICS = mkCal(VEVENT_OUTLOOK_CET);
-      const endData = service.parseIcal(parsedICS, 123);
+      const endData = service.parseIcal(
+        parsedICS,
+        123,
+        new Date('2020-11-14T11:00:00+0000'),
+        new Date('2020-11-14T14:00:00+0000'),
+      );
       expect(endData).toStrictEqual([
         {
           title: 'Online OH CS3700 - Ishan',
@@ -501,7 +648,12 @@ describe('IcalService', () => {
     it('converts Outlook time zones during summer/daylight saving time', () => {
       // 2 hour offset from UTC
       const parsedICS = mkCal(VEVENT_OUTLOOK_CEST);
-      const endData = service.parseIcal(parsedICS, 123);
+      const endData = service.parseIcal(
+        parsedICS,
+        123,
+        new Date('2020-09-14T10:00:00+0000'),
+        new Date('2020-09-14T13:00:00+0000'),
+      );
       expect(endData).toStrictEqual([
         {
           title: 'Online OH CS3700 - Ishan',
@@ -515,8 +667,12 @@ describe('IcalService', () => {
 
     it('correctly excludes exdate with Outlook time zones', () => {
       const parsedICS = mkCal(VEVENT_RRULE_OUTLOOK_EXDATE);
-      const endData = service.parseIcal(parsedICS, 123);
-      expect(endData).not;
+      const endData = service.parseIcal(
+        parsedICS,
+        123,
+        new Date('2020-09-28T12:00:00-0400'),
+        new Date('2020-10-19T14:00:00-0400'),
+      );
       expect(endData).toStrictEqual([
         {
           title: 'Online OH CS3700 - Ashwin',
@@ -544,7 +700,12 @@ describe('IcalService', () => {
 
     it('creates multiple when there is an rrule', () => {
       const parsedICS = mkCal(VEVENT_RRULE);
-      const endData = service.parseIcal(parsedICS, 123);
+      const endData = service.parseIcal(
+        parsedICS,
+        123,
+        new Date('2020-09-18T20:15:00-0400'),
+        new Date('2020-09-25T21:15:00-0400'),
+      );
       expect(endData).toStrictEqual([
         {
           title: 'Online OH',
@@ -565,7 +726,12 @@ describe('IcalService', () => {
 
     it('creates all events in a week when there is a multi day rrule', () => {
       const parsedICS = mkCal(VEVENT_RRULE_MULTI_DAY);
-      const endData = service.parseIcal(parsedICS, 123);
+      const endData = service.parseIcal(
+        parsedICS,
+        123,
+        new Date('2020-09-21T10:00:00-0400'),
+        new Date('2020-10-01T12:00:00-0400'),
+      );
       endData.length = 4;
       expect(endData).toStrictEqual([
         {
@@ -601,7 +767,12 @@ describe('IcalService', () => {
 
     it('creates all events in a week with a multi day rrule at UTC midnight', () => {
       const parsedICS = mkCal(VEVENT_RRULE_MULTI_DAY_8PM);
-      const endData = service.parseIcal(parsedICS, 123);
+      const endData = service.parseIcal(
+        parsedICS,
+        123,
+        new Date('2020-09-21T20:00:00-0400'),
+        new Date('2020-10-01T22:00:00-0400'),
+      );
       endData.length = 4;
       expect(endData).toStrictEqual([
         {
@@ -637,7 +808,12 @@ describe('IcalService', () => {
 
     it('excludes deleted date in rrule', () => {
       const parsedICS = mkCal(VEVENT_RRULE_MULTI_DAY_EXDATE);
-      const endData = service.parseIcal(parsedICS, 123);
+      const endData = service.parseIcal(
+        parsedICS,
+        123,
+        new Date('2020-09-21T10:00:00-0400'),
+        new Date('2020-10-05T12:00:00-0400'),
+      );
       endData.length = 3;
       expect(endData).toStrictEqual([
         {
@@ -666,7 +842,12 @@ describe('IcalService', () => {
 
     it('excludes deleted date in rrule crossing dst', () => {
       const parsedICS = mkCal(VEVENT_RRULE_MULTI_DAY_EXDATE_DST);
-      const endData = service.parseIcal(parsedICS, 123);
+      const endData = service.parseIcal(
+        parsedICS,
+        123,
+        new Date('2020-10-22T10:00:00-0400'),
+        new Date('2020-11-12T13:00:00-0400'),
+      );
       expect(endData).toStrictEqual([
         {
           title: 'Online OH- Amit Shesh',
@@ -688,7 +869,12 @@ describe('IcalService', () => {
     it('creates multiple while converting Outlook timezone', () => {
       // 2 hour offset from UTC
       const parsedICS = mkCal(VEVENT_RRULE_OUTLOOK);
-      const endData = service.parseIcal(parsedICS, 123);
+      const endData = service.parseIcal(
+        parsedICS,
+        123,
+        new Date('2020-09-14T10:00:00+0000'),
+        new Date('2020-09-21T13:00:00+0000'),
+      );
       expect(endData).toStrictEqual([
         {
           title: 'Online OH CS3700 - Ishan',
@@ -709,7 +895,12 @@ describe('IcalService', () => {
 
     it('generates 10 weeks of events when rrule has no UNTIL date', () => {
       const parsedICS = mkCal(VEVENT_RRULE_FOREVER);
-      const endData = service.parseIcal(parsedICS, 123);
+      const endData = service.parseIcal(
+        parsedICS,
+        123,
+        new Date('2020-05-14T10:00:00+0000'),
+        new Date('2021-05-14T10:00:00+0000'),
+      );
       expect(endData).toContainEqual({
         title: 'Online OH forever',
         courseId: 123,
@@ -729,7 +920,12 @@ describe('IcalService', () => {
 
     it('correct times after daylight savings', () => {
       const parsedICS = mkCal(VEVENT_DAYLIGHT_SAVINGS_FALL_BACK);
-      const endData = service.parseIcal(parsedICS, 123);
+      const endData = service.parseIcal(
+        parsedICS,
+        123,
+        new Date('2020-09-25T19:00:00+0000'),
+        new Date('2020-12-01T22:00:00+0000'),
+      );
       expect(endData).toContainEqual({
         title: 'Online OH: Anurag',
         courseId: 123,
@@ -748,7 +944,12 @@ describe('IcalService', () => {
 
     it('correct times after daylight savings spring forward', () => {
       const parsedICS = mkCal(VEVENT_DAYLIGHT_SAVINGS_SPRING_FORWARD);
-      const endData = service.parseIcal(parsedICS, 123);
+      const endData = service.parseIcal(
+        parsedICS,
+        123,
+        new Date('2020-03-08T02:00:00+0000'),
+        new Date('2020-03-15T03:00:00+0000'),
+      );
       expect(endData).toContainEqual({
         title: 'Online OH CS3700 - Ashwin',
         courseId: 123,
@@ -767,7 +968,12 @@ describe('IcalService', () => {
 
     it('correct times after daylight savings spring forward outlook', () => {
       const parsedICS = mkCal(VEVENT_DAYLIGHT_SAVINGS_SPRING_FORWARD_OUTLOOK);
-      const endData = service.parseIcal(parsedICS, 123);
+      const endData = service.parseIcal(
+        parsedICS,
+        123,
+        new Date('2021-03-08T16:00:00+0000'),
+        new Date('2021-03-15T17:00:00+0000'),
+      );
       expect(endData).toContainEqual({
         title: 'Online OH CS3700 - Ashwin',
         courseId: 123,
@@ -786,7 +992,12 @@ describe('IcalService', () => {
 
     it('correct times in outlook with timezone spillover', () => {
       const parsedICS = mkCal(VEVENT_OUTLOOK_SPILLOVER);
-      const endData = service.parseIcal(parsedICS, 123);
+      const endData = service.parseIcal(
+        parsedICS,
+        123,
+        new Date('2021-02-09T06:00:00+0000'),
+        new Date('2021-02-16T08:00:00+0000'),
+      );
       expect(endData).toContainEqual({
         title: 'Online OH CS3700 - Ashwin',
         courseId: 123,
@@ -805,7 +1016,12 @@ describe('IcalService', () => {
 
     it('correct times in outlook with timezone spillover, across DST', () => {
       const parsedICS = mkCal(VEVENT_OUTLOOK_SPILLOVER_DST);
-      const endData = service.parseIcal(parsedICS, 123);
+      const endData = service.parseIcal(
+        parsedICS,
+        123,
+        new Date('2021-03-09T06:00:00+0000'),
+        new Date('2021-03-16T07:00:00+0000'),
+      );
       expect(endData).toContainEqual({
         title: 'Online OH CS3700 - Ashwin',
         courseId: 123,
@@ -824,7 +1040,13 @@ describe('IcalService', () => {
 
     it('generates some professor office hours based on recurrence', () => {
       const parsedICS = mkCal(VEVENT_WITH_RECURRING_PROFESSOR);
-      const endData = service.parseIcal(parsedICS, 123, /\b^(Prof|Professor)/);
+      const endData = service.parseIcal(
+        parsedICS,
+        123,
+        new Date('2021-01-11T14:00:00.000Z'),
+        new Date('2021-02-08T15:00:00.000Z'),
+        /\b^(Prof|Professor)/,
+      );
       expect(endData).toContainEqual({
         title: "Professor Gamburg's Hours",
         courseId: 123,
@@ -843,7 +1065,13 @@ describe('IcalService', () => {
 
     it('generates two sets of professor office hours', () => {
       const parsedICS = mkCal(VEVENT_WITH_TWO_PROFESSORS);
-      const endData = service.parseIcal(parsedICS, 123, /\b^(Prof|Professor)/);
+      const endData = service.parseIcal(
+        parsedICS,
+        123,
+        new Date('2020-12-28T14:00:00.000Z'),
+        new Date('2020-12-28T17:00:00.000Z'),
+        /\b^(Prof|Professor)/,
+      );
       expect(endData).toEqual([
         {
           title: "Professor Gamburg's Hours",
@@ -868,22 +1096,25 @@ describe('IcalService', () => {
       });
       it('creates officehours', async () => {
         const course = await CourseFactory.create({ id: 123 });
-
         const parsedICS = mkCal(
           VEVENT_ROOM + VEVENT_NOROOM + VEVENT_WITH_TWO_PROFESSORS,
         );
+
         mockedICal.fromURL.mockReturnValue(Promise.resolve(parsedICS));
 
         await service.updateCalendarForCourse(course);
+
         const queue = await QueueModel.findOne({
           courseId: course.id,
           room: 'Online',
         });
+
         const gamburgQueue = await QueueModel.findOne({
           courseId: course.id,
           room: "Professor Gamburg's Hours",
           isProfessorQueue: true,
         });
+
         const shortQueue = await QueueModel.findOne({
           courseId: course.id,
           room: "Prof Usyvatsky's Hours",
@@ -896,15 +1127,15 @@ describe('IcalService', () => {
           {
             title: 'Online OH: Ameya, Julia',
             courseId: course.id,
-            startTime: new Date(1589317200000),
-            endTime: new Date(1589324400000),
+            startTime: new Date(1599944400000),
+            endTime: new Date(1599951600000),
             queueId: queue.id,
           },
           {
             title: 'Online OH: Elaina',
             courseId: course.id,
-            startTime: new Date(1589475600000),
-            endTime: new Date(1589482800000),
+            startTime: new Date(1600102800000),
+            endTime: new Date(1600110000000),
             queueId: queue.id,
           },
           {
@@ -925,6 +1156,157 @@ describe('IcalService', () => {
           },
         ]);
       });
+
+      it('creates FALL 2019 officehours ', async () => {
+        mockedICal.fromURL.mockReturnValue(Promise.resolve(seasonTest));
+        const semF2019 = await SemesterModel.create({
+          season: 'Fall',
+          year: 2019,
+        });
+        const courseYr19 = await CourseFactory.create({
+          id: 15,
+          semester: semF2019,
+        });
+        await service.updateCalendarForCourse(courseYr19);
+
+        const cm = await CourseModel.findOne(courseYr19.id, {
+          relations: ['officeHours'],
+        });
+
+        const ohDates = cm.officeHours.map((oh) => oh.startTime);
+
+        // only generates OH in 2019
+        ohDates.map((date) => expect(date.getFullYear()).toBe(2019));
+        // 8 is september, 12 is max
+        ohDates.map((date) => expect(date.getMonth() >= 8).toBe(true));
+        ohDates.map((date) => expect(date.getMonth() <= 12).toBe(true));
+      });
+    });
+
+    it('creates SPRING 2020 officehours ', async () => {
+      mockedICal.fromURL.mockReturnValue(Promise.resolve(seasonTest));
+      const semS2020 = await SemesterModel.create({
+        season: 'Spring',
+        year: 2020,
+      });
+      const courseSp = await CourseFactory.create({
+        id: 11,
+        semester: semS2020,
+      });
+
+      await service.updateCalendarForCourse(courseSp);
+
+      const cm = await CourseModel.findOne(courseSp.id, {
+        relations: ['officeHours'],
+      });
+
+      const ohDates = cm.officeHours.map((oh) => oh.startTime);
+      // only generates OH in 2020
+      ohDates.map((date) => expect(date.getFullYear()).toBe(2020));
+      // 0 is jan, 4 is may (max)
+      ohDates.map((date) => expect(date.getMonth() >= 0).toBe(true));
+      ohDates.map((date) => expect(date.getMonth() <= 4).toBe(true));
+    });
+
+    it('creates FALL 2020 officehours', async () => {
+      mockedICal.fromURL.mockReturnValue(Promise.resolve(seasonTest));
+      const semF2020 = await SemesterModel.create({
+        season: 'Fall',
+        year: 2020,
+      });
+      const courseFall = await CourseFactory.create({
+        id: 11,
+        semester: semF2020,
+      });
+
+      await service.updateCalendarForCourse(courseFall);
+
+      const cm = await CourseModel.findOne(courseFall.id, {
+        relations: ['officeHours'],
+      });
+
+      const ohDates = cm.officeHours.map((oh) => oh.startTime);
+      // only generates OH in 2020
+      ohDates.map((date) => expect(date.getFullYear()).toBe(2020));
+      // only generates OH from September (8) to December (11)
+      ohDates.map((date) => expect(date.getMonth() >= 8).toBe(true));
+      ohDates.map((date) => expect(date.getMonth() <= 11).toBe(true));
+      // generates the expected number of OH events
+      expect(ohDates.length).toEqual(8);
+    });
+
+    it('creates Summer_FULL 2020 officehours ', async () => {
+      mockedICal.fromURL.mockReturnValue(Promise.resolve(seasonTest));
+      const semS2020 = await SemesterModel.create({
+        season: 'Summer_Full',
+        year: 2020,
+      });
+      const course = await CourseFactory.create({
+        id: 11,
+        semester: semS2020,
+      });
+
+      await service.updateCalendarForCourse(course);
+
+      const cm = await CourseModel.findOne(course.id, {
+        relations: ['officeHours'],
+      });
+
+      const ohDates = cm.officeHours.map((oh) => oh.startTime);
+      // only generates OH in 2020
+      ohDates.map((date) => expect(date.getFullYear()).toBe(2020));
+      // 4 is may, 8 is sept (max)
+      ohDates.map((date) => expect(date.getMonth() >= 4).toBe(true));
+      ohDates.map((date) => expect(date.getMonth() <= 8).toBe(true));
+    });
+
+    it('creates Summer 1 2020 officehours ', async () => {
+      mockedICal.fromURL.mockReturnValue(Promise.resolve(seasonTest));
+      const semSu12020 = await SemesterModel.create({
+        season: 'Summer_1',
+        year: 2020,
+      });
+      const course = await CourseFactory.create({
+        id: 15,
+        semester: semSu12020,
+      });
+
+      await service.updateCalendarForCourse(course);
+
+      const cm = await CourseModel.findOne(course.id, {
+        relations: ['officeHours'],
+      });
+
+      const ohDates = cm.officeHours.map((oh) => oh.startTime);
+      // only generates OH in 2020
+      ohDates.map((date) => expect(date.getFullYear()).toBe(2020));
+      // 4 is may, 6 is july (max)
+
+      ohDates.map((date) => expect(date.getMonth() >= 4).toBe(true));
+      ohDates.map((date) => expect(date.getMonth() <= 6).toBe(true));
+    });
+
+    it('creates Summer 2 2020 officehours ', async () => {
+      mockedICal.fromURL.mockReturnValue(Promise.resolve(seasonTest));
+      const semSu22020 = await SemesterModel.create({
+        season: 'Summer_2',
+        year: 2020,
+      });
+      const course = await CourseFactory.create({
+        id: 18,
+        semester: semSu22020,
+      });
+      await service.updateCalendarForCourse(course);
+      const cm = await CourseModel.findOne(course.id, {
+        relations: ['officeHours'],
+      });
+      const ohDates = cm.officeHours.map((oh) => oh.startTime);
+      // only generates OH in 2020
+      ohDates.map((date) => expect(date.getFullYear()).toBe(2020));
+      // 6 is july, 8 is september (max)
+
+      ohDates.map((date) => expect(date.getMonth() >= 6).toBe(true));
+      ohDates.map((date) => expect(date.getMonth() <= 8).toBe(true));
     });
   });
 });

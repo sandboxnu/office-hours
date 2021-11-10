@@ -8,7 +8,7 @@
     "cypress:open": "npx cypress open",
     "cli": "yarn workspace @koh/server cli",
     "tsc": "yarn workspaces run tsc",
-    "lint": "eslint packages/ --ext .ts,.tsx --ignore-path .gitignore",
+    "lint": "eslint packages/ --ext .ts,.tsx .",
     "test": "yarn workspace @koh/server test",
     "typeorm": "yarn workspace @koh/server typeorm",
     "dev": "concurrently -n \"server,app,proxy\" \"yarn workspace @koh/server dev\" \"yarn workspace @koh/app dev\" \"yarn dev:proxy\"",
@@ -18,7 +18,8 @@
     "dev:db:reset": "yarn workspace @koh/server run dev:db:reset",
     "migration:generate": "yarn workspace @koh/server run migration:generate",
     "build": "yarn workspace @koh/server run build && yarn workspace @koh/app run build",
-    "ci:start": "yarn concurrently \"yarn dev:proxy\" \"yarn workspace @koh/server prod:start\" \"yarn workspace @koh/app prod:start\""
+    "ci:start": "yarn concurrently \"yarn dev:proxy\" \"yarn workspace @koh/server prod:start\" \"yarn workspace @koh/app prod:start\"",
+    "prepare": "husky install"
   },
   "workspaces": {
     "packages": [
@@ -26,17 +27,17 @@
     ]
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.9.6",
-    "@babel/plugin-proposal-class-properties": "^7.8.3",
-    "@babel/plugin-proposal-decorators": "^7.8.3",
-    "@babel/preset-env": "^7.9.6",
-    "@babel/preset-typescript": "^7.9.0",
+    "@babel/cli": "^7.12.1",
+    "@babel/core": "^7.12.3",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/plugin-proposal-decorators": "^7.12.1",
+    "@babel/preset-env": "^7.12.1",
+    "@babel/preset-typescript": "^7.12.1",
     "@percy/cypress": "^2.3.2",
     "@typescript-eslint/eslint-plugin": "4.0.1",
     "@typescript-eslint/parser": "4.0.1",
     "concurrently": "^5.2.0",
-    "cypress": "6.8.0",
+    "cypress": "8.7.0",
     "eslint": "^7.20.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-import": "^2.20.1",
@@ -44,14 +45,15 @@
     "express": "^4.17.1",
     "http-proxy-cli": "^2.1.0",
     "http-proxy-middleware": "^1.0.3",
-    "husky": "^4.2.5",
+    "husky": "^7.0.4",
     "prettier": "^2.1.2",
     "pretty-quick": "^3.1.0"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged"
-    }
+  "lint-staged": {
+    "packages/**/*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
   },
   "jest": {
     "projects": [
@@ -59,6 +61,7 @@
     ]
   },
   "dependencies": {
+    "lint-staged": "^11.2.6",
     "pm2": "^4.4.0",
     "rimraf": "^3.0.2"
   },
@@ -73,5 +76,8 @@
       "network-idle-timeout": 250,
       "cache-responses": true
     }
+  },
+  "resolutions": {
+    "webpack": "^5.4.0"
   }
 }
