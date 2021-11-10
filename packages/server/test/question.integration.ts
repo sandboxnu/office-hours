@@ -55,11 +55,11 @@ describe('Question Integration', () => {
         creator: student1.user,
       });
 
-      const response2 = await supertest({ userId: 99 })
+      const response = await supertest({ userId: 99 })
         .get(`/questions/${q.id}`)
         .expect(200);
 
-      expect(response2.body).toMatchSnapshot();
+      expect(response.body).toMatchSnapshot();
     });
     it('fails to get a non-existent question', async () => {
       await supertest({ userId: 99 }).get(`/questions/999`).expect(404);
