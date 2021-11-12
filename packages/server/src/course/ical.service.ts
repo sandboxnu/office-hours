@@ -17,11 +17,29 @@ import moment = require('moment');
 import { Cron } from '@nestjs/schedule';
 import { RedisService } from 'nestjs-redis';
 import * as Redlock from 'redlock';
+import { SemesterModel } from '../semester/semester.entity';
 
 type Moment = moment.Moment;
 
 type CreateOfficeHour = DeepPartial<OfficeHourModel>[];
 
+// months are zero indexed (start date is 9/1/YEAR for fall (ex))
+const ICalStartDateMap = {
+  Fall: 8,
+  Spring: 0,
+  Summer_1: 4,
+  Summer_2: 6,
+  Summer_Full: 4,
+};
+
+// end date is the last day of 1+month, ex: fall's end date is 1/1/(YEAR+1)
+const ICalEndDateMap = {
+  Fall: 11,
+  Spring: 4,
+  Summer_1: 6,
+  Summer_2: 8,
+  Summer_Full: 8,
+};
 @Injectable()
 export class IcalService {
   constructor(
@@ -95,10 +113,11 @@ export class IcalService {
   parseIcal(
     icalData: CalendarResponse,
     courseId: number,
+    startDate: Date,
+    endDate: Date,
     testRegex = /\b^(Online OH)\b/,
   ): CreateOfficeHour {
     const icalDataValues: Array<CalendarComponent> = Object.values(icalData);
-
     const officeHours = icalDataValues.filter(
       (iCalElement): iCalElement is VEvent =>
         iCalElement.type === 'VEVENT' &&
@@ -110,37 +129,55 @@ export class IcalService {
       testRegex.test(event.summary),
     );
 
-    let resultOfficeHours = [];
+    let resultOfficeHours: CreateOfficeHour = [];
 
     filteredOfficeHours.forEach((oh: VEvent) => {
+      // Filter out events that occur before the current semester
       // This office hour timezone. ASSUMING every date field has same timezone as oh.start
       const eventTZ = oh.start.tz;
       const { rrule } = oh as any;
+      let generatedOfficeHours: CreateOfficeHour = [];
       if (rrule) {
         const duration = oh.end.getTime() - oh.start.getTime();
-
         const allDates = this.rruleToDates(rrule, eventTZ, oh.exdate);
-        const generatedOfficeHours = allDates.map((date) => ({
+        generatedOfficeHours = allDates.map((date) => ({
           title: oh.summary,
           courseId: courseId,
           room: oh.location,
           startTime: date,
           endTime: new Date(date.getTime() + duration),
         }));
-        resultOfficeHours = resultOfficeHours.concat(generatedOfficeHours);
       } else {
-        resultOfficeHours.push({
+        const startTime = this.fixOutlookTZ(moment(oh.start), eventTZ).toDate();
+        generatedOfficeHours.push({
           title: oh.summary,
           courseId: courseId,
           room: oh.location,
-          startTime: this.fixOutlookTZ(moment(oh.start), eventTZ).toDate(),
+          startTime: startTime,
           endTime: this.fixOutlookTZ(moment(oh.end), eventTZ).toDate(),
         });
       }
+
+      const filteredHours: CreateOfficeHour = generatedOfficeHours.filter(
+        (date) => date.startTime >= startDate && date.startTime <= endDate,
+      );
+      resultOfficeHours = resultOfficeHours.concat(filteredHours);
     });
+
     return resultOfficeHours;
   }
 
+  private getSemEnd(sem: SemesterModel): Date {
+    const month = ICalEndDateMap[sem.season];
+    const year = sem.year;
+    return new Date(year, month + 1, 0, 0, 0, 0, 0);
+  }
+  private getSemBegin(sem: SemesterModel): Date {
+    const month = ICalStartDateMap[sem.season];
+    const day = 1;
+    const year = sem.year;
+    return new Date(year, month, day, 0, 0, 0, 0);
+  }
   /**
    * Updates the OfficeHours for a given Course by rescraping ical
    * @param course to parse
@@ -153,6 +190,7 @@ export class IcalService {
     let queue = await QueueModel.findOne({
       where: { courseId: course.id, room: 'Online' },
     });
+
     if (!queue) {
       queue = await QueueModel.create({
         room: 'Online',
@@ -163,9 +201,13 @@ export class IcalService {
       }).save();
     }
 
+    const semBegin = this.getSemBegin(course.semester);
+    const semEnd = this.getSemEnd(course.semester);
+
     const icalURL = await fromURL(course.icalURL);
 
-    const officeHours = this.parseIcal(icalURL, course.id);
+    const officeHours = this.parseIcal(icalURL, course.id, semBegin, semEnd);
+
     await OfficeHourModel.delete({ courseId: course.id });
     await OfficeHourModel.save(
       officeHours.map((e) => {
@@ -178,6 +220,8 @@ export class IcalService {
     const professorOfficeHours = this.parseIcal(
       icalURL,
       course.id,
+      semBegin,
+      semEnd,
       professorHoursRegex,
     );
 
@@ -222,7 +266,6 @@ export class IcalService {
 
     await OfficeHourModel.save(processedProfessorOfficeHours);
     await QueueModel.save(professorQueues);
-
     console.timeEnd(`scrape course ${course.id}`);
     console.log('done scraping!');
   }
