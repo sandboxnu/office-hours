@@ -133,7 +133,7 @@ export class CourseController {
     }
 
     course.queues = await async.filter(course.queues, async (q) =>
-      userCourseModel.role === Role.PROFESSOR ? true : !q.isProfessorQueue,
+      !q.isDisabled && userCourseModel.role === Role.PROFESSOR ? true : !q.isProfessorQueue,
     );
 
     try {
