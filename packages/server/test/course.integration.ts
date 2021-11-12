@@ -49,7 +49,18 @@ describe('Course Integration', () => {
       const now = new Date();
       const course = await CourseFactory.create();
 
-      await QueueFactory.create({
+      const userTA = await UserFactory.create({
+        firstName: 'a',
+        lastName: 'b',
+        email: 'dummyta@neu.edu',
+      });
+
+      await TACourseFactory.create({
+        user: userTA,
+        course: course,
+      });
+
+      const queue = await QueueFactory.create({
         room: "Matthias's Office",
         course: course,
         officeHours: [
@@ -66,17 +77,21 @@ describe('Course Integration', () => {
         course: course,
       });
 
-      await UserCourseFactory.create({
+      await supertest({ userId: userTA.id })
+        .post(`/courses/${queue.course.id}/ta_location/${queue.room}`)
+        .expect(201);
+
+      const userF = await UserCourseFactory.create({
         user: await UserFactory.create(),
         course: course,
       });
 
-      const response = await supertest({ userId: 1 })
+      const response = await supertest({ userId: userF.userId })
         .get(`/courses/${course.id}`)
         .expect(200);
 
       expect(response.body).toMatchObject({
-        queues: [{ id: 1 }, { id: 2 }],
+        queues: [{ id: 1 }],
       });
     });
 
