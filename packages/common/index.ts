@@ -84,7 +84,7 @@ export class DesktopNotifPartial {
  * Contains the partial user info needed by the frontend when nested in a response
  * @param id - The unique id of the user in our db.
  * @param name - The full name of this user: First Last.
- * @param photoURL - The URL string of this user photo. This is pulled from the admin site
+ * @param photoURL - The URL string of this user photo. This is pulled from the admin site.
  */
 export class UserPartial {
   id!: number;
@@ -203,8 +203,7 @@ export type Heatmap = Array<number>;
  * @param questionType - The question type helps distinguish question for TA's and data insights.
  * @param status - The current status of the question in the queue.
  * @param position - The current position of this question in the queue.
- * @param location - The location of the particular student, to help TA's find them
- * @param isOnline - Wether or not the question will helped online or in-person
+ * @param location - The location of the particular student, to help TA's find them.
  */
 export class Question {
   id!: number;
@@ -229,7 +228,6 @@ export class Question {
   groupable!: boolean;
   status!: QuestionStatus;
   location?: string;
-  isOnline?: boolean;
 }
 
 // Question Types
@@ -250,7 +248,7 @@ export enum OpenQuestionStatus {
 }
 
 /**
- * Limbo statuses are awaiting some confirmation from the student
+ * Limbo statuses are awaiting some confirmation from the student.
  */
 export enum LimboQuestionStatus {
   CantFind = "CantFind", // represents when a student can't be found by a TA
@@ -451,9 +449,8 @@ export class GetCourseResponse {
   @Type(() => QueuePartial)
   queues!: QueuePartial[];
 
+  heatmap!: false; // TODO: Add this back in after queue refactor is done => Heatmap | false;
   coordinator_email!: string;
-
-  heatmap!: Heatmap | false;
 
   selfEnroll!: boolean;
 }
@@ -526,10 +523,6 @@ export class CreateQuestionParams {
   @IsInt()
   queueId!: number;
 
-  @IsBoolean()
-  @IsOptional()
-  isOnline?: boolean;
-
   @IsString()
   @IsOptional()
   location?: string;
@@ -559,10 +552,6 @@ export class UpdateQuestionParams {
   @IsEnum(QuestionStatusKeys)
   @IsOptional()
   status?: QuestionStatus;
-
-  @IsBoolean()
-  @IsOptional()
-  isOnline?: boolean;
 
   @IsString()
   @IsOptional()
@@ -880,6 +869,7 @@ export const ERROR_MESSAGES = {
     getQuestions: "Unable to get questions from queue",
     saveQueue: "Unable to save queue",
     cleanQueue: "Unable to clean queue",
+    cannotCloseQueue: "Unable to close professor queue as a TA",
   },
   queueRoleGuard: {
     queueNotFound: "Queue not found",
@@ -892,6 +882,7 @@ export const ERROR_MESSAGES = {
   insightsController: {
     insightUnathorized: "User is not authorized to view this insight",
     insightNameNotFound: "The insight requested was not found",
+    insightsDisabled: "Insights are currently unavailable, sorry :(",
   },
   roleGuard: {
     notLoggedIn: "Must be logged in",

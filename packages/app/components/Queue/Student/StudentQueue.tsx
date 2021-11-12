@@ -173,7 +173,6 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
       text: studentQuestion.text,
       questionType: studentQuestion?.questionType,
       queueId: qid,
-      isOnline: studentQuestion?.isOnline,
       location: studentQuestion?.location,
       force: true,
       groupable: true,

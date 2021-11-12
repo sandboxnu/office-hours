@@ -65,6 +65,9 @@ export class QueueModel extends BaseEntity {
   @Column({ default: false })
   isProfessorQueue: boolean;
 
+  @Column({ default: false })
+  isDisabled: boolean;
+
   startTime: Date;
   endTime: Date;
 

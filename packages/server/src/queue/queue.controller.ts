@@ -9,6 +9,7 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
@@ -142,6 +143,41 @@ export class QueueController {
       this.queueSSEService.subscribeClient(queueId, res, { role, userId });
     } catch (err) {
       console.error(err);
+    }
+  }
+
+  @Delete(':queueId')
+  @Roles(Role.TA, Role.PROFESSOR)
+  async disableQueue(
+    @Param('queueId') queueId: number,
+    @QueueRole() role: Role,
+  ): Promise<void> {
+    // disable a queue
+    const queue = await this.queueService.getQueue(queueId);
+    if (queue === undefined) {
+      throw new NotFoundException();
+    }
+
+    if (queue.isProfessorQueue) {
+      if (role == Role.TA) {
+        throw new HttpException(
+          ERROR_MESSAGES.queueController.cannotCloseQueue,
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+    }
+
+    queue.isDisabled = true;
+
+    try {
+      // try to save queue
+      await queue.save();
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.queueController.saveQueue,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }
