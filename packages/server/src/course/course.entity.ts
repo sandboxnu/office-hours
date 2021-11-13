@@ -33,7 +33,7 @@ export class CourseModel extends BaseEntity {
   @Column('text', { nullable: true })
   coordinator_email: string;
 
-  @Column('text', { nullable: false })
+  @Column('text', { nullable: true })
   @Exclude()
   icalURL: string;
 
