@@ -131,47 +131,55 @@ export default function AboutPage(): ReactElement {
 // The images are stored in the drive folder Sandbox Members/Office Hours/About Page Images
 const PROFILES_CURRENT = [
   {
-    name: "Stanley Liu",
-    role: "Project Lead",
-    image: "https://drive.google.com/uc?id=1u7sWtqg9g16NZm6Ynzzydn4agED7FPSG",
-    linkedin: "https://www.linkedin.com/in/stanleyspliu/",
-  },
-  {
-    name: "Eddy Li",
-    role: "Developer",
-    image: "https://drive.google.com/uc?id=1ym8FmRbxY05PDqDDMp4_8wsLvS_i26OS",
-    linkedin: "https://www.linkedin.com/in/eddy-li/",
-    personalSite: "https://eddyli.dev/",
-  },
-  {
-    name: "Will Stenzel",
-    role: "Developer",
-    image: "https://drive.google.com/uc?id=1nt95VPtubspwRkHxIkxA0dcXme-zhd3Q",
-    personalSite: "https://willstenzel.com/",
-  },
-  {
     name: "Danish Farooq",
-    role: "Developer",
+    role: "Project Lead",
     image: "https://drive.google.com/uc?id=1RE6r1qjhBqffDNjXyAA78vBYBvOCL8nr",
     linkedin: "https://www.linkedin.com/in/danishfarooq610/",
   },
   {
-    name: "Olivia Floody",
-    role: "Developer",
-    image: "https://drive.google.com/uc?id=1ZwEKAvK2JTZZTXEsi6g3iDdBLaXPq6uu",
-    linkedin: "https://www.linkedin.com/in/olivia-floody-a7b5a4154/",
-  },
-  {
     name: "Iris Liu",
-    role: "Developer",
+    role: "Tech Lead",
     image: "https://drive.google.com/uc?id=1ouq2iOsN2q1i6jGSnBcblRyCsAMH8ctX",
     linkedin: "https://www.linkedin.com/in/iris-liu-curiously",
   },
   {
-    name: "Alexandra Kopel",
+    name: "Brian Yang",
+    role: "Developer",
+    image: "https://drive.google.com/uc?id=1WPrJCGMedUbGmuLvfBxTpGAonWABrHKT",
+    linkedin: "https://www.linkedin.com/in/brianyyang/",
+  },
+  {
+    name: "Vera Kong",
+    role: "Developer",
+    image: "https://drive.google.com/uc?id=1sNfZAEMKZhjAm9G_hZyOk3d4XAwUfti1",
+    linkedin: "https://www.linkedin.com/in/vera-kong/",
+    personalSite: "https://vkong6019.github.io/",
+  },
+  {
+    name: "Nicole Danuwidjaja",
+    role: "Developer",
+    image: "https://drive.google.com/uc?id=14MgtILS0aBKrhk88f5K14sV-tdjpMXkN",
+    linkedin: "https://www.linkedin.com/in/nicoledanuwidjaja/",
+    personalSite: "https://nicoledanuwidjaja.github.io/",
+  },
+  {
+    name: "Neel Bhalla",
+    role: "Developer",
+    image: "https://drive.google.com/uc?id=1_rroyrFOaVq-rLKNHAam_mnmzxTLOwP5",
+    linkedin: "https://www.linkedin.com/in/neelbhalla2021/",
+  },
+  {
+    name: "Tingwei Shi",
+    role: "Developer",
+    image: "https://drive.google.com/uc?id=1GrUpNThyLoazwM3RkCNHr2dB2HxDOUTY",
+    linkedin: "https://www.linkedin.com/in/tingwei-shi",
+  },
+  {
+    name: "Megan Chong",
     role: "Designer",
-    image: "https://drive.google.com/uc?id=132RC8z0nnhEqSbgZMPw-JauD9ONp87dT",
-    personalSite: "https://alexkopel.myportfolio.com/",
+    image: "https://drive.google.com/uc?id=1sJ4aEFG_C8WXEkbNa7EcMBKo6B2VfldE",
+    linkedin: "https://www.linkedin.com/in/megan-chong-/",
+    personalSite: "https://www.megan-chong.com",
   },
 ];
 
@@ -196,5 +204,36 @@ const PROFILES_PAST = [
     image: "https://drive.google.com/uc?id=1UNkfm-Rcl7EqAUlfGY0qldLWMxQWWa9n",
     linkedin: "https://www.linkedin.com/in/alexander-takayama/",
     personalSite: "",
+  },
+  {
+    name: "Stanley Liu",
+    role: "Project Lead",
+    image: "https://drive.google.com/uc?id=1u7sWtqg9g16NZm6Ynzzydn4agED7FPSG",
+    linkedin: "https://www.linkedin.com/in/stanleyspliu/",
+  },
+  {
+    name: "Eddy Li",
+    role: "Developer",
+    image: "https://drive.google.com/uc?id=1ym8FmRbxY05PDqDDMp4_8wsLvS_i26OS",
+    linkedin: "https://www.linkedin.com/in/eddy-li/",
+    personalSite: "https://eddyli.dev/",
+  },
+  {
+    name: "Will Stenzel",
+    role: "Developer",
+    image: "https://drive.google.com/uc?id=1nt95VPtubspwRkHxIkxA0dcXme-zhd3Q",
+    personalSite: "https://willstenzel.com/",
+  },
+  {
+    name: "Olivia Floody",
+    role: "Developer",
+    image: "https://drive.google.com/uc?id=1ZwEKAvK2JTZZTXEsi6g3iDdBLaXPq6uu",
+    linkedin: "https://www.linkedin.com/in/olivia-floody-a7b5a4154/",
+  },
+  {
+    name: "Alexandra Kopel",
+    role: "Designer",
+    image: "https://drive.google.com/uc?id=132RC8z0nnhEqSbgZMPw-JauD9ONp87dT",
+    personalSite: "https://alexkopel.myportfolio.com/",
   },
 ];
