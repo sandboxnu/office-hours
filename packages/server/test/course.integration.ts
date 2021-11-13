@@ -45,55 +45,139 @@ describe('Course Integration', () => {
       expect(response.body).toMatchSnapshot();
     });
 
-    it('gets office hours and queues since time is now and rooms are same', async () => {
-      const now = new Date();
+    it('gets queues that are not disabled and staffed (student)',  async () => {
       const course = await CourseFactory.create();
-
-      const userTA = await UserFactory.create({
-        firstName: 'a',
-        lastName: 'b',
-        email: 'dummyta@neu.edu',
-      });
-
-      await TACourseFactory.create({
-        user: userTA,
-        course: course,
-      });
-
-      const queue = await QueueFactory.create({
-        room: "Matthias's Office",
-        course: course,
-        officeHours: [
-          await OfficeHourFactory.create({
-            startTime: now,
-            endTime: new Date(now.valueOf() + 4500000),
-            room: "Matthias's Office",
-          }),
-          await OfficeHourFactory.create(), // aren't loaded cause time off
-        ],
-      });
-
-      await QueueFactory.create({
-        course: course,
-      });
-
-      await supertest({ userId: userTA.id })
-        .post(`/courses/${queue.course.id}/ta_location/${queue.room}`)
-        .expect(201);
-
-      const userF = await UserCourseFactory.create({
+      const ucf = await UserCourseFactory.create({
         user: await UserFactory.create(),
         course: course,
       });
-
-      const response = await supertest({ userId: userF.userId })
-        .get(`/courses/${course.id}`)
-        .expect(200);
-
-      expect(response.body).toMatchObject({
-        queues: [{ id: 1 }],
+      const taf = await TACourseFactory.create({
+        user: await UserFactory.create(),
+        course: course
       });
+      const queueDisabled = await QueueFactory.create({
+        isDisabled: true,
+        room: 'room 1',
+        course: course
+      });
+
+      const queueEnabled_nostaff = await QueueFactory.create({
+        isDisabled: false,
+        room: 'room 2',
+        course: course
+      });
+      const queueEnabled_staff = await QueueFactory.create({
+        isDisabled: false,
+        room: 'room 3',
+        course: course,
+        staffList: [taf.user]
+      });
+
+      const response = await supertest({ userId: ucf.userId })
+          .get(`/courses/${course.id}`)
+          .expect(200);
+      expect(response.body.queues.length).toBe(1);
+      expect(response.body.queues[0].room).toBe('room 3');
     });
+
+    it('gets queues that are not disabled and not prof queues (TA)', async() => {
+      const course = await CourseFactory.create();
+      const ucf = await UserCourseFactory.create({
+        user: await UserFactory.create(),
+        course: course,
+      });
+      const taf = await TACourseFactory.create({
+        user: await UserFactory.create(),
+        course: course
+      });
+      const queueDisabled = await QueueFactory.create({
+        isDisabled: true,
+        room: 'room 1',
+        course: course
+      });
+
+      const queueEnabled_nostaff = await QueueFactory.create({
+        isDisabled: false,
+        room: 'room 2',
+        course: course
+      });
+      const queueEnabled_staff = await QueueFactory.create({
+        isDisabled: false,
+        room: 'room 3',
+        course: course,
+        staffList: [taf.user]
+      });
+
+      const profq = await QueueFactory.create({
+        isDisabled: false,
+        isProfessorQueue: true,
+        room: 'room 4',
+        course: course,
+        staffList: [taf.user]
+      });
+
+      const response = await supertest({ userId: taf.userId })
+          .get(`/courses/${course.id}`)
+          .expect(200);
+      expect(response.body.queues.length).toBe(2);
+    });
+
+    it('gets all queues that are not disasbled (prof)', async () => {
+      const course = await CourseFactory.create();
+      const ucf = await UserCourseFactory.create({
+        user: await UserFactory.create(),
+        course: course,
+      });
+      const taf = await TACourseFactory.create({
+        user: await UserFactory.create(),
+        course: course
+      });
+      const proff = await UserCourseFactory.create({
+        user: await UserFactory.create(),
+        course: course,
+        role: Role.PROFESSOR
+      })
+      const queueDisabled = await QueueFactory.create({
+        isDisabled: true,
+        room: 'room 1',
+        course: course
+      });
+
+      const queueEnabled_nostaff = await QueueFactory.create({
+        isDisabled: false,
+        room: 'room 2',
+        course: course
+      });
+      const queueEnabled_staff = await QueueFactory.create({
+        isDisabled: false,
+        room: 'room 3',
+        course: course,
+        staffList: [taf.user]
+      });
+
+      const profq = await QueueFactory.create({
+        isDisabled: false,
+        isProfessorQueue: true,
+        room: 'room 4',
+        course: course,
+        staffList: [taf.user]
+      });
+      const profq_dis = await QueueFactory.create({
+        isDisabled: true,
+        isProfessorQueue: true,
+        room: 'room 5',
+        course: course,
+        staffList: [taf.user]
+      });
+
+      const response = await supertest({ userId: proff.userId })
+          .get(`/courses/${course.id}`)
+          .expect(200);
+      expect(response.body.queues.length).toBe(3);
+
+
+    });
+
 
     it('cant get office hours if not a member of the course', async () => {
       const now = new Date();

@@ -132,9 +132,22 @@ export class CourseController {
       );
     }
 
-    course.queues = await async.filter(course.queues, async (q) =>
-      !q.isDisabled && userCourseModel.role === Role.PROFESSOR ? true : !q.isProfessorQueue,
-    );
+    if(userCourseModel.role == Role.PROFESSOR){
+      course.queues = await async.filter(course.queues, async (q) =>
+          !q.isDisabled,
+      );
+    }
+    else if(userCourseModel.role == Role.TA){
+      course.queues = await async.filter(course.queues, async (q) =>
+          !q.isDisabled && !q.isProfessorQueue,
+      );
+    }
+    else if(userCourseModel.role == Role.STUDENT){
+      course.queues = await async.filter(course.queues, async (q) =>
+          !q.isDisabled && (await q.checkIsOpen()),
+      );
+    }
+
 
     try {
       await async.each(course.queues, async (q) => {
