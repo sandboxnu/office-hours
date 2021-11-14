@@ -26,6 +26,7 @@ export default function Schedule(): ReactElement {
       </Head>
       <NavBar courseId={Number(cid)} />
       <ScheduleContainer>
+        {/* TODO: Currently, iCal stuff is not showing, replace this with something else */}
         <SchedulePanel courseId={Number(cid)} />
       </ScheduleContainer>
     </StandardPageContainer>
