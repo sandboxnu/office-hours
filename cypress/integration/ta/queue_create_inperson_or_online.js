@@ -15,7 +15,7 @@ describe('Can successfully create queues', () => {
         // open the online queue
         taOpenOnline();
 
-        cy.location("pathname", {timeout: 20000}).should("contain", "/queue");
+        cy.location("pathname", {timeout: 30000}).should("contain", "/queue");
 
         // make sure it says online (will accept Online+[zero or more chars])
         cy.get("[data-cy='room-title']")
@@ -54,7 +54,7 @@ describe('Can successfully create queues', () => {
                     .click();
             });
 
-        cy.location("pathname", {timeout: 20000}).should("contain", "/queue");
+        cy.location("pathname", {timeout: 30000}).should("contain", "/queue");
 
         // make sure it says online (will accept Online+[zero or more chars])
         cy.get("[data-cy='room-title']")
@@ -93,7 +93,7 @@ describe('Can successfully create queues', () => {
                     .click();
             });
 
-        cy.location("pathname", {timeout: 20000}).should("contain", "/queue");
+        cy.location("pathname", {timeout: 30000}).should("contain", "/queue");
 
         // make sure it says online (will accept Online+[zero or more chars])
         cy.get("[data-cy='room-title']")
@@ -113,7 +113,7 @@ describe('Can successfully create queues', () => {
             .contains(roomName)
             .click();
 
-        cy.percySnapshot("CheckIn Modal Selection Page -- Custom Already Created")
+        cy.percySnapshot("CheckIn Modal Selection Page -- Custom Already CFreated")
 
         cy.get("[id^=rcDialogTitle]")
             .contains("Check-In To Office Hours")
@@ -127,7 +127,7 @@ describe('Can successfully create queues', () => {
                     .click();
             });
 
-        cy.location("pathname", {timeout: 20000}).should("contain", "/queue");
+        cy.location("pathname", {timeout: 30000}).should("contain", "/queue");
 
         // make sure it says our room name (success!, p2 logged in)
         cy.get("[data-cy='room-title']")
