@@ -1,4 +1,3 @@
-import { Container } from "next/app";
 import Head from "next/head";
 import React, { ReactElement } from "react";
 import { StandardPageContainer } from "../components/common/PageContainer";
@@ -10,9 +9,7 @@ export default function Apply(): ReactElement {
       <Head>
         <title>Apply | Khoury Office Hours</title>
       </Head>
-      <Container>
-        <ApplyPage />
-      </Container>
+      <ApplyPage />
     </StandardPageContainer>
   );
 }
