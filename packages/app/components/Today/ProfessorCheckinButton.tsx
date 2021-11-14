@@ -97,7 +97,7 @@ export default function TodayPageCheckinButton(): ReactElement {
           </Radio.Group>
         </Modal>
       )}
-      {!queueCheckedIn && (
+      {!queueCheckedIn && role !== Role.STUDENT && (
         <CheckinButton
           type="default"
           size="large"
@@ -107,7 +107,7 @@ export default function TodayPageCheckinButton(): ReactElement {
           Check In
         </CheckinButton>
       )}
-      {queueCheckedIn && (
+      {queueCheckedIn && role !== Role.STUDENT && (
         <TACheckinButton
           courseId={Number(cid)}
           room={queueCheckedIn.room}
