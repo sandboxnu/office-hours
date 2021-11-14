@@ -216,3 +216,21 @@ export const helpQuestionWithID = (id) => {
     .click();
   cy.get('[data-cy="help-student"]').click();
 };
+
+
+export const taOpenOnline = () => {
+
+    cy.get("[data-cy='check-in-modal-button']").click();
+    cy.wait(500);
+    cy.get("[id^=rcDialogTitle]")
+        .contains("Check-In To Office Hours")
+        .parent()
+        .parent()
+        .should('have.class', 'ant-modal-content')
+        .within(($content) => {
+            cy.get("span").contains("Check In")
+                .parent()
+                .should('have.class', 'ant-btn-primary')
+                .click();
+        });
+}

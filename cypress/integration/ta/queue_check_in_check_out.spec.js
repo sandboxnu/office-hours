@@ -3,7 +3,7 @@ import {
   checkInTA,
   createQueue,
   createQuestion,
-  createQueueWithoutOfficeHour,
+  createQueueWithoutOfficeHour, taOpenOnline,
 } from "../../utils";
 
 describe("Can successfuly check in and out of a queue when their is scheduled office hours", () => {
@@ -27,9 +27,7 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
 
     cy.get(".ant-modal-close-x").click();
     // Click "Check in"
-    cy.get("[data-cy='check-in-modal-button']").click();
-    cy.get("span").contains("Check In").wait(500).click(); // default is already online
-
+    taOpenOnline();
     cy.location("pathname").should("contain", "/queue");
 
     // Wait to see that the user has been checked in
@@ -85,8 +83,7 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
     cy.contains("No Staff Checked In");
 
     // Click "Check in"
-    cy.get("[data-cy='check-in-button']").click();
-
+    taOpenOnline();
     cy.location("pathname").should("contain", "/queue");
     cy.get("body").should("contain", "There are no questions in the queue");
 

@@ -100,7 +100,7 @@ export function QueueInfoColumn({
   return (
     <InfoColumnContainer>
       <QueueRoomGroup>
-        <QueueTitle>{queue?.room}</QueueTitle>
+        <QueueTitle data-cy='room-title'>{queue?.room}</QueueTitle>
         {!queue.allowQuestions && (
           <Tooltip title="This queue is no longer accepting questions">
             <StopOutlined
