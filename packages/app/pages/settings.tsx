@@ -1,4 +1,3 @@
-import { Container } from "next/app";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
@@ -14,14 +13,12 @@ export default function Settings(): ReactElement {
   const defaultPage = router.query["defaultPage"];
   return (
     <StandardPageContainer>
-      <Container>
-        <Head>
-          <title>Settings | Khoury Office Hours</title>
-        </Head>
-        <NavBar courseId={Number(courseId)} />
+      <Head>
+        <title>Settings | Khoury Office Hours</title>
+      </Head>
+      <NavBar courseId={Number(courseId)} />
 
-        <SettingsPage defaultPage={defaultPage as SettingsOptions} />
-      </Container>
+      <SettingsPage defaultPage={defaultPage as SettingsOptions} />
     </StandardPageContainer>
   );
 }
