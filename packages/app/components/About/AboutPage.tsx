@@ -45,9 +45,8 @@ export default function AboutPage(): ReactElement {
           </p>
           <p>
             We began developing Khoury Office Hours in May 2020, and first
-            launched the app in Fall 2020 to 4 courses. As of this semester
-            (Spring 2021), we now support 16 courses, with over 2,500 registered
-            users. Check us out{" "}
+            launched the app in Fall 2020 to 4 courses. We now support around 20
+            courses with over 2,500 registered users. Check us out{" "}
             <a href="https://news.northeastern.edu/2021/02/02/this-app-helps-students-get-more-face-time-with-professors/">
               {" "}
               in the news{" "}
