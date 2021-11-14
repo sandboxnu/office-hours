@@ -217,7 +217,9 @@ export const helpQuestionWithID = (id) => {
   cy.get('[data-cy="help-student"]').click();
 };
 
-
+/**
+ * Opens up the modal and checks into the default option (usually online if created)
+ */
 export const taOpenOnline = () => {
 
     cy.get("[data-cy='check-in-modal-button']").click();

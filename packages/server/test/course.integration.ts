@@ -55,18 +55,18 @@ describe('Course Integration', () => {
         user: await UserFactory.create(),
         course: course
       });
-      const queueDisabled = await QueueFactory.create({
+      await QueueFactory.create({
         isDisabled: true,
         room: 'room 1',
         course: course
       });
 
-      const queueEnabled_nostaff = await QueueFactory.create({
+      await QueueFactory.create({
         isDisabled: false,
         room: 'room 2',
         course: course
       });
-      const queueEnabled_staff = await QueueFactory.create({
+      await QueueFactory.create({
         isDisabled: false,
         room: 'room 3',
         course: course,
@@ -82,7 +82,7 @@ describe('Course Integration', () => {
 
     it('gets queues that are not disabled and not prof queues (TA)', async() => {
       const course = await CourseFactory.create();
-      const ucf = await UserCourseFactory.create({
+      await UserCourseFactory.create({
         user: await UserFactory.create(),
         course: course,
       });
@@ -90,25 +90,25 @@ describe('Course Integration', () => {
         user: await UserFactory.create(),
         course: course
       });
-      const queueDisabled = await QueueFactory.create({
+      await QueueFactory.create({
         isDisabled: true,
         room: 'room 1',
         course: course
       });
 
-      const queueEnabled_nostaff = await QueueFactory.create({
+      await QueueFactory.create({
         isDisabled: false,
         room: 'room 2',
         course: course
       });
-      const queueEnabled_staff = await QueueFactory.create({
+      await QueueFactory.create({
         isDisabled: false,
         room: 'room 3',
         course: course,
         staffList: [taf.user]
       });
 
-      const profq = await QueueFactory.create({
+      await QueueFactory.create({
         isDisabled: false,
         isProfessorQueue: true,
         room: 'room 4',
@@ -124,7 +124,7 @@ describe('Course Integration', () => {
 
     it('gets all queues that are not disasbled (prof)', async () => {
       const course = await CourseFactory.create();
-      const ucf = await UserCourseFactory.create({
+      await UserCourseFactory.create({
         user: await UserFactory.create(),
         course: course,
       });
@@ -137,32 +137,32 @@ describe('Course Integration', () => {
         course: course,
         role: Role.PROFESSOR
       })
-      const queueDisabled = await QueueFactory.create({
+      await QueueFactory.create({
         isDisabled: true,
         room: 'room 1',
         course: course
       });
 
-      const queueEnabled_nostaff = await QueueFactory.create({
+      await QueueFactory.create({
         isDisabled: false,
         room: 'room 2',
         course: course
       });
-      const queueEnabled_staff = await QueueFactory.create({
+      await QueueFactory.create({
         isDisabled: false,
         room: 'room 3',
         course: course,
         staffList: [taf.user]
       });
 
-      const profq = await QueueFactory.create({
+      await QueueFactory.create({
         isDisabled: false,
         isProfessorQueue: true,
         room: 'room 4',
         course: course,
         staffList: [taf.user]
       });
-      const profq_dis = await QueueFactory.create({
+      await QueueFactory.create({
         isDisabled: true,
         isProfessorQueue: true,
         room: 'room 5',
