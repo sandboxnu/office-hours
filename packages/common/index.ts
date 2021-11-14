@@ -451,6 +451,8 @@ export class GetCourseResponse {
   @Type(() => QueuePartial)
   queues!: QueuePartial[];
 
+  coordinator_email!: string;
+
   heatmap!: Heatmap | false;
 
   selfEnroll!: boolean;
