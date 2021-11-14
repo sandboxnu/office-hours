@@ -38,15 +38,30 @@ describe("Allow or disable new questions for a queue", () => {
 
 describe("When allow questions is disabled", () => {
   beforeEach(() => {
-    createAndLoginStudent();
+    createAndLoginTA();
+
     createQueue({
-      courseId: "student.course.id",
-      allowQuestions: false,
-      identifier: "queue",
+      courseId: "ta.course.id",
     });
+
+    checkInTA();
+
   });
+
   it("student cannot add new questions when new questions are disabled", function () {
+    cy.visit(`/course/${this.queue.courseId}/queue/${this.queue.id}`);
+    cy.get("[data-cy='editQueue']").click();
+    cy.get("[data-cy='allow-questions-toggle']").click();
+    cy.get("span").contains("OK").click();
+
+    // See that allow questions has been toggled off
+    cy.get("[data-cy='stopQuestions']").should("exist");
+
     // Visit the today page
+    createAndLoginStudent({
+      courseId: "ta.course.id",
+    });
+
     cy.visit(`/course/${this.queue.courseId}/today`);
 
     cy.get(".ant-modal-close-x").click();

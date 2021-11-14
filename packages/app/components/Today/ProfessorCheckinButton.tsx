@@ -101,6 +101,7 @@ export default function TodayPageCheckinButton(): ReactElement {
         <CheckinButton
           type="default"
           size="large"
+          data-cy="check-in-modal-button"
           onClick={() => setModalVisible(true)}
         >
           Check In

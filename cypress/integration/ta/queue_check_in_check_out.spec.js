@@ -27,7 +27,9 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
 
     cy.get(".ant-modal-close-x").click();
     // Click "Check in"
-    cy.get("[data-cy='check-in-button']").click();
+    cy.get("[data-cy='check-in-modal-button']").click();
+    cy.get("span").contains("Check In").wait(500).click(); // default is already online
+
     cy.location("pathname").should("contain", "/queue");
 
     // Wait to see that the user has been checked in
