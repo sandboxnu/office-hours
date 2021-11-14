@@ -55,7 +55,7 @@ export default function ProfileSettings(): ReactElement {
             <Input />
           </Form.Item>
           <Form.Item
-            style={{ marginLeft: isMobile ? "10px" : "0" }}
+            style={{ marginLeft: isMobile ? "0" : "10px" }}
             label="Last Name"
             name="lastName"
             data-cy="lastNameInput"

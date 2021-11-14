@@ -100,7 +100,7 @@ export default function SettingsPage({
         <Row
           style={{
             marginTop: avatarSize / 6,
-            justifyContent: "center",
+            justifyContent: `${isMobile ? "left" : "center"}`
           }}
         >
           {uploading ? (
@@ -134,7 +134,7 @@ export default function SettingsPage({
               }}
             >
               <ProfilePicButton icon={<UploadOutlined />}>
-                Edit profile picture
+                Edit photo
               </ProfilePicButton>
             </Upload>
             {profile?.photoURL && (
@@ -168,7 +168,7 @@ export default function SettingsPage({
   const SettingsMenu = () => (
     <>
       {isMobile ? (
-        <Collapse accordion>
+        <Collapse accordion style={{marginTop: '10px'}}>
           <Panel header="Personal Information" key="profile">
             <ProfileSettings />
           </Panel>
@@ -186,7 +186,7 @@ export default function SettingsPage({
         </Collapse>
       ) : (
         <Menu
-          style={{ background: "none" }}
+          style={{ background: "none", marginTop: '10px' }}
           defaultSelectedKeys={[currentSettings]}
           onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}
         >

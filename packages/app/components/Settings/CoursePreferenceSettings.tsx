@@ -105,7 +105,10 @@ export default function CoursePreferenceSettings(): ReactElement {
   return (
     profile && (
       <div>
-        <HeaderTitle>Course Preferences</HeaderTitle>
+        <HeaderTitle>
+          <h1>Course Preferences</h1>
+          
+        </HeaderTitle>
         <Table columns={columns} dataSource={createCourseDataSource()} />
       </div>
     )
