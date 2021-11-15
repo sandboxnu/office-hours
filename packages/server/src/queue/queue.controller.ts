@@ -1,7 +1,8 @@
 import {
+  ClosedQuestionStatus,
   ERROR_MESSAGES,
-  GetQueueResponse,
-  ListQuestionsResponse,
+  GetQueueResponse, LimboQuestionStatus,
+  ListQuestionsResponse, OpenQuestionStatus,
   Role,
   UpdateQueueParams,
 } from '@koh/common';
@@ -32,6 +33,7 @@ import { QueueRolesGuard } from '../guards/queue-role.guard';
 import { QueueSSEService } from './queue-sse.service';
 import { QueueModel } from './queue.entity';
 import { QueueService } from './queue.service';
+import {QuestionModel} from "../question/question.entity";
 
 @Controller('queues')
 @UseGuards(JwtAuthGuard, QueueRolesGuard)
@@ -169,8 +171,20 @@ export class QueueController {
 
     queue.isDisabled = true;
 
+    const questions = await QuestionModel.inQueueWithStatus(queueId, [
+      ...Object.values(OpenQuestionStatus),
+      ...Object.values(LimboQuestionStatus),
+    ]).getMany();
+
+    questions.forEach((q: QuestionModel) => {
+      q.status = ClosedQuestionStatus.Stale;
+      q.closedAt = new Date();
+    });
+
+
     try {
-      // try to save queue
+      // try to save queue (and stale questions!)
+      await QuestionModel.save(questions);
       await queue.save();
     } catch (err) {
       console.error(err);
