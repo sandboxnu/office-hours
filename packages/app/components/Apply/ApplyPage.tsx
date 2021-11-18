@@ -1,4 +1,4 @@
-import { SubmitCourseParams } from "@koh/common";
+// import { SubmitCourseParams } from "@koh/common";
 import { API } from "@koh/api-client";
 import React, { ReactElement, useState } from "react";
 import { Form, Input, Tooltip, Row, Select, Button, Result } from "antd";
@@ -29,7 +29,7 @@ export default function ApplyPage(): ReactElement {
       Object.keys(router.query).length == 1 ? Object.keys(router.query)[0] : "";
 
     try {
-      await API.course.submitCourse(value as SubmitCourseParams);
+      // await API.course.submitCourse(value as SubmitCourseParams); TODO: This is the old login registration form.
     } catch (error) {
       setUnauthorized(true);
     }
