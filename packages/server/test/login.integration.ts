@@ -71,7 +71,7 @@ describe('Login Integration', () => {
         last_name: 'Stenzel',
         photo_url: 'sdf',
         courses: [],
-        ta_courses: [],
+        prof_courses: [],
       });
 
       // Expect that the new user has been created
@@ -99,7 +99,7 @@ describe('Login Integration', () => {
         last_name: 'Stenzel',
         photo_url: 'sdf',
         courses: [],
-        ta_courses: [],
+        prof_courses: [],
       });
 
       // Expect that the new user has been created
@@ -158,15 +158,12 @@ describe('Login Integration', () => {
             photo_url: 'sdf',
             courses: [
               {
-                course: 'CS 2510',
                 crn: 12345,
-                accelerated: false,
-                section: 1,
                 semester: '000',
-                title: 'Fundamentals of Computer Science II',
+                role: Role.STUDENT,
               },
             ],
-            ta_courses: [],
+            prof_courses: [],
           })
           .expect(201);
         user = await UserModel.findOne({
@@ -197,7 +194,7 @@ describe('Login Integration', () => {
                 title: 'Fundamentals of Computer Science II',
               },
             ],
-            ta_courses: [],
+            prof_courses: [],
           })
           .expect(201);
 
@@ -221,30 +218,21 @@ describe('Login Integration', () => {
             photo_url: '',
             courses: [
               {
-                course: 'CS 2510',
                 crn: 12345,
-                accelerated: false,
-                section: 1,
                 semester: '000',
-                title: 'Fundamentals of Computer Science II',
+                role: Role.STUDENT,
               },
               {
-                course: 'CS 2510',
                 crn: 24680,
-                accelerated: true,
-                section: 2,
                 semester: '000',
-                title: 'Fundamentals of Computer Science II',
+                role: Role.STUDENT,
               },
             ],
-            ta_courses: [
+            prof_courses: [
               {
-                course: 'CS 2500',
-                crn: 12312,
-                accelerated: false,
-                section: 55555,
+                crns: [12312],
                 semester: '000',
-                title: 'Fundamentals of Computer Science I',
+                name: "Prof Li's Courses",
               },
             ],
           })
@@ -281,22 +269,16 @@ describe('Login Integration', () => {
             photo_url: '',
             courses: [
               {
-                course: 'CS 2510',
                 crn: 24680,
-                accelerated: true,
-                section: 2,
                 semester: '000',
-                title: 'Fundamentals of Computer Science II',
+                role: Role.STUDENT,
               },
             ],
-            ta_courses: [
+            prof_courses: [
               {
-                course: 'CS 2500',
-                crn: 12312,
-                accelerated: false,
-                section: 55555,
+                crns: [12312],
                 semester: '000',
-                title: 'Fundamentals of Computer Science I',
+                name: "Prof Li's Office Hours",
               },
             ],
           })
@@ -322,30 +304,21 @@ describe('Login Integration', () => {
             photo_url: '',
             courses: [
               {
-                course: 'CS 2510',
                 crn: 12345,
-                accelerated: false,
-                section: 1,
                 semester: '000',
-                title: 'Fundamentals of Computer Science II',
+                role: Role.STUDENT,
               },
               {
-                course: 'CS 2510',
                 crn: 24680,
-                accelerated: true,
-                section: 2,
                 semester: '000',
-                title: 'Fundamentals of Computer Science II',
+                role: Role.STUDENT,
               },
             ],
-            ta_courses: [
+            prof_courses: [
               {
-                course: 'CS 2500',
-                crn: 12312,
-                accelerated: false,
-                section: 55555,
+                crns: [12312],
                 semester: '000',
-                title: 'Fundamentals of Computer Science I',
+                name: "Prof Li's Office Hours",
               },
             ],
           })
@@ -394,10 +367,10 @@ describe('Login Integration', () => {
                 title: 'Fundamentals of Computer Science II',
               },
             ],
-            ta_courses: [
+            prof_courses: [
               {
                 course: 'CS 2500',
-                crn: 12312,
+                crns: 12312,
                 accelerated: false,
                 section: 55555,
                 semester: '000',
@@ -466,10 +439,11 @@ describe('Login Integration', () => {
           last_name: 'Stenzel',
           photo_url: 'sdf',
           courses: [],
-          ta_courses: [
+          prof_courses: [
             {
-              course: 'CS 2500',
+              crns: [12312],
               semester: '000',
+              name: "Prof Li's Office Hours",
             },
           ],
         })
@@ -496,11 +470,11 @@ describe('Login Integration', () => {
           last_name: 'Stenzel',
           photo_url: 'sdf',
           courses: [],
-          ta_courses: [
+          prof_courses: [
             {
-              course: 'CS 2500',
+              crns: [12312],
               semester: '000',
-              instructor: 1,
+              name: "Prof Li's Office Hours",
             },
           ],
         })
