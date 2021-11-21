@@ -124,21 +124,21 @@ describe('Login Integration', () => {
           name: 'CS 2510 Accelerated',
         });
         await CourseSectionFactory.create({
-          crn: 12345,
+          crn: 23456,
           course: course,
         });
         course2 = await CourseFactory.create({
           name: 'CS 2510',
         });
         await CourseSectionFactory.create({
-          crn: 12345,
+          crn: 34567,
           course: course2,
         });
         course3 = await CourseFactory.create({
           name: 'CS 2500',
         });
         await CourseSectionFactory.create({
-          crn: 12345,
+          crn: 45678,
           course: course3,
         });
       });
@@ -441,15 +441,15 @@ describe('Login Integration', () => {
         name: 'CS 2500 Online',
       });
       await CourseSectionFactory.create({
-        crn: 12345,
+        crn: 98765,
         course: regularFundies,
       });
       await CourseSectionFactory.create({
-        crn: 12345,
+        crn: 87654,
         course: acceleratedFundies,
       });
       await CourseSectionFactory.create({
-        crn: 12345,
+        crn: 76543,
         course: onlineFundies,
       });
     };
