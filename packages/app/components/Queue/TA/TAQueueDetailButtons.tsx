@@ -17,7 +17,7 @@ import {
 } from "@koh/common";
 import { message, Popconfirm, Tooltip } from "antd";
 import React, { ReactElement, useCallback } from "react";
-import { useProfile } from "../../../hooks/useProfile";
+import { useDefaultMessage } from "../../../hooks/useDefaultMessage";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { useQueue } from "../../../hooks/useQueue";
 import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
@@ -41,7 +41,7 @@ export default function TAQueueDetailButtons({
   queueId: number;
   question: Question;
 }): ReactElement {
-  const profile = useProfile();
+  const defaultMessage = useDefaultMessage();
   const { mutateQuestions } = useQuestions(queueId);
   const isQueueOnline = useQueue(queueId).queue?.room === "Online";
 
@@ -76,9 +76,6 @@ export default function TAQueueDetailButtons({
   const helpStudent = () => {
     changeStatus(OpenQuestionStatus.Helping);
     if (isQueueOnline) {
-      const defaultMessage = profile.includeDefaultMessage
-        ? profile.defaultMessage
-        : "";
       window.open(
         `https://teams.microsoft.com/l/chat/0/0?users=${question.creator.email}&message=${defaultMessage}`
       );

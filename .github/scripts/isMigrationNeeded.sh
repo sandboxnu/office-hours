@@ -6,7 +6,6 @@ set -e
 SUB='No changes in database schema were found'
 {
   log=$(yarn migration:generate -n CHECK 2>&1)
-  echo "$log"
 } || {
   echo "$log"
   if [[ "$log" == *"$SUB"* ]]; then
@@ -14,6 +13,9 @@ SUB='No changes in database schema were found'
     exit 0
   fi
 }
+
+echo "$log"
+
 # Check if migration file exists
 if ls packages/server/migration/*-CHECK.ts 1> /dev/null 2>&1; then
   git fetch origin master
