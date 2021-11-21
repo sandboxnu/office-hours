@@ -49,8 +49,7 @@ export const CourseFactory = new Factory(CourseModel)
   .assocMany('officeHours', OfficeHourFactory, 0);
 
 export const CourseSectionFactory = new Factory(CourseSectionMappingModel)
-  .attr('genericCourseName', 'CS 2500')
-  .sequence('section', (i) => i)
+  .attr('crn', 12345)
   .assocOne('course', CourseFactory);
 
 export const UserCourseFactory = new Factory(UserCourseModel)
