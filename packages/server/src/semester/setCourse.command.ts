@@ -1,12 +1,12 @@
 import { Command, Positional } from 'nestjs-command';
 import { Injectable } from '@nestjs/common';
-import { CourseService } from '../course/course.service';
 import { SemesterFactory } from '../../test/util/factories';
 import { Season } from '@koh/common';
+import { SemesterService } from './semester.service';
 
 @Injectable()
 export class SetSemesterCommand {
-  constructor(private readonly courseService: CourseService) {}
+  constructor(private readonly semService: SemesterService) {}
   @Command({
     command: 'course:modsemeter <mode> <semester> <year>',
     describe: '',
@@ -64,6 +64,6 @@ export class SetSemesterCommand {
       year: year,
     });
 
-    await this.courseService.setSemester(targetEnable, enOrDisable);
+    await this.semService.setSemester(targetEnable, enOrDisable);
   }
 }
