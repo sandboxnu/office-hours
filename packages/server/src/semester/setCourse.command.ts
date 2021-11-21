@@ -8,7 +8,7 @@ import { SemesterService } from './semester.service';
 export class SetSemesterCommand {
   constructor(private readonly semService: SemesterService) {}
   @Command({
-    command: 'course:modsemeter <mode> <semester> <year>',
+    command: 'semester:modsemester <mode> <semester> <year>',
     describe: '',
     autoExit: true,
   })
@@ -32,15 +32,21 @@ export class SetSemesterCommand {
     })
     year: number,
   ): Promise<void> {
-    if (!(semester as Season)) {
-      console.log('invalid season:' + semester);
+    if (Number.isNaN(year)) {
+      console.log('Invalid year: Please provide the year as a number.');
+      return;
+    }
+
+    const sem = this.validateSemester(semester);
+    if (!sem) {
+      console.log('Invalid season: "' + semester + '"');
       console.log(
-        'pick from one of:' +
-          '\n"Fall"' +
-          '\n"Spring"' +
-          '\n"Summer_1"' +
-          '\n"Summer_2"' +
-          '\n"Summer_Full"',
+        'Pick from one of:' +
+          '\n-  "Fall"' +
+          '\n-  "Spring"' +
+          '\n-  "Summer_1"' +
+          '\n-  "Summer_2"' +
+          '\n-  "Summer_Full"',
       );
       return;
     }
@@ -55,15 +61,30 @@ export class SetSemesterCommand {
         enOrDisable = false;
         break;
       default:
-        console.error('mode was not one of "enable" or "disable", got ' + mode);
+        console.error(
+          'Mode must be one of "enable" or "disable", got "' + mode + '".',
+        );
         return;
     }
 
     const targetEnable = await SemesterFactory.create({
-      season: semester as Season,
+      season: sem,
       year: year,
     });
 
     await this.semService.setSemester(targetEnable, enOrDisable);
+  }
+
+  validateSemester(sem: string): Season {
+    switch (sem) {
+      case 'Fall':
+      case 'Spring':
+      case 'Summer_1':
+      case 'Summer_2':
+      case 'Summer_Full':
+        return sem;
+      default:
+        return null;
+    }
   }
 }
