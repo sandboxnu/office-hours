@@ -73,4 +73,4 @@ jobs:
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
       - uses: actions/checkout@v2
       - name: "pm2 deploy to staging"
-        run: "npx pm2 deploy infrastructure/prod/ecosystem.config.js staging update"
+        run: "npx pm2 deploy infrastructure/prod/ecosystem.config.js staging update --force"

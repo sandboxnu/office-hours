@@ -62,7 +62,7 @@
   },
   "dependencies": {
     "lint-staged": "^11.2.6",
-    "pm2": "^4.4.0",
+    "pm2": "4.4.0",
     "rimraf": "^3.0.2"
   },
   "percy": {
