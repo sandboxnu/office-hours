@@ -124,21 +124,21 @@ describe('Login Integration', () => {
           name: 'CS 2510 Accelerated',
         });
         await CourseSectionFactory.create({
-          crn: 12345,
+          crn: 23456,
           course: course,
         });
         course2 = await CourseFactory.create({
           name: 'CS 2510',
         });
         await CourseSectionFactory.create({
-          crn: 12345,
+          crn: 34567,
           course: course2,
         });
         course3 = await CourseFactory.create({
           name: 'CS 2500',
         });
         await CourseSectionFactory.create({
-          crn: 12345,
+          crn: 45678,
           course: course3,
         });
       });
@@ -158,7 +158,7 @@ describe('Login Integration', () => {
             photo_url: 'sdf',
             courses: [
               {
-                crn: 12345,
+                crn: 23456,
                 semester: '000',
                 role: Role.STUDENT,
               },
@@ -186,12 +186,9 @@ describe('Login Integration', () => {
             photo_url: 'sdf',
             courses: [
               {
-                course: 'CS 2510',
-                crn: 12345,
-                accelerated: false,
-                section: 1,
+                crn: 23456,
                 semester: '000',
-                title: 'Fundamentals of Computer Science II',
+                role: Role.STUDENT,
               },
             ],
             prof_courses: [],
@@ -218,7 +215,7 @@ describe('Login Integration', () => {
             photo_url: '',
             courses: [
               {
-                crn: 12345,
+                crn: 23456,
                 semester: '000',
                 role: Role.STUDENT,
               },
@@ -228,13 +225,7 @@ describe('Login Integration', () => {
                 role: Role.STUDENT,
               },
             ],
-            prof_courses: [
-              {
-                crns: [12312],
-                semester: '000',
-                name: "Prof Li's Courses",
-              },
-            ],
+            prof_courses: [],
           })
           .expect(201);
 
@@ -304,23 +295,17 @@ describe('Login Integration', () => {
             photo_url: '',
             courses: [
               {
-                crn: 12345,
+                crn: 23456,
                 semester: '000',
                 role: Role.STUDENT,
               },
               {
-                crn: 24680,
+                crn: 34567,
                 semester: '000',
-                role: Role.STUDENT,
+                role: Role.TA,
               },
             ],
-            prof_courses: [
-              {
-                crns: [12312],
-                semester: '000',
-                name: "Prof Li's Office Hours",
-              },
-            ],
+            prof_courses: [],
           })
           .expect(201);
 
@@ -359,22 +344,16 @@ describe('Login Integration', () => {
             photo_url: '',
             courses: [
               {
-                course: 'CS 2510',
                 crn: 24680,
-                accelerated: true,
-                section: 2,
                 semester: '000',
-                title: 'Fundamentals of Computer Science II',
+                role: Role.STUDENT,
               },
             ],
             prof_courses: [
               {
-                course: 'CS 2500',
-                crns: 12312,
-                accelerated: false,
-                section: 55555,
+                crns: [12312],
                 semester: '000',
-                title: 'Fundamentals of Computer Science I',
+                name: "Prof Li's Office Hours",
               },
             ],
           })
@@ -414,15 +393,15 @@ describe('Login Integration', () => {
         name: 'CS 2500 Online',
       });
       await CourseSectionFactory.create({
-        crn: 12345,
+        crn: 98765,
         course: regularFundies,
       });
       await CourseSectionFactory.create({
-        crn: 12345,
+        crn: 87654,
         course: acceleratedFundies,
       });
       await CourseSectionFactory.create({
-        crn: 12345,
+        crn: 76543,
         course: onlineFundies,
       });
     };
