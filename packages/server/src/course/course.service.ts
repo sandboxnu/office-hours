@@ -9,6 +9,8 @@ import { EventModel, EventType } from 'profile/event-model.entity';
 import { QuestionModel } from 'question/question.entity';
 import { Between, Connection, In } from 'typeorm';
 import { UserCourseModel } from '../profile/user-course.entity';
+import { SemesterModel } from '../semester/semester.entity';
+import { CourseModel } from './course.entity';
 
 @Injectable()
 export class CourseService {
@@ -83,6 +85,22 @@ export class CourseService {
     }
 
     return { taCheckinTimes };
+  }
+
+  async setSemester(semester: SemesterModel, enable: boolean): Promise<void> {
+    const enableList = await CourseModel.find({
+      semester: semester,
+    });
+
+    enableList.map((course) => {
+      course.enabled = enable;
+    });
+
+    try {
+      await CourseModel.save(enableList);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async removeUserFromCourse(userCourse: UserCourseModel): Promise<void> {
