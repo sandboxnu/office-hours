@@ -132,17 +132,17 @@ export class CourseController {
       );
     }
 
-    if (userCourseModel.role == Role.PROFESSOR) {
+    if (userCourseModel.role === Role.PROFESSOR) {
       course.queues = await async.filter(
         course.queues,
         async (q) => !q.isDisabled,
       );
-    } else if (userCourseModel.role == Role.TA) {
+    } else if (userCourseModel.role === Role.TA) {
       course.queues = await async.filter(
         course.queues,
         async (q) => !q.isDisabled && !q.isProfessorQueue,
       );
-    } else if (userCourseModel.role == Role.STUDENT) {
+    } else if (userCourseModel.role === Role.STUDENT) {
       course.queues = await async.filter(
         course.queues,
         async (q) => !q.isDisabled && (await q.checkIsOpen()),

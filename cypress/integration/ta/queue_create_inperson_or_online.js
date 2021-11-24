@@ -9,7 +9,7 @@ describe('Can successfully create queues', () => {
         });
     });
 
-    /*
+
     it('Creates an online queue via modal', () => {
         cy.get(".ant-modal-close-x").click();
         cy.wait(1000);
@@ -20,10 +20,10 @@ describe('Can successfully create queues', () => {
 
         // make sure it says online (will accept Online+[zero or more chars])
         cy.get("[data-cy='room-title']")
-            .contains(/^Online\w*);
+            .contains(/^Online\w*/);
 
     });
-    */
+
 
     it('Creates an in-person queue via modal', () => {
         const roomName = "Snell 049"
@@ -116,7 +116,7 @@ describe('Can successfully create queues', () => {
             .contains(roomName)
             .click();
 
-        cy.percySnapshot("CheckIn Modal Selection Page -- Custom Already CFreated")
+        cy.percySnapshot("CheckIn Modal Selection Page -- Custom Already Created")
 
         cy.get("[id^=rcDialogTitle]")
             .contains("Check-In To Office Hours")
