@@ -132,22 +132,22 @@ export class CourseController {
       );
     }
 
-    if(userCourseModel.role == Role.PROFESSOR){
-      course.queues = await async.filter(course.queues, async (q) =>
-          !q.isDisabled,
+    if (userCourseModel.role == Role.PROFESSOR) {
+      course.queues = await async.filter(
+        course.queues,
+        async (q) => !q.isDisabled,
+      );
+    } else if (userCourseModel.role == Role.TA) {
+      course.queues = await async.filter(
+        course.queues,
+        async (q) => !q.isDisabled && !q.isProfessorQueue,
+      );
+    } else if (userCourseModel.role == Role.STUDENT) {
+      course.queues = await async.filter(
+        course.queues,
+        async (q) => !q.isDisabled && (await q.checkIsOpen()),
       );
     }
-    else if(userCourseModel.role == Role.TA){
-      course.queues = await async.filter(course.queues, async (q) =>
-          !q.isDisabled && !q.isProfessorQueue,
-      );
-    }
-    else if(userCourseModel.role == Role.STUDENT){
-      course.queues = await async.filter(course.queues, async (q) =>
-          !q.isDisabled && (await q.checkIsOpen()),
-      );
-    }
-
 
     try {
       await async.each(course.queues, async (q) => {
@@ -203,14 +203,14 @@ export class CourseController {
       { relations: ['staffList'] },
     );
 
-    if (!queue) {
-      const userCourseModel = await UserCourseModel.findOne({
-        where: {
-          user,
-          courseId,
-        },
-      });
+    const userCourseModel = await UserCourseModel.findOne({
+      where: {
+        user,
+        courseId,
+      },
+    });
 
+    if (!queue) {
       if (userCourseModel === null || userCourseModel === undefined) {
         throw new HttpException(
           ERROR_MESSAGES.courseController.courseModelError,
@@ -226,6 +226,12 @@ export class CourseController {
         allowQuestions: true,
         isProfessorQueue: userCourseModel.role === Role.PROFESSOR,
       }).save();
+    }
+
+    if (userCourseModel.role === Role.TA && queue.isProfessorQueue) {
+      throw new UnauthorizedException(
+        ERROR_MESSAGES.courseController.queueNotAuthorized,
+      );
     }
 
     if (queue.staffList.length === 0) {

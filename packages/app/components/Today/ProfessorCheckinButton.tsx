@@ -1,6 +1,6 @@
 import { API } from "@koh/api-client";
 import { QueuePartial, Role } from "@koh/common";
-import { Form, Input, Modal, Radio } from "antd";
+import { Form, Input, message, Modal, Radio } from "antd";
 import { useRouter } from "next/router";
 import { Row } from "antd";
 import React, { ReactElement, useState } from "react";
@@ -39,21 +39,25 @@ export default function TodayPageCheckinButton(): ReactElement {
           onOk={async () => {
             const value = await form.validateFields();
             let redirectID: QueuePartial;
-            if (queueToCheckInto > -1) {
-              redirectID = await API.taStatus.checkIn(
-                Number(cid),
-                course?.queues[queueToCheckInto].room
+            try {
+              if (queueToCheckInto > -1) {
+                redirectID = await API.taStatus.checkIn(
+                  Number(cid),
+                  course?.queues[queueToCheckInto].room
+                );
+              } else {
+                redirectID = await API.taStatus.checkIn(
+                  Number(cid),
+                  value.officeHourName
+                );
+              }
+              router.push(
+                "/course/[cid]/queue/[qid]",
+                `/course/${Number(cid)}/queue/${redirectID.id}`
               );
-            } else {
-              redirectID = await API.taStatus.checkIn(
-                Number(cid),
-                value.officeHourName
-              );
+            } catch (err) {
+              message.error(err.response?.data?.message);
             }
-            router.push(
-              "/course/[cid]/queue/[qid]",
-              `/course/${Number(cid)}/queue/${redirectID.id}`
-            );
           }}
         >
           <h3>Which queue would you like to check into?</h3>
