@@ -1,8 +1,8 @@
 import { Command, Positional } from 'nestjs-command';
 import { Injectable } from '@nestjs/common';
-import { SemesterFactory } from '../../test/util/factories';
 import { Season } from '@koh/common';
 import { SemesterService } from './semester.service';
+import { SemesterModel } from './semester.entity';
 
 @Injectable()
 export class SetSemesterCommand {
@@ -67,12 +67,14 @@ export class SetSemesterCommand {
         return;
     }
 
-    const targetEnable = await SemesterFactory.create({
-      season: sem,
-      year: year,
-    });
+    const targetEnable = await this.getSemester(sem, year);
+    if (!targetEnable) {
+      console.log('semester is not bound to any courses, exiting');
+      return;
+    }
 
     await this.semService.setSemester(targetEnable, enOrDisable);
+    console.log('done');
   }
 
   validateSemester(sem: string): Season {
@@ -86,5 +88,13 @@ export class SetSemesterCommand {
       default:
         return null;
     }
+  }
+
+  async getSemester(sea: Season, year: number) {
+    // we need to some id matching
+    return await SemesterModel.findOne({
+      season: sea,
+      year: year,
+    });
   }
 }
