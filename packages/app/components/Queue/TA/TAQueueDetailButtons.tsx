@@ -43,7 +43,7 @@ export default function TAQueueDetailButtons({
 }): ReactElement {
   const defaultMessage = useDefaultMessage();
   const { mutateQuestions } = useQuestions(queueId);
-  const isQueueOnline = useQueue(queueId).queue?.room === "Online";
+  const isQueueOnline = useQueue(queueId).queue?.room.startsWith("Online");
 
   const changeStatus = useCallback(
     async (status: QuestionStatus) => {
