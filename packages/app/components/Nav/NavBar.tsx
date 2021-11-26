@@ -132,8 +132,6 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
       queue.isOpen && (role === Role.TA ? !queue.isProfessorQueue : true)
   );
 
-  debugger;
-
   const showDrawer = () => {
     setVisible(true);
   };
