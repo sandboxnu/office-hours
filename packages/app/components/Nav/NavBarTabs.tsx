@@ -1,8 +1,10 @@
 import React, { ReactElement } from "react";
 import styled from "styled-components";
-import { Menu } from "antd";
+import { Dropdown, Menu } from "antd";
 import { MenuProps } from "antd/lib/menu";
 import Link from "next/link";
+import { QueuePartial } from "@koh/common";
+import { DownOutlined } from "@ant-design/icons";
 
 const HorizontalMenu = styled(Menu)<MenuProps>`
   ${(props) => (props.mode === "horizontal" ? "border-bottom: none" : "")}
@@ -21,10 +23,17 @@ const MenuItem = styled(Menu.Item)`
   }
 `;
 
+const QueueMenuItem = styled(Menu.Item)`
+  z-index: 1;
+  background: #ffffff;
+`;
+
 export interface NavBarTabsItem {
-  href: string;
-  as: string;
+  href?: string;
+  as?: string;
   text: string;
+  queues?: QueuePartial[];
+  courseId?: number;
 }
 
 interface NavBarTabsProps {
@@ -38,6 +47,23 @@ export default function NavBarTabs({
   tabs,
   horizontal,
 }: NavBarTabsProps): ReactElement {
+  function queueSelector(openQueues: QueuePartial[], courseId: number) {
+    return (
+      <Menu>
+        {openQueues?.map((openQueue) => (
+          <QueueMenuItem key={openQueue.id}>
+            <Link
+              href="/course/[cid]/queue/[qid]"
+              as={`/course/${courseId}/queue/${openQueue.id}`}
+            >
+              <a>{openQueue.room}</a>
+            </Link>
+          </QueueMenuItem>
+        ))}
+      </Menu>
+    );
+  }
+
   return (
     <HorizontalMenu
       selectedKeys={[currentHref]}
@@ -45,9 +71,27 @@ export default function NavBarTabs({
     >
       {tabs.map((tab) => (
         <MenuItem key={tab.href}>
-          <Link href={tab.href} as={tab.as}>
-            <a>{tab.text}</a>
-          </Link>
+          {tab.text !== "Queue" ? (
+            <Link href={tab.href} as={tab.as}>
+              <a>{tab.text}</a>
+            </Link>
+          ) : (
+            <Dropdown
+              overlay={queueSelector(tab.queues, tab.courseId)}
+              trigger={["click"]}
+            >
+              <a>
+                <span>Queue</span>
+                <DownOutlined
+                  style={{
+                    fontSize: "16px",
+                    verticalAlign: "-0.125em",
+                    marginLeft: "5px",
+                  }}
+                />
+              </a>
+            </Dropdown>
+          )}
         </MenuItem>
       ))}
     </HorizontalMenu>
