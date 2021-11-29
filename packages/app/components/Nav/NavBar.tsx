@@ -128,8 +128,11 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
   const role = useRoleInCourse(courseId);
 
   const openQueues = course?.queues?.filter(
-    (queue) => queue.isOpen && queue.allowQuestions
+    (queue) =>
+      queue.isOpen && (role === Role.TA ? !queue.isProfessorQueue : true)
   );
+
+  debugger;
 
   const showDrawer = () => {
     setVisible(true);
