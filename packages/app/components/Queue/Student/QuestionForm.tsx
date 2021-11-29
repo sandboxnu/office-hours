@@ -74,7 +74,7 @@ export default function QuestionForm({
     question?.text || ""
   );
   const [questionGroupable, setQuestionGroupable] = useState<boolean>(
-    (question?.groupable !== undefined && question?.groupable) || false
+    question?.groupable !== undefined && question?.groupable
   );
 
   useEffect(() => {
