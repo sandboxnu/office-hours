@@ -8,8 +8,8 @@ import { SemesterModel } from './semester.entity';
 export class SetSemesterCommand {
   constructor(private readonly semService: SemesterService) {}
   @Command({
-    command: 'semester:modsemester <mode> <semester> <year>',
-    describe: '',
+    command: 'semester:toggleActiveSemester  <mode> <semester> <year>',
+    describe: '(disable or enable) all the classes in a given semester',
     autoExit: true,
   })
   async create(
@@ -51,20 +51,13 @@ export class SetSemesterCommand {
       return;
     }
 
-    let enOrDisable = mode === 'enable';
+    const isEnable = this.enableOrDisable(mode);
 
-    switch (mode) {
-      case 'enable':
-        enOrDisable = true;
-        break;
-      case 'disable':
-        enOrDisable = false;
-        break;
-      default:
-        console.error(
-          'Mode must be one of "enable" or "disable", got "' + mode + '".',
-        );
-        return;
+    if (isEnable === null) {
+      console.error(
+        'Mode must be one of "enable" or "disable", got "' + mode + '".',
+      );
+      return;
     }
 
     const targetEnable = await this.getSemester(sem, year);
@@ -73,7 +66,7 @@ export class SetSemesterCommand {
       return;
     }
 
-    await this.semService.setSemester(targetEnable, enOrDisable);
+    await this.semService.setSemester(targetEnable, isEnable);
     console.log('done');
   }
 
@@ -85,6 +78,17 @@ export class SetSemesterCommand {
       case 'Summer_2':
       case 'Summer_Full':
         return sem;
+      default:
+        return null;
+    }
+  }
+
+  enableOrDisable(mode: string): boolean {
+    switch (mode) {
+      case 'enable':
+        return true;
+      case 'disable':
+        return false;
       default:
         return null;
     }
