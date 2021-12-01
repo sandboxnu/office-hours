@@ -53,6 +53,8 @@ export default function TAQueueDetailButtons({
   );
   const { isCheckedIn, isHelping } = useTAInQueueInfo(queueId);
 
+  const openTeams = useTeams(queueId, question.creator.email, defaultMessage);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const sendRephraseAlert = async () => {
     const payload: RephraseQuestionPayload = {
@@ -71,8 +73,6 @@ export default function TAQueueDetailButtons({
       //If the ta creates an alert that already exists the error is caught and nothing happens
     }
   };
-
-  const openTeams = useTeams(queueId, question.creator.email, defaultMessage);
 
   const helpStudent = () => {
     changeStatus(OpenQuestionStatus.Helping);
