@@ -82,7 +82,7 @@ describe('SemesterService', () => {
     it('setSemester disables courses when false ', async () => {
       const target = await getSemester('Fall', 2019);
 
-      await service.setSemester(target, false);
+      await service.toggleActiveSemester(target, false);
 
       const allCourses = await CourseModel.find({});
 
@@ -98,7 +98,7 @@ describe('SemesterService', () => {
     it('setSemester enables courses when true ', async () => {
       const target = await getSemester('Spring', 2020);
 
-      await service.setSemester(target, false);
+      await service.toggleActiveSemester(target, false);
 
       const allCourses = await CourseModel.find({
         semester: target,
@@ -107,7 +107,7 @@ describe('SemesterService', () => {
       expect(allCourses.length).toBeGreaterThan(0);
       allCourses.map((course) => expect(course.enabled).toBeFalsy());
 
-      await service.setSemester(target, true);
+      await service.toggleActiveSemester(target, true);
 
       const allCourses2 = await CourseModel.find({
         semester: target,

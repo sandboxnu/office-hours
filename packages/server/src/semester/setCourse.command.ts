@@ -66,7 +66,7 @@ export class SetSemesterCommand {
       return;
     }
 
-    await this.semService.setSemester(targetEnable, isEnable);
+    await this.semService.toggleActiveSemester(targetEnable, isEnable);
     console.log('done');
   }
 

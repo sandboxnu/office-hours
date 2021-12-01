@@ -7,7 +7,10 @@ import { CourseModel } from '../course/course.entity';
 export class SemesterService {
   constructor(private connection: Connection) {}
 
-  async setSemester(semester: SemesterModel, enable: boolean): Promise<void> {
+  async toggleActiveSemester(
+    semester: SemesterModel,
+    enable: boolean,
+  ): Promise<void> {
     const enableList = await CourseModel.find({
       semester: semester,
     });
