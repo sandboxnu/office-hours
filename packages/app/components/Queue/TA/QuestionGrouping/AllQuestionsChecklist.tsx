@@ -4,6 +4,7 @@ import { Question, User } from "@koh/common";
 import { Checkbox, Tooltip } from "antd";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
+import { useDefaultMessage } from "../../../../hooks/useDefaultMessage";
 import { useTAInQueueInfo } from "../../../../hooks/useTAInQueueInfo";
 import { BannerPrimaryButton } from "../../Banner";
 import { Header } from "../TAQueueDetail";
@@ -53,6 +54,8 @@ export default function AllQuestionsCheckList({
     }
   })();
 
+  const defaultMessage = useDefaultMessage();
+
   const onQuestionChecked = (q) => {
     if (!checkedQuestions.has(q.id)) {
       setCheckedQuestions(new Set(checkedQuestions.add(q.id)));
@@ -101,7 +104,7 @@ export default function AllQuestionsCheckList({
                   });
                   onStartCall();
                   window.open(
-                    `https://teams.microsoft.com/l/chat/0/0?users=${usersInLink}`
+                    `https://teams.microsoft.com/l/chat/0/0?users=${usersInLink}&message=${defaultMessage}`
                   );
                 }}
                 disabled={!canHelp || checkedQuestions.size === 0}
