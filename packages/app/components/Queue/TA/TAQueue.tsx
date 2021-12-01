@@ -18,6 +18,8 @@ import {
 } from "../QueueListSharedComponents";
 import { EditQueueModal } from "./EditQueueModal";
 import TAQueueListDetail from "./TAQueueListDetail";
+import { useTeams } from "../../../hooks/useTeams";
+import { useDefaultMessage } from "../../../hooks/useDefaultMessage";
 
 /**
  * Method to help student and
@@ -105,15 +107,14 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
       (question) => question.status === QuestionStatusKeys.Queued
     );
 
+  const defaultMessage = useDefaultMessage();
+
+  const openTeams = useTeams(qid, nextQuestion.creator.email, defaultMessage);
+
   const helpNext = async () => {
     await onHelpQuestion(nextQuestion.id);
     mutateQuestions();
-    const defaultMessage = user.includeDefaultMessage
-      ? user.defaultMessage
-      : "";
-    window.open(
-      `https://teams.microsoft.com/l/chat/0/0?users=${nextQuestion.creator.email}&message=${defaultMessage}`
-    );
+    openTeams();
   };
 
   // TODO: figure out tooltips
