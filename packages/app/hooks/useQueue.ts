@@ -53,7 +53,9 @@ export function useQueue(qid: number, onUpdate?: OnUpdate): UseQueueReturn {
       const refreshInfo = REFRESH_INFO[key];
       refreshInfo.onUpdates.add(onUpdate);
       onUpdate(refreshInfo.lastUpdated);
-      return () => refreshInfo.onUpdates.delete(onUpdate);
+      return () => {
+        refreshInfo.onUpdates.delete(onUpdate);
+      };
     }
   }, [onUpdate, key]);
 

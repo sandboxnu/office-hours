@@ -1,5 +1,4 @@
 import { Role } from "@koh/common";
-import { Container } from "next/app";
 import DefaultErrorPage from "next/error";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -24,18 +23,16 @@ export default function CourseAdminPanelPage(): ReactElement {
   return (
     <div>
       <StandardPageContainer>
-        <Container>
-          <Head>
-            <title>Course Admin Panel | Khoury Office Hours</title>
-          </Head>
-          <NavBar courseId={Number(courseId)} />
-          {courseId && (
-            <CourseAdminPanel
-              courseId={Number(courseId)}
-              defaultPage={defaultPage}
-            />
-          )}
-        </Container>
+        <Head>
+          <title>Course Admin Panel | Khoury Office Hours</title>
+        </Head>
+        <NavBar courseId={Number(courseId)} />
+        {courseId && (
+          <CourseAdminPanel
+            courseId={Number(courseId)}
+            defaultPage={defaultPage}
+          />
+        )}
       </StandardPageContainer>
     </div>
   );

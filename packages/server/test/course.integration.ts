@@ -298,11 +298,8 @@ describe('Course Integration', () => {
         staffList: [],
       });
 
-      const UCM = UserCourseModel.findOne({
-        where: { userId: ta.id, courseId: queue.courseId },
-      });
       const events = await EventModel.find({
-        where: { user: UCM },
+        where: { userId: ta.id },
       });
 
       expect(events.length).toBe(0);

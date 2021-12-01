@@ -1,4 +1,3 @@
-import { Container } from "next/app";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
@@ -16,9 +15,7 @@ export default function About(): ReactElement {
         <title>About | Khoury Office Hours</title>
       </Head>
       <NavBar courseId={Number(courseId)} />
-      <Container>
-        <AboutPage />
-      </Container>
+      <AboutPage />
     </StandardPageContainer>
   );
 }
