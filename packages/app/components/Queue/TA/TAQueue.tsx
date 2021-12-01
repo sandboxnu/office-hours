@@ -106,9 +106,7 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
     questions?.queue?.find(
       (question) => question.status === QuestionStatusKeys.Queued
     );
-
   const defaultMessage = useDefaultMessage();
-
   const openTeams = useTeams(qid, nextQuestion?.creator.email, defaultMessage);
 
   const helpNext = async () => {
