@@ -38,6 +38,7 @@ export const NotesText = styled.div`
 const InfoColumnContainer = styled.div`
   flex-shrink: 0;
   padding-bottom: 30px;
+  position: relative;
   @media (min-width: 650px) {
     margin-top: 32px;
     width: 290px;
@@ -87,13 +88,28 @@ const QueueRoomGroup = styled.div`
   align-items: center;
   margin-bottom: 24px;
 `;
+
+const DisableQueueButton = styled(QueueInfoColumnButton)`
+  color: white;
+  background: #da3236;
+  bottom: 0;
+  position: absolute;
+  &:hover,
+  &:focus {
+    color: white;
+    background: #f76c6c;
+  }
+`;
+
 interface QueueInfoColumnProps {
   queueId: number;
+  isTA: boolean;
   buttons: ReactNode;
 }
 
 export function QueueInfoColumn({
   queueId,
+  isTA,
   buttons,
 }: QueueInfoColumnProps): ReactElement {
   const { queue } = useQueue(queueId);
@@ -142,6 +158,13 @@ export function QueueInfoColumn({
       {buttons}
       <StaffH2>Staff</StaffH2>
       <TAStatuses queueId={queueId} />
+      {isTA && (
+        <DisableQueueButton
+          onClick={() => console.log("i have a big red button!")}
+        >
+          Disable Queue
+        </DisableQueueButton>
+      )}
     </InfoColumnContainer>
   );
 }

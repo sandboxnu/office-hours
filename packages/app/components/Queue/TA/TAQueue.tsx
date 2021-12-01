@@ -122,6 +122,7 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
         <Container>
           <QueueInfoColumn
             queueId={qid}
+            isTA={true}
             buttons={
               <>
                 <EditQueueButton
