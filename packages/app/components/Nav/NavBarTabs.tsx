@@ -47,7 +47,7 @@ export default function NavBarTabs({
   tabs,
   horizontal,
 }: NavBarTabsProps): ReactElement {
-  function queueSelector(openQueues: QueuePartial[], courseId: number) {
+  function queueSelector(courseId: number, openQueues: QueuePartial[]) {
     return (
       <Menu>
         {openQueues?.map((openQueue) => (
@@ -77,7 +77,7 @@ export default function NavBarTabs({
             </Link>
           ) : (
             <Dropdown
-              overlay={queueSelector(tab.queues, tab.courseId)}
+              overlay={queueSelector(tab.courseId, tab.queues)}
               trigger={["click"]}
             >
               <a>
