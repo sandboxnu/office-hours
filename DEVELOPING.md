@@ -90,5 +90,5 @@ If you have prod ssh access, deploy master to prod with `./deploy.sh <prod usern
 
 On the VM, source code is at `/var/www/source`. From there you can run `yarn cli` commands etc. Make an admin account with `yarn cli create:admin <name>` and give a password. Please auto-generate a random password.
 
-If you need to hotfix something, you can edit the files on prod and run `yarn build && yarn prod:start` to build and restart the server. Try to avoid doing this.
+If you need to hotfix something, you can edit the files on prod and run `yarn build && env HOME=/var/www pm2 startOrReload infrastructure/prod/ecosystem.config.js` to build and restart the server. Try to avoid doing this.
 You can also push something to master, and then use the deploy script. Note that it'll still take about 5 minutes for the changes to propogate to the dist folder
