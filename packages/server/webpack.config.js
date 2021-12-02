@@ -13,7 +13,6 @@ module.exports = function (options) {
         config: [__filename],
       },
     },
-    externalsPresets: { node: true }, // in order to ignore built-in modules like path, fs, etc.
     externals: [
       nodeExternals({
         allowlist: ['@koh/common'],
