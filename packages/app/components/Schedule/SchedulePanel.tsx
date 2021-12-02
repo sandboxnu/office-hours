@@ -1,19 +1,8 @@
-import { Role } from "@koh/common";
-import moment from "moment";
-import React, { ReactElement } from "react";
-import {
-  Calendar,
-  CalendarProps,
-  Event,
-  momentLocalizer,
-  View,
-} from "react-big-calendar";
+import { ReactElement } from "react";
+import { Calendar, CalendarProps, View } from "react-big-calendar";
 import styled from "styled-components";
-import { useCourse } from "../../hooks/useCourse";
-import { useRoleInCourse } from "../../hooks/useRoleInCourse";
-import UpdateCalendarButton from "./UpdateCalendarButton";
 
-const ScheduleCalendar = styled(Calendar)<CalendarProps>`
+const _ScheduleCalendar = styled(Calendar)<CalendarProps>`
   height: 70vh;
 `;
 
@@ -26,6 +15,10 @@ export default function SchedulePanel({
   courseId,
   defaultView = "week",
 }: ScheduleProps): ReactElement {
+  const _a = courseId;
+  const _d = defaultView;
+  return null; // TODO: Replace this with something other than the iCal
+  /**
   const { course } = useCourse(courseId);
   const role = useRoleInCourse(courseId);
 
@@ -51,4 +44,5 @@ export default function SchedulePanel({
       {role === Role.PROFESSOR && <UpdateCalendarButton courseId={courseId} />}
     </div>
   );
+  */
 }

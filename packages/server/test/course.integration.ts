@@ -399,11 +399,8 @@ describe('Course Integration', () => {
         staffList: [],
       });
 
-      const UCM = UserCourseModel.findOne({
-        where: { userId: ta.id, courseId: queue.courseId },
-      });
       const events = await EventModel.find({
-        where: { user: UCM },
+        where: { userId: ta.id },
       });
 
       expect(events.length).toBe(0);
@@ -543,7 +540,7 @@ describe('Course Integration', () => {
         })
         .expect(200);
 
-      const checkinTimes = (data.body as unknown as TACheckinTimesResponse)
+      const checkinTimes = ((data.body as unknown) as TACheckinTimesResponse)
         .taCheckinTimes;
 
       const taName = ta.firstName + ' ' + ta.lastName;

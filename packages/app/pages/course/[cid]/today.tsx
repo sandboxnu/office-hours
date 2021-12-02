@@ -113,6 +113,7 @@ export default function Today(): ReactElement {
             )*/}
           </Col>
           <Col md={12} sm={24}>
+            {/* TODO: Currently, iCal stuff is not showing, replace this with something else */}
             <SchedulePanel courseId={Number(cid)} defaultView="day" />
           </Col>
         </Row>
