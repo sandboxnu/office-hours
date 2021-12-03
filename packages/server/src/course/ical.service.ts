@@ -191,9 +191,10 @@ export class IcalService {
       where: { courseId: course.id, room: 'Online' },
     });
     const semester =
+      course.semester ||
       (await SemesterModel.findOne({
         where: { id: course.semesterId },
-      })) || course.semester;
+      }));
 
     if (!queue) {
       queue = await QueueModel.create({
