@@ -8,6 +8,7 @@ import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
 import { QuestionGroupModel } from 'question/question-group.entity';
+import { SemesterModel } from 'semester/semester.entity';
 import { Connection, getManager } from 'typeorm';
 import {
   CourseFactory,
@@ -48,6 +49,7 @@ export class SeedController {
     await this.seedService.deleteAll(UserModel);
     await this.seedService.deleteAll(CourseSectionMappingModel);
     await this.seedService.deleteAll(CourseModel);
+    await this.seedService.deleteAll(SemesterModel);
     const manager = getManager();
     manager.query('ALTER SEQUENCE user_model_id_seq RESTART WITH 1;');
 
@@ -99,8 +101,14 @@ export class SeedController {
       // But since the semester is centered in Fall 2020,
       // the events will get filtered out since they arent in that date.
       // you will need to reseed data!
-      await SemesterFactory.create({ season: 'Fall', year: 2020 });
-      await CourseFactory.create({ timezone: 'America/New_York' });
+      const semester = await SemesterFactory.create({
+        season: 'Fall',
+        year: 2020,
+      });
+      await CourseFactory.create({
+        timezone: 'America/New_York',
+        semesterId: semester.id,
+      });
     }
 
     const course = await CourseModel.findOne({
