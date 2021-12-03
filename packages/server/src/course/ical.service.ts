@@ -190,9 +190,10 @@ export class IcalService {
     let queue = await QueueModel.findOne({
       where: { courseId: course.id, room: 'Online' },
     });
-    const semester = await SemesterModel.findOne({
-      where: { id: course.semesterId },
-    });
+    const semester =
+      (await SemesterModel.findOne({
+        where: { id: course.semesterId },
+      })) || course.semester;
 
     if (!queue) {
       queue = await QueueModel.create({
