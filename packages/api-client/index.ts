@@ -15,12 +15,12 @@ import {
   GetQueueResponse,
   GetReleaseNotesResponse,
   GroupQuestionsParams,
-  //GetSelfEnrollResponse,
+  GetSelfEnrollResponse,
   ListInsightsResponse,
   ListQuestionsResponse,
   SemesterPartial,
   //SubmitCourseParams,
-  //TACheckinTimesResponse,
+  TACheckinTimesResponse,
   TACheckoutResponse,
   TAUpdateStatusResponse,
   UpdateCourseOverrideBody,
@@ -114,6 +114,7 @@ class APIClient {
     /*
     submitCourse: async (params: SubmitCourseParams): Promise<void> =>
       this.req("POST", `/api/v1/courses/submit_course`, undefined, params),
+    */
     getTACheckinTimes: async (
       courseId: number,
       startDate: string,
@@ -132,7 +133,6 @@ class APIClient {
       this.req("GET", "/api/v1/self_enroll_courses"),
     createSelfEnrollOverride: async (courseId: number): Promise<void> =>
       this.req("POST", `/api/v1/create_self_enroll_override/${courseId}`),
-    */
   };
   taStatus = {
     checkIn: async (
