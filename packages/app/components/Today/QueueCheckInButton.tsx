@@ -10,7 +10,7 @@ import { useProfile } from "../../hooks/useProfile";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import TACheckinButton, { CheckinButton } from "./TACheckinButton";
 
-const ProfessorModalRadio = styled(Radio)`
+const ModalRadio = styled(Radio)`
   display: block;
   height: 30px;
 `;
@@ -68,12 +68,12 @@ export default function TodayPageCheckinButton(): ReactElement {
             {course?.queues
               .filter((q) => (role === Role.TA ? !q.isProfessorQueue : true))
               .map((q, i) => (
-                <ProfessorModalRadio key={q.id} value={i}>
+                <ModalRadio key={q.id} value={i}>
                   {q.room}
-                </ProfessorModalRadio>
+                </ModalRadio>
               ))}
             <Row style={{ flexWrap: "nowrap" }}>
-              <ProfessorModalRadio value={-1}>Other...</ProfessorModalRadio>
+              <ModalRadio value={-1}>Other...</ModalRadio>
               {queueToCheckInto === -1 ? (
                 <Form form={form}>
                   <Form.Item
