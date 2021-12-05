@@ -176,7 +176,7 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
       isOnline: studentQuestion?.isOnline,
       location: studentQuestion?.location,
       force: true,
-      groupable: true,
+      groupable: false,
     });
     await API.questions.update(newQuestion.id, {
       status: OpenQuestionStatus.Queued,
@@ -209,7 +209,7 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
           text: "",
           force: force,
           questionType: null,
-          groupable: true,
+          groupable: false,
         });
         const newQuestionsInQueue = [...questions?.queue, createdQuestion];
         await mutateQuestions({ ...questions, queue: newQuestionsInQueue });

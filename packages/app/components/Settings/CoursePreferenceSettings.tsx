@@ -48,7 +48,7 @@ export default function CoursePreferenceSettings(): ReactElement {
   const InstructorCell = ({ courseId }: { courseId: number }) => {
     const course = useCourse(courseId);
 
-    return <>{course.course.coordinator_email}</>;
+    return <>{course.course?.coordinator_email}</>;
   };
 
   const columns = [
