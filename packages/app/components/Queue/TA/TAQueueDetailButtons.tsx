@@ -19,7 +19,6 @@ import { message, Popconfirm, Tooltip } from "antd";
 import React, { ReactElement, useCallback } from "react";
 import { useDefaultMessage } from "../../../hooks/useDefaultMessage";
 import { useQuestions } from "../../../hooks/useQuestions";
-import { useQueue } from "../../../hooks/useQueue";
 import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
 import {
   BannerDangerButton,
@@ -28,6 +27,7 @@ import {
   FinishHelpingButton,
   RequeueButton,
 } from "../Banner";
+import { useTeams } from "../../../hooks/useTeams";
 
 const PRORITY_QUEUED_MESSAGE_TEXT =
   "This student has been temporarily removed from the queue. They must select to rejoin the queue and will then be placed in the Priority Queue.";
@@ -43,7 +43,6 @@ export default function TAQueueDetailButtons({
 }): ReactElement {
   const defaultMessage = useDefaultMessage();
   const { mutateQuestions } = useQuestions(queueId);
-  const isQueueOnline = useQueue(queueId).queue?.room === "Online";
 
   const changeStatus = useCallback(
     async (status: QuestionStatus) => {
@@ -53,6 +52,8 @@ export default function TAQueueDetailButtons({
     [question.id, mutateQuestions]
   );
   const { isCheckedIn, isHelping } = useTAInQueueInfo(queueId);
+
+  const openTeams = useTeams(queueId, question.creator.email, defaultMessage);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const sendRephraseAlert = async () => {
@@ -75,11 +76,7 @@ export default function TAQueueDetailButtons({
 
   const helpStudent = () => {
     changeStatus(OpenQuestionStatus.Helping);
-    if (isQueueOnline) {
-      window.open(
-        `https://teams.microsoft.com/l/chat/0/0?users=${question.creator.email}&message=${defaultMessage}`
-      );
-    }
+    openTeams();
   };
 
   if (question.status === OpenQuestionStatus.Helping) {

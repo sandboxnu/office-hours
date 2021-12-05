@@ -54,7 +54,7 @@ export default function StudentBanner({
   leaveQueue,
 }: StudentBannerProps): ReactElement {
   const { studentQuestion, studentQuestionIndex } = useStudentQuestion(queueId);
-  const isQueueOnline = useQueue(queueId).queue?.room === "Online";
+  const isQueueOnline = useQueue(queueId).queue?.room.startsWith("Online");
 
   switch (studentQuestion?.status) {
     case "Drafting":
