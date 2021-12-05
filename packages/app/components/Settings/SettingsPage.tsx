@@ -71,7 +71,7 @@ export default function SettingsPage({
   const [avatarSize, setAvatarSize] = useState(windowWidth / 2);
 
   useEffect(() => {
-    let widthDivider = isMobile ? 6 : 10;
+    const widthDivider = isMobile ? 6 : 10;
     setAvatarSize(windowWidth / widthDivider);
   });
 
@@ -100,7 +100,7 @@ export default function SettingsPage({
         <Row
           style={{
             marginTop: avatarSize / 6,
-            justifyContent: `${isMobile ? "left" : "center"}`
+            justifyContent: `${isMobile ? "left" : "center"}`,
           }}
         >
           {uploading ? (
@@ -168,7 +168,7 @@ export default function SettingsPage({
   const SettingsMenu = () => (
     <>
       {isMobile ? (
-        <Collapse accordion style={{marginTop: '10px'}}>
+        <Collapse accordion style={{ marginTop: "10px" }}>
           <Panel header="Personal Information" key="profile">
             <ProfileSettings />
           </Panel>
@@ -186,7 +186,7 @@ export default function SettingsPage({
         </Collapse>
       ) : (
         <Menu
-          style={{ background: "none", marginTop: '10px' }}
+          style={{ background: "none", marginTop: "10px" }}
           defaultSelectedKeys={[currentSettings]}
           onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}
         >
