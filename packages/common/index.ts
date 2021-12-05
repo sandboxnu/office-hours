@@ -363,11 +363,7 @@ export class KhouryDataParams {
 
   @IsOptional()
   @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
-  courses!: KhouryCourse[];
-
-  @IsOptional()
-  @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
-  prof_courses!: KhouryProfCourse[];
+  courses!: KhouryCourse[] | KhouryProfCourse[];
 }
 
 export class KhouryCourse {
@@ -377,8 +373,8 @@ export class KhouryCourse {
   @IsString()
   semester!: string;
 
-  @IsEnum(Role)
-  role!: Role;
+  @IsEnum(String)
+  role!: "TA" | "Student";
 }
 
 export class KhouryProfCourse {

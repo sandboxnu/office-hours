@@ -131,4 +131,8 @@ export class LoginCourseService {
         uc.role === previousCourse.role,
     );
   }
+
+  private convertKhouryRole(khouryRole: 'TA' | 'Student'): Role {
+    return khouryRole.toLowerCase() === 'ta' ? Role.TA : Role.STUDENT;
+  }
 }
