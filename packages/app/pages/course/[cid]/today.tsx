@@ -85,19 +85,21 @@ export default function Today(): ReactElement {
                 <div>You are a professor for this course</div>
               </Row>
             )}
-            {course?.queues?.length === 0 ? (
+            {course?.queues?.filter((q) => q.isOpen).length === 0 ? (
               <h1 style={{ paddingTop: "100px" }}>
                 There are currently no scheduled office hours
               </h1>
             ) : (
-              course?.queues?.map((q) => (
-                <OpenQueueCard
-                  key={q.id}
-                  queue={q}
-                  isTA={role === Role.TA}
-                  updateQueueNotes={updateQueueNotes}
-                />
-              ))
+              course?.queues
+                ?.filter((q) => q.isOpen)
+                .map((q) => (
+                  <OpenQueueCard
+                    key={q.id}
+                    queue={q}
+                    isTA={role === Role.TA}
+                    updateQueueNotes={updateQueueNotes}
+                  />
+                ))
             )}
             {!course && <OpenQueueCardSkeleton />}
             {/*This only works with UTC offsets in the form N:00, to help with other offsets, the size of the array might have to change to a size of 24*7*4 (for every 15 min interval)
