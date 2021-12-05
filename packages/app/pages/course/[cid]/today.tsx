@@ -14,7 +14,7 @@ import OpenQueueCard, {
   OpenQueueCardSkeleton,
 } from "../../../components/Today/OpenQueueCard";
 //import PopularTimes from "../../../components/Today/PopularTimes/PopularTimes";
-import TodayPageCheckinButton from "../../../components/Today/ProfessorCheckinButton";
+import TodayPageCheckinButton from "../../../components/Today/QueueCheckInButton";
 import ReleaseNotes from "../../../components/Today/ReleaseNotes";
 import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useCourse } from "../../../hooks/useCourse";
