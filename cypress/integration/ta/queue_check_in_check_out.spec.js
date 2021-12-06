@@ -33,6 +33,9 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
     // Wait to see that the user has been checked in
     cy.contains("Check Out");
     cy.get("[data-cy='ta-status-card']").should("have.length", "2");
+
+    // wait for queue tab to show up (load course profiles)
+    cy.get(`[href="/course/${this.queue.course.id}/queue/${this.queue.id}"]`).contains("Queue");
     cy.percySnapshot("TA Queue Page - Two TA's Checked In");
 
     // 1 student should be in the queue
