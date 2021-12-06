@@ -10,7 +10,9 @@ describe('Can successfully create queues', () => {
     });
 
 
-    it('Creates an online queue via modal', () => {
+    it('Creates an online queue via modal', function () {
+
+        cy.visit(`/course/${this.queue.course.id}/today`, {timeout : 20000});
         cy.get(".ant-modal-close-x").click();
         cy.wait(1000);
         // open the online queue
@@ -25,9 +27,9 @@ describe('Can successfully create queues', () => {
     });
 
 
-    it('Creates an in-person queue via modal', () => {
+    it('Creates an in-person queue via modal', function () {
         const roomName = "Snell 049"
-
+        cy.visit(`/course/${this.queue.course.id}/today`);
         cy.get(".ant-modal-close-x").click();
 
 
@@ -64,11 +66,11 @@ describe('Can successfully create queues', () => {
             .contains(roomName);
     });
 
-    it('Other TAs can join custom in-person queues', () => {
+    it('Other TAs can join custom in-person queues', function ()  {
         const roomName = "Snell 049"
 
+        cy.visit(`/course/${this.queue.course.id}/today`);
         cy.get(".ant-modal-close-x").click();
-
 
         cy.get("[data-cy='check-in-modal-button']").click();
         cy.wait(500);
