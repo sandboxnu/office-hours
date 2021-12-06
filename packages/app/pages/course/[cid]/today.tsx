@@ -85,13 +85,14 @@ export default function Today(): ReactElement {
                 <div>You are a professor for this course</div>
               </Row>
             )}
-            {course?.queues?.filter((q) => q.isOpen).length === 0 ? (
+            {course?.queues?.filter((q) => q.staffList.length > 0).length ===
+            0 ? (
               <h1 style={{ paddingTop: "100px" }}>
                 There are currently no scheduled office hours
               </h1>
             ) : (
               course?.queues
-                ?.filter((q) => q.isOpen)
+                ?.filter((q) => q.staffList.length > 0)
                 .map((q) => (
                   <OpenQueueCard
                     key={q.id}

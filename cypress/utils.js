@@ -39,7 +39,7 @@ export const loginUser = (identifier) => {
   cy.get(`@${identifier}`).then((userCourse) => {
     cy.visit(`/api/v1/login/dev?userId=${userCourse.user.id}`);
     // wait for the defaultCourseRedirect
-    cy.url().should("include", "today");
+    cy.url({ timeout: 30000 }).should("include", "today");
   });
 };
 
