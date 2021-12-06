@@ -80,7 +80,7 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
 
     // Wait for page to load
     cy.get(".ant-modal-close-x").click();
-    cy.contains("No Staff Checked In");
+    cy.contains("There are currently no scheduled office hours");
 
     // Click "Check in"
     taOpenOnline();

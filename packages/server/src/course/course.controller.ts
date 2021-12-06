@@ -149,6 +149,11 @@ export class CourseController {
       );
     }
 
+    // make sure all of isopen is populated since we need it in FE
+    course.queues.map(async (q) => {
+      await q.checkIsOpen();
+    });
+
     try {
       await async.each(course.queues, async (q) => {
         await q.addQueueTimes();

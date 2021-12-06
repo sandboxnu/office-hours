@@ -41,7 +41,6 @@ describe('Course Integration', () => {
       const response = await supertest({ userId: 1 })
         .get(`/courses/${course.id}`)
         .expect(200);
-
       expect(response.body).toMatchSnapshot();
     });
 
@@ -194,6 +193,63 @@ describe('Course Integration', () => {
       });
 
       await supertest({ userId: 1 }).get(`/courses/${course.id}`).expect(401);
+    });
+
+    it('ensures isOpen is defined for all queues(dynamic gen)', async () => {
+      const course = await CourseFactory.create();
+      await UserCourseFactory.create({
+        user: await UserFactory.create(),
+        course: course,
+      });
+      const taf = await TACourseFactory.create({
+        user: await UserFactory.create(),
+        course: course,
+      });
+      const proff = await UserCourseFactory.create({
+        user: await UserFactory.create(),
+        course: course,
+        role: Role.PROFESSOR,
+      });
+      await QueueFactory.create({
+        isDisabled: true,
+        room: 'room 1',
+        course: course,
+      });
+
+      await QueueFactory.create({
+        isDisabled: false,
+        room: 'room 2',
+        course: course,
+      });
+      await QueueFactory.create({
+        isDisabled: false,
+        room: 'room 3',
+        course: course,
+        staffList: [taf.user],
+      });
+
+      await QueueFactory.create({
+        isDisabled: false,
+        isProfessorQueue: true,
+        room: 'room 4',
+        course: course,
+        staffList: [taf.user],
+      });
+      await QueueFactory.create({
+        isDisabled: true,
+        isProfessorQueue: true,
+        room: 'room 5',
+        course: course,
+        staffList: [taf.user],
+      });
+
+      const response = await supertest({ userId: proff.userId })
+        .get(`/courses/${course.id}`)
+        .expect(200);
+      console.log(response.body.queues);
+      response.body.queues.map((q) => {
+        expect(q.isOpen).toBeDefined();
+      });
     });
   });
 
@@ -537,7 +593,7 @@ describe('Course Integration', () => {
         })
         .expect(200);
 
-      const checkinTimes = ((data.body as unknown) as TACheckinTimesResponse)
+      const checkinTimes = (data.body as unknown as TACheckinTimesResponse)
         .taCheckinTimes;
 
       const taName = ta.firstName + ' ' + ta.lastName;
