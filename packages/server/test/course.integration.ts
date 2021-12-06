@@ -246,7 +246,6 @@ describe('Course Integration', () => {
       const response = await supertest({ userId: proff.userId })
         .get(`/courses/${course.id}`)
         .expect(200);
-      console.log(response.body.queues);
       response.body.queues.map((q) => {
         expect(q.isOpen).toBeDefined();
       });
