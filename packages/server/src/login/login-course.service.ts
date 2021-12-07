@@ -1,4 +1,4 @@
-import { KhouryDataParams, Role } from '@koh/common';
+import { KhouryCourse, KhouryDataParams, Role } from '@koh/common';
 import { Injectable } from '@nestjs/common';
 import { CourseModel } from 'course/course.entity';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
@@ -31,38 +31,31 @@ export class LoginCourseService {
     const userCourses = [];
 
     for (const c of info.courses) {
-      const course: CourseModel = await this.courseCRNToCourse(c.crn);
+      if (c instanceof KhouryCourse) {
+        const course: CourseModel = await this.courseCRNToCourse(c.crn);
 
-      if (course) {
-        const userCourse = await this.courseToUserCourse(
-          user.id,
-          course.id,
-          c.role,
-        );
-        userCourses.push(userCourse);
-      }
-    }
+        if (course) {
+          const userCourse = await this.courseToUserCourse(
+            user.id,
+            course.id,
+            this.convertKhouryRole(c.role),
+          );
+          userCourses.push(userCourse);
+        }
+      } else {
+        // c is a KhouryProfCourse
+        // only need to inspect one of the CRNs from the list
+        // b/c they should all map to the same section group
+        if (c.crns.length !== 0) {
+          const courseCRN = c.crns[0];
+          const profCourse = await this.courseCRNToCourse(courseCRN);
 
-    if (info.prof_courses) {
-      // loop through section groups
-      for (const c of info.prof_courses) {
-        // loop through CRNs to create courses
-        for (const courseCRN of c.crns) {
-          const courseMappings = (
-            await CourseSectionMappingModel.find({
-              where: { crn: courseCRN }, // TODO: Add semester support
-              relations: ['course'],
-            })
-          ).filter((cm) => cm.course.enabled);
-
-          for (const courseMapping of courseMappings) {
-            const profCourse = await this.courseToUserCourse(
-              user.id,
-              courseMapping.courseId,
-              Role.PROFESSOR,
-            );
-            userCourses.push(profCourse);
-          }
+          const profUserCourse = await this.courseToUserCourse(
+            user.id,
+            profCourse.id,
+            Role.PROFESSOR,
+          );
+          userCourses.push(profUserCourse);
         }
       }
     }
@@ -132,6 +125,7 @@ export class LoginCourseService {
     );
   }
 
+  // util functions for converting Khoury Admin data to KOH data
   private convertKhouryRole(khouryRole: 'TA' | 'Student'): Role {
     return khouryRole.toLowerCase() === 'ta' ? Role.TA : Role.STUDENT;
   }
