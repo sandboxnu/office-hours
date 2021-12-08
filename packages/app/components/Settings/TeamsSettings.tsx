@@ -2,7 +2,7 @@ import { API } from "@koh/api-client";
 import { UpdateProfileParams } from "@koh/common";
 import { Button, Col, Form, Input, message, Switch } from "antd";
 import { pick } from "lodash";
-import { HeaderTitle } from "../common/HeaderTitle";
+import { HeaderTitle } from "./Styled";
 import React, { ReactElement } from "react";
 import useSWR from "swr";
 

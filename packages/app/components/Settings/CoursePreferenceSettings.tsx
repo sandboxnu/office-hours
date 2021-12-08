@@ -5,7 +5,7 @@ import { Button, message, Modal, Table } from "antd";
 import { UserCourse } from "@koh/common";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import Router from "next/router";
-import { HeaderTitle } from "../common/HeaderTitle";
+import { HeaderTitle } from "./Styled";
 import { useCourse } from "../../hooks/useCourse";
 
 const { confirm } = Modal;
@@ -107,7 +107,6 @@ export default function CoursePreferenceSettings(): ReactElement {
       <div>
         <HeaderTitle>
           <h1>Course Preferences</h1>
-          
         </HeaderTitle>
         <Table columns={columns} dataSource={createCourseDataSource()} />
       </div>

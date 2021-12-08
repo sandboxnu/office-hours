@@ -3,7 +3,7 @@ import { UpdateProfileParams } from "@koh/common";
 import { Button, Form, Input, message, Row } from "antd";
 import { pick } from "lodash";
 import { useIsMobile } from "../../hooks/useIsMobile";
-import { HeaderTitle } from "../common/HeaderTitle";
+import { HeaderTitle } from "./Styled";
 import styled from "styled-components";
 import React, { ReactElement } from "react";
 import useSWR from "swr";
@@ -73,6 +73,7 @@ export default function ProfileSettings(): ReactElement {
       <Button
         key="submit"
         type="primary"
+        data-cy="saveButton"
         onClick={handleOk}
         style={{ marginBottom: "15px" }}
       >

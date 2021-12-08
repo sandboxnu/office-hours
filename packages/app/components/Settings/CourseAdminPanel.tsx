@@ -47,7 +47,7 @@ export default function CourseAdminPanel({
   return (
     <Row>
       <Col span={4} style={{ textAlign: "center" }}>
-        <SettingsPanelAvatar />
+        <SettingsPanelAvatar avatarSize={20} />
         <CenteredText>
           Welcome back
           <br />

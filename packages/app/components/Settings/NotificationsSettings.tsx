@@ -7,7 +7,7 @@ import {
 } from "@koh/common";
 import { Button, Form, Input, List, message, Switch, Tooltip } from "antd";
 import { pick } from "lodash";
-import { HeaderTitle } from "../common/HeaderTitle";
+import { HeaderTitle } from "./Styled";
 import React, { ReactElement, useEffect, useState } from "react";
 import styled from "styled-components";
 import useSWR from "swr";

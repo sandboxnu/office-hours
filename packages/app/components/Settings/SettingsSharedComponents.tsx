@@ -1,8 +1,13 @@
-import { useWindowWidth } from "@react-hook/window-size";
 import React, { ReactElement } from "react";
 import SelfAvatar from "../common/SelfAvatar";
 
-export function SettingsPanelAvatar({ avatarSize }): ReactElement {
+interface SettingsPanelAvatarProps {
+  avatarSize: number;
+}
+
+export function SettingsPanelAvatar({
+  avatarSize,
+}: SettingsPanelAvatarProps): ReactElement {
   return (
     <SelfAvatar
       size={avatarSize}
