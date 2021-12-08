@@ -4,6 +4,7 @@ import { CourseModel } from 'course/course.entity';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
+// import { SemesterModel } from 'semester/semester.entity';
 import { Connection } from 'typeorm';
 
 @Injectable()
@@ -32,7 +33,10 @@ export class LoginCourseService {
 
     for (const c of info.courses) {
       if (c instanceof KhouryCourse) {
-        const course: CourseModel = await this.courseCRNToCourse(c.crn);
+        const course: CourseModel = await this.courseCRNToCourse(
+          c.crn,
+          c.semester,
+        );
 
         if (course) {
           const userCourse = await this.courseToUserCourse(
@@ -48,7 +52,10 @@ export class LoginCourseService {
         // b/c they should all map to the same section group
         if (c.crns.length !== 0) {
           const courseCRN = c.crns[0];
-          const profCourse = await this.courseCRNToCourse(courseCRN);
+          const profCourse = await this.courseCRNToCourse(
+            courseCRN,
+            c.semester,
+          );
 
           const profUserCourse = await this.courseToUserCourse(
             user.id,
@@ -79,10 +86,19 @@ export class LoginCourseService {
     return user;
   }
 
-  public async courseCRNToCourse(courseCRN: number): Promise<CourseModel> {
+  public async courseCRNToCourse(
+    courseCRN: number,
+    semester: string,
+  ): Promise<CourseModel> {
     const courseSectionModel = (
       await CourseSectionMappingModel.find({
         where: { crn: courseCRN },
+        join: {
+          alias: 'user',
+          leftJoinAndSelect: {
+            semester: semester,
+          },
+        },
         relations: ['course'],
       })
     ).find((cm) => cm.course.enabled);
@@ -129,4 +145,27 @@ export class LoginCourseService {
   private convertKhouryRole(khouryRole: 'TA' | 'Student'): Role {
     return khouryRole.toLowerCase() === 'ta' ? Role.TA : Role.STUDENT;
   }
+
+  /*
+    private convertKhourySemester(khourySemester: string): SemesterModel {
+      // parsing time
+      const year = `20${khourySemester.slice(-2)}`;
+      let season = khourySemester.slice(khourySemester.length - 2);
+      
+      return;
+    }
+
+    private convertKhourySeason(khourySeason: string): Season {
+      let season = khourySeason;
+      switch(khourySeason) { // summer sems are the only ones that are diff
+        case 'Summer I': 
+          season = 'Summer_1';
+          break;
+        case 'Summer II':
+          season = 'Summer_2';
+          break;
+      }
+      return season;
+    }
+  */
 }
