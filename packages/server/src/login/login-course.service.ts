@@ -1,10 +1,9 @@
-import { KhouryCourse, KhouryDataParams, Role } from '@koh/common';
+import { KhouryCourse, KhouryDataParams, Role, Season } from '@koh/common';
 import { Injectable } from '@nestjs/common';
 import { CourseModel } from 'course/course.entity';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
-// import { SemesterModel } from 'semester/semester.entity';
 import { Connection } from 'typeorm';
 
 @Injectable()
@@ -90,18 +89,16 @@ export class LoginCourseService {
     courseCRN: number,
     semester: string,
   ): Promise<CourseModel> {
-    const courseSectionModel = (
-      await CourseSectionMappingModel.find({
-        where: { crn: courseCRN },
-        join: {
-          alias: 'user',
-          leftJoinAndSelect: {
-            semester: semester,
-          },
-        },
-        relations: ['course'],
-      })
-    ).find((cm) => cm.course.enabled);
+    const { season, year } = this.parseKhourySemester(semester);
+    const courseSectionModel =
+      await CourseSectionMappingModel.createQueryBuilder('section_mapping')
+        .leftJoinAndSelect('section_mapping.course', 'course')
+        .leftJoinAndSelect('course.semester', 'semester')
+        .where(
+          'section_mapping.crn = :courseCRN and semester.season = :season and semester.year = :year',
+          { courseCRN, season, year },
+        )
+        .getOne();
 
     return courseSectionModel?.course;
   }
@@ -146,26 +143,31 @@ export class LoginCourseService {
     return khouryRole.toLowerCase() === 'ta' ? Role.TA : Role.STUDENT;
   }
 
-  /*
-    private convertKhourySemester(khourySemester: string): SemesterModel {
-      // parsing time
-      const year = `20${khourySemester.slice(-2)}`;
-      let season = khourySemester.slice(khourySemester.length - 2);
-      
-      return;
-    }
+  private parseKhourySemester(khourySemester: string): {
+    season: Season;
+    year: number;
+  } {
+    // parsing time
+    const year = Number(`20${khourySemester.slice(-2)}`);
+    const season = this.parseKhourySeason(
+      khourySemester.slice(khourySemester.length - 2),
+    );
 
-    private convertKhourySeason(khourySeason: string): Season {
-      let season = khourySeason;
-      switch(khourySeason) { // summer sems are the only ones that are diff
-        case 'Summer I': 
-          season = 'Summer_1';
-          break;
-        case 'Summer II':
-          season = 'Summer_2';
-          break;
-      }
-      return season;
+    return { season, year };
+  }
+
+  private parseKhourySeason(khourySeason: string): Season {
+    let season = khourySeason;
+    switch (
+      khourySeason // summer sems are the only ones that are diff
+    ) {
+      case 'Summer I':
+        season = 'Summer_1';
+        break;
+      case 'Summer II':
+        season = 'Summer_2';
+        break;
     }
-  */
+    return season as Season;
+  }
 }
