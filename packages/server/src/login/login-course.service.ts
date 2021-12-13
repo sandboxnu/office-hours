@@ -1,4 +1,4 @@
-import { KhouryCourse, KhouryDataParams, Role, Season } from '@koh/common';
+import { isKhouryCourse, KhouryDataParams, Role, Season } from '@koh/common';
 import { Injectable } from '@nestjs/common';
 import { CourseModel } from 'course/course.entity';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
@@ -31,11 +31,8 @@ export class LoginCourseService {
     const userCourses = [];
 
     for (const c of info.courses) {
-      if (c instanceof KhouryCourse) {
-        const course: CourseModel = await this.courseCRNToCourse(
-          c.crn,
-          c.semester,
-        );
+      if (isKhouryCourse(c)) {
+        const course = await this.courseCRNToCourse(c.crn, c.semester);
 
         if (course) {
           const userCourse = await this.courseToUserCourse(
@@ -56,12 +53,14 @@ export class LoginCourseService {
             c.semester,
           );
 
-          const profUserCourse = await this.courseToUserCourse(
-            user.id,
-            profCourse.id,
-            Role.PROFESSOR,
-          );
-          userCourses.push(profUserCourse);
+          if (profCourse) {
+            const profUserCourse = await this.courseToUserCourse(
+              user.id,
+              profCourse.id,
+              Role.PROFESSOR,
+            );
+            userCourses.push(profUserCourse);
+          }
         }
       }
     }
@@ -150,7 +149,7 @@ export class LoginCourseService {
     // parsing time
     const year = Number(`20${khourySemester.slice(-2)}`);
     const season = this.parseKhourySeason(
-      khourySemester.slice(khourySemester.length - 2),
+      khourySemester.slice(0, khourySemester.length - 3),
     );
 
     return { season, year };

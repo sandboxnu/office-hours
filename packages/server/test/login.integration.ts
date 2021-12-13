@@ -1,6 +1,7 @@
 import { Role } from '@koh/common';
 import { JwtService } from '@nestjs/jwt';
 import { TestingModuleBuilder } from '@nestjs/testing';
+import { CourseModel } from 'course/course.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { LoginModule } from '../src/login/login.module';
 import { UserModel } from '../src/profile/user.entity';
@@ -71,7 +72,6 @@ describe('Login Integration', () => {
         last_name: 'Stenzel',
         photo_url: 'sdf',
         courses: [],
-        prof_courses: [],
       });
 
       // Expect that the new user has been created
@@ -99,7 +99,6 @@ describe('Login Integration', () => {
         last_name: 'Stenzel',
         photo_url: 'sdf',
         courses: [],
-        prof_courses: [],
       });
 
       // Expect that the new user has been created
@@ -159,11 +158,10 @@ describe('Login Integration', () => {
             courses: [
               {
                 crn: 23456,
-                semester: '000',
+                semester: 'Fall 20',
                 role: Role.STUDENT,
               },
             ],
-            prof_courses: [],
           })
           .expect(201);
         user = await UserModel.findOne({
@@ -187,11 +185,10 @@ describe('Login Integration', () => {
             courses: [
               {
                 crn: 23456,
-                semester: '000',
+                semester: 'Fall 20',
                 role: Role.STUDENT,
               },
             ],
-            prof_courses: [],
           })
           .expect(201);
 
@@ -216,16 +213,15 @@ describe('Login Integration', () => {
             courses: [
               {
                 crn: 23456,
-                semester: '000',
+                semester: 'Fall 20',
                 role: Role.STUDENT,
               },
               {
-                crn: 24680,
-                semester: '000',
+                crn: 45678,
+                semester: 'Fall 20',
                 role: Role.STUDENT,
               },
             ],
-            prof_courses: [],
           })
           .expect(201);
 
@@ -247,7 +243,7 @@ describe('Login Integration', () => {
         });
 
         const totalUserCourses = await UserCourseModel.count();
-        expect(totalUserCourses).toEqual(3);
+        expect(totalUserCourses).toEqual(2);
 
         // After dropping fundies II, user logs in again
         await supertest()
@@ -260,16 +256,9 @@ describe('Login Integration', () => {
             photo_url: '',
             courses: [
               {
-                crn: 24680,
-                semester: '000',
+                crn: 45678,
+                semester: 'Fall 20',
                 role: Role.STUDENT,
-              },
-            ],
-            prof_courses: [
-              {
-                crns: [12312],
-                semester: '000',
-                name: "Prof Li's Office Hours",
               },
             ],
           })
@@ -281,7 +270,7 @@ describe('Login Integration', () => {
         expect(noUserCourse).toBeUndefined();
 
         const totalUserCoursesUpdated = await UserCourseModel.count();
-        expect(totalUserCoursesUpdated).toEqual(2);
+        expect(totalUserCoursesUpdated).toEqual(1);
       });
 
       it('respects user course overrides', async () => {
@@ -296,44 +285,26 @@ describe('Login Integration', () => {
             courses: [
               {
                 crn: 23456,
-                semester: '000',
+                semester: 'Fall 20',
                 role: Role.STUDENT,
               },
               {
                 crn: 34567,
-                semester: '000',
+                semester: 'Fall 20',
                 role: Role.TA,
               },
             ],
-            prof_courses: [],
           })
           .expect(201);
 
-        const user = await UserModel.findOne({
-          where: { email: 'stenzel.w@northeastern.edu' },
-          relations: ['courses'],
-        });
+        expect(await UserCourseModel.count()).toEqual(2);
 
         const overrideCourse = await UserCourseFactory.create({
           override: true,
         });
 
-        const fundiesUserCourse = await UserCourseModel.findOne({
-          where: { user, course },
-        });
-        expect(fundiesUserCourse).toEqual({
-          courseId: 1,
-          id: 1,
-          override: false,
-          role: 'student',
-          userId: 1,
-          expires: false,
-        });
+        expect(await UserCourseModel.count()).toEqual(3);
 
-        const totalUserCourses = await UserCourseModel.count();
-        expect(totalUserCourses).toEqual(4);
-
-        // After dropping fundies II, user logs in again
         await supertest()
           .post('/khoury_login')
           .send({
@@ -344,25 +315,18 @@ describe('Login Integration', () => {
             photo_url: '',
             courses: [
               {
-                crn: 24680,
-                semester: '000',
+                crn: 23456,
+                semester: 'Fall 20',
                 role: Role.STUDENT,
               },
-            ],
-            prof_courses: [
               {
-                crns: [12312],
-                semester: '000',
-                name: "Prof Li's Office Hours",
+                crn: 34567,
+                semester: 'Fall 20',
+                role: Role.TA,
               },
             ],
           })
           .expect(201);
-
-        const noUserCourse = await UserCourseModel.findOne(
-          fundiesUserCourse.id,
-        );
-        expect(noUserCourse).toBeUndefined();
 
         const overrideStillExists = await UserCourseModel.findOne(
           overrideCourse.id,
@@ -397,6 +361,10 @@ describe('Login Integration', () => {
         course: regularFundies,
       });
       await CourseSectionFactory.create({
+        crn: 13345,
+        course: regularFundies,
+      });
+      await CourseSectionFactory.create({
         crn: 87654,
         course: acceleratedFundies,
       });
@@ -417,12 +385,11 @@ describe('Login Integration', () => {
           first_name: 'Will',
           last_name: 'Stenzel',
           photo_url: 'sdf',
-          courses: [],
-          prof_courses: [
+          courses: [
             {
-              crns: [12312],
-              semester: '000',
-              name: "Prof Li's Office Hours",
+              crn: 98765,
+              semester: 'Fall 20',
+              role: 'TA',
             },
           ],
         })
@@ -433,8 +400,19 @@ describe('Login Integration', () => {
         relations: ['courses'],
       });
 
-      // Expect the ta to have been all three courses accosiated with the given generic courses (CS 2500)
-      expect(ta.courses).toHaveLength(3);
+      const fundiesRegular = await CourseModel.findOne({
+        name: 'CS 2500 Regular',
+      });
+
+      expect(ta.courses).toHaveLength(1);
+      expect(ta.courses[0]).toEqual({
+        courseId: fundiesRegular.id,
+        id: 1,
+        override: false,
+        role: 'ta',
+        userId: ta.id,
+        expires: false,
+      });
     });
 
     it('handles professor courses correctly', async () => {
@@ -448,11 +426,10 @@ describe('Login Integration', () => {
           first_name: 'Will',
           last_name: 'Stenzel',
           photo_url: 'sdf',
-          courses: [],
-          prof_courses: [
+          courses: [
             {
-              crns: [12312],
-              semester: '000',
+              crns: [13345, 98765],
+              semester: 'Fall 20',
               name: "Prof Li's Office Hours",
             },
           ],
@@ -468,8 +445,7 @@ describe('Login Integration', () => {
         where: { user: professor },
       });
 
-      // Expect the professor to have been all three courses accosiated with the given generic courses (CS 2500)
-      expect(professor.courses).toHaveLength(3);
+      expect(professor.courses).toHaveLength(1);
       expect(ucms.every((ucm) => ucm.role === Role.PROFESSOR)).toBeTruthy();
     });
   });
