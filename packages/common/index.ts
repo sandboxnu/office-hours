@@ -390,6 +390,15 @@ export class KhouryProfCourse {
   name!: string;
 }
 
+export function isKhouryCourse(
+  c: KhouryCourse | KhouryProfCourse
+): c is KhouryCourse {
+  return (
+    (c as KhouryCourse).role !== undefined &&
+    (c as KhouryCourse).crn !== undefined
+  );
+}
+
 export interface KhouryRedirectResponse {
   redirect: string;
 }
