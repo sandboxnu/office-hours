@@ -1,5 +1,93 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Course Integration GET /courses/:id gets all queues that are not disabled (prof) 1`] = `
+Object {
+  "allowQuestions": false,
+  "endTime": Any<String>,
+  "id": 2,
+  "isDisabled": false,
+  "isOpen": false,
+  "isProfessorQueue": false,
+  "notes": null,
+  "queueSize": 0,
+  "room": "room 2",
+  "staffList": Array [],
+  "startTime": Any<String>,
+}
+`;
+
+exports[`Course Integration GET /courses/:id gets all queues that are not disabled (prof) 2`] = `
+Object {
+  "allowQuestions": false,
+  "endTime": Any<String>,
+  "id": 3,
+  "isDisabled": false,
+  "isOpen": true,
+  "isProfessorQueue": false,
+  "notes": null,
+  "queueSize": 0,
+  "room": "room 3",
+  "staffList": Array [
+    Object {
+      "defaultMessage": null,
+      "email": "user@neu.edu",
+      "firstName": "User",
+      "id": 2,
+      "includeDefaultMessage": true,
+      "insights": Array [
+        "TotalStudents",
+        "TotalQuestionsAsked",
+        "MedianWaitTime",
+        "QuestionTypeBreakdown",
+        "MostActiveStudents",
+        "QuestionToStudentRatio",
+        "MedianHelpingTime",
+      ],
+      "lastName": "Person",
+      "name": "User Person",
+      "photoURL": null,
+    },
+  ],
+  "startTime": Any<String>,
+}
+`;
+
+exports[`Course Integration GET /courses/:id gets all queues that are not disabled (prof) 3`] = `
+Object {
+  "allowQuestions": false,
+  "endTime": Any<String>,
+  "id": 4,
+  "isDisabled": false,
+  "isOpen": true,
+  "isProfessorQueue": true,
+  "notes": null,
+  "queueSize": 0,
+  "room": "room 4",
+  "staffList": Array [
+    Object {
+      "defaultMessage": null,
+      "email": "user@neu.edu",
+      "firstName": "User",
+      "id": 2,
+      "includeDefaultMessage": true,
+      "insights": Array [
+        "TotalStudents",
+        "TotalQuestionsAsked",
+        "MedianWaitTime",
+        "QuestionTypeBreakdown",
+        "MostActiveStudents",
+        "QuestionToStudentRatio",
+        "MedianHelpingTime",
+      ],
+      "lastName": "Person",
+      "name": "User Person",
+      "photoURL": null,
+    },
+  ],
+  "startTime": Any<String>,
+}
+`;
+
 exports[`Course Integration GET /courses/:id gets office hours no queues, since no queue is happening right now 1`] = `
 Object {
   "coordinator_email": null,
@@ -19,6 +107,58 @@ Object {
   "queues": Array [],
   "selfEnroll": false,
   "timezone": "America/New_York",
+}
+`;
+
+exports[`Course Integration GET /courses/:id gets queues that are not disabled and not prof queues (TA) 1`] = `
+Object {
+  "allowQuestions": false,
+  "endTime": Any<String>,
+  "id": 2,
+  "isDisabled": false,
+  "isOpen": false,
+  "isProfessorQueue": false,
+  "notes": null,
+  "queueSize": 0,
+  "room": "room 2",
+  "staffList": Array [],
+  "startTime": Any<String>,
+}
+`;
+
+exports[`Course Integration GET /courses/:id gets queues that are not disabled and not prof queues (TA) 2`] = `
+Object {
+  "allowQuestions": false,
+  "endTime": Any<String>,
+  "id": 3,
+  "isDisabled": false,
+  "isOpen": true,
+  "isProfessorQueue": false,
+  "notes": null,
+  "queueSize": 0,
+  "room": "room 3",
+  "staffList": Array [
+    Object {
+      "defaultMessage": null,
+      "email": "user@neu.edu",
+      "firstName": "User",
+      "id": 2,
+      "includeDefaultMessage": true,
+      "insights": Array [
+        "TotalStudents",
+        "TotalQuestionsAsked",
+        "MedianWaitTime",
+        "QuestionTypeBreakdown",
+        "MostActiveStudents",
+        "QuestionToStudentRatio",
+        "MedianHelpingTime",
+      ],
+      "lastName": "Person",
+      "name": "User Person",
+      "photoURL": null,
+    },
+  ],
+  "startTime": Any<String>,
 }
 `;
 

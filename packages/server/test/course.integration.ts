@@ -118,7 +118,16 @@ describe('Course Integration', () => {
       const response = await supertest({ userId: taf.userId })
         .get(`/courses/${course.id}`)
         .expect(200);
-      expect(response.body.queues.length).toBe(2);
+      // date agnostic snapshots
+      response.body.queues.map((q) =>
+        expect(q).toMatchSnapshot({
+          startTime: expect.any(String),
+          endTime: expect.any(String),
+        }),
+      );
+
+      response.body.queues.map((q) => expect(q.isDisabled).toBeFalsy());
+      response.body.queues.map((q) => expect(q.isProfessorQueue).toBeFalsy());
     });
 
     it('gets all queues that are not disabled (prof)', async () => {
@@ -172,7 +181,16 @@ describe('Course Integration', () => {
       const response = await supertest({ userId: proff.userId })
         .get(`/courses/${course.id}`)
         .expect(200);
-      expect(response.body.queues.length).toBe(3);
+
+      // date agnostic snapshots
+      response.body.queues.map((q) =>
+        expect(q).toMatchSnapshot({
+          startTime: expect.any(String),
+          endTime: expect.any(String),
+        }),
+      );
+
+      response.body.queues.map((q) => expect(q.isDisabled).toBeFalsy());
     });
 
     it('cant get office hours if not a member of the course', async () => {
