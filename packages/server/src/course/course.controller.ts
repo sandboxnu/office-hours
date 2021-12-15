@@ -16,7 +16,6 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   HttpException,
   HttpStatus,
@@ -136,13 +135,23 @@ export class CourseController {
     if (userCourseModel.role === Role.PROFESSOR) {
       course.queues = await async.filter(
         course.queues,
-        async (q) => (await q.checkIsOpen()) || q.isProfessorQueue,
+        async (q) => !q.isDisabled,
       );
-    } else {
+    } else if (userCourseModel.role === Role.TA) {
       course.queues = await async.filter(
         course.queues,
-        async (q) => await q.checkIsOpen(),
+        async (q) => !q.isDisabled && !q.isProfessorQueue,
       );
+    } else if (userCourseModel.role === Role.STUDENT) {
+      course.queues = await async.filter(
+        course.queues,
+        async (q) => !q.isDisabled && (await q.checkIsOpen()),
+      );
+    }
+
+    // make sure all of isopen is populated since we need it in FE
+    for (const que of course.queues) {
+      await que.checkIsOpen();
     }
 
     try {
@@ -199,14 +208,14 @@ export class CourseController {
       { relations: ['staffList'] },
     );
 
-    if (!queue) {
-      const userCourseModel = await UserCourseModel.findOne({
-        where: {
-          user,
-          courseId,
-        },
-      });
+    const userCourseModel = await UserCourseModel.findOne({
+      where: {
+        user,
+        courseId,
+      },
+    });
 
+    if (!queue) {
       if (userCourseModel === null || userCourseModel === undefined) {
         throw new HttpException(
           ERROR_MESSAGES.courseController.courseModelError,
@@ -214,20 +223,20 @@ export class CourseController {
         );
       }
 
-      if (userCourseModel.role === Role.PROFESSOR) {
-        queue = await QueueModel.create({
-          room,
-          courseId,
-          staffList: [],
-          questions: [],
-          allowQuestions: true,
-          isProfessorQueue: true, // only professors should be able to make queues
-        }).save();
-      } else {
-        throw new ForbiddenException(
-          ERROR_MESSAGES.courseController.checkIn.cannotCreateNewQueueIfNotProfessor,
-        );
-      }
+      queue = await QueueModel.create({
+        room,
+        courseId,
+        staffList: [],
+        questions: [],
+        allowQuestions: true,
+        isProfessorQueue: userCourseModel.role === Role.PROFESSOR,
+      }).save();
+    }
+
+    if (userCourseModel.role === Role.TA && queue.isProfessorQueue) {
+      throw new UnauthorizedException(
+        ERROR_MESSAGES.courseController.queueNotAuthorized,
+      );
     }
 
     if (queue.staffList.length === 0) {

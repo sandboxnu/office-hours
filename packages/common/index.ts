@@ -795,8 +795,6 @@ export type DateRangeType = {
 export const ERROR_MESSAGES = {
   courseController: {
     checkIn: {
-      cannotCreateNewQueueIfNotProfessor:
-        "You can't create a new queue if you're not a professor",
       cannotCheckIntoMultipleQueues:
         "Cannot check into multiple queues at the same time",
     },
@@ -809,6 +807,7 @@ export const ERROR_MESSAGES = {
     updatedQueueError: "Error updating a course queue",
     queuesNotFound: "Queues not found",
     queueNotFound: "Queue not found",
+    queueNotAuthorized: "Unable to join this professor queue as a TA",
     saveQueueError: "Unable to save queue",
     clearQueueError: "Unable to determine if queue can be cleared",
     createEventError: "An error occurred while creating an event",
@@ -871,6 +870,7 @@ export const ERROR_MESSAGES = {
     getQuestions: "Unable to get questions from queue",
     saveQueue: "Unable to save queue",
     cleanQueue: "Unable to clean queue",
+    cannotCloseQueue: "Unable to close professor queue as a TA",
   },
   queueRoleGuard: {
     queueNotFound: "Queue not found",

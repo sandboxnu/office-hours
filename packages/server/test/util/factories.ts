@@ -65,7 +65,8 @@ export const QueueFactory = new Factory(QueueModel)
   .attr('allowQuestions', false)
   .assocMany('officeHours', OfficeHourFactory)
   .assocMany('staffList', UserFactory, 0)
-  .attr('isProfessorQueue', false);
+  .attr('isProfessorQueue', false)
+  .attr('isDisabled', false);
 
 // WARNING: DO NOT USE CREATORID. AS YOU SEE HERE, WE ONLY ACCEPT CREATOR
 //TODO: make it accept creatorId as well

@@ -41,43 +41,156 @@ describe('Course Integration', () => {
       const response = await supertest({ userId: 1 })
         .get(`/courses/${course.id}`)
         .expect(200);
-
       expect(response.body).toMatchSnapshot();
     });
 
-    it('gets office hours and queues since time is now and rooms are same', async () => {
-      const now = new Date();
+    it('gets queues that are not disabled and staffed (student)', async () => {
       const course = await CourseFactory.create();
-
-      await QueueFactory.create({
-        room: "Matthias's Office",
+      const ucf = await UserCourseFactory.create({
+        user: await UserFactory.create(),
         course: course,
-        officeHours: [
-          await OfficeHourFactory.create({
-            startTime: now,
-            endTime: new Date(now.valueOf() + 4500000),
-            room: "Matthias's Office",
-          }),
-          await OfficeHourFactory.create(), // aren't loaded cause time off
-        ],
       });
-
+      const taf = await TACourseFactory.create({
+        user: await UserFactory.create(),
+        course: course,
+      });
       await QueueFactory.create({
+        isDisabled: true,
+        room: 'room 1',
         course: course,
       });
 
+      await QueueFactory.create({
+        isDisabled: false,
+        room: 'room 2',
+        course: course,
+      });
+      await QueueFactory.create({
+        isDisabled: false,
+        room: 'room 3',
+        course: course,
+        staffList: [taf.user],
+      });
+
+      const response = await supertest({ userId: ucf.userId })
+        .get(`/courses/${course.id}`)
+        .expect(200);
+      expect(response.body.queues.length).toBe(1);
+      expect(response.body.queues[0].room).toBe('room 3');
+    });
+
+    it('gets queues that are not disabled and not prof queues (TA)', async () => {
+      const course = await CourseFactory.create();
       await UserCourseFactory.create({
         user: await UserFactory.create(),
         course: course,
       });
+      const taf = await TACourseFactory.create({
+        user: await UserFactory.create(),
+        course: course,
+      });
+      await QueueFactory.create({
+        isDisabled: true,
+        room: 'room 1',
+        course: course,
+      });
 
-      const response = await supertest({ userId: 1 })
+      await QueueFactory.create({
+        isDisabled: false,
+        room: 'room 2',
+        course: course,
+      });
+      await QueueFactory.create({
+        isDisabled: false,
+        room: 'room 3',
+        course: course,
+        staffList: [taf.user],
+      });
+
+      await QueueFactory.create({
+        isDisabled: false,
+        isProfessorQueue: true,
+        room: 'room 4',
+        course: course,
+        staffList: [taf.user],
+      });
+
+      const response = await supertest({ userId: taf.userId })
+        .get(`/courses/${course.id}`)
+        .expect(200);
+      // date agnostic snapshots
+      response.body.queues.map((q) =>
+        expect(q).toMatchSnapshot({
+          startTime: expect.any(String),
+          endTime: expect.any(String),
+        }),
+      );
+
+      response.body.queues.map((q) => expect(q.isDisabled).toBeFalsy());
+      response.body.queues.map((q) => expect(q.isProfessorQueue).toBeFalsy());
+    });
+
+    it('gets all queues that are not disabled (prof)', async () => {
+      const course = await CourseFactory.create();
+      await UserCourseFactory.create({
+        user: await UserFactory.create(),
+        course: course,
+      });
+      const taf = await TACourseFactory.create({
+        user: await UserFactory.create(),
+        course: course,
+      });
+      const proff = await UserCourseFactory.create({
+        user: await UserFactory.create(),
+        course: course,
+        role: Role.PROFESSOR,
+      });
+      await QueueFactory.create({
+        isDisabled: true,
+        room: 'room 1',
+        course: course,
+      });
+
+      await QueueFactory.create({
+        isDisabled: false,
+        room: 'room 2',
+        course: course,
+      });
+      await QueueFactory.create({
+        isDisabled: false,
+        room: 'room 3',
+        course: course,
+        staffList: [taf.user],
+      });
+
+      await QueueFactory.create({
+        isDisabled: false,
+        isProfessorQueue: true,
+        room: 'room 4',
+        course: course,
+        staffList: [taf.user],
+      });
+      await QueueFactory.create({
+        isDisabled: true,
+        isProfessorQueue: true,
+        room: 'room 5',
+        course: course,
+        staffList: [taf.user],
+      });
+
+      const response = await supertest({ userId: proff.userId })
         .get(`/courses/${course.id}`)
         .expect(200);
 
-      expect(response.body).toMatchObject({
-        queues: [{ id: 1 }, { id: 2 }],
-      });
+      // date agnostic snapshots
+      response.body.queues.map((q) =>
+        expect(q).toMatchSnapshot({
+          startTime: expect.any(String),
+          endTime: expect.any(String),
+        }),
+      );
+
+      response.body.queues.map((q) => expect(q.isDisabled).toBeFalsy());
     });
 
     it('cant get office hours if not a member of the course', async () => {
@@ -98,6 +211,62 @@ describe('Course Integration', () => {
       });
 
       await supertest({ userId: 1 }).get(`/courses/${course.id}`).expect(401);
+    });
+
+    it('ensures isOpen is defined for all queues(dynamic gen)', async () => {
+      const course = await CourseFactory.create();
+      await UserCourseFactory.create({
+        user: await UserFactory.create(),
+        course: course,
+      });
+      const taf = await TACourseFactory.create({
+        user: await UserFactory.create(),
+        course: course,
+      });
+      const proff = await UserCourseFactory.create({
+        user: await UserFactory.create(),
+        course: course,
+        role: Role.PROFESSOR,
+      });
+      await QueueFactory.create({
+        isDisabled: true,
+        room: 'room 1',
+        course: course,
+      });
+
+      await QueueFactory.create({
+        isDisabled: false,
+        room: 'room 2',
+        course: course,
+      });
+      await QueueFactory.create({
+        isDisabled: false,
+        room: 'room 3',
+        course: course,
+        staffList: [taf.user],
+      });
+
+      await QueueFactory.create({
+        isDisabled: false,
+        isProfessorQueue: true,
+        room: 'room 4',
+        course: course,
+        staffList: [taf.user],
+      });
+      await QueueFactory.create({
+        isDisabled: true,
+        isProfessorQueue: true,
+        room: 'room 5',
+        course: course,
+        staffList: [taf.user],
+      });
+
+      const response = await supertest({ userId: proff.userId })
+        .get(`/courses/${course.id}`)
+        .expect(200);
+      response.body.queues.map((q) => {
+        expect(q.isOpen).toBeDefined();
+      });
     });
   });
 
@@ -139,23 +308,25 @@ describe('Course Integration', () => {
       expect(events.length).toBe(0);
     });
 
-    it("Doesn't allow a TA to check into a new queue", async () => {
+    it('Allow a TA to create a new queue', async () => {
       const ta = await UserFactory.create();
       const tcf = await TACourseFactory.create({
         course: await CourseFactory.create(),
         user: ta,
       });
       const response = await supertest({ userId: ta.id })
-        .post(`/courses/${tcf.courseId}/ta_location/The Alamo`)
-        .expect(403);
+        .post(`/courses/${tcf.courseId}/ta_location/WVH 404`)
+        .expect(201);
 
-      expect(response.body.message).toBe(
-        ERROR_MESSAGES.courseController.checkIn
-          .cannotCreateNewQueueIfNotProfessor,
-      );
+      expect(response.body).toMatchObject({
+        id: 1,
+        room: 'WVH 404',
+        staffList: [{ id: ta.id }],
+      });
 
       const events = await EventModel.find();
-      expect(events.length).toBe(0);
+      expect(events.length).toBe(1);
+      expect(events[0].eventType).toBe(EventType.TA_CHECKED_IN);
     });
 
     it('Allows a professor to create a new queue', async () => {
@@ -439,7 +610,7 @@ describe('Course Integration', () => {
         })
         .expect(200);
 
-      const checkinTimes = ((data.body as unknown) as TACheckinTimesResponse)
+      const checkinTimes = (data.body as unknown as TACheckinTimesResponse)
         .taCheckinTimes;
 
       const taName = ta.firstName + ' ' + ta.lastName;

@@ -1,11 +1,15 @@
-import { createAndLoginStudent, createQueue } from "../../utils";
+import {checkInTA, createAndLoginStudent, createAndLoginTA, createQueue} from "../../utils";
 
 describe("Student can create a question", () => {
   beforeEach(() => {
-    createAndLoginStudent();
-    createQueue({
-      courseId: "student.course.id",
-    });
+      createAndLoginTA();
+      createQueue({courseId: "ta.course.id"});
+      checkInTA();
+
+      createAndLoginStudent({
+          courseId: "ta.course.id"
+      });
+
   });
 
   it("Create online question & ensures questions can't be submitted until fields are filled out", function () {
