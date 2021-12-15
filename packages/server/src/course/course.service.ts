@@ -84,7 +84,6 @@ export class CourseService {
 
     return { taCheckinTimes };
   }
-
   async removeUserFromCourse(userCourse: UserCourseModel): Promise<void> {
     if (!userCourse) {
       throw new HttpException(
