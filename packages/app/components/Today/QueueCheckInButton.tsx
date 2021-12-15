@@ -1,6 +1,6 @@
 import { API } from "@koh/api-client";
 import { QueuePartial, Role } from "@koh/common";
-import { Form, message, Modal, Select } from "antd";
+import { message, Modal, Select } from "antd";
 import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
 import { useCourse } from "../../hooks/useCourse";
@@ -16,7 +16,6 @@ export default function TodayPageCheckinButton(): ReactElement {
   const { cid } = router.query;
   const { course } = useCourse(Number(cid));
   const role = useRoleInCourse(Number(cid));
-  const [form] = Form.useForm();
   const { Option } = Select;
   const queueCheckedIn = course?.queues.find((queue) =>
     queue.staffList.find((staff) => staff.id === profile?.id)
@@ -39,20 +38,13 @@ export default function TodayPageCheckinButton(): ReactElement {
           okText="Check In"
           okButtonProps={{ disabled: queueToCheckInto < 0 }}
           onOk={async () => {
-            const value = await form.validateFields();
             let redirectID: QueuePartial;
             try {
-              if (queueToCheckInto > -1) {
-                redirectID = await API.taStatus.checkIn(
-                  Number(cid),
-                  course?.queues[queueToCheckInto].room
-                );
-              } else {
-                redirectID = await API.taStatus.checkIn(
-                  Number(cid),
-                  value.officeHourName
-                );
-              }
+              // ok only enabled on nonnegative values
+              redirectID = await API.taStatus.checkIn(
+                Number(cid),
+                course?.queues[queueToCheckInto].room
+              );
               router.push(
                 "/course/[cid]/queue/[qid]",
                 `/course/${Number(cid)}/queue/${redirectID.id}`
