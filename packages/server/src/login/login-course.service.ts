@@ -86,7 +86,7 @@ export class LoginCourseService {
 
   public async courseCRNToCourse(
     courseCRN: number,
-    semester: string,
+    semester: string, // 6-digit semester code
   ): Promise<CourseModel> {
     const { season, year } = this.parseKhourySemester(semester);
     const courseSectionModel =
@@ -142,31 +142,25 @@ export class LoginCourseService {
     return khouryRole.toLowerCase() === 'ta' ? Role.TA : Role.STUDENT;
   }
 
+  // parses 6-digit semester code, where first 4 digits represent year and last 2 digits represent academic semester (ex: 202110)
   private parseKhourySemester(khourySemester: string): {
     season: Season;
     year: number;
   } {
+    const courseSeasonMap = {
+      '10': 'Fall',
+      '30': 'Spring',
+      '40': 'Summer_1',
+      '50': 'Summer_Full',
+      '60': 'Summer_2',
+    };
     // parsing time
-    const year = Number(`20${khourySemester.slice(-2)}`);
-    const season = this.parseKhourySeason(
-      khourySemester.slice(0, khourySemester.length - 3),
-    );
-
-    return { season, year };
-  }
-
-  private parseKhourySeason(khourySeason: string): Season {
-    let season = khourySeason;
-    switch (
-      khourySeason // summer sems are the only ones that are diff
-    ) {
-      case 'Summer I':
-        season = 'Summer_1';
-        break;
-      case 'Summer II':
-        season = 'Summer_2';
-        break;
+    let year = Number(khourySemester.slice(0, 4));
+    const season = courseSeasonMap[khourySemester.slice(-2)];
+    // edge case for Fall semester
+    if (season == 'Fall') {
+      year--;
     }
-    return season as Season;
+    return { season, year };
   }
 }
