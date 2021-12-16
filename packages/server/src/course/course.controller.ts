@@ -294,6 +294,61 @@ export class CourseController {
     return queue;
   }
 
+  @Post(':id/generate_queue/:room')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
+  @Roles(Role.PROFESSOR, Role.TA)
+  async generateQueue(
+    @Param('id') courseId: number,
+    @Param('room') room: string,
+    @User() user: UserModel,
+    @Body()
+    body: {
+      notes: string;
+      isProfessorQueue: boolean;
+    },
+  ): Promise<QueueModel> {
+    const userCourseModel = await UserCourseModel.findOne({
+      where: {
+        user,
+        courseId,
+      },
+    });
+
+    if (userCourseModel === null || userCourseModel === undefined) {
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.courseModelError,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    if (userCourseModel.role === Role.TA && body.isProfessorQueue) {
+      throw new UnauthorizedException(
+        ERROR_MESSAGES.courseController.queueNotAuthorized,
+      );
+    }
+    try {
+      return await QueueModel.create({
+        room,
+        courseId,
+        staffList: [],
+        questions: [],
+        allowQuestions: true,
+        notes: body.notes,
+        isProfessorQueue: body.isProfessorQueue,
+      }).save();
+    } catch (err) {
+      console.error(
+        ERROR_MESSAGES.courseController.saveQueueError +
+          '\nError message: ' +
+          err,
+      );
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.saveQueueError,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   @Delete(':id/ta_location/:room')
   @UseGuards(JwtAuthGuard, CourseRolesGuard)
   @Roles(Role.PROFESSOR, Role.TA)

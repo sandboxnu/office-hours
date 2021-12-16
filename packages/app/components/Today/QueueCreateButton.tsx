@@ -5,8 +5,9 @@ import { CheckinButton } from "./TACheckinButton";
 import { useRouter } from "next/router";
 import { useCourse } from "../../hooks/useCourse";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
-import { Col, Form, Input, Modal, Row, Switch } from "antd";
+import { Col, Form, Input, message, Modal, Row, Switch } from "antd";
 import TextArea from "antd/lib/input/TextArea";
+import { API } from "@koh/api-client";
 
 export default function TodayPageCreateButton(): ReactElement {
   const profile = useProfile();
@@ -20,6 +21,34 @@ export default function TodayPageCreateButton(): ReactElement {
   );
   const [form] = Form.useForm();
 
+  async function submitMakeQueue() {
+    const queueRequest = await form.validateFields();
+    try {
+      await API.taStatus.makeQueue(
+        Number(cid),
+        queueRequest.officeHourName,
+        !queueRequest.allowTA,
+        queueRequest.notes
+      );
+
+      message.success(
+        `created a new queue ${queueRequest.officeHourName}. Checking you in...`
+      );
+
+      const redirectID = await API.taStatus.checkIn(
+        Number(cid),
+        queueRequest.officeHourName
+      );
+
+      router.push(
+        "/course/[cid]/queue/[qid]",
+        `/course/${Number(cid)}/queue/${redirectID.id}`
+      );
+    } catch (err) {
+      message.error(err.response?.data?.message);
+    }
+  }
+
   return (
     <>
       {modalVisible && (
@@ -30,13 +59,18 @@ export default function TodayPageCreateButton(): ReactElement {
             setModalVisible(false);
           }}
           okText="Create"
+          onOk={submitMakeQueue}
         >
           <Form form={form}>
             <Row>
               <Col style={{ fontWeight: "bold" }}>
                 <Row>Online?</Row>
                 <Row>
-                  <Form.Item name="isOnline">
+                  <Form.Item
+                    name="isOnline"
+                    initialValue={true}
+                    valuePropName="checked"
+                  >
                     <Switch defaultChecked />
                   </Form.Item>
                 </Row>
@@ -45,7 +79,11 @@ export default function TodayPageCreateButton(): ReactElement {
               <Col style={{ fontWeight: "bold" }}>
                 <Row>Allow TAs?</Row>
                 <Row>
-                  <Form.Item name="allowTA">
+                  <Form.Item
+                    name="allowTA"
+                    initialValue={role === Role.TA}
+                    valuePropName="checked"
+                  >
                     <Switch
                       disabled={role === Role.TA}
                       defaultChecked={role === Role.TA}
@@ -66,16 +104,13 @@ export default function TodayPageCreateButton(): ReactElement {
                     message: "Please give this room a name.",
                   },
                 ]}
+                initialValue={
+                  role === Role.TA
+                    ? ""
+                    : `Professor ${profile.lastName}'s Office Hours`
+                }
               >
-                <Input
-                  defaultValue={
-                    role === Role.TA
-                      ? ""
-                      : `Professor ${profile.lastName}'s Office Hours`
-                  }
-                  placeholder={"location"}
-                  style={{ width: 350 }}
-                />
+                <Input placeholder={"location"} style={{ width: 350 }} />
               </Form.Item>
             </Row>
             <Row style={{ fontWeight: "bold" }}>
