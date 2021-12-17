@@ -27,7 +27,7 @@ describe('Can successfully create queues', () => {
     });
 
 
-    it('Creates an in-person queue via modal', function () {
+    it('Creates an in-person queue via modal, and Other TAs can join custom in-person queues', function () {
         const roomName = "Snell 049"
         cy.visit(`/course/${this.ta.course.id}/today`);
         cy.get(".ant-modal-close-x").click();
@@ -61,42 +61,7 @@ describe('Can successfully create queues', () => {
         // make sure it says online (will accept Online+[zero or more chars])
         cy.get("[data-cy='room-title']")
             .contains(roomName);
-    });
 
-    it('Other TAs can join custom in-person queues', function ()  {
-        const roomName = "Snell 049"
-        cy.visit(`/course/${this.ta.course.id}/today`);
-        cy.get(".ant-modal-close-x").click();
-
-
-        cy.get("[data-cy=\"create-queue-modal-button\"]").click();
-        cy.wait(500);
-
-        // name the other OH field
-        cy.get("[data-cy=\"qc-location\"]")
-            .should('be.visible')
-            .trigger('focus')
-            .type(roomName)
-            .wait(250);
-
-        // submit and create queue
-        cy.get("[id^=rcDialogTitle]")
-            .contains("Create a new queue")
-            .parent()
-            .parent()
-            .should('have.class', 'ant-modal-content')
-            .within(($content) => {
-                cy.get("span").contains("Create")
-                    .parent()
-                    .should('have.class', 'ant-btn-primary')
-                    .click();
-            });
-
-        cy.location("pathname", {timeout: 30000}).should("contain", "/queue");
-
-        // make sure it says online (will accept Online+[zero or more chars])
-        cy.get("[data-cy='room-title']")
-            .contains(roomName);
 
         // Person 2
         createAndLoginTA({
