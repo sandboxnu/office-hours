@@ -25,6 +25,7 @@ describe('Can successfully create queues', () => {
             .contains(/^Online\w*/);
 
     });
+    /*
     it('Creates an in-person queue via modal, and Other TAs can join custom in-person queues', function () {
         const roomName = "Snell 049"
         cy.visit(`/course/${this.ta.course.id}/today`);
@@ -96,4 +97,5 @@ describe('Can successfully create queues', () => {
         cy.get("[data-cy='room-title']")
             .contains(roomName);
     });
+     */
 });
