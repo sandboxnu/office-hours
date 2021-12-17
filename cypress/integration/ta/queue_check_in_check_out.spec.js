@@ -6,7 +6,7 @@ import {
   createQueueWithoutOfficeHour, taOpenOnline,
 } from "../../utils";
 
-describe("Can successfuly check in and out of a queue when their is scheduled office hours", () => {
+describe("Can successfully check in and out of a queue when their is scheduled office hours", () => {
   beforeEach(() => {
     // Set the state
     createAndLoginTA();
@@ -14,6 +14,27 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
       courseId: "ta.course.id",
     });
   });
+
+it("should check in as TA and view online and non-Professor queues on dropdown", () => {
+    checkInTA();
+
+    // close "Welcome to Khoury" modal
+    cy.get(".ant-modal-close-x").click();
+
+    // click the queue dropdown
+    cy.get(".ant-dropdown-trigger").click()
+    cy.get("[data-cy='queue-menu-items']").should(
+        "have.length",
+        "1"
+    );
+
+    // click the available queue from dropdown to visit
+    cy.get("[data-cy='queue-menu-item-Online']").click();
+
+    // check we went to correct queue page
+    cy.location("pathname").should("contain", "/queue");
+    cy.get("body").should("contain", "There are no questions in the queue");
+});
 
   it("checking in multiple TAs then checking one out", function () {
     createAndLoginTA({

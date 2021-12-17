@@ -49,9 +49,12 @@ export default function NavBarTabs({
 }: NavBarTabsProps): ReactElement {
   function queueSelector(courseId: number, openQueues: QueuePartial[]) {
     return (
-      <Menu>
+      <Menu data-cy="queue-menu-items">
         {openQueues?.map((openQueue) => (
-          <QueueMenuItem key={openQueue.id}>
+          <QueueMenuItem
+            key={openQueue.id}
+            data-cy={`queue-menu-item-${openQueue.room}`}
+          >
             <Link
               href="/course/[cid]/queue/[qid]"
               as={`/course/${courseId}/queue/${openQueue.id}`}
