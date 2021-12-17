@@ -4,15 +4,15 @@ describe('Can successfully create queues', () => {
     beforeEach(() => {
         // Set the state
         createAndLoginTA();
-        createQueue({
-            courseId: "ta.course.id",
-        });
+
     });
 
 
     it('Join an online queue via modal', function () {
-
-        cy.visit(`/course/${this.queue.course.id}/today`, {timeout : 20000});
+        createQueue({
+            courseId: "ta.course.id",
+        });
+        cy.visit(`/course/${this.ta.course.id}/today`, {timeout : 20000});
         cy.get(".ant-modal-close-x").click();
         cy.wait(1000);
         // open the online queue
@@ -29,7 +29,7 @@ describe('Can successfully create queues', () => {
 
     it('Creates an in-person queue via modal', function () {
         const roomName = "Snell 049"
-        cy.visit(`/course/${this.queue.course.id}/today`);
+        cy.visit(`/course/${this.ta.course.id}/today`);
         cy.get(".ant-modal-close-x").click();
 
 
@@ -65,7 +65,7 @@ describe('Can successfully create queues', () => {
 
     it('Other TAs can join custom in-person queues', function ()  {
         const roomName = "Snell 049"
-        cy.visit(`/course/${this.queue.course.id}/today`);
+        cy.visit(`/course/${this.ta.course.id}/today`);
         cy.get(".ant-modal-close-x").click();
 
 
