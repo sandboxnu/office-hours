@@ -84,7 +84,7 @@ export default function NavBarTabs({
               trigger={["click"]}
             >
               <a>
-                <span>Queue</span>
+                <span data-cy={"queue-tab"}>Queue</span>
                 <DownOutlined
                   style={{
                     fontSize: "16px",

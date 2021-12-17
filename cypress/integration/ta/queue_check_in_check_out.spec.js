@@ -15,13 +15,17 @@ describe("Can successfully check in and out of a queue when their is scheduled o
     });
   });
 
-it("should check in as TA and view online and non-Professor queues on dropdown", () => {
-    checkInTA();
+  it("should check in as TA and view open queues on dropdown", function () {
+    // Visit the today page
+    cy.visit(`/course/${this.queue.courseId}/today`);
 
     // close "Welcome to Khoury" modal
     cy.get(".ant-modal-close-x").click();
 
+    taOpenOnline();
+
     // click the queue dropdown
+    cy.get("[data-cy='queue-tab']").contains("Queue");
     cy.get(".ant-dropdown-trigger").click()
     cy.get("[data-cy='queue-menu-items']").should(
         "have.length",
@@ -34,7 +38,7 @@ it("should check in as TA and view online and non-Professor queues on dropdown",
     // check we went to correct queue page
     cy.location("pathname").should("contain", "/queue");
     cy.get("body").should("contain", "There are no questions in the queue");
-});
+  });
 
   it("checking in multiple TAs then checking one out", function () {
     createAndLoginTA({
@@ -56,13 +60,13 @@ it("should check in as TA and view online and non-Professor queues on dropdown",
     cy.get("[data-cy='ta-status-card']").should("have.length", "2");
 
     // wait for queue tab to show up (load course profiles)
-    cy.get(`[href="/course/${this.queue.course.id}/queue/${this.queue.id}"]`).contains("Queue");
+    cy.get("[data-cy='queue-tab']").contains("Queue");
     cy.percySnapshot("TA Queue Page - Two TA's Checked In");
 
     // 1 student should be in the queue
     cy.get(`[data-cy="list-queue"] [data-cy^="queue-list-item"]`).should(
-      "have.length",
-      "1"
+        "have.length",
+        "1"
     );
 
     // Click "Check out"
@@ -72,8 +76,8 @@ it("should check in as TA and view online and non-Professor queues on dropdown",
     // Other TA should still be checked in, and there should still be 1 student in the queue
     cy.get("[data-cy='ta-status-card']").should("have.length", "1");
     cy.get(`[data-cy="list-queue"] [data-cy^="queue-list-item"]`).should(
-      "have.length",
-      "1"
+        "have.length",
+        "1"
     );
     cy.percySnapshot("TA Queue Page - One TA Checked out One TA Checked In");
   });
