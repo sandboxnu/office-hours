@@ -224,8 +224,11 @@ export const taOpenOnline = () => {
 
     cy.get("[data-cy='check-in-modal-button']").click();
     cy.wait(500);
+    cy.get("[data-cy=\"select-existing-queue\"]").click();
+    cy.get('[data-cy="select-queue-Online"]').click();
+
     cy.get("[id^=rcDialogTitle]")
-        .contains("Check-In To Office Hours")
+        .contains("Check into an existing queue")
         .parent()
         .parent()
         .should('have.class', 'ant-modal-content')

@@ -807,6 +807,7 @@ export const ERROR_MESSAGES = {
     updatedQueueError: "Error updating a course queue",
     queuesNotFound: "Queues not found",
     queueNotFound: "Queue not found",
+    queueAlreadyExists: "Queue already exists.",
     queueNotAuthorized: "Unable to join this professor queue as a TA",
     saveQueueError: "Unable to save queue",
     clearQueueError: "Unable to determine if queue can be cleared",

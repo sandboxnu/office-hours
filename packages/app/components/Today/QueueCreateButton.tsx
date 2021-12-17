@@ -71,7 +71,7 @@ export default function TodayPageCreateButton(): ReactElement {
                     initialValue={true}
                     valuePropName="checked"
                   >
-                    <Switch defaultChecked />
+                    <Switch data-cy="qc-isonline" defaultChecked />
                   </Form.Item>
                 </Row>
               </Col>
@@ -85,6 +85,7 @@ export default function TodayPageCreateButton(): ReactElement {
                     valuePropName="checked"
                   >
                     <Switch
+                      data-cy="qc-allowTA"
                       disabled={role === Role.TA}
                       defaultChecked={role === Role.TA}
                     />
@@ -110,7 +111,11 @@ export default function TodayPageCreateButton(): ReactElement {
                     : `Professor ${profile.lastName}'s Office Hours`
                 }
               >
-                <Input placeholder={"location"} style={{ width: 350 }} />
+                <Input
+                  data-cy="qc-location"
+                  placeholder={"location"}
+                  style={{ width: 350 }}
+                />
               </Form.Item>
             </Row>
             <Row style={{ fontWeight: "bold" }}>
@@ -118,7 +123,7 @@ export default function TodayPageCreateButton(): ReactElement {
             </Row>
             <Row>
               <Form.Item name="notes">
-                <TextArea rows={4} placeholder="Notes" />
+                <TextArea data-cy="qc-notes" rows={4} placeholder="Notes" />
               </Form.Item>
             </Row>
           </Form>

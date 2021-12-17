@@ -321,6 +321,19 @@ export class CourseController {
       );
     }
 
+    const queue = await QueueModel.findOne({
+      room,
+      courseId,
+      isDisabled: false,
+    });
+
+    if (queue) {
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.queueAlreadyExists,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
     if (userCourseModel.role === Role.TA && body.isProfessorQueue) {
       throw new UnauthorizedException(
         ERROR_MESSAGES.courseController.queueNotAuthorized,

@@ -61,6 +61,7 @@ export default function TodayPageCheckinButton(): ReactElement {
             placeholder="Select a course"
             optionFilterProp="children"
             onChange={onQueueUpdate}
+            data-cy="select-existing-queue"
             filterOption={(input, option) => {
               return (
                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -70,7 +71,11 @@ export default function TodayPageCheckinButton(): ReactElement {
             {course?.queues
               .filter((q) => (role === Role.TA ? !q.isProfessorQueue : true))
               .map((q, i) => (
-                <Option key={i} value={i}>{`${q.room}`}</Option>
+                <Option
+                  key={i}
+                  value={i}
+                  data-cy={`select-queue-${q.room}`}
+                >{`${q.room}`}</Option>
               ))}
           </Select>
         </Modal>
