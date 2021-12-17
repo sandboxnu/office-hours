@@ -111,6 +111,7 @@ describe('Can successfully create queues', () => {
 
         cy.get("[data-cy=\"select-existing-queue\"]").click();
         cy.get(`[data-cy="select-queue-${roomName}"]`).click();
+        cy.wait(500);
 
         cy.percySnapshot("CheckIn Modal Selection Page -- Custom Already Created")
 
