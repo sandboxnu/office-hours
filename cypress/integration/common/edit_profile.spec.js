@@ -19,8 +19,8 @@ describe("User can edit their name", () => {
         .type(
           "{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}Benzel"
         );
-      cy.get('[style="padding-top: 50px;"] > .ant-btn > span')
-        .should("contain", "Ok")
+      cy.get('[data-cy="saveButton"]')
+        .should("contain", "Save")
         .click();
 
       // getting the avatar and making sure the name is properly changed to Bill Benzel (BB)
