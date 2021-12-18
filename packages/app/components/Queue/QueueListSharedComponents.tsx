@@ -1,11 +1,12 @@
 import {
   ClockCircleOutlined,
   CloudSyncOutlined,
+  ExclamationCircleOutlined,
   FrownOutlined,
   NotificationOutlined,
   StopOutlined,
 } from "@ant-design/icons";
-import { Button, Tooltip } from "antd";
+import { Button, message, Modal, Tooltip } from "antd";
 import { ButtonProps } from "antd/lib/button";
 import Linkify from "react-linkify";
 import moment from "moment";
@@ -15,6 +16,8 @@ import { useQueue } from "../../hooks/useQueue";
 import { formatQueueTime } from "../../utils/TimeUtil";
 import { RenderEvery } from "../RenderEvery";
 import { TAStatuses } from "./TAStatuses";
+import { API } from "@koh/api-client";
+import Router from "next/router";
 
 export const Container = styled.div`
   display: flex;
@@ -52,6 +55,8 @@ const QueueInfoColumnButtonStyle = styled(Button)`
   border-radius: 6px;
   margin-bottom: 12px;
 `;
+
+const { confirm } = Modal;
 
 export const QueueInfoColumnButton = (props: ButtonProps): ReactElement => (
   <QueueInfoColumnButtonStyle size="large" block {...props} />
@@ -113,10 +118,28 @@ export function QueueInfoColumn({
   buttons,
 }: QueueInfoColumnProps): ReactElement {
   const { queue } = useQueue(queueId);
+
+  const disableQueue = async () => {
+    await API.queues.disable(queueId);
+    message.success("Successfully disabled queue: " + queue.room);
+    await Router.push("/");
+  };
+
+  const confirmDisable = () => {
+    confirm({
+      title: `Please Confirm!`,
+      icon: <ExclamationCircleOutlined />,
+      content: `Please confirm that you want to disable the queue: ${queue.room}`,
+      onOk() {
+        disableQueue();
+      },
+    });
+  };
+
   return (
     <InfoColumnContainer>
       <QueueRoomGroup>
-        <QueueTitle data-cy='room-title'>{queue?.room}</QueueTitle>
+        <QueueTitle data-cy="room-title">{queue?.room}</QueueTitle>
         {!queue.allowQuestions && (
           <Tooltip title="This queue is no longer accepting questions">
             <StopOutlined
@@ -159,9 +182,7 @@ export function QueueInfoColumn({
       <StaffH2>Staff</StaffH2>
       <TAStatuses queueId={queueId} />
       {isTA && (
-        <DisableQueueButton
-          onClick={() => console.log("i have a big red button!")}
-        >
+        <DisableQueueButton onClick={confirmDisable}>
           Disable Queue
         </DisableQueueButton>
       )}

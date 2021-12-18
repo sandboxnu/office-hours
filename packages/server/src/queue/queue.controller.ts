@@ -171,6 +171,12 @@ export class QueueController {
 
     queue.isDisabled = true;
 
+    // clear staff list
+    if (role !== Role.STUDENT) {
+      queue.staffList = [];
+      await queue.save();
+    }
+
     const questions = await QuestionModel.inQueueWithStatus(queueId, [
       ...Object.values(OpenQuestionStatus),
       ...Object.values(LimboQuestionStatus),
