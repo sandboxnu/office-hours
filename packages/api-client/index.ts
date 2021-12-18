@@ -19,7 +19,7 @@ import {
   ListInsightsResponse,
   ListQuestionsResponse,
   SemesterPartial,
-  SubmitCourseParams,
+  //SubmitCourseParams,
   TACheckinTimesResponse,
   TACheckoutResponse,
   TAUpdateStatusResponse,
@@ -111,8 +111,10 @@ class APIClient {
         `/api/v1/courses/${courseId}/withdraw_course`,
         undefined
       ),
+    /*
     submitCourse: async (params: SubmitCourseParams): Promise<void> =>
       this.req("POST", `/api/v1/courses/submit_course`, undefined, params),
+    */
     getTACheckinTimes: async (
       courseId: number,
       startDate: string,

@@ -1,4 +1,4 @@
-import { KhouryDataParams, Role } from '@koh/common';
+import { isKhouryCourse, KhouryDataParams, Role, Season } from '@koh/common';
 import { Injectable } from '@nestjs/common';
 import { CourseModel } from 'course/course.entity';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
@@ -31,38 +31,36 @@ export class LoginCourseService {
     const userCourses = [];
 
     for (const c of info.courses) {
-      const course: CourseModel = await this.courseSectionToCourse(
-        c.course,
-        c.section,
-      );
+      if (isKhouryCourse(c)) {
+        const course = await this.courseCRNToCourse(c.crn, c.semester);
 
-      if (course) {
-        const userCourse = await this.courseToUserCourse(
-          user.id,
-          course.id,
-          Role.STUDENT,
-        );
-        userCourses.push(userCourse);
-      }
-    }
-
-    if (info.ta_courses) {
-      for (const c of info.ta_courses) {
-        // Query for all the courses which match the name of the generic course from Khoury
-        const courseMappings = (
-          await CourseSectionMappingModel.find({
-            where: { genericCourseName: c.course }, // TODO: Add semester support
-            relations: ['course'],
-          })
-        ).filter((cm) => cm.course.enabled);
-
-        for (const courseMapping of courseMappings) {
-          const taCourse = await this.courseToUserCourse(
+        if (course) {
+          const userCourse = await this.courseToUserCourse(
             user.id,
-            courseMapping.courseId,
-            c.instructor === 1 ? Role.PROFESSOR : Role.TA,
+            course.id,
+            this.convertKhouryRole(c.role),
           );
-          userCourses.push(taCourse);
+          userCourses.push(userCourse);
+        }
+      } else {
+        // c is a KhouryProfCourse
+        // only need to inspect one of the CRNs from the list
+        // b/c they should all map to the same section group
+        if (c.crns.length !== 0) {
+          const courseCRN = c.crns[0];
+          const profCourse = await this.courseCRNToCourse(
+            courseCRN,
+            c.semester,
+          );
+
+          if (profCourse) {
+            const profUserCourse = await this.courseToUserCourse(
+              user.id,
+              profCourse.id,
+              Role.PROFESSOR,
+            );
+            userCourses.push(profUserCourse);
+          }
         }
       }
     }
@@ -86,16 +84,20 @@ export class LoginCourseService {
     return user;
   }
 
-  public async courseSectionToCourse(
-    courseName: string,
-    courseSection: number,
+  public async courseCRNToCourse(
+    courseCRN: number,
+    semester: string, // 6-digit semester code
   ): Promise<CourseModel> {
-    const courseSectionModel = (
-      await CourseSectionMappingModel.find({
-        where: { genericCourseName: courseName, section: courseSection },
-        relations: ['course'],
-      })
-    ).find((cm) => cm.course.enabled);
+    const { season, year } = this.parseKhourySemester(semester);
+    const courseSectionModel =
+      await CourseSectionMappingModel.createQueryBuilder('section_mapping')
+        .leftJoinAndSelect('section_mapping.course', 'course')
+        .leftJoinAndSelect('course.semester', 'semester')
+        .where(
+          'section_mapping.crn = :courseCRN and semester.season = :season and semester.year = :year',
+          { courseCRN, season, year },
+        )
+        .getOne();
 
     return courseSectionModel?.course;
   }
@@ -133,5 +135,32 @@ export class LoginCourseService {
         uc.userId === previousCourse.userId &&
         uc.role === previousCourse.role,
     );
+  }
+
+  // util functions for converting Khoury Admin data to KOH data
+  private convertKhouryRole(khouryRole: 'TA' | 'Student'): Role {
+    return khouryRole.toLowerCase() === 'ta' ? Role.TA : Role.STUDENT;
+  }
+
+  // parses 6-digit semester code, where first 4 digits represent year and last 2 digits represent academic semester (ex: 202110)
+  private parseKhourySemester(khourySemester: string): {
+    season: Season;
+    year: number;
+  } {
+    const courseSeasonMap = {
+      '10': 'Fall',
+      '30': 'Spring',
+      '40': 'Summer_1',
+      '50': 'Summer_Full',
+      '60': 'Summer_2',
+    };
+    // parsing time
+    let year = Number(khourySemester.slice(0, 4));
+    const season = courseSeasonMap[khourySemester.slice(-2)];
+    // edge case for Fall semester, included in the next academic year
+    if (season === 'Fall') {
+      year--;
+    }
+    return { season, year };
   }
 }

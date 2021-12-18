@@ -4,7 +4,7 @@ import {
   GetCourseResponse,
   QueuePartial,
   Role,
-  SubmitCourseParams,
+  // SubmitCourseParams,
   TACheckinTimesResponse,
   TACheckoutResponse,
   UpdateCourseOverrideBody,
@@ -28,7 +28,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import async from 'async';
-import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
+// import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { Connection, getRepository, MoreThanOrEqual } from 'typeorm';
@@ -40,7 +40,7 @@ import { UserModel } from '../profile/user.entity';
 import { QueueCleanService } from '../queue/queue-clean/queue-clean.service';
 import { QueueSSEService } from '../queue/queue-sse.service';
 import { QueueModel } from '../queue/queue.entity';
-import { SemesterModel } from '../semester/semester.entity';
+// import { SemesterModel } from '../semester/semester.entity';
 import { CourseModel } from './course.entity';
 import { CourseService } from './course.service';
 import { HeatmapService } from './heatmap.service';
@@ -525,6 +525,7 @@ export class CourseController {
     await this.courseService.removeUserFromCourse(userCourse);
   }
 
+  /* TODO: This is the old login registration form.
   @Post('submit_course')
   async submitCourse(@Body() body: SubmitCourseParams): Promise<void> {
     if (body.password !== process.env.APPLY_PASSWORD) {
@@ -581,6 +582,7 @@ export class CourseController {
       );
     }
   }
+  */
 
   @Get(':id/ta_check_in_times')
   @UseGuards(JwtAuthGuard, CourseRolesGuard)
