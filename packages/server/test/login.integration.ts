@@ -158,7 +158,7 @@ describe('Login Integration', () => {
             courses: [
               {
                 crn: 23456,
-                semester: 'Fall 20',
+                semester: '202110',
                 role: Role.STUDENT,
               },
             ],
@@ -185,7 +185,7 @@ describe('Login Integration', () => {
             courses: [
               {
                 crn: 23456,
-                semester: 'Fall 20',
+                semester: '202110',
                 role: Role.STUDENT,
               },
             ],
@@ -213,12 +213,12 @@ describe('Login Integration', () => {
             courses: [
               {
                 crn: 23456,
-                semester: 'Fall 20',
+                semester: '202110',
                 role: Role.STUDENT,
               },
               {
                 crn: 45678,
-                semester: 'Fall 20',
+                semester: '202110',
                 role: Role.STUDENT,
               },
             ],
@@ -257,7 +257,7 @@ describe('Login Integration', () => {
             courses: [
               {
                 crn: 45678,
-                semester: 'Fall 20',
+                semester: '202110',
                 role: Role.STUDENT,
               },
             ],
@@ -285,12 +285,12 @@ describe('Login Integration', () => {
             courses: [
               {
                 crn: 23456,
-                semester: 'Fall 20',
+                semester: '202110',
                 role: Role.STUDENT,
               },
               {
                 crn: 34567,
-                semester: 'Fall 20',
+                semester: '202110',
                 role: Role.TA,
               },
             ],
@@ -316,12 +316,12 @@ describe('Login Integration', () => {
             courses: [
               {
                 crn: 23456,
-                semester: 'Fall 20',
+                semester: '202110',
                 role: Role.STUDENT,
               },
               {
                 crn: 34567,
-                semester: 'Fall 20',
+                semester: '202110',
                 role: Role.TA,
               },
             ],
@@ -388,7 +388,7 @@ describe('Login Integration', () => {
           courses: [
             {
               crn: 98765,
-              semester: 'Fall 20',
+              semester: '202110',
               role: 'TA',
             },
           ],
@@ -429,7 +429,7 @@ describe('Login Integration', () => {
           courses: [
             {
               crns: [13345, 98765],
-              semester: 'Fall 20',
+              semester: '202110',
               name: "Prof Li's Office Hours",
             },
           ],

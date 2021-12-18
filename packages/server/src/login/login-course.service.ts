@@ -157,8 +157,8 @@ export class LoginCourseService {
     // parsing time
     let year = Number(khourySemester.slice(0, 4));
     const season = courseSeasonMap[khourySemester.slice(-2)];
-    // edge case for Fall semester
-    if (season == 'Fall') {
+    // edge case for Fall semester, included in the next academic year
+    if (season === 'Fall') {
       year--;
     }
     return { season, year };
