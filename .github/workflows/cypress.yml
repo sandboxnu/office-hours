@@ -11,7 +11,7 @@ jobs:
     name: E2E Tests
     runs-on: ubuntu-latest
     container:
-      image: cypress/browsers:chrome67
+      image: cypress/browsers:node14.17.0-chrome91-ff89
       options: --shm-size=2g
     services:
       postgres:
