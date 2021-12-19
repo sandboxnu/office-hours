@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class LoginFlowModels1639939207124 implements MigrationInterface {
-  name = 'LoginFlowModels1639939207124';
+export class LoginFlowModels1639939836105 implements MigrationInterface {
+  name = 'LoginFlowModels1639939836105';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -11,7 +11,7 @@ export class LoginFlowModels1639939207124 implements MigrationInterface {
       `CREATE TABLE "prof_section_groups_model" ("id" SERIAL NOT NULL, "profId" integer NOT NULL, "sectionGroups" jsonb, CONSTRAINT "REL_f4883601530ed63d8dcafea57d" UNIQUE ("profId"), CONSTRAINT "PK_48eff12d6af8235a16acd3d578f" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `ALTER TABLE "course_model" ADD "sectionGroupName" text NOT NULL`,
+      `ALTER TABLE "course_model" ADD "sectionGroupName" text`,
     );
     await queryRunner.query(
       `ALTER TABLE "last_registration_model" ADD CONSTRAINT "FK_765fe567b826dd6ba406d802df6" FOREIGN KEY ("profId") REFERENCES "user_model"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
