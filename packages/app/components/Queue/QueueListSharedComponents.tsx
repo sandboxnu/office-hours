@@ -182,7 +182,10 @@ export function QueueInfoColumn({
       <StaffH2>Staff</StaffH2>
       <TAStatuses queueId={queueId} />
       {isTA && (
-        <DisableQueueButton onClick={confirmDisable}>
+        <DisableQueueButton
+          onClick={confirmDisable}
+          data-cy="queue-disable-button"
+        >
           Disable Queue
         </DisableQueueButton>
       )}
