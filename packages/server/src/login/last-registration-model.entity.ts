@@ -1,4 +1,4 @@
-import { UserModel } from 'profile/user.entity';
+import { UserModel } from '../profile/user.entity';
 import {
   Entity,
   Column,

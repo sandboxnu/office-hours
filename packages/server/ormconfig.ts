@@ -13,6 +13,8 @@ import { QuestionModel } from './src/question/question.entity';
 import { QuestionGroupModel } from './src/question/question-group.entity';
 import { QueueModel } from './src/queue/queue.entity';
 import { AlertModel } from './src/alerts/alerts.entity';
+import { LastRegistrationModel } from './src/login/last-registration-model.entity';
+import { ProfSectionGroupsModel } from './src/login/prof-section-groups.entity';
 config();
 
 // Options only used whe run via CLI
@@ -42,6 +44,8 @@ const typeorm = {
     EventModel,
     QuestionGroupModel,
     AlertModel,
+    LastRegistrationModel,
+    ProfSectionGroupsModel,
   ],
   keepConnectionAlive: true,
   logging: !!process.env.TYPEORM_LOGGING,

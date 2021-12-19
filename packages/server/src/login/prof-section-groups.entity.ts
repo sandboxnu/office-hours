@@ -1,4 +1,5 @@
-import { UserModel } from 'profile/user.entity';
+import { KhouryProfCourse } from '@koh/common';
+import { UserModel } from '../profile/user.entity';
 import {
   Entity,
   Column,
@@ -20,10 +21,9 @@ export class ProfSectionGroupsModel extends BaseEntity {
   @Column()
   profId: number;
 
-  // TODO: add in after dependent PR merge
-  // @Column({
-  //   type: 'jsonb',
-  //   nullable: true
-  // })
-  // sectionGroups: KhouryProfCourse[];
+  @Column({
+    type: 'jsonb',
+    nullable: true,
+  })
+  sectionGroups: KhouryProfCourse[];
 }
