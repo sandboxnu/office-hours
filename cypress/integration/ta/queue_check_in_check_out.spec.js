@@ -23,7 +23,7 @@ describe("Can successfully check in and out of a queue when their is scheduled o
     cy.get(".ant-modal-close-x").click();
 
     taOpenOnline();
-
+    
     // click the queue dropdown
     cy.get("[data-cy='queue-tab']").contains("Queue");
     cy.get(".ant-dropdown-trigger").click()
