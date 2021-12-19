@@ -10,6 +10,9 @@ jobs:
   cypress-tests:
     name: E2E Tests
     runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:chrome67
+      options: --shm-size=2g
     services:
       postgres:
         image: postgres:11.5
