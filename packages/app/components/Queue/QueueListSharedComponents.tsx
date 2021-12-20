@@ -117,10 +117,11 @@ export function QueueInfoColumn({
   isTA,
   buttons,
 }: QueueInfoColumnProps): ReactElement {
-  const { queue } = useQueue(queueId);
+  const { queue, mutateQueue } = useQueue(queueId);
 
   const disableQueue = async () => {
     await API.queues.disable(queueId);
+    await mutateQueue(); // cope
     message.success("Successfully disabled queue: " + queue.room);
     await Router.push("/");
   };
