@@ -52,11 +52,10 @@ export const loginUser = (identifier) => {
 const createUserAndLogin = ({ role, courseId, identifier }) => {
   const req = (parsedId) => {
     // create the user
-    cy.task("log", "posting to createuser")
-    cy.request({method: "POST", url: "/api/v1/seeds/createUser",body: {
+    cy.request("POST", "/api/v1/seeds/createUser", {
       role: role,
       courseId: parsedId,
-    }, timeout: 20000})
+    })
       .then((res) => res.body)
       .then((userCourse) => {
         cy.task("log", userCourse)
