@@ -3,10 +3,13 @@ import {createAndLoginTA, createQueue, taOpenOnline} from "../../utils";
 describe('Can successfully create queues', () => {
     beforeEach(() => {
         // Set the state
+        cy.task('log', 'qc before each 1');
         createAndLoginTA();
+        cy.task('log', 'qc before each 2');
         createQueue({
             courseId: "ta.course.id",
         });
+        cy.task('log', 'qc before each 3');
     });
 
 
@@ -23,7 +26,6 @@ describe('Can successfully create queues', () => {
         // make sure it says online (will accept Online+[zero or more chars])
         cy.get("[data-cy='room-title']")
             .contains(/^Online\w*/);
-
     });
 
 

@@ -58,6 +58,7 @@ const createUserAndLogin = ({ role, courseId, identifier }) => {
     })
       .then((res) => res.body)
       .then((userCourse) => {
+        cy.task("log", userCourse)
         // log them in
         cy.visit(`/api/v1/login/dev?userId=${userCourse.user.id}`);
         cy.visit(`/course/${userCourse.courseId}/today`);
