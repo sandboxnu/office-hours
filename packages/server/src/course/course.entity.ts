@@ -28,7 +28,10 @@ export class CourseModel extends BaseEntity {
   queues: QueueModel[];
 
   @Column('text')
-  name: string;
+  name: string; // display name entered by Prof
+
+  @Column('text', { nullable: true }) // nullable for backwards compatibility
+  sectionGroupName: string; // from admin
 
   @Column('text', { nullable: true })
   coordinator_email: string;

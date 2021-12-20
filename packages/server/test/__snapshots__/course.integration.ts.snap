@@ -17,6 +17,7 @@ Object {
   ],
   "pending": null,
   "queues": Array [],
+  "sectionGroupName": null,
   "selfEnroll": false,
   "timezone": "America/New_York",
 }
