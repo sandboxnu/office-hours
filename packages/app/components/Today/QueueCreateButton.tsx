@@ -14,7 +14,7 @@ export default function TodayPageCreateButton(): ReactElement {
   const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
   const { cid } = router.query;
-  const { course } = useCourse(Number(cid));
+  const { course, mutateCourse } = useCourse(Number(cid));
   const role = useRoleInCourse(Number(cid));
   const queueCheckedIn = course?.queues.find((queue) =>
     queue.staffList.find((staff) => staff.id === profile?.id)
@@ -39,6 +39,8 @@ export default function TodayPageCreateButton(): ReactElement {
         Number(cid),
         queueRequest.officeHourName
       );
+
+      mutateCourse();
 
       router.push(
         "/course/[cid]/queue/[qid]",

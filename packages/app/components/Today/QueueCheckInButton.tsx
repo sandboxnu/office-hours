@@ -14,7 +14,7 @@ export default function TodayPageCheckinButton(): ReactElement {
   const [queueToCheckInto, setQueueToCheckInto] = useState(-1);
   const router = useRouter();
   const { cid } = router.query;
-  const { course } = useCourse(Number(cid));
+  const { course, mutateCourse } = useCourse(Number(cid));
   const role = useRoleInCourse(Number(cid));
   const { Option } = Select;
   const queueCheckedIn = course?.queues.find((queue) =>
@@ -45,6 +45,7 @@ export default function TodayPageCheckinButton(): ReactElement {
                 Number(cid),
                 course?.queues[queueToCheckInto].room
               );
+              mutateCourse();
               router.push(
                 "/course/[cid]/queue/[qid]",
                 `/course/${Number(cid)}/queue/${redirectID.id}`
