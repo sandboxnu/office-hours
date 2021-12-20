@@ -5,6 +5,7 @@ import { Button, message, Modal, Table } from "antd";
 import { UserCourse } from "@koh/common";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import Router from "next/router";
+import { HeaderTitle } from "./Styled";
 import { useCourse } from "../../hooks/useCourse";
 
 const { confirm } = Modal;
@@ -103,8 +104,10 @@ export default function CoursePreferenceSettings(): ReactElement {
 
   return (
     profile && (
-      <div style={{ paddingTop: "50px" }}>
-        <h1>Course Preferences</h1>
+      <div>
+        <HeaderTitle>
+          <h1>Course Preferences</h1>
+        </HeaderTitle>
         <Table columns={columns} dataSource={createCourseDataSource()} />
       </div>
     )

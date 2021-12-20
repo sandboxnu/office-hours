@@ -7,6 +7,7 @@ import {
 } from "@koh/common";
 import { Button, Form, Input, List, message, Switch, Tooltip } from "antd";
 import { pick } from "lodash";
+import { HeaderTitle } from "./Styled";
 import React, { ReactElement, useEffect, useState } from "react";
 import styled from "styled-components";
 import useSWR from "swr";
@@ -29,6 +30,7 @@ export default function NotificationsSettings(): ReactElement {
   );
 
   const [form] = Form.useForm();
+
   const editProfile = async (updateProfile: UpdateProfileParams) => {
     const newProfile = { ...profile, ...updateProfile };
     mutate(newProfile, false);
@@ -66,9 +68,13 @@ export default function NotificationsSettings(): ReactElement {
 
   return (
     profile && (
-      <div style={{ paddingTop: "50px" }}>
-        <Form form={form} initialValues={profile}>
+      <>
+        <HeaderTitle>
+          <h1>Notifications</h1>
+        </HeaderTitle>
+        <Form wrapperCol={{ span: 10 }} form={form} initialValues={profile}>
           <Form.Item
+            style={{ flex: 1 }}
             label="Enable notifications on all devices"
             name="desktopNotifsEnabled"
             valuePropName="checked"
@@ -83,7 +89,7 @@ export default function NotificationsSettings(): ReactElement {
             }
           </Form.Item>
           <Form.Item
-            style={{ marginTop: "30px" }}
+            style={{ marginTop: "30px", flex: 1 }}
             label="Enable SMS notifications"
             name="phoneNotifsEnabled"
             valuePropName="checked"
@@ -120,10 +126,15 @@ export default function NotificationsSettings(): ReactElement {
             }
           />
         </Tooltip>
-        <Button key="submit" type="primary" onClick={handleOk}>
-          Ok
+        <Button
+          key="submit"
+          type="primary"
+          onClick={handleOk}
+          style={{ marginBottom: "15px" }}
+        >
+          Save
         </Button>
-      </div>
+      </>
     )
   );
 }
