@@ -13,6 +13,22 @@ describe('Can successfully create queues', () => {
     });
 
 
+    it('Creates an online queue via modal', function () {
+
+        cy.visit(`/course/${this.queue.course.id}/today`, {timeout : 20000});
+        cy.get(".ant-modal-close-x").click();
+        cy.wait(1000);
+        // open the online queue
+        taOpenOnline();
+
+        cy.location("pathname", {timeout: 30000}).should("contain", "/queue");
+
+        // make sure it says online (will accept Online+[zero or more chars])
+        cy.get("[data-cy='room-title']")
+            .contains(/^Online\w*/);
+    });
+
+
     it('Creates an in-person queue via modal', function () {
         const roomName = "Snell 049"
         cy.visit(`/course/${this.queue.course.id}/today`);
@@ -50,21 +66,6 @@ describe('Can successfully create queues', () => {
         // make sure it says online (will accept Online+[zero or more chars])
         cy.get("[data-cy='room-title']")
             .contains(roomName);
-    });
-
-    it('Creates an online queue via modal', function () {
-
-        cy.visit(`/course/${this.queue.course.id}/today`, {timeout : 20000});
-        cy.get(".ant-modal-close-x").click();
-        cy.wait(1000);
-        // open the online queue
-        taOpenOnline();
-
-        cy.location("pathname", {timeout: 30000}).should("contain", "/queue");
-
-        // make sure it says online (will accept Online+[zero or more chars])
-        cy.get("[data-cy='room-title']")
-            .contains(/^Online\w*/);
     });
 
     it('Other TAs can join custom in-person queues', function ()  {
