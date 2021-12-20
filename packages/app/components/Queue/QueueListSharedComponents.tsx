@@ -152,7 +152,7 @@ function QueueUpToDateInfo({ queueId }: { queueId: number }): ReactElement {
   return (
     <QueuePropertyRow className="hide-in-percy">
       {isLive || lastUpdated ? <CloudSyncOutlined /> : <FrownOutlined />}
-      <QueuePropertyText>
+      <QueuePropertyText className="hide-in-percy">
         {isLive ? (
           "Queue up to date"
         ) : lastUpdated ? (
