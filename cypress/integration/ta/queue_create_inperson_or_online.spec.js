@@ -1,4 +1,4 @@
-import {checkInTA, createAndLoginTA, createQueue, taOpenOnline} from "../../utils";
+import {createAndLoginTA, createQueue, taOpenOnline} from "../../utils";
 
 describe('Can successfully create queues', () => {
     beforeEach(() => {

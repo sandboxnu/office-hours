@@ -119,10 +119,11 @@ export function QueueInfoColumn({
   isStaff,
   buttons,
 }: QueueInfoColumnProps): ReactElement {
-  const { queue } = useQueue(queueId);
+  const { queue, mutateQueue } = useQueue(queueId);
 
   const disableQueue = async () => {
     await API.queues.disable(queueId);
+    await mutateQueue(); // cope
     message.success("Successfully disabled queue: " + queue.room);
     await Router.push("/");
   };
@@ -185,7 +186,10 @@ export function QueueInfoColumn({
       <StaffH2>Staff</StaffH2>
       <TAStatuses queueId={queueId} />
       {isStaff && (
-        <DisableQueueButton onClick={confirmDisable}>
+        <DisableQueueButton
+          onClick={confirmDisable}
+          data-cy="queue-disable-button"
+        >
           Disable Queue
         </DisableQueueButton>
       )}
