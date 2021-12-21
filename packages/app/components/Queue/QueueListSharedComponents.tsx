@@ -42,6 +42,8 @@ const InfoColumnContainer = styled.div`
   flex-shrink: 0;
   padding-bottom: 30px;
   position: relative;
+  display: flex;
+  flex-direction: column;
   @media (min-width: 650px) {
     margin-top: 32px;
     width: 290px;
@@ -108,13 +110,13 @@ const DisableQueueButton = styled(QueueInfoColumnButton)`
 
 interface QueueInfoColumnProps {
   queueId: number;
-  isTA: boolean;
+  isStaff: boolean;
   buttons: ReactNode;
 }
 
 export function QueueInfoColumn({
   queueId,
-  isTA,
+  isStaff,
   buttons,
 }: QueueInfoColumnProps): ReactElement {
   const { queue } = useQueue(queueId);
@@ -129,7 +131,8 @@ export function QueueInfoColumn({
     confirm({
       title: `Please Confirm!`,
       icon: <ExclamationCircleOutlined />,
-      content: `Please confirm that you want to disable the queue: ${queue.room}`,
+      style: { whiteSpace: "pre-wrap" },
+      content: `Please confirm that you want to disable the queue: ${queue.room}.\nThis queue will no longer appear in the app, and any students currently in the queue will be removed.`,
       onOk() {
         disableQueue();
       },
@@ -181,7 +184,7 @@ export function QueueInfoColumn({
       {buttons}
       <StaffH2>Staff</StaffH2>
       <TAStatuses queueId={queueId} />
-      {isTA && (
+      {isStaff && (
         <DisableQueueButton onClick={confirmDisable}>
           Disable Queue
         </DisableQueueButton>

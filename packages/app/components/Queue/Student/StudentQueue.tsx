@@ -285,7 +285,7 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
           />
           <QueueInfoColumn
             queueId={qid}
-            isTA={false}
+            isStaff={false}
             buttons={
               !studentQuestion && (
                 <Popconfirm
