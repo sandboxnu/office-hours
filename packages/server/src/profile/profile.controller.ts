@@ -35,6 +35,7 @@ import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { NotificationService } from '../notification/notification.service';
 import { User } from '../decorators/user.decorator';
 import { UserModel } from './user.entity';
+import { ProfileService } from './profile.service';
 
 @Controller('profile')
 @UseGuards(JwtAuthGuard)
@@ -42,6 +43,7 @@ export class ProfileController {
   constructor(
     private connection: Connection,
     private notifService: NotificationService,
+    private profileService: ProfileService,
   ) {}
 
   @Get()
@@ -100,11 +102,14 @@ export class ProfileController {
       );
     }
 
+    const pendingCourses = await this.profileService.getPendingCourses(user.id);
+
     return {
       ...userResponse,
       courses,
       phoneNumber: user.phoneNotif?.phoneNumber,
       desktopNotifs,
+      pendingCourses,
     };
   }
 

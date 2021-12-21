@@ -5,6 +5,7 @@ import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
 import { Connection } from 'typeorm';
+import { ProfSectionGroupsModel } from './prof-section-groups.entity';
 
 @Injectable()
 export class LoginCourseService {
@@ -77,6 +78,14 @@ export class LoginCourseService {
           userCourses.push(previousCourse);
         }
       }
+    }
+
+    // If Prof, save the JSON data
+    if (info.courses[0] && !isKhouryCourse(info.courses[0])) {
+      await ProfSectionGroupsModel.create({
+        profId: user.id,
+        sectionGroups: info.courses,
+      }).save();
     }
 
     user.courses = userCourses;
