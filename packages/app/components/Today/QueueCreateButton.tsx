@@ -5,7 +5,7 @@ import { CheckinButton } from "./TACheckinButton";
 import { useRouter } from "next/router";
 import { useCourse } from "../../hooks/useCourse";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
-import { Col, Form, Input, message, Modal, Row, Switch } from "antd";
+import { Checkbox, Col, Form, Input, message, Modal, Row, Space } from "antd";
 import TextArea from "antd/lib/input/TextArea";
 import { API } from "@koh/api-client";
 
@@ -13,6 +13,7 @@ export default function TodayPageCreateButton(): ReactElement {
   const profile = useProfile();
   const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
+  const [roomEditDisabled, setRoomEditDisabled] = useState(false);
   const { cid } = router.query;
   const { course, mutateCourse } = useCourse(Number(cid));
   const role = useRoleInCourse(Number(cid));
@@ -32,7 +33,7 @@ export default function TodayPageCreateButton(): ReactElement {
       );
 
       message.success(
-        `created a new queue ${queueRequest.officeHourName}. Checking you in...`
+        `Created a new queue ${queueRequest.officeHourName}. Checking you in...`
       );
 
       const redirectID = await API.taStatus.checkIn(
@@ -51,6 +52,18 @@ export default function TodayPageCreateButton(): ReactElement {
     }
   }
 
+  function onIsOnlineUpdate(e) {
+    setRoomEditDisabled(e.target.checked);
+    if (e.target.checked) {
+      form.setFieldsValue({
+        officeHourName:
+          role === Role.TA
+            ? "Online"
+            : `Online - Professor ${profile.lastName}'s Office Hours`,
+      });
+    }
+  }
+
   return (
     <>
       {modalVisible && (
@@ -65,35 +78,45 @@ export default function TodayPageCreateButton(): ReactElement {
         >
           <Form form={form}>
             <Row>
-              <Col style={{ fontWeight: "bold" }}>
-                <Row>Online?</Row>
-                <Row>
-                  <Form.Item
-                    name="isOnline"
-                    initialValue={true}
-                    valuePropName="checked"
-                  >
-                    <Switch data-cy="qc-isonline" defaultChecked />
-                  </Form.Item>
-                </Row>
-              </Col>
-
-              <Col style={{ fontWeight: "bold" }}>
-                <Row>Allow TAs?</Row>
-                <Row>
+              <Space>
+                <Col style={{ fontWeight: "bold" }}>
+                  <Row>Online?</Row>
+                  <Row>
+                    <Form.Item
+                      name="isOnline"
+                      initialValue={false}
+                      valuePropName="checked"
+                    >
+                      <Checkbox
+                        data-cy="qc-isonline"
+                        defaultChecked
+                        onChange={onIsOnlineUpdate}
+                      />
+                    </Form.Item>
+                  </Row>
+                </Col>
+                {role === Role.PROFESSOR && (
+                  <Col style={{ fontWeight: "bold" }}>
+                    <Row>Allow TAs to check in?</Row>
+                    <Row>
+                      <Form.Item
+                        name="allowTA"
+                        initialValue={false}
+                        valuePropName="checked"
+                      >
+                        <Checkbox data-cy="qc-allowTA" defaultChecked={false} />
+                      </Form.Item>
+                    </Row>
+                  </Col>
+                )}
+                {role === Role.TA && (
                   <Form.Item
                     name="allowTA"
-                    initialValue={role === Role.TA}
+                    initialValue={true}
                     valuePropName="checked"
-                  >
-                    <Switch
-                      data-cy="qc-allowTA"
-                      disabled={role === Role.TA}
-                      defaultChecked={role === Role.TA}
-                    />
-                  </Form.Item>
-                </Row>
-              </Col>
+                  />
+                )}
+              </Space>
             </Row>
 
             <Row style={{ fontWeight: "bold" }}>Queue Location</Row>
@@ -107,15 +130,11 @@ export default function TodayPageCreateButton(): ReactElement {
                     message: "Please give this room a name.",
                   },
                 ]}
-                initialValue={
-                  role === Role.TA
-                    ? ""
-                    : `Professor ${profile.lastName}'s Office Hours`
-                }
               >
                 <Input
                   data-cy="qc-location"
-                  placeholder={"location"}
+                  placeholder={"Ex: ISEC 102"}
+                  disabled={roomEditDisabled}
                   style={{ width: 350 }}
                 />
               </Form.Item>

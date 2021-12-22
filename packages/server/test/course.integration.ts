@@ -308,47 +308,27 @@ describe('Course Integration', () => {
       expect(events.length).toBe(0);
     });
 
-    it('Allow a TA to create a new queue', async () => {
+    it('TA cannot create a new queue while checking in', async () => {
       const ta = await UserFactory.create();
       const tcf = await TACourseFactory.create({
         course: await CourseFactory.create(),
         user: ta,
       });
-      const response = await supertest({ userId: ta.id })
+      await supertest({ userId: ta.id })
         .post(`/courses/${tcf.courseId}/ta_location/WVH 404`)
-        .expect(201);
-
-      expect(response.body).toMatchObject({
-        id: 1,
-        room: 'WVH 404',
-        staffList: [{ id: ta.id }],
-      });
-
-      const events = await EventModel.find();
-      expect(events.length).toBe(1);
-      expect(events[0].eventType).toBe(EventType.TA_CHECKED_IN);
+        .expect(404);
     });
 
-    it('Allows a professor to create a new queue', async () => {
+    it('Professors cannot create a new queue while checking in', async () => {
       const professor = await UserFactory.create();
       const pcf = await UserCourseFactory.create({
         course: await CourseFactory.create(),
         user: professor,
         role: Role.PROFESSOR,
       });
-      const response = await supertest({ userId: professor.id })
+      await supertest({ userId: professor.id })
         .post(`/courses/${pcf.courseId}/ta_location/The Alamo`)
-        .expect(201);
-
-      expect(response.body).toMatchObject({
-        id: 1,
-        room: 'The Alamo',
-        staffList: [{ id: professor.id }],
-      });
-
-      const events = await EventModel.find();
-      expect(events.length).toBe(1);
-      expect(events[0].eventType).toBe(EventType.TA_CHECKED_IN);
+        .expect(404);
     });
 
     it("Doesn't allow users to check into multiple queues", async () => {
@@ -549,7 +529,7 @@ describe('Course Integration', () => {
       await supertest({ userId: ucp.user.id })
         .post(`/courses/${ucp.course.id}/generate_queue/abcd1`)
         .send({ notes: 'example note 2', isProfessorQueue: false })
-        .expect(500);
+        .expect(400);
     });
   });
 

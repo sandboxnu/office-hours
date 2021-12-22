@@ -21,9 +21,9 @@ export default function TodayPageCheckinButton(): ReactElement {
     queue.staffList.find((staff) => staff.id === profile?.id)
   );
 
-  function onQueueUpdate(queueIx: number) {
+  const onQueueUpdate = (queueIx: number) => {
     setQueueToCheckInto(queueIx);
-  }
+  };
 
   return (
     <>

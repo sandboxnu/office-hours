@@ -200,7 +200,7 @@ export class CourseController {
       );
     }
 
-    let queue = await QueueModel.findOne(
+    const queue = await QueueModel.findOne(
       {
         room,
         courseId,
@@ -223,14 +223,10 @@ export class CourseController {
         );
       }
 
-      queue = await QueueModel.create({
-        room,
-        courseId,
-        staffList: [],
-        questions: [],
-        allowQuestions: true,
-        isProfessorQueue: userCourseModel.role === Role.PROFESSOR,
-      }).save();
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.queueNotFound,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     if (userCourseModel.role === Role.TA && queue.isProfessorQueue) {
@@ -330,7 +326,7 @@ export class CourseController {
     if (queue) {
       throw new HttpException(
         ERROR_MESSAGES.courseController.queueAlreadyExists,
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.BAD_REQUEST,
       );
     }
 
