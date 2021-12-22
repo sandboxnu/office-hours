@@ -696,9 +696,6 @@ export class RegisterCourseParams {
   @IsString()
   displayName!: string;
 
-  @IsArray()
-  crns!: number[];
-
   @IsString()
   semester!: string;
 

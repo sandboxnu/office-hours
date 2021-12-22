@@ -2,6 +2,7 @@ import {
   ERROR_MESSAGES,
   GetCourseOverridesResponse,
   GetCourseResponse,
+  KhouryProfCourse,
   QueuePartial,
   RegisterCourseParams,
   Role,
@@ -49,6 +50,7 @@ import { OfficeHourModel } from './office-hour.entity';
 import moment = require('moment');
 import { SemesterModel } from 'semester/semester.entity';
 import { ProfSectionGroupsModel } from 'login/prof-section-groups.entity';
+import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 
 @Controller('courses')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -531,28 +533,67 @@ export class CourseController {
   @UseGuards(JwtAuthGuard, CourseRolesGuard)
   @Roles(Role.PROFESSOR)
   async registerCourse(
-    @Body() body: RegisterCourseParams,
+    @Body() body: RegisterCourseParams[],
     @UserId() userId: number
   ): Promise<void> {
-    const season = body.semester.split(' ')[0];
-    const year = parseInt(body.semester.split(' ')[1]);
+    // iterate over each section group
+    body.forEach(registerCourseParams => {
+      const season = registerCourseParams.semester.split(' ')[0];
+      const year = parseInt(registerCourseParams.semester.split(' ')[1]);
 
-    const semester = await SemesterModel.findOne({
-      where: { season, year },
+      const semester = await SemesterModel.findOne({
+        where: { season, year },
+      });
+
+      if (!semester)
+        throw new BadRequestException(
+          ERROR_MESSAGES.courseController.noSemesterFound,
+        );
+
+      
+      //const profSectionGroups = await ProfSectionGroupsModel.findOne({
+      //  where: { profId },
+      //});
+
+      // create course models for each crn in professor's course
+      let course = null;
+      try {
+        // create the submitted course
+        course = await CourseModel.create({
+          name: registerCourseParams.displayName,
+          coordinator_email: registerCourseParams.coordinator_email,
+          icalURL: registerCourseParams.iCalURL,
+          semesterId: semester.id,
+          enabled: true,
+          pending: false,
+          timezone: registerCourseParams.timezone,
+        }).save();
+      } catch (err) {
+        console.error(err);
+        throw new HttpException(
+          ERROR_MESSAGES.courseController.createCourse,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+
+      try {
+        // create CourseSectionMappings for each crn
+        /*
+        new Set(profCourse.crns).forEach(async (crn) => {
+          await CourseSectionMappingModel.create({
+            crn: crn,
+            courseId: course.id,
+          }).save();
+        });
+        */
+      } catch (err) {
+        console.error(err);
+        throw new HttpException(
+          ERROR_MESSAGES.courseController.createCourseMappings,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     });
-
-    if (!semester)
-      throw new BadRequestException(
-        ERROR_MESSAGES.courseController.noSemesterFound,
-      );
-
-    const profSectionGroups = await ProfSectionGroupsModel.findOne({
-      where: { userId },
-    });
-    // verify that professor actually teaches section group name
-    // profSectionGroups.sectionGroups.find(crns) in body.crns
-    
-    // validate section group name uniqueness
   }
 
   
