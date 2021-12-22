@@ -3,8 +3,8 @@ import {
   GetCourseOverridesResponse,
   GetCourseResponse,
   QueuePartial,
+  RegisterCourseParams,
   Role,
-  // SubmitCourseParams,
   TACheckinTimesResponse,
   TACheckoutResponse,
   UpdateCourseOverrideBody,
@@ -47,6 +47,8 @@ import { HeatmapService } from './heatmap.service';
 import { IcalService } from './ical.service';
 import { OfficeHourModel } from './office-hour.entity';
 import moment = require('moment');
+import { SemesterModel } from 'semester/semester.entity';
+import { ProfSectionGroupsModel } from 'login/prof-section-groups.entity';
 
 @Controller('courses')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -525,6 +527,35 @@ export class CourseController {
     await this.courseService.removeUserFromCourse(userCourse);
   }
 
+  @Post('register_course')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
+  @Roles(Role.PROFESSOR)
+  async registerCourse(
+    @Body() body: RegisterCourseParams,
+    @UserId() userId: number
+  ): Promise<void> {
+    const season = body.semester.split(' ')[0];
+    const year = parseInt(body.semester.split(' ')[1]);
+
+    const semester = await SemesterModel.findOne({
+      where: { season, year },
+    });
+
+    if (!semester)
+      throw new BadRequestException(
+        ERROR_MESSAGES.courseController.noSemesterFound,
+      );
+
+    const profSectionGroups = await ProfSectionGroupsModel.findOne({
+      where: { userId },
+    });
+    // verify that professor actually teaches section group name
+    // profSectionGroups.sectionGroups.find(crns) in body.crns
+    
+    // validate section group name uniqueness
+  }
+
+  
   /* TODO: This is the old login registration form.
   @Post('submit_course')
   async submitCourse(@Body() body: SubmitCourseParams): Promise<void> {
