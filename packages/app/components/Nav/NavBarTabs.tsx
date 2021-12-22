@@ -42,12 +42,18 @@ const QueueMenuItem = styled(Menu.Item)`
   background: #ffffff;
 `;
 
-export interface NavBarTabsItem {
-  href?: string;
-  as?: string;
+export type NavBarTabsItem = NavBarGeneralTabItem | NavBarQueueTabItem;
+
+interface NavBarGeneralTabItem {
+  href: string;
+  as: string;
   text: string;
-  queues?: QueuePartial[];
-  courseId?: number;
+}
+
+interface NavBarQueueTabItem {
+  text: string;
+  queues: QueuePartial[];
+  courseId: number;
 }
 
 interface NavBarTabsProps {
@@ -56,23 +62,33 @@ interface NavBarTabsProps {
   horizontal?: boolean;
 }
 
-function queueSelector(courseId: number, openQueues: QueuePartial[]) {
+function createQueueTab(queueTabItem: NavBarQueueTabItem) {
   return (
     <QueueMenu data-cy="queue-tab" title="Queue">
-      {openQueues?.map((openQueue) => (
+      {queueTabItem.queues?.map((openQueue) => (
         <QueueMenuItem
           key={openQueue.id}
           data-cy={`queue-menu-item-${openQueue.room}`}
         >
           <Link
             href="/course/[cid]/queue/[qid]"
-            as={`/course/${courseId}/queue/${openQueue.id}`}
+            as={`/course/${queueTabItem.courseId}/queue/${openQueue.id}`}
           >
             <a>{openQueue.room}</a>
           </Link>
         </QueueMenuItem>
       ))}
     </QueueMenu>
+  );
+}
+
+function createGeneralTab(tabItem: NavBarGeneralTabItem) {
+  return (
+    <MenuItem key={tabItem.href}>
+      <Link href={tabItem.href} as={tabItem.as}>
+        <a>{tabItem.text}</a>
+      </Link>
+    </MenuItem>
   );
 }
 
@@ -87,15 +103,9 @@ export default function NavBarTabs({
       mode={horizontal ? "horizontal" : "vertical"}
     >
       {tabs.map((tab) =>
-        tab.text !== "Queue" ? (
-          <MenuItem key={tab.href}>
-            <Link href={tab.href} as={tab.as}>
-              <a>{tab.text}</a>
-            </Link>
-          </MenuItem>
-        ) : (
-          queueSelector(tab.courseId, tab.queues)
-        )
+        tab.text !== "Queue"
+          ? createGeneralTab(tab as NavBarGeneralTabItem)
+          : createQueueTab(tab as NavBarQueueTabItem)
       )}
     </HorizontalMenu>
   );
