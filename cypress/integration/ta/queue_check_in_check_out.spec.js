@@ -27,7 +27,7 @@ describe("Can successfully check in and out of a queue when their is scheduled o
     // click the queue dropdown
     cy.get("[data-cy='queue-tab']").contains("Queue");
     cy.get(".ant-dropdown-trigger").click()
-    cy.get("[data-cy='queue-menu-items']").should(
+    cy.get("[data-cy='queue-tab']").should(
         "have.length",
         "1"
     );
