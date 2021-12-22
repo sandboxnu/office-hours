@@ -679,27 +679,37 @@ export class GetAlertsResponse {
   alerts!: Alert[];
 }
 
-export class SubmitCourseParams {
-  @IsString()
-  coordinator_email!: string;
-
+/**
+ * Represents the parameters for register_course endpoint.
+ * @param name - The name of the section group.
+ * @param displayName - user friendly display name entered by Prof
+ * @param crns - The list of CRNs in the section group.
+ * @param semester - The name of the semester.
+ * @param iCalURL - The URL for the iCal calendar.
+ * @param coordinatorEmail - The email for the course coordinator.
+ * @param timezone - The timezone derived from the Campus field on the form.
+ */
+export class RegisterCourseParams {
   @IsString()
   name!: string;
 
+  @IsString()
+  displayName!: string;
+
   @IsArray()
-  sections!: number[];
+  crns!: number[];
 
   @IsString()
   semester!: string;
 
   @IsString()
+  iCalURL!: string;
+
+  @IsString()
+  coordinator_email!: string;
+
+  @IsString()
   timezone!: string;
-
-  @IsString()
-  icalURL!: string;
-
-  @IsString()
-  password!: string;
 }
 
 export class SemesterPartial {
