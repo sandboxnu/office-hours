@@ -1,5 +1,5 @@
 import { TestingModule, Test } from '@nestjs/testing';
-import { LoginCourseService } from 'login/login-course.service';
+import { LoginCourseService } from '../login/login-course.service';
 import { Connection } from 'typeorm';
 import {
   UserFactory,
