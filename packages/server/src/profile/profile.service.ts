@@ -14,10 +14,14 @@ export class ProfileService {
 
   public async getPendingCourses(userId: number): Promise<KhouryProfCourse[]> {
     const profCourses = await ProfSectionGroupsModel.findOne({
-      profId: userId,
+      where: {
+        profId: userId,
+      },
     });
     const lastRegistered = await LastRegistrationModel.findOne({
-      profId: userId,
+      where: {
+        profId: userId,
+      },
     });
 
     if (!profCourses) return; // not a professor
