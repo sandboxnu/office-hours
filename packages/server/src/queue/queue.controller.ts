@@ -171,6 +171,9 @@ export class QueueController {
 
     queue.isDisabled = true;
 
+    // clear staff list
+    queue.staffList = [];
+
     const questions = await QuestionModel.inQueueWithStatus(queueId, [
       ...Object.values(OpenQuestionStatus),
       ...Object.values(LimboQuestionStatus),

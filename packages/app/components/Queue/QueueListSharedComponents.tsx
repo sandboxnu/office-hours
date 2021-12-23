@@ -1,11 +1,12 @@
 import {
   ClockCircleOutlined,
   CloudSyncOutlined,
+  ExclamationCircleOutlined,
   FrownOutlined,
   NotificationOutlined,
   StopOutlined,
 } from "@ant-design/icons";
-import { Button, Tooltip } from "antd";
+import { Button, message, Modal, Tooltip } from "antd";
 import { ButtonProps } from "antd/lib/button";
 import Linkify from "react-linkify";
 import moment from "moment";
@@ -15,6 +16,8 @@ import { useQueue } from "../../hooks/useQueue";
 import { formatQueueTime } from "../../utils/TimeUtil";
 import { RenderEvery } from "../RenderEvery";
 import { TAStatuses } from "./TAStatuses";
+import { API } from "@koh/api-client";
+import Router from "next/router";
 
 export const Container = styled.div`
   display: flex;
@@ -38,6 +41,9 @@ export const NotesText = styled.div`
 const InfoColumnContainer = styled.div`
   flex-shrink: 0;
   padding-bottom: 30px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
   @media (min-width: 650px) {
     margin-top: 32px;
     width: 290px;
@@ -51,6 +57,8 @@ const QueueInfoColumnButtonStyle = styled(Button)`
   border-radius: 6px;
   margin-bottom: 12px;
 `;
+
+const { confirm } = Modal;
 
 export const QueueInfoColumnButton = (props: ButtonProps): ReactElement => (
   <QueueInfoColumnButtonStyle size="large" block {...props} />
@@ -87,20 +95,55 @@ const QueueRoomGroup = styled.div`
   align-items: center;
   margin-bottom: 24px;
 `;
+
+const DisableQueueButton = styled(QueueInfoColumnButton)`
+  color: white;
+  background: #da3236;
+  bottom: 0;
+  position: absolute;
+  &:hover,
+  &:focus {
+    color: white;
+    background: #f76c6c;
+  }
+`;
+
 interface QueueInfoColumnProps {
   queueId: number;
+  isStaff: boolean;
   buttons: ReactNode;
 }
 
 export function QueueInfoColumn({
   queueId,
+  isStaff,
   buttons,
 }: QueueInfoColumnProps): ReactElement {
-  const { queue } = useQueue(queueId);
+  const { queue, mutateQueue } = useQueue(queueId);
+
+  const disableQueue = async () => {
+    await API.queues.disable(queueId);
+    await mutateQueue(); // cope
+    message.success("Successfully disabled queue: " + queue.room);
+    await Router.push("/");
+  };
+
+  const confirmDisable = () => {
+    confirm({
+      title: `Please Confirm!`,
+      icon: <ExclamationCircleOutlined />,
+      style: { whiteSpace: "pre-wrap" },
+      content: `Please confirm that you want to disable the queue: ${queue.room}.\nThis queue will no longer appear in the app, and any students currently in the queue will be removed.`,
+      onOk() {
+        disableQueue();
+      },
+    });
+  };
+
   return (
     <InfoColumnContainer>
       <QueueRoomGroup>
-        <QueueTitle data-cy='room-title'>{queue?.room}</QueueTitle>
+        <QueueTitle data-cy="room-title">{queue?.room}</QueueTitle>
         {!queue.allowQuestions && (
           <Tooltip title="This queue is no longer accepting questions">
             <StopOutlined
@@ -142,6 +185,14 @@ export function QueueInfoColumn({
       {buttons}
       <StaffH2>Staff</StaffH2>
       <TAStatuses queueId={queueId} />
+      {isStaff && (
+        <DisableQueueButton
+          onClick={confirmDisable}
+          data-cy="queue-disable-button"
+        >
+          Disable Queue
+        </DisableQueueButton>
+      )}
     </InfoColumnContainer>
   );
 }
