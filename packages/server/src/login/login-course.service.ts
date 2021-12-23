@@ -20,13 +20,13 @@ export class LoginCourseService {
     });
 
     if (!user) {
-      user = UserModel.create({
+      user = await UserModel.create({
         courses: [],
         email: neuEmail,
         firstName: info.first_name,
         lastName: info.last_name,
         hideInsights: [],
-      });
+      }).save();
     }
 
     const userCourses = [];

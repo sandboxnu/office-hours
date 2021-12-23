@@ -82,7 +82,7 @@ describe('Login Integration', () => {
 
       // And that the redirect is correct
       expect(res.body).toEqual({
-        redirect: 'http://localhost:3000/api/v1/login/entry?token={"userId":1}',
+        redirect: `http://localhost:3000/api/v1/login/entry?token={"userId":${newUser.id}}`,
       });
     });
 
