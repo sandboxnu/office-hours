@@ -64,18 +64,16 @@ export default function TodayPageCreateButton(): ReactElement {
   };
 
   const updateRoomName = (online, aTA) => {
-    if (online && role === Role.PROFESSOR) {
+    if (online) {
       form.setFieldsValue({
         officeHourName: aTA
-          ? ``
+          ? `Online`
           : `Professor ${profile.lastName}'s Office Hours`,
       });
-    } else if (online && role === Role.TA) {
+    } else {
       form.setFieldsValue({
-        officeHourName: `Online`,
+        officeHourName: "",
       });
-    } else if (!online) {
-      form.setFieldsValue({ officeHourName: `` });
     }
   };
 
@@ -153,10 +151,7 @@ export default function TodayPageCreateButton(): ReactElement {
                 <Input
                   data-cy="qc-location"
                   placeholder={"Ex: ISEC 102"}
-                  disabled={
-                    isOnline &&
-                    (role === Role.TA || (role === Role.PROFESSOR && !allowTA))
-                  }
+                  disabled={isOnline}
                   style={{ width: 350 }}
                 />
               </Form.Item>
