@@ -13,10 +13,11 @@ export default function TodayPageCreateButton(): ReactElement {
   const profile = useProfile();
   const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
-  const [roomEditDisabled, setRoomEditDisabled] = useState(false);
   const { cid } = router.query;
   const { course, mutateCourse } = useCourse(Number(cid));
   const role = useRoleInCourse(Number(cid));
+  const [isOnline, setIsOnline] = useState(false);
+  const [allowTA, setAllowTA] = useState(role === Role.PROFESSOR);
   const queueCheckedIn = course?.queues.find((queue) =>
     queue.staffList.find((staff) => staff.id === profile?.id)
   );
@@ -52,17 +53,31 @@ export default function TodayPageCreateButton(): ReactElement {
     }
   }
 
-  function onIsOnlineUpdate(e) {
-    setRoomEditDisabled(e.target.checked);
-    if (e.target.checked) {
+  const onAllowTAUpdate = (e) => {
+    setAllowTA(e.target.checked);
+    updateRoomName(isOnline, e.target.checked);
+  };
+
+  const onIsOnlineUpdate = (e) => {
+    setIsOnline(e.target.checked);
+    updateRoomName(e.target.checked, allowTA);
+  };
+
+  const updateRoomName = (online, aTA) => {
+    if (online && role === Role.PROFESSOR) {
       form.setFieldsValue({
-        officeHourName:
-          role === Role.TA
-            ? "Online"
-            : `Online - Professor ${profile.lastName}'s Office Hours`,
+        officeHourName: aTA
+          ? ``
+          : `Professor ${profile.lastName}'s Office Hours`,
       });
+    } else if (online && role === Role.TA) {
+      form.setFieldsValue({
+        officeHourName: `Online`,
+      });
+    } else if (!online) {
+      form.setFieldsValue({ officeHourName: `` });
     }
-  }
+  };
 
   return (
     <>
@@ -101,10 +116,14 @@ export default function TodayPageCreateButton(): ReactElement {
                     <Row>
                       <Form.Item
                         name="allowTA"
-                        initialValue={false}
+                        initialValue={allowTA}
                         valuePropName="checked"
                       >
-                        <Checkbox data-cy="qc-allowTA" defaultChecked={false} />
+                        <Checkbox
+                          data-cy="qc-allowTA"
+                          defaultChecked={allowTA}
+                          onChange={onAllowTAUpdate}
+                        />
                       </Form.Item>
                     </Row>
                   </Col>
@@ -112,7 +131,7 @@ export default function TodayPageCreateButton(): ReactElement {
                 {role === Role.TA && (
                   <Form.Item
                     name="allowTA"
-                    initialValue={true}
+                    initialValue={allowTA}
                     valuePropName="checked"
                   />
                 )}
@@ -134,7 +153,10 @@ export default function TodayPageCreateButton(): ReactElement {
                 <Input
                   data-cy="qc-location"
                   placeholder={"Ex: ISEC 102"}
-                  disabled={roomEditDisabled}
+                  disabled={
+                    isOnline &&
+                    (role === Role.TA || (role === Role.PROFESSOR && !allowTA))
+                  }
                   style={{ width: 350 }}
                 />
               </Form.Item>
