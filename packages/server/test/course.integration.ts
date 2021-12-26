@@ -358,6 +358,42 @@ describe('Course Integration', () => {
       events = await EventModel.count();
       expect(events).toBe(1);
     });
+
+    it('doesnt allow people to join disabled queues', async () => {
+      const queue1 = await QueueFactory.create({
+        isDisabled: true,
+      });
+      const ta = await UserFactory.create();
+      await TACourseFactory.create({
+        course: queue1.course,
+        user: ta,
+      });
+      await supertest({ userId: ta.id })
+        .post(`/courses/${queue1.courseId}/ta_location/${queue1.room}`)
+        .expect(404);
+    });
+
+    it('correctly checks-in to the right queue (name-collision)', async () => {
+      const queue1 = await QueueFactory.create({
+        isDisabled: true,
+      });
+      await QueueFactory.create({
+        course: queue1.course,
+        isDisabled: false,
+      });
+      const ta = await UserFactory.create();
+      await TACourseFactory.create({
+        course: queue1.course,
+        user: ta,
+      });
+
+      // should log us into the second one.
+      const q = await supertest({ userId: ta.id })
+        .post(`/courses/${queue1.courseId}/ta_location/${queue1.room}`)
+        .expect(201);
+
+      expect(q.body.isDisabled).toBeFalsy();
+    });
   });
 
   describe('DELETE /courses/:id/ta_location/:room', () => {
@@ -455,6 +491,38 @@ describe('Course Integration', () => {
 
       expect(events.length).toBe(0);
     });
+
+    it('correctly checks out when two queues have same location, but one is disabled ', async () => {
+      const ta = await UserFactory.create();
+      const queue = await QueueFactory.create({
+        room: 'room1',
+        isDisabled: true,
+      });
+      const tcf = await TACourseFactory.create({
+        course: queue.course,
+        user: ta,
+      });
+
+      await QueueFactory.create({
+        course: queue.course,
+        room: queue.room,
+        isDisabled: false,
+        staffList: [ta],
+      });
+
+      await supertest({ userId: ta.id })
+        .delete(`/courses/${tcf.courseId}/ta_location/${queue.room}`)
+        .expect(200);
+      const q3 = await QueueModel.findOne(
+        {
+          room: queue.room,
+          isDisabled: false,
+        },
+        { relations: ['staffList'] },
+      );
+
+      expect(q3.staffList.length).toBe(0);
+    });
   });
 
   describe('POST /courses/:id/generate_queue/:room', () => {
@@ -517,7 +585,7 @@ describe('Course Integration', () => {
         .expect(401); // unauthorized
     });
 
-    it('prevents TAs from creating pre-existing queues', async () => {
+    it('prevents people from creating pre-existing queues', async () => {
       const ucp = await UserCourseFactory.create({
         role: Role.PROFESSOR,
       });
@@ -530,6 +598,28 @@ describe('Course Integration', () => {
         .post(`/courses/${ucp.course.id}/generate_queue/abcd1`)
         .send({ notes: 'example note 2', isProfessorQueue: false })
         .expect(400);
+    });
+
+    it('allows people to recreate recently disabled queues', async () => {
+      const ucp = await UserCourseFactory.create({
+        role: Role.PROFESSOR,
+      });
+      const queue1 = await QueueFactory.create({
+        course: ucp.course,
+        isDisabled: true,
+        room: `aabb`,
+        notes: '',
+        isProfessorQueue: false,
+      });
+
+      // recreate a disabled queue.
+      await supertest({ userId: ucp.user.id })
+        .post(`/courses/${ucp.course.id}/generate_queue/${queue1.room}`)
+        .send({
+          notes: queue1.notes,
+          isProfessorQueue: queue1.isProfessorQueue,
+        })
+        .expect(201);
     });
   });
 

@@ -204,6 +204,7 @@ export class CourseController {
       {
         room,
         courseId,
+        isDisabled: false,
       },
       { relations: ['staffList'] },
     );
@@ -370,6 +371,7 @@ export class CourseController {
       {
         room,
         courseId,
+        isDisabled: false,
       },
       { relations: ['staffList'] },
     );
