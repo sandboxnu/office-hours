@@ -1,7 +1,6 @@
 import {checkInTA, createAndLoginProfessor, createAndLoginTA, createQueue, taOpenOnline} from "../../utils";
 
 describe('Can successfully create queues', () => {
-    /*
     describe('Creating Queues', () => {
         beforeEach(() => {
             // Set the state
@@ -94,11 +93,11 @@ describe('Can successfully create queues', () => {
 
             // make sure it says online (will accept Online+[zero or more chars])
             cy.get("[data-cy='room-title']")
-                .contains(/^Online\w/);
+                .contains(/^Online\w*/);
 
         });
     });
-    */
+
 
     describe('verify the behavior of the queue-create form components (TA)', () => {
         beforeEach(() => {
@@ -219,7 +218,7 @@ describe('Can successfully create queues', () => {
                 .click()
                 .invoke("attr", "aria-checked")
                 .should('equal', 'false');
-            
+
             cy.get("[data-cy=\"qc-location\"]")
                 .should('be.enabled')
                 .should('have.value', ''); // better not be empty
