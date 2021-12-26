@@ -17,7 +17,7 @@ export default function TodayPageCreateButton(): ReactElement {
   const { course, mutateCourse } = useCourse(Number(cid));
   const role = useRoleInCourse(Number(cid));
   const [isOnline, setIsOnline] = useState(false);
-  const [allowTA, setAllowTA] = useState(role === Role.PROFESSOR);
+  const [allowTA, setAllowTA] = useState(true);
   const queueCheckedIn = course?.queues.find((queue) =>
     queue.staffList.find((staff) => staff.id === profile?.id)
   );
