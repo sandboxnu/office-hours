@@ -1,6 +1,7 @@
 import {checkInTA, createAndLoginProfessor, createAndLoginTA, createQueue, taOpenOnline} from "../../utils";
 
 describe('Can successfully create queues', () => {
+    /*
     describe('Creating Queues', () => {
         beforeEach(() => {
             // Set the state
@@ -93,11 +94,11 @@ describe('Can successfully create queues', () => {
 
             // make sure it says online (will accept Online+[zero or more chars])
             cy.get("[data-cy='room-title']")
-                .contains(/^Online\w*/);
+                .contains(/^Online\w/);
 
         });
     });
-
+    */
 
     describe('verify the behavior of the queue-create form components (TA)', () => {
         beforeEach(() => {
@@ -115,11 +116,14 @@ describe('Can successfully create queues', () => {
                 .should("contain","Create a new queue");
 
             // assert the allow TA's checkbox does not exist
-            cy.get("[data-cy=\"qc-allowTA\"]").should("not.exist");
+            cy.get("[data-cy=\"qc-allowTA\"]")
+                .should("exist")
+                .should("not.be.visible");
 
             // isonline should not be checked
             cy.get("[data-cy=\"qc-isonline\"]")
-                .should("not.be.checked");
+                .invoke("attr", "aria-checked")
+                .should('equal', 'false');
 
             // location should be not disabled yet (editable)
             cy.get("[data-cy=\"qc-location\"]")
@@ -127,14 +131,18 @@ describe('Can successfully create queues', () => {
                 .trigger('focus')
                 .type('Snell 049');
 
-            cy.get("[data-cy=\"qc-isonline\"]").check();
+            cy.get("[data-cy=\"qc-isonline\"]")
+                .click()
+                .invoke("attr", "aria-checked")
+                .should('equal', 'true');
 
             // TA online queues must be 'Online'
             cy.get("[data-cy=\"qc-location\"]")
                 .should('be.disabled')
                 .should('have.value','Online');
 
-            cy.get("[data-cy=\"qc-isonline\"]").uncheck();
+            cy.get("[data-cy=\"qc-isonline\"]").click();
+
             cy.get("[data-cy=\"qc-location\"]")
                 .should('not.be.disabled')
                 .should('have.value','');
@@ -178,12 +186,11 @@ describe('Can successfully create queues', () => {
                 .should("contain","Create a new queue");
 
             cy.get("[data-cy=\"qc-allowTA\"]")
-                .should("exist")
-                .should("be.checked");
+                .should("be.visible");
 
             cy.get("[data-cy=\"qc-isonline\"]")
-                .should("exist")
-                .should("not.be.checked");
+                .should("exist");
+
 
             // location should be not disabled yet (editable)
             cy.get("[data-cy=\"qc-location\"]")
@@ -191,20 +198,28 @@ describe('Can successfully create queues', () => {
                 .trigger('focus')
                 .type('Snell 049');
 
-            cy.get("[data-cy=\"qc-isonline\"]").check();
+            cy.get("[data-cy=\"qc-isonline\"]")
+                .click()
+                .invoke("attr", "aria-checked")
+                .should('equal', 'true');
 
             // location should be disabled and 'Online'
             cy.get("[data-cy=\"qc-location\"]")
                 .should('be.disabled')
                 .should('have.value','Online');
 
-            cy.get("[data-cy=\"qc-allowTA\"]").uncheck();
+            cy.get("[data-cy=\"qc-allowTA-unchecked\"]").check();
+
             cy.get("[data-cy=\"qc-location\"]")
                 .should('be.disabled')
                 .should('not.have.value','Online')
                 .should('not.have.value', ''); // better not be empty
 
-            cy.get("[data-cy=\"qc-isonline\"]").uncheck();
+            cy.get("[data-cy=\"qc-isonline\"]")
+                .click()
+                .invoke("attr", "aria-checked")
+                .should('equal', 'false');
+            
             cy.get("[data-cy=\"qc-location\"]")
                 .should('be.enabled')
                 .should('have.value', ''); // better not be empty
