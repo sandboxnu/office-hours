@@ -42,7 +42,7 @@ describe('ProfileService', () => {
       {
         name: 'Fundies 1',
         crns: [123, 456],
-        semester: '202110',
+        semester: '202110', // fall 2020
       },
       {
         name: 'OOD',
@@ -81,7 +81,16 @@ describe('ProfileService', () => {
       expect(resp).toBeUndefined();
     });
 
-    it('returns pending courses (sans already registered courses) for a prof', async () => {
+    it('returns pending courses (sans already registered courses) for a prof who never registered', async () => {
+      const resp = await service.getPendingCourses(prof1.id);
+      expect(resp).toEqual([prof1KhouryCourses[1]]);
+    });
+
+    it('returns pending courses (sans already registered courses) for a prof who registered last sem', async () => {
+      await LastRegistrationFactory.create({
+        prof: prof1,
+        lastRegisteredSemester: '202060',
+      }); // summer 2 of 2020
       const resp = await service.getPendingCourses(prof1.id);
       expect(resp).toEqual([prof1KhouryCourses[1]]);
     });
