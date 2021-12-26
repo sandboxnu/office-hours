@@ -308,47 +308,27 @@ describe('Course Integration', () => {
       expect(events.length).toBe(0);
     });
 
-    it('Allow a TA to create a new queue', async () => {
+    it('TA cannot create a new queue while checking in', async () => {
       const ta = await UserFactory.create();
       const tcf = await TACourseFactory.create({
         course: await CourseFactory.create(),
         user: ta,
       });
-      const response = await supertest({ userId: ta.id })
+      await supertest({ userId: ta.id })
         .post(`/courses/${tcf.courseId}/ta_location/WVH 404`)
-        .expect(201);
-
-      expect(response.body).toMatchObject({
-        id: 1,
-        room: 'WVH 404',
-        staffList: [{ id: ta.id }],
-      });
-
-      const events = await EventModel.find();
-      expect(events.length).toBe(1);
-      expect(events[0].eventType).toBe(EventType.TA_CHECKED_IN);
+        .expect(404);
     });
 
-    it('Allows a professor to create a new queue', async () => {
+    it('Professors cannot create a new queue while checking in', async () => {
       const professor = await UserFactory.create();
       const pcf = await UserCourseFactory.create({
         course: await CourseFactory.create(),
         user: professor,
         role: Role.PROFESSOR,
       });
-      const response = await supertest({ userId: professor.id })
+      await supertest({ userId: professor.id })
         .post(`/courses/${pcf.courseId}/ta_location/The Alamo`)
-        .expect(201);
-
-      expect(response.body).toMatchObject({
-        id: 1,
-        room: 'The Alamo',
-        staffList: [{ id: professor.id }],
-      });
-
-      const events = await EventModel.find();
-      expect(events.length).toBe(1);
-      expect(events[0].eventType).toBe(EventType.TA_CHECKED_IN);
+        .expect(404);
     });
 
     it("Doesn't allow users to check into multiple queues", async () => {
@@ -380,7 +360,7 @@ describe('Course Integration', () => {
     });
   });
 
-  describe('DELETE, /courses/:id/ta_location/:room', () => {
+  describe('DELETE /courses/:id/ta_location/:room', () => {
     it('tests TA is checked out from queue if exists', async () => {
       const ta = await UserFactory.create();
       const queue = await QueueFactory.create({
@@ -474,6 +454,82 @@ describe('Course Integration', () => {
       });
 
       expect(events.length).toBe(0);
+    });
+  });
+
+  describe('POST /courses/:id/generate_queue/:room', () => {
+    it('correctly propagates notes,profq,and name', async () => {
+      const ucp = await UserCourseFactory.create({
+        role: Role.PROFESSOR,
+      });
+
+      const uct = await UserCourseFactory.create({
+        role: Role.TA,
+        course: ucp.course,
+      });
+
+      await supertest({ userId: ucp.user.id })
+        .post(`/courses/${ucp.course.id}/generate_queue/abcd1`)
+        .send({ notes: 'example note 1', isProfessorQueue: false })
+        .expect(201);
+
+      await supertest({ userId: ucp.user.id })
+        .post(`/courses/${ucp.course.id}/generate_queue/abcd2`)
+        .send({ notes: 'example note 7', isProfessorQueue: true })
+        .expect(201);
+
+      await supertest({ userId: uct.user.id })
+        .post(`/courses/${uct.course.id}/generate_queue/abcd3`)
+        .send({ notes: 'ta queue', isProfessorQueue: false })
+        .expect(201);
+
+      const q1 = await QueueModel.findOne({ room: 'abcd1' });
+      const q2 = await QueueModel.findOne({ room: 'abcd2' });
+      const q3 = await QueueModel.findOne({ room: 'abcd3' });
+
+      expect(q1).toBeDefined();
+      expect(q2).toBeDefined();
+      expect(q3).toBeDefined();
+
+      expect(q1).toMatchSnapshot({
+        id: expect.any(Number),
+        courseId: expect.any(Number),
+      });
+
+      expect(q2).toMatchSnapshot({
+        id: expect.any(Number),
+        courseId: expect.any(Number),
+      });
+
+      expect(q3).toMatchSnapshot({
+        id: expect.any(Number),
+        courseId: expect.any(Number),
+      });
+    });
+
+    it('prevents TAs from creating prof queues', async () => {
+      const uct = await UserCourseFactory.create({
+        role: Role.TA,
+      });
+      await supertest({ userId: uct.user.id })
+        .post(`/courses/${uct.course.id}/generate_queue/abcd3`)
+        .send({ notes: 'ta queue', isProfessorQueue: true })
+        .expect(401); // unauthorized
+    });
+
+    it('prevents TAs from creating pre-existing queues', async () => {
+      const ucp = await UserCourseFactory.create({
+        role: Role.PROFESSOR,
+      });
+
+      await supertest({ userId: ucp.user.id })
+        .post(`/courses/${ucp.course.id}/generate_queue/abcd1`)
+        .send({ notes: 'example note 1', isProfessorQueue: false })
+        .expect(201);
+      await supertest({ userId: ucp.user.id })
+        .post(`/courses/${ucp.course.id}/generate_queue/abcd1`)
+        .send({ notes: 'example note 2', isProfessorQueue: false })
+        .expect(400);
     });
   });
 

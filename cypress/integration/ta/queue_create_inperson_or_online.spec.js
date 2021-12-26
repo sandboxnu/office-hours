@@ -1,141 +1,229 @@
-import {createAndLoginTA, createQueue, taOpenOnline} from "../../utils";
+import {createAndLoginProfessor, createAndLoginTA, createQueue, taOpenOnline} from "../../utils";
 
 describe('Can successfully create queues', () => {
-    beforeEach(() => {
-        // Set the state
-        createAndLoginTA();
-        createQueue({
-            courseId: "ta.course.id",
+    describe('Creating Queues', () => {
+        beforeEach(() => {
+            // Set the state
+            createAndLoginTA();
+
+        });
+        it('Creates an in-person queue via modal, and Other TAs can join custom in-person queues', function () {
+            const roomName = "Snell 049"
+            cy.visit(`/course/${this.ta.course.id}/today`);
+            cy.get(".ant-modal-close-x").click();
+
+
+            cy.get("[data-cy=\"create-queue-modal-button\"]").click();
+            cy.wait(500);
+
+            // name the other OH field
+            cy.get("[data-cy=\"qc-location\"]")
+                .should('be.visible')
+                .trigger('focus')
+                .type(roomName)
+                .wait(250);
+
+            // submit and create queue
+            cy.get("[id^=rcDialogTitle]")
+                .contains("Create a new queue")
+                .parent()
+                .parent()
+                .should('have.class', 'ant-modal-content')
+                .within(($content) => {
+                    cy.get("span").contains("Create")
+                        .parent()
+                        .should('have.class', 'ant-btn-primary')
+                        .click();
+                });
+
+            cy.location("pathname", {timeout: 30000}).should("contain", "/queue");
+
+            // make sure it says online (will accept Online+[zero or more chars])
+            cy.get("[data-cy='room-title']")
+                .contains(roomName);
+
+
+            // Person 2
+            createAndLoginTA({
+                identifier: "ta2",
+                courseId: "ta.course.id",
+            });
+
+
+            cy.get("[data-cy='check-in-modal-button']").click();
+            cy.wait(500);
+
+            cy.get("[data-cy=\"select-existing-queue\"]").click();
+            cy.get(`[data-cy="select-queue-${roomName}"]`).click();
+            cy.wait(500);
+
+            cy.percySnapshot("CheckIn Modal Selection Page -- Custom Already Created")
+
+            cy.get("[id^=rcDialogTitle]")
+                .contains("Check into an existing queue")
+                .parent()
+                .parent()
+                .should('have.class', 'ant-modal-content')
+                .within(($content) => {
+                    cy.get("span").contains("Check In")
+                        .parent()
+                        .should('have.class', 'ant-btn-primary')
+                        .click();
+                });
+
+            cy.location("pathname", {timeout: 30000}).should("contain", "/queue");
+
+            // make sure it says our room name (success!, p2 logged in)
+            cy.get("[data-cy='room-title']")
+                .contains(roomName);
+        });
+
+
+        it('Join an online queue via modal', function () {
+            createQueue({
+                courseId: "ta.course.id",
+            });
+            cy.visit(`/course/${this.ta.course.id}/today`, {timeout: 20000});
+            cy.get(".ant-modal-close-x").click();
+            cy.wait(1000);
+            // open the online queue
+            taOpenOnline();
+
+            cy.location("pathname", {timeout: 30000}).should("contain", "/queue");
+
+            // make sure it says online (will accept Online+[zero or more chars])
+            cy.get("[data-cy='room-title']")
+                .contains(/^Online\w*/);
+
         });
     });
 
 
-    it('Creates an online queue via modal', function () {
-
-        cy.visit(`/course/${this.queue.course.id}/today`, {timeout : 20000});
-        cy.get(".ant-modal-close-x").click();
-        cy.wait(1000);
-        // open the online queue
-        taOpenOnline();
-
-        cy.location("pathname", {timeout: 30000}).should("contain", "/queue");
-
-        // make sure it says online (will accept Online+[zero or more chars])
-        cy.get("[data-cy='room-title']")
-            .contains(/^Online\w*/);
-
-    });
-
-
-    it('Creates an in-person queue via modal', function () {
-        const roomName = "Snell 049"
-        cy.visit(`/course/${this.queue.course.id}/today`);
-        cy.get(".ant-modal-close-x").click();
-
-
-        cy.get("[data-cy='check-in-modal-button']").click();
-        cy.wait(500);
-        // select other
-        cy.get("span")
-            .contains("Other...")
-            .click()
-        // name the other OH field
-        cy.get("[id=officeHourName]")
-            .should('be.visible')
-            .trigger('focus')
-            .type(roomName)
-            .wait(250);
-
-        // submit and create queue
-        cy.get("[id^=rcDialogTitle]")
-            .contains("Check-In To Office Hours")
-            .parent()
-            .parent()
-            .should('have.class', 'ant-modal-content')
-            .within(($content) => {
-                cy.get("span").contains("Check In")
-                    .parent()
-                    .should('have.class', 'ant-btn-primary')
-                    .click();
-            });
-
-        cy.location("pathname", {timeout: 30000}).should("contain", "/queue");
-
-        // make sure it says online (will accept Online+[zero or more chars])
-        cy.get("[data-cy='room-title']")
-            .contains(roomName);
-    });
-
-    it('Other TAs can join custom in-person queues', function ()  {
-        const roomName = "Snell 049"
-
-        cy.visit(`/course/${this.queue.course.id}/today`);
-        cy.get(".ant-modal-close-x").click();
-
-        cy.get("[data-cy='check-in-modal-button']").click();
-        cy.wait(500);
-        // select other
-        cy.get("span")
-            .contains("Other...")
-            .click()
-        // name the other OH field
-        cy.get("[id=officeHourName]")
-            .should('be.visible')
-            .trigger('focus')
-            .type(roomName)
-            .wait(250);
-
-        // submit and create queue
-        cy.get("[id^=rcDialogTitle]")
-            .contains("Check-In To Office Hours")
-            .parent()
-            .parent()
-            .should('have.class', 'ant-modal-content')
-            .within(($content) => {
-                cy.get("span").contains("Check In")
-                    .parent()
-                    .should('have.class', 'ant-btn-primary')
-                    .click();
-            });
-
-        cy.location("pathname", {timeout: 30000}).should("contain", "/queue");
-
-        // make sure it says online (will accept Online+[zero or more chars])
-        cy.get("[data-cy='room-title']")
-            .contains(roomName);
-
-        // Person 2
-        createAndLoginTA({
-            identifier: "ta2",
-            courseId: "ta.course.id",
+    describe('verify the behavior of the queue-create form components (TA)', () => {
+        beforeEach(() => {
+            createAndLoginTA();
         });
 
+        it('Checks properties of the TA queue-create', function () {
+            cy.visit(`/course/${this.ta.course.id}/today`, {timeout: 20000});
+            cy.get(".ant-modal-close-x").click();
+            cy.get("[data-cy=\"create-queue-modal-button\"]")
+                .should("be.visible")
+                .should("not.be.disabled")
+                .click();
+            cy.get("[id^=rcDialogTitle]")
+                .should("contain","Create a new queue");
+
+            // assert the allow TA's checkbox does not exist
+            cy.get("[data-cy=\"qc-allowTA\"]")
+                .should("exist")
+                .should("not.be.visible");
+
+            // isonline should not be checked
+            cy.get("[data-cy=\"qc-isonline\"]")
+                .invoke("attr", "aria-checked")
+                .should('equal', 'false');
+
+            // location should be not disabled yet (editable)
+            cy.get("[data-cy=\"qc-location\"]")
+                .should("not.be.disabled")
+                .trigger('focus')
+                .type('Snell 049');
+
+            cy.get("[data-cy=\"qc-isonline\"]")
+                .click()
+                .invoke("attr", "aria-checked")
+                .should('equal', 'true');
+
+            // TA online queues must be 'Online'
+            cy.get("[data-cy=\"qc-location\"]")
+                .should('be.disabled')
+                .should('have.value','Online');
+
+            cy.get("[data-cy=\"qc-isonline\"]").click();
+
+            cy.get("[data-cy=\"qc-location\"]")
+                .should('not.be.disabled')
+                .should('have.value','');
+
+            // try to submit an empty room name:
+            cy.get("[id^=rcDialogTitle]")
+                .contains("Create a new queue")
+                .parent()
+                .parent()
+                .should('have.class', 'ant-modal-content')
+                .within(($content) => {
+                    cy.get("span").contains("Create")
+                        .parent()
+                        .should('have.class', 'ant-btn-primary')
+                        .click();
+                });
+
+            // check for alert!
+            cy.get("div[role=\"alert\"]")
+                .should("exist")
+                .contains("Please give this room a name.");
+
+            // test end
+
+        });
+    });
+
+    describe('verify the behavior of the queue-create form components (professor)', () => {
+        beforeEach(() => {
+            createAndLoginProfessor();
+        });
+
+        it('Checks properties of the prof queue-create', function () {
+            cy.visit(`/course/${this.professor.course.id}/today`, {timeout: 20000});
+            cy.get(".ant-modal-close-x").click();
+            cy.get("[data-cy=\"create-queue-modal-button\"]")
+                .should("be.visible")
+                .should("not.be.disabled")
+                .click();
+            cy.get("[id^=rcDialogTitle]")
+                .should("contain","Create a new queue");
+
+            cy.get("[data-cy=\"qc-allowTA\"]")
+                .should("be.visible");
+
+            cy.get("[data-cy=\"qc-isonline\"]")
+                .should("exist");
 
 
-        cy.get("[data-cy='check-in-modal-button']").click();
-        cy.wait(500);
-        cy.get("span")
-            .contains(roomName)
-            .click();
+            // location should be not disabled yet (editable)
+            cy.get("[data-cy=\"qc-location\"]")
+                .should("not.be.disabled")
+                .trigger('focus')
+                .type('Snell 049');
 
-        cy.percySnapshot("CheckIn Modal Selection Page -- Custom Already Created")
+            cy.get("[data-cy=\"qc-isonline\"]")
+                .click()
+                .invoke("attr", "aria-checked")
+                .should('equal', 'true');
 
-        cy.get("[id^=rcDialogTitle]")
-            .contains("Check-In To Office Hours")
-            .parent()
-            .parent()
-            .should('have.class', 'ant-modal-content')
-            .within(($content) => {
-                cy.get("span").contains("Check In")
-                    .parent()
-                    .should('have.class', 'ant-btn-primary')
-                    .click();
-            });
+            // location should be disabled and 'Online'
+            cy.get("[data-cy=\"qc-location\"]")
+                .should('be.disabled')
+                .should('have.value','Online');
 
-        cy.location("pathname", {timeout: 30000}).should("contain", "/queue");
+            cy.get("[data-cy=\"qc-allowTA-unchecked\"]").check();
 
-        // make sure it says our room name (success!, p2 logged in)
-        cy.get("[data-cy='room-title']")
-            .contains(roomName);
+            cy.get("[data-cy=\"qc-location\"]")
+                .should('be.disabled')
+                .should('not.have.value','Online')
+                .should('not.have.value', ''); // better not be empty
+
+            cy.get("[data-cy=\"qc-isonline\"]")
+                .click()
+                .invoke("attr", "aria-checked")
+                .should('equal', 'false');
+
+            cy.get("[data-cy=\"qc-location\"]")
+                .should('be.enabled')
+                .should('have.value', ''); // better not be empty
+
+            // end of test
+        });
     });
 });

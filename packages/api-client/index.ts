@@ -29,6 +29,7 @@ import {
   UpdateQuestionParams,
   UpdateQuestionResponse,
   UpdateQueueParams,
+  QueuePartial,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -143,6 +144,18 @@ class APIClient {
       room: string
     ): Promise<TACheckoutResponse> =>
       this.req("DELETE", `/api/v1/courses/${courseId}/ta_location/${room}`),
+    makeQueue: async (
+      courseId: number,
+      room: string,
+      isProfessorQueue: boolean,
+      notes: string
+    ): Promise<TAUpdateStatusResponse> =>
+      this.req(
+        "POST",
+        `/api/v1/courses/${courseId}/generate_queue/${room}`,
+        QueuePartial,
+        { notes, isProfessorQueue }
+      ),
   };
   questions = {
     index: async (queueId: number) =>

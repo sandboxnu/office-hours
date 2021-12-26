@@ -162,6 +162,42 @@ Object {
 }
 `;
 
+exports[`Course Integration POST /courses/:id/generate_queue/:room correctly propagates notes,profq,and name 1`] = `
+Object {
+  "allowQuestions": true,
+  "courseId": Any<Number>,
+  "id": Any<Number>,
+  "isDisabled": false,
+  "isProfessorQueue": false,
+  "notes": "example note 1",
+  "room": "abcd1",
+}
+`;
+
+exports[`Course Integration POST /courses/:id/generate_queue/:room correctly propagates notes,profq,and name 2`] = `
+Object {
+  "allowQuestions": true,
+  "courseId": Any<Number>,
+  "id": Any<Number>,
+  "isDisabled": false,
+  "isProfessorQueue": true,
+  "notes": "example note 7",
+  "room": "abcd2",
+}
+`;
+
+exports[`Course Integration POST /courses/:id/generate_queue/:room correctly propagates notes,profq,and name 3`] = `
+Object {
+  "allowQuestions": true,
+  "courseId": Any<Number>,
+  "id": Any<Number>,
+  "isDisabled": false,
+  "isProfessorQueue": false,
+  "notes": "ta queue",
+  "room": "abcd3",
+}
+`;
+
 exports[`Course Integration POST /courses/:id/ta_location/:room checks a TA into an existing queue 1`] = `
 Object {
   "allowQuestions": true,

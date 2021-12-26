@@ -19,6 +19,7 @@ import ReleaseNotes from "../../../components/Today/ReleaseNotes";
 import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useCourse } from "../../../hooks/useCourse";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
+import TodayPageCreateButton from "../../../components/Today/QueueCreateButton";
 
 const Container = styled.div`
   margin-top: 32px;
@@ -113,6 +114,9 @@ export default function Today(): ReactElement {
                 )}
               />
             )*/}
+            <Row>
+              <TodayPageCreateButton />
+            </Row>
           </Col>
           <Col md={12} sm={24}>
             {/* TODO: Currently, iCal stuff is not showing, replace this with something else */}
