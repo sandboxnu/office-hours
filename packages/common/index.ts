@@ -173,6 +173,8 @@ export class QueuePartial {
   notes?: string;
   isOpen!: boolean;
 
+  isDisabled!: boolean;
+
   @Type(() => Date)
   startTime?: Date;
 
