@@ -4,7 +4,9 @@ import { CourseModel } from 'course/course.entity';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
+import { SemesterModel } from 'semester/semester.entity';
 import { Connection } from 'typeorm';
+import { ProfSectionGroupsModel } from './prof-section-groups.entity';
 
 @Injectable()
 export class LoginCourseService {
@@ -19,13 +21,13 @@ export class LoginCourseService {
     });
 
     if (!user) {
-      user = UserModel.create({
+      user = await UserModel.create({
         courses: [],
         email: neuEmail,
         firstName: info.first_name,
         lastName: info.last_name,
         hideInsights: [],
-      });
+      }).save();
     }
 
     const userCourses = [];
@@ -79,6 +81,14 @@ export class LoginCourseService {
       }
     }
 
+    // If Prof, save the JSON data
+    if (info.courses[0] && !isKhouryCourse(info.courses[0])) {
+      await ProfSectionGroupsModel.create({
+        profId: user.id,
+        sectionGroups: info.courses,
+      }).save();
+    }
+
     user.courses = userCourses;
     await user.save();
     return user;
@@ -88,14 +98,13 @@ export class LoginCourseService {
     courseCRN: number,
     semester: string, // 6-digit semester code
   ): Promise<CourseModel> {
-    const { season, year } = this.parseKhourySemester(semester);
+    const semModel = await this.getSemester(semester);
     const courseSectionModel =
       await CourseSectionMappingModel.createQueryBuilder('section_mapping')
         .leftJoinAndSelect('section_mapping.course', 'course')
-        .leftJoinAndSelect('course.semester', 'semester')
         .where(
-          'section_mapping.crn = :courseCRN and semester.season = :season and semester.year = :year',
-          { courseCRN, season, year },
+          'section_mapping.crn = :courseCRN and course.semesterId = :semesterId',
+          { courseCRN, semesterId: semModel.id },
         )
         .getOne();
 
@@ -123,6 +132,19 @@ export class LoginCourseService {
       }).save();
     }
     return userCourse;
+  }
+
+  private async getSemester(khourySemester: string) {
+    const { season, year } = this.parseKhourySemester(khourySemester);
+    let semModel = await SemesterModel.findOne({ where: { season, year } });
+    if (!semModel) {
+      semModel = await SemesterModel.create({
+        season,
+        year,
+        courses: [],
+      }).save();
+    }
+    return semModel;
   }
 
   private hasUserCourse(
