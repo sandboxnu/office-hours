@@ -112,7 +112,7 @@ class APIClient {
         undefined
       ),
     registerCourse: async (params: RegisterCourseParams): Promise<void> =>
-      this.req("POST", `/api/v1/courses/register_course`, undefined, params),
+      this.req("POST", `/api/v1/courses/register_courses`, undefined, params),
     getTACheckinTimes: async (
       courseId: number,
       startDate: string,
