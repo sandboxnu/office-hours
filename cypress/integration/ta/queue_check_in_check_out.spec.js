@@ -23,14 +23,17 @@ describe("Can successfully check in and out of a queue when their is scheduled o
     cy.get(".ant-modal-close-x").click();
 
     taOpenOnline();
-    
-    // click the queue dropdown
-    cy.get("[data-cy='queue-tab']").contains("Queue");
-    cy.get(".ant-dropdown-trigger").click()
+
+    // check Queue tab exists with one queue
+    cy.get("[data-cy='queue-tab']").should('be.visible').contains("Queue");
     cy.get("[data-cy='queue-tab']").should(
         "have.length",
         "1"
     );
+
+    // wait for modal to close and then hover over Queue tab for submenu
+    cy.get(".ant-modal").should('not.exist');
+    cy.get("[data-cy='queue-tab']").trigger("mouseover");
 
     // click the available queue from dropdown to visit
     cy.get("[data-cy='queue-menu-item-Online']").click();
