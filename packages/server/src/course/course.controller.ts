@@ -529,7 +529,7 @@ export class CourseController {
     await this.courseService.removeUserFromCourse(userCourse);
   }
 
-  @Post('register_course')
+  @Post('register_courses')
   @UseGuards(JwtAuthGuard, CourseRolesGuard)
   @Roles(Role.PROFESSOR)
   async registerCourse(

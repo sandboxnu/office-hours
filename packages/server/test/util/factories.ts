@@ -1,4 +1,4 @@
-import { QuestionType, Role } from '@koh/common';
+import { KhouryProfCourse, QuestionType, Role } from '@koh/common';
 import { QuestionGroupModel } from 'question/question-group.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { Factory } from 'typeorm-factory';
@@ -10,6 +10,7 @@ import { UserCourseModel } from '../../src/profile/user-course.entity';
 import { UserModel } from '../../src/profile/user.entity';
 import { QuestionModel } from '../../src/question/question.entity';
 import { QueueModel } from '../../src/queue/queue.entity';
+import { ProfSectionGroupsModel } from 'login/prof-section-groups.entity';
 
 export const UserFactory = new Factory(UserModel)
   .attr('email', `user@neu.edu`)
@@ -57,6 +58,14 @@ export const UserCourseFactory = new Factory(UserCourseModel)
   .assocOne('course', CourseFactory)
   .attr('role', Role.STUDENT)
   .attr('override', false);
+
+export const KhouryProfCourseFactory = new Factory(KhouryProfCourse)
+  .attr('crns', [12345, 23456, 34567])
+  .attr('name', 'Underwater Basket-Weaving');
+
+export const ProfSectionGroupsFactory = new Factory(ProfSectionGroupsModel)
+  .assocOne('prof', UserFactory)
+  .assocMany('sectionGroups', KhouryProfCourseFactory);
 
 export const QueueFactory = new Factory(QueueModel)
   .attr('room', 'Online')

@@ -680,10 +680,9 @@ export class GetAlertsResponse {
 }
 
 /**
- * Represents the parameters for register_course endpoint.
+ * Represents the parameters for register_courses endpoint.
  * @param name - The name of the section group.
  * @param displayName - user friendly display name entered by Prof
- * @param crns - The list of CRNs in the section group.
  * @param semester - The name of the semester.
  * @param iCalURL - The URL for the iCal calendar.
  * @param coordinatorEmail - The email for the course coordinator.
