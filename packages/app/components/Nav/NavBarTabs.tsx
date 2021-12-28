@@ -13,14 +13,18 @@ const HorizontalMenu = styled(Menu)<MenuProps>`
 
 const QueueMenu = styled(SubMenu)`
   @media (min-width: 650px) {
-    padding: 10px 50px !important;
     font-size: 16px !important;
     color: #262626 !important;
     margin: 0 !important;
+    padding: 0 !important;
   }
   &&&:after {
     left: 0px;
     right: 0px;
+  }
+
+  &&& .ant-menu-submenu-title {
+    padding: 10px 50px !important;
   }
 `;
 
