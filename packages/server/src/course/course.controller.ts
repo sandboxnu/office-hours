@@ -2,7 +2,6 @@ import {
   ERROR_MESSAGES,
   GetCourseOverridesResponse,
   GetCourseResponse,
-  KhouryProfCourse,
   QueuePartial,
   RegisterCourseParams,
   Role,
@@ -51,6 +50,7 @@ import moment = require('moment');
 import { SemesterModel } from 'semester/semester.entity';
 import { ProfSectionGroupsModel } from 'login/prof-section-groups.entity';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
+import { LastRegistrationModel } from 'login/last-registration-model.entity';
 
 @Controller('courses')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -534,10 +534,15 @@ export class CourseController {
   @Roles(Role.PROFESSOR)
   async registerCourse(
     @Body() body: RegisterCourseParams[],
-    @UserId() userId: number
+    @UserId() userId: number,
   ): Promise<void> {
-    // iterate over each section group
-    body.forEach(registerCourseParams => {
+    // obtains the ProfSectionGroupsModel of the professor
+    const profSectionGroups = await ProfSectionGroupsModel.findOne({
+      where: { profId: userId },
+    });
+
+    // iterate over each section group registration
+    for (const registerCourseParams of body) {
       const season = registerCourseParams.semester.split(' ')[0];
       const year = parseInt(registerCourseParams.semester.split(' ')[1]);
 
@@ -550,10 +555,10 @@ export class CourseController {
           ERROR_MESSAGES.courseController.noSemesterFound,
         );
 
-      
-      //const profSectionGroups = await ProfSectionGroupsModel.findOne({
-      //  where: { profId },
-      //});
+      // finds professor's section group with matching name
+      const sectionGroup = profSectionGroups.sectionGroups.find(
+        (sg) => sg.name === registerCourseParams.name,
+      );
 
       // create course models for each crn in professor's course
       let course = null;
@@ -561,6 +566,7 @@ export class CourseController {
         // create the submitted course
         course = await CourseModel.create({
           name: registerCourseParams.displayName,
+          sectionGroupName: registerCourseParams.name,
           coordinator_email: registerCourseParams.coordinator_email,
           icalURL: registerCourseParams.iCalURL,
           semesterId: semester.id,
@@ -578,14 +584,12 @@ export class CourseController {
 
       try {
         // create CourseSectionMappings for each crn
-        /*
-        new Set(profCourse.crns).forEach(async (crn) => {
+        new Set(sectionGroup.crns).forEach(async (crn) => {
           await CourseSectionMappingModel.create({
             crn: crn,
             courseId: course.id,
           }).save();
         });
-        */
       } catch (err) {
         console.error(err);
         throw new HttpException(
@@ -593,10 +597,39 @@ export class CourseController {
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
-    });
+
+      // Add UserCourse to course
+      let userCourse: UserCourseModel;
+      userCourse = await UserCourseModel.findOne({
+        where: { userId, courseId: course.id },
+      });
+      if (
+        userCourse &&
+        userCourse.override &&
+        userCourse.role === Role.PROFESSOR
+      ) {
+        userCourse.override = false;
+        await userCourse.save();
+      }
+      if (!userCourse) {
+        userCourse = await UserCourseModel.create({
+          userId,
+          courseId: course.id,
+          role: Role.PROFESSOR,
+        }).save();
+      }
+
+      // Update professor's last registered semester to semester model's current semester
+      const profLastRegistration = await LastRegistrationModel.findOne({
+        where: { profId: userId },
+      });
+
+      profLastRegistration.lastRegisteredSemester =
+        registerCourseParams.semester;
+      profLastRegistration.save();
+    }
   }
 
-  
   /* TODO: This is the old login registration form.
   @Post('submit_course')
   async submitCourse(@Body() body: SubmitCourseParams): Promise<void> {
