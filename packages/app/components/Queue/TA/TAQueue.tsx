@@ -142,6 +142,7 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
                     Help Next
                   </HelpNextButton>
                 </Tooltip>
+
                 <div style={{ marginBottom: "12px" }}>
                   <TACheckinButton
                     courseId={courseId}
@@ -149,7 +150,8 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
                     disabled={
                       staffCheckedIntoAnotherQueue ||
                       isHelping ||
-                      (queue.isProfessorQueue && role !== Role.PROFESSOR)
+                      (queue.isProfessorQueue && role !== Role.PROFESSOR) ||
+                      queue.isDisabled
                     }
                     state={isCheckedIn ? "CheckedIn" : "CheckedOut"}
                     block
