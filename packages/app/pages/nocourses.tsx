@@ -3,10 +3,10 @@ import { Button, Result } from "antd";
 import Router from "next/router";
 import { ReactElement } from "react";
 import useSWR from "swr";
-import { useDefaultCourseRedirect } from "../hooks/useDefaultCourseRedirect";
+import { useHomePageRedirect } from "../hooks/useHomePageRedirect";
 
 export default function NoCourses(): ReactElement {
-  useDefaultCourseRedirect();
+  useHomePageRedirect();
 
   const { data } = useSWR("/api/v1/courses/self_enroll_courses", async () =>
     API.course.selfEnrollCourses()
