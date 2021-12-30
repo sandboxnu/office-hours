@@ -1,5 +1,6 @@
 import {
   ERROR_MESSAGES,
+  KhouryProfCourse,
   Role,
   TACheckinTimesResponse,
   TACheckoutResponse,
@@ -7,18 +8,17 @@ import {
 import { CourseModel } from 'course/course.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
-import supertest from 'supertest';
 import { CourseModule } from '../src/course/course.module';
 import { QueueModel } from '../src/queue/queue.entity';
 import {
   ClosedOfficeHourFactory,
   CourseFactory,
   EventFactory,
-  KhouryProfCourseFactory,
   OfficeHourFactory,
   ProfSectionGroupsFactory,
   QuestionFactory,
   QueueFactory,
+  SemesterFactory,
   StudentCourseFactory,
   TACourseFactory,
   UserCourseFactory,
@@ -567,72 +567,80 @@ describe('Course Integration', () => {
       expect(userCourse).toBeDefined();
     });
   });
-});
 
-describe('POST /courses/register_courses', async () => {
-  const professor = await UserFactory.create();
-  // const pcf = await UserCourseFactory.create({
-  //   course: await CourseFactory.create(),
-  //   user: professor,
-  //   role: Role.PROFESSOR,
-  // });
-  const course1 = await KhouryProfCourseFactory.create({
-    crns: [12345, 56765, 44444],
-    semester: 'Fall 2021',
-    name: 'Underwater Basket-Weaving',
-  });
+  describe('POST /register_courses', () => {
+    it('tests prof registering an array of courses', async () => {
+      const professor = await UserFactory.create();
+      await UserCourseFactory.create({
+        course: await CourseFactory.create(),
+        user: professor,
+        role: Role.PROFESSOR,
+      });
+      const course1: KhouryProfCourse = {
+        crns: [12345, 56765, 44444],
+        semester: '202210',
+        name: 'Underwater Basket-Weaving',
+      };
+      const course2: KhouryProfCourse = {
+        crns: [11111, 22222],
+        semester: '202230',
+        name: 'Underwater Basket-Weaving 2',
+      };
+      await SemesterFactory.create({
+        season: 'Fall',
+        year: 2021,
+      });
+      await SemesterFactory.create({
+        season: 'Spring',
+        year: 2022,
+      });
+      await ProfSectionGroupsFactory.create({
+        prof: professor,
+        profId: professor.id,
+        sectionGroups: [course1, course2],
+      });
+      const registerCourses = [
+        {
+          sectionGroupName: 'Underwater Basket-Weaving',
+          name: 'Scuba',
+          iCalURL:
+            'https://calendar.google.com/calendar/ical/yamsarecool/basic.ics',
+          coordinator_email: 'yamsarecool@gmail.com',
+          timezone: 'America/New_York',
+        },
+        {
+          sectionGroupName: 'Underwater Basket-Weaving 2',
+          name: 'Scuba 2',
+          iCalURL:
+            'https://calendar.google.com/calendar/ical/potatoesarecool2/basic.ics',
+          coordinator_email: 'potatoesarecool2@outlook.com',
+          timezone: 'America/Los_Angeles',
+        },
+      ];
 
-  const course2 = await KhouryProfCourseFactory.create({
-    crns: [11111, 22222],
-    semester: 'Spring 2022',
-    name: 'Underwater Basket-Weaving 2',
-  });
+      await supertest({ userId: professor.id })
+        .post(`/courses/register_courses`)
+        .send(registerCourses)
+        .expect(201);
 
-  await ProfSectionGroupsFactory.create({
-    prof: professor,
-    profId: professor.id,
-    sectionGroups: [course1, course2],
-  });
+      const ubw = await CourseModel.findOne({
+        sectionGroupName: 'Underwater Basket-Weaving',
+      });
+      const ubw2 = await CourseModel.findOne({
+        sectionGroupName: 'Underwater Basket-Weaving 2',
+      });
+      const totalProfCourses = await UserCourseModel.count();
+      expect(totalProfCourses).toEqual(2);
 
-  const registerCourses = [
-    {
-      name: 'Underwater Basket-Weaving',
-      displayName: 'Scuba',
-      iCalURL:
-        'https://calendar.google.com/calendar/ical/yamsarecool/basic.ics',
-      coordinatorEmail: 'yamsarecool@gmail.com',
-      timezone: 'America/New_York',
-    },
-    {
-      name: 'Underwater Basket-Weaving 2',
-      displayName: 'Scuba 2',
-      iCalURL:
-        'https://calendar.google.com/calendar/ical/potatoesarecool2/basic.ics',
-      coordinatorEmail: 'potatoesarecool2@outlook.com',
-      timezone: 'America/Los_Angeles',
-    },
-  ];
-
-  it('tests prof registering an array of courses', async () => {
-    await supertest({ userId: professor.id })
-      .post(`/courses/register_courses`)
-      .send(registerCourses)
-      .expect(201);
-
-    const underwaterBasketweaving = await CourseModel.findOne({
-      name: 'Underwater Basket-Weaving',
+      // checks if the course has the professor as a userCourse
+      const ubwProfCourse = await UserCourseModel.findOne({
+        where: { userId: professor.id, courseId: ubw.id },
+      });
+      const ubw2ProfCourse = await UserCourseModel.findOne({
+        where: { userId: professor.id, courseId: ubw2.id },
+      });
+      expect(ubwProfCourse).toBeDefined();
+      expect(ubw2ProfCourse).toBeDefined();
     });
-    const underwaterBasketweaving2 = await CourseModel.findOne({
-      name: 'Underwater Basket-Weaving 2',
-    });
-    expect(underwaterBasketweaving2).toBeDefined();
-
-    const userCourse = await UserCourseFactory.create({
-      course: underwaterBasketweaving,
-      user: professor,
-      role: Role.PROFESSOR,
-    });
-    // checks if the course has the professor as a userCourse
-    expect(underwaterBasketweaving.userCourses).toContain(userCourse);
   });
 });

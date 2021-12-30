@@ -680,20 +680,20 @@ export class GetAlertsResponse {
 }
 
 /**
- * Represents the parameters for register_courses endpoint.
- * @param name - The name of the section group.
- * @param displayName - user friendly display name entered by Prof
+ * Represents the parameters for a course being registered for register_courses endpoint.
+ * @param sectionGroupName - The name of the section group.
+ * @param name - user friendly display name entered by Prof
  * @param semester - The name of the semester.
  * @param iCalURL - The URL for the iCal calendar.
- * @param coordinatorEmail - The email for the course coordinator.
+ * @param coordinator_email - The email for the course coordinator.
  * @param timezone - The timezone derived from the Campus field on the form.
  */
 export class RegisterCourseParams {
   @IsString()
-  name!: string;
+  sectionGroupName!: string;
 
   @IsString()
-  displayName!: string;
+  name!: string;
 
   @IsString()
   iCalURL!: string;
@@ -825,6 +825,8 @@ export const ERROR_MESSAGES = {
     createCourse: "Error occurred while trying to create a course",
     updateCourse: "Error occurred while trying to update a course",
     createCourseMappings: "Unable to create a course mappings",
+    updateProfLastRegistered:
+      "Unable to update professor's last registered semester",
     invalidApplyURL:
       "You are unauthorized to submit an application. Please email help@khouryofficehours.com for the correct URL.",
   },

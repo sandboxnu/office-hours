@@ -1,4 +1,4 @@
-import { KhouryProfCourse, QuestionType, Role } from '@koh/common';
+import { QuestionType, Role } from '@koh/common';
 import { QuestionGroupModel } from 'question/question-group.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { Factory } from 'typeorm-factory';
@@ -59,13 +59,9 @@ export const UserCourseFactory = new Factory(UserCourseModel)
   .attr('role', Role.STUDENT)
   .attr('override', false);
 
-export const KhouryProfCourseFactory = new Factory(KhouryProfCourse)
-  .attr('crns', [12345, 23456, 34567])
-  .attr('name', 'Underwater Basket-Weaving');
-
 export const ProfSectionGroupsFactory = new Factory(ProfSectionGroupsModel)
   .assocOne('prof', UserFactory)
-  .assocMany('sectionGroups', KhouryProfCourseFactory);
+  .attr('sectionGroups', []);
 
 export const QueueFactory = new Factory(QueueModel)
   .attr('room', 'Online')

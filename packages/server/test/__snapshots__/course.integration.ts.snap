@@ -53,3 +53,11 @@ Object {
   ],
 }
 `;
+
+exports[`Course Integration POST /register_courses tests prof registering an array of courses 1`] = `
+Object {
+  "error": "Not Found",
+  "message": "Cannot POST /register_courses",
+  "statusCode": 404,
+}
+`;

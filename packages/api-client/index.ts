@@ -111,7 +111,7 @@ class APIClient {
         `/api/v1/courses/${courseId}/withdraw_course`,
         undefined
       ),
-    registerCourse: async (params: RegisterCourseParams): Promise<void> =>
+    registerCourses: async (params: RegisterCourseParams[]): Promise<void> =>
       this.req("POST", `/api/v1/courses/register_courses`, undefined, params),
     getTACheckinTimes: async (
       courseId: number,
