@@ -598,7 +598,6 @@ describe('POST /courses/register_courses', async () => {
     {
       name: 'Underwater Basket-Weaving',
       displayName: 'Scuba',
-      semester: 'Fall 2021',
       iCalURL:
         'https://calendar.google.com/calendar/ical/yamsarecool/basic.ics',
       coordinatorEmail: 'yamsarecool@gmail.com',
@@ -607,7 +606,6 @@ describe('POST /courses/register_courses', async () => {
     {
       name: 'Underwater Basket-Weaving 2',
       displayName: 'Scuba 2',
-      semester: 'Spring 2022',
       iCalURL:
         'https://calendar.google.com/calendar/ical/potatoesarecool2/basic.ics',
       coordinatorEmail: 'potatoesarecool2@outlook.com',

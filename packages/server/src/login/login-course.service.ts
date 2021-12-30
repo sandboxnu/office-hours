@@ -143,7 +143,7 @@ export class LoginCourseService {
   }
 
   // parses 6-digit semester code, where first 4 digits represent year and last 2 digits represent academic semester (ex: 202110)
-  private parseKhourySemester(khourySemester: string): {
+  public parseKhourySemester(khourySemester: string): {
     season: Season;
     year: number;
   } {

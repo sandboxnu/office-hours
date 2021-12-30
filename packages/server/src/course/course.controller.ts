@@ -1,3 +1,6 @@
+@Module({
+  imports: [ LoginModule ]
+});
 import {
   ERROR_MESSAGES,
   GetCourseOverridesResponse,
@@ -50,7 +53,9 @@ import moment = require('moment');
 import { SemesterModel } from 'semester/semester.entity';
 import { ProfSectionGroupsModel } from 'login/prof-section-groups.entity';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
+import { LoginCourseService } from 'login/login-course.service';
 import { LastRegistrationModel } from 'login/last-registration-model.entity';
+import { LoginModule } from 'login/login.module';
 
 @Controller('courses')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -62,6 +67,7 @@ export class CourseController {
     private heatmapService: HeatmapService,
     private icalService: IcalService,
     private courseService: CourseService,
+    private loginCourseService: LoginCourseService,
   ) {}
 
   @Get(':id')
@@ -543,24 +549,20 @@ export class CourseController {
 
     // iterate over each section group registration
     for (const registerCourseParams of body) {
-      const season = registerCourseParams.semester.split(' ')[0];
-      const year = parseInt(registerCourseParams.semester.split(' ')[1]);
-
-      const semester = await SemesterModel.findOne({
-        where: { season, year },
-      });
-
-      if (!semester)
-        throw new BadRequestException(
-          ERROR_MESSAGES.courseController.noSemesterFound,
-        );
 
       // finds professor's section group with matching name
       const sectionGroup = profSectionGroups.sectionGroups.find(
         (sg) => sg.name === registerCourseParams.name,
       );
 
-      // create course models for each crn in professor's course
+      // get the semester of the section group
+      const khourySemesterParsed = this.loginCourseService.parseKhourySemester(sectionGroup.semester);
+
+      const semester = await SemesterModel.findOne({
+        where: { season: khourySemesterParsed.season, year: khourySemesterParsed.year },
+      });
+
+      // create course models for each section group
       let course = null;
       try {
         // create the submitted course
@@ -599,25 +601,7 @@ export class CourseController {
       }
 
       // Add UserCourse to course
-      let userCourse: UserCourseModel;
-      userCourse = await UserCourseModel.findOne({
-        where: { userId, courseId: course.id },
-      });
-      if (
-        userCourse &&
-        userCourse.override &&
-        userCourse.role === Role.PROFESSOR
-      ) {
-        userCourse.override = false;
-        await userCourse.save();
-      }
-      if (!userCourse) {
-        userCourse = await UserCourseModel.create({
-          userId,
-          courseId: course.id,
-          role: Role.PROFESSOR,
-        }).save();
-      }
+      this.loginCourseService.courseToUserCourse(userId, course.id, Role.PROFESSOR);
 
       // Update professor's last registered semester to semester model's current semester
       const profLastRegistration = await LastRegistrationModel.findOne({
@@ -625,7 +609,7 @@ export class CourseController {
       });
 
       profLastRegistration.lastRegisteredSemester =
-        registerCourseParams.semester;
+        sectionGroup.semester;
       profLastRegistration.save();
     }
   }

@@ -696,9 +696,6 @@ export class RegisterCourseParams {
   displayName!: string;
 
   @IsString()
-  semester!: string;
-
-  @IsString()
   iCalURL!: string;
 
   @IsString()
