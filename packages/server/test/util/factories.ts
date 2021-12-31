@@ -10,6 +10,7 @@ import { UserCourseModel } from '../../src/profile/user-course.entity';
 import { UserModel } from '../../src/profile/user.entity';
 import { QuestionModel } from '../../src/question/question.entity';
 import { QueueModel } from '../../src/queue/queue.entity';
+import { LastRegistrationModel } from 'login/last-registration-model.entity';
 import { ProfSectionGroupsModel } from 'login/prof-section-groups.entity';
 
 export const UserFactory = new Factory(UserModel)
@@ -59,10 +60,6 @@ export const UserCourseFactory = new Factory(UserCourseModel)
   .attr('role', Role.STUDENT)
   .attr('override', false);
 
-export const ProfSectionGroupsFactory = new Factory(ProfSectionGroupsModel)
-  .assocOne('prof', UserFactory)
-  .attr('sectionGroups', []);
-
 export const QueueFactory = new Factory(QueueModel)
   .attr('room', 'Online')
   .assocOne('course', CourseFactory)
@@ -91,3 +88,11 @@ export const EventFactory = new Factory(EventModel)
   .attr('eventType', EventType.TA_CHECKED_IN)
   .assocOne('user', UserFactory)
   .assocOne('course', CourseFactory);
+
+export const LastRegistrationFactory = new Factory(LastRegistrationModel)
+  .attr('lastRegisteredSemester', '202110') // Fall 2020
+  .assocOne('prof', UserFactory);
+
+export const ProfSectionGroupsFactory = new Factory(ProfSectionGroupsModel)
+  .assocOne('prof', UserFactory)
+  .attr('sectionGroups', []);

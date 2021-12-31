@@ -64,6 +64,7 @@ export class User {
   defaultMessage?: string;
   includeDefaultMessage!: boolean;
   courses!: UserCourse[];
+  pendingCourses?: KhouryProfCourse[];
   desktopNotifsEnabled!: boolean;
   @Type(() => DesktopNotifPartial)
   desktopNotifs!: DesktopNotifPartial[];

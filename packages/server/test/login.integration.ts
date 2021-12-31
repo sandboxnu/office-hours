@@ -3,11 +3,13 @@ import { JwtService } from '@nestjs/jwt';
 import { TestingModuleBuilder } from '@nestjs/testing';
 import { CourseModel } from 'course/course.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
+import { SemesterModel } from 'semester/semester.entity';
 import { LoginModule } from '../src/login/login.module';
 import { UserModel } from '../src/profile/user.entity';
 import {
   CourseFactory,
   CourseSectionFactory,
+  SemesterFactory,
   UserCourseFactory,
   UserFactory,
 } from './util/factories';
@@ -82,7 +84,7 @@ describe('Login Integration', () => {
 
       // And that the redirect is correct
       expect(res.body).toEqual({
-        redirect: 'http://localhost:3000/api/v1/login/entry?token={"userId":1}',
+        redirect: `http://localhost:3000/api/v1/login/entry?token={"userId":${newUser.id}}`,
       });
     });
 
@@ -119,8 +121,10 @@ describe('Login Integration', () => {
       let course3;
       beforeEach(async () => {
         // Make course mapping so usercourse can be added
+        const semester = await SemesterFactory.create();
         course = await CourseFactory.create({
           name: 'CS 2510 Accelerated',
+          semester,
         });
         await CourseSectionFactory.create({
           crn: 23456,
@@ -128,6 +132,7 @@ describe('Login Integration', () => {
         });
         course2 = await CourseFactory.create({
           name: 'CS 2510',
+          semester,
         });
         await CourseSectionFactory.create({
           crn: 34567,
@@ -135,6 +140,7 @@ describe('Login Integration', () => {
         });
         course3 = await CourseFactory.create({
           name: 'CS 2500',
+          semester,
         });
         await CourseSectionFactory.create({
           crn: 45678,
@@ -343,6 +349,43 @@ describe('Login Integration', () => {
 
         const totalUserCoursesUpdated = await UserCourseModel.count();
         expect(totalUserCoursesUpdated).toEqual(3);
+      });
+
+      it('handles new semester with unregistered courses', async () => {
+        const sem = await SemesterModel.findOne({
+          where: { season: 'Fall', year: 2022 },
+        });
+        expect(sem).toBeUndefined();
+
+        await supertest()
+          .post('/khoury_login')
+          .send({
+            email: 'liu.i@northeastern.edu',
+            campus: 1,
+            first_name: 'Iris',
+            last_name: 'Liu',
+            photo_url: 'sdf',
+            courses: [
+              {
+                crns: [23456],
+                semester: '202310', // 2022 fall
+                name: 'Fundies 2 Accel',
+              },
+            ],
+          })
+          .expect(201);
+
+        const prof = await UserModel.findOne({
+          where: { email: 'liu.i@northeastern.edu' },
+          relations: ['courses'],
+        });
+
+        expect(prof.courses).toHaveLength(0); // Does not create user courses
+
+        const newSem = await SemesterModel.findOne({
+          where: { season: 'Fall', year: 2022 },
+        });
+        expect(newSem).toBeDefined();
       });
     });
 
