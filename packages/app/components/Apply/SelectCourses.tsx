@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Select, Button, Tag } from "antd";
 import { useProfile } from "../../hooks/useProfile";
 import { KhouryProfCourse } from "@koh/common";
+import { useEffect } from "react";
 
 const Italics = styled.span`
   font-weight: normal;
@@ -41,6 +42,21 @@ export default function SelectCourses({
 }): ReactElement {
   const [selectedCourses, setSelectedCourses] = useState<number[]>([]);
   const profile = useProfile();
+
+  // populate initially selected courses when returning to first selection page
+  useEffect(() => {
+    const defaultValues = profile?.pendingCourses?.reduce(
+      (defaults: number[], course, idx) => {
+        if (initialValues.find((name) => name === course.name)) {
+          defaults.push(idx);
+          return defaults;
+        } else return defaults;
+      },
+      []
+    );
+    setSelectedCourses(defaultValues);
+  }, []);
+
   const handleCoursesChange = (indicies) => {
     setSelectedCourses(indicies);
   };
@@ -48,16 +64,6 @@ export default function SelectCourses({
     onSubmit(
       selectedCourses.map((courseIdx) => profile?.pendingCourses[courseIdx])
     );
-
-  const defaultValues = profile?.pendingCourses?.reduce(
-    (defaults: number[], course, idx) => {
-      if (initialValues.find((name) => name === course.name)) {
-        defaults.push(idx);
-        return defaults;
-      } else return defaults;
-    },
-    []
-  );
 
   return (
     <div>
@@ -77,7 +83,7 @@ export default function SelectCourses({
           placeholder="Please select your courses"
           onChange={handleCoursesChange}
           style={{ width: "100%" }}
-          defaultValue={defaultValues}
+          value={selectedCourses}
         >
           {profile?.pendingCourses?.map((course, idx) => (
             <Select.Option key={course.name} value={idx}>
