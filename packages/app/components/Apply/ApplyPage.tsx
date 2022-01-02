@@ -17,6 +17,10 @@ interface RegisterCourseInfo {
 
 const ProgressBar = styled(Progress)`
   padding-bottom: 2.5em;
+
+  & .ant-progress-inner {
+    border: 1px solid #d9d9d9;
+  }
 `;
 
 export default function ApplyPage(): ReactElement {
