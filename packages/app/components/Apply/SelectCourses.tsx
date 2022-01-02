@@ -51,7 +51,7 @@ export default function SelectCourses({
     <div>
       <div>
         It looks like this is your first time using the app for this semester.
-        Let&apos;s pick out all the courses you want to use Khoury Office Hours
+        Please pick out all the courses you want to use Khoury Office Hours
         for.
       </div>
 
