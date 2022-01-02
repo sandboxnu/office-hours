@@ -6,7 +6,7 @@ import SelectCourses from "./SelectCourses";
 import { Progress } from "antd";
 import styled from "styled-components";
 
-interface RegisterCourseInfo {
+export interface RegisterCourseInfo {
   name: string;
   crns: number[];
   displayName?: string;
@@ -21,6 +21,20 @@ const ProgressBar = styled(Progress)`
   & .ant-progress-inner {
     border: 1px solid #d9d9d9;
   }
+`;
+
+export function createSGString({
+  name,
+  crns,
+}: {
+  name: string;
+  crns: number[];
+}): string {
+  return `${name} (CRNs: ${crns.join(", ")})`;
+}
+
+export const Highlight = styled.span`
+  color: #1890ff;
 `;
 
 export default function ApplyPage(): ReactElement {
@@ -72,7 +86,11 @@ export default function ApplyPage(): ReactElement {
           onBack={() => setCurrentCourse(currentCourse - 1)}
         />
       ) : (
-        <ConfirmCourses />
+        <ConfirmCourses
+          courses={postBody}
+          onSubmit={() => 1}
+          onBack={() => setCurrentCourse(currentCourse - 1)}
+        />
       )}
     </div>
   );

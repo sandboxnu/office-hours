@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
-import styled from "styled-components";
 import { Form, Input, Select, Button, Space } from "antd";
 import { useEffect } from "react";
+import { createSGString, Highlight } from "./ApplyPage";
 
 export interface EditCourseInfo {
   displayName: string;
@@ -16,15 +16,14 @@ type EditCourseProps = {
   onBack: () => any;
 };
 
-const Highlight = styled.span`
-  color: #1890ff;
-`;
+export const TimezoneCampusMapping = {
+  "America/New_York": "Boston / Charlotte",
+  "America/Los_Angeles": "San Francisco / Seattle",
+  "America/Toronto": "Toronto",
+  "America/Vancouver": "Vancouver",
+};
 
 const { Option } = Select;
-
-function createSGString(name: string, crns: number[]) {
-  return `${name} (CRNs: ${crns.join(", ")})`;
-} // TODO: centralize
 
 export default function EditCourse({
   courseInfo,
@@ -32,7 +31,7 @@ export default function EditCourse({
   onBack,
 }: EditCourseProps): ReactElement {
   const [form] = Form.useForm();
-  const sectionGroupString = createSGString(courseInfo.name, courseInfo.crns);
+  const sectionGroupString = createSGString(courseInfo);
 
   useEffect(() => {
     form.resetFields();
@@ -76,10 +75,11 @@ export default function EditCourse({
           ]}
         >
           <Select>
-            <Option value="America/New_York">Boston / Charlotte</Option>
-            <Option value="America/Los_Angeles">San Francisco / Seattle</Option>
-            <Option value="America/Toronto">Toronto</Option>
-            <Option value="America/Vancouver">Vancouver</Option>
+            {Object.entries(TimezoneCampusMapping).map(([timezone, campus]) => (
+              <Option value={timezone} key={timezone}>
+                {campus}
+              </Option>
+            ))}
           </Select>
         </Form.Item>
 

@@ -4,6 +4,7 @@ import { Select, Button, Tag } from "antd";
 import { useProfile } from "../../hooks/useProfile";
 import { KhouryProfCourse } from "@koh/common";
 import { useEffect } from "react";
+import { createSGString } from "./ApplyPage";
 
 const Italics = styled.span`
   font-weight: normal;
@@ -28,10 +29,6 @@ const LargeTag = styled(Tag)`
   font-size: 14px;
   padding: 2px 6px;
 `;
-
-function createSGString(sg: KhouryProfCourse) {
-  return `${sg.name} (CRNs: ${sg.crns.join(", ")})`;
-}
 
 export default function SelectCourses({
   onSubmit,
