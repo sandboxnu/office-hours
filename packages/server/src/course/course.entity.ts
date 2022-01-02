@@ -57,10 +57,6 @@ export class CourseModel extends BaseEntity {
   @Column('boolean', { nullable: true })
   enabled: boolean; // Set to true if the given the course is using our app
 
-  // Set to true if the course is submitted via application and pending approval
-  @Column('boolean', { nullable: true })
-  pending: boolean;
-
   // The heatmap is false when there havent been any questions asked yet or there havent been any office hours
   heatmap: Heatmap | false;
 
