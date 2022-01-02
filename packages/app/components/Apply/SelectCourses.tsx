@@ -34,8 +34,10 @@ function createSGString(sg: KhouryProfCourse) {
 
 export default function SelectCourses({
   onSubmit,
+  initialValues,
 }: {
   onSubmit: (courses: KhouryProfCourse[]) => any;
+  initialValues: string[];
 }): ReactElement {
   const [selectedCourses, setSelectedCourses] = useState<number[]>([]);
   const profile = useProfile();
@@ -47,12 +49,21 @@ export default function SelectCourses({
       selectedCourses.map((courseIdx) => profile?.pendingCourses[courseIdx])
     );
 
+  const defaultValues = profile?.pendingCourses?.reduce(
+    (defaults: number[], course, idx) => {
+      if (initialValues.find((name) => name === course.name)) {
+        defaults.push(idx);
+        return defaults;
+      } else return defaults;
+    },
+    []
+  );
+
   return (
     <div>
       <div>
         It looks like this is your first time using the app for this semester.
-        Please pick out all the courses you want to use Khoury Office Hours
-        for.
+        Please pick out all the courses you want to use Khoury Office Hours for.
       </div>
 
       <FormSection>
@@ -66,6 +77,7 @@ export default function SelectCourses({
           placeholder="Please select your courses"
           onChange={handleCoursesChange}
           style={{ width: "100%" }}
+          defaultValue={defaultValues}
         >
           {profile?.pendingCourses?.map((course, idx) => (
             <Select.Option key={course.name} value={idx}>

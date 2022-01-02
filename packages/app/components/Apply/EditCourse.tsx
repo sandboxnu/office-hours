@@ -1,101 +1,136 @@
 import { ReactElement } from "react";
 import styled from "styled-components";
-import { Form, Input, Select, Button } from "antd";
+import { Form, Input, Select, Button, Space } from "antd";
+import { useEffect } from "react";
 
-const Bold = styled.span`
-  font-weight: bold;
-  font-size: 18px;
+export interface EditCourseInfo {
+  displayName: string;
+  iCalURL: string;
+  coordinator_email: string;
+  timezone: string;
+}
+
+type EditCourseProps = {
+  courseInfo: { name: string; crns: number[] };
+  onSubmitCourse: (courseInfo: EditCourseInfo) => any;
+  onBack: () => any;
+};
+
+const Highlight = styled.span`
+  color: #1890ff;
 `;
 
 const { Option } = Select;
 
-const validateMessages = {
-  required: '${label} is required!',
-  types: {
-    email: 'Please provide a valid email!',
-    number: '${label} is not a valid number!',
-    url: 'Please provide a valid Google (or Outlook) calendar url!',
-  },
-  number: {
-    range: '${label} must be between ${min} and ${max}',
-  },
-};
-
-function createSGString(name: String, crns: number[]) {
+function createSGString(name: string, crns: number[]) {
   return `${name} (CRNs: ${crns.join(", ")})`;
-}
+} // TODO: centralize
 
 export default function EditCourse({
   courseInfo,
-  onChangeCourse,
-}): ReactElement {
-  console.log(courseInfo, onChangeCourse);
-  const handleSubmit = () =>
-  onChangeCourse(
-    //selectedCourses.map((courseIdx) => profile?.pendingCourses[courseIdx])
-  );
-
+  onSubmitCourse,
+  onBack,
+}: EditCourseProps): ReactElement {
+  const [form] = Form.useForm();
   const sectionGroupString = createSGString(courseInfo.name, courseInfo.crns);
 
-  return (
-    // need to fix the link :|
-    <div>
-      <div>
-        <Bold>
-        Please fill out the following course information for <a href="https://play2048.co/">{sectionGroupString}</a>
-        </Bold>
-      </div>
+  useEffect(() => {
+    form.resetFields();
+  }, [courseInfo]);
 
-      <Form layout="vertical" validateMessages={validateMessages}>
-        <Form.Item name="display name" 
-        label="Course Display Name" 
-        rules={[{ required: true }]}>
-          <Input placeholder="ex: CS 2500"/>
+  const handleSubmitCourse = () => {
+    form
+      .validateFields()
+      .then((value) => onSubmitCourse(value))
+      .catch(() => {
+        // don't submit if the fields are not valid
+      });
+  };
+
+  return (
+    <div>
+      <h3 style={{ marginBottom: "1.5em" }}>
+        Please fill out the following course information for{" "}
+        <Highlight>{sectionGroupString}</Highlight>
+      </h3>
+
+      <Form form={form} layout="vertical" initialValues={courseInfo}>
+        <Form.Item
+          name="displayName"
+          label="Course Display Name"
+          tooltip="This is the course name that will be displayed within the app"
+          rules={[{ required: true, message: "Please input a display name." }]}
+        >
+          <Input placeholder="ex: CS 2500" />
         </Form.Item>
 
-        <Form.Item name="campus" 
-        label="Campus" 
-        rules={[{ required: true }]}>
-          <Select
-            placeholder="Select a option and change input text above"
-            //onChange={this.onCampusChange}
-            allowClear
-          >
-            <Option value="male">male</Option>
-            <Option value="female">female</Option>
-            <Option value="other">other</Option>
+        <Form.Item
+          name="timezone"
+          label="Campus"
+          rules={[
+            {
+              required: true,
+              message:
+                "Please select a Northeastern campus (for purpose of timezone).",
+            },
+          ]}
+        >
+          <Select>
+            <Option value="America/New_York">Boston / Charlotte</Option>
+            <Option value="America/Los_Angeles">San Francisco / Seattle</Option>
+            <Option value="America/Toronto">Toronto</Option>
+            <Option value="America/Vancouver">Vancouver</Option>
           </Select>
         </Form.Item>
 
-        <Form.Item name="coordinator email"
-        label="Coordinator Email" 
-        rules={[{ required: true, type: 'email' }]}>
-        <Input placeholder="example@northeastern.edu"/>
-      </Form.Item>
+        <Form.Item
+          name="coordinator_email"
+          label="Coordinator Email"
+          rules={[
+            {
+              required: true,
+              type: "email",
+              message: "Please input your email.",
+            },
+          ]}
+        >
+          <Input placeholder="example@northeastern.edu" />
+        </Form.Item>
 
-      <Form.Item
-        name="icalURL"
-        label="Office Hours Calendar URL"
-        rules={[{ required: true, type: 'url' }]}
-      >
-        <Input placeholder="http://calendar.google.com/calendar/ical/...basics.ics"></Input>
-      </Form.Item>
-
+        <Form.Item
+          label="Office Hours Calendar URL"
+          tooltip={
+            <div>
+              See{" "}
+              <a
+                target="_blank"
+                rel="noreferrer"
+                href="https://info.khouryofficehours.com/coordinators-manual"
+              >
+                here
+              </a>{" "}
+              to create your office hours calendar
+            </div>
+          }
+          name="iCalURL"
+          rules={[
+            {
+              required: true,
+              type: "url",
+              message: "Please input your office hours calendar URL.",
+            },
+          ]}
+        >
+          <Input placeholder="https://calendar.google.com/calendar/ical/.../basic.ics" />
+        </Form.Item>
       </Form>
-      <Button
-        onClick={handleSubmit}
-        style={{ marginTop: "30px" }}
-      >
-        Back
-      </Button>
+      <Space>
+        <Button onClick={onBack}>Back</Button>
 
-      <Button
-        onClick={handleSubmit}
-        type="primary"
-        style={{ marginTop: "30px" }}
-      >
-        Next
-      </Button>
+        <Button onClick={handleSubmitCourse} type="primary">
+          Next
+        </Button>
+      </Space>
     </div>
   );
 }
