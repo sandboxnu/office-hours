@@ -3,8 +3,11 @@ import React, { ReactElement, useState } from "react";
 import ConfirmCourses from "./ConfirmCourses";
 import EditCourse, { EditCourseInfo } from "./EditCourse";
 import SelectCourses from "./SelectCourses";
-import { Progress } from "antd";
+import { message, Progress } from "antd";
 import styled from "styled-components";
+import { API } from "@koh/api-client";
+import useSWR from "swr";
+import Router from "next/router";
 
 export interface RegisterCourseInfo {
   name: string;
@@ -40,6 +43,10 @@ export const Highlight = styled.span`
 export default function ApplyPage(): ReactElement {
   const [postBody, setPostBody] = useState<RegisterCourseInfo[]>([]);
   const [currentCourse, setCurrentCourse] = useState<number>(-1);
+  const { data: profile, mutate: mutateProfile } = useSWR(
+    `api/v1/profile`,
+    async () => API.profile.index()
+  );
 
   const handleSelectCourses = (selectedCourses: KhouryProfCourse[]) => {
     setPostBody(
@@ -51,7 +58,7 @@ export default function ApplyPage(): ReactElement {
     setCurrentCourse(currentCourse + 1);
   };
 
-  const handleSubmitCourse = (courseInfo: EditCourseInfo) => {
+  const handleEditCourse = (courseInfo: EditCourseInfo) => {
     const newPostBody = [...postBody];
     newPostBody[currentCourse] = {
       ...postBody[currentCourse],
@@ -59,6 +66,22 @@ export default function ApplyPage(): ReactElement {
     };
     setPostBody(newPostBody);
     setCurrentCourse(currentCourse + 1);
+  };
+
+  const handleSubmitCourses = async () => {
+    try {
+      await Promise.resolve(); // TODO: test with api endpt, that redirect no longer happens
+      message.success(
+        "Successfully registered courses. Redirecting you to the app..."
+      );
+      await mutateProfile();
+      Router.push(
+        "/course/[cid]/today",
+        `/course/${profile.courses[0].course.id}/today`
+      );
+    } catch (e) {
+      message.error(e.response?.data?.message);
+    }
   };
 
   const calculateProgress = () => {
@@ -82,13 +105,13 @@ export default function ApplyPage(): ReactElement {
       ) : currentCourse < postBody.length ? (
         <EditCourse
           courseInfo={postBody[currentCourse]}
-          onSubmitCourse={handleSubmitCourse}
+          onSubmitCourse={handleEditCourse}
           onBack={() => setCurrentCourse(currentCourse - 1)}
         />
       ) : (
         <ConfirmCourses
           courses={postBody}
-          onSubmit={() => 1}
+          onSubmit={handleSubmitCourses}
           onBack={() => setCurrentCourse(currentCourse - 1)}
         />
       )}
