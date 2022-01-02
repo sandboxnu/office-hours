@@ -578,7 +578,7 @@ describe('Course Integration', () => {
       });
       const course1: KhouryProfCourse = {
         crns: [12345, 56765, 44444],
-        semester: '202210',
+        semester: '202230',
         name: 'Underwater Basket-Weaving',
       };
       const course2: KhouryProfCourse = {
@@ -586,10 +586,6 @@ describe('Course Integration', () => {
         semester: '202230',
         name: 'Underwater Basket-Weaving 2',
       };
-      await SemesterFactory.create({
-        season: 'Fall',
-        year: 2021,
-      });
       await SemesterFactory.create({
         season: 'Spring',
         year: 2022,
@@ -641,6 +637,9 @@ describe('Course Integration', () => {
       });
       expect(ubwProfCourse).toBeDefined();
       expect(ubw2ProfCourse).toBeDefined();
+
+      // TODO: Check CRN mappings created for each crn
+      // TODO: Check if LastRegistrationSemester with for Spring 2022
     });
   });
 });

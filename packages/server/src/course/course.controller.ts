@@ -547,6 +547,10 @@ export class CourseController {
       const sectionGroup = profSectionGroups.sectionGroups.find(
         (sg) => sg.name === courseParams.sectionGroupName,
       );
+      if (!sectionGroup)
+        throw new BadRequestException(
+          ERROR_MESSAGES.courseController.sectionGroupNotFound,
+        );
       const khourySemesterParsed = this.loginCourseService.parseKhourySemester(
         sectionGroup.semester,
       );
@@ -599,11 +603,11 @@ export class CourseController {
       }
 
       // Add UserCourse to course
-      this.loginCourseService.courseToUserCourse(
+      await UserCourseModel.create({
         userId,
-        course.id,
-        Role.PROFESSOR,
-      );
+        courseId: course.id,
+        role: Role.PROFESSOR,
+      }).save();
 
       try {
         // Update professor's last registered semester to semester model's current semester
@@ -614,8 +618,7 @@ export class CourseController {
         if (profLastRegistered) {
           profLastRegistered.lastRegisteredSemester = sectionGroup.semester;
           await profLastRegistered.save();
-        }
-        if (!profLastRegistered) {
+        } else {
           profLastRegistered = await LastRegistrationModel.create({
             profId: userId,
             lastRegisteredSemester: sectionGroup.semester,
