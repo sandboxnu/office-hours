@@ -3,6 +3,8 @@ import React, { ReactElement, useState } from "react";
 import ConfirmCourses from "./ConfirmCourses";
 import EditCourse, { EditCourseInfo } from "./EditCourse";
 import SelectCourses from "./SelectCourses";
+import { Progress } from "antd";
+import styled from "styled-components";
 
 interface RegisterCourseInfo {
   name: string;
@@ -12,6 +14,10 @@ interface RegisterCourseInfo {
   coordinator_email?: string;
   timezone?: string;
 }
+
+const ProgressBar = styled(Progress)`
+  padding-bottom: 2.5em;
+`;
 
 export default function ApplyPage(): ReactElement {
   const [postBody, setPostBody] = useState<RegisterCourseInfo[]>([]);
@@ -37,9 +43,19 @@ export default function ApplyPage(): ReactElement {
     setCurrentCourse(currentCourse + 1);
   };
 
+  const calculateProgress = () => {
+    return Math.round(((currentCourse + 1) * 100) / postBody.length);
+  };
+
   return (
     <div style={{ padding: "3% 12%" }}>
       <h1>Apply for Khoury Office Hours</h1>
+      <ProgressBar
+        percent={calculateProgress()}
+        strokeColor="#408FEA"
+        trailColor="white"
+        strokeWidth={12}
+      />
       {currentCourse < 0 ? (
         <SelectCourses
           onSubmit={handleSelectCourses}
