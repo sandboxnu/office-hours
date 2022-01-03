@@ -565,7 +565,7 @@ export class CourseController {
           ERROR_MESSAGES.courseController.noSemesterFound,
         );
 
-      let course = null;
+      let course;
       try {
         // create the submitted course
         course = await CourseModel.create({
