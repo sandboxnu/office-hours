@@ -808,6 +808,7 @@ export const ERROR_MESSAGES = {
       cannotCheckIntoMultipleQueues:
         "Cannot check into multiple queues at the same time",
     },
+    courseAlreadyRegistered: "The course was already registered",
     courseNotFound: "The course was not found",
     sectionGroupNotFound: "The section group was not found",
     courseOfficeHourError: "Unable to find a course's office hours",

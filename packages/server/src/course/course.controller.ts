@@ -565,7 +565,19 @@ export class CourseController {
           ERROR_MESSAGES.courseController.noSemesterFound,
         );
 
-      let course = null;
+      // checks that course hasn't already been created
+      let course = await CourseModel.findOne({
+        where: {
+          name: courseParams.name,
+          semesterId: semester.id,
+        },
+      });
+      if (course)
+        throw new BadRequestException(
+          ERROR_MESSAGES.courseController.courseAlreadyRegistered,
+          courseParams.name,
+        );
+
       try {
         // create the submitted course
         course = await CourseModel.create({
