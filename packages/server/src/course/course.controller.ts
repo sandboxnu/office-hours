@@ -587,7 +587,6 @@ export class CourseController {
           icalURL: courseParams.iCalURL,
           semesterId: semester.id,
           enabled: true,
-          pending: false,
           timezone: courseParams.timezone,
         }).save();
       } catch (err) {
