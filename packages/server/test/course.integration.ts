@@ -596,7 +596,7 @@ describe('Course Integration', () => {
         name: 'Underwater Basket-Weaving 2',
       };
 
-      await SemesterFactory.create({
+      const semester = await SemesterFactory.create({
         season: 'Spring',
         year: 2022,
       });
@@ -626,21 +626,53 @@ describe('Course Integration', () => {
         },
       ];
 
+      // Counts total professor courses before registration
+      const totalProfCoursesBefore = await UserCourseModel.count({
+        where: { userId: professor.id },
+      });
+
       await supertest({ userId: professor.id })
         .post(`/courses/register_courses`)
         .send(registerCourses)
         .expect(201);
 
+      // total professor courses after registering 2 courses
+      const totalProfCourses = await UserCourseModel.count({
+        where: { userId: professor.id },
+      });
+      expect(totalProfCourses).toEqual(totalProfCoursesBefore + 2);
+
+      // verify courses are created as expected
       const ubw = await CourseModel.findOne({
         sectionGroupName: 'Underwater Basket-Weaving',
       });
       const ubw2 = await CourseModel.findOne({
         sectionGroupName: 'Underwater Basket-Weaving 2',
       });
-      const totalProfCourses = await UserCourseModel.count();
-      expect(totalProfCourses).toEqual(2);
 
-      // checks if the course has the professor as a userCourse
+      expect(ubw.name).toEqual('Scuba');
+      expect(ubw.sectionGroupName).toEqual('Underwater Basket-Weaving');
+      expect(ubw.coordinator_email).toEqual('yamsarecool@gmail.com');
+      expect(ubw.icalURL).toEqual(
+        'https://calendar.google.com/calendar/ical/yamsarecool/basic.ics',
+      );
+      expect(ubw.semesterId).toEqual(semester.id);
+      expect(ubw.enabled).toBeTruthy();
+      expect(ubw.pending).toBeFalsy();
+      expect(ubw.timezone).toEqual('America/New_York');
+
+      expect(ubw2.name).toEqual('Scuba 2');
+      expect(ubw2.sectionGroupName).toEqual('Underwater Basket-Weaving 2');
+      expect(ubw2.coordinator_email).toEqual('potatoesarecool2@outlook.com');
+      expect(ubw2.icalURL).toEqual(
+        'https://calendar.google.com/calendar/ical/potatoesarecool2/basic.ics',
+      );
+      expect(ubw2.semesterId).toEqual(semester.id);
+      expect(ubw2.enabled).toBeTruthy();
+      expect(ubw2.pending).toBeFalsy();
+      expect(ubw2.timezone).toEqual('America/Los_Angeles');
+
+      // checks if the registered courses have the professor as a userCourse
       const ubwProfCourse = await UserCourseModel.findOne({
         where: { userId: professor.id, courseId: ubw.id },
       });

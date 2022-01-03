@@ -35,7 +35,7 @@ Object {
       "defaultMessage": null,
       "email": "user@neu.edu",
       "firstName": "User",
-      "id": 2,
+      "id": 1,
       "includeDefaultMessage": true,
       "insights": Array [
         "TotalStudents",
@@ -51,13 +51,5 @@ Object {
       "photoURL": null,
     },
   ],
-}
-`;
-
-exports[`Course Integration POST /register_courses tests prof registering an array of courses 1`] = `
-Object {
-  "error": "Not Found",
-  "message": "Cannot POST /register_courses",
-  "statusCode": 404,
 }
 `;
