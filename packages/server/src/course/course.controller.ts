@@ -40,16 +40,11 @@ import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { CourseModel } from './course.entity';
 import { OfficeHourModel } from './office-hour.entity';
-import { SemesterModel } from 'semester/semester.entity';
-import { ProfSectionGroupsModel } from 'login/prof-section-groups.entity';
-import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
-import { LastRegistrationModel } from 'login/last-registration-model.entity';
 import { QueueCleanService } from '../queue/queue-clean/queue-clean.service';
 import { QueueSSEService } from '../queue/queue-sse.service';
 import { CourseService } from './course.service';
 import { HeatmapService } from './heatmap.service';
 import { IcalService } from './ical.service';
-import { LoginCourseService } from '../login/login-course.service';
 
 @Controller('courses')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -61,7 +56,6 @@ export class CourseController {
     private heatmapService: HeatmapService,
     private icalService: IcalService,
     private courseService: CourseService,
-    private loginCourseService: LoginCourseService,
   ) {}
 
   @Get(':id')
@@ -536,112 +530,10 @@ export class CourseController {
     @Body() body: RegisterCourseParams[],
     @UserId() userId: number,
   ): Promise<void> {
-    // obtains the ProfSectionGroupsModel of the professor
-    const profSectionGroups = await ProfSectionGroupsModel.findOne({
-      where: { profId: userId },
-    });
-
-    // iterate over each section group registration
-    for (const courseParams of body) {
-      // finds professor's section group with matching name
-      const sectionGroup = profSectionGroups.sectionGroups.find(
-        (sg) => sg.name === courseParams.sectionGroupName,
-      );
-      if (!sectionGroup)
-        throw new BadRequestException(
-          ERROR_MESSAGES.courseController.sectionGroupNotFound,
-        );
-      const khourySemesterParsed = this.loginCourseService.parseKhourySemester(
-        sectionGroup.semester,
-      );
-      const semester = await SemesterModel.findOne({
-        where: {
-          season: khourySemesterParsed.season,
-          year: khourySemesterParsed.year,
-        },
-      });
-      if (!semester)
-        throw new BadRequestException(
-          ERROR_MESSAGES.courseController.noSemesterFound,
-        );
-
-      // checks that course hasn't already been created
-      let course = await CourseModel.findOne({
-        where: {
-          name: courseParams.name,
-          semesterId: semester.id,
-        },
-      });
-      if (course)
-        throw new BadRequestException(
-          ERROR_MESSAGES.courseController.courseAlreadyRegistered,
-          courseParams.name,
-        );
-
-      try {
-        // create the submitted course
-        course = await CourseModel.create({
-          name: courseParams.name,
-          sectionGroupName: courseParams.sectionGroupName,
-          coordinator_email: courseParams.coordinator_email,
-          icalURL: courseParams.iCalURL,
-          semesterId: semester.id,
-          enabled: true,
-          timezone: courseParams.timezone,
-        }).save();
-      } catch (err) {
-        console.error(err);
-        throw new HttpException(
-          ERROR_MESSAGES.courseController.createCourse,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
-
-      try {
-        // create CourseSectionMappings for each crn
-        new Set(sectionGroup.crns).forEach(async (crn) => {
-          await CourseSectionMappingModel.create({
-            crn: crn,
-            courseId: course.id,
-          }).save();
-        });
-      } catch (err) {
-        console.error(err);
-        throw new HttpException(
-          ERROR_MESSAGES.courseController.createCourseMappings,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
-
-      // Add UserCourse to course
-      await UserCourseModel.create({
-        userId,
-        courseId: course.id,
-        role: Role.PROFESSOR,
-      }).save();
-
-      try {
-        // Update professor's last registered semester to semester model's current semester
-        let profLastRegistered: LastRegistrationModel;
-        profLastRegistered = await LastRegistrationModel.findOne({
-          where: { profId: userId },
-        });
-        if (profLastRegistered) {
-          profLastRegistered.lastRegisteredSemester = sectionGroup.semester;
-          await profLastRegistered.save();
-        } else {
-          profLastRegistered = await LastRegistrationModel.create({
-            profId: userId,
-            lastRegisteredSemester: sectionGroup.semester,
-          }).save();
-        }
-      } catch (err) {
-        console.error(err);
-        throw new HttpException(
-          ERROR_MESSAGES.courseController.updateProfLastRegistered,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
+    try {
+      await this.courseService.registerCourses(body, userId);
+    } catch (err) {
+      throw err;
     }
   }
 
