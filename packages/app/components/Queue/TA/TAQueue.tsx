@@ -144,18 +144,24 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
                 </Tooltip>
 
                 <div style={{ marginBottom: "12px" }}>
-                  <TACheckinButton
-                    courseId={courseId}
-                    room={queue?.room}
-                    disabled={
-                      staffCheckedIntoAnotherQueue ||
-                      isHelping ||
-                      (queue.isProfessorQueue && role !== Role.PROFESSOR) ||
-                      queue.isDisabled
+                  <Tooltip
+                    title={
+                      queue.isDisabled && "Cannot check into a disabled queue!"
                     }
-                    state={isCheckedIn ? "CheckedIn" : "CheckedOut"}
-                    block
-                  />
+                  >
+                    <TACheckinButton
+                      courseId={courseId}
+                      room={queue?.room}
+                      disabled={
+                        staffCheckedIntoAnotherQueue ||
+                        isHelping ||
+                        (queue.isProfessorQueue && role !== Role.PROFESSOR) ||
+                        queue.isDisabled
+                      }
+                      state={isCheckedIn ? "CheckedIn" : "CheckedOut"}
+                      block
+                    />
+                  </Tooltip>
                 </div>
               </>
             }
