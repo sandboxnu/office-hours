@@ -626,10 +626,21 @@ describe('Course Integration', () => {
         },
       ];
 
+      // Counts total professor courses before registration
+      const totalProfCoursesBefore = await UserCourseModel.count({
+        where: { userId: professor.id },
+      });
+
       await supertest({ userId: professor.id })
         .post(`/courses/register_courses`)
         .send(registerCourses)
         .expect(201);
+
+      // total professor courses after registering 2 courses
+      const totalProfCourses = await UserCourseModel.count({
+        where: { userId: professor.id },
+      });
+      expect(totalProfCourses).toEqual(totalProfCoursesBefore + 2);
 
       // verify courses are created as expected
       const ubw = await CourseModel.findOne({
