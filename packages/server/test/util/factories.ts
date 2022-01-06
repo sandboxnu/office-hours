@@ -94,5 +94,5 @@ export const LastRegistrationFactory = new Factory(LastRegistrationModel)
   .assocOne('prof', UserFactory);
 
 export const ProfSectionGroupsFactory = new Factory(ProfSectionGroupsModel)
-  .attr('sectionGroups', [])
-  .assocOne('prof', UserFactory);
+  .assocOne('prof', UserFactory)
+  .attr('sectionGroups', []);
