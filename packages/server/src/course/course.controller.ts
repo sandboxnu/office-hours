@@ -530,11 +530,7 @@ export class CourseController {
     @Body() body: RegisterCourseParams[],
     @UserId() userId: number,
   ): Promise<void> {
-    try {
-      await this.courseService.registerCourses(body, userId);
-    } catch (err) {
-      throw err;
-    }
+    await this.courseService.registerCourses(body, userId);
   }
 
   @Get(':id/ta_check_in_times')
