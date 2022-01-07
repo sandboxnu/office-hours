@@ -299,7 +299,7 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
                 >
                   <JoinButton
                     type="primary"
-                    disabled={!queue?.allowQuestions}
+                    disabled={!queue?.allowQuestions || queue?.isDisabled}
                     data-cy="join-queue-button"
                     onClick={async () =>
                       setShowJoinPopconfirm(!(await joinQueueOpenModal(false)))
