@@ -60,7 +60,7 @@ export default function EditCourse({
           tooltip="This is the course name that will be displayed within the app"
           rules={[{ required: true, message: "Please input a display name." }]}
         >
-          <Input placeholder="ex: CS 2500" />
+          <Input placeholder="ex: CS 2500" maxLength={20} />
         </Form.Item>
 
         <Form.Item

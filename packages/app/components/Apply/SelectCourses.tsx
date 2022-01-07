@@ -51,7 +51,7 @@ export default function SelectCourses({
       },
       []
     );
-    setSelectedCourses(defaultValues);
+    setSelectedCourses(defaultValues || []);
   }, []);
 
   const handleCoursesChange = (indicies) => {

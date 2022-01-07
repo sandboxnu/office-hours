@@ -70,7 +70,15 @@ export default function ApplyPage(): ReactElement {
 
   const handleSubmitCourses = async () => {
     try {
-      await Promise.resolve(); // TODO: test with api endpt, that redirect no longer happens
+      await API.course.registerCourses(
+        postBody.map((courseInfo) => ({
+          name: courseInfo.displayName,
+          sectionGroupName: courseInfo.name,
+          iCalURL: courseInfo.iCalURL,
+          coordinator_email: courseInfo.coordinator_email,
+          timezone: courseInfo.timezone,
+        }))
+      );
       message.success(
         "Successfully registered courses. Redirecting you to the app..."
       );
