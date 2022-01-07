@@ -1,9 +1,13 @@
 import {
   ERROR_MESSAGES,
+  KhouryProfCourse,
   Role,
   TACheckinTimesResponse,
   TACheckoutResponse,
 } from '@koh/common';
+import { CourseModel } from 'course/course.entity';
+import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
+import { LastRegistrationModel } from 'login/last-registration-model.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { CourseModule } from '../src/course/course.module';
@@ -13,8 +17,10 @@ import {
   CourseFactory,
   EventFactory,
   OfficeHourFactory,
+  ProfSectionGroupsFactory,
   QuestionFactory,
   QueueFactory,
+  SemesterFactory,
   StudentCourseFactory,
   TACourseFactory,
   UserCourseFactory,
@@ -561,6 +567,132 @@ describe('Course Integration', () => {
       expect(testTPresent).toBeUndefined();
       expect(testPPresent).toBeUndefined();
       expect(userCourse).toBeDefined();
+    });
+  });
+
+  describe('POST /register_courses', () => {
+    it('tests prof registering an array of courses', async () => {
+      const professor = await UserFactory.create();
+      await UserCourseFactory.create({
+        course: await CourseFactory.create(),
+        user: professor,
+        role: Role.PROFESSOR,
+      });
+
+      const CRN1 = 12345;
+      const CRN2 = 56765;
+      const CRN3 = 44444;
+      const course1: KhouryProfCourse = {
+        crns: [CRN1, CRN2, CRN3],
+        semester: '202230',
+        name: 'Underwater Basket-Weaving',
+      };
+
+      const CRN4 = 11111;
+      const CRN5 = 22222;
+      const course2: KhouryProfCourse = {
+        crns: [CRN4, CRN5],
+        semester: '202230',
+        name: 'Underwater Basket-Weaving 2',
+      };
+
+      await SemesterFactory.create({
+        season: 'Spring',
+        year: 2022,
+      });
+
+      await ProfSectionGroupsFactory.create({
+        prof: professor,
+        profId: professor.id,
+        sectionGroups: [course1, course2],
+      });
+
+      const registerCourses = [
+        {
+          sectionGroupName: 'Underwater Basket-Weaving',
+          name: 'Scuba',
+          iCalURL:
+            'https://calendar.google.com/calendar/ical/yamsarecool/basic.ics',
+          coordinator_email: 'yamsarecool@gmail.com',
+          timezone: 'America/New_York',
+        },
+        {
+          sectionGroupName: 'Underwater Basket-Weaving 2',
+          name: 'Scuba 2',
+          iCalURL:
+            'https://calendar.google.com/calendar/ical/potatoesarecool2/basic.ics',
+          coordinator_email: 'potatoesarecool2@outlook.com',
+          timezone: 'America/Los_Angeles',
+        },
+      ];
+
+      // Counts total professor courses before registration
+      const totalProfCoursesBefore = await UserCourseModel.count({
+        where: { userId: professor.id },
+      });
+
+      await supertest({ userId: professor.id })
+        .post(`/courses/register_courses`)
+        .send(registerCourses)
+        .expect(201);
+
+      // total professor courses after registering 2 courses
+      const totalProfCourses = await UserCourseModel.count({
+        where: { userId: professor.id },
+      });
+      expect(totalProfCourses).toEqual(totalProfCoursesBefore + 2);
+
+      // verify courses are created as expected
+      const ubw = await CourseModel.findOne({
+        sectionGroupName: 'Underwater Basket-Weaving',
+      });
+      const ubw2 = await CourseModel.findOne({
+        sectionGroupName: 'Underwater Basket-Weaving 2',
+      });
+      expect(ubw).toBeDefined();
+      expect(ubw2).toBeDefined();
+
+      // checks if the registered courses have the professor as a userCourse
+      const ubwProfCourse = await UserCourseModel.findOne({
+        where: { userId: professor.id, courseId: ubw.id },
+      });
+      const ubw2ProfCourse = await UserCourseModel.findOne({
+        where: { userId: professor.id, courseId: ubw2.id },
+      });
+      expect(ubwProfCourse).toBeDefined();
+      expect(ubw2ProfCourse).toBeDefined();
+
+      // Check CRN mappings created for each crn
+      const crn1ToUbwMapping = await CourseSectionMappingModel.findOne({
+        where: { crn: CRN1, courseId: ubw.id },
+      });
+      const crn2ToUbwMapping = await CourseSectionMappingModel.findOne({
+        where: { crn: CRN2, courseId: ubw.id },
+      });
+      const crn3ToUbwMapping = await CourseSectionMappingModel.findOne({
+        where: { crn: CRN3, courseId: ubw.id },
+      });
+      const crn4ToUbwMapping = await CourseSectionMappingModel.findOne({
+        where: { crn: CRN4, courseId: ubw.id },
+      });
+      expect(crn1ToUbwMapping).toBeDefined();
+      expect(crn2ToUbwMapping).toBeDefined();
+      expect(crn3ToUbwMapping).toBeDefined();
+      expect(crn4ToUbwMapping).toBeUndefined();
+      const crn4ToUbw2Mapping = await CourseSectionMappingModel.findOne({
+        where: { crn: CRN4, courseId: ubw2.id },
+      });
+      const crn5ToUbw2Mapping = await CourseSectionMappingModel.findOne({
+        where: { crn: CRN5, courseId: ubw2.id },
+      });
+      expect(crn4ToUbw2Mapping).toBeDefined();
+      expect(crn5ToUbw2Mapping).toBeDefined();
+
+      // Check if prof's LastRegistrationSemester is up to date
+      const profLastRegistered = await LastRegistrationModel.findOne({
+        where: { profId: professor.id },
+      });
+      expect(profLastRegistered.lastRegisteredSemester).toEqual('202230');
     });
   });
 });

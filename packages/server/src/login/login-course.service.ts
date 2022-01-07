@@ -134,6 +134,30 @@ export class LoginCourseService {
     return userCourse;
   }
 
+  // parses 6-digit semester code, where first 4 digits represent year and last 2 digits represent academic semester (ex: 202110)
+  public parseKhourySemester(khourySemester: string): {
+    season: Season;
+    year: number;
+  } {
+    const courseSeasonMap = {
+      '10': 'Fall',
+      '30': 'Spring',
+      '40': 'Summer_1',
+      '50': 'Summer_Full',
+      '60': 'Summer_2',
+    };
+
+    // parsing time
+    let year = Number(khourySemester.slice(0, 4));
+    const season = courseSeasonMap[khourySemester.slice(-2)];
+    // edge case for Fall semester, included in the next academic year
+    if (season === 'Fall') {
+      year--;
+    }
+
+    return { season, year };
+  }
+
   private async getSemester(khourySemester: string) {
     const { season, year } = this.parseKhourySemester(khourySemester);
     let semModel = await SemesterModel.findOne({ where: { season, year } });
@@ -162,27 +186,5 @@ export class LoginCourseService {
   // util functions for converting Khoury Admin data to KOH data
   private convertKhouryRole(khouryRole: 'TA' | 'Student'): Role {
     return khouryRole.toLowerCase() === 'ta' ? Role.TA : Role.STUDENT;
-  }
-
-  // parses 6-digit semester code, where first 4 digits represent year and last 2 digits represent academic semester (ex: 202110)
-  private parseKhourySemester(khourySemester: string): {
-    season: Season;
-    year: number;
-  } {
-    const courseSeasonMap = {
-      '10': 'Fall',
-      '30': 'Spring',
-      '40': 'Summer_1',
-      '50': 'Summer_Full',
-      '60': 'Summer_2',
-    };
-    // parsing time
-    let year = Number(khourySemester.slice(0, 4));
-    const season = courseSeasonMap[khourySemester.slice(-2)];
-    // edge case for Fall semester, included in the next academic year
-    if (season === 'Fall') {
-      year--;
-    }
-    return { season, year };
   }
 }
