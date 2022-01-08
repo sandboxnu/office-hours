@@ -143,7 +143,9 @@ export function QueueInfoColumn({
   return (
     <InfoColumnContainer>
       <QueueRoomGroup>
-        <QueueTitle data-cy="room-title">{queue?.room}</QueueTitle>
+        <QueueTitle data-cy="room-title">
+          {queue?.room} {queue?.isDisabled && <b>(disabled)</b>}
+        </QueueTitle>
         {!queue.allowQuestions && (
           <Tooltip title="This queue is no longer accepting questions">
             <StopOutlined
@@ -189,8 +191,9 @@ export function QueueInfoColumn({
         <DisableQueueButton
           onClick={confirmDisable}
           data-cy="queue-disable-button"
+          disabled={queue?.isDisabled}
         >
-          Disable Queue
+          {queue?.isDisabled ? `Queue disabled` : `Disable Queue`}
         </DisableQueueButton>
       )}
     </InfoColumnContainer>

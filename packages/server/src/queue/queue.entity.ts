@@ -74,7 +74,8 @@ export class QueueModel extends BaseEntity {
   isOpen: boolean;
 
   async checkIsOpen(): Promise<boolean> {
-    this.isOpen = this.staffList && this.staffList.length > 0;
+    this.isOpen =
+      this.staffList && this.staffList.length > 0 && !this.isDisabled;
     return this.isOpen;
   }
 

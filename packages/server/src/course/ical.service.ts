@@ -188,7 +188,7 @@ export class IcalService {
     );
     console.time(`scrape course ${course.id}`);
     let queue = await QueueModel.findOne({
-      where: { courseId: course.id, room: 'Online' },
+      where: { courseId: course.id, room: 'Online', isDisabled: false },
     });
     const semester =
       course.semester ||
