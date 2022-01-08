@@ -50,16 +50,19 @@ export default function TACheckinButton({
   async function checkInTA() {
     // to see old check in in person functionality look at commit b4768bbfb0f36444c80961703bdbba01ff4a5596
     //trying to limit changes to the frontend, all queues will have the room online
-    try {
-      const redirectID = await API.taStatus.checkIn(courseId, room);
 
-      router.push(
-        "/course/[cid]/queue/[qid]",
-        `/course/${courseId}/queue/${redirectID.id}`
-      );
+    try {
+       const redirectID = await API.taStatus.checkIn(courseId, room);
+    mutateCourse();
+    router.push(
+      "/course/[cid]/queue/[qid]",
+      `/course/${courseId}/queue/${redirectID.id}`
+    );
+
     } catch (err) {
       message.error(err.response?.data?.message);
     }
+   
   }
 
   const [checkoutModalInfo, setCheckoutModalInfo] = useState<{

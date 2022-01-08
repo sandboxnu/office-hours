@@ -6,13 +6,41 @@ import {
   createQueueWithoutOfficeHour, taOpenOnline,
 } from "../../utils";
 
-describe("Can successfuly check in and out of a queue when their is scheduled office hours", () => {
+describe("Can successfully check in and out of a queue when their is scheduled office hours", () => {
   beforeEach(() => {
     // Set the state
     createAndLoginTA();
     createQueue({
       courseId: "ta.course.id",
     });
+  });
+
+  it("should check in as TA and view open queues on dropdown", function () {
+    // Visit the today page
+    cy.visit(`/course/${this.queue.courseId}/today`);
+
+    // close "Welcome to Khoury" modal
+    cy.get(".ant-modal-close-x").click();
+
+    taOpenOnline();
+
+    // check Queue tab exists with one queue
+    cy.get("[data-cy='queue-tab']").should('be.visible').contains("Queue");
+    cy.get("[data-cy='queue-tab']").should(
+        "have.length",
+        "1"
+    );
+
+    // wait for modal to close and then hover over Queue tab for submenu
+    cy.get(".ant-modal").should('not.exist');
+    cy.get("[data-cy='queue-tab']").trigger("mouseover");
+
+    // click the available queue from dropdown to visit
+    cy.get("[data-cy='queue-menu-item-Online']").click();
+
+    // check we went to correct queue page
+    cy.location("pathname").should("contain", "/queue");
+    cy.get("body").should("contain", "There are no questions in the queue");
   });
 
   it("checking in multiple TAs then checking one out", function () {
@@ -35,13 +63,13 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
     cy.get("[data-cy='ta-status-card']").should("have.length", "2");
 
     // wait for queue tab to show up (load course profiles)
-    cy.get(`[href="/course/${this.queue.course.id}/queue/${this.queue.id}"]`).contains("Queue");
+    cy.get("[data-cy='queue-tab']").contains("Queue");
     cy.percySnapshot("TA Queue Page - Two TA's Checked In");
 
     // 1 student should be in the queue
     cy.get(`[data-cy="list-queue"] [data-cy^="queue-list-item"]`).should(
-      "have.length",
-      "1"
+        "have.length",
+        "1"
     );
 
     // Click "Check out"
@@ -51,8 +79,8 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
     // Other TA should still be checked in, and there should still be 1 student in the queue
     cy.get("[data-cy='ta-status-card']").should("have.length", "1");
     cy.get(`[data-cy="list-queue"] [data-cy^="queue-list-item"]`).should(
-      "have.length",
-      "1"
+        "have.length",
+        "1"
     );
     cy.percySnapshot("TA Queue Page - One TA Checked out One TA Checked In");
   });
