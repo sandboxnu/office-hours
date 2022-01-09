@@ -55,13 +55,21 @@ export default function ConfirmCourses({
 }: ConfirmCourseProps): ReactElement {
   return (
     <div>
-      <h3>Please confirm all the information is correct before submitting:</h3>
-      {courses.map((course, index) => (
-        <div key={course.name}>
-          {index > 0 && <Divider style={{ backgroundColor: "#d9d9d9" }} />}
-          <FormattedCourse course={course} />
-        </div>
-      ))}
+      {courses.length === 0 ? (
+        <h3>Continue without registering new courses?</h3>
+      ) : (
+        <>
+          <h3>
+            Please confirm all the information is correct before submitting:
+          </h3>
+          {courses.map((course, index) => (
+            <div key={course.name}>
+              {index > 0 && <Divider style={{ backgroundColor: "#d9d9d9" }} />}
+              <FormattedCourse course={course} />
+            </div>
+          ))}
+        </>
+      )}
       <Space style={{ marginTop: "1.5em" }}>
         <Button onClick={onBack}>Back</Button>
         <Button onClick={onSubmit} type="primary">
