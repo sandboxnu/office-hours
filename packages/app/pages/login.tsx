@@ -1,7 +1,7 @@
 import { Button } from "antd";
 import styled from "styled-components";
 import { ReactElement } from "react";
-import { useDefaultCourseRedirect } from "../hooks/useDefaultCourseRedirect";
+import { useHomePageRedirect } from "../hooks/useHomePageRedirect";
 import { User } from "@koh/common";
 import Router from "next/router";
 import { useProfile } from "../hooks/useProfile";
@@ -19,7 +19,7 @@ const ContentContainer = styled.div`
 
 export default function Login(): ReactElement {
   const profile: User = useProfile();
-  const didRedirect = useDefaultCourseRedirect();
+  const didRedirect = useHomePageRedirect();
   if (profile && !didRedirect) {
     Router.push("/nocourses");
   }

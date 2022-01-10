@@ -3,8 +3,8 @@ import {
   GetCourseOverridesResponse,
   GetCourseResponse,
   QueuePartial,
+  RegisterCourseParams,
   Role,
-  SubmitCourseParams,
   TACheckinTimesResponse,
   TACheckoutResponse,
   UpdateCourseOverrideBody,
@@ -28,7 +28,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import async from 'async';
-import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
+import moment = require('moment');
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { Connection, getRepository, MoreThanOrEqual } from 'typeorm';
@@ -37,16 +37,14 @@ import { User, UserId } from '../decorators/user.decorator';
 import { CourseRolesGuard } from '../guards/course-roles.guard';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { UserModel } from '../profile/user.entity';
+import { QueueModel } from '../queue/queue.entity';
+import { CourseModel } from './course.entity';
+import { OfficeHourModel } from './office-hour.entity';
 import { QueueCleanService } from '../queue/queue-clean/queue-clean.service';
 import { QueueSSEService } from '../queue/queue-sse.service';
-import { QueueModel } from '../queue/queue.entity';
-import { SemesterModel } from '../semester/semester.entity';
-import { CourseModel } from './course.entity';
 import { CourseService } from './course.service';
 import { HeatmapService } from './heatmap.service';
 import { IcalService } from './ical.service';
-import { OfficeHourModel } from './office-hour.entity';
-import moment = require('moment');
 
 @Controller('courses')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -525,61 +523,14 @@ export class CourseController {
     await this.courseService.removeUserFromCourse(userCourse);
   }
 
-  @Post('submit_course')
-  async submitCourse(@Body() body: SubmitCourseParams): Promise<void> {
-    if (body.password !== process.env.APPLY_PASSWORD) {
-      throw new UnauthorizedException(
-        ERROR_MESSAGES.courseController.invalidApplyURL,
-      );
-    }
-
-    const season = body.semester.split(' ')[0];
-    const year = parseInt(body.semester.split(' ')[1]);
-
-    const semester = await SemesterModel.findOne({
-      where: { season, year },
-    });
-    if (!semester)
-      throw new BadRequestException(
-        ERROR_MESSAGES.courseController.noSemesterFound,
-      );
-
-    let course = null;
-    try {
-      // create the submitted course
-      course = await CourseModel.create({
-        name: body.name,
-        coordinator_email: body.coordinator_email,
-        icalURL: body.icalURL,
-        semesterId: semester.id,
-        enabled: false,
-        pending: true,
-        timezone: body.timezone,
-      }).save();
-    } catch (err) {
-      console.error(err);
-      throw new HttpException(
-        ERROR_MESSAGES.courseController.createCourse,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-
-    try {
-      // create CourseSectionMappings for each unique submitted section number
-      new Set(body.sections).forEach(async (section) => {
-        await CourseSectionMappingModel.create({
-          genericCourseName: body.name,
-          section,
-          courseId: course.id,
-        }).save();
-      });
-    } catch (err) {
-      console.error(err);
-      throw new HttpException(
-        ERROR_MESSAGES.courseController.createCourseMappings,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+  @Post('/register_courses')
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.PROFESSOR)
+  async registerCourses(
+    @Body() body: RegisterCourseParams[],
+    @UserId() userId: number,
+  ): Promise<void> {
+    await this.courseService.registerCourses(body, userId);
   }
 
   @Get(':id/ta_check_in_times')
