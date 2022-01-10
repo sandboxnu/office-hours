@@ -10,6 +10,8 @@ import { UserCourseModel } from '../../src/profile/user-course.entity';
 import { UserModel } from '../../src/profile/user.entity';
 import { QuestionModel } from '../../src/question/question.entity';
 import { QueueModel } from '../../src/queue/queue.entity';
+import { LastRegistrationModel } from 'login/last-registration-model.entity';
+import { ProfSectionGroupsModel } from 'login/prof-section-groups.entity';
 
 export const UserFactory = new Factory(UserModel)
   .attr('email', `user@neu.edu`)
@@ -49,8 +51,7 @@ export const CourseFactory = new Factory(CourseModel)
   .assocMany('officeHours', OfficeHourFactory, 0);
 
 export const CourseSectionFactory = new Factory(CourseSectionMappingModel)
-  .attr('genericCourseName', 'CS 2500')
-  .sequence('section', (i) => i)
+  .attr('crn', 12345)
   .assocOne('course', CourseFactory);
 
 export const UserCourseFactory = new Factory(UserCourseModel)
@@ -87,3 +88,11 @@ export const EventFactory = new Factory(EventModel)
   .attr('eventType', EventType.TA_CHECKED_IN)
   .assocOne('user', UserFactory)
   .assocOne('course', CourseFactory);
+
+export const LastRegistrationFactory = new Factory(LastRegistrationModel)
+  .attr('lastRegisteredSemester', '202110') // Fall 2020
+  .assocOne('prof', UserFactory);
+
+export const ProfSectionGroupsFactory = new Factory(ProfSectionGroupsModel)
+  .assocOne('prof', UserFactory)
+  .attr('sectionGroups', []);

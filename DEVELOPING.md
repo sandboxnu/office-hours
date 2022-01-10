@@ -52,7 +52,7 @@ Your IDE should do type-checking for you. You can run type-checks manually with 
 
 ## Migrations
 
-If you change an entity, you MUST run `yarn migration:generate`, to make the migration file, then `yarn typeorm migration:run` will automatically run on deployment to staging/production. Commit the migration file to Git!
+If you change an entity, you MUST run `yarn migration:generate -n [migration-name]`, to make the migration file, then `yarn typeorm migration:run` will automatically run on deployment to staging/production. Commit the migration file to Git!
 
 ### Adding an API Route
 
