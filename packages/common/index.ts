@@ -356,7 +356,7 @@ export class KhouryDataParams {
   last_name!: string;
 
   @IsInt()
-  campus!: string;
+  campus!: number;
 
   @IsOptional()
   @IsString()
