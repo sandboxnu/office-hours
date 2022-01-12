@@ -1,12 +1,12 @@
 import { API } from "@koh/api-client";
 import { UpdateProfileParams } from "@koh/common";
-import { Button, Form, Input, message, Row } from "antd";
+import { Button, Form, Input, message } from "antd";
 import { pick } from "lodash";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { HeaderTitle } from "./Styled";
-import styled from "styled-components";
 import React, { ReactElement } from "react";
 import useSWR from "swr";
+import ResponsiveRowCol from "../common/ResponsiveRowCol";
 
 export default function ProfileSettings(): ReactElement {
   const { data: profile, mutate } = useSWR(`api/v1/profile`, async () =>
@@ -30,17 +30,13 @@ export default function ProfileSettings(): ReactElement {
     message.success("Your profile settings have been successfully updated");
   };
 
-  const ResponsiveFormRow = styled(Row)`
-    flexdirection: ${isMobile ? "column" : "row"};
-  `;
-
   return profile ? (
     <div>
       <HeaderTitle>
         <h1>Personal Information</h1>
       </HeaderTitle>
       <Form wrapperCol={{ span: 18 }} form={form} initialValues={profile}>
-        <ResponsiveFormRow>
+        <ResponsiveRowCol>
           <Form.Item
             label="First Name"
             name="firstName"
@@ -68,7 +64,7 @@ export default function ProfileSettings(): ReactElement {
           >
             <Input />
           </Form.Item>
-        </ResponsiveFormRow>
+        </ResponsiveRowCol>
       </Form>
       <Button
         key="submit"

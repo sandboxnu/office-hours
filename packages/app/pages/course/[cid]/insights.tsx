@@ -28,18 +28,26 @@ import SimpleDisplayComponent from "../../../components/Insights/components/Simp
 import InsightsDisplayOptions from "../../../components/Insights/components/InsightsDisplayOptions";
 import { SimpleTable } from "../../../components/Insights/components/SimpleTable";
 import styled from "styled-components";
+import { useIsMobile } from "../../../hooks/useIsMobile";
 
 const InsightsRowContainer = styled.div`
   display: flex;
   direction: ltr;
   margin-left: -0.5%;
   margin-right: -0.5%;
+
+  @media (max-width: 650px) {
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
 `;
 
 export default function Insights(): ReactElement {
   const profile = useProfile();
   const router = useRouter();
   const { cid } = router.query;
+  const isMobile = useIsMobile();
 
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
 
@@ -63,87 +71,83 @@ export default function Insights(): ReactElement {
   const { RangePicker } = DatePicker;
 
   return (
-    <>
-      <StandardPageContainer>
-        <NavBar courseId={Number(cid)} />
-        <Row
-          align={"middle"}
-          justify={"space-between"}
-          style={{ margin: "12px 0px" }}
-        >
-          <h1 style={{ display: "inline", margin: "0px" }}>
-            Insights Dashboard
-          </h1>
-          <Row>
-            <div style={{ maxWidth: "200 px" }}>
-              <Tooltip
-                title={
-                  "If no date range is selected results are from the data for the full semester so far"
-                }
-              >
-                <QuestionCircleOutlined />
-              </Tooltip>
-              <b
-                style={{
-                  display: "inline-block",
-                  marginRight: "12px",
-                  marginLeft: "8px",
-                }}
-              >
-                Date Range
-              </b>
-              <RangePicker
-                onChange={(_, dateString) =>
-                  setDateRange({ start: dateString[0], end: dateString[1] })
-                }
-              />
-            </div>
-            <Button
-              style={{ marginLeft: "24px" }}
-              onClick={() => setSettingsVisible(true)}
+    <StandardPageContainer>
+      <NavBar courseId={Number(cid)} />
+      <Row
+        align={"middle"}
+        justify={"space-between"}
+        style={{ margin: "12px 0px" }}
+      >
+        <h1 style={{ display: "inline", margin: "0px" }}>Insights Dashboard</h1>
+        <Row>
+          <div style={{ maxWidth: "200px" }}>
+            <Tooltip
+              title={
+                "If no date range is selected results are from the data for the full semester so far"
+              }
             >
-              Edit Insights
-            </Button>
-          </Row>
+              <QuestionCircleOutlined />
+            </Tooltip>
+            <b
+              style={{
+                display: "inline-block",
+                marginRight: "12px",
+                marginLeft: "8px",
+              }}
+            >
+              Date Range
+            </b>
+            <RangePicker
+              onChange={(_, dateString) =>
+                setDateRange({ start: dateString[0], end: dateString[1] })
+              }
+            />
+          </div>
+          <Button
+            style={{ marginLeft: "24px" }}
+            onClick={() => setSettingsVisible(true)}
+          >
+            Edit Insights
+          </Button>
         </Row>
-        <Divider style={{ margin: "0 0 16px 0" }} />
-        <Drawer
-          title="Display Options"
-          placement="left"
-          closable={true}
-          destroyOnClose={true}
-          onClose={() => setSettingsVisible(false)}
-          visible={settingsVisible}
-          width={400}
-        >
-          <InsightsDisplayOptions />
-        </Drawer>
-        <InsightsRowContainer>
-          {smallInsights?.map((insightName: string) => {
-            return (
-              <RenderInsight
-                key={insightName}
-                insightName={insightName}
-                insightDisplay={allInsights[insightName]}
-                dateRange={dateRange}
-              />
-            );
-          })}
-        </InsightsRowContainer>
-        <InsightsRowContainer>
-          {defaultInsights?.map((insightName: string) => {
-            return (
-              <RenderInsight
-                key={insightName}
-                insightName={insightName}
-                insightDisplay={allInsights[insightName]}
-                dateRange={dateRange}
-              />
-            );
-          })}
-        </InsightsRowContainer>
-      </StandardPageContainer>
-    </>
+      </Row>
+      <Divider style={{ margin: "0 0 16px 0" }} />
+      <Drawer
+        title="Display Options"
+        placement="left"
+        closable={true}
+        destroyOnClose={true}
+        onClose={() => setSettingsVisible(false)}
+        visible={settingsVisible}
+        width={isMobile ? "100%" : 400}
+      >
+        <InsightsDisplayOptions />
+      </Drawer>
+      <InsightsRowContainer>
+        {smallInsights?.map((insightName: string) => {
+          return (
+            <RenderInsight
+              key={insightName}
+              insightName={insightName}
+              insightDisplay={allInsights[insightName]}
+              dateRange={dateRange}
+            />
+          );
+        })}
+      </InsightsRowContainer>
+      <InsightsRowContainer>
+        {defaultInsights?.map((insightName: string) => {
+          return (
+            <RenderInsight
+              key={insightName}
+              insightName={insightName}
+              insightDisplay={allInsights[insightName]}
+              dateRange={dateRange}
+            />
+          );
+        })}
+      </InsightsRowContainer>
+    </StandardPageContainer>
   );
 }
 
@@ -171,6 +175,18 @@ function RenderInsight({
       })
   );
 
+  const SizeableCard = styled(Card)`
+    margin: 0.5%;
+    padding: 2px;
+    width: 16.6%;
+    maxwidth: 200px;
+
+    @media (max-width: 650px) {
+      width: 48%;
+      maxwidth: 625px;
+    }
+  `;
+
   let DataComponent;
   switch (insightDisplay.component) {
     case InsightComponent.SimpleDisplay:
@@ -188,14 +204,11 @@ function RenderInsight({
   }
 
   return (
-    <Card
+    <SizeableCard
       size={insightDisplay.size as CardSize}
       title={insightDisplay.displayName}
       style={{
-        margin: "0.5%",
-        padding: "2px",
-        width: insightDisplay.size === "default" ? "50%" : "16.66%",
-        maxWidth: insightDisplay.size === "default" ? "625px" : "200px",
+        width: insightDisplay.size === "default" && "100%",
       }}
       bodyStyle={{ position: "relative" }}
       extra={
@@ -206,12 +219,12 @@ function RenderInsight({
         </Space>
       }
     >
-      {insightOutput === undefined ? (
+      {insightOutput !== undefined ? (
         <Spin style={{ margin: "10% 45%" }} />
       ) : (
         <DataComponent key={insightName} output={insightOutput} />
       )}
-    </Card>
+    </SizeableCard>
   );
 }
 

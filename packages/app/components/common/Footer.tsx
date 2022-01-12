@@ -10,6 +10,12 @@ const FullWidth = styled.footer`
 
   display: flex;
   justify-content: space-between;
+
+  @media (max-width: 650px) {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
 `;
 
 export function Footer(): ReactElement {
@@ -59,7 +65,7 @@ export function Footer(): ReactElement {
             );
           }}
         >
-          File a bug report
+          file a bug report
         </a>
       </div>
     </FullWidth>
