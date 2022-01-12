@@ -13,7 +13,7 @@ export class CourseSectionMappingModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true }) // for backwards compat
+  @Column()
   crn: number;
 
   // Represents the course that this maps to
