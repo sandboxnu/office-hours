@@ -130,7 +130,7 @@ export class CourseService {
     // iterate over each section group registration
     for (const courseParams of body) {
       // finds professor's section group with matching name
-      const sectionGroup = profSectionGroups.sectionGroups.find(
+      const sectionGroup = profSectionGroups?.sectionGroups.find(
         (sg) => sg.name === courseParams.sectionGroupName,
       );
       if (!sectionGroup)
@@ -205,29 +205,33 @@ export class CourseService {
         courseId: course.id,
         role: Role.PROFESSOR,
       }).save();
+    }
 
-      try {
-        // Update professor's last registered semester to semester model's current semester
-        let profLastRegistered: LastRegistrationModel;
-        profLastRegistered = await LastRegistrationModel.findOne({
-          where: { profId: userId },
-        });
-        if (profLastRegistered) {
-          profLastRegistered.lastRegisteredSemester = sectionGroup.semester;
-          await profLastRegistered.save();
-        } else {
-          profLastRegistered = await LastRegistrationModel.create({
-            profId: userId,
-            lastRegisteredSemester: sectionGroup.semester,
-          }).save();
-        }
-      } catch (err) {
-        console.error(err);
-        throw new HttpException(
-          ERROR_MESSAGES.courseController.updateProfLastRegistered,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+    try {
+      // Update professor's last registered semester to semester model's current semester
+      let profLastRegistered: LastRegistrationModel;
+      profLastRegistered = await LastRegistrationModel.findOne({
+        where: { profId: userId },
+      });
+
+      const lastRegisteredSemester =
+        profSectionGroups?.sectionGroups[0]?.semester;
+
+      if (profLastRegistered) {
+        profLastRegistered.lastRegisteredSemester = lastRegisteredSemester;
+        await profLastRegistered.save();
+      } else {
+        profLastRegistered = await LastRegistrationModel.create({
+          profId: userId,
+          lastRegisteredSemester,
+        }).save();
       }
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.updateProfLastRegistered,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }
