@@ -697,6 +697,7 @@ describe('Course Integration', () => {
 
     it('tests prof registering no courses and last registered semester is still updated', async () => {
       const professor = await UserFactory.create();
+      const newSem = '202230';
       await UserCourseFactory.create({
         course: await CourseFactory.create(),
         user: professor,
@@ -706,6 +707,17 @@ describe('Course Integration', () => {
       await SemesterFactory.create({
         season: 'Spring',
         year: 2022,
+      });
+
+      await ProfSectionGroupsFactory.create({
+        prof: professor,
+        sectionGroups: [
+          {
+            name: 'Fundies 1',
+            crns: [123, 456],
+            semester: newSem,
+          },
+        ],
       });
 
       const noCourses = [];
@@ -725,7 +737,7 @@ describe('Course Integration', () => {
       const profLastRegistered = await LastRegistrationModel.findOne({
         where: { profId: professor.id },
       });
-      expect(profLastRegistered.lastRegisteredSemester).toEqual('202230');
+      expect(profLastRegistered.lastRegisteredSemester).toEqual(newSem);
     });
 
     it('shows error if user enters course that is already registered', async () => {

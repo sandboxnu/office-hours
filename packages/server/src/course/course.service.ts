@@ -127,12 +127,10 @@ export class CourseService {
       where: { profId: userId },
     });
 
-    let lastRegisteredSemester: string;
-
     // iterate over each section group registration
     for (const courseParams of body) {
       // finds professor's section group with matching name
-      const sectionGroup = profSectionGroups.sectionGroups.find(
+      const sectionGroup = profSectionGroups?.sectionGroups.find(
         (sg) => sg.name === courseParams.sectionGroupName,
       );
       if (!sectionGroup)
@@ -207,8 +205,6 @@ export class CourseService {
         courseId: course.id,
         role: Role.PROFESSOR,
       }).save();
-
-      lastRegisteredSemester = sectionGroup.semester;
     }
 
     try {
@@ -218,10 +214,8 @@ export class CourseService {
         where: { profId: userId },
       });
 
-      // if the professor did not register anything, then find the current semester
-      if (!lastRegisteredSemester) {
-        lastRegisteredSemester = this.getCurrentKhourySemester();
-      }
+      const lastRegisteredSemester =
+        profSectionGroups?.sectionGroups[0]?.semester;
 
       if (profLastRegistered) {
         profLastRegistered.lastRegisteredSemester = lastRegisteredSemester;
@@ -238,38 +232,6 @@ export class CourseService {
         ERROR_MESSAGES.courseController.updateProfLastRegistered,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
-    }
-  }
-
-  // TODO: harden course registration for Summer Courses. Last Registered Semester can't tell between summer 1 and summer full.
-  public getCurrentKhourySemester = (): string => {
-    const courseSeasonMap = {
-      Fall: '10',
-      Spring: '30',
-      Summer_1: '40',
-      Summer_Full: '50',
-      Summer_2: '60',
-    };
-    const now = new Date();
-    let year = now.getFullYear();
-    const season = this.monthToSeason(now.getMonth() + 1);
-
-    if (season === 'Fall') {
-      year -= 1;
-    }
-
-    return `${year}${courseSeasonMap[season]}`;
-  };
-
-  private monthToSeason(month: number): string {
-    if (1 <= month && month <= 4) {
-      return 'Spring';
-    } else if (5 <= month && month <= 6) {
-      return 'Summer_1'; // i have no idea how to differentiate between this and summer full
-    } else if (6 <= month && month <= 7) {
-      return 'Summer_2';
-    } else {
-      return 'Fall';
     }
   }
 }
