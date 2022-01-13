@@ -127,6 +127,8 @@ export class CourseService {
       where: { profId: userId },
     });
 
+    let lastRegisteredSemester: string;
+
     // iterate over each section group registration
     for (const courseParams of body) {
       // finds professor's section group with matching name
@@ -206,28 +208,69 @@ export class CourseService {
         role: Role.PROFESSOR,
       }).save();
 
-      try {
-        // Update professor's last registered semester to semester model's current semester
-        let profLastRegistered: LastRegistrationModel;
-        profLastRegistered = await LastRegistrationModel.findOne({
-          where: { profId: userId },
-        });
-        if (profLastRegistered) {
-          profLastRegistered.lastRegisteredSemester = sectionGroup.semester;
-          await profLastRegistered.save();
-        } else {
-          profLastRegistered = await LastRegistrationModel.create({
-            profId: userId,
-            lastRegisteredSemester: sectionGroup.semester,
-          }).save();
-        }
-      } catch (err) {
-        console.error(err);
-        throw new HttpException(
-          ERROR_MESSAGES.courseController.updateProfLastRegistered,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+      lastRegisteredSemester = sectionGroup.semester;
+    }
+
+    try {
+      // Update professor's last registered semester to semester model's current semester
+      let profLastRegistered: LastRegistrationModel;
+      profLastRegistered = await LastRegistrationModel.findOne({
+        where: { profId: userId },
+      });
+
+      // if the professor did not register anything, then find the current semester
+      if (!profLastRegistered) {
+        lastRegisteredSemester = this.getCurrentKhourySemester();
       }
+
+      if (profLastRegistered) {
+        profLastRegistered.lastRegisteredSemester = lastRegisteredSemester;
+        await profLastRegistered.save();
+      } else {
+        profLastRegistered = await LastRegistrationModel.create({
+          profId: userId,
+          lastRegisteredSemester,
+        }).save();
+      }
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.updateProfLastRegistered,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  //TODO: harden course registration for Summer Courses. Last Registered Semester can't tell between summer 1 and summer full.
+  getCurrentKhourySemester = (): string => {
+    const now = new Date();
+    let year = now.getFullYear();
+    const season = this.monthToSeason(now.getMonth());
+
+    const courseSeasonMap = {
+      Fall: '10',
+      Spring: '30',
+      Summer_1: '40',
+      Summer_Full: '50',
+      Summer_2: '60',
+    };
+
+    if (season === 'Fall') {
+      year -= 1;
+    }
+
+    return `${year}${courseSeasonMap[season]}`;
+  };
+
+  private monthToSeason(month: number): string {
+    if (1 <= month && month <= 4) {
+      return 'Spring';
+    } else if (5 <= month && month <= 6) {
+      return 'Summer_1'; // i have no idea how to differentiate between this and summer full
+    } else if (6 <= month && month <= 7) {
+      return 'Summer_2';
+    } else {
+      return 'Fall';
     }
   }
 }
