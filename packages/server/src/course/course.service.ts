@@ -219,7 +219,7 @@ export class CourseService {
       });
 
       // if the professor did not register anything, then find the current semester
-      if (!profLastRegistered) {
+      if (!lastRegisteredSemester) {
         lastRegisteredSemester = this.getCurrentKhourySemester();
       }
 
@@ -241,12 +241,8 @@ export class CourseService {
     }
   }
 
-  //TODO: harden course registration for Summer Courses. Last Registered Semester can't tell between summer 1 and summer full.
-  getCurrentKhourySemester = (): string => {
-    const now = new Date();
-    let year = now.getFullYear();
-    const season = this.monthToSeason(now.getMonth());
-
+  // TODO: harden course registration for Summer Courses. Last Registered Semester can't tell between summer 1 and summer full.
+  public getCurrentKhourySemester = (): string => {
     const courseSeasonMap = {
       Fall: '10',
       Spring: '30',
@@ -254,6 +250,9 @@ export class CourseService {
       Summer_Full: '50',
       Summer_2: '60',
     };
+    const now = new Date();
+    let year = now.getFullYear();
+    const season = this.monthToSeason(now.getMonth() + 1);
 
     if (season === 'Fall') {
       year -= 1;
