@@ -694,5 +694,139 @@ describe('Course Integration', () => {
       });
       expect(profLastRegistered.lastRegisteredSemester).toEqual('202230');
     });
+
+    it('tests prof registering no courses and last registered semester is still updated', async () => {
+      const professor = await UserFactory.create();
+      const newSem = '202230';
+      await UserCourseFactory.create({
+        course: await CourseFactory.create(),
+        user: professor,
+        role: Role.PROFESSOR,
+      });
+
+      await SemesterFactory.create({
+        season: 'Spring',
+        year: 2022,
+      });
+
+      await ProfSectionGroupsFactory.create({
+        prof: professor,
+        sectionGroups: [
+          {
+            name: 'Fundies 1',
+            crns: [123, 456],
+            semester: newSem,
+          },
+        ],
+      });
+
+      const noCourses = [];
+
+      await supertest({ userId: professor.id })
+        .post(`/courses/register_courses`)
+        .send(noCourses)
+        .expect(201);
+
+      // total professor courses after registering no courses should remain the same (one course: CS2500)
+      const totalProfCourses = await UserCourseModel.count({
+        where: { userId: professor.id },
+      });
+      expect(totalProfCourses).toEqual(1);
+
+      // Check if prof's LastRegistrationSemester is up to date
+      const profLastRegistered = await LastRegistrationModel.findOne({
+        where: { profId: professor.id },
+      });
+      expect(profLastRegistered.lastRegisteredSemester).toEqual(newSem);
+    });
+
+    it('shows error if user enters course that is already registered', async () => {
+      const professor = await UserFactory.create();
+      await UserCourseFactory.create({
+        course: await CourseFactory.create(),
+        user: professor,
+        role: Role.PROFESSOR,
+      });
+
+      const semester = await SemesterFactory.create({
+        season: 'Spring',
+        year: 2022,
+      });
+
+      const CRN1 = 12345;
+      const course1: KhouryProfCourse = {
+        crns: [CRN1],
+        semester: '202230',
+        name: 'Life is Not a Highway',
+      };
+
+      const CRN4 = 11111;
+      const CRN5 = 22222;
+      const course2: KhouryProfCourse = {
+        crns: [CRN4, CRN5],
+        semester: '202230',
+        name: 'Underwater Basket-Weaving 2',
+      };
+
+      await SemesterFactory.create({
+        season: 'Spring',
+        year: 2022,
+      });
+
+      await ProfSectionGroupsFactory.create({
+        prof: professor,
+        profId: professor.id,
+        sectionGroups: [course1, course2],
+      });
+
+      // course was already registered before
+      await CourseModel.create({
+        name: 'life',
+        sectionGroupName: 'Life is Not a Highway',
+        coordinator_email: 'squidward@bikinibottom.com',
+        icalURL: '',
+        semesterId: semester.id,
+        enabled: true,
+        timezone: 'America/Los_Angeles',
+      }).save();
+
+      const registerCourses = [
+        {
+          sectionGroupName: 'Underwater Basket-Weaving 2',
+          name: 'Scuba 2',
+          iCalURL:
+            'https://calendar.google.com/calendar/ical/potatoesarecool2/basic.ics',
+          coordinator_email: 'potatoesarecool2@outlook.com',
+          timezone: 'America/Los_Angeles',
+        },
+        {
+          sectionGroupName: 'Life is Not a Highway',
+          name: 'Life',
+          iCalURL:
+            'https://calendar.google.com/calendar/ical/yamsarecool/basic.ics',
+          coordinator_email: 'yamsarecool@gmail.com',
+          timezone: 'America/New_York',
+        },
+      ];
+
+      const response = await supertest({ userId: professor.id })
+        .post(`/courses/register_courses`)
+        .send(registerCourses)
+        .expect(400);
+      expect(response.body.message).toEqual(
+        'One or more of the courses is already registered',
+      );
+
+      // verify course is created as expected before error
+      const ubw2 = await CourseModel.findOne({
+        sectionGroupName: 'Underwater Basket-Weaving 2',
+      });
+      // verify existing course still exists
+      const life = await CourseModel.findOne({
+        sectionGroupName: 'Life is Not a Highway',
+      });
+      expect(ubw2).toBeDefined();
+      expect(life).toBeDefined();
+    });
   });
 });
