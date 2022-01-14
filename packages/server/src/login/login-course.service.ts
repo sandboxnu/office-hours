@@ -1,4 +1,10 @@
-import { isKhouryCourse, KhouryDataParams, Role, Season } from '@koh/common';
+import {
+  isKhouryCourse,
+  KhouryDataParams,
+  KhouryProfCourse,
+  Role,
+  Season,
+} from '@koh/common';
 import { Injectable } from '@nestjs/common';
 import { CourseModel } from 'course/course.entity';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
@@ -83,10 +89,17 @@ export class LoginCourseService {
 
     // If Prof, save the JSON data
     if (info.courses[0] && !isKhouryCourse(info.courses[0])) {
-      await ProfSectionGroupsModel.create({
-        profId: user.id,
-        sectionGroups: info.courses,
-      }).save();
+      const profSectionGroups = await ProfSectionGroupsModel.findOne({
+        where: { profId: user.id },
+      });
+      if (profSectionGroups) {
+        profSectionGroups.sectionGroups = info.courses as KhouryProfCourse[];
+      } else {
+        await ProfSectionGroupsModel.create({
+          profId: user.id,
+          sectionGroups: info.courses,
+        }).save();
+      }
     }
 
     user.courses = userCourses;
