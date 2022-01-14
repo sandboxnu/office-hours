@@ -85,7 +85,8 @@ export default function EditCourse({
 
         <Form.Item
           name="coordinator_email"
-          label="Coordinator Email"
+          label="Course Contact Email"
+          tooltip="This can be your email or that of a course coordinator's"
           rules={[
             {
               required: true,
