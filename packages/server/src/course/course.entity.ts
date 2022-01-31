@@ -28,7 +28,10 @@ export class CourseModel extends BaseEntity {
   queues: QueueModel[];
 
   @Column('text')
-  name: string;
+  name: string; // display name entered by Prof
+
+  @Column('text', { nullable: true }) // nullable for backwards compatibility
+  sectionGroupName: string; // from admin
 
   @Column('text', { nullable: true })
   coordinator_email: string;
@@ -53,10 +56,6 @@ export class CourseModel extends BaseEntity {
 
   @Column('boolean', { nullable: true })
   enabled: boolean; // Set to true if the given the course is using our app
-
-  // Set to true if the course is submitted via application and pending approval
-  @Column('boolean', { nullable: true })
-  pending: boolean;
 
   // The heatmap is false when there havent been any questions asked yet or there havent been any office hours
   heatmap: false; // TODO: Change this back after queue refactor to => Heatmap | false;

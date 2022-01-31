@@ -2,6 +2,8 @@ import { CreateQuestionParams, Role } from '@koh/common';
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AlertModel } from 'alerts/alerts.entity';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
+import { LastRegistrationModel } from 'login/last-registration-model.entity';
+import { ProfSectionGroupsModel } from 'login/prof-section-groups.entity';
 import { DesktopNotifModel } from 'notification/desktop-notif.entity';
 import { PhoneNotifModel } from 'notification/phone-notif.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
@@ -37,6 +39,8 @@ export class SeedController {
 
   @Get('delete')
   async deleteAll(): Promise<string> {
+    await this.seedService.deleteAll(LastRegistrationModel);
+    await this.seedService.deleteAll(ProfSectionGroupsModel);
     await this.seedService.deleteAll(OfficeHourModel);
     await this.seedService.deleteAll(QuestionModel);
     await this.seedService.deleteAll(QuestionGroupModel);

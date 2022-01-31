@@ -13,12 +13,8 @@ export class CourseSectionMappingModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  // This is the course name that is sent to us from the khoury amin backend
-  @Column()
-  genericCourseName: string;
-
-  @Column()
-  section: number;
+  @Column({ nullable: true })
+  crn: number;
 
   // Represents the course that this maps to
   @ManyToOne((type) => CourseModel)

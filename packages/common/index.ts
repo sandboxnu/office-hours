@@ -64,6 +64,7 @@ export class User {
   defaultMessage?: string;
   includeDefaultMessage!: boolean;
   courses!: UserCourse[];
+  pendingCourses?: KhouryProfCourse[];
   desktopNotifsEnabled!: boolean;
   @Type(() => DesktopNotifPartial)
   desktopNotifs!: DesktopNotifPartial[];
@@ -355,7 +356,7 @@ export class KhouryDataParams {
   last_name!: string;
 
   @IsInt()
-  campus!: string;
+  campus!: number;
 
   @IsOptional()
   @IsString()
@@ -363,47 +364,40 @@ export class KhouryDataParams {
 
   @IsOptional()
   @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
-  courses!: KhouryStudentCourse[];
-
-  @IsOptional()
-  @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
-  ta_courses!: KhouryTACourse[];
+  courses!: KhouryCourse[] | KhouryProfCourse[];
 }
 
-export class KhouryStudentCourse {
+export class KhouryCourse {
   @IsInt()
   crn!: number;
 
   @IsString()
-  course!: string;
-
-  @IsBoolean()
-  accelerated!: boolean;
-
-  @IsInt()
-  section!: number;
-
-  @IsString()
   semester!: string;
 
-  @IsString()
-  title!: string;
-
-  @IsString()
-  @IsOptional()
-  campus!: string;
+  @IsEnum(String)
+  role!: "TA" | "Student";
 }
 
-export class KhouryTACourse {
-  @IsString()
-  course!: string;
+export class KhouryProfCourse {
+  // List of CRN's in the section group
+  @IsArray()
+  crns!: number[];
 
   @IsString()
   semester!: string;
 
-  @IsInt()
-  @IsOptional()
-  instructor!: number;
+  // Section group name
+  @IsString()
+  name!: string;
+}
+
+export function isKhouryCourse(
+  c: KhouryCourse | KhouryProfCourse
+): c is KhouryCourse {
+  return (
+    (c as KhouryCourse).role !== undefined &&
+    (c as KhouryCourse).crn !== undefined
+  );
 }
 
 export interface KhouryRedirectResponse {
@@ -677,27 +671,30 @@ export class GetAlertsResponse {
   alerts!: Alert[];
 }
 
-export class SubmitCourseParams {
+/**
+ * Represents the parameters for a course being registered for register_courses endpoint.
+ * @param sectionGroupName - The name of the section group.
+ * @param name - user friendly display name entered by Prof
+ * @param semester - The name of the semester.
+ * @param iCalURL - The URL for the iCal calendar.
+ * @param coordinator_email - The email for the course coordinator.
+ * @param timezone - The timezone derived from the Campus field on the form.
+ */
+export class RegisterCourseParams {
   @IsString()
-  coordinator_email!: string;
+  sectionGroupName!: string;
 
   @IsString()
   name!: string;
 
-  @IsArray()
-  sections!: number[];
+  @IsString()
+  iCalURL!: string;
 
   @IsString()
-  semester!: string;
+  coordinator_email!: string;
 
   @IsString()
   timezone!: string;
-
-  @IsString()
-  icalURL!: string;
-
-  @IsString()
-  password!: string;
 }
 
 export class SemesterPartial {
@@ -800,7 +797,9 @@ export const ERROR_MESSAGES = {
       cannotCheckIntoMultipleQueues:
         "Cannot check into multiple queues at the same time",
     },
+    courseAlreadyRegistered: "One or more of the courses is already registered",
     courseNotFound: "The course was not found",
+    sectionGroupNotFound: "One or more of the section groups was not found",
     courseOfficeHourError: "Unable to find a course's office hours",
     courseHeatMapError: "Unable to get course's cached heatmap",
     courseModelError: "Course Model not found",
@@ -820,6 +819,8 @@ export const ERROR_MESSAGES = {
     createCourse: "Error occurred while trying to create a course",
     updateCourse: "Error occurred while trying to update a course",
     createCourseMappings: "Unable to create a course mappings",
+    updateProfLastRegistered:
+      "Unable to update professor's last registered semester",
     invalidApplyURL:
       "You are unauthorized to submit an application. Please email help@khouryofficehours.com for the correct URL.",
   },
