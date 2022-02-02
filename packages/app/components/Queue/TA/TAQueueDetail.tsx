@@ -26,10 +26,12 @@ export default function TAQueueDetail({
   courseId,
   queueId,
   question,
+  hasUnresolvedRephraseAlert,
 }: {
   courseId: number;
   queueId: number;
   question: Question;
+  hasUnresolvedRephraseAlert: boolean;
 }): ReactElement {
   return (
     <Container>
@@ -43,6 +45,7 @@ export default function TAQueueDetail({
             courseId={courseId}
             queueId={queueId}
             question={question}
+            hasUnresolvedRephraseAlert={hasUnresolvedRephraseAlert}
           />
         </div>
       </Header>

@@ -14,6 +14,7 @@ import { pick } from 'lodash';
 import { QuestionModel } from 'question/question.entity';
 import { Connection, In } from 'typeorm';
 import { QueueModel } from './queue.entity';
+import { AlertModel } from '../alerts/alerts.entity';
 
 /**
  * Get data in service of the queue controller and SSE
@@ -54,6 +55,9 @@ export class QueueService {
       .leftJoinAndSelect('question.taHelped', 'taHelped')
       .getMany();
 
+    const unresolvedRephraseQuestionAlerts =
+      await AlertModel.unresolvedRephraseQuestionAlert(queueId).getMany();
+
     const groupMap: Record<number, QuestionGroup> = {};
 
     questionsFromDb.forEach((question) => {
@@ -86,6 +90,10 @@ export class QueueService {
     );
 
     questions.groups = Object.values(groupMap);
+
+    questions.unresolvedAlerts = unresolvedRephraseQuestionAlerts.map(
+      (alert) => alert.payload,
+    );
 
     return questions;
   }

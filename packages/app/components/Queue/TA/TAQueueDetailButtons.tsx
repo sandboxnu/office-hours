@@ -37,10 +37,12 @@ export default function TAQueueDetailButtons({
   courseId,
   queueId,
   question,
+  hasUnresolvedRephraseAlert,
 }: {
   courseId: number;
   queueId: number;
   question: Question;
+  hasUnresolvedRephraseAlert: boolean;
 }): ReactElement {
   const defaultMessage = useDefaultMessage();
   const { mutateQuestions } = useQuestions(queueId);
@@ -68,6 +70,8 @@ export default function TAQueueDetailButtons({
         payload,
         targetUserId: question.creator.id,
       });
+      await mutateQuestions();
+      message.success("Successfully asked student to rephrase their question.");
     } catch (e) {
       //If the ta creates an alert that already exists the error is caught and nothing happens
     }
@@ -173,13 +177,19 @@ export default function TAQueueDetailButtons({
             </span>
           </Tooltip>
         </Popconfirm>
-        <Tooltip title="Ask the student to add more detail to their question">
+        <Tooltip
+          title={
+            hasUnresolvedRephraseAlert
+              ? "The student has already been asked to rephrase their question"
+              : "Ask the student to add more detail to their question"
+          }
+        >
           <BannerOrangeButton
             shape="circle"
             icon={<QuestionOutlined />}
             onClick={sendRephraseAlert}
             data-cy="request-rephrase-question"
-            disabled={!isCheckedIn}
+            disabled={!isCheckedIn || hasUnresolvedRephraseAlert}
           />
         </Tooltip>
         <Tooltip title={helpTooltip}>
