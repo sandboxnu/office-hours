@@ -13,10 +13,8 @@ import { UserCourseModel } from 'profile/user-course.entity';
 import { CourseModule } from '../src/course/course.module';
 import { QueueModel } from '../src/queue/queue.entity';
 import {
-  ClosedOfficeHourFactory,
   CourseFactory,
   EventFactory,
-  OfficeHourFactory,
   ProfSectionGroupsFactory,
   QuestionFactory,
   QueueFactory,
@@ -33,7 +31,6 @@ describe('Course Integration', () => {
   describe('GET /courses/:id', () => {
     it('gets office hours no queues, since no queue is happening right now', async () => {
       const course = await CourseFactory.create({
-        officeHours: [await ClosedOfficeHourFactory.create()],
         timezone: 'America/New_York',
       });
       await QueueFactory.create();
@@ -200,20 +197,11 @@ describe('Course Integration', () => {
     });
 
     it('cant get office hours if not a member of the course', async () => {
-      const now = new Date();
       const course = await CourseFactory.create();
 
       await QueueFactory.create({
         room: "Matthias's Office",
         course: course,
-        officeHours: [
-          await OfficeHourFactory.create({
-            startTime: now,
-            endTime: new Date(now.valueOf() + 4500000),
-            room: "Matthias's Office",
-          }),
-          await OfficeHourFactory.create(), // aren't loaded cause time off
-        ],
       });
 
       await supertest({ userId: 1 }).get(`/courses/${course.id}`).expect(401);
@@ -451,12 +439,10 @@ describe('Course Integration', () => {
     });
 
     it('returns canClearQueue true when TA checks out', async () => {
-      const ofs = await ClosedOfficeHourFactory.create();
       const ta = await UserFactory.create();
       const queue = await QueueFactory.create({
         room: 'The Alamo',
         staffList: [ta],
-        officeHours: [ofs],
       });
       const tcf = await TACourseFactory.create({
         course: queue.course,

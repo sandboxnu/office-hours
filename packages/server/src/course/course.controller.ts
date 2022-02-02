@@ -30,7 +30,7 @@ import async from 'async';
 import moment = require('moment');
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
-import { Connection, getRepository, MoreThanOrEqual } from 'typeorm';
+import { Connection, MoreThanOrEqual } from 'typeorm';
 import { Roles } from '../decorators/roles.decorator';
 import { User, UserId } from '../decorators/user.decorator';
 import { CourseRolesGuard } from '../guards/course-roles.guard';
@@ -80,25 +80,6 @@ export class CourseController {
     }
 
     // Use raw query for performance (avoid entity instantiation and serialization)
-
-    try {
-      course.officeHours = await getRepository(OfficeHourModel)
-        .createQueryBuilder('oh')
-        .select(['id', 'title', `"startTime"`, `"endTime"`])
-        .where('oh.courseId = :courseId', { courseId: course.id })
-        .getRawMany();
-    } catch (err) {
-      console.error(
-        ERROR_MESSAGES.courseController.courseOfficeHourError +
-          '\n' +
-          'Error message: ' +
-          err,
-      );
-      throw new HttpException(
-        ERROR_MESSAGES.courseController.courseOfficeHourError,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
 
     try {
       course.heatmap = false; // Change this back after queue refactor
@@ -154,7 +135,6 @@ export class CourseController {
 
     try {
       await async.each(course.queues, async (q) => {
-        await q.addQueueTimes();
         await q.addQueueSize();
       });
     } catch (err) {

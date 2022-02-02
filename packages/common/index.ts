@@ -122,18 +122,6 @@ export enum Role {
   TA = "ta",
   PROFESSOR = "professor",
 }
-
-class OfficeHourPartial {
-  id!: number;
-  title!: string;
-
-  @Type(() => Date)
-  startTime!: Date;
-
-  @Type(() => Date)
-  endTime!: Date;
-}
-
 /**
  * A Queue that students can join with thier tickets.
  * @param id - The unique id number for a Queue.
@@ -438,9 +426,6 @@ export class UpdateProfileParams {
 export class GetCourseResponse {
   id!: number;
   name!: string;
-
-  @Type(() => OfficeHourPartial)
-  officeHours!: Array<OfficeHourPartial>;
 
   @Type(() => QueuePartial)
   queues!: QueuePartial[];

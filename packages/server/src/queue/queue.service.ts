@@ -27,7 +27,6 @@ export class QueueService {
     const queue = await QueueModel.findOne(queueId, {
       relations: ['staffList'],
     });
-    await queue.addQueueTimes();
     await queue.checkIsOpen();
     await queue.addQueueSize();
 

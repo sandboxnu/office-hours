@@ -13,7 +13,6 @@ import supertest from 'supertest';
 import { QuestionModel } from '../src/question/question.entity';
 import { QuestionModule } from '../src/question/question.module';
 import {
-  ClosedOfficeHourFactory,
   CourseFactory,
   QuestionFactory,
   QuestionGroupFactory,
@@ -169,14 +168,10 @@ describe('Question Integration', () => {
     });
 
     it('post question fails on closed queue', async () => {
-      const officeHours = await ClosedOfficeHourFactory.create();
-      const course = await CourseFactory.create({
-        officeHours: [officeHours],
-      });
+      const course = await CourseFactory.create({});
 
       const queue = await QueueFactory.create({
         course: course,
-        officeHours: [officeHours],
         allowQuestions: true,
       });
       expect(await queue.checkIsOpen()).toBe(false);

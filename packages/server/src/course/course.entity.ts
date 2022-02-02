@@ -14,15 +14,11 @@ import { EventModel } from '../profile/event-model.entity';
 import { UserCourseModel } from '../profile/user-course.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { SemesterModel } from '../semester/semester.entity';
-import { OfficeHourModel } from './office-hour.entity';
 
 @Entity('course_model')
 export class CourseModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @OneToMany((type) => OfficeHourModel, (oh) => oh.course)
-  officeHours: OfficeHourModel[];
 
   @OneToMany((type) => QueueModel, (q) => q.course)
   queues: QueueModel[];
