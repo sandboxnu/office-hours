@@ -1,7 +1,7 @@
 const { createAndLoginStudent } = require("../../utils")
 
-describe("Logging out for no course user", () => {
-    it("actual test", () => {
+describe("Testing no courses logout", () => {
+    it("Creates user with no courses", () => {
         createAndLoginStudent()
         cy.get("@student").then((student) => {
             cy.request('DELETE', `/api/v1/courses/${student.course.id}/withdraw_course`)
