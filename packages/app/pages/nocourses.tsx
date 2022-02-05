@@ -53,7 +53,7 @@ export default function NoCourses(): ReactElement {
           </div>
         </div>
       ) : null}
-      <LogoutButton data-cy="open-queue-button" href="/api/v1/logout">
+      <LogoutButton data-cy="logout-button" href="/api/v1/logout">
         Logout
       </LogoutButton>
     </div>
