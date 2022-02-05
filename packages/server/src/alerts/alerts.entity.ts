@@ -48,9 +48,10 @@ export class AlertModel extends BaseEntity {
   static unresolvedRephraseQuestionAlert(
     queueId: number,
   ): SelectQueryBuilder<AlertModel> {
+    const alertType = AlertType.REPHRASE_QUESTION;
     return this.createQueryBuilder('alert')
       .where('alert.resolved IS NULL')
-      .andWhere('alert.alertType::text = ' + AlertType.REPHRASE_QUESTION)
+      .andWhere('alert.alertType = :alertType', { alertType })
       .andWhere("(alert.payload ->> 'queueId')::INTEGER = :queueId ", {
         queueId,
       });
