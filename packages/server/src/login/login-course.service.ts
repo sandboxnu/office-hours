@@ -13,6 +13,7 @@ import { UserModel } from 'profile/user.entity';
 import { SemesterModel } from 'semester/semester.entity';
 import { Connection } from 'typeorm';
 import { ProfSectionGroupsModel } from './prof-section-groups.entity';
+import { khourySemesterCodes } from './last-registration-model.entity';
 
 @Injectable()
 export class LoginCourseService {
@@ -152,17 +153,12 @@ export class LoginCourseService {
     season: Season;
     year: number;
   } {
-    const courseSeasonMap = {
-      '10': 'Fall',
-      '30': 'Spring',
-      '40': 'Summer_1',
-      '50': 'Summer_Full',
-      '60': 'Summer_2',
-    };
-
     // parsing time
     let year = Number(khourySemester.slice(0, 4));
-    const season = courseSeasonMap[khourySemester.slice(-2)];
+    const semesterCode = khourySemester.slice(-2);
+    const season = Object.keys(khourySemesterCodes).find(
+      (key) => khourySemesterCodes[key] === semesterCode,
+    ) as Season;
     // edge case for Fall semester, included in the next academic year
     if (season === 'Fall') {
       year--;
