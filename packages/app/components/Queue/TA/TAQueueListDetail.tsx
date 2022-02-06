@@ -105,7 +105,6 @@ export default function TAQueueListDetail({
   const hasUnresolvedRephraseAlert = questions?.unresolvedAlerts
     ?.map((payload) => (payload as RephraseQuestionPayload).questionId)
     .includes(selectedQuestionId);
-  debugger;
   // set currentQuestion to null if it no longer exists in the queue
   if (selectedQuestionId && !selectedQuestion) {
     onSelectQuestion(null);
