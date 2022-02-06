@@ -73,9 +73,14 @@ export default function DevPanel(): ReactElement {
           </DevPageButton>
         </a>
         <a href="/api/v1/login/dev?userId=5">
-          <Button type="default" htmlType="submit">
+          <DevPageButton type="default" htmlType="submit">
             Login as <b> Professor </b>
-          </Button>
+          </DevPageButton>
+        </a>
+        <a href="/api/v1/login/dev?userId=6">
+          <DevPageButton type="default" htmlType="submit">
+            Login as <b> No Course User</b>
+          </DevPageButton>
         </a>
       </LoginContainer>
       <SeedingContainer>

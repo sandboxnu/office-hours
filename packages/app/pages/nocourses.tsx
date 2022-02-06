@@ -2,6 +2,7 @@ import { API } from "@koh/api-client";
 import { Button, Result } from "antd";
 import Router from "next/router";
 import { ReactElement } from "react";
+import styled from "styled-components";
 import useSWR from "swr";
 import { useHomePageRedirect } from "../hooks/useHomePageRedirect";
 
@@ -11,6 +12,17 @@ export default function NoCourses(): ReactElement {
   const { data } = useSWR("/api/v1/courses/self_enroll_courses", async () =>
     API.course.selfEnrollCourses()
   );
+
+  const LogoutButton = styled(Button)`
+    background-color: #3684c6;
+    border-radius: 6px;
+    color: white;
+    font-weight: 500;
+    font-size: 14px;
+    width: 200px;
+    margin: 0 auto;
+    display: block;
+  `;
 
   return (
     <div>
@@ -41,6 +53,9 @@ export default function NoCourses(): ReactElement {
           </div>
         </div>
       ) : null}
+      <LogoutButton data-cy="logout-button" href="/api/v1/logout">
+        Logout
+      </LogoutButton>
     </div>
   );
 }
