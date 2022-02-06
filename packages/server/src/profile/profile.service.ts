@@ -58,13 +58,13 @@ export class ProfileService {
     const year2 = Number(semester2.slice(0, 4));
     const semesterCode1 = semester1.slice(-2);
     const semesterCode2 = semester2.slice(-2);
+    const summer1 = khourySemesterCodes['Summer_1'];
+    const summerFull = khourySemesterCodes['Summer_Full'];
     // we want to treat Summer 1 and Summer Full as the same window
     // for profs to register classes for both at the same time
     if (
-      (semesterCode1 === khourySemesterCodes['Summer_1'] ||
-        semesterCode2 === khourySemesterCodes['Summer_1']) &&
-      (semesterCode1 === khourySemesterCodes['Summer_Full'] ||
-        semesterCode2 === khourySemesterCodes['Summer_Full'])
+      (semesterCode1 === summer1 || semesterCode2 === summer1) &&
+      (semesterCode1 === summerFull || semesterCode2 === summerFull)
     ) {
       return year1 === year2;
     }
