@@ -48,8 +48,6 @@ describe('Queue Integration', () => {
         room: 'Online',
         staffList: expect.any(Array),
         isOpen: true,
-        startTime: expect.any(String),
-        endTime: expect.any(String),
       });
     });
 

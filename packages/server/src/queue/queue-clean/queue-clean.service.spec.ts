@@ -32,26 +32,6 @@ describe('QueueService', () => {
     jest.resetAllMocks();
   });
 
-  describe('shouldCleanQueue', () => {
-    it('returns true when no staff, 1 question, and no other office hours', async () => {
-      const queue = await QueueFactory.create({});
-      await QuestionFactory.create({
-        status: OpenQuestionStatus.Queued,
-        queue: queue,
-      });
-      expect(await service.shouldCleanQueue(queue)).toBeTruthy();
-    });
-
-    it('returns false when no staff, 1 question, but other office hours soon', async () => {
-      const queue = await QueueFactory.create();
-      await QuestionFactory.create({
-        status: OpenQuestionStatus.Queued,
-        queue: queue,
-      });
-      expect(await service.shouldCleanQueue(queue)).toBeFalsy();
-    });
-  });
-
   describe('cleanQueue', () => {
     it('queue remains the same if any staff are checked in', async () => {
       const ta = await UserFactory.create();

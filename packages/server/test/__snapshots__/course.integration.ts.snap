@@ -3,7 +3,6 @@
 exports[`Course Integration GET /courses/:id gets all queues that are not disabled (prof) 1`] = `
 Object {
   "allowQuestions": false,
-  "endTime": Any<String>,
   "id": 2,
   "isDisabled": false,
   "isOpen": false,
@@ -12,14 +11,12 @@ Object {
   "queueSize": 0,
   "room": "room 2",
   "staffList": Array [],
-  "startTime": Any<String>,
 }
 `;
 
 exports[`Course Integration GET /courses/:id gets all queues that are not disabled (prof) 2`] = `
 Object {
   "allowQuestions": false,
-  "endTime": Any<String>,
   "id": 3,
   "isDisabled": false,
   "isOpen": true,
@@ -48,14 +45,12 @@ Object {
       "photoURL": null,
     },
   ],
-  "startTime": Any<String>,
 }
 `;
 
 exports[`Course Integration GET /courses/:id gets all queues that are not disabled (prof) 3`] = `
 Object {
   "allowQuestions": false,
-  "endTime": Any<String>,
   "id": 4,
   "isDisabled": false,
   "isOpen": true,
@@ -84,7 +79,6 @@ Object {
       "photoURL": null,
     },
   ],
-  "startTime": Any<String>,
 }
 `;
 
@@ -95,14 +89,6 @@ Object {
   "heatmap": false,
   "id": 1,
   "name": "CS 2500",
-  "officeHours": Array [
-    Object {
-      "endTime": "2020-05-20T15:30:00.000Z",
-      "id": 1,
-      "startTime": "2020-05-20T14:00:00.000Z",
-      "title": "Alex & Stanley",
-    },
-  ],
   "queues": Array [],
   "sectionGroupName": null,
   "selfEnroll": false,
@@ -113,7 +99,6 @@ Object {
 exports[`Course Integration GET /courses/:id gets queues that are not disabled and not prof queues (TA) 1`] = `
 Object {
   "allowQuestions": false,
-  "endTime": Any<String>,
   "id": 2,
   "isDisabled": false,
   "isOpen": false,
@@ -122,14 +107,12 @@ Object {
   "queueSize": 0,
   "room": "room 2",
   "staffList": Array [],
-  "startTime": Any<String>,
 }
 `;
 
 exports[`Course Integration GET /courses/:id gets queues that are not disabled and not prof queues (TA) 2`] = `
 Object {
   "allowQuestions": false,
-  "endTime": Any<String>,
   "id": 3,
   "isDisabled": false,
   "isOpen": true,
@@ -158,7 +141,6 @@ Object {
       "photoURL": null,
     },
   ],
-  "startTime": Any<String>,
 }
 `;
 

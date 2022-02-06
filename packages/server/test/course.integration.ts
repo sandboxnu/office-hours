@@ -122,12 +122,7 @@ describe('Course Integration', () => {
         .get(`/courses/${course.id}`)
         .expect(200);
       // date agnostic snapshots
-      response.body.queues.map((q) =>
-        expect(q).toMatchSnapshot({
-          startTime: expect.any(String),
-          endTime: expect.any(String),
-        }),
-      );
+      response.body.queues.map((q) => expect(q).toMatchSnapshot({}));
 
       response.body.queues.map((q) => expect(q.isDisabled).toBeFalsy());
       response.body.queues.map((q) => expect(q.isProfessorQueue).toBeFalsy());
@@ -186,12 +181,7 @@ describe('Course Integration', () => {
         .expect(200);
 
       // date agnostic snapshots
-      response.body.queues.map((q) =>
-        expect(q).toMatchSnapshot({
-          startTime: expect.any(String),
-          endTime: expect.any(String),
-        }),
-      );
+      response.body.queues.map((q) => expect(q).toMatchSnapshot({}));
 
       response.body.queues.map((q) => expect(q.isDisabled).toBeFalsy());
     });

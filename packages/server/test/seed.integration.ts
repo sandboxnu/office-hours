@@ -63,13 +63,6 @@ describe('Seed Integration', () => {
       courseId: 1,
       id: 1,
       notes: null,
-      officeHours: [
-        {
-          endTime: expect.any(String),
-          startTime: expect.any(String),
-          title: 'Alex & Stanley',
-        },
-      ],
       room: 'Online',
     });
   });
@@ -99,7 +92,6 @@ describe('Seed Integration', () => {
       courseId: 1,
       id: 1,
       notes: null,
-      officeHours: [],
       room: 'Online',
     });
   });
