@@ -4,6 +4,7 @@ import { ReactElement } from "react";
 import styled from "styled-components";
 import { getWaitTime } from "../../../utils/TimeUtil";
 import { CenterRow, Text } from "../QueueCardSharedComponents";
+import { truncate } from "../QueueUtils";
 
 const HorizontalStudentCard = styled(Card)`
   margin-bottom: 8px;
@@ -43,7 +44,7 @@ export default function StudentQueueCard({
           <Text>{rank}</Text>
         </Col>
         <Col flex="1 1">
-          <Text>{question.text}</Text>
+          <Text>{truncate(question.text, 150)}</Text>
         </Col>
         <Col flex="0 0 80px">
           <Text>{getWaitTime(question)}</Text>
