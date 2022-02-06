@@ -26,6 +26,7 @@ export class ProfileService {
         profId: userId,
       },
     });
+    const lastRegisteredSemester = lastRegistered?.lastRegisteredSemester;
 
     if (!profCourses) return; // not a professor
 
@@ -35,10 +36,8 @@ export class ProfileService {
       // current semester does not match last time prof registered, there may be pending courses
       if (
         c.crns.length !== 0 &&
-        !this.isSameRegistrationTime(
-          c.semester,
-          lastRegistered?.lastRegisteredSemester,
-        )
+        (!lastRegisteredSemester || // lastRegistered doesnt exist if prof has never registered before
+          !this.isSameRegistrationTime(c.semester, lastRegisteredSemester))
       ) {
         const courseCRN = c.crns[0];
         const profCourse = await this.loginCourseService.courseCRNToCourse(
