@@ -447,6 +447,11 @@ export class GetCourseResponse {
 
   coordinator_email!: string;
 
+  @Type(() => Number)
+  crns?: number[];
+
+  icalURL!: string;
+
   heatmap!: Heatmap | false;
 
   selfEnroll!: boolean;
@@ -813,6 +818,7 @@ export const ERROR_MESSAGES = {
     sectionGroupNotFound: "One or more of the section groups was not found",
     courseOfficeHourError: "Unable to find a course's office hours",
     courseHeatMapError: "Unable to get course's cached heatmap",
+    courseCrnsError: "Unable to get course's crn numbers",
     courseModelError: "Course Model not found",
     noUserFound: "No user found with given email",
     noSemesterFound: "No semester exists for the submitted course",

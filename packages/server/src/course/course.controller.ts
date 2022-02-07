@@ -45,6 +45,7 @@ import { QueueSSEService } from '../queue/queue-sse.service';
 import { CourseService } from './course.service';
 import { HeatmapService } from './heatmap.service';
 import { IcalService } from './ical.service';
+import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 
 @Controller('courses')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -160,7 +161,25 @@ export class CourseController {
       );
     }
 
-    return course;
+    const course_response = { ...course };
+    course_response.crns = null;
+
+    try {
+      course_response.crns = await CourseSectionMappingModel.find({ course });
+    } catch (err) {
+      console.error(
+        ERROR_MESSAGES.courseController.courseOfficeHourError +
+          '\n' +
+          'Error message: ' +
+          err,
+      );
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.courseCrnsError,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return course_response;
   }
 
   @Post(':id/ta_location/:room')
