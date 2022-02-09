@@ -4,6 +4,7 @@ import {
   AlertType,
   RephraseQuestionPayload,
 } from '@koh/common';
+import { pick } from 'lodash';
 import { Injectable } from '@nestjs/common';
 import { QuestionModel } from 'question/question.entity';
 import { Connection } from 'typeorm';
@@ -25,7 +26,9 @@ export class AlertsService {
           const payload = alert.payload as RephraseQuestionPayload;
           const question = await QuestionModel.findOne(payload.questionId);
 
-          const queue = await QueueModel.findOne(payload.queueId);
+          const queue = await QueueModel.findOne(payload.queueId, {
+            relations: ['staffList'],
+          });
           const isQueueOpen = await queue?.checkIsOpen();
           if (question.closedAt || !isQueueOpen) {
             console.log(
@@ -40,7 +43,9 @@ export class AlertsService {
             alert.resolved = new Date();
             await alert.save();
           } else {
-            nonStaleAlerts.push(alert);
+            nonStaleAlerts.push(
+              pick(alert, ['sent', 'alertType', 'payload', 'id']),
+            );
           }
           break;
       }

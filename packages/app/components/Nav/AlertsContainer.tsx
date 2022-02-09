@@ -19,7 +19,11 @@ export default function AlertsContainer({
 
   const handleClose = async (alertId, courseId, queueId) => {
     await API.alerts.close(alertId);
-    mutateAlerts();
+    // TODO: literally no clue why you need to call the GET endpoint twice in order for
+    // the new alerts list to be correctly fetched. For some reason the first call
+    // returns the old list containing the already resolved alert
+    await API.alerts.get(courseId);
+    await mutateAlerts();
     router.push(`/course/${courseId}/queue/${queueId}?edit_question=true`);
   };
 
