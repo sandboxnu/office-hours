@@ -7,8 +7,8 @@ import { Spin } from "antd";
 
 export default function Home(): ReactElement {
   const profile: User = useProfile();
-  const redirected = useHomePageRedirect();
-  if (profile && !redirected) {
+  const didRedirect = useHomePageRedirect();
+  if (profile && !didRedirect) {
     Router.push("/nocourses");
   } else {
     return (
