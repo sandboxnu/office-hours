@@ -875,6 +875,7 @@ export const ERROR_MESSAGES = {
     saveQueue: "Unable to save queue",
     cleanQueue: "Unable to clean queue",
     cannotCloseQueue: "Unable to close professor queue as a TA",
+    missingStaffList: "Stafflist relation not present on Queue",
   },
   queueRoleGuard: {
     queueNotFound: "Queue not found",
