@@ -53,6 +53,7 @@ export default function TAQueueDetail({
         courseId={courseId}
         question={question}
         queueId={queueId}
+        hasUnresolvedRephraseAlert={hasUnresolvedRephraseAlert}
       />
     </Container>
   );

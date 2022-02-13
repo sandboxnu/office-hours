@@ -43,12 +43,14 @@ export default function TAQueueDetailQuestion({
   courseId,
   showName,
   showButtons,
+  hasUnresolvedRephraseAlert,
 }: {
   question: Question;
   queueId: number;
   courseId: number;
   showName?: boolean;
   showButtons?: boolean;
+  hasUnresolvedRephraseAlert: boolean;
 }) {
   return question.status === OpenQuestionStatus.Drafting ? (
     <StillDrafting>
@@ -79,6 +81,7 @@ export default function TAQueueDetailQuestion({
             courseId={courseId}
             queueId={queueId}
             question={question}
+            hasUnresolvedRephraseAlert={hasUnresolvedRephraseAlert}
           />
         )}
       </div>
