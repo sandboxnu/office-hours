@@ -11,10 +11,11 @@ export class BackfillSectionGroupName {
     autoExit: true,
   })
   async fix(): Promise<void> {
-    await CourseModel.createQueryBuilder()
+    const result = await CourseModel.createQueryBuilder()
       .update()
       .set({ sectionGroupName: () => 'name' })
       .where('sectionGroupName IS NULL')
       .execute();
+    console.log(`${result.affected} rows updated`);
   }
 }
