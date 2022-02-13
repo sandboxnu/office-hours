@@ -10,5 +10,6 @@ export default function Home(): ReactElement {
   if (profile && !didRedirect) {
     Router.push("/nocourses");
   }
+
   return <div />;
 }
