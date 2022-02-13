@@ -448,7 +448,7 @@ export class GetCourseResponse {
   coordinator_email!: string;
 
   @Type(() => Number)
-  crns?: number[];
+  crns!: number[];
 
   icalURL!: string;
 
@@ -709,6 +709,24 @@ export class RegisterCourseParams {
 
   @IsString()
   timezone!: string;
+}
+
+export class EditCourseInfoParams {
+  @IsNumber()
+  courseId!: number;
+
+  @IsString()
+  courseName?: string;
+
+  @IsString()
+  coordinatorEmail?: string;
+
+  @IsString()
+  iCalURL?: string;
+
+  @IsArray()
+  @Type(() => Number)
+  crns?: number[];
 }
 
 export class SemesterPartial {

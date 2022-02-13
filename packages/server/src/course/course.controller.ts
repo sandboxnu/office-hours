@@ -1,4 +1,5 @@
 import {
+  EditCourseInfoParams,
   ERROR_MESSAGES,
   GetCourseOverridesResponse,
   GetCourseResponse,
@@ -21,6 +22,7 @@ import {
   HttpException,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
   UnauthorizedException,
@@ -161,7 +163,7 @@ export class CourseController {
       );
     }
 
-    const course_response = { ...course };
+    const course_response: any = { ...course };
     course_response.crns = null;
 
     try {
@@ -180,6 +182,33 @@ export class CourseController {
     }
 
     return course_response;
+  }
+
+  @Patch(':id/edit_course')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
+  @Roles(Role.PROFESSOR)
+  async editCourseInfo(
+    @Param('id') courseId: number,
+    @Body() coursePatch: EditCourseInfoParams,
+  ): Promise<void> {
+    let course = await CourseModel.findOne(courseId);
+    if (course === null || course === undefined) {
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.courseNotFound,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    course = Object.assign(course, coursePatch);
+    try {
+      await course.save();
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.updateCourse,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post(':id/ta_location/:room')
