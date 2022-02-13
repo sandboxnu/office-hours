@@ -29,7 +29,7 @@ export default function Queue(): ReactElement {
         </Head>
         <NavBar courseId={Number(cid)} />
         {Role.STUDENT === role ? (
-          <StudentQueue qid={Number(qid)} />
+          <StudentQueue qid={Number(qid)} cid={Number(cid)} />
         ) : (
           <TAQueue qid={Number(qid)} courseId={Number(cid)} />
         )}
