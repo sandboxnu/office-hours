@@ -167,7 +167,7 @@ export class CourseController {
     course_response.crns = null;
 
     try {
-      course_response.crns = await CourseSectionMappingModel.find({ course });
+      course_response.crns = await CourseSectionMappingModel.find(course);
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.courseOfficeHourError +
@@ -196,6 +196,46 @@ export class CourseController {
       throw new HttpException(
         ERROR_MESSAGES.courseController.courseNotFound,
         HttpStatus.NOT_FOUND,
+      );
+    }
+
+    if (Object.values(coursePatch).some((x) => x === null || x === '')) {
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.updateCourse,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    try {
+      // create CourseSectionMappings for each crn
+      new Set(coursePatch.crns).forEach(async (crn) => {
+        // check semester
+        const courseCrnMap = await CourseSectionMappingModel.findOne({
+          where: {
+            crn: crn,
+          },
+        });
+        if (!courseCrnMap) {
+          await CourseSectionMappingModel.create({
+            crn: crn,
+            courseId: course.id,
+          }).save();
+        } else {
+          if (courseCrnMap.courseId != courseId) {
+            throw new Error(
+              'The CRN ' +
+                crn +
+                ' already exists for another course with course id ' +
+                courseCrnMap.courseId,
+            );
+          }
+        }
+      });
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.createCourseMappings,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
 
