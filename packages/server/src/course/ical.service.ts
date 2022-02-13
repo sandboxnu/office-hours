@@ -1,15 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import 'moment-timezone';
-import {
-  CalendarComponent,
-  CalendarResponse,
-  fromURL,
-  VEvent,
-} from 'node-ical';
 import { RRule } from 'rrule';
 import { Connection, DeepPartial } from 'typeorm';
 import { findOneIana } from 'windows-iana/dist';
-import { QueueModel } from '../queue/queue.entity';
 import { CourseModel } from './course.entity';
 import { OfficeHourModel } from './office-hour.entity';
 import moment = require('moment');
@@ -17,14 +10,13 @@ import moment = require('moment');
 import { Cron } from '@nestjs/schedule';
 import { RedisService } from 'nestjs-redis';
 import * as Redlock from 'redlock';
-import { SemesterModel } from '../semester/semester.entity';
 
 type Moment = moment.Moment;
 
-type CreateOfficeHour = DeepPartial<OfficeHourModel>[];
+type _CreateOfficeHour = DeepPartial<OfficeHourModel>[];
 
 // months are zero indexed (start date is 9/1/YEAR for fall (ex))
-const ICalStartDateMap = {
+const _ICalStartDateMap = {
   Fall: 8,
   Spring: 0,
   Summer_1: 4,
@@ -33,7 +25,7 @@ const ICalStartDateMap = {
 };
 
 // end date is the last day of 1+month, ex: fall's end date is 1/1/(YEAR+1)
-const ICalEndDateMap = {
+const _ICalEndDateMap = {
   Fall: 11,
   Spring: 4,
   Summer_1: 6,
@@ -109,7 +101,7 @@ export class IcalService {
       .filter((date) => !exdates.includes(date.getTime()))
       .map((d) => fixDST(postRRule(moment(d))).toDate());
   }
-
+  /*
   parseIcal(
     icalData: CalendarResponse,
     courseId: number,
@@ -177,13 +169,14 @@ export class IcalService {
     const day = 1;
     const year = sem.year;
     return new Date(year, month, day, 0, 0, 0, 0);
-  }
+  }*/
   /**
    * Updates the OfficeHours for a given Course by rescraping ical
-   * @param course to parse
+   * @param _course to parse
    */
-  public async updateCalendarForCourse(course: CourseModel): Promise<void> {
-    console.log(
+  public async updateCalendarForCourse(_course: CourseModel): Promise<void> {
+    console.log(_course);
+    /* console.log(
       `scraping ical for course "${course.name}"(${course.id} at url: ${course.icalURL}...`,
     );
     console.time(`scrape course ${course.id}`);
@@ -272,7 +265,7 @@ export class IcalService {
     await OfficeHourModel.save(processedProfessorOfficeHours);
     await QueueModel.save(professorQueues);
     console.timeEnd(`scrape course ${course.id}`);
-    console.log('done scraping!');
+    console.log('done scraping!');*/
   }
 
   @Cron('51 0 * * *')

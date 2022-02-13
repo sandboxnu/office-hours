@@ -1,15 +1,8 @@
-import { ClosedQuestionStatus, Heatmap, timeDiffInMins } from '@koh/common';
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
-import { inRange, mean, range } from 'lodash';
-import moment = require('moment');
-import { Command, Positional } from 'nestjs-command';
-import { QuestionModel } from 'question/question.entity';
-import { MoreThan } from 'typeorm';
-import { OfficeHourModel } from './office-hour.entity';
-import { Cache } from 'cache-manager';
-import { CourseModel } from './course.entity';
 
-function arrayRotate(arr, count) {
+import { Cache } from 'cache-manager';
+
+function _arrayRotate(arr, count) {
   count -= arr.length * Math.floor(count / arr.length);
   const spliced = arr.splice(0, count);
   return [...arr, ...spliced];
@@ -18,7 +11,7 @@ function arrayRotate(arr, count) {
 @Injectable()
 export class HeatmapService {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
-
+  /*
   async getCachedHeatmapFor(courseId: number): Promise<Heatmap | false> {
     //One week
     const cacheLengthInSeconds = 604800;
@@ -109,7 +102,7 @@ export class HeatmapService {
     look at question Q1 and the next question Q2
     for all sample timepoints between Q1.createdAt and Q2.createdAt:
        - sample = Q1.helpedAt - timepoint (if negative, then it's 0)
-    */
+
 
     const hourTimestamps: [number, number][] = hours.map((hours) => [
       hours.startTime.getTime(),
@@ -252,4 +245,5 @@ export class HeatmapService {
   ): Promise<void> {
     console.log(await this._getHeatmapFor(courseId));
   }
+  */
 }
