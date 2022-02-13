@@ -5,13 +5,7 @@ import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { getWaitTime } from "../../../utils/TimeUtil";
 import { KOHAvatar } from "../../common/SelfAvatar";
-
-function truncate(string: string, length: number) {
-  if (string.length > length) {
-    return string.substring(0, length - 3) + "...";
-  }
-  return string;
-}
+import { truncate } from "../QueueUtils";
 
 export const Container = styled.div<{ selected: boolean }>`
   display: flex;
