@@ -16,6 +16,6 @@ export class BackfillSectionGroupName {
       .set({ sectionGroupName: () => 'name' })
       .where('sectionGroupName IS NULL')
       .execute();
-    console.log(`Set sectionGroupName for ${result.affected} rows courses`);
+    console.log(`Set sectionGroupName for ${result.affected} courses`);
   }
 }
