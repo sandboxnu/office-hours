@@ -1,13 +1,12 @@
 import { CheckOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
-import { QuestionGroup, RephraseQuestionPayload } from "@koh/common";
+import { QuestionGroup } from "@koh/common";
 import { Tooltip } from "antd";
 import React, { ReactElement } from "react";
 import { FinishHelpingButton } from "../../Banner";
 import { Header } from "../TAQueueDetail";
 import TAQueueDetailQuestion from "../TAQueueDetailQuestion";
 import { Description } from "./AllQuestionsChecklist";
-import { useQuestions } from "../../../../hooks/useQuestions";
 
 export function CurrentGroupList({
   group,
@@ -18,11 +17,6 @@ export function CurrentGroupList({
   queueId: number;
   courseId: number;
 }): ReactElement {
-  const { questions } = useQuestions(queueId);
-  const unresolvedAlerts = questions?.unresolvedAlerts?.map(
-    (payload) => (payload as RephraseQuestionPayload).questionId
-  );
-
   return (
     <div>
       <Header>
@@ -50,7 +44,7 @@ export function CurrentGroupList({
             queueId={queueId}
             showName
             showButtons
-            hasUnresolvedRephraseAlert={unresolvedAlerts.includes(q.id)}
+            hasUnresolvedRephraseAlert={false}
           />
         </div>
       ))}
