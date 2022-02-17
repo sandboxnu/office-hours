@@ -73,6 +73,7 @@ describe('QueueService', () => {
         questionsGettingHelp: ['Helping'],
         queue: ['Queued', 'Drafting'],
         groups: [],
+        unresolvedAlerts: [],
       });
     });
 
