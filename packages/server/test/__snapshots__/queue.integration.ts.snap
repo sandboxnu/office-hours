@@ -31,5 +31,6 @@ Object {
       "text": "in queue",
     },
   ],
+  "unresolvedAlerts": Array [],
 }
 `;
