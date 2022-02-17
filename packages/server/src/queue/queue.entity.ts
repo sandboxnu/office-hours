@@ -65,10 +65,6 @@ export class QueueModel extends BaseEntity {
     return this.isOpen;
   }
 
-  async areThereOfficeHoursRightNow(now = new Date()): Promise<boolean> {
-    return this.staffList.length > 0;
-  }
-
   queueSize: number;
 
   async addQueueSize(): Promise<void> {

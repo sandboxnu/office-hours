@@ -51,7 +51,7 @@ describe('Queue Integration', () => {
       });
     });
 
-    it('is not open when there are no TAs present (oh-agnostic)', async () => {
+    it('is not open when there are no TAs present', async () => {
       const queue = await QueueFactory.create({});
       const userCourse = await UserCourseFactory.create({
         user: await UserFactory.create(),

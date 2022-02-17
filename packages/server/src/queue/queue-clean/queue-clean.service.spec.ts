@@ -46,7 +46,17 @@ describe('QueueService', () => {
       const question = await QuestionModel.findOne({});
       expect(question.status).toEqual('Queued');
     });
+    it('if no staff are present all questions with open status are marked as stale', async () => {
+      const queue = await QueueFactory.create({});
+      const question = await QuestionFactory.create({
+        status: OpenQuestionStatus.Queued,
+        queue: queue,
+      });
 
+      await service.cleanQueue(queue.id);
+      await question.reload();
+      expect(question.status).toEqual('Stale');
+    });
     it('queue gets cleaned when force parameter is passed, even with staff present', async () => {
       const ta = await UserFactory.create();
       const queue = await QueueFactory.create({ staffList: [ta] });
