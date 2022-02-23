@@ -716,15 +716,19 @@ export class EditCourseInfoParams {
   courseId!: number;
 
   @IsString()
-  courseName?: string;
+  @IsOptional()
+  name?: string;
 
   @IsString()
-  coordinatorEmail?: string;
+  @IsOptional()
+  coordinator_email?: string;
 
   @IsString()
-  iCalURL?: string;
+  @IsOptional()
+  icalURL?: string;
 
   @IsArray()
+  @IsOptional()
   @Type(() => Number)
   crns?: number[];
 }
@@ -856,6 +860,8 @@ export const ERROR_MESSAGES = {
       "Unable to update professor's last registered semester",
     invalidApplyURL:
       "You are unauthorized to submit an application. Please email help@khouryofficehours.com for the correct URL.",
+    crnAlreadyRegistered: (crn: number, courseId: number): string =>
+      `The CRN ${crn} already exists for another course with course id ${courseId}`,
   },
   questionController: {
     createQuestion: {

@@ -191,7 +191,7 @@ export class CourseController {
     @Param('id') courseId: number,
     @Body() coursePatch: EditCourseInfoParams,
   ): Promise<void> {
-    let course = await CourseModel.findOne(courseId);
+    const course = await CourseModel.findOne(courseId);
     if (course === null || course === undefined) {
       throw new HttpException(
         ERROR_MESSAGES.courseController.courseNotFound,
@@ -207,28 +207,32 @@ export class CourseController {
     }
 
     try {
-      // create CourseSectionMappings for each crn
       new Set(coursePatch.crns).forEach(async (crn) => {
-        // check semester
         const courseCrnMap = await CourseSectionMappingModel.findOne({
           where: {
             crn: crn,
           },
         });
-        if (!courseCrnMap) {
+
+        if (
+          courseCrnMap &&
+          courseCrnMap.courseId !== courseId &&
+          courseCrnMap.course.semesterId === course.semesterId
+        ) {
+          throw new Error(
+            ERROR_MESSAGES.courseController.crnAlreadyRegistered(crn, courseId),
+          );
+        }
+
+        if (
+          !courseCrnMap ||
+          (courseCrnMap.courseId === courseId &&
+            courseCrnMap.course.semesterId !== course.semesterId)
+        ) {
           await CourseSectionMappingModel.create({
             crn: crn,
             courseId: course.id,
           }).save();
-        } else {
-          if (courseCrnMap.courseId != courseId) {
-            throw new Error(
-              'The CRN ' +
-                crn +
-                ' already exists for another course with course id ' +
-                courseCrnMap.courseId,
-            );
-          }
         }
       });
     } catch (err) {
@@ -239,7 +243,18 @@ export class CourseController {
       );
     }
 
-    course = Object.assign(course, coursePatch);
+    if (coursePatch.name) {
+      course.name = coursePatch.name;
+    }
+
+    if (coursePatch.coordinator_email) {
+      course.coordinator_email = coursePatch.coordinator_email;
+    }
+
+    if (coursePatch.icalURL) {
+      course.icalURL = coursePatch.icalURL;
+    }
+
     try {
       await course.save();
     } catch (err) {
