@@ -4,6 +4,7 @@ import {
   TACheckinTimesResponse,
   RegisterCourseParams,
   Role,
+  EditCourseInfoParams,
 } from '@koh/common';
 import {
   HttpException,
@@ -100,6 +101,7 @@ export class CourseService {
 
     return { taCheckinTimes };
   }
+
   async removeUserFromCourse(userCourse: UserCourseModel): Promise<void> {
     if (!userCourse) {
       throw new HttpException(
@@ -113,6 +115,86 @@ export class CourseService {
       console.error(err);
       throw new HttpException(
         ERROR_MESSAGES.courseController.removeCourse,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async editCourse(
+    courseId: number,
+    coursePatch: EditCourseInfoParams,
+  ): Promise<void> {
+    const course = await CourseModel.findOne(courseId);
+    if (course === null || course === undefined) {
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.courseNotFound,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    if (Object.values(coursePatch).some((x) => x === null || x === '')) {
+      throw new BadRequestException(
+        ERROR_MESSAGES.courseController.updateCourse,
+      );
+    }
+
+    new Set(coursePatch.crns).forEach(async (crn) => {
+      const courseCrnMap = await CourseSectionMappingModel.findOne({
+        crn: crn,
+      });
+
+      let conflictCourse;
+      if (courseCrnMap) {
+        conflictCourse = await CourseModel.findOne(courseCrnMap.courseId);
+        if (
+          courseCrnMap.courseId !== courseId &&
+          conflictCourse &&
+          conflictCourse.semesterId === course.semesterId
+        ) {
+          throw new BadRequestException(
+            ERROR_MESSAGES.courseController.crnAlreadyRegistered(crn, courseId),
+          );
+        }
+      }
+      if (
+        !courseCrnMap ||
+        (courseCrnMap.courseId === courseId &&
+          conflictCourse &&
+          conflictCourse.semesterId !== course.semesterId)
+      ) {
+        try {
+          await CourseSectionMappingModel.create({
+            crn: crn,
+            courseId: course.id,
+          }).save();
+        } catch (err) {
+          console.error(err);
+          throw new HttpException(
+            ERROR_MESSAGES.courseController.createCourseMappings,
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+        }
+      }
+    });
+
+    if (coursePatch.name) {
+      course.name = coursePatch.name;
+    }
+
+    if (coursePatch.coordinator_email) {
+      course.coordinator_email = coursePatch.coordinator_email;
+    }
+
+    if (coursePatch.icalURL) {
+      course.icalURL = coursePatch.icalURL;
+    }
+
+    try {
+      await course.save();
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.updateCourse,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
