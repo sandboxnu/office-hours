@@ -3,8 +3,10 @@
 exports[`Course Integration GET /courses/:id gets office hours no queues, since no queue is happening right now 1`] = `
 Object {
   "coordinator_email": null,
+  "crns": Array [],
   "enabled": true,
   "heatmap": false,
+  "icalURL": "http://hi.com",
   "id": 1,
   "name": "CS 2500",
   "officeHours": Array [
@@ -18,6 +20,7 @@ Object {
   "queues": Array [],
   "sectionGroupName": null,
   "selfEnroll": false,
+  "semesterId": 1,
   "timezone": "America/New_York",
 }
 `;

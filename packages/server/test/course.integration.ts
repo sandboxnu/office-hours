@@ -15,6 +15,7 @@ import { QueueModel } from '../src/queue/queue.entity';
 import {
   ClosedOfficeHourFactory,
   CourseFactory,
+  CourseSectionFactory,
   EventFactory,
   OfficeHourFactory,
   ProfSectionGroupsFactory,
@@ -571,13 +572,78 @@ describe('Course Integration', () => {
   });
 
   describe('PATCH /courses/:id/edit_course', () => {
-    it('tests patching ', async () => {
+    it('test patching update successfully', async () => {
       const professor = await UserFactory.create();
+      const course = await CourseFactory.create({
+        semesterId: 123,
+      });
       await UserCourseFactory.create({
-        course: await CourseFactory.create(),
+        course: course,
         user: professor,
         role: Role.PROFESSOR,
       });
+
+      const editCourseTomato = {
+        courseId: course.id,
+        name: 'Tomato',
+        icalURL: 'https://calendar.google.com/calendar/ical/tomato/basic.ics',
+        coordinator_email: 'tomato@gmail.com',
+        crns: [12345, 67890],
+      };
+
+      // update crns, coordinator email, name, icalURL
+      await supertest({ userId: professor.id })
+        .patch(`/courses/${course.id}/edit_course`)
+        .send(editCourseTomato)
+        .expect(200);
+
+      const updatedCourse = await CourseModel.findOne({ id: course.id });
+
+      expect(updatedCourse.name).toEqual('Tomato');
+      expect(updatedCourse.coordinator_email).toEqual('tomato@gmail.com');
+      expect(updatedCourse.icalURL).toEqual(
+        'https://calendar.google.com/calendar/ical/tomato/basic.ics',
+      );
+
+      await CourseSectionMappingModel.findOne({
+        where: { crn: 67890, courseId: course.id },
+      });
+    });
+
+    it('test patching fail adding conflicting crn', async () => {
+      const professor = await UserFactory.create();
+      const semester = await SemesterFactory.create();
+      const tomato = await CourseFactory.create({ semester: semester });
+      const potato = await CourseFactory.create({ semester: semester });
+
+      await UserCourseFactory.create({
+        course: tomato,
+        user: professor,
+        role: Role.PROFESSOR,
+      });
+
+      await UserCourseFactory.create({
+        course: potato,
+        user: professor,
+        role: Role.PROFESSOR,
+      });
+
+      await CourseSectionFactory.create({
+        crn: 67890,
+        courseId: tomato.id,
+        course: tomato,
+      });
+
+      console.log(potato);
+      console.log(tomato);
+      const response = await supertest({ userId: professor.id })
+        .patch(`/courses/${potato.id}/edit_course`)
+        .send({ courseId: potato.id, crns: [11111, 67890] })
+        .expect(400);
+
+      expect(response.body.message).toEqual(
+        ERROR_MESSAGES.courseController.crnAlreadyRegistered(67890, potato.id),
+      );
     });
   });
 

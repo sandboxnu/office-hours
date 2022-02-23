@@ -167,7 +167,7 @@ export class CourseController {
     course_response.crns = null;
 
     try {
-      course_response.crns = await CourseSectionMappingModel.find(course);
+      course_response.crns = await CourseSectionMappingModel.find({ course });
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.courseOfficeHourError +
@@ -202,7 +202,7 @@ export class CourseController {
     if (Object.values(coursePatch).some((x) => x === null || x === '')) {
       throw new HttpException(
         ERROR_MESSAGES.courseController.updateCourse,
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.BAD_REQUEST,
       );
     }
 
@@ -214,20 +214,31 @@ export class CourseController {
           },
         });
 
-        if (
-          courseCrnMap &&
-          courseCrnMap.courseId !== courseId &&
-          courseCrnMap.course.semesterId === course.semesterId
-        ) {
-          throw new Error(
-            ERROR_MESSAGES.courseController.crnAlreadyRegistered(crn, courseId),
-          );
+        let conflictCourse;
+        if (courseCrnMap) {
+          console.log('COURSE MAP IS ');
+          console.log(courseCrnMap);
+          conflictCourse = await CourseModel.findOne(courseCrnMap.courseId);
+          console.log(conflictCourse);
+          if (
+            courseCrnMap.courseId !== courseId &&
+            conflictCourse &&
+            conflictCourse.semesterId === course.semesterId
+          ) {
+            throw new HttpException(
+              ERROR_MESSAGES.courseController.crnAlreadyRegistered(
+                crn,
+                courseId,
+              ),
+              HttpStatus.BAD_REQUEST,
+            );
+          }
         }
-
         if (
           !courseCrnMap ||
           (courseCrnMap.courseId === courseId &&
-            courseCrnMap.course.semesterId !== course.semesterId)
+            conflictCourse &&
+            conflictCourse.semesterId !== course.semesterId)
         ) {
           await CourseSectionMappingModel.create({
             crn: crn,
