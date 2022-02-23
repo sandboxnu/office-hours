@@ -570,6 +570,17 @@ describe('Course Integration', () => {
     });
   });
 
+  describe('PATCH /courses/:id/edit_course', () => {
+    it('tests patching ', async () => {
+      const professor = await UserFactory.create();
+      await UserCourseFactory.create({
+        course: await CourseFactory.create(),
+        user: professor,
+        role: Role.PROFESSOR,
+      });
+    });
+  });
+
   describe('POST /register_courses', () => {
     it('tests prof registering an array of courses', async () => {
       const professor = await UserFactory.create();
