@@ -26,7 +26,9 @@ Khoury Office Hours was developed by [Sandbox](https://www.sandboxnu.com/), Nort
 
 - Question grouping
 
-- Professor Insights
+- Professor Data Insights
+
+- Login integration with Khoury Admin
 
 ## Contribute
 
