@@ -69,4 +69,17 @@ export class AlertsService {
         );
     }
   }
+
+  async getUnresolvedRephraseQuestionAlert(
+    queueId: number,
+  ): Promise<AlertModel[]> {
+    const alertType = AlertType.REPHRASE_QUESTION;
+    return await AlertModel.createQueryBuilder('alert')
+      .where('alert.resolved IS NULL')
+      .andWhere('alert.alertType = :alertType', { alertType })
+      .andWhere("(alert.payload ->> 'queueId')::INTEGER = :queueId ", {
+        queueId,
+      })
+      .getMany();
+  }
 }

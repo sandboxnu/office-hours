@@ -14,7 +14,7 @@ import { pick } from 'lodash';
 import { QuestionModel } from 'question/question.entity';
 import { Connection, In } from 'typeorm';
 import { QueueModel } from './queue.entity';
-import { AlertModel } from '../alerts/alerts.entity';
+import { AlertsService } from '../alerts/alerts.service';
 
 /**
  * Get data in service of the queue controller and SSE
@@ -22,7 +22,10 @@ import { AlertModel } from '../alerts/alerts.entity';
  */
 @Injectable()
 export class QueueService {
-  constructor(private connection: Connection) {}
+  constructor(
+    private connection: Connection,
+    private alertsService: AlertsService,
+  ) {}
 
   async getQueue(queueId: number): Promise<QueueModel> {
     const queue = await QueueModel.findOne(queueId, {
@@ -56,7 +59,7 @@ export class QueueService {
       .getMany();
 
     const unresolvedRephraseQuestionAlerts =
-      await AlertModel.unresolvedRephraseQuestionAlert(queueId).getMany();
+      await this.alertsService.getUnresolvedRephraseQuestionAlert(queueId);
 
     const groupMap: Record<number, QuestionGroup> = {};
 

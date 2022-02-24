@@ -11,6 +11,7 @@ import {
 import { TestTypeOrmModule } from '../../test/util/testUtils';
 import { AlertModel } from './alerts.entity';
 import { AlertsService } from './alerts.service';
+import { QueueModel } from '../queue/queue.entity';
 
 describe('Alerts service', () => {
   let service: AlertsService;
@@ -34,6 +35,38 @@ describe('Alerts service', () => {
     await conn.synchronize(true);
   });
 
+  async function createAlerts(queue: QueueModel): Promise<AlertModel> {
+    const closedQuestion = await QuestionFactory.create({
+      createdAt: new Date(Date.now() - 90000),
+      closedAt: new Date(),
+      queue: queue,
+    });
+
+    const openQuestion = await QuestionFactory.create({
+      queue,
+    });
+
+    await AlertFactory.create({
+      user: closedQuestion.creator,
+      course: queue.course,
+      payload: {
+        questionId: closedQuestion.id,
+        queueId: queue.id,
+        courseId: queue.course.id,
+      },
+    });
+
+    return await AlertFactory.create({
+      user: openQuestion.creator,
+      course: queue.course,
+      payload: {
+        questionId: openQuestion.id,
+        queueId: queue.id,
+        courseId: queue.course.id,
+      },
+    });
+  }
+
   describe('remove stale alerts', () => {
     it('removes stale alerts', async () => {
       const course = await CourseFactory.create();
@@ -44,37 +77,11 @@ describe('Alerts service', () => {
         staffList: [ta.user],
       });
 
-      const closedQuestion = await QuestionFactory.create({
-        createdAt: new Date(Date.now() - 90000),
-        closedAt: new Date(),
-        queue: queue,
-      });
+      const openAlert = await createAlerts(queue);
 
-      const openQuestion = await QuestionFactory.create({
-        queue,
-      });
-
-      await AlertFactory.create({
-        user: closedQuestion.creator,
-        course: queue.course,
-        payload: {
-          questionId: closedQuestion.id,
-          queueId: queue.id,
-          courseId: queue.course.id,
-        },
-      });
-
-      const openAlert = await AlertFactory.create({
-        user: openQuestion.creator,
-        course: queue.course,
-        payload: {
-          questionId: openQuestion.id,
-          queueId: queue.id,
-          courseId: queue.course.id,
-        },
-      });
-
-      expect((await AlertModel.find()).length).toBe(2);
+      expect(
+        (await AlertModel.find({ where: { course: queue.course } })).length,
+      ).toBe(2);
 
       const nonStaleAlerts = await service.removeStaleAlerts(
         await AlertModel.find({ where: { course: queue.course } }),
@@ -119,6 +126,31 @@ describe('Alerts service', () => {
           questionId: 420,
         }),
       ).toBeFalsy();
+    });
+  });
+
+  describe('getting unresolved alerts for the rephrase question type', () => {
+    it('gets unresolved alerts', async () => {
+      const course = await CourseFactory.create();
+      const ta = await TACourseFactory.create({ course });
+      const queue = await QueueFactory.create({
+        course,
+        staffList: [ta.user],
+      });
+      const openAlert = await createAlerts(queue);
+      await service.removeStaleAlerts(
+        await AlertModel.find({ where: { course: queue.course } }),
+      );
+
+      const unresolvedAlerts = await service.getUnresolvedRephraseQuestionAlert(
+        queue.id,
+      );
+
+      expect(unresolvedAlerts.length).toBe(1);
+      expect(unresolvedAlerts[0].id).toBe(openAlert.id);
+      expect(unresolvedAlerts[0].resolved).toBeNull();
+      expect(unresolvedAlerts[0].alertType).toBe(AlertType.REPHRASE_QUESTION);
+      expect(unresolvedAlerts[0].payload['queueId']).toBe(queue.id);
     });
   });
 });

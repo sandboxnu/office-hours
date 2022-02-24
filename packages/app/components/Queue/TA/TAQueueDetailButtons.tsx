@@ -56,10 +56,6 @@ export default function TAQueueDetailButtons({
   );
   const { isCheckedIn, isHelping } = useTAInQueueInfo(queueId);
 
-  const rephraseTooltipTitle = hasUnresolvedRephraseAlert
-    ? "The student has already been asked to rephrase their question"
-    : "Ask the student to add more detail to their question";
-
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const sendRephraseAlert = async () => {
     const payload: RephraseQuestionPayload = {
@@ -146,6 +142,21 @@ export default function TAQueueDetailButtons({
         return [true, "Help Student"];
       }
     })();
+    const [canRephrase, rephraseTooltip] = ((): [boolean, string] => {
+      if (!isCheckedIn) {
+        return [
+          false,
+          "You must check in to ask this student to rephrase their question",
+        ];
+      } else if (hasUnresolvedRephraseAlert) {
+        return [
+          false,
+          "The student has already been asked to rephrase their question",
+        ];
+      } else {
+        return [true, "Ask the student to add more detail to their question"];
+      }
+    })();
     return (
       <>
         <Popconfirm
@@ -181,20 +192,14 @@ export default function TAQueueDetailButtons({
             </span>
           </Tooltip>
         </Popconfirm>
-        <Tooltip
-          title={
-            isCheckedIn
-              ? rephraseTooltipTitle
-              : "You must check in to ask this student to rephrase their question"
-          }
-        >
+        <Tooltip title={rephraseTooltip}>
           <span>
             <BannerOrangeButton
               shape="circle"
               icon={<QuestionOutlined />}
               onClick={sendRephraseAlert}
               data-cy="request-rephrase-question"
-              disabled={!isCheckedIn || hasUnresolvedRephraseAlert}
+              disabled={!canRephrase}
             />
           </span>
         </Tooltip>
