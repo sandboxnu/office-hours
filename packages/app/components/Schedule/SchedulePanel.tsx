@@ -1,10 +1,12 @@
 import { ReactElement } from "react";
-import { Calendar, CalendarProps, View } from "react-big-calendar";
-import styled from "styled-components";
+import FullCalendar from "@fullcalendar/react"; // must go before plugins
+import timeGridPlugin from "@fullcalendar/timegrid";
+import { View } from "react-big-calendar";
+// import styled from "styled-components";
 
-const _ScheduleCalendar = styled(Calendar)<CalendarProps>`
-  height: 70vh;
-`;
+// const _ScheduleCalendar = styled(Calendar)<CalendarProps>`
+//   height: 70vh;
+// `;
 
 type ScheduleProps = {
   courseId: number;
@@ -17,7 +19,7 @@ export default function SchedulePanel({
 }: ScheduleProps): ReactElement {
   const _a = courseId;
   const _d = defaultView;
-  return null; // TODO: Replace this with something other than the iCal
+  return <FullCalendar plugins={[timeGridPlugin]} initialView="timeGridWeek" />;
   /**
   const { course } = useCourse(courseId);
   const role = useRoleInCourse(courseId);
