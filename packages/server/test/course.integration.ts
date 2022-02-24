@@ -614,41 +614,45 @@ describe('Course Integration', () => {
       expect(crnCourseMap).toBeDefined();
     });
 
-    // it('test conflict crn',async () => {
-    //   const professor = await UserFactory.create();
-    //   const semester = await SemesterFactory.create();
-    //   const potato = await CourseFactory.create({name: 'Potato', semester: semester});
-    //   const tomato = await CourseFactory.create({name: 'Tomato', semester: semester});
+    it('test conflict crn', async () => {
+      const professor = await UserFactory.create();
+      const semester = await SemesterFactory.create();
+      const potato = await CourseFactory.create({
+        name: 'Potato',
+        semester: semester,
+      });
+      const tomato = await CourseFactory.create({
+        name: 'Tomato',
+        semester: semester,
+      });
 
-    //   await UserCourseFactory.create({
-    //     course: potato,
-    //     user: professor,
-    //     role: Role.PROFESSOR,
-    //   });
+      await UserCourseFactory.create({
+        course: potato,
+        user: professor,
+        role: Role.PROFESSOR,
+      });
 
-    //   await UserCourseFactory.create({
-    //     course: tomato,
-    //     user: professor,
-    //     role: Role.PROFESSOR,
-    //   });
+      await UserCourseFactory.create({
+        course: tomato,
+        user: professor,
+        role: Role.PROFESSOR,
+      });
 
-    //   await CourseSectionFactory.create({
-    //     course: tomato,
-    //     crn: 12500
-    //   });
-    //   console.log('Mapping course is ');
-    //   console.log(tomato);
+      await CourseSectionFactory.create({
+        course: tomato,
+        crn: 12500,
+      });
 
-    //   const editCourseCrn = {
-    //     courseId: potato.id,
-    //     crns: [31000, 12500],
-    //   };
+      const editCourseCrn = {
+        courseId: potato.id,
+        crns: [31000, 12500],
+      };
 
-    //   await supertest({ userId: professor.id })
-    //   .patch(`/courses/${potato.id}/edit_course`)
-    //   .send(editCourseCrn)
-    //   .expect(400);
-    // });
+      await supertest({ userId: professor.id })
+        .patch(`/courses/${potato.id}/edit_course`)
+        .send(editCourseCrn)
+        .expect(400);
+    });
 
     it('test null field', async () => {
       const professor = await UserFactory.create();
