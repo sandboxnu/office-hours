@@ -22,10 +22,6 @@ export default function AlertsContainer({
 
     await mutateAlerts();
     router.push(`/course/${courseId}/queue/${queueId}?edit_question=true`);
-    // setTimeout(async () => {
-    //   await mutateAlerts();
-    //   router.push(`/course/${courseId}/queue/${queueId}?edit_question=true`);
-    // }, 100);
   };
 
   const alertDivs = alerts?.map((alert) => {
