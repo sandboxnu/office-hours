@@ -247,9 +247,8 @@ class APIClient {
       this.req("GET", `/api/v1/alerts/${courseId}`),
     create: async (params: CreateAlertParams): Promise<CreateAlertResponse> =>
       this.req("POST", `/api/v1/alerts`, CreateAlertResponse, params),
-    close: async (alertId: number): Promise<void> => {
-      this.req("PATCH", `/api/v1/alerts/${alertId}`);
-    },
+    close: async (alertId: number): Promise<void> =>
+      this.req("PATCH", `/api/v1/alerts/${alertId}`),
   };
 
   constructor(baseURL = "") {

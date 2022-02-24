@@ -44,6 +44,7 @@ export function CurrentGroupList({
             queueId={queueId}
             showName
             showButtons
+            hasUnresolvedRephraseAlert={false}
           />
         </div>
       ))}
