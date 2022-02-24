@@ -12,6 +12,7 @@ import {
 import { TestConfigModule, TestTypeOrmModule } from '../../test/util/testUtils';
 import { QueueModel } from './queue.entity';
 import { QueueService } from './queue.service';
+import { AlertsService } from '../alerts/alerts.service';
 
 describe('QueueService', () => {
   let service: QueueService;
@@ -21,7 +22,7 @@ describe('QueueService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestTypeOrmModule, TestConfigModule],
-      providers: [QueueService],
+      providers: [QueueService, AlertsService],
     }).compile();
 
     service = module.get<QueueService>(QueueService);
@@ -73,6 +74,7 @@ describe('QueueService', () => {
         questionsGettingHelp: ['Helping'],
         queue: ['Queued', 'Drafting'],
         groups: [],
+        unresolvedAlerts: [],
       });
     });
 

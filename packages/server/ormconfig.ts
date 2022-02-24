@@ -48,7 +48,10 @@ const typeorm = {
     ProfSectionGroupsModel,
   ],
   keepConnectionAlive: true,
-  logging: !!process.env.TYPEORM_LOGGING,
+  logging:
+    process.env.NODE_ENV !== 'production'
+      ? ['error']
+      : !!process.env.TYPEORM_LOGGING,
   ...(!!process.env.TYPEORM_CLI ? inCLI : {}),
 };
 module.exports = typeorm;

@@ -5,6 +5,8 @@ import { SSEModule } from 'sse/sse.module';
 import { QueueService } from './queue.service';
 import { QueueSSEService } from './queue-sse.service';
 import { QueueSubscriber } from './queue.subscriber';
+import { AlertsService } from '../alerts/alerts.service';
+import { AlertsModule } from '../alerts/alerts.module';
 
 @Module({
   controllers: [QueueController],
@@ -13,8 +15,9 @@ import { QueueSubscriber } from './queue.subscriber';
     QueueService,
     QueueSSEService,
     QueueSubscriber,
+    AlertsService,
   ],
   exports: [QueueCleanService, QueueSSEService],
-  imports: [SSEModule],
+  imports: [SSEModule, AlertsModule],
 })
 export class QueueModule {}
