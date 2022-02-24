@@ -31,11 +31,6 @@ export class AlertsService {
           });
           const isQueueOpen = await queue?.checkIsOpen();
           if (question.closedAt || !isQueueOpen) {
-            console.log(
-              `Rephrase Question alert with id ${
-                alert.id
-              } expired ${isQueueOpen} ${JSON.stringify(question)}`,
-            );
             if (!question.closedAt) {
               question.closedAt = new Date();
               await question.save();
