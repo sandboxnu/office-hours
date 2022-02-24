@@ -9,6 +9,8 @@ import {
 import { TestTypeOrmModule } from '../../../test/util/testUtils';
 import { QuestionModel } from '../../question/question.entity';
 import { QueueCleanService } from './queue-clean.service';
+import { QueueModel } from '../queue.entity';
+import { EventModel } from '../../profile/event-model.entity';
 
 describe('QueueService', () => {
   let service: QueueCleanService;
@@ -107,6 +109,46 @@ describe('QueueService', () => {
       await queue1.reload();
       await queue2.reload();
       expect(cleanQueueSpy).toHaveBeenCalledTimes(2);
+    });
+    it('checkout all staff from all queues', async () => {
+      const ta = await UserFactory.create();
+      const ta2 = await UserFactory.create();
+      const ta3 = await UserFactory.create();
+      const ta4 = await UserFactory.create();
+
+      const queue = await QueueFactory.create({
+        staffList: [ta],
+      });
+      const queue2 = await QueueFactory.create({
+        staffList: [ta2, ta3],
+      });
+      const queue3 = await QueueFactory.create({
+        staffList: [ta4],
+      });
+
+      await service.checkoutAllStaff();
+
+      const updatedQueue1 = await QueueModel.findOne(queue.id, {
+        relations: ['staffList'],
+      });
+      const updatedQueue2 = await QueueModel.findOne(queue2.id, {
+        relations: ['staffList'],
+      });
+      const updatedQueue3 = await QueueModel.findOne(queue3.id, {
+        relations: ['staffList'],
+      });
+      const checkoutEvents = await EventModel.createQueryBuilder().getMany();
+      const checkoutEventTypes = checkoutEvents.map((em) => em.eventType);
+
+      expect(updatedQueue1.staffList.length).toEqual(0);
+      expect(updatedQueue2.staffList.length).toEqual(0);
+      expect(updatedQueue3.staffList.length).toEqual(0);
+      expect(checkoutEventTypes).toEqual([
+        'taCheckedOutForced',
+        'taCheckedOutForced',
+        'taCheckedOutForced',
+        'taCheckedOutForced',
+      ]);
     });
 
     it('does not clean queue that has no questions in open or limbo state', async () => {
