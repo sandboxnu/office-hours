@@ -1,8 +1,16 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 
 import { Cache } from 'cache-manager';
+import { ClosedQuestionStatus, Heatmap, timeDiffInMins } from '@koh/common';
+import moment from 'moment';
+import { CourseModel } from './course.entity';
+import { MoreThan } from 'typeorm';
+import { QuestionModel } from '../question/question.entity';
+import { EventModel } from '../profile/event-model.entity';
+import { Command, Positional } from 'nestjs-command';
+import { inRange, mean, range } from 'lodash';
 
-function _arrayRotate(arr, count) {
+function arrayRotate(arr, count) {
   count -= arr.length * Math.floor(count / arr.length);
   const spliced = arr.splice(0, count);
   return [...arr, ...spliced];
@@ -11,7 +19,7 @@ function _arrayRotate(arr, count) {
 @Injectable()
 export class HeatmapService {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
-  /*
+
   async getCachedHeatmapFor(courseId: number): Promise<Heatmap | false> {
     //One week
     const cacheLengthInSeconds = 604800;
@@ -44,19 +52,48 @@ export class HeatmapService {
       return false;
     }
 
-    const officeHours = await OfficeHourModel.find({
-      where: { startTime: MoreThan(recent), courseId },
+    //const officeHours = await OfficeHourModel.find({
+    //  where: { startTime: MoreThan(recent), courseId },
+    //});
+    const taEvents = await EventModel.find({
+      where: { time: MoreThan(recent), courseId },
     });
 
-    if (officeHours.length === 0) {
+    if (taEvents.length === 0) {
       return false;
     }
 
     const tz = (await CourseModel.findOne({ id: courseId })).timezone;
+
+    function extractTimestamps(taEvents: EventModel[]) {
+      const hours = [];
+      taEvents.sort((a, b) => {
+        return a.time.getTime() - b.time.getTime();
+      });
+
+      let iday = taEvents[0].time.getDate();
+      let itime = taEvents[0].time.getTime();
+      let etime = taEvents[0].time.getTime();
+      for (let i = 1; i < taEvents.length; i++) {
+        if (taEvents[i].time.getDate() == iday) {
+          etime = taEvents[i].time.getTime();
+        } else {
+          hours.push([itime, etime]);
+          iday = taEvents[i].time.getDate();
+          itime = taEvents[i].time.getTime();
+          etime = taEvents[i].time.getTime(); // new day
+        }
+      }
+
+      hours.push([itime, etime]); // push last day.
+
+      return hours;
+    }
+
     let heatmap = this._generateHeatMapWithReplay(
       // Ignore questions that cross midnight (usually a fluke)
       questions.filter((q) => q.helpedAt.getDate() === q.createdAt.getDate()),
-      officeHours,
+      extractTimestamps(taEvents),
       tz,
       BUCKET_SIZE_IN_MINS,
       SAMPLES_PER_BUCKET,
@@ -76,7 +113,7 @@ export class HeatmapService {
   // Returns heatmap in the timezone (ie 3rd bucket is 3am in that timezone)
   _generateHeatMapWithReplay(
     questions: QuestionModel[],
-    hours: OfficeHourModel[],
+    hourTimestamps: [number, number][],
     timezone: string,
     bucketSize: number,
     samplesPerBucket: number,
@@ -103,11 +140,7 @@ export class HeatmapService {
     for all sample timepoints between Q1.createdAt and Q2.createdAt:
        - sample = Q1.helpedAt - timepoint (if negative, then it's 0)
 
-
-    const hourTimestamps: [number, number][] = hours.map((hours) => [
-      hours.startTime.getTime(),
-      hours.endTime.getTime(),
-    ]);
+  */
 
     function dateToBucket(date: Date | number): number {
       // parse in zone to handle daylight savings by getting day/hour/minute within that IANA zone
@@ -245,5 +278,4 @@ export class HeatmapService {
   ): Promise<void> {
     console.log(await this._getHeatmapFor(courseId));
   }
-  */
 }
