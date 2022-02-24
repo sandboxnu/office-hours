@@ -17,6 +17,8 @@ import { CourseModel } from '../course/course.entity';
 import { OfficeHourModel } from '../course/office-hour.entity';
 import { UserModel } from '../profile/user.entity';
 import { QuestionModel } from '../question/question.entity';
+import { HttpException, HttpStatus } from '@nestjs/common';
+import { ERROR_MESSAGES } from '@koh/common';
 
 interface TimeInterval {
   startTime: Date;
@@ -74,8 +76,14 @@ export class QueueModel extends BaseEntity {
   isOpen: boolean;
 
   async checkIsOpen(): Promise<boolean> {
-    this.isOpen =
-      this.staffList && this.staffList.length > 0 && !this.isDisabled;
+    if (!this.staffList) {
+      console.error(ERROR_MESSAGES.queueController.missingStaffList, this.id);
+      throw new HttpException(
+        ERROR_MESSAGES.queueController.missingStaffList,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+    this.isOpen = this.staffList.length > 0 && !this.isDisabled;
     return this.isOpen;
   }
 
