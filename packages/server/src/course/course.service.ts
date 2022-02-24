@@ -138,7 +138,7 @@ export class CourseService {
       );
     }
 
-    new Set(coursePatch.crns).forEach(async (crn) => {
+    for (const crn of new Set(coursePatch.crns)) {
       const courseCrnMap = await CourseSectionMappingModel.findOne({
         crn: crn,
       });
@@ -175,7 +175,7 @@ export class CourseService {
           );
         }
       }
-    });
+    }
 
     if (coursePatch.name) {
       course.name = coursePatch.name;
