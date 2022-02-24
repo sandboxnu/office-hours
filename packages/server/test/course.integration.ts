@@ -15,6 +15,7 @@ import { QueueModel } from '../src/queue/queue.entity';
 import {
   ClosedOfficeHourFactory,
   CourseFactory,
+  CourseSectionFactory,
   EventFactory,
   OfficeHourFactory,
   ProfSectionGroupsFactory,
@@ -580,12 +581,17 @@ describe('Course Integration', () => {
         role: Role.PROFESSOR,
       });
 
+      await CourseSectionFactory.create({
+        course: course,
+        crn: 30303,
+      });
+
       const editCourseTomato = {
         courseId: course.id,
         name: 'Tomato',
         icalURL: 'https://calendar.google.com/calendar/ical/tomato/basic.ics',
         coordinator_email: 'tomato@gmail.com',
-        crns: [12345, 67890],
+        crns: [30303, 67890],
       };
 
       // update crns, coordinator email, name, icalURL
@@ -602,9 +608,10 @@ describe('Course Integration', () => {
         'https://calendar.google.com/calendar/ical/tomato/basic.ics',
       );
 
-      await CourseSectionMappingModel.findOne({
+      const crnCourseMap = await CourseSectionMappingModel.findOne({
         where: { crn: 67890, courseId: course.id },
       });
+      expect(crnCourseMap).toBeDefined();
     });
 
     // it('test conflict crn',async () => {
