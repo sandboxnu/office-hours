@@ -20,10 +20,12 @@ export default function AlertsContainer({
   const handleClose = async (alertId, courseId, queueId) => {
     await API.alerts.close(alertId);
 
-    setTimeout(async () => {
-      await mutateAlerts();
-      router.push(`/course/${courseId}/queue/${queueId}?edit_question=true`);
-    }, 100);
+    await mutateAlerts();
+    router.push(`/course/${courseId}/queue/${queueId}?edit_question=true`);
+    // setTimeout(async () => {
+    //   await mutateAlerts();
+    //   router.push(`/course/${courseId}/queue/${queueId}?edit_question=true`);
+    // }, 100);
   };
 
   const alertDivs = alerts?.map((alert) => {
