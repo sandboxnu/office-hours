@@ -15,7 +15,6 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { pick } from 'lodash';
 import { JwtAuthGuard } from 'guards/jwt-auth.guard';
 import { User } from 'decorators/user.decorator';
 import { UserModel } from 'profile/user.entity';
@@ -33,16 +32,13 @@ export class AlertsController {
     @Param('courseId') courseId: number,
     @User() user: UserModel,
   ): Promise<GetAlertsResponse> {
-    const alerts = (
-      await AlertModel.find({
-        where: {
-          courseId,
-          user,
-          resolved: null,
-        },
-      })
-    ).map((alert) => pick(alert, ['sent', 'alertType', 'payload', 'id']));
-
+    const alerts = await AlertModel.find({
+      where: {
+        courseId,
+        user,
+        resolved: null,
+      },
+    });
     return { alerts: await this.alertsService.removeStaleAlerts(alerts) };
   }
 
@@ -52,6 +48,12 @@ export class AlertsController {
     @Body() body: CreateAlertParams,
   ): Promise<CreateAlertResponse> {
     const { alertType, courseId, payload, targetUserId } = body;
+
+    if (!this.alertsService.assertPayloadType(alertType, payload)) {
+      throw new BadRequestException(
+        ERROR_MESSAGES.alertController.incorrectPayload,
+      );
+    }
 
     const anotherAlert = await AlertModel.findOne({
       where: {

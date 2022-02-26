@@ -1,5 +1,6 @@
-import { QuestionType, Role } from '@koh/common';
 import { QuestionGroupModel } from 'question/question-group.entity';
+import { AlertType, QuestionType, Role } from '@koh/common';
+import { AlertModel } from 'alerts/alerts.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { Factory } from 'typeorm-factory';
 import { CourseModel } from '../../src/course/course.entity';
@@ -97,3 +98,9 @@ export const LastRegistrationFactory = new Factory(LastRegistrationModel)
 export const ProfSectionGroupsFactory = new Factory(ProfSectionGroupsModel)
   .assocOne('prof', UserFactory)
   .attr('sectionGroups', []);
+export const AlertFactory = new Factory(AlertModel)
+  .attr('alertType', AlertType.REPHRASE_QUESTION)
+  .attr('sent', new Date(Date.now() - 86400000))
+  .assocOne('user', UserFactory)
+  .assocOne('course', CourseFactory)
+  .attr('payload', {});

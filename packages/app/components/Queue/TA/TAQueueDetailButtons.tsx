@@ -3,6 +3,7 @@ import {
   CloseOutlined,
   DeleteOutlined,
   PhoneOutlined,
+  QuestionOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
 import { API } from "@koh/api-client";
@@ -22,6 +23,7 @@ import { useQuestions } from "../../../hooks/useQuestions";
 import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
 import {
   BannerDangerButton,
+  BannerOrangeButton,
   BannerPrimaryButton,
   CantFindButton,
   FinishHelpingButton,
@@ -36,10 +38,12 @@ export default function TAQueueDetailButtons({
   courseId,
   queueId,
   question,
+  hasUnresolvedRephraseAlert,
 }: {
   courseId: number;
   queueId: number;
   question: Question;
+  hasUnresolvedRephraseAlert: boolean;
 }): ReactElement {
   const defaultMessage = useDefaultMessage();
   const { mutateQuestions } = useQuestions(queueId);
@@ -69,6 +73,8 @@ export default function TAQueueDetailButtons({
         payload,
         targetUserId: question.creator.id,
       });
+      await mutateQuestions();
+      message.success("Successfully asked student to rephrase their question.");
     } catch (e) {
       //If the ta creates an alert that already exists the error is caught and nothing happens
     }
@@ -135,6 +141,21 @@ export default function TAQueueDetailButtons({
         return [true, "Help Student"];
       }
     })();
+    const [canRephrase, rephraseTooltip] = ((): [boolean, string] => {
+      if (!isCheckedIn) {
+        return [
+          false,
+          "You must check in to ask this student to rephrase their question",
+        ];
+      } else if (hasUnresolvedRephraseAlert) {
+        return [
+          false,
+          "The student has already been asked to rephrase their question",
+        ];
+      } else {
+        return [true, "Ask the student to add more detail to their question"];
+      }
+    })();
     return (
       <>
         <Popconfirm
@@ -170,15 +191,17 @@ export default function TAQueueDetailButtons({
             </span>
           </Tooltip>
         </Popconfirm>
-        {/* TODO: fix this <Tooltip title="Ask the student to add more detail to their question">
-          <BannerOrangeButton
-            shape="circle"
-            icon={<QuestionOutlined />}
-            onClick={sendRephraseAlert}
-            data-cy="request-rephrase-question"
-            disabled={!isCheckedIn}
-          />
-        </Tooltip> */}
+        <Tooltip title={rephraseTooltip}>
+          <span>
+            <BannerOrangeButton
+              shape="circle"
+              icon={<QuestionOutlined />}
+              onClick={sendRephraseAlert}
+              data-cy="request-rephrase-question"
+              disabled={!canRephrase}
+            />
+          </span>
+        </Tooltip>
         <Tooltip title={helpTooltip}>
           <span>
             <BannerPrimaryButton
