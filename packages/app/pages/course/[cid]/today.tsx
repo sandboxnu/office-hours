@@ -88,7 +88,7 @@ export default function Today(): ReactElement {
             )}
             {course?.queues?.filter((q) => q.isOpen).length === 0 ? (
               <h1 style={{ paddingTop: "100px" }}>
-                There are currently no scheduled office hours
+                There are currently no open queues
               </h1>
             ) : (
               course?.queues
