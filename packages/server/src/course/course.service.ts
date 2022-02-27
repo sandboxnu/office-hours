@@ -147,22 +147,17 @@ export class CourseService {
 
       for (const courseCrnMap of courseCrnMaps) {
         const conflictCourse = await CourseModel.findOne(courseCrnMap.courseId);
-        if (
-          courseCrnMap.courseId !== courseId &&
-          conflictCourse &&
-          conflictCourse.semesterId === course.semesterId
-        ) {
-          throw new BadRequestException(
-            ERROR_MESSAGES.courseController.crnAlreadyRegistered(crn, courseId),
-          );
-        }
-
-        if (
-          courseCrnMap.courseId === courseId &&
-          conflictCourse &&
-          conflictCourse.semesterId === course.semesterId
-        ) {
-          courseCrnMapExists = true;
+        if (conflictCourse && conflictCourse.semesterId === course.semesterId) {
+          if (courseCrnMap.courseId !== courseId) {
+            throw new BadRequestException(
+              ERROR_MESSAGES.courseController.crnAlreadyRegistered(
+                crn,
+                courseId,
+              ),
+            );
+          } else {
+            courseCrnMapExists = true;
+          }
         }
       }
 
