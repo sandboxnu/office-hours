@@ -16,7 +16,7 @@ Object {
     },
   ],
   "queues": Array [],
-  "sectionGroupName": null,
+  "sectionGroupName": "CS 2500",
   "selfEnroll": false,
   "timezone": "America/New_York",
 }

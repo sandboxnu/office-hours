@@ -46,6 +46,7 @@ export const OfficeHourFactory = new Factory(OfficeHourModel)
 
 export const CourseFactory = new Factory(CourseModel)
   .attr('name', 'CS 2500')
+  .attr('sectionGroupName', 'CS 2500')
   .attr('icalURL', 'http://hi.com')
   .attr('enabled', true)
   .assocOne('semester', SemesterFactory)
