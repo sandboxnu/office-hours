@@ -158,7 +158,7 @@ export class CourseService {
       }
       if (
         !courseCrnMap ||
-        (courseCrnMap.courseId === courseId &&
+        (courseCrnMap.courseId !== courseId &&
           conflictCourse &&
           conflictCourse.semesterId !== course.semesterId)
       ) {
