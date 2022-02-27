@@ -30,7 +30,7 @@ export class CourseModel extends BaseEntity {
   @Column('text')
   name: string; // display name entered by Prof
 
-  @Column('text', { nullable: true }) // nullable for backwards compatibility
+  @Column('text')
   sectionGroupName: string; // from admin
 
   @Column('text', { nullable: true })
