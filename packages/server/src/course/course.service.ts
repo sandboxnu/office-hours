@@ -139,13 +139,14 @@ export class CourseService {
     }
 
     for (const crn of new Set(coursePatch.crns)) {
-      const courseCrnMap = await CourseSectionMappingModel.findOne({
+      const courseCrnMaps = await CourseSectionMappingModel.find({
         crn: crn,
       });
 
-      let conflictCourse;
-      if (courseCrnMap) {
-        conflictCourse = await CourseModel.findOne(courseCrnMap.courseId);
+      let courseCrnMapExists = false;
+
+      for (const courseCrnMap of courseCrnMaps) {
+        const conflictCourse = await CourseModel.findOne(courseCrnMap.courseId);
         if (
           courseCrnMap.courseId !== courseId &&
           conflictCourse &&
@@ -155,13 +156,17 @@ export class CourseService {
             ERROR_MESSAGES.courseController.crnAlreadyRegistered(crn, courseId),
           );
         }
-      }
-      if (
-        !courseCrnMap ||
-        (courseCrnMap.courseId !== courseId &&
+
+        if (
+          courseCrnMap.courseId === courseId &&
           conflictCourse &&
-          conflictCourse.semesterId !== course.semesterId)
-      ) {
+          conflictCourse.semesterId === course.semesterId
+        ) {
+          courseCrnMapExists = true;
+        }
+      }
+
+      if (!courseCrnMapExists || !courseCrnMaps) {
         try {
           await CourseSectionMappingModel.create({
             crn: crn,
