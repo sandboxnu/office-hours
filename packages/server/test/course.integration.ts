@@ -614,7 +614,7 @@ describe('Course Integration', () => {
       expect(crnCourseMap).toBeDefined();
     });
 
-    it('test crn mapped to course for a different semester', async () => {
+    it('test crn mapped to another course for a different semester', async () => {
       const professor = await UserFactory.create();
       const semester1 = await SemesterFactory.create();
       const semester2 = await SemesterFactory.create();
