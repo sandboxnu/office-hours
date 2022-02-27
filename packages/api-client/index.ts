@@ -29,6 +29,7 @@ import {
   UpdateQuestionParams,
   UpdateQuestionResponse,
   UpdateQueueParams,
+  UserPartial,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -77,6 +78,8 @@ class APIClient {
   course = {
     get: async (courseId: number) =>
       this.req("GET", `/api/v1/courses/${courseId}`, GetCourseResponse),
+    getUserInfo: async (courseId: number, page: number, search: string) =>
+      this.req("GET", `/api/v1/courses/${courseId}/getUserInfo/${page}/${search}`, UserPartial),
     updateCalendar: async (courseId: number) =>
       this.req("POST", `/api/v1/courses/${courseId}/update_calendar`),
     getCourseOverrides: async (courseId: number) =>
