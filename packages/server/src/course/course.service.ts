@@ -161,7 +161,7 @@ export class CourseService {
         }
       }
 
-      if (!courseCrnMapExists || !courseCrnMaps) {
+      if (!courseCrnMapExists) {
         try {
           await CourseSectionMappingModel.create({
             crn: crn,
