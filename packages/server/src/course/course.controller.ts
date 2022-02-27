@@ -9,6 +9,7 @@ import {
   TACheckoutResponse,
   UpdateCourseOverrideBody,
   UpdateCourseOverrideResponse,
+  UserPartial,
 } from '@koh/common';
 import {
   BadRequestException,
@@ -551,6 +552,26 @@ export class CourseController {
       console.error(err);
       throw new HttpException(
         ERROR_MESSAGES.courseController.checkInTime,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Get(':id/get_user_info/:page/:search')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
+  @Roles(Role.PROFESSOR)
+  async getUserInfo(
+    @Param('id') courseId: number,
+    @Param('page') page: number,
+    @Param('search') search: string,
+    @Param('role') role: Role,
+  ): Promise<UserPartial> {
+    try {
+      return { id: courseId + page, name: search, email: role, photoURL: '' };
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.common.pageOutOfBounds,
         HttpStatus.BAD_REQUEST,
       );
     }

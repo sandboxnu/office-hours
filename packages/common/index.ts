@@ -804,6 +804,9 @@ export type DateRangeType = {
 };
 
 export const ERROR_MESSAGES = {
+  common: {
+    pageOutOfBounds: "Can't retrieve out of bounds page.",
+  },
   courseController: {
     checkIn: {
       cannotCreateNewQueueIfNotProfessor:
