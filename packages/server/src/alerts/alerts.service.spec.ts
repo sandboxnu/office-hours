@@ -7,6 +7,7 @@ import {
   QuestionFactory,
   QueueFactory,
   TACourseFactory,
+  UserFactory,
 } from '../../test/util/factories';
 import { TestTypeOrmModule } from '../../test/util/testUtils';
 import { AlertModel } from './alerts.entity';
@@ -70,7 +71,10 @@ describe('Alerts service', () => {
   describe('remove stale alerts', () => {
     it('removes stale alerts', async () => {
       const course = await CourseFactory.create();
-      const ta = await TACourseFactory.create({ course });
+      const ta = await TACourseFactory.create({
+        user: await UserFactory.create(),
+        course: course,
+      });
 
       const queue = await QueueFactory.create({
         course,
@@ -132,7 +136,10 @@ describe('Alerts service', () => {
   describe('getting unresolved alerts for the rephrase question type', () => {
     it('gets unresolved alerts', async () => {
       const course = await CourseFactory.create();
-      const ta = await TACourseFactory.create({ course });
+      const ta = await TACourseFactory.create({
+        user: await UserFactory.create(),
+        course: course,
+      });
       const queue = await QueueFactory.create({
         course,
         staffList: [ta.user],
