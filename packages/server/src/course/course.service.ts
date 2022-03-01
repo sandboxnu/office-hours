@@ -157,6 +157,7 @@ export class CourseService {
             );
           } else {
             courseCrnMapExists = true;
+            break;
           }
         }
       }

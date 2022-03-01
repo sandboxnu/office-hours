@@ -163,7 +163,7 @@ export class CourseController {
       );
     }
 
-    const course_response: any = { ...course, crns: null };
+    const course_response = { ...course, crns: null };
     try {
       course_response.crns = await CourseSectionMappingModel.find({ course });
     } catch (err) {
