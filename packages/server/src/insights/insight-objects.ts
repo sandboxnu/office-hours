@@ -104,7 +104,7 @@ export const TotalQuestionsAsked: InsightObject = {
 export const MostActiveStudents: InsightObject = {
   displayName: 'Most Active Students',
   description:
-    'Who are the students who have asked the most questions in Office Hours? (limit 75)',
+    'Who are the students who have asked the most questions in Office Hours?',
   roles: [Role.PROFESSOR],
   component: InsightComponent.SimpleTable,
   size: 'default' as const,
