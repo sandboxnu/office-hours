@@ -103,6 +103,7 @@ export class QuestionController {
 
     const previousUserQuestion = await QuestionModel.findOne({
       where: {
+        queueId: queueId,
         creatorId: user.id,
         status: In(Object.values(OpenQuestionStatus)),
       },
