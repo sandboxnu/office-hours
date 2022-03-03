@@ -2,7 +2,7 @@ import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 
 import { Cache } from 'cache-manager';
 import { ClosedQuestionStatus, Heatmap, timeDiffInMins } from '@koh/common';
-import moment from 'moment';
+import moment = require('moment');
 import { CourseModel } from './course.entity';
 import { MoreThan } from 'typeorm';
 import { QuestionModel } from '../question/question.entity';
