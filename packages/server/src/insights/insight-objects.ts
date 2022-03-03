@@ -133,7 +133,6 @@ export const MostActiveStudents: InsightObject = {
       .addGroupBy('name')
       .addGroupBy('"UserModel".email')
       .orderBy('4', 'DESC')
-      .limit(75)
       .getRawMany();
 
     return {
