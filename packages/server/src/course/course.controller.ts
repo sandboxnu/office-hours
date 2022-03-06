@@ -557,17 +557,33 @@ export class CourseController {
     }
   }
 
-  @Get(':id/get_user_info/:page/:search')
-  @UseGuards(JwtAuthGuard, CourseRolesGuard)
-  @Roles(Role.PROFESSOR)
+  @Get(':id/get_user_info/:role/:page/:search')
+  // @UseGuards(JwtAuthGuard, CourseRolesGuard)
+  // @Roles(Role.PROFESSOR)
   async getUserInfo(
     @Param('id') courseId: number,
     @Param('page') page: number,
     @Param('search') search: string,
-    @Param('role') role: Role,
+    @Param('role') role?: Role,
   ): Promise<UserPartial> {
     try {
-      return { id: courseId + page, name: search, email: role, photoURL: '' };
+      const users = await UserCourseModel.createQueryBuilder()
+        .innerJoin(
+          UserModel,
+          'UserModel',
+          '"UserModel".id = "UserCourseModel"."userId"',
+        )
+        .where('"UserCourseModel"."courseId" = :courseId', { courseId })
+        .andWhere('"UserCourseModel".role = :role', { role })
+        .getMany();
+      console.log('USERS');
+      console.log(users);
+      console.log('USERS');
+      console.log(users);
+      return {
+        id: page,
+        name: search,
+      };
     } catch (err) {
       console.error(err);
       throw new HttpException(

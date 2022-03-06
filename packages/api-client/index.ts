@@ -83,7 +83,7 @@ class APIClient {
       courseId: number,
       page: number,
       search: string,
-      role: Role
+      role?: Role
     ) =>
       this.req(
         "GET",
