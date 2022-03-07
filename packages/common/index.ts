@@ -447,6 +447,11 @@ export class GetCourseResponse {
 
   coordinator_email!: string;
 
+  @Type(() => Number)
+  crns!: number[];
+
+  icalURL!: string;
+
   heatmap!: Heatmap | false;
 
   selfEnroll!: boolean;
@@ -709,6 +714,28 @@ export class RegisterCourseParams {
   timezone!: string;
 }
 
+export class EditCourseInfoParams {
+  @IsNumber()
+  courseId!: number;
+
+  @IsString()
+  @IsOptional()
+  name?: string;
+
+  @IsString()
+  @IsOptional()
+  coordinator_email?: string;
+
+  @IsString()
+  @IsOptional()
+  icalURL?: string;
+
+  @IsArray()
+  @IsOptional()
+  @Type(() => Number)
+  crns?: number[];
+}
+
 export class SemesterPartial {
   id!: number;
   season!: string;
@@ -816,6 +843,7 @@ export const ERROR_MESSAGES = {
     sectionGroupNotFound: "One or more of the section groups was not found",
     courseOfficeHourError: "Unable to find a course's office hours",
     courseHeatMapError: "Unable to get course's cached heatmap",
+    courseCrnsError: "Unable to get course's crn numbers",
     courseModelError: "Course Model not found",
     noUserFound: "No user found with given email",
     noSemesterFound: "No semester exists for the submitted course",
@@ -835,6 +863,8 @@ export const ERROR_MESSAGES = {
       "Unable to update professor's last registered semester",
     invalidApplyURL:
       "You are unauthorized to submit an application. Please email help@khouryofficehours.com for the correct URL.",
+    crnAlreadyRegistered: (crn: number, courseId: number): string =>
+      `The CRN ${crn} already exists for another course with course id ${courseId}`,
   },
   questionController: {
     createQuestion: {
