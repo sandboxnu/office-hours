@@ -5,6 +5,7 @@ import { EventModel } from 'profile/event-model.entity';
 import { QueueModel } from 'queue/queue.entity';
 import { Connection } from 'typeorm';
 import {
+  AlertFactory,
   ClosedOfficeHourFactory,
   OfficeHourFactory,
   QuestionFactory,
@@ -164,6 +165,29 @@ describe('QueueService', () => {
       await service.cleanQueue(queue.id);
       await question.reload();
       expect(question.status).toEqual('Stale');
+    });
+
+    it('resolves lingering alerts from a queue', async () => {
+      const ofs = await ClosedOfficeHourFactory.create();
+      const queue = await QueueFactory.create({ officeHours: [ofs] });
+      const openQuestion = await QuestionFactory.create({
+        queue,
+      });
+      const openAlert = await AlertFactory.create({
+        user: openQuestion.creator,
+        course: queue.course,
+        payload: {
+          questionId: openQuestion.id,
+          queueId: queue.id,
+          courseId: queue.course.id,
+        },
+      });
+      expect(openAlert.resolved).toBeNull();
+
+      await service.cleanQueue(queue.id);
+
+      await openAlert.reload();
+      expect(openAlert.resolved).not.toBeNull();
     });
   });
   describe('cleanAllQueues', () => {
