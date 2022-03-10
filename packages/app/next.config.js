@@ -2,12 +2,14 @@ const withTM = require("next-transpile-modules")([
   "@koh/app",
   "@koh/common",
   "@koh/api-client",
-  "@fullcalendar",
 ]);
 const withPlugins = require("next-compose-plugins");
 const withOffline = require("next-offline");
+const { withGlobalCss } = require('next-global-css')
+const { patchWebpackConfig } = require('next-global-css')
+const webpackNodeExternals = require('webpack-node-externals')
 
-const plugins = [withTM, withOffline];
+const plugins = [withTM, withOffline, withGlobalCss];
 
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 
@@ -26,6 +28,8 @@ const config = {
     productionBrowserSourceMaps: true,
   },
   webpack: (config, options) => {
+    patchWebpackConfig(config, options)
+
     // Webpack to replace @sentry/node imports with @sentry/browser when
     // building the browser's bundle
     if (!options.isServer) {

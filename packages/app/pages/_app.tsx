@@ -1,10 +1,6 @@
 import "antd/dist/antd.css";
 import { AppProps } from "next/app";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-// Nextjs prevents fullcalendar from including its own stylesheets, need to do so manually
-import "@fullcalendar/common/main.css";
-import "@fullcalendar/timegrid/main.css";
-import "@fullcalendar/daygrid/main.css"; // @fullcalendar/timegrid imports @fullcalendar/daygrid
 import "../styles/global.css";
 import { Footer } from "../components/common/Footer";
 import styled from "styled-components";
