@@ -82,13 +82,14 @@ class APIClient {
     getUserInfo: async (
       courseId: number,
       page: number,
-      search: string,
-      role?: Role
+      role?: Role,
+      search?: string
     ) =>
       this.req(
         "GET",
-        `/api/v1/courses/${courseId}/get_user_info/${role}/${page}/${search}`,
-        UserPartial
+        `/api/v1/courses/${courseId}/get_user_info/${page}/${role}`,
+        UserPartial,
+        { search }
       ),
     updateCalendar: async (courseId: number) =>
       this.req("POST", `/api/v1/courses/${courseId}/update_calendar`),

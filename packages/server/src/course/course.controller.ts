@@ -32,7 +32,7 @@ import async from 'async';
 import moment = require('moment');
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
-import { Connection, getRepository, MoreThanOrEqual } from 'typeorm';
+import { Brackets, Connection, getRepository, MoreThanOrEqual } from 'typeorm';
 import { Roles } from '../decorators/roles.decorator';
 import { User, UserId } from '../decorators/user.decorator';
 import { CourseRolesGuard } from '../guards/course-roles.guard';
@@ -557,33 +557,61 @@ export class CourseController {
     }
   }
 
-  @Get(':id/get_user_info/:role/:page/:search')
-  // @UseGuards(JwtAuthGuard, CourseRolesGuard)
-  // @Roles(Role.PROFESSOR)
+  @Get(':id/get_user_info/:page/:role?')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
+  @Roles(Role.PROFESSOR)
   async getUserInfo(
     @Param('id') courseId: number,
     @Param('page') page: number,
-    @Param('search') search: string,
     @Param('role') role?: Role,
-  ): Promise<UserPartial> {
+    @Query('search') search?: string,
+  ): Promise<UserPartial[]> {
     try {
-      const users = await UserCourseModel.createQueryBuilder()
-        .innerJoin(
-          UserModel,
-          'UserModel',
+      const query = await getRepository(UserModel)
+        .createQueryBuilder()
+        .leftJoin(
+          UserCourseModel,
+          'UserCourseModel',
           '"UserModel".id = "UserCourseModel"."userId"',
         )
-        .where('"UserCourseModel"."courseId" = :courseId', { courseId })
-        .andWhere('"UserCourseModel".role = :role', { role })
+        .where('"UserCourseModel"."courseId" = :courseId', { courseId });
+
+      // check if searching for specific role
+      if (role) {
+        query.andWhere('"UserCourseModel".role = :role', { role });
+      }
+      // check if searching for specific name
+      if (search) {
+        const likeSearch = `%${search}%`.toUpperCase();
+        query.andWhere(
+          new Brackets((q) => {
+            q.where('UPPER("UserModel"."firstName") like :firstSearch', {
+              firstSearch: likeSearch,
+            }).orWhere('UPPER("UserModel"."lastName") like :lastSearch', {
+              lastSearch: likeSearch,
+            });
+          }),
+        );
+      }
+
+      // page size constants, should prob move this to index or utils or something
+      const PAGE_SIZE = 50;
+
+      // run query
+      const users = query
+        .select([
+          'UserModel.id',
+          'UserModel.firstName',
+          'UserModel.lastName',
+          'UserModel.photoURL',
+          'UserModel.email',
+        ])
+        .orderBy('UserModel.firstName')
+        .skip((page - 1) * PAGE_SIZE)
+        .take(PAGE_SIZE)
         .getMany();
-      console.log('USERS');
-      console.log(users);
-      console.log('USERS');
-      console.log(users);
-      return {
-        id: page,
-        name: search,
-      };
+
+      return users;
     } catch (err) {
       console.error(err);
       throw new HttpException(
