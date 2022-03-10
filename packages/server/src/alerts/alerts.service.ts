@@ -31,10 +31,6 @@ export class AlertsService {
           });
           const isQueueOpen = await queue?.checkIsOpen();
           if (question.closedAt || !isQueueOpen) {
-            if (!question.closedAt) {
-              question.closedAt = new Date();
-              await question.save();
-            }
             alert.resolved = new Date();
             await alert.save();
           } else {
