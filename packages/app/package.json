@@ -13,6 +13,7 @@
     "@ant-design/charts": "^1.0.13",
     "@ant-design/icons": "^4.2.1",
     "@fullcalendar/common": "^5.10.1",
+    "@fullcalendar/icalendar": "^5.10.1",
     "@fullcalendar/react": "^5.10.1",
     "@fullcalendar/timegrid": "^5.10.1",
     "@koh/api-client": "0.1.0",
