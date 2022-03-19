@@ -1,4 +1,5 @@
-import { Controller, Get, HttpService } from '@nestjs/common';
+import { Controller, Get, HttpService, Param } from '@nestjs/common';
+import { CourseModel } from '../course/course.entity';
 import { Connection } from 'typeorm';
 
 /**
@@ -12,13 +13,10 @@ export class ResourcesController {
     private httpService: HttpService,
   ) {}
 
-  @Get('/calendar')
-  async calendar(): Promise<string> {
-    const request = await this.httpService
-      .get(
-        'https://calendar.google.com/calendar/ical/iris.lamb2%40gmail.com/public/basic.ics',
-      )
-      .toPromise();
+  @Get('/calendar/:course')
+  async getCourseCalendar(@Param('course') courseId: number): Promise<string> {
+    const course = await CourseModel.findOne(courseId);
+    const request = await this.httpService.get(course.icalURL).toPromise();
     return request.data;
   }
 }

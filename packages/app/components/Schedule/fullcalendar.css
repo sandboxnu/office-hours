@@ -1,0 +1,12 @@
+/* These are basically hacks to style things within the  fullcal component.
+Most styles in here are for responsiveness on small screens.
+*/
+
+.fc-header-toolbar {
+    flex-wrap: wrap; 
+    margin-bottom: .5em;
+}
+
+.fc-header-toolbar .fc-toolbar-chunk {
+    margin-bottom: .5em;
+}

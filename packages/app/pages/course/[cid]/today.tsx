@@ -30,6 +30,11 @@ const Title = styled.div`
   font-size: 30px;
   color: #212934;
 `;
+
+const TodayCol = styled(Col)`
+  margin-bottom: 15px;
+`;
+
 /*
 function arrayRotate(arr, count) {
   const adjustedCount = (arr.length + count) % arr.length;
@@ -76,7 +81,7 @@ export default function Today(): ReactElement {
       <NavBar courseId={Number(cid)} />
       <Container>
         <Row gutter={64}>
-          <Col md={12} xs={24}>
+          <TodayCol md={12} xs={24}>
             <Row justify="space-between">
               <Title>Current Office Hours</Title>
               <TodayPageCheckinButton />
@@ -117,11 +122,10 @@ export default function Today(): ReactElement {
             <Row>
               <TodayPageCreateButton />
             </Row>
-          </Col>
-          <Col md={12} sm={24}>
-            {/* TODO: Currently, iCal stuff is not showing, replace this with something else */}
-            <SchedulePanel courseId={Number(cid)} defaultView="day" />
-          </Col>
+          </TodayCol>
+          <TodayCol md={12} sm={24}>
+            <SchedulePanel courseId={Number(cid)} defaultView="timeGridDay" />
+          </TodayCol>
         </Row>
       </Container>
     </StandardPageContainer>
