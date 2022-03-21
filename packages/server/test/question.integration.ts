@@ -172,29 +172,72 @@ describe('Question Integration', () => {
         })
         .expect(400);
     });
-    it("can't create more than one open question at a time", async () => {
+    it("can't create more than one open question for the same course at a time", async () => {
       const course = await CourseFactory.create({});
       const user = await UserFactory.create();
-      const queue = await QueueFactory.create({
+      const queue1 = await QueueFactory.create({
+        allowQuestions: true,
+        course: course,
+      });
+      const queue2 = await QueueFactory.create({
         allowQuestions: true,
         course: course,
       });
       await StudentCourseFactory.create({
         userId: user.id,
-        courseId: queue.courseId,
+        courseId: course.id,
       });
       await QuestionFactory.create({
-        queueId: queue.id,
+        queueId: queue1.id,
         creator: user,
+        queue: queue1,
         status: OpenQuestionStatus.Drafting,
       });
 
-      const response = await postQuestion(user, queue);
+      const response = await postQuestion(user, queue2);
 
       expect(response.status).toBe(400);
       expect(response.body.message).toBe(
         ERROR_MESSAGES.questionController.createQuestion.oneQuestionAtATime,
       );
+    });
+    it('allow multiple questions across courses', async () => {
+      const course1 = await CourseFactory.create({});
+      const course2 = await CourseFactory.create({});
+      const user = await UserFactory.create();
+      const queue1 = await QueueFactory.create({
+        allowQuestions: true,
+        course: course1,
+      });
+      const queue2 = await QueueFactory.create({
+        allowQuestions: true,
+        course: course2,
+      });
+      await StudentCourseFactory.create({
+        userId: user.id,
+        courseId: course1.id,
+      });
+      await StudentCourseFactory.create({
+        userId: user.id,
+        courseId: course2.id,
+      });
+      await QuestionFactory.create({
+        queueId: queue1.id,
+        creator: user,
+        queue: queue1,
+        status: OpenQuestionStatus.Drafting,
+      });
+
+      const response = await postQuestion(user, queue2);
+
+      expect(response.status).toBe(201);
+      expect(response.body).toMatchObject({
+        text: "Don't know recursion",
+        questionType: QuestionType.Concept,
+        groupable: true,
+      });
+      expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(1);
+      expect(await QuestionModel.count({ where: { queueId: 2 } })).toEqual(1);
     });
     it('force a question when one is already open', async () => {
       const course = await CourseFactory.create({});
