@@ -55,7 +55,7 @@ export default function SchedulePanel({
 
   return (
     <div>
-      {isClientSide && (
+      {isClientSide && !isNaN(courseId) && (
         <CalendarWrapper>
           <FullCalendar
             ref={calendarRef}
