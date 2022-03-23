@@ -1,17 +1,14 @@
-import { ReactElement } from "react";
+import { ReactElement, useState, useEffect, useRef } from "react";
 import FullCalendar from "@fullcalendar/react"; // must go before plugins
 import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import iCalendarPlugin from "@fullcalendar/icalendar";
-import { useState } from "react";
-import { useEffect } from "react";
+import { Button } from "antd";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import { Role } from "@koh/common";
 import styled from "styled-components";
 import "./fullcalendar.css";
-import { useRef } from "react";
-import { Button } from "antd";
 
 const CalendarWrapper = styled.div`
   margin-bottom: 20px;
@@ -44,8 +41,16 @@ export default function SchedulePanel({
     setIsClientSide(true);
   });
 
+  const fetchCalUrl = (refresh: boolean) =>
+    `/api/v1/resources/calendar/${courseId}/refresh=${refresh}`;
+
   const refetchEvents = () => {
-    calendarRef.current.getApi().refetchEvents();
+    const calApi = calendarRef.current.getApi();
+    calApi.getEventSources().forEach(src => src.remove());
+    calApi.addEventSource({
+      url: fetchCalUrl(true),
+      format: "ics"
+    });
   };
 
   return (
@@ -61,7 +66,7 @@ export default function SchedulePanel({
               listPlugin
             ]}
             events={{
-              url: `/api/v1/resources/calendar/${courseId}`,
+              url: fetchCalUrl(false),
               format: "ics"
             }}
             initialView={defaultView}

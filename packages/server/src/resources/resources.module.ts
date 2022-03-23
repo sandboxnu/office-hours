@@ -1,4 +1,4 @@
-import { Module, HttpModule } from '@nestjs/common';
+import { Module, HttpModule, CacheModule } from '@nestjs/common';
 import { ResourcesController } from './resources.controller';
 
 @Module({
@@ -11,6 +11,7 @@ import { ResourcesController } from './resources.controller';
         maxRedirects: 5,
       }),
     }),
+    CacheModule.register(),
   ],
 })
 export class ResourcesModule {}
