@@ -327,55 +327,47 @@ export class CourseService {
     role?: Role,
     search?: string,
   ): Promise<UserPartial[]> {
-    try {
-      const query = await getRepository(UserModel)
-        .createQueryBuilder()
-        .leftJoin(
-          UserCourseModel,
-          'UserCourseModel',
-          '"UserModel".id = "UserCourseModel"."userId"',
-        )
-        .where('"UserCourseModel"."courseId" = :courseId', { courseId });
+    const query = await getRepository(UserModel)
+      .createQueryBuilder()
+      .leftJoin(
+        UserCourseModel,
+        'UserCourseModel',
+        '"UserModel".id = "UserCourseModel"."userId"',
+      )
+      .where('"UserCourseModel"."courseId" = :courseId', { courseId });
 
-      // check if searching for specific role
-      if (role) {
-        query.andWhere('"UserCourseModel".role = :role', { role });
-      }
-      // check if searching for specific name
-      if (search) {
-        const likeSearch = `%${search}%`.toUpperCase();
-        query.andWhere(
-          new Brackets((q) => {
-            q.where('UPPER("UserModel"."firstName") like :firstSearch', {
-              firstSearch: likeSearch,
-            }).orWhere('UPPER("UserModel"."lastName") like :lastSearch', {
-              lastSearch: likeSearch,
-            });
-          }),
-        );
-      }
-
-      // run query
-      const users = query
-        .select([
-          'UserModel.id',
-          'UserModel.firstName',
-          'UserModel.lastName',
-          'UserModel.photoURL',
-          'UserModel.email',
-        ])
-        .orderBy('UserModel.firstName')
-        .skip((page - 1) * pageSize)
-        .take(pageSize)
-        .getMany();
-
-      return users;
-    } catch (err) {
-      console.error(err);
-      throw new HttpException(
-        ERROR_MESSAGES.common.pageOutOfBounds,
-        HttpStatus.BAD_REQUEST,
+    // check if searching for specific role
+    if (role) {
+      query.andWhere('"UserCourseModel".role = :role', { role });
+    }
+    // check if searching for specific name
+    if (search) {
+      const likeSearch = `%${search}%`.toUpperCase();
+      query.andWhere(
+        new Brackets((q) => {
+          q.where('UPPER("UserModel"."firstName") like :firstSearch', {
+            firstSearch: likeSearch,
+          }).orWhere('UPPER("UserModel"."lastName") like :lastSearch', {
+            lastSearch: likeSearch,
+          });
+        }),
       );
     }
+
+    // run query
+    const users = query
+      .select([
+        'UserModel.id',
+        'UserModel.firstName',
+        'UserModel.lastName',
+        'UserModel.photoURL',
+        'UserModel.email',
+      ])
+      .orderBy('UserModel.firstName')
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
+      .getMany();
+
+    return users;
   }
 }

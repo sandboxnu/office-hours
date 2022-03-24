@@ -596,22 +596,14 @@ export class CourseController {
     @Query('search') search?: string,
   ): Promise<UserPartial[]> {
     const pageSize = 50;
-    try {
-      const users = await this.courseService.getUserInfo(
-        courseId,
-        page,
-        pageSize,
-        role,
-        search,
-      );
-      return users;
-    } catch (err) {
-      console.error(err);
-      throw new HttpException(
-        ERROR_MESSAGES.common.pageOutOfBounds,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    const users = await this.courseService.getUserInfo(
+      courseId,
+      page,
+      pageSize,
+      role,
+      search,
+    );
+    return users;
   }
 
   @Post(':id/self_enroll')
