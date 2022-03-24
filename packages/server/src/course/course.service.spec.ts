@@ -10,6 +10,7 @@ import { CourseService } from './course.service';
 import { UserModel } from 'profile/user.entity';
 import { CourseModel } from './course.entity';
 import { Role } from '@koh/common';
+import { LoginCourseService } from 'login/login-course.service';
 
 describe('CourseService', () => {
   let service: CourseService;
@@ -19,7 +20,7 @@ describe('CourseService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestTypeOrmModule, TestConfigModule],
-      providers: [CourseService],
+      providers: [CourseService, LoginCourseService],
     }).compile();
 
     service = module.get<CourseService>(CourseService);
