@@ -76,6 +76,10 @@ const HeaderText = styled.div`
   font-variant: small-caps;
 `;
 
+const PopConfirmTitle = styled.div`
+  max-width: 400px;
+`;
+
 const CenterRow = styled(Row)`
   align-items: center;
 `;
@@ -292,7 +296,13 @@ export default function StudentQueue({
             buttons={
               !studentQuestion && (
                 <Popconfirm
-                  title="In order to join this queue, you must delete your previous question. Do you want to continue?"
+                  title={
+                    <PopConfirmTitle>
+                      You already have a question in a queue for this course, so
+                      your previous question will be deleted in order to join
+                      this queue. Do you want to continue?
+                    </PopConfirmTitle>
+                  }
                   onConfirm={() => joinQueueOpenModal(true)}
                   okText="Yes"
                   cancelText="No"

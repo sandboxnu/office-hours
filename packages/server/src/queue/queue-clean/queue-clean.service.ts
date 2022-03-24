@@ -13,6 +13,7 @@ import { Connection, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { QuestionModel } from '../../question/question.entity';
 import { QueueModel } from '../queue.entity';
 import moment = require('moment');
+import { AlertModel } from '../../alerts/alerts.entity';
 
 /**
  * Clean the queue and mark stale
@@ -116,12 +117,22 @@ export class QueueCleanService {
       ...Object.values(OpenQuestionStatus),
       ...Object.values(LimboQuestionStatus),
     ]).getMany();
+    const alerts = await AlertModel.createQueryBuilder('alert')
+      .where('alert.resolved IS NULL')
+      .andWhere("(alert.payload ->> 'queueId')::INTEGER = :queueId ", {
+        queueId,
+      })
+      .getMany();
 
     questions.forEach((q: QuestionModel) => {
       q.status = ClosedQuestionStatus.Stale;
       q.closedAt = new Date();
     });
+    alerts.forEach((a: AlertModel) => {
+      a.resolved = new Date();
+    });
 
     await QuestionModel.save(questions);
+    await AlertModel.save(alerts);
   }
 }

@@ -19,6 +19,7 @@ import {
   ListInsightsResponse,
   ListQuestionsResponse,
   RegisterCourseParams,
+  EditCourseInfoParams,
   SemesterPartial,
   TACheckinTimesResponse,
   TACheckoutResponse,
@@ -127,6 +128,16 @@ class APIClient {
       ),
     registerCourses: async (params: RegisterCourseParams[]): Promise<void> =>
       this.req("POST", `/api/v1/courses/register_courses`, undefined, params),
+    editCourseInfo: async (
+      courseId: number,
+      params: EditCourseInfoParams
+    ): Promise<void> =>
+      this.req(
+        "PATCH",
+        `/api/v1/courses/${courseId}/edit_course`,
+        undefined,
+        params
+      ),
     getTACheckinTimes: async (
       courseId: number,
       startDate: string,
