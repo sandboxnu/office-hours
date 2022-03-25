@@ -1,8 +1,10 @@
 import { CacheModule } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { QuestionModel } from 'question/question.entity';
 import { Connection } from 'typeorm';
 import { TestTypeOrmModule } from '../../test/util/testUtils';
 import { HeatmapService } from './heatmap.service';
+import { ClosedQuestionStatus, Heatmap } from '@koh/common';
 
 describe('HeatmapService', () => {
   let _service: HeatmapService;
@@ -24,7 +26,7 @@ describe('HeatmapService', () => {
   it('_', () => {
     expect(3).toEqual(2 + 1);
   });
-  /*
+
   describe('generateHeatmap with replay', () => {
     // Return a list of question models from a list of ISO String pairs representing start and end times
     function questionsFromDates(
@@ -41,16 +43,6 @@ describe('HeatmapService', () => {
     }
 
     // Return a list of office hour models from a list of ISO String pairs representing start and end times
-    function officehoursFromDates(
-      hoursTimes: [string, string][],
-    ): OfficeHourModel[] {
-      return hoursTimes.map(([start, end]) =>
-        OfficeHourModel.create({
-          startTime: new Date(start),
-          endTime: new Date(end),
-        }),
-      );
-    }
 
     // OCT 8 is a Thursday (EDT timezone)
     const OCT8 = (start: string, end: string): [string, string] => [
@@ -80,12 +72,21 @@ describe('HeatmapService', () => {
     const SAMPLES_PER_BUCKET = 4;
     // Sample timepoints for bucket N are at N:00, N:15, N:30, N:45
 
+    function officehoursFromDates(
+      hoursTimes: [string, string][],
+    ): [number, number][] {
+      return hoursTimes.map(([start, end]) => [
+        new Date(start).getTime(),
+        new Date(end).getTime(),
+      ]);
+    }
+
     // Generate a heatmap from the historical question times and office hours times
     function heatmapFromDates(
       questionTimes: [string, string][],
       hoursTimes: [string, string][],
     ): Heatmap {
-      return service._generateHeatMapWithReplay(
+      return _service._generateHeatMapWithReplay(
         questionsFromDates(questionTimes),
         officehoursFromDates(hoursTimes),
         'America/New_York',
@@ -129,7 +130,7 @@ describe('HeatmapService', () => {
         ],
         [OCT4('03:00', '04:00')],
       );
-      /!**
+      /**
        *   Timepoint | Wait time   | Question in front of you
        *   -----------------------------------------------------
        *     2:45    | 0 min       |
@@ -139,7 +140,7 @@ describe('HeatmapService', () => {
        *     3:45    | 0 minutes   |
        *
        *  Average timepoint wait = 6.75
-       *!/
+       */
       const expected = sparseHeatmap({
         3: 6.75,
       });
@@ -154,7 +155,7 @@ describe('HeatmapService', () => {
         ],
         [OCT4('03:00', '05:00')],
       );
-      /!**
+      /**
        *   Timepoint | Wait time   | Question in front of you
        *   -----------------------------------------------------
        *     3:00    |  0 minutes  |
@@ -166,7 +167,7 @@ describe('HeatmapService', () => {
        *
        *  3-4 bucket avg: 16.25
        *  4-5 bucket avg: 4
-       *!/
+       */
       const expected = sparseHeatmap({
         3: 16.25,
         4: 4,
@@ -183,7 +184,7 @@ describe('HeatmapService', () => {
         ],
         [OCT4('03:00', '05:00')],
       );
-      /!**
+      /**
        *   Timepoint | Wait time   | Question in front of you
        *   -----------------------------------------------------
        *     3:00    |  0 minutes  |
@@ -195,7 +196,7 @@ describe('HeatmapService', () => {
        *
        *  3-4 bucket avg: 16.25
        *  4-5 bucket avg: 2.75
-       *!/
+       */
       const expected = sparseHeatmap({
         3: 16.25,
         4: 2.75,
@@ -211,7 +212,7 @@ describe('HeatmapService', () => {
         ],
         [OCT4('03:00', '04:00'), OCT4('07:00', '08:00')],
       );
-      /!**
+      /**
        *   Timepoint | Wait time   | Question in front of you
        *   -----------------------------------------------------
        *     3:00    |  0 minutes  |
@@ -224,7 +225,7 @@ describe('HeatmapService', () => {
        *
        *  3-4 bucket avg: 15/4
        *  7-8 bucket avg: 6/4
-       *!/
+       */
       const expected = sparseHeatmap({
         3: 15 / 4,
         7: 6 / 4,
@@ -276,7 +277,7 @@ describe('HeatmapService', () => {
         ],
         [OCT4('03:00', '05:00'), OCT11('03:00', '05:00')],
       );
-      /!**
+      /**
        *   Timepoint | Wait time   | Question in front of you
        *   -----------------------------------------------------
        *     3:00    |  0 minutes  |
@@ -308,7 +309,7 @@ describe('HeatmapService', () => {
        * ------OVERALL-----
        * 3-4 bucket avg: 20
        * 4-5 bucket avg: 10.75
-       *!/
+       */
 
       const expected = sparseHeatmap({
         3: 20,
@@ -323,7 +324,7 @@ describe('HeatmapService', () => {
         [OCT4('03:29', '04:10'), OCT18('03:21', '04:25')],
         [OCT4('03:00', '04:00'), OCT18('03:00', '04:00')],
       );
-      /!**
+      /**
        *   Timepoint | Wait time   | Question in front of you
        *   -----------------------------------------------------
        *     3:00    |  0 minutes  |
@@ -344,7 +345,7 @@ describe('HeatmapService', () => {
        *
        * ------OVERALL-----
        * 3-4 bucket avg: 20
-       *!/
+       */
 
       const expected = sparseHeatmap({
         3: 20,
@@ -364,9 +365,9 @@ describe('HeatmapService', () => {
           [`2020-11-01T09:00:00.000Z`, `2020-11-01T10:00:00.000Z`], // same office hour after falling back
         ],
       );
-      /!**
+      /**
        * For both weeks wait time is 19/4
-       *!/
+       */
 
       const expected = sparseHeatmap({
         4: 19 / 4,
@@ -376,7 +377,7 @@ describe('HeatmapService', () => {
 
     it('returns heatmap during a week with daylight savings, but the course is not in a DST timezone', () => {
       // Honolulu doesn't have DST (Pacific/Honolulu)
-      const heatmap = service._generateHeatMapWithReplay(
+      const heatmap = _service._generateHeatMapWithReplay(
         questionsFromDates([
           [`2020-10-25T04:04:00-1000`, `2020-10-25T04:32:00-1000`],
           [`2020-11-01T05:04:00-1000`, `2020-11-01T05:32:00-1000`],
@@ -389,9 +390,9 @@ describe('HeatmapService', () => {
         BUCKET_SIZE,
         SAMPLES_PER_BUCKET,
       );
-      /!**
+      /**
        * For both weeks wait time is 19/4
-       *!/
+       */
 
       const expected = sparseHeatmap({
         4: 19 / 4,
@@ -413,9 +414,9 @@ describe('HeatmapService', () => {
           [`2020-03-14T07:00:00.000Z`, `2020-03-14T08:00:00.000Z`], // same office hour after spring forward
         ],
       );
-      /!**
+      /**
        * For both weeks wait time is 19/4
-       *!/
+       */
 
       const expected = sparseHeatmap({
         [24 * 6 + 3]: 19 / 4,
@@ -431,7 +432,7 @@ describe('HeatmapService', () => {
         ],
         [[`2020-11-01T05:00:00.000Z`, `2020-11-01T07:00:00.000Z`]],
       );
-      /!**
+      /**
        *   Timepoint | Wait time   | Question in front of you
        *   -----------------------------------------------------
        *     1:45    | 27 minutes  | Q1
@@ -439,7 +440,7 @@ describe('HeatmapService', () => {
        *     1:00    | 12 mintues  | Q1
        *
        * we have to divide by 8 because this hour happened twice
-       **!/
+       **/
 
       const expected = sparseHeatmap({
         1: 39 / 8,
@@ -455,7 +456,7 @@ describe('HeatmapService', () => {
         ],
         [[`2020-03-08T06:00:00.000Z`, `2020-03-08T08:00:00.000Z`]],
       );
-      /!**
+      /**
        *   Timepoint | Wait time   | Question in front of you
        *   -----------------------------------------------------
        *     1:45    | 27 minutes  | Q1
@@ -464,7 +465,7 @@ describe('HeatmapService', () => {
        *
        *
        *   We don't bucket for 2AM at all.
-       **!/
+       **/
 
       const expected = sparseHeatmap({
         1: 27 / 4,
@@ -488,7 +489,7 @@ describe('HeatmapService', () => {
     });
 
     it('works when the bucketsize and sample interval are different', () => {
-      const heatmap = service._generateHeatMapWithReplay(
+      const heatmap = _service._generateHeatMapWithReplay(
         questionsFromDates([OCT4('03:01', '03:11'), OCT8('05:12', '05:22')]),
         officehoursFromDates([OCT4('03:00', '04:00'), OCT8('05:00', '06:00')]),
         'America/New_York',
@@ -497,5 +498,5 @@ describe('HeatmapService', () => {
       );
       expect(heatmap).toEqual([0, -1, -1, -1, 0, -1, -1]);
     });
-  });*/
+  });
 });
