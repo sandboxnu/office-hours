@@ -4,29 +4,19 @@ import {
   Column,
   Entity,
   JoinColumn,
-  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { QueueModel } from '../queue/queue.entity';
-import { CourseModel } from './course.entity';
 
 @Entity('office_hour')
 export class OfficeHourModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne((type) => CourseModel, (course) => course.officeHours)
-  @JoinColumn({ name: 'courseId' })
-  @Exclude()
-  course: CourseModel;
-
   @Column({ nullable: true })
   @Exclude()
   courseId: number;
 
-  @ManyToOne((type) => QueueModel, (queue) => queue.officeHours, {
-    eager: true,
-  })
   @JoinColumn({ name: 'queueId' })
   @Exclude()
   queue: QueueModel;

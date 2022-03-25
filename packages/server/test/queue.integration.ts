@@ -3,7 +3,6 @@ import { QuestionModel } from 'question/question.entity';
 import { QueueModule } from '../src/queue/queue.module';
 import {
   CourseFactory,
-  OfficeHourFactory,
   QuestionFactory,
   QueueFactory,
   StudentCourseFactory,
@@ -49,22 +48,11 @@ describe('Queue Integration', () => {
         room: 'Online',
         staffList: expect.any(Array),
         isOpen: true,
-        startTime: expect.any(String),
-        endTime: expect.any(String),
       });
     });
 
-    it('is not open when there are no TAs present (oh-agnostic)', async () => {
-      const now = new Date();
-      const queue = await QueueFactory.create({
-        officeHours: [
-          await OfficeHourFactory.create({
-            startTime: now,
-            endTime: new Date(now.valueOf() + 4500000),
-            room: "Matthias's Office",
-          }),
-        ],
-      });
+    it('is not open when there are no TAs present', async () => {
+      const queue = await QueueFactory.create({});
       const userCourse = await UserCourseFactory.create({
         user: await UserFactory.create(),
         course: queue.course,
@@ -82,17 +70,9 @@ describe('Queue Integration', () => {
       const course = await CourseFactory.create();
       const ta = await UserFactory.create();
       await TACourseFactory.create({ course: course, user: ta });
-      const now = new Date();
       const queue = await QueueFactory.create({
         course: course,
         staffList: [ta],
-        officeHours: [
-          await OfficeHourFactory.create({
-            startTime: now,
-            endTime: new Date(now.valueOf() + 4500000),
-            room: "Matthias's Office",
-          }),
-        ],
       });
 
       const userCourse = await UserCourseFactory.create({
@@ -278,7 +258,6 @@ describe('Queue Integration', () => {
     const cleanableQueue = async () => {
       const queue = await QueueFactory.create({
         room: 'The Alamo',
-        officeHours: [],
       });
       await QuestionFactory.create({ queue: queue });
       return queue;
