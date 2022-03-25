@@ -82,9 +82,13 @@ const CenterRow = styled(Row)`
 
 interface StudentQueueProps {
   qid: number;
+  cid: number;
 }
 
-export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
+export default function StudentQueue({
+  qid,
+  cid,
+}: StudentQueueProps): ReactElement {
   const { queue } = useQueue(qid);
   const { questions, mutateQuestions } = useQuestions(qid);
   const { studentQuestion, studentQuestionIndex } = useStudentQuestion(qid);
@@ -103,15 +107,14 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
 
   const router = useRouter();
   const editQuestionQueryParam = Boolean(router.query.edit_question as string);
-  const [firstLanding, setFirstLanding] = useState(true);
 
   useEffect(() => {
-    if (editQuestionQueryParam && firstLanding && studentQuestion) {
+    if (editQuestionQueryParam && studentQuestion) {
       mutate(`/api/v1/queues/${qid}/questions`);
       setPopupEditQuestion(true);
-      setFirstLanding(false);
+      router.push(`/course/${cid}/queue/${qid}`);
     }
-  }, [editQuestionQueryParam, qid, studentQuestion, firstLanding]);
+  }, [editQuestionQueryParam, qid, studentQuestion]);
 
   const studentQuestionId = studentQuestion?.id;
   const studentQuestionStatus = studentQuestion?.status;

@@ -1,5 +1,5 @@
 import { ArrowLeftOutlined, QuestionCircleOutlined } from "@ant-design/icons";
-import { Question } from "@koh/common";
+import { Question, RephraseQuestionPayload } from "@koh/common";
 import { useWindowWidth } from "@react-hook/window-size";
 import { Button, Skeleton, Tooltip } from "antd";
 import Link from "next/link";
@@ -102,6 +102,9 @@ export default function TAQueueListDetail({
   const selectedQuestion = allQuestionsList.find(
     (q) => q.id === selectedQuestionId
   );
+  const hasUnresolvedRephraseAlert = questions?.unresolvedAlerts
+    ?.map((payload) => (payload as RephraseQuestionPayload).questionId)
+    .includes(selectedQuestionId);
   // set currentQuestion to null if it no longer exists in the queue
   if (selectedQuestionId && !selectedQuestion) {
     onSelectQuestion(null);
@@ -189,6 +192,7 @@ export default function TAQueueListDetail({
           courseId={courseId}
           queueId={queueId}
           question={selectedQuestion}
+          hasUnresolvedRephraseAlert={hasUnresolvedRephraseAlert}
         />
       )}
       {isGrouping && (

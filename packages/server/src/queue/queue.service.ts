@@ -14,6 +14,7 @@ import { pick } from 'lodash';
 import { QuestionModel } from 'question/question.entity';
 import { Connection, In } from 'typeorm';
 import { QueueModel } from './queue.entity';
+import { AlertsService } from '../alerts/alerts.service';
 
 /**
  * Get data in service of the queue controller and SSE
@@ -21,7 +22,10 @@ import { QueueModel } from './queue.entity';
  */
 @Injectable()
 export class QueueService {
-  constructor(private connection: Connection) {}
+  constructor(
+    private connection: Connection,
+    private alertsService: AlertsService,
+  ) {}
 
   async getQueue(queueId: number): Promise<QueueModel> {
     const queue = await QueueModel.findOne(queueId, {
@@ -52,6 +56,9 @@ export class QueueService {
       .leftJoinAndSelect('question.creator', 'creator')
       .leftJoinAndSelect('question.taHelped', 'taHelped')
       .getMany();
+
+    const unresolvedRephraseQuestionAlerts =
+      await this.alertsService.getUnresolvedRephraseQuestionAlert(queueId);
 
     const groupMap: Record<number, QuestionGroup> = {};
 
@@ -85,6 +92,10 @@ export class QueueService {
     );
 
     questions.groups = Object.values(groupMap);
+
+    questions.unresolvedAlerts = unresolvedRephraseQuestionAlerts.map(
+      (alert) => alert.payload,
+    );
 
     return questions;
   }

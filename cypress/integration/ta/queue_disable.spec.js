@@ -53,7 +53,7 @@ describe('Can successfully disable queues', () => {
 
         // should be no office hours
         cy.get("div")
-            .contains("There are currently no scheduled office hours")
+            .contains("There are currently no open queues")
             .should("be.visible");
 
 
