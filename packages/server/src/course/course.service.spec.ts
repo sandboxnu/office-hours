@@ -9,7 +9,7 @@ import { TestTypeOrmModule, TestConfigModule } from '../../test/util/testUtils';
 import { CourseService } from './course.service';
 import { UserModel } from 'profile/user.entity';
 import { CourseModel } from './course.entity';
-import { Role } from '@koh/common';
+import { Role, UserPartial } from '@koh/common';
 import { LoginCourseService } from 'login/login-course.service';
 
 describe('CourseService', () => {
@@ -45,9 +45,10 @@ describe('CourseService', () => {
     let angela: UserModel;
     let fundies1: CourseModel;
     let algo: CourseModel;
-    // page defaults
-    const page = 1;
-    const pageSize = 10;
+    // param defaults
+    let page = 1;
+    let pageSize = 10;
+    let search = '';
     beforeEach(async () => {
       // Initialize courses
       fundies1 = await CourseFactory.create({
@@ -156,26 +157,216 @@ describe('CourseService', () => {
     });
 
     /*
-        courseId: number,
-        page: number,
-        pageSize: number,
-        role?: Role,
-        search?: string,
+        Fundies:
+          profs - danish, iris
+          tas - vera, tingwei, neel
+          students - sumit, angela
+
+        Algo:
+          profs - danish
+          tas - vera
+          students - sumit, tingwei
     */
+
     it('returns nothing for a non-existing course id', async () => {
       const courseId = 3;
       const resp = await service.getUserInfo(courseId, page, pageSize);
       expect(resp).toEqual([]);
     });
 
-    it('returns Danish and Iris for fundies profs', async () => {
+    it('returns everyone for fundies, no role, no search term', async () => {
       const courseId = 1;
-      const prof = Role.PROFESSOR;
-      const resp = await service.getUserInfo(courseId, page, pageSize, prof);
+      const resp = await service.getUserInfo(courseId, page, pageSize);
+      expect(resp.map((info) => info.name)).toEqual([
+        'Angela Zheng',
+        'Danish Farooq',
+        'Iris Liu',
+        'Neel Bhalla',
+        'Sumit De',
+        'Tingwei Shi',
+        'Vera Kong',
+      ]);
+    });
+
+    it('returns all professors for fundies', async () => {
+      const courseId = 1;
+      const role = Role.PROFESSOR;
+      const resp = await service.getUserInfo(
+        courseId,
+        page,
+        pageSize,
+        search,
+        role,
+      );
       expect(resp.map((info) => info.name)).toEqual([
         'Danish Farooq',
         'Iris Liu',
       ]);
+    });
+
+    it('returns all tas for fundies', async () => {
+      const courseId = 1;
+      const role = Role.TA;
+      const resp = await service.getUserInfo(
+        courseId,
+        page,
+        pageSize,
+        search,
+        role,
+      );
+      expect(resp.map((info) => info.name)).toEqual([
+        'Neel Bhalla',
+        'Tingwei Shi',
+        'Vera Kong',
+      ]);
+    });
+
+    it('returns all students for fundies', async () => {
+      const courseId = 1;
+      const role = Role.STUDENT;
+      const resp = await service.getUserInfo(
+        courseId,
+        page,
+        pageSize,
+        search,
+        role,
+      );
+      expect(resp.map((info) => info.name)).toEqual([
+        'Angela Zheng',
+        'Sumit De',
+      ]);
+    });
+
+    it('returns all professors for algo', async () => {
+      const courseId = 2;
+      const role = Role.PROFESSOR;
+      const resp = await service.getUserInfo(
+        courseId,
+        page,
+        pageSize,
+        search,
+        role,
+      );
+      expect(resp.map((info) => info.name)).toEqual(['Danish Farooq']);
+    });
+
+    it('returns all tas for algo', async () => {
+      const courseId = 2;
+      const role = Role.TA;
+      const resp = await service.getUserInfo(
+        courseId,
+        page,
+        pageSize,
+        search,
+        role,
+      );
+      expect(resp.map((info) => info.name)).toEqual(['Vera Kong']);
+    });
+
+    it('returns all students for algo', async () => {
+      const courseId = 2;
+      const role = Role.STUDENT;
+      const resp = await service.getUserInfo(
+        courseId,
+        page,
+        pageSize,
+        search,
+        role,
+      );
+      expect(resp.map((info) => info.name)).toEqual([
+        'Sumit De',
+        'Tingwei Shi',
+      ]);
+    });
+
+    it('returns name, email, and photoURL for user', async () => {
+      const courseId = 2;
+      const role = Role.TA;
+      const user = (
+        await service.getUserInfo(courseId, page, pageSize, search, role)
+      )[0] as UserPartial;
+      expect(user.name).toEqual('Vera Kong');
+      expect(user.email).toEqual('vkong@northeastern.edu');
+      expect(user.photoURL).toEqual('photo@url.com');
+    });
+
+    it('returns danish when search term is danish', async () => {
+      const courseId = 1;
+      const role = Role.PROFESSOR;
+      search = 'danish';
+      const user = (
+        await service.getUserInfo(courseId, page, pageSize, search, role)
+      )[0] as UserPartial;
+      expect(user.name).toEqual('Danish Farooq');
+    });
+
+    it('returns danish when search term is farooq', async () => {
+      const courseId = 1;
+      const role = Role.PROFESSOR;
+      search = 'farooq';
+      const user = (
+        await service.getUserInfo(courseId, page, pageSize, search, role)
+      )[0] as UserPartial;
+      expect(user.name).toEqual('Danish Farooq');
+    });
+
+    it('returns danish when search term is the whole name', async () => {
+      const courseId = 1;
+      const role = Role.PROFESSOR;
+      search = 'Danish Farooq';
+      const user = (
+        await service.getUserInfo(courseId, page, pageSize, search, role)
+      )[0] as UserPartial;
+      expect(user.name).toEqual('Danish Farooq');
+    });
+
+    it('returns danish and sumit when search term is d', async () => {
+      const courseId = 1;
+      search = 'd';
+      const resp = await service.getUserInfo(courseId, page, pageSize, search);
+      expect(resp.map((info) => info.name)).toEqual([
+        'Danish Farooq',
+        'Sumit De',
+      ]);
+    });
+
+    it('returns first three users for fundies when page size is 3', async () => {
+      const courseId = 1;
+      pageSize = 3;
+      const resp = await service.getUserInfo(courseId, page, pageSize);
+      expect(resp.map((info) => info.name)).toEqual([
+        'Angela Zheng',
+        'Danish Farooq',
+        'Iris Liu',
+      ]);
+    });
+
+    it('returns second three users for fundies when page size is 3 and page is 2', async () => {
+      const courseId = 1;
+      pageSize = 3;
+      page = 2;
+      const resp = await service.getUserInfo(courseId, page, pageSize);
+      expect(resp.map((info) => info.name)).toEqual([
+        'Neel Bhalla',
+        'Sumit De',
+        'Tingwei Shi',
+      ]);
+    });
+
+    it('returns last user for fundies when page size is 3 and page is 3', async () => {
+      const courseId = 1;
+      pageSize = 3;
+      page = 3;
+      const resp = await service.getUserInfo(courseId, page, pageSize);
+      expect(resp.map((info) => info.name)).toEqual(['Vera Kong']);
+    });
+
+    it('returns no users for fundies when page size is 3 and page is out of bounds', async () => {
+      const courseId = 1;
+      pageSize = 3;
+      page = 4;
+      const resp = await service.getUserInfo(courseId, page, pageSize);
+      expect(resp.map((info) => info.name)).toEqual([]);
     });
   });
 });
