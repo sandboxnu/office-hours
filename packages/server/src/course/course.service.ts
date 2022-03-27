@@ -324,8 +324,8 @@ export class CourseService {
     courseId: number,
     page: number,
     pageSize: number,
-    role?: Role,
     search?: string,
+    role?: Role,
   ): Promise<UserPartial[]> {
     const query = await getRepository(UserModel)
       .createQueryBuilder()
@@ -342,14 +342,15 @@ export class CourseService {
     }
     // check if searching for specific name
     if (search) {
-      const likeSearch = `%${search}%`.toUpperCase();
+      const likeSearch = `%${search.replace(' ', '')}%`.toUpperCase();
       query.andWhere(
         new Brackets((q) => {
-          q.where('UPPER("UserModel"."firstName") like :firstSearch', {
-            firstSearch: likeSearch,
-          }).orWhere('UPPER("UserModel"."lastName") like :lastSearch', {
-            lastSearch: likeSearch,
-          });
+          q.where(
+            'CONCAT(UPPER("UserModel"."firstName"), UPPER("UserModel"."lastName")) like :searchString',
+            {
+              searchString: likeSearch,
+            },
+          );
         }),
       );
     }

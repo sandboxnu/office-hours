@@ -596,12 +596,15 @@ export class CourseController {
     @Query('search') search?: string,
   ): Promise<UserPartial[]> {
     const pageSize = 50;
+    if (!search) {
+      search = '';
+    }
     const users = await this.courseService.getUserInfo(
       courseId,
       page,
       pageSize,
-      role,
       search,
+      role,
     );
     return users;
   }
