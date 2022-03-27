@@ -27,10 +27,9 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import async from 'async';
-import moment = require('moment');
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
-import { Connection, MoreThanOrEqual } from 'typeorm';
+import { Connection } from 'typeorm';
 import { Roles } from '../decorators/roles.decorator';
 import { User, UserId } from '../decorators/user.decorator';
 import { CourseRolesGuard } from '../guards/course-roles.guard';
@@ -38,7 +37,6 @@ import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { CourseModel } from './course.entity';
-import { OfficeHourModel } from './office-hour.entity';
 import { QueueCleanService } from '../queue/queue-clean/queue-clean.service';
 import { QueueSSEService } from '../queue/queue-sse.service';
 import { CourseService } from './course.service';
@@ -401,31 +399,8 @@ export class CourseController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-    let canClearQueue = null;
+    const nextOfficeHourTime = null;
 
-    try {
-      canClearQueue = await this.queueCleanService.shouldCleanQueue(queue);
-    } catch (err) {
-      console.error(err);
-      throw new HttpException(
-        ERROR_MESSAGES.courseController.clearQueueError,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-
-    let nextOfficeHourTime = null;
-
-    // find out how long until next office hour
-    if (canClearQueue) {
-      const soon = moment().add(15, 'minutes').toDate();
-      const nextOfficeHour = await OfficeHourModel.findOne({
-        where: { startTime: MoreThanOrEqual(soon) },
-        order: {
-          startTime: 'ASC',
-        },
-      });
-      nextOfficeHourTime = nextOfficeHour?.startTime;
-    }
     try {
       await this.queueSSEService.updateQueue(queue.id);
     } catch (err) {
@@ -439,7 +414,7 @@ export class CourseController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-    return { queueId: queue.id, canClearQueue, nextOfficeHourTime };
+    return { queueId: queue.id, nextOfficeHourTime };
   }
 
   @Post(':id/update_calendar')
