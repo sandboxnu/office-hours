@@ -105,6 +105,8 @@ describe('CourseService', () => {
         firstName: 'Tingwei',
         lastName: 'Shi',
         email: 'tshi@northeastern.edu',
+        photoURL:
+          'https://files.slack.com/files-pri/TE565NU79-F02K81U7S13/image_from_ios.jpg',
       });
       await UserCourseFactory.create({
         user: tingwei,
@@ -280,14 +282,16 @@ describe('CourseService', () => {
     });
 
     it('returns name, email, and photoURL for user', async () => {
-      const courseId = 2;
-      const role = Role.TA;
+      const courseId = 1;
+      search = 'tingwei';
       const user = (
-        await service.getUserInfo(courseId, page, pageSize, search, role)
+        await service.getUserInfo(courseId, page, pageSize, search)
       )[0] as UserPartial;
-      expect(user.name).toEqual('Vera Kong');
-      expect(user.email).toEqual('vkong@northeastern.edu');
-      expect(user.photoURL).toEqual('photo@url.com');
+      expect(user.name).toEqual('Tingwei Shi');
+      expect(user.email).toEqual('tshi@northeastern.edu');
+      expect(user.photoURL).toEqual(
+        'https://files.slack.com/files-pri/TE565NU79-F02K81U7S13/image_from_ios.jpg',
+      );
     });
 
     it('returns danish when search term is danish', async () => {

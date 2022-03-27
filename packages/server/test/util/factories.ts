@@ -18,7 +18,6 @@ export const UserFactory = new Factory(UserModel)
   .attr('email', `user@neu.edu`)
   .attr('firstName', 'User')
   .attr('lastName', 'Person')
-  .attr('photoURL', `photo@url.com`)
   .attr('hideInsights', []);
 
 export const StudentCourseFactory = new Factory(UserCourseModel).attr(
