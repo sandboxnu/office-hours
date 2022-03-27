@@ -3,7 +3,6 @@ import {
   KhouryProfCourse,
   Role,
   TACheckinTimesResponse,
-  TACheckoutResponse,
 } from '@koh/common';
 import { CourseModel } from 'course/course.entity';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
@@ -16,7 +15,6 @@ import {
   CourseFactory,
   EventFactory,
   ProfSectionGroupsFactory,
-  QuestionFactory,
   QueueFactory,
   SemesterFactory,
   StudentCourseFactory,
@@ -426,27 +424,6 @@ describe('Course Integration', () => {
       await supertest({ userId: student.id })
         .delete(`/courses/${scf.courseId}/ta_location/The Alamo`)
         .expect(401);
-    });
-
-    it('returns canClearQueue true when TA checks out', async () => {
-      const ta = await UserFactory.create();
-      const queue = await QueueFactory.create({
-        room: 'The Alamo',
-        staffList: [ta],
-      });
-      const tcf = await TACourseFactory.create({
-        course: queue.course,
-        user: ta,
-      });
-      await QuestionFactory.create({ queue: queue });
-
-      const checkoutResult: TACheckoutResponse = (
-        await supertest({ userId: ta.id })
-          .delete(`/courses/${tcf.courseId}/ta_location/The Alamo`)
-          .expect(200)
-      ).body;
-
-      expect(checkoutResult.canClearQueue).toBeTruthy();
     });
 
     it('tests nothing happens if ta not in queue', async () => {

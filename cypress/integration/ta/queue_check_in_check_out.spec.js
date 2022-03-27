@@ -148,9 +148,6 @@ describe("Checking out when office hours end soon", () => {
     // Click "Check out"
     cy.get("[data-cy='check-out-button']").click();
 
-    // click "clear queue" button in modal
-    cy.get("[data-cy='clear-queue-btn']").click();
-
     // Verify queue is now empty
     cy.get("body").should("contain", "There are no questions in the queue");
   });
@@ -193,8 +190,6 @@ describe("Checking in and out when there arent scheduled office hours, but the o
 
     // Click "Check out"
     cy.get("[data-cy='check-out-button']").click();
-    // click "clear queue" button in modal
-    cy.get("[data-cy='clear-queue-btn']").click();
 
     // No TAs should be checked in, and there should not be any student in the queue
     cy.get("[data-cy='ta-status-card']").should("not.exist");
