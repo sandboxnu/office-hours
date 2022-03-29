@@ -1,12 +1,21 @@
-import { StopOutlined } from "@ant-design/icons";
-import { Button, Card, Input, Row, Skeleton, Tooltip } from "antd";
+import { NotificationOutlined, StopOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Card,
+  Divider,
+  Input,
+  Row,
+  Skeleton,
+  Space,
+  Tag,
+  Tooltip,
+} from "antd";
 import Linkify from "react-linkify";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { QueuePartial } from "../../../common/index";
-import { formatQueueTime } from "../../utils/TimeUtil";
 import { KOHAvatar } from "../common/SelfAvatar";
 
 type OpenQueueCard = {
@@ -23,8 +32,7 @@ const PaddedCard = styled(Card)`
 `;
 
 const HeaderDiv = styled.div`
-  font-size: 24px;
-  font-weight: 500;
+  font-size: 18px;
   color: #212934;
 `;
 
@@ -42,11 +50,6 @@ const RightQueueInfoRow = styled.div`
 
 const QuestionNumberSpan = styled.span`
   font-size: 24px;
-`;
-
-const QueueSizeColorDiv = styled.div`
-  color: #212934;
-  font-size: 16px;
 `;
 
 const HeaderText = styled.div`
@@ -119,45 +122,77 @@ const OpenQueueCard = ({
 
   return (
     <PaddedCard
-      headStyle={{ background: "#F3F5F7" }}
+      headStyle={{ background: "#25426C", color: "#FFFFFF" }}
       className={"open-queue-card"}
-      title={
-        staffList.map((staffMember) => staffMember.name).join(", ") ||
-        "No Staff Checked In!"
-      }
-      extra={queue.startTime && queue.endTime && formatQueueTime(queue)}
+      title={`${queue.room} ${
+        queue.isProfessorQueue ? `(Professor queue)` : ``
+      }`}
+      extra={`${queue.queueSize} in queue`}
     >
       <QueueInfoRow>
-        <HeaderDiv>{queue.room}</HeaderDiv>
+        <HeaderDiv>
+          <QuestionNumberSpan>{queue.staffList.length}</QuestionNumberSpan>{" "}
+          staff checked in
+        </HeaderDiv>
         <RightQueueInfoRow>
-          {!queue.allowQuestions && (
-            <Tooltip title="This queue is no longer accepting questions">
-              <StopOutlined
-                style={{ color: "red", fontSize: "24px", marginRight: "8px" }}
-              />
-            </Tooltip>
-          )}
-          <QueueSizeColorDiv>
-            <QuestionNumberSpan>{queue.queueSize}</QuestionNumberSpan> in queue
-          </QueueSizeColorDiv>
+          <Space
+            direction="vertical"
+            size="middle"
+            style={{ display: "flex", alignItems: "center" }}
+          >
+            {!queue.allowQuestions && (
+              <Tooltip title="This queue is no longer accepting questions">
+                <Tag icon={<StopOutlined />} color="error">
+                  Not Accepting Questions
+                </Tag>
+              </Tooltip>
+            )}
+            <Link
+              href="/course/[cid]/queue/[qid]"
+              as={`/course/${cid}/queue/${queue.id}`}
+            >
+              <OpenQueueButton
+                type="primary"
+                style={{ color: `#5F6B79`, borderColor: `#5F6B79` }}
+                size="large"
+                data-cy="open-queue-button"
+                ghost
+              >
+                Open Queue
+              </OpenQueueButton>
+            </Link>
+          </Space>
         </RightQueueInfoRow>
       </QueueInfoRow>
+      {
+        staffList.length > 1 && (
+          <HeaderText>checked-in staff</HeaderText>
+        ) /*todo: add better text*/
+      }
 
-      <br />
-
-      {editingNotes ? (
+      <Row justify="space-between" align="middle">
         <div>
-          <HeaderText>staff notes</HeaderText>
-          <NotesInput
-            defaultValue={queue.notes}
-            value={updatedNotes}
-            onChange={(e) => setUpdatedNotes(e.target.value as any)}
-          />
+          {staffList.map((staffMember) => (
+            <Tooltip key={staffMember.id} title={staffMember.name}>
+              <StyledKOHAvatar
+                size={96}
+                photoURL={staffMember.photoURL}
+                name={staffMember.name}
+              />
+            </Tooltip>
+          ))}
         </div>
-      ) : (
-        queue.notes && (
+        <Divider />
+        {editingNotes ? (
           <div>
-            <HeaderText style={{ marginBottom: 0 }}>staff notes</HeaderText>
+            <NotesInput
+              defaultValue={queue.notes}
+              value={updatedNotes}
+              onChange={(e) => setUpdatedNotes(e.target.value as any)}
+            />
+          </div>
+        ) : queue.notes ? (
+          <div>
             <Linkify
               componentDecorator={(decoratedHref, decoratedText, key) => (
                 <a
@@ -170,62 +205,37 @@ const OpenQueueCard = ({
                 </a>
               )}
             >
-              <Notes>{queue.notes}</Notes>
+              <Notes>
+                <NotificationOutlined /> <i>{queue.notes}</i>
+              </Notes>
             </Linkify>
           </div>
-        )
-      )}
-      <br />
-
-      {
-        staffList.length > 1 && (
-          <HeaderText>checked-in staff</HeaderText>
-        ) /*todo: add better text*/
-      }
-
-      <Row justify="space-between" align="bottom">
-        <div>
-          {staffList.map((staffMember) => (
-            <Tooltip key={staffMember.id} title={staffMember.name}>
-              <StyledKOHAvatar
-                size={96}
-                photoURL={staffMember.photoURL}
-                name={staffMember.name}
-              />
-            </Tooltip>
-          ))}
-        </div>
-        {editingNotes && (
-          <SaveButton onClick={handleUpdate} size="large">
-            Save Changes
-          </SaveButton>
+        ) : (
+          <div>
+            <i> no notes provided</i>
+          </div>
         )}
-        {!editingNotes && (
-          <QueueCardButtonRow>
-            {isTA && (
-              <EditNotesButton
-                size="large"
-                onClick={() => {
-                  setEditingNotes(true);
-                }}
-              >
-                Edit Notes
-              </EditNotesButton>
-            )}
-            <Link
-              href="/course/[cid]/queue/[qid]"
-              as={`/course/${cid}/queue/${queue.id}`}
-            >
-              <OpenQueueButton
-                type="primary"
-                size="large"
-                data-cy="open-queue-button"
-              >
-                Open Queue
-              </OpenQueueButton>
-            </Link>
-          </QueueCardButtonRow>
-        )}
+        <RightQueueInfoRow>
+          {editingNotes && (
+            <SaveButton onClick={handleUpdate} size="large">
+              Save Changes
+            </SaveButton>
+          )}
+          {!editingNotes && (
+            <QueueCardButtonRow>
+              {isTA && (
+                <EditNotesButton
+                  size="large"
+                  onClick={() => {
+                    setEditingNotes(true);
+                  }}
+                >
+                  Edit Notes
+                </EditNotesButton>
+              )}
+            </QueueCardButtonRow>
+          )}
+        </RightQueueInfoRow>
       </Row>
     </PaddedCard>
   );

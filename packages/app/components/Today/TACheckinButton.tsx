@@ -7,7 +7,7 @@ import styled from "styled-components";
 import { useCourse } from "../../hooks/useCourse";
 
 export const CheckinButton = styled(Button)`
-  background: #2a9187;
+  background: #1890ff;
   border-radius: 6px;
   color: white;
   font-weight: 500;
@@ -52,17 +52,15 @@ export default function TACheckinButton({
     //trying to limit changes to the frontend, all queues will have the room online
 
     try {
-       const redirectID = await API.taStatus.checkIn(courseId, room);
-    mutateCourse();
-    router.push(
-      "/course/[cid]/queue/[qid]",
-      `/course/${courseId}/queue/${redirectID.id}`
-    );
-
+      const redirectID = await API.taStatus.checkIn(courseId, room);
+      mutateCourse();
+      router.push(
+        "/course/[cid]/queue/[qid]",
+        `/course/${courseId}/queue/${redirectID.id}`
+      );
     } catch (err) {
       message.error(err.response?.data?.message);
     }
-   
   }
 
   const [checkoutModalInfo, setCheckoutModalInfo] = useState<{
