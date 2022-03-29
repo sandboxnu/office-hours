@@ -10,6 +10,7 @@ import {
   TACheckoutResponse,
   UpdateCourseOverrideBody,
   UpdateCourseOverrideResponse,
+  UserPartial,
 } from '@koh/common';
 import {
   BadRequestException,
@@ -583,6 +584,29 @@ export class CourseController {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  @Get(':id/get_user_info/:page/:role?')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
+  @Roles(Role.PROFESSOR)
+  async getUserInfo(
+    @Param('id') courseId: number,
+    @Param('page') page: number,
+    @Param('role') role?: Role,
+    @Query('search') search?: string,
+  ): Promise<UserPartial[]> {
+    const pageSize = 50;
+    if (!search) {
+      search = '';
+    }
+    const users = await this.courseService.getUserInfo(
+      courseId,
+      page,
+      pageSize,
+      search,
+      role,
+    );
+    return users;
   }
 
   @Post(':id/self_enroll')
