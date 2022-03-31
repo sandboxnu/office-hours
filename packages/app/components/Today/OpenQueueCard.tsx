@@ -103,6 +103,11 @@ const QueueCardButtonRow = styled(Row)`
   padding-top: 10px;
 `;
 
+const OpenQueueCardDivider = styled(Divider)`
+  margin-top: 12px;
+  margin-bottom: 0;
+`;
+
 const OpenQueueCard = ({
   queue,
   isTA,
@@ -182,7 +187,7 @@ const OpenQueueCard = ({
             </Tooltip>
           ))}
         </div>
-        <Divider />
+        <OpenQueueCardDivider />
         {editingNotes ? (
           <div>
             <NotesInput
