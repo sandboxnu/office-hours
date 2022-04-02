@@ -11,6 +11,7 @@ import { UserCourseModel } from '../profile/user-course.entity';
 import { UserModel } from '../profile/user.entity';
 import { QuestionModel } from '../question/question.entity';
 import { createQueryBuilder, SelectQueryBuilder } from 'typeorm';
+import { Cache } from 'cache-manager';
 
 export type Filter = {
   type: string;
@@ -104,37 +105,12 @@ export const TotalQuestionsAsked: InsightObject = {
 export const MostActiveStudents: InsightObject = {
   displayName: 'Most Active Students',
   description:
-    'Who are the students who have asked the most questions in Office Hours? (limit 75)',
+    'Who are the students who have asked the most questions in Office Hours?',
   roles: [Role.PROFESSOR],
   component: InsightComponent.SimpleTable,
   size: 'default' as const,
-  async compute(filters): Promise<SimpleTableOutputType> {
-    const dataSource = await addFilters({
-      query: createQueryBuilder()
-        .select('"QuestionModel"."creatorId"', 'studentId')
-        .addSelect(
-          'concat("UserModel"."firstName", \' \',"UserModel"."lastName")',
-          'name',
-        )
-        .addSelect('"UserModel"."email"', 'email')
-        .addSelect('COUNT(*)', 'questionsAsked')
-        .from(QuestionModel, 'QuestionModel')
-        .where('"QuestionModel"."questionType" IS NOT NULL'),
-      modelName: QuestionModel.name,
-      allowedFilters: ['courseId', 'timeframe'],
-      filters,
-    })
-      .innerJoin(
-        UserModel,
-        'UserModel',
-        '"UserModel".id = "QuestionModel"."creatorId"',
-      )
-      .groupBy('"QuestionModel"."creatorId"')
-      .addGroupBy('name')
-      .addGroupBy('"UserModel".email')
-      .orderBy('4', 'DESC')
-      .limit(75)
-      .getRawMany();
+  async compute(filters, cacheManager: Cache): Promise<SimpleTableOutputType> {
+    const dataSource = await getCachedQuestions(cacheManager, filters);
 
     return {
       columns: [
@@ -152,6 +128,64 @@ export const MostActiveStudents: InsightObject = {
       dataSource,
     };
   },
+};
+
+const getCachedQuestions = async (
+  cacheManager: Cache,
+  filters: Filter[],
+): Promise<any[]> => {
+  const courseId = filters.find((filter: Filter) => filter.type === 'courseId')[
+    'courseId'
+  ];
+  const timeframe = filters.find(
+    (filter: Filter) => filter.type === 'timeframe',
+  );
+  const getStartString = timeframe
+    ? `${timeframe['start'].getDay()}-${timeframe[
+        'start'
+      ].getMonth()}-${timeframe['start'].getFullYear()}`
+    : '';
+  const getEndString = timeframe
+    ? `${timeframe['start'].getDay()}-${timeframe[
+        'start'
+      ].getMonth()}-${timeframe['start'].getFullYear()}`
+    : '';
+  //One hour
+  const cacheLengthInSeconds = 3600;
+  return cacheManager.wrap(
+    `questions/${courseId}/${getStartString}:${getEndString}`,
+    () => getQuestions(courseId),
+    { ttl: cacheLengthInSeconds },
+  );
+};
+
+const getQuestions = async (filters: Filter[]): Promise<any[]> => {
+  const questions = await addFilters({
+    query: createQueryBuilder()
+      .select('"QuestionModel"."creatorId"', 'studentId')
+      .addSelect(
+        'concat("UserModel"."firstName", \' \',"UserModel"."lastName")',
+        'name',
+      )
+      .addSelect('"UserModel"."email"', 'email')
+      .addSelect('COUNT(*)', 'questionsAsked')
+      .from(QuestionModel, 'QuestionModel')
+      .where('"QuestionModel"."questionType" IS NOT NULL'),
+    modelName: QuestionModel.name,
+    allowedFilters: ['courseId', 'timeframe'],
+    filters,
+  })
+    .innerJoin(
+      UserModel,
+      'UserModel',
+      '"UserModel".id = "QuestionModel"."creatorId"',
+    )
+    .groupBy('"QuestionModel"."creatorId"')
+    .addGroupBy('name')
+    .addGroupBy('"UserModel".email')
+    .orderBy('4', 'DESC')
+    .getRawMany();
+  return questions;
 };
 
 export const QuestionTypeBreakdown: InsightObject = {
