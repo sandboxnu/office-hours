@@ -1,14 +1,9 @@
-import {
-  CACHE_MANAGER,
-  Controller,
-  Get,
-  HttpService,
-  Inject,
-  Param,
-} from '@nestjs/common';
-import { Cache } from 'cache-manager';
-import { CourseModel } from '../course/course.entity';
+import { Controller, Get, HttpService, Param, Res } from '@nestjs/common';
+import * as fs from 'fs';
+import * as path from 'path';
+import { Response } from 'express';
 import { Connection } from 'typeorm';
+import { ResourcesService } from './resources.service';
 
 /**
  * Controller for any public resources on the app. Anything accessed through this controller does
@@ -19,23 +14,26 @@ export class ResourcesController {
   constructor(
     private connection: Connection,
     private httpService: HttpService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private resourcesService: ResourcesService,
   ) {}
 
   @Get('/calendar/:course/refresh=:refresh')
   async getCourseCalendar(
     @Param('course') courseId: number,
     @Param('refresh') refresh: boolean,
-  ): Promise<string> {
-    const cacheKey = `/calendar/${courseId}`;
-    const cal = await this.cacheManager.get(cacheKey);
-    if (!cal || refresh) {
-      const course = await CourseModel.findOne(courseId);
-      const request = await this.httpService.get(course.icalURL).toPromise();
-      await this.cacheManager.set(cacheKey, request.data, { ttl: 86400 }); // cache results for 24 hrs
-      return request.data;
-    } else {
-      return cal;
-    }
+    @Res() res: Response,
+  ): Promise<void> {
+    const filename = this.resourcesService.getCalFilename(courseId);
+    fs.stat(
+      path.join(process.env.UPLOAD_LOCATION, filename),
+      async (err, stats) => {
+        if (stats && !refresh) {
+          res.sendFile(filename, { root: process.env.UPLOAD_LOCATION });
+        } else {
+          const cal = await this.resourcesService.refetchCalendar(courseId);
+          res.send(cal);
+        }
+      },
+    );
   }
 }

@@ -1,9 +1,10 @@
-import { Module, HttpModule, CacheModule } from '@nestjs/common';
+import { Module, HttpModule } from '@nestjs/common';
 import { ResourcesController } from './resources.controller';
+import { ResourcesService } from './resources.service';
 
 @Module({
   controllers: [ResourcesController],
-  providers: [],
+  providers: [ResourcesService],
   imports: [
     HttpModule.registerAsync({
       useFactory: () => ({
@@ -11,7 +12,6 @@ import { ResourcesController } from './resources.controller';
         maxRedirects: 5,
       }),
     }),
-    CacheModule.register(),
   ],
 })
 export class ResourcesModule {}
