@@ -126,33 +126,6 @@ describe("Can successfully check in and out of a queue when their is scheduled o
   });
 });
 
-describe("Checking out when office hours end soon", () => {
-  beforeEach(() => {
-    createAndLoginTA();
-    createQueue({
-      courseId: "ta.course.id",
-      closesIn: 5 * 60 * 1000,
-    });
-    checkInTA();
-    createQuestion({ queueId: "queue.id" });
-  });
-
-  it("opens the clean queue page from the queue page", function () {
-    // Visit the queue page
-    cy.visit(`/course/${this.queue.courseId}/queue/${this.queue.id}`);
-    // verify there's 1 student in queue
-    cy.get("[data-cy='list-queue'] [data-cy^='queue-list-item']").should(
-      "have.length",
-      "1"
-    );
-    // Click "Check out"
-    cy.get("[data-cy='check-out-button']").click();
-
-    // Verify queue is now empty
-    cy.get("body").should("contain", "There are no questions in the queue");
-  });
-});
-
 describe("Checking in and out when there arent scheduled office hours, but the online queue exists", function () {
   beforeEach(() => {
     createAndLoginTA();
@@ -194,7 +167,7 @@ describe("Checking in and out when there arent scheduled office hours, but the o
     // No TAs should be checked in, and there should not be any student in the queue
     cy.get("[data-cy='ta-status-card']").should("not.exist");
     cy.get(`[data-cy="list-queue"] [data-cy^="queue-list-item"]`).should(
-      "not.exist"
+      "exist"
     );
 
   });
