@@ -161,13 +161,18 @@ function RenderInsight({
   const router = useRouter();
   const { cid } = router.query;
 
+  const limit = insightName === "MostActiveStudents" ? 75 : null;
   const { data: insightOutput } = useSWR(
     cid &&
-      `api/v1/insights/${cid}/${insightName}?start=${dateRange.start}&end=${dateRange.end}`,
+      `api/v1/insights/${cid}/${insightName}?start=${dateRange.start}&end=${
+        dateRange.end
+      }${limit ? "limit&75" : ""}`,
     async () =>
       await API.insights.get(Number(cid), insightName, {
         start: dateRange.start,
         end: dateRange.end,
+        limit,
+        offset: null,
       })
   );
 

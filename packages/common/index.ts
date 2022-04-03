@@ -807,6 +807,13 @@ export type DateRangeType = {
   end: string;
 };
 
+export type InsightParamsType = {
+  start: string;
+  end: string;
+  limit: number;
+  offset: number;
+};
+
 export const ERROR_MESSAGES = {
   courseController: {
     checkIn: {

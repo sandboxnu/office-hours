@@ -154,7 +154,7 @@ const getCachedQuestions = async (
   const cacheLengthInSeconds = 3600;
   return cacheManager.wrap(
     `questions/${courseId}/${getStartString}:${getEndString}`,
-    () => getQuestions(courseId),
+    () => getQuestions(filters),
     { ttl: cacheLengthInSeconds },
   );
 };
