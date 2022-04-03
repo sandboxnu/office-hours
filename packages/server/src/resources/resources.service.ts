@@ -32,16 +32,23 @@ export class ResourcesService {
    * Refetches course calendar for all active courses. Any calendar files for
    * disabled courses are deleted from disk.
    */
-  @Cron('51 0 * * *')
+  @Cron('51 0 * * *') // at 00:51 each day
   public async refetchAllCalendars(): Promise<void> {
-    return;
+    // delete all cal files (will also get rid of files for disabled courses)
+    const regex = /calendar-\d+$/;
+    fs.readdirSync(process.env.UPLOAD_LOCATION)
+      .filter(f => regex.test(f))
+      .map(f => fs.unlinkSync(path.join(process.env.UPLOAD_LOCATION, f)));
+
+    const courses = await CourseModel.find({ where: { enabled: true } });
+    await Promise.all(courses.map(c => this.refetchCalendar(c)));
   }
 
   /**
    * Fetch calendar for the given courseId, saving it to disk. Returns the string content
    * of the fetched calendar.
    */
-  public async refetchCalendar(courseId: number): Promise<string> {
+  public async refetchCalendar(course: CourseModel): Promise<string> {
     const spaceLeft = await checkDiskSpace(path.parse(process.cwd()).root);
     if (spaceLeft.free < 1000000) {
       // less than 1000kb left (calendars range in size from 30-850kb)
@@ -50,11 +57,10 @@ export class ResourcesService {
       );
     }
 
-    const course = await CourseModel.findOne(courseId);
     const request = await this.httpService.get(course.icalURL).toPromise();
     fs.writeFile(
       // not doing this synchronously so the request is faster
-      path.join(process.env.UPLOAD_LOCATION, this.getCalFilename(courseId)),
+      path.join(process.env.UPLOAD_LOCATION, this.getCalFilename(course.id)),
       request.data,
       err => {
         if (err) {

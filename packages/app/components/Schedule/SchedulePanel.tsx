@@ -4,7 +4,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import iCalendarPlugin from "@fullcalendar/icalendar";
-import { Button } from "antd";
+import { Button, Spin } from "antd";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import { Role } from "@koh/common";
 import styled from "styled-components";
@@ -18,6 +18,18 @@ const UpdateButton = styled(Button)`
   color: white;
   font-weight: 500;
   font-size: 14px;
+`;
+const SpinnerContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: #f8f9fb99;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 type ScheduleProps = {
@@ -35,6 +47,7 @@ export default function SchedulePanel({
   const [isClientSide, setIsClientSide] = useState(false);
   const role = useRoleInCourse(courseId);
   const calendarRef = useRef(null);
+  const spinnerRef = useRef(null);
 
   useEffect(() => {
     // it is now safe to render the client-side only component
@@ -55,6 +68,9 @@ export default function SchedulePanel({
 
   return (
     <div>
+      <SpinnerContainer ref={spinnerRef}>
+        <Spin />
+      </SpinnerContainer>
       {isClientSide && !isNaN(courseId) && (
         <CalendarWrapper>
           <FullCalendar
@@ -74,6 +90,13 @@ export default function SchedulePanel({
               start: "title",
               center: "dayGridMonth timeGridWeek timeGridDay listWeek",
               end: "today prev,next"
+            }}
+            loading={loading => {
+              // FullCal is stupid so if you setState in this cb you get into an infinite render loop
+              // https://stackoverflow.com/questions/66818770/fullcalendar-react-loading-function-problem
+              // So we're just floating a spinner on top of the calendar and setting its display property
+              if (spinnerRef.current)
+                spinnerRef.current.style.display = loading ? "flex" : "none";
             }}
             height="70vh"
           />

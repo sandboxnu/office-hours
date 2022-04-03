@@ -4,6 +4,7 @@ import * as path from 'path';
 import { Response } from 'express';
 import { Connection } from 'typeorm';
 import { ResourcesService } from './resources.service';
+import { CourseModel } from '../course/course.entity';
 
 /**
  * Controller for any public resources on the app. Anything accessed through this controller does
@@ -30,7 +31,8 @@ export class ResourcesController {
         if (stats && !refresh) {
           res.sendFile(filename, { root: process.env.UPLOAD_LOCATION });
         } else {
-          const cal = await this.resourcesService.refetchCalendar(courseId);
+          const course = await CourseModel.findOne(courseId);
+          const cal = await this.resourcesService.refetchCalendar(course);
           res.send(cal);
         }
       },
