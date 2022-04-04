@@ -110,8 +110,13 @@ export const MostActiveStudents: InsightObject = {
   component: InsightComponent.SimpleTable,
   size: 'default' as const,
   async compute(filters, cacheManager: Cache): Promise<SimpleTableOutputType> {
-    const dataSource = await getCachedQuestions(cacheManager, filters);
-
+    const dataSource = await getCachedActiveStudents(cacheManager, filters);
+    const totalStudents: number = await addFilters({
+      query: createQueryBuilder(QuestionModel).select(),
+      modelName: QuestionModel.name,
+      allowedFilters: ['courseId', 'timeframe'],
+      filters,
+    }).getCount();
     return {
       columns: [
         {
@@ -126,11 +131,12 @@ export const MostActiveStudents: InsightObject = {
         },
       ],
       dataSource,
+      totalStudents,
     };
   },
 };
 
-const getCachedQuestions = async (
+const getCachedActiveStudents = async (
   cacheManager: Cache,
   filters: Filter[],
 ): Promise<any[]> => {
@@ -154,13 +160,13 @@ const getCachedQuestions = async (
   const cacheLengthInSeconds = 3600;
   return cacheManager.wrap(
     `questions/${courseId}/${getStartString}:${getEndString}`,
-    () => getQuestions(filters),
+    () => getActiveStudents(filters),
     { ttl: cacheLengthInSeconds },
   );
 };
 
-const getQuestions = async (filters: Filter[]): Promise<any[]> => {
-  const questions = await addFilters({
+const getActiveStudents = async (filters: Filter[]): Promise<any[]> => {
+  const activeStudents = await addFilters({
     query: createQueryBuilder()
       .select('"QuestionModel"."creatorId"', 'studentId')
       .addSelect(
@@ -185,7 +191,7 @@ const getQuestions = async (filters: Filter[]): Promise<any[]> => {
     .addGroupBy('"UserModel".email')
     .orderBy('4', 'DESC')
     .getRawMany();
-  return questions;
+  return activeStudents;
 };
 
 export const QuestionTypeBreakdown: InsightObject = {

@@ -796,6 +796,7 @@ export type BarChartOutputType = {
 export type SimpleTableOutputType = {
   dataSource: StringMap<string>[];
   columns: StringMap<string>[];
+  totalStudents: number;
 };
 
 export type StringMap<T> = {
