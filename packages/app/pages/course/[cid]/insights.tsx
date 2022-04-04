@@ -99,9 +99,9 @@ export default function Insights(): ReactElement {
                 Date Range
               </b>
               <RangePicker
-                onChange={(_, dateString) => {
-                  setDateRange({ start: dateString[0], end: dateString[1] });
-                }}
+                onChange={(_, dateString) =>
+                  setDateRange({ start: dateString[0], end: dateString[1] })
+                }
               />
             </div>
             <Button
