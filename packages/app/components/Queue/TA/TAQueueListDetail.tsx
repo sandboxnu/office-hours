@@ -12,6 +12,7 @@ import EmptyGroupList from "./QuestionGrouping/EmptyGroupList";
 import TAGroupDetail from "./QuestionGrouping/TAGroupDetail";
 import TAQueueDetail from "./TAQueueDetail";
 import TAQueueListSection from "./TAQueueListSection";
+import { useHotkeys } from "react-hotkeys-hook";
 
 // The min screen width at which the list and detail become side-by-side
 const SPLIT_DETAIL_BKPT = 900;
@@ -69,7 +70,7 @@ const BackToQueue = styled.div`
  */
 export default function TAQueueListDetail({
   queueId,
-  courseId,
+  courseId
 }: {
   queueId: number;
   courseId: number;
@@ -80,30 +81,42 @@ export default function TAQueueListDetail({
   const [isGrouping, setIsGrouping] = useState<boolean>(false);
   const isSideBySide = useWindowWidth() >= SPLIT_DETAIL_BKPT;
 
+  const navigateQuestions = (key: string) => {
+    const numOfQuestions = questions?.queue.length;
+    if (numOfQuestions > 0) {
+      const addMinus = key === "up" ? -1 : 1;
+      const modulusMagic =
+        (((selectedQuestionId + addMinus) % numOfQuestions) + numOfQuestions) %
+        numOfQuestions;
+      setSelectedQuestionId(selectedQuestionId ? modulusMagic : 1);
+    }
+  };
+
+  useHotkeys("up", () => navigateQuestions("up"));
+  useHotkeys("down", () => navigateQuestions("down"));
+
   const onSelectQuestion = (qId: number) => {
     setSelectedQuestionId(qId);
     setIsGrouping(false);
   };
   const helpingQuestions = questions?.questionsGettingHelp?.filter(
-    (q) => q.taHelped.id === user.id
+    q => q.taHelped.id === user.id
   );
-  const myGroup = questions?.groups.find(
-    (group) => group.creator.id === user.id
-  );
+  const myGroup = questions?.groups.find(group => group.creator.id === user.id);
   const groupedQuestions = myGroup ? myGroup.questions : [];
   const allQuestionsList: Question[] = questions
     ? [
         ...helpingQuestions,
         ...questions.queue,
         ...questions.priorityQueue,
-        ...questions.groups.flatMap((e) => e.questions),
+        ...questions.groups.flatMap(e => e.questions)
       ]
     : [];
   const selectedQuestion = allQuestionsList.find(
-    (q) => q.id === selectedQuestionId
+    q => q.id === selectedQuestionId
   );
   const hasUnresolvedRephraseAlert = questions?.unresolvedAlerts
-    ?.map((payload) => (payload as RephraseQuestionPayload).questionId)
+    ?.map(payload => (payload as RephraseQuestionPayload).questionId)
     .includes(selectedQuestionId);
   // set currentQuestion to null if it no longer exists in the queue
   if (selectedQuestionId && !selectedQuestion) {
@@ -255,7 +268,7 @@ function NotifReminderButton({ courseId }: { courseId: number }) {
       <Link
         href={{
           pathname: "/settings",
-          query: { cid: courseId, defaultPage: SettingsOptions.NOTIFICATIONS },
+          query: { cid: courseId, defaultPage: SettingsOptions.NOTIFICATIONS }
         }}
       >
         <NotifRemindButton>Sign Up for Notifications</NotifRemindButton>
