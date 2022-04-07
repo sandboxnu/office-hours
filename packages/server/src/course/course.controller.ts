@@ -27,10 +27,9 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import async from 'async';
-import moment = require('moment');
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
-import { Connection, MoreThanOrEqual } from 'typeorm';
+import { Connection } from 'typeorm';
 import { Roles } from '../decorators/roles.decorator';
 import { User, UserId } from '../decorators/user.decorator';
 import { CourseRolesGuard } from '../guards/course-roles.guard';
@@ -38,7 +37,6 @@ import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { CourseModel } from './course.entity';
-import { OfficeHourModel } from './office-hour.entity';
 import { QueueCleanService } from '../queue/queue-clean/queue-clean.service';
 import { QueueSSEService } from '../queue/queue-sse.service';
 import { CourseService } from './course.service';
@@ -114,17 +112,17 @@ export class CourseController {
     if (userCourseModel.role === Role.PROFESSOR) {
       course.queues = await async.filter(
         course.queues,
-        async (q) => !q.isDisabled,
+        async q => !q.isDisabled,
       );
     } else if (userCourseModel.role === Role.TA) {
       course.queues = await async.filter(
         course.queues,
-        async (q) => !q.isDisabled && !q.isProfessorQueue,
+        async q => !q.isDisabled && !q.isProfessorQueue,
       );
     } else if (userCourseModel.role === Role.STUDENT) {
       course.queues = await async.filter(
         course.queues,
-        async (q) => !q.isDisabled && (await q.checkIsOpen()),
+        async q => !q.isDisabled && (await q.checkIsOpen()),
       );
     }
 
@@ -134,7 +132,7 @@ export class CourseController {
     }
 
     try {
-      await async.each(course.queues, async (q) => {
+      await async.each(course.queues, async q => {
         await q.addQueueSize();
       });
     } catch (err) {
@@ -171,7 +169,7 @@ export class CourseController {
 
     if (
       queues &&
-      queues.some((q) => q.staffList.some((staff) => staff.id === user.id))
+      queues.some(q => q.staffList.some(staff => staff.id === user.id))
     ) {
       throw new UnauthorizedException(
         ERROR_MESSAGES.courseController.checkIn.cannotCheckIntoMultipleQueues,
@@ -362,9 +360,9 @@ export class CourseController {
     }
 
     // Do nothing if user not already in stafflist
-    if (!queue.staffList.find((e) => e.id === user.id)) return;
+    if (!queue.staffList.find(e => e.id === user.id)) return;
 
-    queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
+    queue.staffList = queue.staffList.filter(e => e.id !== user.id);
     if (queue.staffList.length === 0) {
       queue.allowQuestions = false;
     }
@@ -401,31 +399,7 @@ export class CourseController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-    let canClearQueue = null;
 
-    try {
-      canClearQueue = await this.queueCleanService.shouldCleanQueue(queue);
-    } catch (err) {
-      console.error(err);
-      throw new HttpException(
-        ERROR_MESSAGES.courseController.clearQueueError,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-
-    let nextOfficeHourTime = null;
-
-    // find out how long until next office hour
-    if (canClearQueue) {
-      const soon = moment().add(15, 'minutes').toDate();
-      const nextOfficeHour = await OfficeHourModel.findOne({
-        where: { startTime: MoreThanOrEqual(soon) },
-        order: {
-          startTime: 'ASC',
-        },
-      });
-      nextOfficeHourTime = nextOfficeHour?.startTime;
-    }
     try {
       await this.queueSSEService.updateQueue(queue.id);
     } catch (err) {
@@ -439,7 +413,7 @@ export class CourseController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-    return { queueId: queue.id, canClearQueue, nextOfficeHourTime };
+    return { queueId: queue.id };
   }
 
   @Post(':id/update_calendar')
@@ -483,7 +457,7 @@ export class CourseController {
     }
 
     return {
-      data: resp.map((row) => ({
+      data: resp.map(row => ({
         id: row.id,
         role: row.role,
         name: row.user.name,
