@@ -3,7 +3,6 @@ import {
   KhouryProfCourse,
   Role,
   TACheckinTimesResponse,
-  TACheckoutResponse,
 } from '@koh/common';
 import { CourseModel } from 'course/course.entity';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
@@ -13,12 +12,9 @@ import { UserCourseModel } from 'profile/user-course.entity';
 import { CourseModule } from '../src/course/course.module';
 import { QueueModel } from '../src/queue/queue.entity';
 import {
-  ClosedOfficeHourFactory,
   CourseFactory,
   EventFactory,
-  OfficeHourFactory,
   ProfSectionGroupsFactory,
-  QuestionFactory,
   QueueFactory,
   SemesterFactory,
   StudentCourseFactory,
@@ -33,7 +29,6 @@ describe('Course Integration', () => {
   describe('GET /courses/:id', () => {
     it('gets office hours no queues, since no queue is happening right now', async () => {
       const course = await CourseFactory.create({
-        officeHours: [await ClosedOfficeHourFactory.create()],
         timezone: 'America/New_York',
       });
       await QueueFactory.create();
@@ -125,12 +120,7 @@ describe('Course Integration', () => {
         .get(`/courses/${course.id}`)
         .expect(200);
       // date agnostic snapshots
-      response.body.queues.map((q) =>
-        expect(q).toMatchSnapshot({
-          startTime: expect.any(String),
-          endTime: expect.any(String),
-        }),
-      );
+      response.body.queues.map((q) => expect(q).toMatchSnapshot({}));
 
       response.body.queues.map((q) => expect(q.isDisabled).toBeFalsy());
       response.body.queues.map((q) => expect(q.isProfessorQueue).toBeFalsy());
@@ -189,31 +179,17 @@ describe('Course Integration', () => {
         .expect(200);
 
       // date agnostic snapshots
-      response.body.queues.map((q) =>
-        expect(q).toMatchSnapshot({
-          startTime: expect.any(String),
-          endTime: expect.any(String),
-        }),
-      );
+      response.body.queues.map((q) => expect(q).toMatchSnapshot({}));
 
       response.body.queues.map((q) => expect(q.isDisabled).toBeFalsy());
     });
 
     it('cant get office hours if not a member of the course', async () => {
-      const now = new Date();
       const course = await CourseFactory.create();
 
       await QueueFactory.create({
         room: "Matthias's Office",
         course: course,
-        officeHours: [
-          await OfficeHourFactory.create({
-            startTime: now,
-            endTime: new Date(now.valueOf() + 4500000),
-            room: "Matthias's Office",
-          }),
-          await OfficeHourFactory.create(), // aren't loaded cause time off
-        ],
       });
 
       await supertest({ userId: 1 }).get(`/courses/${course.id}`).expect(401);
@@ -448,29 +424,6 @@ describe('Course Integration', () => {
       await supertest({ userId: student.id })
         .delete(`/courses/${scf.courseId}/ta_location/The Alamo`)
         .expect(401);
-    });
-
-    it('returns canClearQueue true when TA checks out', async () => {
-      const ofs = await ClosedOfficeHourFactory.create();
-      const ta = await UserFactory.create();
-      const queue = await QueueFactory.create({
-        room: 'The Alamo',
-        staffList: [ta],
-        officeHours: [ofs],
-      });
-      const tcf = await TACourseFactory.create({
-        course: queue.course,
-        user: ta,
-      });
-      await QuestionFactory.create({ queue: queue });
-
-      const checkoutResult: TACheckoutResponse = (
-        await supertest({ userId: ta.id })
-          .delete(`/courses/${tcf.courseId}/ta_location/The Alamo`)
-          .expect(200)
-      ).body;
-
-      expect(checkoutResult.canClearQueue).toBeTruthy();
     });
 
     it('tests nothing happens if ta not in queue', async () => {

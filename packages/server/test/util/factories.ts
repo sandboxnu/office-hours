@@ -4,7 +4,6 @@ import { AlertModel } from 'alerts/alerts.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { Factory } from 'typeorm-factory';
 import { CourseModel } from '../../src/course/course.entity';
-import { OfficeHourModel } from '../../src/course/office-hour.entity';
 import { SemesterModel } from '../../src/semester/semester.entity';
 import { CourseSectionMappingModel } from '../../src/login/course-section-mapping.entity';
 import { UserCourseModel } from '../../src/profile/user-course.entity';
@@ -34,16 +33,6 @@ export const SemesterFactory = new Factory(SemesterModel)
   .attr('season', 'Fall')
   .attr('year', 2020);
 
-export const ClosedOfficeHourFactory = new Factory(OfficeHourModel)
-  .attr('title', 'Alex & Stanley')
-  .attr('startTime', new Date('2020-05-20T14:00:00.000Z'))
-  .attr('endTime', new Date('2020-05-20T15:30:00.000Z'));
-
-export const OfficeHourFactory = new Factory(OfficeHourModel)
-  .attr('title', 'Alex & Stanley')
-  .attr('startTime', new Date(new Date().getTime() - 3600000))
-  .attr('endTime', new Date(new Date().getTime() + 3600000));
-
 export const CourseFactory = new Factory(CourseModel)
   .attr('name', 'CS 2500')
   // calendar is owned by sandboxneu@gmail.com
@@ -52,8 +41,7 @@ export const CourseFactory = new Factory(CourseModel)
     'https://calendar.google.com/calendar/ical/t6lu2pic7u9otrbpkuk26sl34g%40group.calendar.google.com/public/basic.ics',
   )
   .attr('enabled', true)
-  .assocOne('semester', SemesterFactory)
-  .assocMany('officeHours', OfficeHourFactory, 0);
+  .assocOne('semester', SemesterFactory);
 
 export const CourseSectionFactory = new Factory(CourseSectionMappingModel)
   .attr('crn', 12345)
@@ -69,7 +57,6 @@ export const QueueFactory = new Factory(QueueModel)
   .attr('room', 'Online')
   .assocOne('course', CourseFactory)
   .attr('allowQuestions', false)
-  .assocMany('officeHours', OfficeHourFactory)
   .assocMany('staffList', UserFactory, 0)
   .attr('isProfessorQueue', false)
   .attr('isDisabled', false);

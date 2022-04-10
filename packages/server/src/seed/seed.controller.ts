@@ -15,7 +15,6 @@ import { Connection, getManager } from 'typeorm';
 import {
   CourseFactory,
   EventFactory,
-  OfficeHourFactory,
   QuestionFactory,
   QueueFactory,
   SemesterFactory,
@@ -74,27 +73,6 @@ export class SeedController {
     const tomorrow = new Date();
     tomorrow.setUTCHours(now.getUTCHours() + 19);
 
-    const officeHoursToday = await OfficeHourFactory.create({
-      startTime: now,
-      endTime: new Date(now.valueOf() + 4500000),
-    });
-    const officeHoursTodayOverlap = await OfficeHourFactory.create({
-      startTime: new Date(now.valueOf() - 4500000),
-      endTime: new Date(now.valueOf() + 1000000),
-    });
-    const officeHoursYesterday = await OfficeHourFactory.create({
-      startTime: yesterday,
-      endTime: new Date(yesterday.valueOf() + 4500000),
-    });
-    const officeHoursTomorrow = await OfficeHourFactory.create({
-      startTime: tomorrow,
-      endTime: new Date(tomorrow.valueOf() + 4500000),
-    });
-    const professorOfficeHours = await OfficeHourFactory.create({
-      startTime: now,
-      endTime: new Date(now.valueOf() + 4500000),
-    });
-
     const courseExists = await CourseModel.findOne({
       where: { name: 'CS 2500' },
     });
@@ -117,17 +95,7 @@ export class SeedController {
 
     const course = await CourseModel.findOne({
       where: { name: 'CS 2500' },
-      relations: ['officeHours'],
     });
-
-    course.officeHours = [
-      officeHoursToday,
-      officeHoursYesterday,
-      officeHoursTomorrow,
-      officeHoursTodayOverlap,
-      professorOfficeHours,
-    ];
-    course.save();
 
     const userExists = await UserModel.findOne();
     if (!userExists) {
@@ -201,12 +169,6 @@ export class SeedController {
     const queue = await QueueFactory.create({
       room: 'Online',
       course: course,
-      officeHours: [
-        officeHoursToday,
-        officeHoursYesterday,
-        officeHoursTomorrow,
-        officeHoursTodayOverlap,
-      ],
       allowQuestions: true,
     });
 
@@ -263,7 +225,6 @@ export class SeedController {
     const professorQueue = await QueueFactory.create({
       room: "Professor Li's Hours",
       course: course,
-      officeHours: [professorOfficeHours],
       allowQuestions: true,
       isProfessorQueue: true,
     });
@@ -320,13 +281,7 @@ export class SeedController {
       closesIn?: number;
     },
   ): Promise<QueueModel> {
-    const now = new Date();
-    const officeHours = await OfficeHourFactory.create({
-      startTime: now,
-      endTime: new Date(now.valueOf() + (body?.closesIn || 4500000)),
-    });
     const options = {
-      officeHours: [officeHours],
       allowQuestions: body.allowQuestions ?? false,
     };
     if (body.courseId) {
