@@ -2,6 +2,7 @@ import { OpenQuestionStatus, LimboQuestionStatus } from '@koh/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Connection } from 'typeorm';
 import {
+  AlertFactory,
   QuestionFactory,
   QueueFactory,
   UserFactory,
@@ -138,7 +139,8 @@ describe('QueueService', () => {
         relations: ['staffList'],
       });
       const checkoutEvents = await EventModel.createQueryBuilder().getMany();
-      const checkoutEventTypes = checkoutEvents.map((em) => em.eventType);
+      const checkoutEventTypes = checkoutEvents.map(em => em.eventType);
+      const checkoutQueueIds = checkoutEvents.map(event => event.queueId);
 
       expect(updatedQueue1.staffList.length).toEqual(0);
       expect(updatedQueue2.staffList.length).toEqual(0);
@@ -149,8 +151,42 @@ describe('QueueService', () => {
         'taCheckedOutForced',
         'taCheckedOutForced',
       ]);
+      expect(checkoutQueueIds).toEqual([queue.id, queue2.id, queue2.id]);
     });
 
+    it('if no staff are present all questions with open status are marked as stale', async () => {
+      const queue = await QueueFactory.create({});
+      const question = await QuestionFactory.create({
+        status: OpenQuestionStatus.Queued,
+        queue: queue,
+      });
+
+      await service.cleanQueue(queue.id);
+      await question.reload();
+      expect(question.status).toEqual('Stale');
+    });
+
+    it('resolves lingering alerts from a queue', async () => {
+      const queue = await QueueFactory.create({});
+      const openQuestion = await QuestionFactory.create({
+        queue,
+      });
+      const openAlert = await AlertFactory.create({
+        user: openQuestion.creator,
+        course: queue.course,
+        payload: {
+          questionId: openQuestion.id,
+          queueId: queue.id,
+          courseId: queue.course.id,
+        },
+      });
+      expect(openAlert.resolved).toBeNull();
+
+      await service.cleanQueue(queue.id);
+
+      await openAlert.reload();
+      expect(openAlert.resolved).not.toBeNull();
+    });
     it('does not clean queue that has no questions in open or limbo state', async () => {
       const cleanQueueSpy = jest.spyOn(service, 'cleanQueue');
 

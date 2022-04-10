@@ -19,6 +19,7 @@ import {
   ListInsightsResponse,
   ListQuestionsResponse,
   RegisterCourseParams,
+  EditCourseInfoParams,
   SemesterPartial,
   TACheckinTimesResponse,
   TACheckoutResponse,
@@ -30,6 +31,8 @@ import {
   UpdateQuestionResponse,
   UpdateQueueParams,
   QueuePartial,
+  UserPartial,
+  Role
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -73,11 +76,23 @@ class APIClient {
     patch: async (body: UpdateProfileParams): Promise<GetProfileResponse> =>
       this.req("PATCH", `/api/v1/profile`, undefined, body),
     deleteProfilePicture: async (): Promise<void> =>
-      this.req("DELETE", `/api/v1/profile/delete_profile_picture`),
+      this.req("DELETE", `/api/v1/profile/delete_profile_picture`)
   };
   course = {
     get: async (courseId: number) =>
       this.req("GET", `/api/v1/courses/${courseId}`, GetCourseResponse),
+    getUserInfo: async (
+      courseId: number,
+      page: number,
+      role?: Role,
+      search?: string
+    ) =>
+      this.req(
+        "GET",
+        `/api/v1/courses/${courseId}/get_user_info/${page}/${role}`,
+        UserPartial,
+        { search }
+      ),
     updateCalendar: async (courseId: number) =>
       this.req("POST", `/api/v1/courses/${courseId}/update_calendar`),
     getCourseOverrides: async (courseId: number) =>
@@ -114,6 +129,16 @@ class APIClient {
       ),
     registerCourses: async (params: RegisterCourseParams[]): Promise<void> =>
       this.req("POST", `/api/v1/courses/register_courses`, undefined, params),
+    editCourseInfo: async (
+      courseId: number,
+      params: EditCourseInfoParams
+    ): Promise<void> =>
+      this.req(
+        "PATCH",
+        `/api/v1/courses/${courseId}/edit_course`,
+        undefined,
+        params
+      ),
     getTACheckinTimes: async (
       courseId: number,
       startDate: string,
@@ -131,7 +156,7 @@ class APIClient {
     selfEnrollCourses: async (): Promise<GetSelfEnrollResponse> =>
       this.req("GET", "/api/v1/self_enroll_courses"),
     createSelfEnrollOverride: async (courseId: number): Promise<void> =>
-      this.req("POST", `/api/v1/create_self_enroll_override/${courseId}`),
+      this.req("POST", `/api/v1/create_self_enroll_override/${courseId}`)
   };
   taStatus = {
     checkIn: async (
@@ -155,7 +180,7 @@ class APIClient {
         `/api/v1/courses/${courseId}/generate_queue/${room}`,
         QueuePartial,
         { notes, isProfessorQueue }
-      ),
+      )
   };
   questions = {
     index: async (queueId: number) =>
@@ -185,7 +210,7 @@ class APIClient {
         `/api/v1/questions/resolveGroup/${groupId}`,
         undefined,
         { queueId }
-      ),
+      )
   };
   queues = {
     get: async (queueId: number): Promise<GetQueueResponse> =>
@@ -200,7 +225,7 @@ class APIClient {
     clean: async (queueId: number): Promise<void> =>
       this.req("POST", `/api/v1/queues/${queueId}/clean`),
     disable: async (queueId: number): Promise<void> =>
-      this.req("DELETE", `/api/v1/queues/${queueId}`),
+      this.req("DELETE", `/api/v1/queues/${queueId}`)
   };
   notif = {
     desktop: {
@@ -220,21 +245,21 @@ class APIClient {
           "DELETE",
           `/api/v1/notifications/desktop/device/${deviceId}`,
           undefined
-        ),
-    },
+        )
+    }
   };
   seeds = {
     delete: async () => this.req("GET", `/api/v1/seeds/delete`),
     create: async () => this.req("GET", `/api/v1/seeds/create`),
-    fillQueue: async () => this.req("GET", `/api/v1/seeds/fill_queue`),
+    fillQueue: async () => this.req("GET", `/api/v1/seeds/fill_queue`)
   };
   semesters = {
     get: async (): Promise<SemesterPartial[]> =>
-      this.req("GET", `/api/v1/semesters`),
+      this.req("GET", `/api/v1/semesters`)
   };
   releaseNotes = {
     get: async (): Promise<GetReleaseNotesResponse> =>
-      this.req("GET", `/api/v1/release_notes`),
+      this.req("GET", `/api/v1/release_notes`)
   };
   insights = {
     get: async (
@@ -255,7 +280,7 @@ class APIClient {
     toggleOn: async (insightName: string): Promise<void> =>
       this.req("PATCH", `/api/v1/insights`, undefined, { insightName }),
     toggleOff: async (insightName: string): Promise<void> =>
-      this.req("DELETE", `/api/v1/insights`, undefined, { insightName }),
+      this.req("DELETE", `/api/v1/insights`, undefined, { insightName })
   };
   alerts = {
     get: async (courseId: number): Promise<GetAlertsResponse> =>
@@ -263,7 +288,7 @@ class APIClient {
     create: async (params: CreateAlertParams): Promise<CreateAlertResponse> =>
       this.req("POST", `/api/v1/alerts`, CreateAlertResponse, params),
     close: async (alertId: number): Promise<void> =>
-      this.req("PATCH", `/api/v1/alerts/${alertId}`),
+      this.req("PATCH", `/api/v1/alerts/${alertId}`)
   };
 
   constructor(baseURL = "") {

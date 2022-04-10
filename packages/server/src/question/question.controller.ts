@@ -101,17 +101,22 @@ export class QuestionController {
       );
     }
 
-    const previousUserQuestion = await QuestionModel.findOne({
+    const previousUserQuestions = await QuestionModel.find({
+      relations: ['queue'],
       where: {
         creatorId: user.id,
         status: In(Object.values(OpenQuestionStatus)),
       },
     });
 
-    if (!!previousUserQuestion) {
+    const previousCourseQuestion = previousUserQuestions.find(
+      question => question.queue.courseId === queue.courseId,
+    );
+
+    if (!!previousCourseQuestion) {
       if (force) {
-        previousUserQuestion.status = ClosedQuestionStatus.ConfirmedDeleted;
-        await previousUserQuestion.save();
+        previousCourseQuestion.status = ClosedQuestionStatus.ConfirmedDeleted;
+        await previousCourseQuestion.save();
       } else {
         throw new BadRequestException(
           ERROR_MESSAGES.questionController.createQuestion.oneQuestionAtATime,
@@ -266,7 +271,7 @@ export class QuestionController {
       relations: ['taHelped', 'creator'],
     });
 
-    if (!questions.every((q) => q.groupable)) {
+    if (!questions.every(q => q.groupable)) {
       throw new BadRequestException(
         ERROR_MESSAGES.questionController.groupQuestions.notGroupable,
       );
