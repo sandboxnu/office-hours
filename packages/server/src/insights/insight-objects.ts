@@ -112,9 +112,9 @@ export const MostActiveStudents: InsightObject = {
   async compute(filters, cacheManager: Cache): Promise<SimpleTableOutputType> {
     const dataSource = await getCachedActiveStudents(cacheManager, filters);
     const totalStudents: number = await addFilters({
-      query: createQueryBuilder(QuestionModel).select(),
-      modelName: QuestionModel.name,
-      allowedFilters: ['courseId', 'timeframe'],
+      query: createQueryBuilder(UserCourseModel).where("role = 'student'"),
+      modelName: UserCourseModel.name,
+      allowedFilters: ['courseId', 'role'],
       filters,
     }).getCount();
     return {
