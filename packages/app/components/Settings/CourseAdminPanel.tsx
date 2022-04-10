@@ -2,6 +2,7 @@ import {
   BellOutlined,
   EditOutlined,
   QuestionCircleOutlined,
+  BookOutlined,
 } from "@ant-design/icons";
 import { Col, Menu, Row, Space, Tooltip } from "antd";
 import { useRouter } from "next/router";
@@ -11,10 +12,12 @@ import { useProfile } from "../../hooks/useProfile";
 import CourseOverrideSettings from "./CourseOverrideSettings";
 import { SettingsPanelAvatar } from "./SettingsSharedComponents";
 import TACheckInCheckOutTimes from "./TACheckInCheckOutTimes";
+import CourseInformation from "./CourseInformation";
 
 export enum CourseAdminOptions {
   CHECK_IN = "CHECK_IN",
   OVERRIDES = "OVERRIDES",
+  INFO = "INFO",
 }
 
 interface CourseAdminPageProps {
@@ -80,6 +83,9 @@ export default function CourseAdminPanel({
           <Menu.Item key={CourseAdminOptions.OVERRIDES} icon={<BellOutlined />}>
             Course Overrides
           </Menu.Item>
+          <Menu.Item key={CourseAdminOptions.INFO} icon={<BookOutlined />}>
+            Course Information
+          </Menu.Item>
         </Menu>
       </Col>
       <VerticalDivider />
@@ -90,6 +96,9 @@ export default function CourseAdminPanel({
           )}
           {currentSettings === CourseAdminOptions.OVERRIDES && (
             <CourseOverrideSettings courseId={courseId} />
+          )}
+          {currentSettings === CourseAdminOptions.INFO && (
+            <CourseInformation courseId={courseId} />
           )}
         </Col>
       </Space>

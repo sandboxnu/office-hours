@@ -166,7 +166,10 @@ export class CourseController {
 
     const course_response = { ...course, crns: null };
     try {
-      course_response.crns = await CourseSectionMappingModel.find({ course });
+      const mappings = await CourseSectionMappingModel.find({
+        courseId: course.id,
+      });
+      course_response.crns = mappings.map((mapping) => mapping.crn);
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.courseOfficeHourError +
