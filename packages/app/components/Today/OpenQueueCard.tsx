@@ -52,6 +52,10 @@ const QuestionNumberSpan = styled.span`
   font-size: 24px;
 `;
 
+const QueueSizeSpan = styled.span`
+  font-size: 18px;
+`;
+
 const HeaderText = styled.div`
   font-size: 14px;
   line-height: 22px;
@@ -62,9 +66,8 @@ const HeaderText = styled.div`
 `;
 
 const OpenQueueButton = styled(Button)`
-  background-color: #3684c6;
+  color: #5f6b79;
   border-radius: 6px;
-  color: white;
   font-weight: 500;
   font-size: 14px;
   margin-left: 16px;
@@ -84,9 +87,22 @@ const SaveButton = styled(Button)`
   font-size: 14px;
 `;
 
+const NotesDiv = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  margin: 10px 10px auto 0;
+`;
+
+const RightQueueNotesRow = styled.div`
+  display: flex;
+`;
 const NotesInput = styled(Input.TextArea)`
   border-radius: 6px;
   border: 1px solid #b8c4ce;
+  //display: flex;
+  //flex-grow: 1;
+  margin: auto 0px auto 10px;
 `;
 
 const Notes = styled.div`
@@ -129,10 +145,16 @@ const OpenQueueCard = ({
     <PaddedCard
       headStyle={{ background: "#25426C", color: "#FFFFFF" }}
       className={"open-queue-card"}
-      title={`${queue.room} ${
-        queue.isProfessorQueue ? `(Professor queue)` : ``
-      }`}
-      extra={`${queue.queueSize} in queue`}
+      title={
+        <span>
+          {queue.room} <i>{queue.isProfessorQueue ? `(Professor)` : ``}</i>{" "}
+        </span>
+      }
+      extra={
+        <span>
+          <QueueSizeSpan>{queue.queueSize}</QueueSizeSpan> in queue
+        </span>
+      }
     >
       <QueueInfoRow>
         <HeaderDiv>
@@ -157,11 +179,9 @@ const OpenQueueCard = ({
               as={`/course/${cid}/queue/${queue.id}`}
             >
               <OpenQueueButton
-                type="primary"
-                style={{ color: `#5F6B79`, borderColor: `#5F6B79` }}
+                style={{}}
                 size="large"
                 data-cy="open-queue-button"
-                ghost
               >
                 Open Queue
               </OpenQueueButton>
@@ -189,13 +209,13 @@ const OpenQueueCard = ({
         </div>
         <OpenQueueCardDivider />
         {editingNotes ? (
-          <div>
+          <NotesDiv>
             <NotesInput
               defaultValue={queue.notes}
               value={updatedNotes}
               onChange={(e) => setUpdatedNotes(e.target.value as any)}
             />
-          </div>
+          </NotesDiv>
         ) : queue.notes ? (
           <div>
             <Linkify
@@ -220,7 +240,7 @@ const OpenQueueCard = ({
             <i> no notes provided</i>
           </div>
         )}
-        <RightQueueInfoRow>
+        <RightQueueNotesRow>
           {editingNotes && (
             <SaveButton onClick={handleUpdate} size="large">
               Save Changes
@@ -240,7 +260,7 @@ const OpenQueueCard = ({
               )}
             </QueueCardButtonRow>
           )}
-        </RightQueueInfoRow>
+        </RightQueueNotesRow>
       </Row>
     </PaddedCard>
   );
