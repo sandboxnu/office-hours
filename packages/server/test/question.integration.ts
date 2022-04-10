@@ -252,7 +252,6 @@ describe('Question Integration', () => {
         ERROR_MESSAGES.questionController.createQuestion.oneQuestionAtATime,
       );
     });
-
     it('allow multiple questions across courses', async () => {
       const course1 = await CourseFactory.create({});
       const course2 = await CourseFactory.create({});
@@ -291,7 +290,6 @@ describe('Question Integration', () => {
       expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(1);
       expect(await QuestionModel.count({ where: { queueId: 2 } })).toEqual(1);
     });
-
     it('force a question when one is already open', async () => {
       const course = await CourseFactory.create({});
       const user = await UserFactory.create();

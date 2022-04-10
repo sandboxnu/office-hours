@@ -154,10 +154,10 @@ describe('QueueService', () => {
       expect(checkoutQueueIds).toEqual([queue.id, queue2.id, queue2.id]);
     });
 
-    it('if no staff are present all questions with open status are marked as stale', async () => {
+    it('if no staff are present all questions with limbo status are marked as stale', async () => {
       const queue = await QueueFactory.create({});
       const question = await QuestionFactory.create({
-        status: OpenQuestionStatus.Queued,
+        status: LimboQuestionStatus.TADeleted,
         queue: queue,
       });
 
