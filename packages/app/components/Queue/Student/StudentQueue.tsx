@@ -5,7 +5,7 @@ import {
   LimboQuestionStatus,
   OpenQuestionStatus,
   Question,
-  QuestionType,
+  QuestionType
 } from "@koh/common";
 import { Card, Col, notification, Popconfirm, Row } from "antd";
 import { Router, useRouter } from "next/router";
@@ -19,7 +19,7 @@ import { useQueue } from "../../../hooks/useQueue";
 import { useStudentQuestion } from "../../../hooks/useStudentQuestion";
 import {
   QueueInfoColumn,
-  QueueInfoColumnButton,
+  QueueInfoColumnButton
 } from "../QueueListSharedComponents";
 import QuestionForm from "./QuestionForm";
 import StudentBanner from "./StudentBanner";
@@ -76,6 +76,10 @@ const HeaderText = styled.div`
   font-variant: small-caps;
 `;
 
+const PopConfirmTitle = styled.div`
+  max-width: 400px;
+`;
+
 const CenterRow = styled(Row)`
   align-items: center;
 `;
@@ -87,7 +91,7 @@ interface StudentQueueProps {
 
 export default function StudentQueue({
   qid,
-  cid,
+  cid
 }: StudentQueueProps): ReactElement {
   const { queue } = useQueue(qid);
   const { questions, mutateQuestions } = useQuestions(qid);
@@ -120,7 +124,7 @@ export default function StudentQueue({
   const studentQuestionStatus = studentQuestion?.status;
   const leaveQueue = useCallback(async () => {
     await API.questions.update(studentQuestionId, {
-      status: ClosedQuestionStatus.ConfirmedDeleted,
+      status: ClosedQuestionStatus.ConfirmedDeleted
     });
 
     setIsJoining(false);
@@ -129,7 +133,7 @@ export default function StudentQueue({
 
   const rejoinQueue = useCallback(async () => {
     await API.questions.update(studentQuestionId, {
-      status: OpenQuestionStatus.PriorityQueued,
+      status: OpenQuestionStatus.PriorityQueued
     });
     await mutateQuestions();
   }, [mutateQuestions, studentQuestionId]);
@@ -143,7 +147,7 @@ export default function StudentQueue({
         status:
           studentQuestionStatus === OpenQuestionStatus.Drafting
             ? OpenQuestionStatus.Queued
-            : studentQuestionStatus,
+            : studentQuestionStatus
       };
 
       const updatedQuestionFromStudent = await API.questions.update(
@@ -161,7 +165,7 @@ export default function StudentQueue({
       mutateQuestions({
         ...questions,
         yourQuestion: updatedQuestionFromStudent,
-        queue: newQuestionsInQueue,
+        queue: newQuestionsInQueue
       });
     },
     [studentQuestionStatus, studentQuestionId, questions, mutateQuestions]
@@ -169,7 +173,7 @@ export default function StudentQueue({
 
   const joinQueueAfterDeletion = useCallback(async () => {
     await API.questions.update(studentQuestion?.id, {
-      status: ClosedQuestionStatus.ConfirmedDeleted,
+      status: ClosedQuestionStatus.ConfirmedDeleted
     });
     await mutateQuestions();
     const newQuestion = await API.questions.create({
@@ -178,10 +182,10 @@ export default function StudentQueue({
       queueId: qid,
       location: studentQuestion?.location,
       force: true,
-      groupable: false,
+      groupable: false
     });
     await API.questions.update(newQuestion.id, {
-      status: OpenQuestionStatus.Queued,
+      status: OpenQuestionStatus.Queued
     });
     await mutateQuestions();
   }, [mutateQuestions, qid, studentQuestion]);
@@ -211,7 +215,7 @@ export default function StudentQueue({
           text: "",
           force: force,
           questionType: null,
-          groupable: false,
+          groupable: false
         });
         const newQuestionsInQueue = [...questions?.queue, createdQuestion];
         await mutateQuestions({ ...questions, queue: newQuestionsInQueue });
@@ -256,7 +260,7 @@ export default function StudentQueue({
             notification.destroy();
             setIsFirstQuestion(false);
             router.push(`/settings?cid=${cid}`);
-          },
+          }
         });
       }
     },
@@ -265,7 +269,7 @@ export default function StudentQueue({
       finishQuestion,
       closeEditModal,
       isFirstQuestion,
-      setIsFirstQuestion,
+      setIsFirstQuestion
     ]
   );
 
@@ -292,7 +296,13 @@ export default function StudentQueue({
             buttons={
               !studentQuestion && (
                 <Popconfirm
-                  title="In order to join this queue, you must delete your previous question. Do you want to continue?"
+                  title={
+                    <PopConfirmTitle>
+                      You already have a question in a queue for this course, so
+                      your previous question will be deleted in order to join
+                      this queue. Do you want to continue?
+                    </PopConfirmTitle>
+                  }
                   onConfirm={() => joinQueueOpenModal(true)}
                   okText="Yes"
                   cancelText="No"

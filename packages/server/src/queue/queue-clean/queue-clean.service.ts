@@ -11,6 +11,7 @@ import { UserCourseModel } from 'profile/user-course.entity';
 import { Connection } from 'typeorm';
 import { QuestionModel } from '../../question/question.entity';
 import { QueueModel } from '../queue.entity';
+import { AlertModel } from '../../alerts/alerts.entity';
 
 /**
  * Clean the queue and mark stale
@@ -21,33 +22,33 @@ export class QueueCleanService {
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async cleanAllQueues(): Promise<void> {
-    const queuesWithOpenQuestions: QueueModel[] =
-      await QueueModel.getRepository()
-        .createQueryBuilder('queue_model')
-        .leftJoinAndSelect('queue_model.questions', 'question')
-        .where('question.status IN (:...status)', {
-          status: [
-            ...Object.values(OpenQuestionStatus),
-            ...Object.values(LimboQuestionStatus),
-          ],
-        })
-        .getMany();
+    const queuesWithOpenQuestions: QueueModel[] = await QueueModel.getRepository()
+      .createQueryBuilder('queue_model')
+      .leftJoinAndSelect('queue_model.questions', 'question')
+      .where('question.status IN (:...status)', {
+        status: [
+          ...Object.values(OpenQuestionStatus),
+          ...Object.values(LimboQuestionStatus),
+        ],
+      })
+      .getMany();
 
     // Clean 1 queue at a time
     await async.mapLimit(
       queuesWithOpenQuestions,
       1,
-      async (queue) => await this.cleanQueue(queue.id),
+      async queue => await this.cleanQueue(queue.id),
     );
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_3AM)
   public async checkoutAllStaff(): Promise<void> {
-    const queuesWithCheckedInStaff: QueueModel[] =
-      await QueueModel.getRepository().find({ relations: ['staffList'] });
+    const queuesWithCheckedInStaff: QueueModel[] = await QueueModel.getRepository().find(
+      { relations: ['staffList'] },
+    );
 
-    queuesWithCheckedInStaff.forEach(async (queue) => {
-      await queue.staffList.forEach(async (ta) => {
+    queuesWithCheckedInStaff.forEach(async queue => {
+      await queue.staffList.forEach(async ta => {
         await EventModel.create({
           time: new Date(),
           eventType: EventType.TA_CHECKED_OUT_FORCED,
@@ -85,12 +86,22 @@ export class QueueCleanService {
       ...Object.values(OpenQuestionStatus),
       ...Object.values(LimboQuestionStatus),
     ]).getMany();
+    const alerts = await AlertModel.createQueryBuilder('alert')
+      .where('alert.resolved IS NULL')
+      .andWhere("(alert.payload ->> 'queueId')::INTEGER = :queueId ", {
+        queueId,
+      })
+      .getMany();
 
     questions.forEach((q: QuestionModel) => {
       q.status = ClosedQuestionStatus.Stale;
       q.closedAt = new Date();
     });
+    alerts.forEach((a: AlertModel) => {
+      a.resolved = new Date();
+    });
 
     await QuestionModel.save(questions);
+    await AlertModel.save(alerts);
   }
 }

@@ -2,6 +2,7 @@ import { OpenQuestionStatus, LimboQuestionStatus } from '@koh/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Connection } from 'typeorm';
 import {
+  AlertFactory,
   QuestionFactory,
   QueueFactory,
   UserFactory,
@@ -84,6 +85,27 @@ describe('QueueService', () => {
       await question.reload();
       expect(question.status).toEqual('Stale');
     });
+    it('resolves lingering alerts from a queue', async () => {
+      const queue = await QueueFactory.create({});
+      const openQuestion = await QuestionFactory.create({
+        queue,
+      });
+      const openAlert = await AlertFactory.create({
+        user: openQuestion.creator,
+        course: queue.course,
+        payload: {
+          questionId: openQuestion.id,
+          queueId: queue.id,
+          courseId: queue.course.id,
+        },
+      });
+      expect(openAlert.resolved).toBeNull();
+
+      await service.cleanQueue(queue.id);
+
+      await openAlert.reload();
+      expect(openAlert.resolved).not.toBeNull();
+    });
   });
   describe('cleanAllQueues', () => {
     it('correctly cleans queues that have questions in open or limbo state', async () => {
@@ -139,6 +161,7 @@ describe('QueueService', () => {
       });
       const checkoutEvents = await EventModel.createQueryBuilder().getMany();
       const checkoutEventTypes = checkoutEvents.map((em) => em.eventType);
+      const checkoutQueueIds = checkoutEvents.map((event) => event.queueId);
 
       expect(updatedQueue1.staffList.length).toEqual(0);
       expect(updatedQueue2.staffList.length).toEqual(0);
@@ -149,8 +172,13 @@ describe('QueueService', () => {
         'taCheckedOutForced',
         'taCheckedOutForced',
       ]);
+      expect(checkoutQueueIds.sort()).toEqual([
+        queue.id,
+        queue2.id,
+        queue2.id,
+        queue3.id,
+      ]);
     });
-
     it('does not clean queue that has no questions in open or limbo state', async () => {
       const cleanQueueSpy = jest.spyOn(service, 'cleanQueue');
 
