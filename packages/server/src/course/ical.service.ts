@@ -97,17 +97,17 @@ export class IcalService {
 
     // Dates to exclude from recurrence, separate exdate timestamp for filtering
     const exdates: number[] = Object.values(exdateRaw || {})
-      .map((d) => this.fixOutlookTZ(moment(d), eventTZ))
-      .map((d) => applyOffset(d, tzUTCOffsetOnDate(d)).valueOf());
+      .map(d => this.fixOutlookTZ(moment(d), eventTZ))
+      .map(d => applyOffset(d, tzUTCOffsetOnDate(d)).valueOf());
 
     // Doing math here because moment.add changes behavior based on server timezone
     const in10Weeks = new Date(
       dtstart.valueOf() + 1000 * 60 * 60 * 24 * 7 * 10,
     );
     return rule
-      .all((d) => !!until || d < in10Weeks)
-      .filter((date) => !exdates.includes(date.getTime()))
-      .map((d) => fixDST(postRRule(moment(d))).toDate());
+      .all(d => !!until || d < in10Weeks)
+      .filter(date => !exdates.includes(date.getTime()))
+      .map(d => fixDST(postRRule(moment(d))).toDate());
   }
 
   parseIcal(
@@ -125,7 +125,7 @@ export class IcalService {
         iCalElement.end !== undefined,
     );
 
-    const filteredOfficeHours = officeHours.filter((event) =>
+    const filteredOfficeHours = officeHours.filter(event =>
       testRegex.test(event.summary),
     );
 
@@ -140,7 +140,7 @@ export class IcalService {
       if (rrule) {
         const duration = oh.end.getTime() - oh.start.getTime();
         const allDates = this.rruleToDates(rrule, eventTZ, oh.exdate);
-        generatedOfficeHours = allDates.map((date) => ({
+        generatedOfficeHours = allDates.map(date => ({
           title: oh.summary,
           courseId: courseId,
           room: oh.location,
@@ -159,7 +159,7 @@ export class IcalService {
       }
 
       const filteredHours: CreateOfficeHour = generatedOfficeHours.filter(
-        (date) => date.startTime >= startDate && date.startTime <= endDate,
+        date => date.startTime >= startDate && date.startTime <= endDate,
       );
       resultOfficeHours = resultOfficeHours.concat(filteredHours);
     });
@@ -215,7 +215,7 @@ export class IcalService {
 
     await OfficeHourModel.delete({ courseId: course.id });
     await OfficeHourModel.save(
-      officeHours.map((e) => {
+      officeHours.map(e => {
         e.queueId = queue.id;
         return OfficeHourModel.create(e);
       }),
@@ -243,7 +243,7 @@ export class IcalService {
       const professorLocation = poh.title;
       if (
         !professorQueues.some(
-          (q) => q.room === professorLocation && q.courseId === course.id,
+          q => q.room === professorLocation && q.courseId === course.id,
         )
       ) {
         const newProfQ = QueueModel.create({
@@ -259,7 +259,7 @@ export class IcalService {
       }
 
       const professorQueue = professorQueues.find(
-        (q) => q.room === professorLocation,
+        q => q.room === professorLocation,
       );
       processedProfessorOfficeHours.push(
         OfficeHourModel.create({
@@ -275,7 +275,7 @@ export class IcalService {
     console.log('done scraping!');
   }
 
-  @Cron('51 0 * * *')
+  // @Cron('51 0 * * *') turn off this job
   public async updateAllCourses(): Promise<void> {
     const resource = 'locks:icalcron';
     const ttl = 60000;
@@ -284,19 +284,19 @@ export class IcalService {
 
     const redlock = new Redlock([redisDB]);
 
-    redlock.on('clientError', function (err) {
+    redlock.on('clientError', function(err) {
       console.error('A redis error has occurred:', err);
     });
 
     try {
-      await redlock.lock(resource, ttl).then(async (lock) => {
+      await redlock.lock(resource, ttl).then(async lock => {
         console.log('updating course icals');
         const courses = await CourseModel.find({
           where: { enabled: true },
         });
-        await Promise.all(courses.map((c) => this.updateCalendarForCourse(c)));
+        await Promise.all(courses.map(c => this.updateCalendarForCourse(c)));
 
-        return lock.unlock().catch(function (err) {
+        return lock.unlock().catch(function(err) {
           console.error(err);
         });
       });

@@ -3,12 +3,14 @@ import {
   HttpService,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { CourseModel } from '../course/course.entity';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as checkDiskSpace from 'check-disk-space';
 import { Connection } from 'typeorm';
+import { RedisService } from 'nestjs-redis';
+import * as Redlock from 'redlock';
 import { ERROR_MESSAGES } from '@koh/common';
 
 /**
@@ -19,21 +21,41 @@ export class ResourcesService {
   constructor(
     private connection: Connection,
     private httpService: HttpService,
+    private readonly redisService: RedisService,
   ) {}
-  /**
-   * TODO: write cron job to refetch file at midnight
-   * if course is disabled, delete the file
-   * test ical editing+refresh
-   */
-  // cron job needs to get all active courses and refresh
-  // remaining untouched fnames (that start w calendar-) can be deleted
 
   /**
    * Refetches course calendar for all active courses. Any calendar files for
    * disabled courses are deleted from disk.
    */
-  @Cron('51 0 * * *') // at 00:51 each day
-  public async refetchAllCalendars(): Promise<void> {
+  @Cron(CronExpression.EVERY_DAY_AT_1AM)
+  public async refetchAllCalendarsJob(): Promise<void> {
+    const resource = 'locks:icalcron';
+    const ttl = 60000;
+
+    const redisDB = await this.redisService.getClient('db');
+
+    const redlock = new Redlock([redisDB]);
+
+    redlock.on('clientError', function(err) {
+      console.error('A redis error has occurred:', err);
+    });
+
+    try {
+      await redlock.lock(resource, ttl).then(async lock => {
+        console.log('updating course icals');
+        await this.refetchAllCalendars();
+
+        return lock.unlock().catch(function(err) {
+          console.error(err);
+        });
+      });
+    } catch (error) {
+      console.error('A problem locking Redlock has occurred:', error);
+    }
+  }
+
+  private async refetchAllCalendars(): Promise<void> {
     // delete all cal files (will also get rid of files for disabled courses)
     const regex = /calendar-\d+$/;
     fs.readdirSync(process.env.UPLOAD_LOCATION)
