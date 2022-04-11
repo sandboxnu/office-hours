@@ -166,14 +166,14 @@ const OpenQueueCard = ({
           staff checked in
         </HeaderDiv>
         <RightQueueInfoRow>
-          <Space
-            direction="vertical"
-            size="middle"
-            style={{ display: "flex", alignItems: "center" }}
-          >
+          <Space direction="vertical" align="end" size="middle">
             {!queue.allowQuestions && (
               <Tooltip title="This queue is no longer accepting questions">
-                <Tag icon={<StopOutlined />} color="error">
+                <Tag
+                  icon={<StopOutlined />}
+                  color="error"
+                  style={{ margin: 0 }}
+                >
                   Not Accepting Questions
                 </Tag>
               </Tooltip>
