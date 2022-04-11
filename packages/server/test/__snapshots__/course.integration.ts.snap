@@ -3,6 +3,7 @@
 exports[`Course Integration GET /courses/:id gets all queues that are not disabled (prof) 1`] = `
 Object {
   "allowQuestions": false,
+  "courseId": 1,
   "id": 2,
   "isDisabled": false,
   "isOpen": false,
@@ -17,6 +18,7 @@ Object {
 exports[`Course Integration GET /courses/:id gets all queues that are not disabled (prof) 2`] = `
 Object {
   "allowQuestions": false,
+  "courseId": 1,
   "id": 3,
   "isDisabled": false,
   "isOpen": true,
@@ -27,8 +29,10 @@ Object {
   "staffList": Array [
     Object {
       "defaultMessage": null,
+      "desktopNotifsEnabled": false,
       "email": "user@neu.edu",
       "firstName": "User",
+      "hideInsights": Array [],
       "id": 2,
       "includeDefaultMessage": true,
       "insights": Array [
@@ -42,6 +46,7 @@ Object {
       ],
       "lastName": "Person",
       "name": "User Person",
+      "phoneNotifsEnabled": false,
       "photoURL": null,
     },
   ],
@@ -51,6 +56,7 @@ Object {
 exports[`Course Integration GET /courses/:id gets all queues that are not disabled (prof) 3`] = `
 Object {
   "allowQuestions": false,
+  "courseId": 1,
   "id": 4,
   "isDisabled": false,
   "isOpen": true,
@@ -61,8 +67,10 @@ Object {
   "staffList": Array [
     Object {
       "defaultMessage": null,
+      "desktopNotifsEnabled": false,
       "email": "user@neu.edu",
       "firstName": "User",
+      "hideInsights": Array [],
       "id": 2,
       "includeDefaultMessage": true,
       "insights": Array [
@@ -76,6 +84,7 @@ Object {
       ],
       "lastName": "Person",
       "name": "User Person",
+      "phoneNotifsEnabled": false,
       "photoURL": null,
     },
   ],
@@ -102,6 +111,7 @@ Object {
 exports[`Course Integration GET /courses/:id gets queues that are not disabled and not prof queues (TA) 1`] = `
 Object {
   "allowQuestions": false,
+  "courseId": 1,
   "id": 2,
   "isDisabled": false,
   "isOpen": false,
@@ -116,6 +126,7 @@ Object {
 exports[`Course Integration GET /courses/:id gets queues that are not disabled and not prof queues (TA) 2`] = `
 Object {
   "allowQuestions": false,
+  "courseId": 1,
   "id": 3,
   "isDisabled": false,
   "isOpen": true,
@@ -126,8 +137,10 @@ Object {
   "staffList": Array [
     Object {
       "defaultMessage": null,
+      "desktopNotifsEnabled": false,
       "email": "user@neu.edu",
       "firstName": "User",
+      "hideInsights": Array [],
       "id": 2,
       "includeDefaultMessage": true,
       "insights": Array [
@@ -141,6 +154,7 @@ Object {
       ],
       "lastName": "Person",
       "name": "User Person",
+      "phoneNotifsEnabled": false,
       "photoURL": null,
     },
   ],

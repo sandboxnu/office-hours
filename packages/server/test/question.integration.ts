@@ -61,9 +61,7 @@ describe('Question Integration', () => {
       expect(response.body).toMatchSnapshot();
     });
     it('fails to get a non-existent question', async () => {
-      await supertest({ userId: 99 })
-        .get(`/questions/999`)
-        .expect(404);
+      await supertest({ userId: 99 }).get(`/questions/999`).expect(404);
     });
   });
 
@@ -73,15 +71,13 @@ describe('Question Integration', () => {
       queue: QueueModel,
       force = false,
     ): supertest.Test =>
-      supertest({ userId: user.id })
-        .post('/questions')
-        .send({
-          text: "Don't know recursion",
-          questionType: QuestionType.Concept,
-          queueId: queue.id,
-          force,
-          groupable: true,
-        });
+      supertest({ userId: user.id }).post('/questions').send({
+        text: "Don't know recursion",
+        questionType: QuestionType.Concept,
+        queueId: queue.id,
+        force,
+        groupable: true,
+      });
 
     it('posts a new question', async () => {
       const course = await CourseFactory.create();
@@ -221,9 +217,14 @@ describe('Question Integration', () => {
         course: course,
         user: await UserFactory.create(),
       });
+      const ta2 = await TACourseFactory.create({
+        course: course,
+        user: await UserFactory.create(),
+      });
       const queue1 = await QueueFactory.create({
         allowQuestions: true,
         course: course,
+        staffList: [ta2.user],
       });
       const queue2 = await QueueFactory.create({
         allowQuestions: true,
@@ -256,13 +257,23 @@ describe('Question Integration', () => {
       const course1 = await CourseFactory.create({});
       const course2 = await CourseFactory.create({});
       const user = await UserFactory.create();
+      const ta1 = await TACourseFactory.create({
+        course: course1,
+        user: await UserFactory.create(),
+      });
+      const ta2 = await TACourseFactory.create({
+        course: course2,
+        user: await UserFactory.create(),
+      });
       const queue1 = await QueueFactory.create({
         allowQuestions: true,
         course: course1,
+        staffList: [ta1.user],
       });
       const queue2 = await QueueFactory.create({
         allowQuestions: true,
         course: course2,
+        staffList: [ta2.user],
       });
       await StudentCourseFactory.create({
         userId: user.id,
@@ -679,8 +690,8 @@ describe('Question Integration', () => {
       });
       expect(newGroup).toBeDefined();
       expect(newGroup.questions.length).toEqual(2);
-      expect(newGroup.questions.find(q => q.id === q1.id)).toBeTruthy();
-      expect(newGroup.questions.find(q => q.id === q2.id)).toBeTruthy();
+      expect(newGroup.questions.find((q) => q.id === q1.id)).toBeTruthy();
+      expect(newGroup.questions.find((q) => q.id === q2.id)).toBeTruthy();
       expect(await QuestionModel.findOne({ id: q3.id })).toMatchObject({
         groupId: null,
         status: QuestionStatusKeys.Queued,
