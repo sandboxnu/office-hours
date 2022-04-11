@@ -143,7 +143,11 @@ const OpenQueueCard = ({
 
   return (
     <PaddedCard
-      headStyle={{ background: "#25426C", color: "#FFFFFF" }}
+      headStyle={{
+        background: "#25426C",
+        color: "#FFFFFF",
+        borderRadius: "6px 6px 0 0",
+      }}
       className={"open-queue-card"}
       title={
         <span>
