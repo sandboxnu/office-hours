@@ -35,6 +35,24 @@ const TodayCol = styled(Col)`
   margin-bottom: 15px;
 `;
 
+const RoleColorSpan = styled.span`
+  color: #3684c6;
+  font-weight: bold;
+`;
+
+function roleToString(role: Role) {
+  switch (role) {
+    case Role.TA:
+      return "TA";
+    case Role.STUDENT:
+      return "Student";
+    case Role.PROFESSOR:
+      return "Professor";
+    default:
+      return "";
+  }
+}
+
 /*
 function arrayRotate(arr, count) {
   const adjustedCount = (arr.length + count) % arr.length;
@@ -86,11 +104,14 @@ export default function Today(): ReactElement {
               <Title>Current Office Hours</Title>
               <TodayPageCheckinButton />
             </Row>
-            {role === Role.PROFESSOR && (
-              <Row>
-                <div>You are a professor for this course</div>
-              </Row>
-            )}
+            <Row>
+              <div>
+                <i>
+                  You are a <RoleColorSpan>{roleToString(role)}</RoleColorSpan>{" "}
+                  for this course
+                </i>
+              </div>
+            </Row>
             {course?.queues?.filter((q) => q.isOpen).length === 0 ? (
               <h1 style={{ paddingTop: "100px" }}>
                 There are currently no open queues
@@ -102,7 +123,7 @@ export default function Today(): ReactElement {
                   <OpenQueueCard
                     key={q.id}
                     queue={q}
-                    isTA={role === Role.TA}
+                    isTA={role === Role.TA || role === Role.PROFESSOR}
                     updateQueueNotes={updateQueueNotes}
                   />
                 ))

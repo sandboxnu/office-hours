@@ -19,6 +19,7 @@ import {
   ListInsightsResponse,
   ListQuestionsResponse,
   RegisterCourseParams,
+  EditCourseInfoParams,
   SemesterPartial,
   TACheckinTimesResponse,
   TACheckoutResponse,
@@ -30,6 +31,8 @@ import {
   UpdateQuestionResponse,
   UpdateQueueParams,
   QueuePartial,
+  UserPartial,
+  Role,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -78,6 +81,18 @@ class APIClient {
   course = {
     get: async (courseId: number) =>
       this.req("GET", `/api/v1/courses/${courseId}`, GetCourseResponse),
+    getUserInfo: async (
+      courseId: number,
+      page: number,
+      role?: Role,
+      search?: string
+    ) =>
+      this.req(
+        "GET",
+        `/api/v1/courses/${courseId}/get_user_info/${page}/${role}`,
+        UserPartial,
+        { search }
+      ),
     updateCalendar: async (courseId: number) =>
       this.req("POST", `/api/v1/courses/${courseId}/update_calendar`),
     getCourseOverrides: async (courseId: number) =>
@@ -114,6 +129,16 @@ class APIClient {
       ),
     registerCourses: async (params: RegisterCourseParams[]): Promise<void> =>
       this.req("POST", `/api/v1/courses/register_courses`, undefined, params),
+    editCourseInfo: async (
+      courseId: number,
+      params: EditCourseInfoParams
+    ): Promise<void> =>
+      this.req(
+        "PATCH",
+        `/api/v1/courses/${courseId}/edit_course`,
+        undefined,
+        params
+      ),
     getTACheckinTimes: async (
       courseId: number,
       startDate: string,

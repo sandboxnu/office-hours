@@ -40,6 +40,7 @@ export const CourseFactory = new Factory(CourseModel)
     'icalURL',
     'https://calendar.google.com/calendar/ical/t6lu2pic7u9otrbpkuk26sl34g%40group.calendar.google.com/public/basic.ics',
   )
+  .attr('sectionGroupName', 'CS 2500')
   .attr('enabled', true)
   .assocOne('semester', SemesterFactory);
 

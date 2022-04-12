@@ -4,6 +4,8 @@ import {
   TACheckinTimesResponse,
   RegisterCourseParams,
   Role,
+  UserPartial,
+  EditCourseInfoParams,
 } from '@koh/common';
 import {
   HttpException,
@@ -14,7 +16,7 @@ import {
 import { partition } from 'lodash';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { QuestionModel } from 'question/question.entity';
-import { Between, Connection, In } from 'typeorm';
+import { Between, Brackets, Connection, getRepository, In } from 'typeorm';
 import { UserCourseModel } from '../profile/user-course.entity';
 import { SemesterModel } from 'semester/semester.entity';
 import { ProfSectionGroupsModel } from 'login/prof-section-groups.entity';
@@ -22,6 +24,7 @@ import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { LastRegistrationModel } from 'login/last-registration-model.entity';
 import { LoginCourseService } from '../login/login-course.service';
 import { CourseModel } from './course.entity';
+import { UserModel } from 'profile/user.entity';
 
 @Injectable()
 export class CourseService {
@@ -100,6 +103,7 @@ export class CourseService {
 
     return { taCheckinTimes };
   }
+
   async removeUserFromCourse(userCourse: UserCourseModel): Promise<void> {
     if (!userCourse) {
       throw new HttpException(
@@ -113,6 +117,87 @@ export class CourseService {
       console.error(err);
       throw new HttpException(
         ERROR_MESSAGES.courseController.removeCourse,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async editCourse(
+    courseId: number,
+    coursePatch: EditCourseInfoParams,
+  ): Promise<void> {
+    const course = await CourseModel.findOne(courseId);
+    if (course === null || course === undefined) {
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.courseNotFound,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    if (Object.values(coursePatch).some((x) => x === null || x === '')) {
+      throw new BadRequestException(
+        ERROR_MESSAGES.courseController.updateCourse,
+      );
+    }
+
+    for (const crn of new Set(coursePatch.crns)) {
+      const courseCrnMaps = await CourseSectionMappingModel.find({
+        crn: crn,
+      });
+
+      let courseCrnMapExists = false;
+
+      for (const courseCrnMap of courseCrnMaps) {
+        const conflictCourse = await CourseModel.findOne(courseCrnMap.courseId);
+        if (conflictCourse && conflictCourse.semesterId === course.semesterId) {
+          if (courseCrnMap.courseId !== courseId) {
+            throw new BadRequestException(
+              ERROR_MESSAGES.courseController.crnAlreadyRegistered(
+                crn,
+                courseId,
+              ),
+            );
+          } else {
+            courseCrnMapExists = true;
+            break;
+          }
+        }
+      }
+
+      if (!courseCrnMapExists) {
+        try {
+          await CourseSectionMappingModel.create({
+            crn: crn,
+            courseId: course.id,
+          }).save();
+        } catch (err) {
+          console.error(err);
+          throw new HttpException(
+            ERROR_MESSAGES.courseController.createCourseMappings,
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+        }
+      }
+    }
+
+    if (coursePatch.name) {
+      course.name = coursePatch.name;
+    }
+
+    if (coursePatch.coordinator_email) {
+      course.coordinator_email = coursePatch.coordinator_email;
+    }
+
+    if (coursePatch.icalURL) {
+      course.icalURL = coursePatch.icalURL;
+    }
+
+    try {
+      await course.save();
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.updateCourse,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -233,5 +318,57 @@ export class CourseService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  async getUserInfo(
+    courseId: number,
+    page: number,
+    pageSize: number,
+    search?: string,
+    role?: Role,
+  ): Promise<UserPartial[]> {
+    const query = await getRepository(UserModel)
+      .createQueryBuilder()
+      .leftJoin(
+        UserCourseModel,
+        'UserCourseModel',
+        '"UserModel".id = "UserCourseModel"."userId"',
+      )
+      .where('"UserCourseModel"."courseId" = :courseId', { courseId });
+
+    // check if searching for specific role
+    if (role) {
+      query.andWhere('"UserCourseModel".role = :role', { role });
+    }
+    // check if searching for specific name
+    if (search) {
+      const likeSearch = `%${search.replace(' ', '')}%`.toUpperCase();
+      query.andWhere(
+        new Brackets((q) => {
+          q.where(
+            'CONCAT(UPPER("UserModel"."firstName"), UPPER("UserModel"."lastName")) like :searchString',
+            {
+              searchString: likeSearch,
+            },
+          );
+        }),
+      );
+    }
+
+    // run query
+    const users = query
+      .select([
+        'UserModel.id',
+        'UserModel.firstName',
+        'UserModel.lastName',
+        'UserModel.photoURL',
+        'UserModel.email',
+      ])
+      .orderBy('UserModel.firstName')
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
+      .getMany();
+
+    return users;
   }
 }

@@ -1,4 +1,5 @@
 import {
+  EditCourseInfoParams,
   ERROR_MESSAGES,
   GetCourseOverridesResponse,
   GetCourseResponse,
@@ -9,6 +10,7 @@ import {
   TACheckoutResponse,
   UpdateCourseOverrideBody,
   UpdateCourseOverrideResponse,
+  UserPartial,
 } from '@koh/common';
 import {
   BadRequestException,
@@ -20,6 +22,7 @@ import {
   HttpException,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
   UnauthorizedException,
@@ -42,6 +45,7 @@ import { QueueSSEService } from '../queue/queue-sse.service';
 import { CourseService } from './course.service';
 import { HeatmapService } from './heatmap.service';
 import { IcalService } from './ical.service';
+import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 
 @Controller('courses')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -148,7 +152,33 @@ export class CourseController {
       );
     }
 
-    return course;
+    const course_response = { ...course, crns: null };
+    try {
+      course_response.crns = await CourseSectionMappingModel.find({ course });
+    } catch (err) {
+      console.error(
+        ERROR_MESSAGES.courseController.courseOfficeHourError +
+          '\n' +
+          'Error message: ' +
+          err,
+      );
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.courseCrnsError,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return course_response;
+  }
+
+  @Patch(':id/edit_course')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
+  @Roles(Role.PROFESSOR)
+  async editCourseInfo(
+    @Param('id') courseId: number,
+    @Body() coursePatch: EditCourseInfoParams,
+  ): Promise<void> {
+    await this.courseService.editCourse(courseId, coursePatch);
   }
 
   @Post(':id/ta_location/:room')
@@ -584,6 +614,29 @@ export class CourseController {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  @Get(':id/get_user_info/:page/:role?')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
+  @Roles(Role.PROFESSOR)
+  async getUserInfo(
+    @Param('id') courseId: number,
+    @Param('page') page: number,
+    @Param('role') role?: Role,
+    @Query('search') search?: string,
+  ): Promise<UserPartial[]> {
+    const pageSize = 50;
+    if (!search) {
+      search = '';
+    }
+    const users = await this.courseService.getUserInfo(
+      courseId,
+      page,
+      pageSize,
+      search,
+      role,
+    );
+    return users;
   }
 
   @Post(':id/self_enroll')

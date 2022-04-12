@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { useCourse } from "../../hooks/useCourse";
 
 export const CheckinButton = styled(Button)`
-  background: #2a9187;
+  background: #1890ff;
   border-radius: 6px;
   color: white;
   font-weight: 500;
