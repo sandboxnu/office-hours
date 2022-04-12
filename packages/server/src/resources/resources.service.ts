@@ -37,16 +37,16 @@ export class ResourcesService {
 
     const redlock = new Redlock([redisDB]);
 
-    redlock.on('clientError', function(err) {
+    redlock.on('clientError', function (err) {
       console.error('A redis error has occurred:', err);
     });
 
     try {
-      await redlock.lock(resource, ttl).then(async lock => {
+      await redlock.lock(resource, ttl).then(async (lock) => {
         console.log('updating course icals');
         await this.refetchAllCalendars();
 
-        return lock.unlock().catch(function(err) {
+        return lock.unlock().catch(function (err) {
           console.error(err);
         });
       });
@@ -59,11 +59,11 @@ export class ResourcesService {
     // delete all cal files (will also get rid of files for disabled courses)
     const regex = /calendar-\d+$/;
     fs.readdirSync(process.env.UPLOAD_LOCATION)
-      .filter(f => regex.test(f))
-      .map(f => fs.unlinkSync(path.join(process.env.UPLOAD_LOCATION, f)));
+      .filter((f) => regex.test(f))
+      .map((f) => fs.unlinkSync(path.join(process.env.UPLOAD_LOCATION, f)));
 
     const courses = await CourseModel.find({ where: { enabled: true } });
-    await Promise.all(courses.map(c => this.refetchCalendar(c)));
+    await Promise.all(courses.map((c) => this.refetchCalendar(c)));
   }
 
   /**
@@ -84,12 +84,9 @@ export class ResourcesService {
       // not doing this synchronously so the request is faster
       path.join(process.env.UPLOAD_LOCATION, this.getCalFilename(course.id)),
       request.data,
-      err => {
+      (err) => {
         if (err) {
           console.error(ERROR_MESSAGES.resourcesService.saveCalError, err);
-          throw new ServiceUnavailableException(
-            ERROR_MESSAGES.resourcesService.saveCalError,
-          );
         }
       },
     );
