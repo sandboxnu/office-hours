@@ -30,6 +30,7 @@ import {
   RequeueButton,
 } from "../Banner";
 import { useTeams } from "../../../hooks/useTeams";
+import { useHotkeys } from "react-hotkeys-hook";
 
 const PRORITY_QUEUED_MESSAGE_TEXT =
   "This student has been temporarily removed from the queue. They must select to rejoin the queue and will then be placed in the Priority Queue.";
@@ -84,6 +85,18 @@ export default function TAQueueDetailButtons({
     changeStatus(OpenQuestionStatus.Helping);
     openTeams();
   };
+  const deleteQuestion = async () => {
+    await changeStatus(
+      question.status === OpenQuestionStatus.Drafting
+        ? ClosedQuestionStatus.DeletedDraft
+        : LimboQuestionStatus.TADeleted
+    );
+    await API.questions.notify(question.id);
+  };
+
+  useHotkeys("ctrl+d", () => {
+    !isCheckedIn && deleteQuestion();
+  });
 
   if (question.status === OpenQuestionStatus.Helping) {
     return (
@@ -164,12 +177,7 @@ export default function TAQueueDetailButtons({
           okText="Yes"
           cancelText="No"
           onConfirm={async () => {
-            await changeStatus(
-              question.status === OpenQuestionStatus.Drafting
-                ? ClosedQuestionStatus.DeletedDraft
-                : LimboQuestionStatus.TADeleted
-            );
-            await API.questions.notify(question.id);
+            await deleteQuestion();
           }}
         >
           <Tooltip

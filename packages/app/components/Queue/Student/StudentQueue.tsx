@@ -26,6 +26,7 @@ import StudentBanner from "./StudentBanner";
 import CantFindModal from "./StudentCantFindModal";
 import StudentQueueCard from "./StudentQueueCard";
 import StudentRemovedFromQueueModal from "./StudentRemovedFromQueueModal";
+import { useHotkeys } from "react-hotkeys-hook";
 
 const Container = styled.div`
   flex: 1;
@@ -272,6 +273,10 @@ export default function StudentQueue({
       setIsFirstQuestion,
     ]
   );
+
+  useHotkeys("ctrl+e", () => {
+    studentQuestion && openEditModal();
+  });
 
   if (queue && questions) {
     if (!queue.isOpen) {
