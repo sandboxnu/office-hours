@@ -117,7 +117,7 @@ export class IcalService {
         iCalElement.end !== undefined,
     );
 
-    const filteredOfficeHours = officeHours.filter((event) =>
+    const filteredOfficeHours = officeHours.filter(event =>
       testRegex.test(event.summary),
     );
 
@@ -132,7 +132,7 @@ export class IcalService {
       if (rrule) {
         const duration = oh.end.getTime() - oh.start.getTime();
         const allDates = this.rruleToDates(rrule, eventTZ, oh.exdate);
-        generatedOfficeHours = allDates.map((date) => ({
+        generatedOfficeHours = allDates.map(date => ({
           title: oh.summary,
           courseId: courseId,
           room: oh.location,
@@ -151,7 +151,7 @@ export class IcalService {
       }
 
       const filteredHours: CreateOfficeHour = generatedOfficeHours.filter(
-        (date) => date.startTime >= startDate && date.startTime <= endDate,
+        date => date.startTime >= startDate && date.startTime <= endDate,
       );
       resultOfficeHours = resultOfficeHours.concat(filteredHours);
     });
@@ -208,7 +208,7 @@ export class IcalService {
 
     await OfficeHourModel.delete({ courseId: course.id });
     await OfficeHourModel.save(
-      officeHours.map((e) => {
+      officeHours.map(e => {
         e.queueId = queue.id;
         return OfficeHourModel.create(e);
       }),
@@ -236,7 +236,7 @@ export class IcalService {
       const professorLocation = poh.title;
       if (
         !professorQueues.some(
-          (q) => q.room === professorLocation && q.courseId === course.id,
+          q => q.room === professorLocation && q.courseId === course.id,
         )
       ) {
         const newProfQ = QueueModel.create({
@@ -252,7 +252,7 @@ export class IcalService {
       }
 
       const professorQueue = professorQueues.find(
-        (q) => q.room === professorLocation,
+        q => q.room === professorLocation,
       );
       processedProfessorOfficeHours.push(
         OfficeHourModel.create({
@@ -268,7 +268,7 @@ export class IcalService {
     console.log('done scraping!');*/
   }
 
-  @Cron('51 0 * * *')
+  // @Cron('51 0 * * *') turn off this job
   public async updateAllCourses(): Promise<void> {
     const resource = 'locks:icalcron';
     const ttl = 60000;

@@ -59,7 +59,7 @@ export class CourseService {
 
     const [checkinEvents, otherEvents] = partition(
       taEvents,
-      e => e.eventType === EventType.TA_CHECKED_IN,
+      (e) => e.eventType === EventType.TA_CHECKED_IN,
     );
 
     const taCheckinTimes: TACheckinPair[] = [];
@@ -134,7 +134,7 @@ export class CourseService {
       );
     }
 
-    if (Object.values(coursePatch).some(x => x === null || x === '')) {
+    if (Object.values(coursePatch).some((x) => x === null || x === '')) {
       throw new BadRequestException(
         ERROR_MESSAGES.courseController.updateCourse,
       );
@@ -216,7 +216,7 @@ export class CourseService {
     for (const courseParams of body) {
       // finds professor's section group with matching name
       const sectionGroup = profSectionGroups?.sectionGroups.find(
-        sg => sg.name === courseParams.sectionGroupName,
+        (sg) => sg.name === courseParams.sectionGroupName,
       );
       if (!sectionGroup)
         throw new BadRequestException(
@@ -270,7 +270,7 @@ export class CourseService {
 
       try {
         // create CourseSectionMappings for each crn
-        new Set(sectionGroup.crns).forEach(async crn => {
+        new Set(sectionGroup.crns).forEach(async (crn) => {
           await CourseSectionMappingModel.create({
             crn: crn,
             courseId: course.id,
@@ -344,7 +344,7 @@ export class CourseService {
     if (search) {
       const likeSearch = `%${search.replace(' ', '')}%`.toUpperCase();
       query.andWhere(
-        new Brackets(q => {
+        new Brackets((q) => {
           q.where(
             'CONCAT(UPPER("UserModel"."firstName"), UPPER("UserModel"."lastName")) like :searchString',
             {

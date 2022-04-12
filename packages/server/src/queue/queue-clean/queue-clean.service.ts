@@ -22,33 +22,33 @@ export class QueueCleanService {
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async cleanAllQueues(): Promise<void> {
-    const queuesWithOpenQuestions: QueueModel[] = await QueueModel.getRepository()
-      .createQueryBuilder('queue_model')
-      .leftJoinAndSelect('queue_model.questions', 'question')
-      .where('question.status IN (:...status)', {
-        status: [
-          ...Object.values(OpenQuestionStatus),
-          ...Object.values(LimboQuestionStatus),
-        ],
-      })
-      .getMany();
+    const queuesWithOpenQuestions: QueueModel[] =
+      await QueueModel.getRepository()
+        .createQueryBuilder('queue_model')
+        .leftJoinAndSelect('queue_model.questions', 'question')
+        .where('question.status IN (:...status)', {
+          status: [
+            ...Object.values(OpenQuestionStatus),
+            ...Object.values(LimboQuestionStatus),
+          ],
+        })
+        .getMany();
 
     // Clean 1 queue at a time
     await async.mapLimit(
       queuesWithOpenQuestions,
       1,
-      async queue => await this.cleanQueue(queue.id),
+      async (queue) => await this.cleanQueue(queue.id),
     );
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_3AM)
   public async checkoutAllStaff(): Promise<void> {
-    const queuesWithCheckedInStaff: QueueModel[] = await QueueModel.getRepository().find(
-      { relations: ['staffList'] },
-    );
+    const queuesWithCheckedInStaff: QueueModel[] =
+      await QueueModel.getRepository().find({ relations: ['staffList'] });
 
-    queuesWithCheckedInStaff.forEach(async queue => {
-      await queue.staffList.forEach(async ta => {
+    queuesWithCheckedInStaff.forEach(async (queue) => {
+      await queue.staffList.forEach(async (ta) => {
         await EventModel.create({
           time: new Date(),
           eventType: EventType.TA_CHECKED_OUT_FORCED,

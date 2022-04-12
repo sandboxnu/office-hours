@@ -116,17 +116,17 @@ export class CourseController {
     if (userCourseModel.role === Role.PROFESSOR) {
       course.queues = await async.filter(
         course.queues,
-        async q => !q.isDisabled,
+        async (q) => !q.isDisabled,
       );
     } else if (userCourseModel.role === Role.TA) {
       course.queues = await async.filter(
         course.queues,
-        async q => !q.isDisabled && !q.isProfessorQueue,
+        async (q) => !q.isDisabled && !q.isProfessorQueue,
       );
     } else if (userCourseModel.role === Role.STUDENT) {
       course.queues = await async.filter(
         course.queues,
-        async q => !q.isDisabled && (await q.checkIsOpen()),
+        async (q) => !q.isDisabled && (await q.checkIsOpen()),
       );
     }
 
@@ -136,7 +136,7 @@ export class CourseController {
     }
 
     try {
-      await async.each(course.queues, async q => {
+      await async.each(course.queues, async (q) => {
         await q.addQueueSize();
       });
     } catch (err) {
@@ -199,7 +199,7 @@ export class CourseController {
 
     if (
       queues &&
-      queues.some(q => q.staffList.some(staff => staff.id === user.id))
+      queues.some((q) => q.staffList.some((staff) => staff.id === user.id))
     ) {
       throw new UnauthorizedException(
         ERROR_MESSAGES.courseController.checkIn.cannotCheckIntoMultipleQueues,
@@ -390,9 +390,9 @@ export class CourseController {
     }
 
     // Do nothing if user not already in stafflist
-    if (!queue.staffList.find(e => e.id === user.id)) return;
+    if (!queue.staffList.find((e) => e.id === user.id)) return;
 
-    queue.staffList = queue.staffList.filter(e => e.id !== user.id);
+    queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
     if (queue.staffList.length === 0) {
       queue.allowQuestions = false;
     }
@@ -487,7 +487,7 @@ export class CourseController {
     }
 
     return {
-      data: resp.map(row => ({
+      data: resp.map((row) => ({
         id: row.id,
         role: row.role,
         name: row.user.name,

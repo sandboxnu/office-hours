@@ -6,7 +6,12 @@ const withTM = require("next-transpile-modules")([
 const withPlugins = require("next-compose-plugins");
 const withOffline = require("next-offline");
 
-const plugins = [withTM, withOffline];
+// Next doesn't allow node modules to import their own CSS, but the fullcal library does that. 
+// this is a workaround. 
+const { withGlobalCss } = require('next-global-css');
+const { patchWebpackConfig } = require('next-global-css');
+
+const plugins = [withTM, withOffline, withGlobalCss];
 
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 
@@ -25,6 +30,8 @@ const config = {
     productionBrowserSourceMaps: true,
   },
   webpack: (config, options) => {
+    patchWebpackConfig(config, options)
+
     // Webpack to replace @sentry/node imports with @sentry/browser when
     // building the browser's bundle
     if (!options.isServer) {

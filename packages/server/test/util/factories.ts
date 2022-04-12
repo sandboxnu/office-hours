@@ -35,8 +35,12 @@ export const SemesterFactory = new Factory(SemesterModel)
 
 export const CourseFactory = new Factory(CourseModel)
   .attr('name', 'CS 2500')
+  // calendar is owned by sandboxneu@gmail.com
+  .attr(
+    'icalURL',
+    'https://calendar.google.com/calendar/ical/t6lu2pic7u9otrbpkuk26sl34g%40group.calendar.google.com/public/basic.ics',
+  )
   .attr('sectionGroupName', 'CS 2500')
-  .attr('icalURL', 'http://hi.com')
   .attr('enabled', true)
   .assocOne('semester', SemesterFactory);
 

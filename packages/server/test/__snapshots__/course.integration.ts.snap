@@ -97,7 +97,7 @@ Object {
   "crns": Array [],
   "enabled": true,
   "heatmap": false,
-  "icalURL": "http://hi.com",
+  "icalURL": "https://calendar.google.com/calendar/ical/t6lu2pic7u9otrbpkuk26sl34g%40group.calendar.google.com/public/basic.ics",
   "id": 1,
   "name": "CS 2500",
   "queues": Array [],

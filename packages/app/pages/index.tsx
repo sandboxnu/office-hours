@@ -17,7 +17,7 @@ export default function Home(): ReactElement {
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: "translate(-50%, -50%)"
+          transform: "translate(-50%, -50%)",
         }}
       >
         <Spin tip="Loading..." size="large" />

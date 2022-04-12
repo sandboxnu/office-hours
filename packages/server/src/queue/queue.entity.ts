@@ -18,7 +18,6 @@ import { QuestionModel } from '../question/question.entity';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ERROR_MESSAGES } from '@koh/common';
 
-
 @Entity('queue_model')
 export class QueueModel extends BaseEntity {
   @PrimaryGeneratedColumn()

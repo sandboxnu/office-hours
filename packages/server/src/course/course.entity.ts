@@ -20,10 +20,7 @@ export class CourseModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToMany(
-    type => QueueModel,
-    q => q.course,
-  )
+  @OneToMany((type) => QueueModel, (q) => q.course)
   queues: QueueModel[];
 
   @Column('text')
@@ -39,17 +36,11 @@ export class CourseModel extends BaseEntity {
   @Exclude()
   icalURL: string;
 
-  @OneToMany(
-    type => UserCourseModel,
-    ucm => ucm.course,
-  )
+  @OneToMany((type) => UserCourseModel, (ucm) => ucm.course)
   @Exclude()
   userCourses: UserCourseModel;
 
-  @ManyToOne(
-    type => SemesterModel,
-    semester => semester.courses,
-  )
+  @ManyToOne((type) => SemesterModel, (semester) => semester.courses)
   @JoinColumn({ name: 'semesterId' })
   @Exclude()
   semester: SemesterModel;
@@ -69,17 +60,11 @@ export class CourseModel extends BaseEntity {
   @Column('text', { nullable: true })
   timezone: string;
 
-  @OneToMany(
-    type => EventModel,
-    event => event.course,
-  )
+  @OneToMany((type) => EventModel, (event) => event.course)
   @Exclude()
   events: EventModel[];
 
-  @OneToMany(
-    type => AlertModel,
-    alert => alert.course,
-  )
+  @OneToMany((type) => AlertModel, (alert) => alert.course)
   @Exclude()
   alerts: AlertModel[];
 

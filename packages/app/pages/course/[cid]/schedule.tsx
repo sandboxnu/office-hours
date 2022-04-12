@@ -10,6 +10,7 @@ import { StandardPageContainer } from "../../../components/common/PageContainer"
 
 const ScheduleContainer = styled.div`
   margin-top: 32px;
+  margin-bottom: 20px;
 `;
 
 export default function Schedule(): ReactElement {
@@ -26,7 +27,6 @@ export default function Schedule(): ReactElement {
       </Head>
       <NavBar courseId={Number(cid)} />
       <ScheduleContainer>
-        {/* TODO: Currently, iCal stuff is not showing, replace this with something else */}
         <SchedulePanel courseId={Number(cid)} />
       </ScheduleContainer>
     </StandardPageContainer>
