@@ -1,10 +1,19 @@
-import { Controller, Get, HttpService, Param, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpException,
+  HttpService,
+  HttpStatus,
+  Param,
+  Res,
+} from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Response } from 'express';
 import { Connection } from 'typeorm';
 import { ResourcesService } from './resources.service';
 import { CourseModel } from '../course/course.entity';
+import { ERROR_MESSAGES } from '@koh/common';
 
 /**
  * Controller for any public resources on the app. Anything accessed through this controller does
@@ -32,6 +41,17 @@ export class ResourcesController {
           res.sendFile(filename, { root: process.env.UPLOAD_LOCATION });
         } else {
           const course = await CourseModel.findOne(courseId);
+          if (course === null || course === undefined) {
+            console.error(
+              ERROR_MESSAGES.courseController.courseNotFound +
+                'Course ID: ' +
+                courseId,
+            );
+            throw new HttpException(
+              ERROR_MESSAGES.courseController.courseNotFound,
+              HttpStatus.NOT_FOUND,
+            );
+          }
           const cal = await this.resourcesService.refetchCalendar(course);
           res.send(cal);
         }
