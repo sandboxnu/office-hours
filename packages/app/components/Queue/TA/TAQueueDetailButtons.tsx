@@ -94,6 +94,7 @@ export default function TAQueueDetailButtons({
     await API.questions.notify(question.id);
   };
 
+  // TODO: need to test
   useHotkeys("ctrl+d", () => {
     !isCheckedIn && deleteQuestion();
   });
