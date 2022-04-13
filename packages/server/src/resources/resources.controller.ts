@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  HttpException,
   HttpService,
   HttpStatus,
   Param,
@@ -44,16 +43,30 @@ export class ResourcesController {
           if (course === null || course === undefined) {
             console.error(
               ERROR_MESSAGES.courseController.courseNotFound +
-                'Course ID: ' +
+                ' Course ID: ' +
                 courseId,
             );
-            throw new HttpException(
-              ERROR_MESSAGES.courseController.courseNotFound,
-              HttpStatus.NOT_FOUND,
-            );
+            res
+              .status(HttpStatus.NOT_FOUND)
+              .send({
+                message: ERROR_MESSAGES.courseController.courseNotFound,
+              });
+            return;
           }
-          const cal = await this.resourcesService.refetchCalendar(course);
-          res.send(cal);
+          try {
+            const cal = await this.resourcesService.refetchCalendar(course);
+            res.send(cal);
+          } catch (err) {
+            console.error(ERROR_MESSAGES.resourcesService.saveCalError, err);
+            res
+              .status(HttpStatus.INTERNAL_SERVER_ERROR)
+              .send({
+                message:
+                  ERROR_MESSAGES.resourcesService.saveCalError +
+                  ': ' +
+                  err.message,
+              });
+          }
         }
       },
     );
