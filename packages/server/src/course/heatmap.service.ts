@@ -9,6 +9,7 @@ import { QuestionModel } from '../question/question.entity';
 import { EventModel } from '../profile/event-model.entity';
 import { Command, Positional } from 'nestjs-command';
 import { inRange, mean, range } from 'lodash';
+import 'moment-timezone';
 
 function arrayRotate(arr, count) {
   count -= arr.length * Math.floor(count / arr.length);
