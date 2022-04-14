@@ -44,7 +44,6 @@ import { QueueCleanService } from '../queue/queue-clean/queue-clean.service';
 import { QueueSSEService } from '../queue/queue-sse.service';
 import { CourseService } from './course.service';
 import { HeatmapService } from './heatmap.service';
-import { IcalService } from './ical.service';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 
 @Controller('courses')
@@ -55,7 +54,6 @@ export class CourseController {
     private queueCleanService: QueueCleanService,
     private queueSSEService: QueueSSEService,
     private heatmapService: HeatmapService,
-    private icalService: IcalService,
     private courseService: CourseService,
   ) {}
 
@@ -443,28 +441,6 @@ export class CourseController {
       );
     }
     return { queueId: queue.id };
-  }
-
-  @Post(':id/update_calendar')
-  @UseGuards(JwtAuthGuard, CourseRolesGuard)
-  @Roles(Role.PROFESSOR)
-  async updateCalendar(@Param('id') courseId: number): Promise<void> {
-    const course = await CourseModel.findOne(courseId);
-    if (course === null || course === undefined) {
-      throw new HttpException(
-        ERROR_MESSAGES.courseController.courseNotFound,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    try {
-      await this.icalService.updateCalendarForCourse(course);
-    } catch (err) {
-      console.error(err);
-      throw new HttpException(
-        ERROR_MESSAGES.courseController.icalCalendarUpdate,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
   }
 
   @Get(':id/course_override')

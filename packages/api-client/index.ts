@@ -93,8 +93,6 @@ class APIClient {
         UserPartial,
         { search }
       ),
-    updateCalendar: async (courseId: number) =>
-      this.req("POST", `/api/v1/courses/${courseId}/update_calendar`),
     getCourseOverrides: async (courseId: number) =>
       this.req(
         "GET",

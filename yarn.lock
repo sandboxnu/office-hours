@@ -12552,15 +12552,6 @@ rrule@2.6.4:
   optionalDependencies:
     luxon "^1.21.3"
 
-rrule@^2.6.6:
-  version "2.6.8"
-  resolved "https://registry.yarnpkg.com/rrule/-/rrule-2.6.8.tgz#c61714f246e7676e8efa16c2baabac199f20f6db"
-  integrity sha512-cUaXuUPrz9d1wdyzHsBfT1hptKlGgABeCINFXFvulEPqh9Np9BnF3C3lrv9uO54IIr8VDb58tsSF3LhsW+4VRw==
-  dependencies:
-    tslib "^1.10.0"
-  optionalDependencies:
-    luxon "^1.21.3"
-
 rsvp@^4.8.4:
   version "4.8.5"
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-4.8.5.tgz#c8f155311d167f68f21e168df71ec5b083113734"
@@ -14778,11 +14769,6 @@ window-size@0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/window-size/-/window-size-0.1.0.tgz#5438cd2ea93b202efa3a19fe8887aee7c94f9c9d"
   integrity sha1-VDjNLqk7IC76Ohn+iIeu58lPnJ0=
-
-windows-iana@^4.2.1:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/windows-iana/-/windows-iana-4.2.1.tgz#8756656c1301e46d140c7623571e81fdae140e05"
-  integrity sha512-ewNtGiWhAh66r5lYeWwiYWgg3ERcD+KiLMOqA8UCAKnKkFieb9M0VprLt7HD37bRFZKP7CLyXksj2L5hbrtnnw==
 
 windows-release@^4.0.0:
   version "4.0.0"
