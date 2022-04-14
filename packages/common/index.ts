@@ -430,7 +430,7 @@ export class GetCourseResponse {
   @Type(() => QueuePartial)
   queues!: QueuePartial[];
 
-  heatmap!: false; // TODO: Add this back in after queue refactor is done => Heatmap | false;
+  heatmap!: Heatmap | false;
   coordinator_email!: string;
 
   @Type(() => Number)

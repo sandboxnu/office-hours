@@ -45,9 +45,6 @@ export class InsightsController {
     @Query('end') end: string,
   ): Promise<GetInsightOutputResponse> {
     // Temporarily disabling insights until we finish refactoring QueueModel
-    throw new BadRequestException(
-      ERROR_MESSAGES.insightsController.insightsDisabled,
-    );
     // Check that the insight name is valid
     const insightNames = Object.keys(INSIGHTS_MAP);
     if (!insightNames.includes(insightName)) {
@@ -89,10 +86,6 @@ export class InsightsController {
   @Get('list')
   @Roles(Role.PROFESSOR)
   async getAllInsights(): Promise<ListInsightsResponse> {
-    // Temporarily disabling insights until we finish refactoring QueueModel
-    throw new BadRequestException(
-      ERROR_MESSAGES.insightsController.insightsDisabled,
-    );
     return this.insightsService.convertToInsightsListResponse(
       Object.keys(INSIGHTS_MAP),
     );
@@ -104,10 +97,6 @@ export class InsightsController {
     @Body() body: { insightName: string },
     @User() user: UserModel,
   ): Promise<void> {
-    // Temporarily disabling insights until we finish refactoring QueueModel
-    throw new BadRequestException(
-      ERROR_MESSAGES.insightsController.insightsDisabled,
-    );
     await this.insightsService.toggleInsightOn(user, body.insightName);
     return;
   }
@@ -119,9 +108,6 @@ export class InsightsController {
     @User() user: UserModel,
   ): Promise<void> {
     // Temporarily disabling insights until we finish refactoring QueueModel
-    throw new BadRequestException(
-      ERROR_MESSAGES.insightsController.insightsDisabled,
-    );
     await this.insightsService.toggleInsightOff(user, body.insightName);
     return;
   }

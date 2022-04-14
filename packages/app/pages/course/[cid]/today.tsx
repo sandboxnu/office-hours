@@ -1,8 +1,8 @@
 import { API } from "@koh/api-client";
-import { QueuePartial, Role } from "@koh/common";
+import { Heatmap, QueuePartial, Role } from "@koh/common";
 import { Col, Row } from "antd";
-//import { chunk, mean } from "lodash";
-//import moment from "moment";
+import { chunk, mean } from "lodash";
+import moment from "moment";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
@@ -13,13 +13,13 @@ import SchedulePanel from "../../../components/Schedule/SchedulePanel";
 import OpenQueueCard, {
   OpenQueueCardSkeleton,
 } from "../../../components/Today/OpenQueueCard";
-//import PopularTimes from "../../../components/Today/PopularTimes/PopularTimes";
 import TodayPageCheckinButton from "../../../components/Today/QueueCheckInButton";
 import ReleaseNotes from "../../../components/Today/ReleaseNotes";
 import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useCourse } from "../../../hooks/useCourse";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import TodayPageCreateButton from "../../../components/Today/QueueCreateButton";
+import PopularTimes from "../../../components/Today/PopularTimes/PopularTimes";
 
 const Container = styled.div`
   margin-top: 32px;
@@ -53,7 +53,6 @@ function roleToString(role: Role) {
   }
 }
 
-/*
 function arrayRotate(arr, count) {
   const adjustedCount = (arr.length + count) % arr.length;
   return arr
@@ -66,7 +65,7 @@ const collapseHeatmap = (heatmap: Heatmap): Heatmap =>
     const filteredOfficeHours = hours.filter((v) => v !== -1);
     return filteredOfficeHours.length > 0 ? mean(filteredOfficeHours) : -1;
   });
-*/
+
 export default function Today(): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
@@ -129,17 +128,19 @@ export default function Today(): ReactElement {
                 ))
             )}
             {!course && <OpenQueueCardSkeleton />}
-            {/*This only works with UTC offsets in the form N:00, to help with other offsets, the size of the array might have to change to a size of 24*7*4 (for every 15 min interval)
-            course && course.heatmap && (
-              <PopularTimes
-                heatmap={collapseHeatmap(
-                  arrayRotate(
-                    course.heatmap,
-                    -Math.floor(moment().utcOffset() / 15)
-                  )
-                )}
-              />
-            )*/}
+            {
+              // This only works with UTC offsets in the form N:00, to help with other offsets, the size of the array might have to change to a size of 24*7*4 (for every 15 min interval)
+              course && course.heatmap && (
+                <PopularTimes
+                  heatmap={collapseHeatmap(
+                    arrayRotate(
+                      course.heatmap,
+                      -Math.floor(moment().utcOffset() / 15)
+                    )
+                  )}
+                />
+              )
+            }
             <Row>
               <TodayPageCreateButton />
             </Row>

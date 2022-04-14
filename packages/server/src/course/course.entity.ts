@@ -54,7 +54,7 @@ export class CourseModel extends BaseEntity {
   enabled: boolean; // Set to true if the given the course is using our app
 
   // The heatmap is false when there havent been any questions asked yet or there havent been any office hours
-  heatmap: false; // TODO: Change this back after queue refactor to => Heatmap | false;
+  heatmap: Heatmap | false;
 
   // The IANA string representing the timezone the course is centered around. This is important for any time based events for a course
   @Column('text', { nullable: true })

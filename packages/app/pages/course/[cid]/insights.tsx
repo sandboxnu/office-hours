@@ -1,5 +1,5 @@
-import React, { ReactElement } from "react";
-/*
+import React, { ReactElement, useState } from "react";
+
 import { API } from "@koh/api-client";
 import useSWR from "swr";
 import {
@@ -22,67 +22,53 @@ import {
   InsightDisplayInfo,
 } from "@koh/common";
 
-
 import BarChartComponent from "../../../components/Insights/components/BarChartComponent";
 import SimpleDisplayComponent from "../../../components/Insights/components/SimpleDisplayComponent";
-//import InsightsDisplayOptions from "../../../components/Insights/components/InsightsDisplayOptions";
+import InsightsDisplayOptions from "../../../components/Insights/components/InsightsDisplayOptions";
 import { SimpleTable } from "../../../components/Insights/components/SimpleTable";
-
- */
 import NavBar from "../../../components/Nav/NavBar";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 
-/*
 const InsightsRowContainer = styled.div`
   display: flex;
   direction: ltr;
   margin-left: -0.5%;
   margin-right: -0.5%;
 `;
-*/
-const TempMessage = styled.div`
-  display: flex;
-  align-items: center;
-  font-size: 50px;
-  margin: auto;
-`;
 
 export default function Insights(): ReactElement {
-  //const profile = useProfile();
+  const profile = useProfile();
   const router = useRouter();
   const { cid } = router.query;
 
-  // const [dateRange, setDateRange] = useState({ start: "", end: "" });
+  const [dateRange, setDateRange] = useState({ start: "", end: "" });
 
-  // const { data: allInsights } = useSWR(`api/v1/insights/listAll`, async () =>
-  //   API.insights.list()
-  // );
-  // const [settingsVisible, setSettingsVisible] = useState(false);
+  const { data: allInsights } = useSWR(`api/v1/insights/listAll`, async () =>
+    API.insights.list()
+  );
+  const [settingsVisible, setSettingsVisible] = useState(false);
 
-  // if (!allInsights || !profile?.insights) {
-  //   return null;
-  // }
-  // // Group users insights by size (small | default) so they can be rendered correctly
-  // const [smallInsights, defaultInsights] = profile.insights.reduce(
-  //   ([smallInsights, defaultInsights], insight) =>
-  //     allInsights[insight].size === "small"
-  //       ? [[...smallInsights, insight], defaultInsights]
-  //       : [smallInsights, [...defaultInsights, insight]],
-  //   [[], []]
-  // );
+  if (!allInsights || !profile?.insights) {
+    return null;
+  }
+  // Group users insights by size (small | default) so they can be rendered correctly
+  const [smallInsights, defaultInsights] = profile.insights.reduce(
+    ([smallInsights, defaultInsights], insight) =>
+      allInsights[insight].size === "small"
+        ? [[...smallInsights, insight], defaultInsights]
+        : [smallInsights, [...defaultInsights, insight]],
+    [[], []]
+  );
 
-  //const { RangePicker } = DatePicker;
+  const { RangePicker } = DatePicker;
 
   return (
     <>
       <StandardPageContainer>
         <NavBar courseId={Number(cid)} />
-        <TempMessage>
-          {"Insights are temporarily disabled. Sorry :("}
-        </TempMessage>
-        {/*<Row
+        <Row
           align={"middle"}
           justify={"space-between"}
           style={{ margin: "12px 0px" }}
@@ -157,19 +143,17 @@ export default function Insights(): ReactElement {
               />
             );
           })}
-        </InsightsRowContainer> */}
+        </InsightsRowContainer>
       </StandardPageContainer>
     </>
   );
 }
 
-/*
 interface RenderInsightProps {
   insightName: string;
   insightDisplay: InsightDisplayInfo;
   dateRange: DateRangeType;
 }
-
 
 function RenderInsight({
   insightName,
@@ -236,4 +220,3 @@ function RenderInsight({
 function componentDoesNotExist(componentName: never): never {
   throw new Error(`Component ${componentName} was unable to be rendered`);
 }
- */

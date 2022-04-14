@@ -84,8 +84,7 @@ export class CourseController {
     // Use raw query for performance (avoid entity instantiation and serialization)
 
     try {
-      course.heatmap = false; // Change this back after queue refactor
-      // to => await this.heatmapService.getCachedHeatmapFor(id);
+      course.heatmap = await this.heatmapService.getCachedHeatmapFor(id);
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.courseOfficeHourError +

@@ -183,16 +183,13 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     });
   }
 
-  /** 
-   * TODO: https://github.com/sandboxnu/office-hours/issues/732
   if (role === Role.PROFESSOR) {
     tabs.push({
       href: "/course/[cid]/insights",
       as: `/course/${courseId}/insights`,
       text: "Insights",
     });
-  } 
-  */
+  }
 
   return courseId ? (
     <>
