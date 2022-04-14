@@ -10,3 +10,7 @@ Most styles in here are for responsiveness on small screens.
 .fc-header-toolbar .fc-toolbar-chunk {
     margin-bottom: .5em;
 }
+
+.fc-day-today {
+    background-color: #e9f6ff !important;
+  }
