@@ -22,7 +22,6 @@ import {
   UserFactory,
 } from '../../test/util/factories';
 import { CourseModel } from '../course/course.entity';
-import { OfficeHourModel } from '../course/office-hour.entity';
 import { NonProductionGuard } from '../guards/non-production.guard';
 import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from '../queue/queue.entity';
@@ -40,7 +39,6 @@ export class SeedController {
   async deleteAll(): Promise<string> {
     await this.seedService.deleteAll(LastRegistrationModel);
     await this.seedService.deleteAll(ProfSectionGroupsModel);
-    await this.seedService.deleteAll(OfficeHourModel);
     await this.seedService.deleteAll(QuestionModel);
     await this.seedService.deleteAll(QuestionGroupModel);
     await this.seedService.deleteAll(QueueModel);

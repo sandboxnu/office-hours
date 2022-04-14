@@ -53,9 +53,6 @@ export class HeatmapService {
       return false;
     }
 
-    //const officeHours = await OfficeHourModel.find({
-    //  where: { startTime: MoreThan(recent), courseId },
-    //});
     const taEvents = await EventModel.find({
       where: { time: MoreThan(recent), courseId },
     });
