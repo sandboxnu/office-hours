@@ -1,6 +1,6 @@
 import {checkInTA, createAndLoginTA, createQueue, taOpenOnline} from "../../utils";
 
-describe('Can successfully disable queues', () => {
+describe('Can successfully delete queues', () => {
     beforeEach(() => {
         // Set the state
         createAndLoginTA();
@@ -22,7 +22,7 @@ describe('Can successfully disable queues', () => {
 
         // click disable button
         cy.get("[data-cy=\"queue-disable-button\"]")
-            .contains("Disable Queue")
+            .contains("Delete Queue")
             .click();
 
         // modal shenanigans

@@ -332,7 +332,7 @@ describe('Queue Integration', () => {
       expect(postQueue.isDisabled).toBeTruthy();
     });
 
-    it('doesnt allow students to disable queue', async () => {
+    it('doesnt allow students to delete queue', async () => {
       const course = await CourseFactory.create();
       const stu = await StudentCourseFactory.create({
         course: course,

@@ -193,7 +193,7 @@ export function QueueInfoColumn({
           data-cy="queue-disable-button"
           disabled={queue?.isDisabled}
         >
-          {queue?.isDisabled ? `Queue disabled` : `Disable Queue`}
+          {queue?.isDisabled ? `Queue deleted` : `Delete Queue`}
         </DisableQueueButton>
       )}
     </InfoColumnContainer>
