@@ -11,6 +11,7 @@ import { OpenQuestionStatus, Question } from "@koh/common";
 import { Button, Col, Popconfirm, Tooltip } from "antd";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
+import { useQueue } from "../../../hooks/useQueue";
 import { useStudentQuestion } from "../../../hooks/useStudentQuestion";
 import { toOrdinal } from "../../../utils/ordinal";
 import Banner, { BannerButton, BannerDangerButton } from "../Banner";
@@ -53,6 +54,7 @@ export default function StudentBanner({
   leaveQueue,
 }: StudentBannerProps): ReactElement {
   const { studentQuestion, studentQuestionIndex } = useStudentQuestion(queueId);
+  const isQueueOnline = useQueue(queueId).queue?.room.startsWith("Online");
 
   switch (studentQuestion?.status) {
     case "Drafting":
@@ -124,7 +126,7 @@ export default function StudentBanner({
           buttons={
             <>
               <LeaveQueueButton leaveQueue={leaveQueue} />
-              {studentQuestion.isOnline && (
+              {isQueueOnline && (
                 <Tooltip title="Open Teams DM">
                   <BannerButton
                     icon={<TeamOutlined />}

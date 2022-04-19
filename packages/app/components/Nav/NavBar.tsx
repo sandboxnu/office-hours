@@ -127,9 +127,10 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
   const { course } = useCourse(courseId);
   const role = useRoleInCourse(courseId);
 
-  const queueId = course?.queues?.find(
-    (queue) => queue.isOpen && queue.allowQuestions
-  )?.id;
+  const openQueues = course?.queues?.filter(
+    (queue) =>
+      queue.isOpen && (role === Role.TA ? !queue.isProfessorQueue : true)
+  );
 
   const showDrawer = () => {
     setVisible(true);
@@ -174,13 +175,14 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     });
   }
 
-  if (queueId) {
+  if (openQueues?.length > 0) {
     tabs.push({
-      href: "/course/[cid]/queue/[qid]",
-      as: `/course/${courseId}/queue/${queueId}`,
       text: "Queue",
+      queues: openQueues,
+      courseId: courseId,
     });
   }
+
   if (role === Role.PROFESSOR) {
     tabs.push({
       href: "/course/[cid]/insights",

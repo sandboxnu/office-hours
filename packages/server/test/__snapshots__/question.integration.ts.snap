@@ -26,7 +26,6 @@ Object {
   "groupable": true,
   "helpedAt": null,
   "id": 1,
-  "isOnline": null,
   "location": null,
   "questionType": "Other",
   "status": "Queued",

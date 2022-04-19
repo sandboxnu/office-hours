@@ -1,8 +1,10 @@
 {
   "projectId": "8crkwu",
   "baseUrl": "http://localhost:3000",
+  "numTestsKeptInMemory": 1,
   "defaultCommandTimeout": 10000,
   "experimentalStudio": true,
+  "numTestsKeptInMemory": 1,
   "retries": {
     "runMode": 2
   },

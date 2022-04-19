@@ -64,14 +64,12 @@
     "redlock": "^4.2.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rrule": "^2.6.6",
     "rxjs": "^6.5.4",
     "sharp": "^0.27.0",
     "source-map-support": "^0.5.19",
     "twilio": "^3.47.0",
     "typeorm": "^0.2.25",
-    "web-push": "^3.4.4",
-    "windows-iana": "^4.2.1"
+    "web-push": "^3.4.4"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.5.0",

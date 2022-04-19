@@ -1,15 +1,15 @@
 import {
   createAndLoginStudent,
   createQueue,
-  createQuestion,
+  createQuestion, createAndLoginTA, checkInTA,
 } from "../../utils";
 
 describe("Student can delete their question", () => {
   beforeEach(() => {
-    createAndLoginStudent();
-    createQueue({
-      courseId: "student.course.id",
-    });
+    createAndLoginTA();
+    createQueue({courseId: "ta.course.id"});
+    checkInTA();
+    createAndLoginStudent({courseId: "ta.course.id"});
     createQuestion({
       studentId: "student.user.id",
       queueId: "queue.id",
