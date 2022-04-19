@@ -1,4 +1,4 @@
-import { OpenQuestionStatus } from '@koh/common';
+import { OpenQuestionStatus, Role } from '@koh/common';
 import { QuestionModel } from 'question/question.entity';
 import { QueueModule } from '../src/queue/queue.module';
 import {
@@ -11,6 +11,7 @@ import {
   UserFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
+import { QueueModel } from '../src/queue/queue.entity';
 
 async function delay(ms) {
   // return await for better async stack trace support in case of errors.
@@ -23,10 +24,14 @@ describe('Queue Integration', () => {
   describe('GET /queues/:id', () => {
     it('get a queue', async () => {
       const course = await CourseFactory.create();
+      const ta = await UserFactory.create();
+      await TACourseFactory.create({ course: course, user: ta });
+
       const queue = await QueueFactory.create({
         courseId: course.id,
         course: course,
         questions: [await QuestionFactory.create()],
+        staffList: [ta],
       });
       const userCourse = await UserCourseFactory.create({
         user: await UserFactory.create(),
@@ -43,14 +48,52 @@ describe('Queue Integration', () => {
         room: 'Online',
         staffList: expect.any(Array),
         isOpen: true,
-        startTime: expect.any(String),
-        endTime: expect.any(String),
+      });
+    });
+
+    it('is not open when there are no TAs present', async () => {
+      const queue = await QueueFactory.create({});
+      const userCourse = await UserCourseFactory.create({
+        user: await UserFactory.create(),
+        course: queue.course,
+      });
+
+      const res = await supertest({ userId: userCourse.user.id })
+        .get(`/queues/${queue.id}`)
+        .expect(200);
+      expect(res.body).toMatchObject({
+        isOpen: false,
+      });
+    });
+
+    it('is open when there are TAs present', async () => {
+      const course = await CourseFactory.create();
+      const ta = await UserFactory.create();
+      await TACourseFactory.create({ course: course, user: ta });
+      const queue = await QueueFactory.create({
+        course: course,
+        staffList: [ta],
+      });
+
+      const userCourse = await UserCourseFactory.create({
+        user: await UserFactory.create(),
+        course: queue.course,
+      });
+
+      const res = await supertest({ userId: userCourse.user.id })
+        .get(`/queues/${queue.id}`)
+        .expect(200);
+      expect(res.body).toMatchObject({
+        isOpen: true,
       });
     });
 
     it('returns 404 on non-existent course', async () => {
       const course = await CourseFactory.create();
-      const queue = await QueueFactory.create({ course });
+      const ta = await UserFactory.create();
+      await TACourseFactory.create({ course: course, user: ta });
+
+      const queue = await QueueFactory.create({ course, staffList: [ta] });
       const user = await UserFactory.create();
 
       await supertest({ userId: user.id })
@@ -113,6 +156,7 @@ describe('Queue Integration', () => {
       const res = await supertest({ userId: userCourse.user.id })
         .get(`/queues/${queue.id}/questions`)
         .expect(200);
+
       expect(res.body).toMatchSnapshot();
       expect(res.body.queue[0].creator).not.toHaveProperty('firstName');
       expect(res.body.queue[0].creator).not.toHaveProperty('lastName');
@@ -214,7 +258,6 @@ describe('Queue Integration', () => {
     const cleanableQueue = async () => {
       const queue = await QueueFactory.create({
         room: 'The Alamo',
-        officeHours: [],
       });
       await QuestionFactory.create({ queue: queue });
       return queue;
@@ -265,6 +308,92 @@ describe('Queue Integration', () => {
           Object.values(OpenQuestionStatus),
         ).getCount(),
       ).toEqual(1);
+    });
+  });
+
+  describe('DELETE /queues/:id', () => {
+    it('disables queues on hit', async () => {
+      const course = await CourseFactory.create();
+      const ta = await TACourseFactory.create({
+        course: course,
+        user: await UserFactory.create(),
+      });
+      const queue = await QueueFactory.create({
+        course: course,
+      });
+
+      expect(queue.isDisabled).toBeFalsy();
+
+      await supertest({ userId: ta.userId })
+        .delete(`/queues/${queue.id}`)
+        .expect(200);
+
+      const postQueue = await QueueModel.findOne({ id: queue.id });
+      expect(postQueue.isDisabled).toBeTruthy();
+    });
+
+    it('doesnt allow students to delete queue', async () => {
+      const course = await CourseFactory.create();
+      const stu = await StudentCourseFactory.create({
+        course: course,
+        user: await UserFactory.create(),
+      });
+      const queue = await QueueFactory.create({
+        course: course,
+      });
+
+      expect(queue.isDisabled).toBeFalsy();
+
+      await supertest({ userId: stu.userId })
+        .delete(`/queues/${queue.id}`)
+        .expect(401);
+
+      const postQueue = await QueueModel.findOne({ id: queue.id });
+      expect(postQueue.isDisabled).toBeFalsy();
+    });
+
+    it('doesnt allow TAs to disable prof queues', async () => {
+      const course = await CourseFactory.create();
+      const ta = await TACourseFactory.create({
+        course: course,
+        user: await UserFactory.create(),
+      });
+      const queue = await QueueFactory.create({
+        course: course,
+        isProfessorQueue: true,
+      });
+
+      expect(queue.isDisabled).toBeFalsy();
+
+      await supertest({ userId: ta.userId })
+        .delete(`/queues/${queue.id}`)
+        .expect(401);
+    });
+
+    it('allows professors to disable prof queues', async () => {
+      const course = await CourseFactory.create();
+      const prof = await UserCourseFactory.create({
+        course: course,
+        user: await UserFactory.create(),
+        role: Role.PROFESSOR,
+      });
+
+      const queue = await QueueFactory.create({ course });
+
+      expect(queue.isDisabled).toBeFalsy();
+
+      await supertest({ userId: prof.userId })
+        .delete(`/queues/${queue.id}`)
+        .expect(200);
+
+      const postQueue = await QueueModel.findOne({ id: queue.id });
+      expect(postQueue.isDisabled).toBeTruthy();
+    });
+    it('returns 404 on nonexistent queues', async () => {
+      const stu = await StudentCourseFactory.create({
+        user: await UserFactory.create(),
+      });
+      await supertest({ userId: stu.userId }).delete(`/queues/998`).expect(404);
     });
   });
 });

@@ -39,7 +39,7 @@ export const loginUser = (identifier) => {
   cy.get(`@${identifier}`).then((userCourse) => {
     cy.visit(`/api/v1/login/dev?userId=${userCourse.user.id}`);
     // wait for the defaultCourseRedirect
-    cy.url().should("include", "today");
+    cy.url({ timeout: 30000 }).should("include", "today");
   });
 };
 
@@ -204,6 +204,8 @@ export const checkInTA = ({ ta = "ta", queue = "queue" } = {}) => {
   });
 };
 
+
+
 /**
  * Helps the question with the given id. Keeps the question selected after helping them.
  * @param {number} id - the question id that you want to help.
@@ -214,3 +216,26 @@ export const helpQuestionWithID = (id) => {
     .click();
   cy.get('[data-cy="help-student"]').click();
 };
+
+/**
+ * Opens up the modal and checks into the default option (usually online if created)
+ */
+export const taOpenOnline = () => {
+
+    cy.get("[data-cy='check-in-modal-button']").click();
+    cy.wait(500);
+    cy.get("[data-cy=\"select-existing-queue\"]").click();
+    cy.get('[data-cy="select-queue-Online"]').click();
+
+    cy.get("[id^=rcDialogTitle]")
+        .contains("Check into an existing queue")
+        .parent()
+        .parent()
+        .should('have.class', 'ant-modal-content')
+        .within(($content) => {
+            cy.get("span").contains("Check In")
+                .parent()
+                .should('have.class', 'ant-btn-primary')
+                .click();
+        });
+}

@@ -13,12 +13,13 @@ import SchedulePanel from "../../../components/Schedule/SchedulePanel";
 import OpenQueueCard, {
   OpenQueueCardSkeleton,
 } from "../../../components/Today/OpenQueueCard";
-import PopularTimes from "../../../components/Today/PopularTimes/PopularTimes";
-import TodayPageCheckinButton from "../../../components/Today/ProfessorCheckinButton";
+import TodayPageCheckinButton from "../../../components/Today/QueueCheckInButton";
 import ReleaseNotes from "../../../components/Today/ReleaseNotes";
 import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useCourse } from "../../../hooks/useCourse";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
+import TodayPageCreateButton from "../../../components/Today/QueueCreateButton";
+import PopularTimes from "../../../components/Today/PopularTimes/PopularTimes";
 
 const Container = styled.div`
   margin-top: 32px;
@@ -29,6 +30,28 @@ const Title = styled.div`
   font-size: 30px;
   color: #212934;
 `;
+
+const TodayCol = styled(Col)`
+  margin-bottom: 15px;
+`;
+
+const RoleColorSpan = styled.span`
+  color: #3684c6;
+  font-weight: bold;
+`;
+
+function roleToString(role: Role) {
+  switch (role) {
+    case Role.TA:
+      return "TA";
+    case Role.STUDENT:
+      return "Student";
+    case Role.PROFESSOR:
+      return "Professor";
+    default:
+      return "";
+  }
+}
 
 function arrayRotate(arr, count) {
   const adjustedCount = (arr.length + count) % arr.length;
@@ -75,46 +98,56 @@ export default function Today(): ReactElement {
       <NavBar courseId={Number(cid)} />
       <Container>
         <Row gutter={64}>
-          <Col md={12} xs={24}>
+          <TodayCol md={12} xs={24}>
             <Row justify="space-between">
               <Title>Current Office Hours</Title>
               <TodayPageCheckinButton />
             </Row>
-            {role === Role.PROFESSOR && (
-              <Row>
-                <div>You are a professor for this course</div>
-              </Row>
-            )}
-            {course?.queues?.length === 0 ? (
+            <Row>
+              <div>
+                <i>
+                  You are a <RoleColorSpan>{roleToString(role)}</RoleColorSpan>{" "}
+                  for this course
+                </i>
+              </div>
+            </Row>
+            {course?.queues?.filter((q) => q.isOpen).length === 0 ? (
               <h1 style={{ paddingTop: "100px" }}>
-                There are currently no scheduled office hours
+                There are currently no open queues
               </h1>
             ) : (
-              course?.queues?.map((q) => (
-                <OpenQueueCard
-                  key={q.id}
-                  queue={q}
-                  isTA={role === Role.TA}
-                  updateQueueNotes={updateQueueNotes}
-                />
-              ))
+              course?.queues
+                ?.filter((q) => q.isOpen)
+                .map((q) => (
+                  <OpenQueueCard
+                    key={q.id}
+                    queue={q}
+                    isTA={role === Role.TA || role === Role.PROFESSOR}
+                    updateQueueNotes={updateQueueNotes}
+                  />
+                ))
             )}
             {!course && <OpenQueueCardSkeleton />}
-            {/*This only works with UTC offsets in the form N:00, to help with other offsets, the size of the array might have to change to a size of 24*7*4 (for every 15 min interval) */}
-            {course && course.heatmap && (
-              <PopularTimes
-                heatmap={collapseHeatmap(
-                  arrayRotate(
-                    course.heatmap,
-                    -Math.floor(moment().utcOffset() / 15)
-                  )
-                )}
-              />
-            )}
-          </Col>
-          <Col md={12} sm={24}>
-            <SchedulePanel courseId={Number(cid)} defaultView="day" />
-          </Col>
+            {
+              // This only works with UTC offsets in the form N:00, to help with other offsets, the size of the array might have to change to a size of 24*7*4 (for every 15 min interval)
+              course && course.heatmap && (
+                <PopularTimes
+                  heatmap={collapseHeatmap(
+                    arrayRotate(
+                      course.heatmap,
+                      -Math.floor(moment().utcOffset() / 15)
+                    )
+                  )}
+                />
+              )
+            }
+            <Row>
+              <TodayPageCreateButton />
+            </Row>
+          </TodayCol>
+          <TodayCol md={12} sm={24}>
+            <SchedulePanel courseId={Number(cid)} defaultView="timeGridDay" />
+          </TodayCol>
         </Row>
       </Container>
     </StandardPageContainer>

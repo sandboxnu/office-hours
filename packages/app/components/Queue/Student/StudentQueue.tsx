@@ -180,7 +180,6 @@ export default function StudentQueue({
       text: studentQuestion.text,
       questionType: studentQuestion?.questionType,
       queueId: qid,
-      isOnline: studentQuestion?.isOnline,
       location: studentQuestion?.location,
       force: true,
       groupable: false,
@@ -293,6 +292,7 @@ export default function StudentQueue({
           />
           <QueueInfoColumn
             queueId={qid}
+            isStaff={false}
             buttons={
               !studentQuestion && (
                 <Popconfirm
@@ -312,7 +312,7 @@ export default function StudentQueue({
                 >
                   <JoinButton
                     type="primary"
-                    disabled={!queue?.allowQuestions}
+                    disabled={!queue?.allowQuestions || queue?.isDisabled}
                     data-cy="join-queue-button"
                     onClick={async () =>
                       setShowJoinPopconfirm(!(await joinQueueOpenModal(false)))

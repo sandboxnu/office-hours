@@ -29,6 +29,7 @@ import {
   FinishHelpingButton,
   RequeueButton,
 } from "../Banner";
+import { useTeams } from "../../../hooks/useTeams";
 
 const PRORITY_QUEUED_MESSAGE_TEXT =
   "This student has been temporarily removed from the queue. They must select to rejoin the queue and will then be placed in the Priority Queue.";
@@ -56,6 +57,8 @@ export default function TAQueueDetailButtons({
   );
   const { isCheckedIn, isHelping } = useTAInQueueInfo(queueId);
 
+  const openTeams = useTeams(queueId, question.creator.email, defaultMessage);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const sendRephraseAlert = async () => {
     const payload: RephraseQuestionPayload = {
@@ -79,11 +82,7 @@ export default function TAQueueDetailButtons({
 
   const helpStudent = () => {
     changeStatus(OpenQuestionStatus.Helping);
-    if (question.isOnline) {
-      window.open(
-        `https://teams.microsoft.com/l/chat/0/0?users=${question.creator.email}&message=${defaultMessage}`
-      );
-    }
+    openTeams();
   };
 
   if (question.status === OpenQuestionStatus.Helping) {

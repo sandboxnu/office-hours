@@ -44,6 +44,7 @@ export class InsightsController {
     @Query('start') start: string,
     @Query('end') end: string,
   ): Promise<GetInsightOutputResponse> {
+    // Temporarily disabling insights until we finish refactoring QueueModel
     // Check that the insight name is valid
     const insightNames = Object.keys(INSIGHTS_MAP);
     if (!insightNames.includes(insightName)) {
@@ -106,6 +107,7 @@ export class InsightsController {
     @Body() body: { insightName: string },
     @User() user: UserModel,
   ): Promise<void> {
+    // Temporarily disabling insights until we finish refactoring QueueModel
     await this.insightsService.toggleInsightOff(user, body.insightName);
     return;
   }
