@@ -95,7 +95,7 @@ export default function TAQueueDetailButtons({
   };
 
   // TODO: need to test
-  useHotkeys("ctrl+d", () => {
+  useHotkeys("shift+d", () => {
     !isCheckedIn && deleteQuestion();
   });
 

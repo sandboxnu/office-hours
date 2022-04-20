@@ -275,7 +275,7 @@ export default function StudentQueue({
   );
 
   // TODO: need to test
-  useHotkeys("ctrl+e", () => {
+  useHotkeys("shift+e", () => {
     studentQuestion && openEditModal();
   });
 
