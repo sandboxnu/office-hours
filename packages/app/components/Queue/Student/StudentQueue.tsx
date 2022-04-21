@@ -274,9 +274,12 @@ export default function StudentQueue({
     ]
   );
 
-  // TODO: need to test
   useHotkeys("shift+e", () => {
-    studentQuestion && openEditModal();
+    console.log("hit e");
+    if (studentQuestion) {
+      // won't fire off unless i insert a console log here lmao
+      openEditModal();
+    }
   });
 
   if (queue && questions) {

@@ -94,9 +94,10 @@ export default function TAQueueDetailButtons({
     await API.questions.notify(question.id);
   };
 
-  // TODO: need to test
   useHotkeys("shift+d", () => {
-    !isCheckedIn && deleteQuestion();
+    if (isCheckedIn) {
+      deleteQuestion();
+    }
   });
 
   if (question.status === OpenQuestionStatus.Helping) {
