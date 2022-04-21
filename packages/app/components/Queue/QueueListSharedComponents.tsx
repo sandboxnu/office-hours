@@ -6,7 +6,7 @@ import {
   NotificationOutlined,
   StopOutlined,
 } from "@ant-design/icons";
-import { Button, message, Modal, Tooltip } from "antd";
+import { Button, message, Modal, Tag, Tooltip } from "antd";
 import { ButtonProps } from "antd/lib/button";
 import Linkify from "react-linkify";
 import moment from "moment";
@@ -162,6 +162,12 @@ export function QueueInfoColumn({
           <QueuePropertyText className={"hide-in-percy"}>
             {formatQueueTime(queue)}
           </QueuePropertyText>
+        </QueuePropertyRow>
+      )}
+
+      {queue?.isProfessorQueue && (
+        <QueuePropertyRow>
+          <Tag>Professor Queue</Tag>
         </QueuePropertyRow>
       )}
       {queue?.notes && (

@@ -160,6 +160,11 @@ const OpenQueueCard = ({
         </span>
       }
     >
+      {queue?.isProfessorQueue && (
+        <QueueInfoRow>
+          <Tag>Professor Queue</Tag>
+        </QueueInfoRow>
+      )}
       <QueueInfoRow>
         <HeaderDiv>
           <QuestionNumberSpan>{queue.staffList.length}</QuestionNumberSpan>{" "}
