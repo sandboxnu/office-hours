@@ -149,11 +149,7 @@ const OpenQueueCard = ({
         borderRadius: "6px 6px 0 0",
       }}
       className={"open-queue-card"}
-      title={
-        <span>
-          {queue.room} <i>{queue.isProfessorQueue ? `(Professor)` : ``}</i>{" "}
-        </span>
-      }
+      title={<span>{queue.room} </span>}
       extra={
         <span>
           <QueueSizeSpan>{queue.queueSize}</QueueSizeSpan> in queue
