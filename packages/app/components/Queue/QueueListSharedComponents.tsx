@@ -37,7 +37,6 @@ export const NotesText = styled.div`
 `;
 
 // New queue styled components start here
-
 const InfoColumnContainer = styled.div`
   flex-shrink: 0;
   padding-bottom: 30px;
@@ -99,13 +98,27 @@ const QueueRoomGroup = styled.div`
 const DisableQueueButton = styled(QueueInfoColumnButton)`
   color: white;
   background: #da3236;
-  bottom: 0;
-  position: absolute;
   &:hover,
   &:focus {
-    color: white;
-    background: #f76c6c;
+    color: #da3236;
+    background: #fff;
+    border-color: #da3236;
   }
+`;
+
+const ClearQueueButton = styled(QueueInfoColumnButton)`
+  background-color: #1890ff;
+  color: white;
+`;
+
+const QueueManagementBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  color: white;
+  width: 100%;
+  height: 100%;
+  bottom: 0;
 `;
 
 interface QueueInfoColumnProps {
@@ -123,9 +136,15 @@ export function QueueInfoColumn({
 
   const disableQueue = async () => {
     await API.queues.disable(queueId);
-    await mutateQueue(); // cope
+    await mutateQueue();
     message.success("Successfully disabled queue: " + queue.room);
     await Router.push("/");
+  };
+
+  const clearQueue = async () => {
+    await API.queues.clean(queueId);
+    await mutateQueue();
+    message.success("Successfully cleaned queue: " + queue.room);
   };
 
   const confirmDisable = () => {
@@ -188,13 +207,16 @@ export function QueueInfoColumn({
       <StaffH2>Staff</StaffH2>
       <TAStatuses queueId={queueId} />
       {isStaff && (
-        <DisableQueueButton
-          onClick={confirmDisable}
-          data-cy="queue-disable-button"
-          disabled={queue?.isDisabled}
-        >
-          {queue?.isDisabled ? `Queue deleted` : `Delete Queue`}
-        </DisableQueueButton>
+        <QueueManagementBox>
+          <ClearQueueButton onClick={clearQueue}>Clear Queue</ClearQueueButton>
+          <DisableQueueButton
+            onClick={confirmDisable}
+            data-cy="queue-disable-button"
+            disabled={queue?.isDisabled}
+          >
+            {queue?.isDisabled ? `Queue deleted` : `Delete Queue`}
+          </DisableQueueButton>
+        </QueueManagementBox>
       )}
     </InfoColumnContainer>
   );
