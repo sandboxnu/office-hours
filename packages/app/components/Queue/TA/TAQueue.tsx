@@ -3,7 +3,7 @@ import { ERROR_MESSAGES, OpenQuestionStatus } from "@koh/common";
 import { notification } from "antd";
 import { QuestionStatusKeys, Role } from "@koh/common";
 import { Tooltip } from "antd";
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useCourse } from "../../../hooks/useCourse";
 import { useProfile } from "../../../hooks/useProfile";
@@ -107,9 +107,17 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
     questions?.queue?.find(
       (question) => question.status === QuestionStatusKeys.Queued
     );
+
+  const helpNextRef = useRef({ isCheckedIn, isHelping, nextQuestion });
+  useEffect(() => {
+    helpNextRef.current = { isCheckedIn, isHelping, nextQuestion };
+  }, [isCheckedIn, isHelping, nextQuestion]);
+
   const defaultMessage = useDefaultMessage();
   const openTeams = useTeams(qid, nextQuestion?.creator.email, defaultMessage);
 
+  // helpNextButton works normally and both nextQuestion and nextQuestion in ref are defined
+  // using hotkeys will have nextQuestion undefined and nextQuestion in ref defined
   const helpNext = async () => {
     await onHelpQuestion(nextQuestion.id);
     mutateQuestions();
@@ -117,7 +125,13 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
   };
 
   useHotkeys("shift+h", () => {
-    if (isCheckedIn && nextQuestion && !isHelping) {
+    const hotkeyRef = helpNextRef.current;
+
+    if (
+      hotkeyRef.isCheckedIn &&
+      hotkeyRef.nextQuestion &&
+      !hotkeyRef.isHelping
+    ) {
       // won't fire off unless i insert a console log here lmao
       helpNext();
     }
