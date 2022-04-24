@@ -110,15 +110,13 @@ export class CourseController {
       );
     }
 
-    if (userCourseModel.role === Role.PROFESSOR) {
+    if (
+      userCourseModel.role === Role.PROFESSOR ||
+      userCourseModel.role === Role.TA
+    ) {
       course.queues = await async.filter(
         course.queues,
         async (q) => !q.isDisabled,
-      );
-    } else if (userCourseModel.role === Role.TA) {
-      course.queues = await async.filter(
-        course.queues,
-        async (q) => !q.isDisabled && !q.isProfessorQueue,
       );
     } else if (userCourseModel.role === Role.STUDENT) {
       course.queues = await async.filter(

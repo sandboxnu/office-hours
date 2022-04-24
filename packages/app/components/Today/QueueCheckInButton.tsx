@@ -17,6 +17,9 @@ export default function TodayPageCheckinButton(): ReactElement {
   const { course, mutateCourse } = useCourse(Number(cid));
   const role = useRoleInCourse(Number(cid));
   const { Option } = Select;
+  const availableQueues = course?.queues.filter((q) =>
+    role === Role.TA ? !q.isProfessorQueue : true
+  );
   const queueCheckedIn = course?.queues.find((queue) =>
     queue.staffList.find((staff) => staff.id === profile?.id)
   );
@@ -43,7 +46,7 @@ export default function TodayPageCheckinButton(): ReactElement {
               // ok only enabled on nonnegative values
               redirectID = await API.taStatus.checkIn(
                 Number(cid),
-                course?.queues[queueToCheckInto].room
+                availableQueues[queueToCheckInto].room
               );
               mutateCourse();
               router.push(
@@ -69,15 +72,13 @@ export default function TodayPageCheckinButton(): ReactElement {
               );
             }}
           >
-            {course?.queues
-              .filter((q) => (role === Role.TA ? !q.isProfessorQueue : true))
-              .map((q, i) => (
-                <Option
-                  key={i}
-                  value={i}
-                  data-cy={`select-queue-${q.room}`}
-                >{`${q.room}`}</Option>
-              ))}
+            {availableQueues.map((q, i) => (
+              <Option
+                key={i}
+                value={i}
+                data-cy={`select-queue-${q.room}`}
+              >{`${q.room}`}</Option>
+            ))}
           </Select>
         </Modal>
       )}
