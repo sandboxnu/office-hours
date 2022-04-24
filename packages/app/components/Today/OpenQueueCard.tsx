@@ -144,7 +144,7 @@ const OpenQueueCard = ({
   return (
     <PaddedCard
       headStyle={{
-        background: "#25426C",
+        background: queue.isOpen ? "#25426C" : "#25426cbf",
         color: "#FFFFFF",
         borderRadius: "6px 6px 0 0",
       }}
@@ -167,7 +167,7 @@ const OpenQueueCard = ({
         </HeaderDiv>
         <RightQueueInfoRow>
           <Space direction="vertical" align="end" size="middle">
-            {!queue.allowQuestions && (
+            {queue.isOpen && !queue.allowQuestions && (
               <Tooltip title="This queue is no longer accepting questions">
                 <Tag
                   icon={<StopOutlined />}
