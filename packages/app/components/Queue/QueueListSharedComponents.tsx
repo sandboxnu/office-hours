@@ -1,5 +1,4 @@
 import {
-  ClockCircleOutlined,
   CloudSyncOutlined,
   ExclamationCircleOutlined,
   FrownOutlined,
@@ -13,7 +12,6 @@ import moment from "moment";
 import React, { ReactElement, ReactNode, useState } from "react";
 import styled from "styled-components";
 import { useQueue } from "../../hooks/useQueue";
-import { formatQueueTime } from "../../utils/TimeUtil";
 import { RenderEvery } from "../RenderEvery";
 import { TAStatuses } from "./TAStatuses";
 import { API } from "@koh/api-client";
@@ -93,6 +91,9 @@ const QueueRoomGroup = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+`;
+
+const QueueInfo = styled.div`
   margin-bottom: 24px;
 `;
 
@@ -142,34 +143,27 @@ export function QueueInfoColumn({
 
   return (
     <InfoColumnContainer>
-      <QueueRoomGroup>
-        <QueueTitle data-cy="room-title">
-          {queue?.room} {queue?.isDisabled && <b>(disabled)</b>}
-        </QueueTitle>
-        {!queue.allowQuestions && (
-          <Tooltip title="This queue is no longer accepting questions">
-            <StopOutlined
-              data-cy="stopQuestions"
-              style={{ color: "red", fontSize: "24px", marginLeft: "8px" }}
-            />
-          </Tooltip>
+      <QueueInfo>
+        <QueueRoomGroup>
+          <QueueTitle data-cy="room-title">
+            {queue?.room} {queue?.isDisabled && <b>(disabled)</b>}
+          </QueueTitle>
+          {!queue.allowQuestions && (
+            <Tooltip title="This queue is no longer accepting questions">
+              <StopOutlined
+                data-cy="stopQuestions"
+                style={{ color: "red", fontSize: "24px", marginLeft: "8px" }}
+              />
+            </Tooltip>
+          )}
+        </QueueRoomGroup>
+
+        {queue?.isProfessorQueue && (
+          <QueuePropertyRow>
+            <Tag color="blue">Professor Queue</Tag>
+          </QueuePropertyRow>
         )}
-      </QueueRoomGroup>
-
-      {queue.startTime && queue.endTime && (
-        <QueuePropertyRow>
-          <ClockCircleOutlined />
-          <QueuePropertyText className={"hide-in-percy"}>
-            {formatQueueTime(queue)}
-          </QueuePropertyText>
-        </QueuePropertyRow>
-      )}
-
-      {queue?.isProfessorQueue && (
-        <QueuePropertyRow>
-          <Tag>Professor Queue</Tag>
-        </QueuePropertyRow>
-      )}
+      </QueueInfo>
       {queue?.notes && (
         <QueuePropertyRow>
           <NotificationOutlined />
