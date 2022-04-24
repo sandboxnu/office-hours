@@ -715,9 +715,6 @@ export class RegisterCourseParams {
 }
 
 export class EditCourseInfoParams {
-  @IsNumber()
-  courseId!: number;
-
   @IsString()
   @IsOptional()
   name?: string;

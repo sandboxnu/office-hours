@@ -3,16 +3,8 @@ import { API } from "@koh/api-client";
 import { Form, Input, Tag, Button, message } from "antd";
 import React, { ReactElement, useState } from "react";
 import { useCourse } from "../../hooks/useCourse";
-import { EditCourseInfoParams } from "@koh/common";
 
 type CourseOverrideSettingsProps = { courseId: number };
-
-// const OverrideContents = styled.div`
-//   width: 90%;
-//   margin-left: auto;
-//   margin-right: auto;
-//   padding-top: 50px;
-// `;
 
 export default function CourseInfo({
   courseId,
@@ -20,34 +12,20 @@ export default function CourseInfo({
   const [form] = Form.useForm();
   const [showCRNInput, setShowCRNInput] = useState(false);
   const { course } = useCourse(courseId);
-  const [patchBody, setPatchBody] = useState<EditCourseInfoParams>({
-    ...course,
-    courseId: course.id,
-  });
+  const [crns, setCrns] = useState(course.crns);
   const [inputCRN, setInputCRN] = useState<number | null>(null);
 
   const showInput = () => {
     setShowCRNInput(true);
   };
 
-  // const handleSubmitCourse = () => {
-  //   form
-  //   .validateFields()
-  //   .then((value) => onSubmitCourse(value))
-  //   .catch(() => {
-  //     // don't submit if the fields are not valid
-  //   });
-  // };
-
   const handleSaveChanges = async () => {
-    patchBody.courseId = courseId;
-    patchBody.name = course.name;
-    patchBody.coordinator_email = course.coordinator_email;
-    patchBody.icalURL = course.icalURL;
-    patchBody.crns = course.crns;
-    setPatchBody(patchBody);
+    const value = await form.validateFields();
+    value.crns = crns;
+    console.log(value);
+
     try {
-      await API.course.editCourseInfo(course.id, patchBody);
+      await API.course.editCourseInfo(course.id, value);
       message.success("Successfully updated course information.");
     } catch (e) {
       message.error(e.response?.data?.message);
@@ -55,12 +33,13 @@ export default function CourseInfo({
   };
 
   const handleCRNAdd = () => {
-    const newPatchBody = {
-      ...patchBody,
-      crns: patchBody.crns.concat([inputCRN]),
-    };
-    setPatchBody(newPatchBody);
+    setCrns([...crns, inputCRN]);
     setShowCRNInput(false);
+    setInputCRN(null);
+  };
+
+  const handleCRNDelete = (crn) => {
+    setCrns(crns.filter((c) => c !== crn));
   };
 
   return (
@@ -124,8 +103,13 @@ export default function CourseInfo({
         </Form.Item>
 
         <Form.Item label="Registered CRNs" name="crns">
-          {patchBody.crns.map((crn) => (
-            <Tag closeIcon={<DeleteOutlined />} key={crn} closable={true}>
+          {crns.map((crn) => (
+            <Tag
+              closeIcon={<DeleteOutlined />}
+              key={crn}
+              closable={true}
+              onClose={() => handleCRNDelete(crn)}
+            >
               {crn}
             </Tag>
           ))}
@@ -144,16 +128,6 @@ export default function CourseInfo({
               <PlusOutlined /> Add CRN
             </Tag>
           )}
-          {/*{!inputVisible && (*/}
-          {/*    <Tag className="site-tag-plus" onClick={this.showInput}>*/}
-          {/*      <PlusOutlined /> New Tag*/}
-          {/*    </Tag>*/}
-          {/*)}*/}
-          {/*  <Button onClick={onBack}>Back</Button>*/}
-
-          {/*  <Button onClick={handleSubmitCourse} type="primary">*/}
-          {/*    Next*/}
-          {/*  </Button>*/}
         </Form.Item>
       </Form>
     </div>
