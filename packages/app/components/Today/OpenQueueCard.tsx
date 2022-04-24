@@ -124,6 +124,10 @@ const OpenQueueCardDivider = styled(Divider)`
   margin-bottom: 0;
 `;
 
+const NotesSkeleton = styled(Skeleton)`
+  width: 60%;
+`;
+
 const OpenQueueCard = ({
   queue,
   isTA,
@@ -274,11 +278,24 @@ export default OpenQueueCard;
 
 export function OpenQueueCardSkeleton(): ReactElement {
   return (
-    <PaddedCard>
-      <Skeleton paragraph={{ rows: 2 }} />
-      <Row justify="space-between" align="bottom">
-        <Skeleton.Avatar size={96} />
+    <PaddedCard
+      headStyle={{
+        background: "#25426C",
+        color: "#FFFFFF",
+        borderRadius: "6px 6px 0 0",
+      }}
+      className={"open-queue-card"}
+      title={<Skeleton title={false} paragraph={{ rows: 1 }} />}
+    >
+      <QueueInfoRow>
+        <Skeleton title paragraph={{ rows: 0 }} />
         <Skeleton.Button size="large" />
+      </QueueInfoRow>
+      <Skeleton.Avatar size={96} />
+      <OpenQueueCardDivider />
+      <Row justify="space-between" align="bottom">
+        <NotesSkeleton title={false} paragraph={{ rows: 1 }} />
+        <Skeleton.Button size="large" style={{ marginTop: "12px" }} />
       </Row>
     </PaddedCard>
   );
