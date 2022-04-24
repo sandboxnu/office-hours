@@ -33,7 +33,6 @@ export default function TodayPageCheckinButton(): ReactElement {
   };
 
   const submitMakeQueue = async (submittedForm) => {
-    setCreateQueueModalVisible(false);
     const queueRequest = await submittedForm.validateFields();
     try {
       await API.taStatus.makeQueue(
@@ -54,10 +53,10 @@ export default function TodayPageCheckinButton(): ReactElement {
         "/course/[cid]/queue/[qid]",
         `/course/${Number(cid)}/queue/${redirectID.id}`
       );
+      setCreateQueueModalVisible(false);
     } catch (err) {
       message.error(err.response?.data?.message);
     }
-    setCreateQueueModalVisible(false);
   };
 
   const onCreateQueueButtonClick = () => {

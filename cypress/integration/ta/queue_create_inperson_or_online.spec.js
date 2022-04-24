@@ -13,7 +13,7 @@ describe('Can successfully create queues', () => {
             cy.get(".ant-modal-close-x").click();
 
 
-            cy.get("[data-cy=\"create-queue-modal-button\"]").click();
+            cy.get("[data-cy=\"check-in-modal-button\"]").click();
             cy.wait(500);
 
             // name the other OH field
@@ -98,7 +98,6 @@ describe('Can successfully create queues', () => {
         });
     });
 
-
     describe('verify the behavior of the queue-create form components (TA)', () => {
         beforeEach(() => {
             createAndLoginTA();
@@ -107,7 +106,7 @@ describe('Can successfully create queues', () => {
         it('Checks properties of the TA queue-create', function () {
             cy.visit(`/course/${this.ta.course.id}/today`, {timeout: 20000});
             cy.get(".ant-modal-close-x").click();
-            cy.get("[data-cy=\"create-queue-modal-button\"]")
+            cy.get("[data-cy=\"check-in-modal-button\"]")
                 .should("be.visible")
                 .should("not.be.disabled")
                 .click();
@@ -177,7 +176,7 @@ describe('Can successfully create queues', () => {
         it('Checks properties of the prof queue-create', function () {
             cy.visit(`/course/${this.professor.course.id}/today`, {timeout: 20000});
             cy.get(".ant-modal-close-x").click();
-            cy.get("[data-cy=\"create-queue-modal-button\"]")
+            cy.get("[data-cy=\"check-in-modal-button\"]")
                 .should("be.visible")
                 .should("not.be.disabled")
                 .click();
