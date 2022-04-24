@@ -9,13 +9,7 @@ import {
 } from "@koh/common";
 import { Card, Col, notification, Popconfirm, Row } from "antd";
 import { Router, useRouter } from "next/router";
-import React, {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { ReactElement, useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { mutate } from "swr";
 import { useDraftQuestion } from "../../../hooks/useDraftQuestion";
@@ -103,7 +97,6 @@ export default function StudentQueue({
   const { queue } = useQueue(qid);
   const { questions, mutateQuestions } = useQuestions(qid);
   const { studentQuestion, studentQuestionIndex } = useStudentQuestion(qid);
-  const studentQuestionRef = useRef(studentQuestion);
   const [isFirstQuestion, setIsFirstQuestion] = useLocalStorage(
     "isFirstQuestion",
     true
@@ -126,7 +119,6 @@ export default function StudentQueue({
       setPopupEditQuestion(true);
       router.push(`/course/${cid}/queue/${qid}`);
     }
-    studentQuestionRef.current = studentQuestion;
   }, [editQuestionQueryParam, qid, studentQuestion]);
 
   const studentQuestionId = studentQuestion?.id;
@@ -282,11 +274,15 @@ export default function StudentQueue({
     ]
   );
 
-  useHotkeys("shift+e", () => {
-    if (studentQuestionRef.current) {
-      openEditModal();
-    }
-  });
+  useHotkeys(
+    "shift+e",
+    () => {
+      if (studentQuestion) {
+        openEditModal();
+      }
+    },
+    [studentQuestion]
+  );
 
   if (queue && questions) {
     if (!queue.isOpen) {
