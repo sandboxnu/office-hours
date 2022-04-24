@@ -81,7 +81,7 @@ describe('Course Integration', () => {
       expect(response.body.queues[0].room).toBe('room 3');
     });
 
-    it('gets queues that are not disabled and not prof queues (TA)', async () => {
+    it('gets queues that are not disabled (TA)', async () => {
       const course = await CourseFactory.create();
       await UserCourseFactory.create({
         user: await UserFactory.create(),
@@ -121,10 +121,10 @@ describe('Course Integration', () => {
         .get(`/courses/${course.id}`)
         .expect(200);
       // date agnostic snapshots
+      expect(response.body.queues.length).toBe(3);
       response.body.queues.map((q) => expect(q).toMatchSnapshot({}));
 
       response.body.queues.map((q) => expect(q.isDisabled).toBeFalsy());
-      response.body.queues.map((q) => expect(q.isProfessorQueue).toBeFalsy());
     });
 
     it('gets all queues that are not disabled (prof)', async () => {
