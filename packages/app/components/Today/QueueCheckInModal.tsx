@@ -2,6 +2,7 @@ import { QueuePartial, Role } from "@koh/common";
 import { Modal, Select } from "antd";
 import { ReactElement } from "react";
 import { ReactNode, useState } from "react";
+import styled from "styled-components";
 
 interface QueueCheckInModalProps {
   visible: boolean;
@@ -11,6 +12,21 @@ interface QueueCheckInModalProps {
   role: Role;
   queues: QueuePartial[];
 }
+
+const RoomSelectionContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+`;
+
+const CheckInDropdownContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  flex-grow: 7;
+`;
 
 export default function QueueCheckInModal({
   visible,
@@ -28,7 +44,7 @@ export default function QueueCheckInModal({
 
   return (
     <Modal
-      title="Check into an existing queue"
+      title="Check into a queue"
       visible={visible}
       onCancel={() => {
         onCancel();
@@ -38,31 +54,35 @@ export default function QueueCheckInModal({
       okButtonProps={{ disabled: queueToCheckInto < 0 }}
       onOk={() => onSubmit(queueToCheckInto)}
     >
-      <h3>Begin searching for a room</h3>
-      <Select
-        showSearch
-        style={{ width: 200 }}
-        placeholder="Select a course"
-        optionFilterProp="children"
-        onChange={onQueueUpdate}
-        data-cy="select-existing-queue"
-        filterOption={(input, option) => {
-          return (
-            option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          );
-        }}
-      >
-        {queues
-          .filter((q) => (role === Role.TA ? !q.isProfessorQueue : true))
-          .map((q, i) => (
-            <Option
-              key={i}
-              value={i}
-              data-cy={`select-queue-${q.room}`}
-            >{`${q.room}`}</Option>
-          ))}
-      </Select>
-      {button}
+      <RoomSelectionContainer>
+        <CheckInDropdownContainer>
+          <h3>Search for an existing room</h3>
+          <Select
+            showSearch
+            style={{ width: 200 }}
+            placeholder="Select a course"
+            optionFilterProp="children"
+            onChange={onQueueUpdate}
+            data-cy="select-existing-queue"
+            filterOption={(input, option) => {
+              return (
+                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              );
+            }}
+          >
+            {queues
+              .filter((q) => (role === Role.TA ? !q.isProfessorQueue : true))
+              .map((q, i) => (
+                <Option
+                  key={i}
+                  value={i}
+                  data-cy={`select-queue-${q.room}`}
+                >{`${q.room}`}</Option>
+              ))}
+          </Select>
+        </CheckInDropdownContainer>
+        <>{button}</>
+      </RoomSelectionContainer>
     </Modal>
   );
 }

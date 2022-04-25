@@ -3,12 +3,23 @@ import { QueuePartial, Role } from "@koh/common";
 import { Button, message } from "antd";
 import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
+import styled from "styled-components";
 import { useCourse } from "../../hooks/useCourse";
 import { useProfile } from "../../hooks/useProfile";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import QueueCheckInModal from "./QueueCheckInModal";
 import QueueCreateModal from "./QueueCreateModal";
 import TACheckinButton, { CheckinButton } from "./TACheckinButton";
+
+const CreateQueueButton = styled(Button)`
+  color: white;
+  background: #2a9187;
+  &:hover,
+  &:focus {
+    color: white;
+    background: #39aca1;
+  }
+`;
 
 export default function TodayPageCheckinButton(): ReactElement {
   // state for check in modal
@@ -87,7 +98,9 @@ export default function TodayPageCheckinButton(): ReactElement {
           }}
           onCancel={() => setCheckInModalVisible(false)}
           button={
-            <Button onClick={onCreateQueueButtonClick}>Create Queue</Button>
+            <CreateQueueButton onClick={onCreateQueueButtonClick}>
+              + Create Queue
+            </CreateQueueButton>
           }
           queues={course.queues}
           role={role}
