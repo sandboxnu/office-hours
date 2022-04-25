@@ -284,6 +284,16 @@ export default function StudentQueue({
     [studentQuestion]
   );
 
+  useHotkeys(
+    "shift+n",
+    () => {
+      if (!studentQuestion && queue?.allowQuestions && !queue?.isDisabled) {
+        joinQueueOpenModal(false).then((res) => setShowJoinPopconfirm(!res));
+      }
+    },
+    [studentQuestion, queue]
+  );
+
   if (queue && questions) {
     if (!queue.isOpen) {
       return <h1 style={{ marginTop: "50px" }}>The Queue is Closed!</h1>;

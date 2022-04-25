@@ -2,13 +2,7 @@ import { OpenQuestionStatus, Question, QuestionType } from "@koh/common";
 import { Alert, Button, Input, Modal, Radio } from "antd";
 import { RadioChangeEvent } from "antd/lib/radio";
 import { NextRouter, useRouter } from "next/router";
-import {
-  default as React,
-  ReactElement,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { default as React, ReactElement, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { toOrdinal } from "../../../utils/ordinal";
@@ -83,14 +77,12 @@ export default function QuestionForm({
   const [questionGroupable, setQuestionGroupable] = useState<boolean>(
     question?.groupable !== undefined && question?.groupable
   );
-  const formRef = useRef({ visible, questionTypeInput, questionText });
 
   useEffect(() => {
     if (question && !visible) {
       setQuestionText(question.text);
       setQuestionTypeInput(question.questionType);
     }
-    formRef.current = { visible, questionTypeInput, questionText };
   }, [question, visible, questionTypeInput, questionText]);
 
   // on question type change, update the question type state
