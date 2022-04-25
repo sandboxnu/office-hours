@@ -60,7 +60,7 @@ describe('Can successfully create queues', () => {
             cy.percySnapshot("CheckIn Modal Selection Page -- Custom Already Created")
 
             cy.get("[id^=rcDialogTitle]")
-                .contains("Check into an existing queue")
+                .contains("Check into a queue")
                 .parent()
                 .parent()
                 .should('have.class', 'ant-modal-content')
