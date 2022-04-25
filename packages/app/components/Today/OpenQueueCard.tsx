@@ -169,7 +169,9 @@ const OpenQueueCard = ({
           <Space direction="vertical" align="end" size="middle">
             <QueueInfoTags>
               {queue?.isProfessorQueue && (
-                <Tag color="blue">Professor Queue</Tag>
+                <Tag color="blue" style={{ margin: 0 }}>
+                  Professor Queue
+                </Tag>
               )}
               {!queue.allowQuestions && (
                 <Tooltip title="This queue is no longer accepting questions">
