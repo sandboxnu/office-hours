@@ -137,7 +137,6 @@ export default function QuestionForm({
     }
   };
 
-  // broken
   useHotkeys("enter", () => onClickSubmit(), { enableOnTags: ["TEXTAREA"] }, [
     questionTypeInput,
     questionText,
