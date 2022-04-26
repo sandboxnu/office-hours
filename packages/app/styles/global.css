@@ -75,7 +75,6 @@ body {
   .rbc-toolbar {
     visibility: hidden;
   }
-
   .fc-col-header-cell-cushion {
     visibility: hidden;
   }
@@ -84,7 +83,7 @@ body {
     visibility: hidden;
   }
 
-  .fc-event-main {
+  .fc-event {
     visibility: hidden;
   }
 }
