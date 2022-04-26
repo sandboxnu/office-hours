@@ -6,7 +6,7 @@ import {
   NotificationOutlined,
   StopOutlined,
 } from "@ant-design/icons";
-import { Button, message, Modal, Tooltip } from "antd";
+import { Button, message, Modal, Popconfirm, Tooltip } from "antd";
 import { ButtonProps } from "antd/lib/button";
 import Linkify from "react-linkify";
 import moment from "moment";
@@ -158,7 +158,8 @@ export function QueueInfoColumn({
       title: `Please Confirm!`,
       icon: <ExclamationCircleOutlined />,
       style: { whiteSpace: "pre-wrap" },
-      content: `Please confirm that you want to disable the queue: ${queue.room}.\nThis queue will no longer appear in the app, and any students currently in the queue will be removed.`,
+      content: `Please confirm that you want to disable the queue: ${queue.room}.\n
+      This queue will no longer appear in the app, and any students currently in the queue will be removed.`,
       onOk() {
         disableQueue();
       },
@@ -214,7 +215,18 @@ export function QueueInfoColumn({
       <TAStatuses queueId={queueId} />
       {isStaff && (
         <QueueManagementBox>
-          <ClearQueueButton onClick={clearQueue}>Clear Queue</ClearQueueButton>
+          <Popconfirm
+            title={
+              "Are you sure you want to clear all students from the queue?"
+            }
+            okText="Yes"
+            cancelText="No"
+            placement="top"
+            arrowPointAtCenter={true}
+            onConfirm={clearQueue}
+          >
+            <ClearQueueButton>Clear Queue</ClearQueueButton>
+          </Popconfirm>
           <DisableQueueButton
             onClick={confirmDisable}
             data-cy="queue-disable-button"
