@@ -111,7 +111,7 @@ describe("Can successfully check in and out of a queue when their is scheduled o
 
     // Wait for page to load
     cy.get(".ant-modal-close-x").click();
-    cy.contains("There are currently no open queues");
+    cy.get("button").should("contain", "Check In");
 
     // Click "Check in"
     taOpenOnline();

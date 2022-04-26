@@ -18,7 +18,7 @@ import styled from "styled-components";
 import { QueuePartial } from "../../../common/index";
 import { KOHAvatar } from "../common/SelfAvatar";
 
-type OpenQueueCard = {
+type QueueCard = {
   queue: QueuePartial;
   isTA: boolean;
   updateQueueNotes: (queue: QueuePartial, queueNotes: string) => Promise<void>;
@@ -119,7 +119,7 @@ const QueueCardButtonRow = styled(Row)`
   padding-top: 10px;
 `;
 
-const OpenQueueCardDivider = styled(Divider)`
+const QueueCardDivider = styled(Divider)`
   margin-top: 12px;
   margin-bottom: 0;
 `;
@@ -128,11 +128,11 @@ const NotesSkeleton = styled(Skeleton)`
   width: 60%;
 `;
 
-const OpenQueueCard = ({
+const QueueCard = ({
   queue,
   isTA,
   updateQueueNotes,
-}: OpenQueueCard): ReactElement => {
+}: QueueCard): ReactElement => {
   const [editingNotes, setEditingNotes] = useState(false);
   const [updatedNotes, setUpdatedNotes] = useState(queue.notes);
   const router = useRouter();
@@ -215,7 +215,7 @@ const OpenQueueCard = ({
             </Tooltip>
           ))}
         </div>
-        <OpenQueueCardDivider />
+        <QueueCardDivider />
         {editingNotes ? (
           <NotesDiv>
             <NotesInput
@@ -274,9 +274,9 @@ const OpenQueueCard = ({
   );
 };
 
-export default OpenQueueCard;
+export default QueueCard;
 
-export function OpenQueueCardSkeleton(): ReactElement {
+export function QueueCardSkeleton(): ReactElement {
   return (
     <PaddedCard
       headStyle={{
@@ -292,7 +292,7 @@ export function OpenQueueCardSkeleton(): ReactElement {
         <Skeleton.Button size="large" />
       </QueueInfoRow>
       <Skeleton.Avatar size={96} />
-      <OpenQueueCardDivider />
+      <QueueCardDivider />
       <Row justify="space-between" align="bottom">
         <NotesSkeleton title={false} paragraph={{ rows: 1 }} />
         <Skeleton.Button size="large" style={{ marginTop: "12px" }} />

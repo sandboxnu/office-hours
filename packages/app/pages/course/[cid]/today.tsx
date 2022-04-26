@@ -10,9 +10,9 @@ import styled from "styled-components";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
 import NavBar from "../../../components/Nav/NavBar";
 import SchedulePanel from "../../../components/Schedule/SchedulePanel";
-import OpenQueueCard, {
-  OpenQueueCardSkeleton,
-} from "../../../components/Today/OpenQueueCard";
+import QueueCard, {
+  QueueCardSkeleton,
+} from "../../../components/Today/QueueCard";
 import TodayPageCheckinButton from "../../../components/Today/QueueCheckInButton";
 import ReleaseNotes from "../../../components/Today/ReleaseNotes";
 import WelcomeStudents from "../../../components/Today/WelcomeStudents";
@@ -20,7 +20,6 @@ import { useCourse } from "../../../hooks/useCourse";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import TodayPageCreateButton from "../../../components/Today/QueueCreateButton";
 import PopularTimes from "../../../components/Today/PopularTimes/PopularTimes";
-import { partition } from "lodash";
 
 const Container = styled.div`
   margin-top: 32px;
@@ -73,8 +72,11 @@ export default function Today(): ReactElement {
   const role = useRoleInCourse(Number(cid));
   const { course, mutateCourse } = useCourse(Number(cid));
 
-  const parts = course?.queues && partition(course?.queues, (q) => q.isOpen);
-  const sortedQueues = parts && parts[0].concat(parts[1]); // put open queues first
+  const sortedQueues =
+    course?.queues &&
+    [...course?.queues].sort(
+      ({ isOpen: a }, { isOpen: b }) => Number(b) - Number(a)
+    ); // put open queues first
 
   const updateQueueNotes = async (
     queue: QueuePartial,
@@ -121,7 +123,7 @@ export default function Today(): ReactElement {
               </h1>
             ) : (
               sortedQueues?.map((q) => (
-                <OpenQueueCard
+                <QueueCard
                   key={q.id}
                   queue={q}
                   isTA={role === Role.TA || role === Role.PROFESSOR}
@@ -129,7 +131,7 @@ export default function Today(): ReactElement {
                 />
               ))
             )}
-            {!course && <OpenQueueCardSkeleton />}
+            {!course && <QueueCardSkeleton />}
             {
               // This only works with UTC offsets in the form N:00, to help with other offsets, the size of the array might have to change to a size of 24*7*4 (for every 15 min interval)
               course && course.heatmap && (
