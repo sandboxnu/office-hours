@@ -54,6 +54,7 @@ export default function SchedulePanel({
     setIsClientSide(true);
   }, []);
 
+  // allows us to render tooltips around events (in case of cluttered calendars)
   const renderEventContent = (arg: EventContentArg) => {
     const data = calendarRef.current.getApi().getCurrentData();
     const viewSpec = data.viewSpecs[arg.view.type].component;
@@ -61,7 +62,7 @@ export default function SchedulePanel({
       return (
         <Tooltip title={`${arg.timeText}: ${arg.event.title}`}>
           <span>
-            <b>{arg.timeText}</b> {arg.event.title}{" "}
+            <strong>{arg.timeText}</strong> {arg.event.title}
           </span>
         </Tooltip>
       );
