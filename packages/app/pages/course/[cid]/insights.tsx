@@ -1,4 +1,5 @@
 import React, { ReactElement, useState } from "react";
+
 import { API } from "@koh/api-client";
 import useSWR from "swr";
 import {
@@ -15,18 +16,19 @@ import {
 import { CardSize } from "antd/lib/card";
 import { InfoCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { useProfile } from "../../../hooks/useProfile";
-import { useRouter } from "next/router";
-import { StandardPageContainer } from "../../../components/common/PageContainer";
 import {
   DateRangeType,
   InsightComponent,
   InsightDisplayInfo,
 } from "@koh/common";
-import NavBar from "../../../components/Nav/NavBar";
+
 import BarChartComponent from "../../../components/Insights/components/BarChartComponent";
 import SimpleDisplayComponent from "../../../components/Insights/components/SimpleDisplayComponent";
 import InsightsDisplayOptions from "../../../components/Insights/components/InsightsDisplayOptions";
 import { SimpleTable } from "../../../components/Insights/components/SimpleTable";
+import NavBar from "../../../components/Nav/NavBar";
+import { StandardPageContainer } from "../../../components/common/PageContainer";
+import { useRouter } from "next/router";
 import styled from "styled-components";
 import { useIsMobile } from "../../../hooks/useIsMobile";
 

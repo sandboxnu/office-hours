@@ -9,6 +9,7 @@ import { useTAInQueueInfo } from "../../../../hooks/useTAInQueueInfo";
 import { BannerPrimaryButton } from "../../Banner";
 import { Header } from "../TAQueueDetail";
 import TAQueueListItem from "../TAQueueListItem";
+import { useTeams } from "../../../../hooks/useTeams";
 
 export const Description = styled.div`
   font-size: 12px;
@@ -77,6 +78,8 @@ export default function AllQuestionsCheckList({
     .map((question) => question.creator.email)
     .join(",");
 
+  const openTeams = useTeams(queueId, usersInLink, defaultMessage);
+
   return (
     <div>
       <Header>
@@ -103,9 +106,7 @@ export default function AllQuestionsCheckList({
                     queueId: queueId,
                   });
                   onStartCall();
-                  window.open(
-                    `https://teams.microsoft.com/l/chat/0/0?users=${usersInLink}&message=${defaultMessage}`
-                  );
+                  openTeams();
                 }}
                 disabled={!canHelp || checkedQuestions.size === 0}
                 data-cy="help-student"

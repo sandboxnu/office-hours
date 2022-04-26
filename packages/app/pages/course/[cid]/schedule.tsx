@@ -10,6 +10,7 @@ import { StandardPageContainer } from "../../../components/common/PageContainer"
 
 const ScheduleContainer = styled.div`
   margin-top: 32px;
+  margin-bottom: 20px;
 `;
 
 export default function Schedule(): ReactElement {

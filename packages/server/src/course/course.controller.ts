@@ -1,4 +1,5 @@
 import {
+  EditCourseInfoParams,
   ERROR_MESSAGES,
   GetCourseOverridesResponse,
   GetCourseResponse,
@@ -9,6 +10,7 @@ import {
   TACheckoutResponse,
   UpdateCourseOverrideBody,
   UpdateCourseOverrideResponse,
+  UserPartial,
 } from '@koh/common';
 import {
   BadRequestException,
@@ -16,11 +18,11 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   HttpException,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
   UnauthorizedException,
@@ -28,10 +30,9 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import async from 'async';
-import moment = require('moment');
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
-import { Connection, getRepository, MoreThanOrEqual } from 'typeorm';
+import { Connection } from 'typeorm';
 import { Roles } from '../decorators/roles.decorator';
 import { User, UserId } from '../decorators/user.decorator';
 import { CourseRolesGuard } from '../guards/course-roles.guard';
@@ -39,12 +40,11 @@ import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { CourseModel } from './course.entity';
-import { OfficeHourModel } from './office-hour.entity';
 import { QueueCleanService } from '../queue/queue-clean/queue-clean.service';
 import { QueueSSEService } from '../queue/queue-sse.service';
 import { CourseService } from './course.service';
 import { HeatmapService } from './heatmap.service';
-import { IcalService } from './ical.service';
+import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 
 @Controller('courses')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -54,7 +54,6 @@ export class CourseController {
     private queueCleanService: QueueCleanService,
     private queueSSEService: QueueSSEService,
     private heatmapService: HeatmapService,
-    private icalService: IcalService,
     private courseService: CourseService,
   ) {}
 
@@ -81,25 +80,6 @@ export class CourseController {
     }
 
     // Use raw query for performance (avoid entity instantiation and serialization)
-
-    try {
-      course.officeHours = await getRepository(OfficeHourModel)
-        .createQueryBuilder('oh')
-        .select(['id', 'title', `"startTime"`, `"endTime"`])
-        .where('oh.courseId = :courseId', { courseId: course.id })
-        .getRawMany();
-    } catch (err) {
-      console.error(
-        ERROR_MESSAGES.courseController.courseOfficeHourError +
-          '\n' +
-          'Error message: ' +
-          err,
-      );
-      throw new HttpException(
-        ERROR_MESSAGES.courseController.courseOfficeHourError,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
 
     try {
       course.heatmap = await this.heatmapService.getCachedHeatmapFor(id);
@@ -133,18 +113,27 @@ export class CourseController {
     if (userCourseModel.role === Role.PROFESSOR) {
       course.queues = await async.filter(
         course.queues,
-        async (q) => (await q.checkIsOpen()) || q.isProfessorQueue,
+        async (q) => !q.isDisabled,
       );
-    } else {
+    } else if (userCourseModel.role === Role.TA) {
       course.queues = await async.filter(
         course.queues,
-        async (q) => await q.checkIsOpen(),
+        async (q) => !q.isDisabled && !q.isProfessorQueue,
       );
+    } else if (userCourseModel.role === Role.STUDENT) {
+      course.queues = await async.filter(
+        course.queues,
+        async (q) => !q.isDisabled && (await q.checkIsOpen()),
+      );
+    }
+
+    // make sure all of isopen is populated since we need it in FE
+    for (const que of course.queues) {
+      await que.checkIsOpen();
     }
 
     try {
       await async.each(course.queues, async (q) => {
-        await q.addQueueTimes();
         await q.addQueueSize();
       });
     } catch (err) {
@@ -160,7 +149,33 @@ export class CourseController {
       );
     }
 
-    return course;
+    const course_response = { ...course, crns: null };
+    try {
+      course_response.crns = await CourseSectionMappingModel.find({ course });
+    } catch (err) {
+      console.error(
+        ERROR_MESSAGES.courseController.courseOfficeHourError +
+          '\n' +
+          'Error message: ' +
+          err,
+      );
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.courseCrnsError,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return course_response;
+  }
+
+  @Patch(':id/edit_course')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
+  @Roles(Role.PROFESSOR)
+  async editCourseInfo(
+    @Param('id') courseId: number,
+    @Body() coursePatch: EditCourseInfoParams,
+  ): Promise<void> {
+    await this.courseService.editCourse(courseId, coursePatch);
   }
 
   @Post(':id/ta_location/:room')
@@ -188,22 +203,23 @@ export class CourseController {
       );
     }
 
-    let queue = await QueueModel.findOne(
+    const queue = await QueueModel.findOne(
       {
         room,
         courseId,
+        isDisabled: false,
       },
       { relations: ['staffList'] },
     );
 
-    if (!queue) {
-      const userCourseModel = await UserCourseModel.findOne({
-        where: {
-          user,
-          courseId,
-        },
-      });
+    const userCourseModel = await UserCourseModel.findOne({
+      where: {
+        user,
+        courseId,
+      },
+    });
 
+    if (!queue) {
       if (userCourseModel === null || userCourseModel === undefined) {
         throw new HttpException(
           ERROR_MESSAGES.courseController.courseModelError,
@@ -211,20 +227,16 @@ export class CourseController {
         );
       }
 
-      if (userCourseModel.role === Role.PROFESSOR) {
-        queue = await QueueModel.create({
-          room,
-          courseId,
-          staffList: [],
-          questions: [],
-          allowQuestions: true,
-          isProfessorQueue: true, // only professors should be able to make queues
-        }).save();
-      } else {
-        throw new ForbiddenException(
-          ERROR_MESSAGES.courseController.checkIn.cannotCreateNewQueueIfNotProfessor,
-        );
-      }
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.queueNotFound,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    if (userCourseModel.role === Role.TA && queue.isProfessorQueue) {
+      throw new UnauthorizedException(
+        ERROR_MESSAGES.courseController.queueNotAuthorized,
+      );
     }
 
     if (queue.staffList.length === 0) {
@@ -282,6 +294,74 @@ export class CourseController {
     return queue;
   }
 
+  @Post(':id/generate_queue/:room')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
+  @Roles(Role.PROFESSOR, Role.TA)
+  async generateQueue(
+    @Param('id') courseId: number,
+    @Param('room') room: string,
+    @User() user: UserModel,
+    @Body()
+    body: {
+      notes: string;
+      isProfessorQueue: boolean;
+    },
+  ): Promise<QueueModel> {
+    const userCourseModel = await UserCourseModel.findOne({
+      where: {
+        user,
+        courseId,
+      },
+    });
+
+    if (userCourseModel === null || userCourseModel === undefined) {
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.courseModelError,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const queue = await QueueModel.findOne({
+      room,
+      courseId,
+      isDisabled: false,
+    });
+
+    if (queue) {
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.queueAlreadyExists,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (userCourseModel.role === Role.TA && body.isProfessorQueue) {
+      throw new UnauthorizedException(
+        ERROR_MESSAGES.courseController.queueNotAuthorized,
+      );
+    }
+    try {
+      return await QueueModel.create({
+        room,
+        courseId,
+        staffList: [],
+        questions: [],
+        allowQuestions: true,
+        notes: body.notes,
+        isProfessorQueue: body.isProfessorQueue,
+      }).save();
+    } catch (err) {
+      console.error(
+        ERROR_MESSAGES.courseController.saveQueueError +
+          '\nError message: ' +
+          err,
+      );
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.saveQueueError,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   @Delete(':id/ta_location/:room')
   @UseGuards(JwtAuthGuard, CourseRolesGuard)
   @Roles(Role.PROFESSOR, Role.TA)
@@ -294,6 +374,7 @@ export class CourseController {
       {
         room,
         courseId,
+        isDisabled: false,
       },
       { relations: ['staffList'] },
     );
@@ -345,31 +426,7 @@ export class CourseController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-    let canClearQueue = null;
 
-    try {
-      canClearQueue = await this.queueCleanService.shouldCleanQueue(queue);
-    } catch (err) {
-      console.error(err);
-      throw new HttpException(
-        ERROR_MESSAGES.courseController.clearQueueError,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-
-    let nextOfficeHourTime = null;
-
-    // find out how long until next office hour
-    if (canClearQueue) {
-      const soon = moment().add(15, 'minutes').toDate();
-      const nextOfficeHour = await OfficeHourModel.findOne({
-        where: { startTime: MoreThanOrEqual(soon) },
-        order: {
-          startTime: 'ASC',
-        },
-      });
-      nextOfficeHourTime = nextOfficeHour?.startTime;
-    }
     try {
       await this.queueSSEService.updateQueue(queue.id);
     } catch (err) {
@@ -383,29 +440,7 @@ export class CourseController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-    return { queueId: queue.id, canClearQueue, nextOfficeHourTime };
-  }
-
-  @Post(':id/update_calendar')
-  @UseGuards(JwtAuthGuard, CourseRolesGuard)
-  @Roles(Role.PROFESSOR)
-  async updateCalendar(@Param('id') courseId: number): Promise<void> {
-    const course = await CourseModel.findOne(courseId);
-    if (course === null || course === undefined) {
-      throw new HttpException(
-        ERROR_MESSAGES.courseController.courseNotFound,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    try {
-      await this.icalService.updateCalendarForCourse(course);
-    } catch (err) {
-      console.error(err);
-      throw new HttpException(
-        ERROR_MESSAGES.courseController.icalCalendarUpdate,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    return { queueId: queue.id };
   }
 
   @Get(':id/course_override')
@@ -554,6 +589,29 @@ export class CourseController {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  @Get(':id/get_user_info/:page/:role?')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
+  @Roles(Role.PROFESSOR)
+  async getUserInfo(
+    @Param('id') courseId: number,
+    @Param('page') page: number,
+    @Param('role') role?: Role,
+    @Query('search') search?: string,
+  ): Promise<UserPartial[]> {
+    const pageSize = 50;
+    if (!search) {
+      search = '';
+    }
+    const users = await this.courseService.getUserInfo(
+      courseId,
+      page,
+      pageSize,
+      search,
+      role,
+    );
+    return users;
   }
 
   @Post(':id/self_enroll')

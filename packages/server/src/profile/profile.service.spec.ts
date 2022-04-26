@@ -99,5 +99,55 @@ describe('ProfileService', () => {
       const resp = await service.getPendingCourses(prof2.id);
       expect(resp).toEqual([]);
     });
+
+    describe('handles section group payloads with multiple semesters (summer semesters)', () => {
+      let prof: UserModel;
+      const khouryCourses = [
+        {
+          name: 'Fundies 1',
+          crns: [123, 456],
+          semester: '202250', // 2022 summer full
+        },
+        {
+          name: 'OOD',
+          crns: [798],
+          semester: '202160', // 2022 summer 2
+        },
+        {
+          name: 'Fundies 2',
+          crns: [135, 246],
+          semester: '202240', // 2022 summer 1 - this course wouldnt be in a real admin payload, but good to test
+        },
+      ];
+      beforeEach(async () => {
+        prof = await UserFactory.create();
+        await ProfSectionGroupsFactory.create({
+          prof,
+          sectionGroups: khouryCourses,
+        });
+      });
+
+      it('returns only summer 2 pending courses if lastRegistered is summer 1', async () => {
+        // LastRegisteredSemester is Summer 1 --> should identify Summer full as well
+        // so Summer Full class will not be a pending course even tho it was never registered
+        await LastRegistrationFactory.create({
+          prof,
+          lastRegisteredSemester: '202240',
+        });
+
+        const resp = await service.getPendingCourses(prof.id);
+        expect(resp).toEqual([khouryCourses[1]]); // should only have summer 2 course
+      });
+
+      it('returns only summer 2 pending courses if lastRegistered is summer full', async () => {
+        await LastRegistrationFactory.create({
+          prof,
+          lastRegisteredSemester: '202250',
+        });
+
+        const resp = await service.getPendingCourses(prof.id);
+        expect(resp).toEqual([khouryCourses[1]]); // should only have summer 2 course
+      });
+    });
   });
 });

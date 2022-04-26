@@ -85,7 +85,7 @@ export class DesktopNotifPartial {
  * Contains the partial user info needed by the frontend when nested in a response
  * @param id - The unique id of the user in our db.
  * @param name - The full name of this user: First Last.
- * @param photoURL - The URL string of this user photo. This is pulled from the admin site
+ * @param photoURL - The URL string of this user photo. This is pulled from the admin site.
  */
 export class UserPartial {
   id!: number;
@@ -122,18 +122,6 @@ export enum Role {
   TA = "ta",
   PROFESSOR = "professor",
 }
-
-class OfficeHourPartial {
-  id!: number;
-  title!: string;
-
-  @Type(() => Date)
-  startTime!: Date;
-
-  @Type(() => Date)
-  endTime!: Date;
-}
-
 /**
  * A Queue that students can join with thier tickets.
  * @param id - The unique id number for a Queue.
@@ -174,6 +162,8 @@ export class QueuePartial {
   notes?: string;
   isOpen!: boolean;
 
+  isDisabled!: boolean;
+
   @Type(() => Date)
   startTime?: Date;
 
@@ -204,8 +194,7 @@ export type Heatmap = Array<number>;
  * @param questionType - The question type helps distinguish question for TA's and data insights.
  * @param status - The current status of the question in the queue.
  * @param position - The current position of this question in the queue.
- * @param location - The location of the particular student, to help TA's find them
- * @param isOnline - Wether or not the question will helped online or in-person
+ * @param location - The location of the particular student, to help TA's find them.
  */
 export class Question {
   id!: number;
@@ -230,7 +219,6 @@ export class Question {
   groupable!: boolean;
   status!: QuestionStatus;
   location?: string;
-  isOnline?: boolean;
 }
 
 // Question Types
@@ -251,7 +239,7 @@ export enum OpenQuestionStatus {
 }
 
 /**
- * Limbo statuses are awaiting some confirmation from the student
+ * Limbo statuses are awaiting some confirmation from the student.
  */
 export enum LimboQuestionStatus {
   CantFind = "CantFind", // represents when a student can't be found by a TA
@@ -356,7 +344,7 @@ export class KhouryDataParams {
   last_name!: string;
 
   @IsInt()
-  campus!: string;
+  campus!: number;
 
   @IsOptional()
   @IsString()
@@ -439,15 +427,16 @@ export class GetCourseResponse {
   id!: number;
   name!: string;
 
-  @Type(() => OfficeHourPartial)
-  officeHours!: Array<OfficeHourPartial>;
-
   @Type(() => QueuePartial)
   queues!: QueuePartial[];
 
+  heatmap!: Heatmap | false;
   coordinator_email!: string;
 
-  heatmap!: Heatmap | false;
+  @Type(() => Number)
+  crns!: number[];
+
+  icalURL!: string;
 
   selfEnroll!: boolean;
 }
@@ -497,6 +486,9 @@ export class ListQuestionsResponse {
 
   @Type(() => QuestionGroup)
   groups!: Array<QuestionGroup>;
+
+  @Type(() => AlertPayload)
+  unresolvedAlerts?: Array<AlertPayload>;
 }
 
 export class GetQuestionResponse extends Question {}
@@ -519,10 +511,6 @@ export class CreateQuestionParams {
 
   @IsInt()
   queueId!: number;
-
-  @IsBoolean()
-  @IsOptional()
-  isOnline?: boolean;
 
   @IsString()
   @IsOptional()
@@ -554,10 +542,6 @@ export class UpdateQuestionParams {
   @IsOptional()
   status?: QuestionStatus;
 
-  @IsBoolean()
-  @IsOptional()
-  isOnline?: boolean;
-
   @IsString()
   @IsOptional()
   location?: string;
@@ -586,10 +570,6 @@ export type QueueNotePayloadType = {
 export class TACheckoutResponse {
   // The ID of the queue we checked out of
   queueId!: number;
-  canClearQueue!: boolean;
-
-  @Type(() => Date)
-  nextOfficeHourTime?: Date;
 }
 
 export class UpdateQueueParams {
@@ -706,6 +686,28 @@ export class RegisterCourseParams {
   timezone!: string;
 }
 
+export class EditCourseInfoParams {
+  @IsNumber()
+  courseId!: number;
+
+  @IsString()
+  @IsOptional()
+  name?: string;
+
+  @IsString()
+  @IsOptional()
+  coordinator_email?: string;
+
+  @IsString()
+  @IsOptional()
+  icalURL?: string;
+
+  @IsArray()
+  @IsOptional()
+  @Type(() => Number)
+  crns?: number[];
+}
+
 export class SemesterPartial {
   id!: number;
   season!: string;
@@ -801,10 +803,11 @@ export type DateRangeType = {
 };
 
 export const ERROR_MESSAGES = {
+  common: {
+    pageOutOfBounds: "Can't retrieve out of bounds page.",
+  },
   courseController: {
     checkIn: {
-      cannotCreateNewQueueIfNotProfessor:
-        "You can't create a new queue if you're not a professor",
       cannotCheckIntoMultipleQueues:
         "Cannot check into multiple queues at the same time",
     },
@@ -813,12 +816,15 @@ export const ERROR_MESSAGES = {
     sectionGroupNotFound: "One or more of the section groups was not found",
     courseOfficeHourError: "Unable to find a course's office hours",
     courseHeatMapError: "Unable to get course's cached heatmap",
+    courseCrnsError: "Unable to get course's crn numbers",
     courseModelError: "Course Model not found",
     noUserFound: "No user found with given email",
     noSemesterFound: "No semester exists for the submitted course",
     updatedQueueError: "Error updating a course queue",
     queuesNotFound: "Queues not found",
     queueNotFound: "Queue not found",
+    queueAlreadyExists: "Queue already exists.",
+    queueNotAuthorized: "Unable to join this professor queue as a TA",
     saveQueueError: "Unable to save queue",
     clearQueueError: "Unable to determine if queue can be cleared",
     createEventError: "An error occurred while creating an event",
@@ -832,6 +838,8 @@ export const ERROR_MESSAGES = {
       "Unable to update professor's last registered semester",
     invalidApplyURL:
       "You are unauthorized to submit an application. Please email help@khouryofficehours.com for the correct URL.",
+    crnAlreadyRegistered: (crn: number, courseId: number): string =>
+      `The CRN ${crn} already exists for another course with course id ${courseId}`,
   },
   questionController: {
     createQuestion: {
@@ -883,6 +891,8 @@ export const ERROR_MESSAGES = {
     getQuestions: "Unable to get questions from queue",
     saveQueue: "Unable to save queue",
     cleanQueue: "Unable to clean queue",
+    cannotCloseQueue: "Unable to close professor queue as a TA",
+    missingStaffList: "Stafflist relation not present on Queue",
   },
   queueRoleGuard: {
     queueNotFound: "Queue not found",
@@ -895,6 +905,7 @@ export const ERROR_MESSAGES = {
   insightsController: {
     insightUnathorized: "User is not authorized to view this insight",
     insightNameNotFound: "The insight requested was not found",
+    insightsDisabled: "Insights are currently unavailable, sorry :(",
   },
   roleGuard: {
     notLoggedIn: "Must be logged in",
@@ -912,6 +923,7 @@ export const ERROR_MESSAGES = {
   alertController: {
     duplicateAlert: "This alert has already been sent",
     notActiveAlert: "This is not an alert that's open for the current user",
+    incorrectPayload: "The payload provided was not of the correct type",
   },
   sseService: {
     getSubClient: "Unable to get the redis subscriber client",
@@ -928,5 +940,10 @@ export const ERROR_MESSAGES = {
     serialize: "Unable to serialize payload",
     publish: "Publisher client is unable to publish",
     clientIdNotFound: "Client ID not found during subscribing to client",
+  },
+  resourcesService: {
+    noDiskSpace:
+      "There is no disk space left to store a iCal file. Please immediately contact your course staff and let them know. They will contact the Khoury Office Hours team as soon as possible.",
+    saveCalError: "There was an error saving an iCal to disk",
   },
 };

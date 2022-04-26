@@ -76,15 +76,23 @@ const HeaderText = styled.div`
   font-variant: small-caps;
 `;
 
+const PopConfirmTitle = styled.div`
+  max-width: 400px;
+`;
+
 const CenterRow = styled(Row)`
   align-items: center;
 `;
 
 interface StudentQueueProps {
   qid: number;
+  cid: number;
 }
 
-export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
+export default function StudentQueue({
+  qid,
+  cid,
+}: StudentQueueProps): ReactElement {
   const { queue } = useQueue(qid);
   const { questions, mutateQuestions } = useQuestions(qid);
   const { studentQuestion, studentQuestionIndex } = useStudentQuestion(qid);
@@ -103,15 +111,14 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
 
   const router = useRouter();
   const editQuestionQueryParam = Boolean(router.query.edit_question as string);
-  const [firstLanding, setFirstLanding] = useState(true);
 
   useEffect(() => {
-    if (editQuestionQueryParam && firstLanding && studentQuestion) {
+    if (editQuestionQueryParam && studentQuestion) {
       mutate(`/api/v1/queues/${qid}/questions`);
       setPopupEditQuestion(true);
-      setFirstLanding(false);
+      router.push(`/course/${cid}/queue/${qid}`);
     }
-  }, [editQuestionQueryParam, qid, studentQuestion, firstLanding]);
+  }, [editQuestionQueryParam, qid, studentQuestion]);
 
   const studentQuestionId = studentQuestion?.id;
   const studentQuestionStatus = studentQuestion?.status;
@@ -173,7 +180,6 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
       text: studentQuestion.text,
       questionType: studentQuestion?.questionType,
       queueId: qid,
-      isOnline: studentQuestion?.isOnline,
       location: studentQuestion?.location,
       force: true,
       groupable: false,
@@ -286,10 +292,17 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
           />
           <QueueInfoColumn
             queueId={qid}
+            isStaff={false}
             buttons={
               !studentQuestion && (
                 <Popconfirm
-                  title="In order to join this queue, you must delete your previous question. Do you want to continue?"
+                  title={
+                    <PopConfirmTitle>
+                      You already have a question in a queue for this course, so
+                      your previous question will be deleted in order to join
+                      this queue. Do you want to continue?
+                    </PopConfirmTitle>
+                  }
                   onConfirm={() => joinQueueOpenModal(true)}
                   okText="Yes"
                   cancelText="No"
@@ -299,7 +312,7 @@ export default function StudentQueue({ qid }: StudentQueueProps): ReactElement {
                 >
                   <JoinButton
                     type="primary"
-                    disabled={!queue?.allowQuestions}
+                    disabled={!queue?.allowQuestions || queue?.isDisabled}
                     data-cy="join-queue-button"
                     onClick={async () =>
                       setShowJoinPopconfirm(!(await joinQueueOpenModal(false)))

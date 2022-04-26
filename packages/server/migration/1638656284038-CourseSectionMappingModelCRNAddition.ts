@@ -19,7 +19,7 @@ export class CourseSectionMappingModelCRNAddition1638656284038
       `ALTER TABLE "course_section_mapping_model" DROP COLUMN "section"`,
     );
     await queryRunner.query(
-      `ALTER TABLE "course_section_mapping_model" ADD "crn" integer NOT NULL`,
+      `ALTER TABLE "course_section_mapping_model" ADD "crn" integer`,
     );
     await queryRunner.query(
       `ALTER TABLE "queue_model_staff_list_user_model" ADD CONSTRAINT "FK_2fd33d9360492e0ae1cc3332bde" FOREIGN KEY ("queueModelId") REFERENCES "queue_model"("id") ON DELETE CASCADE ON UPDATE CASCADE`,

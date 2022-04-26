@@ -19,7 +19,8 @@ export default function AlertsContainer({
 
   const handleClose = async (alertId, courseId, queueId) => {
     await API.alerts.close(alertId);
-    mutateAlerts();
+
+    await mutateAlerts();
     router.push(`/course/${courseId}/queue/${queueId}?edit_question=true`);
   };
 

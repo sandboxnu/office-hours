@@ -6,13 +6,12 @@ import {
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import async from 'async';
-import { OfficeHourModel } from 'course/office-hour.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
-import { Connection, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
+import { Connection } from 'typeorm';
 import { QuestionModel } from '../../question/question.entity';
 import { QueueModel } from '../queue.entity';
-import moment = require('moment');
+import { AlertModel } from '../../alerts/alerts.entity';
 
 /**
  * Clean the queue and mark stale
@@ -49,18 +48,16 @@ export class QueueCleanService {
       await QueueModel.getRepository().find({ relations: ['staffList'] });
 
     queuesWithCheckedInStaff.forEach(async (queue) => {
-      if (!(await queue.areThereOfficeHoursRightNow())) {
-        await queue.staffList.forEach(async (ta) => {
-          await EventModel.create({
-            time: new Date(),
-            eventType: EventType.TA_CHECKED_OUT_FORCED,
-            userId: ta.id,
-            courseId: queue.courseId,
-            queueId: queue.id,
-          }).save();
-        });
-        queue.staffList = [];
-      }
+      await queue.staffList.forEach(async (ta) => {
+        await EventModel.create({
+          time: new Date(),
+          eventType: EventType.TA_CHECKED_OUT_FORCED,
+          userId: ta.id,
+          courseId: queue.courseId,
+          queueId: queue.id,
+        }).save();
+      });
+      queue.staffList = [];
     });
     await QueueModel.save(queuesWithCheckedInStaff);
   }
@@ -84,44 +81,27 @@ export class QueueCleanService {
     }
   }
 
-  // Should we consider cleaning the queue?
-  //  Checks if there are no staff, open questions and that there aren't any office hours soon
-  public async shouldCleanQueue(queue: QueueModel): Promise<boolean> {
-    if (queue.staffList.length === 0) {
-      // Last TA to checkout, so check if we might want to clear the queue
-      const areAnyQuestionsOpen =
-        (await QuestionModel.inQueueWithStatus(
-          queue.id,
-          Object.values(OpenQuestionStatus),
-        ).getCount()) > 0;
-      if (areAnyQuestionsOpen) {
-        const soon = moment().add(15, 'minutes').toDate();
-        const areOfficeHourSoon =
-          (await OfficeHourModel.count({
-            where: {
-              startTime: LessThanOrEqual(soon),
-              endTime: MoreThanOrEqual(soon),
-            },
-          })) > 0;
-        if (!areOfficeHourSoon) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
   private async unsafeClean(queueId: number): Promise<void> {
     const questions = await QuestionModel.inQueueWithStatus(queueId, [
       ...Object.values(OpenQuestionStatus),
       ...Object.values(LimboQuestionStatus),
     ]).getMany();
+    const alerts = await AlertModel.createQueryBuilder('alert')
+      .where('alert.resolved IS NULL')
+      .andWhere("(alert.payload ->> 'queueId')::INTEGER = :queueId ", {
+        queueId,
+      })
+      .getMany();
 
     questions.forEach((q: QuestionModel) => {
       q.status = ClosedQuestionStatus.Stale;
       q.closedAt = new Date();
     });
+    alerts.forEach((a: AlertModel) => {
+      a.resolved = new Date();
+    });
 
     await QuestionModel.save(questions);
+    await AlertModel.save(alerts);
   }
 }

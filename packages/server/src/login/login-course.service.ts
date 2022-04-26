@@ -1,4 +1,10 @@
-import { isKhouryCourse, KhouryDataParams, Role, Season } from '@koh/common';
+import {
+  isKhouryCourse,
+  KhouryDataParams,
+  KhouryProfCourse,
+  Role,
+  Season,
+} from '@koh/common';
 import { Injectable } from '@nestjs/common';
 import { CourseModel } from 'course/course.entity';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
@@ -7,6 +13,7 @@ import { UserModel } from 'profile/user.entity';
 import { SemesterModel } from 'semester/semester.entity';
 import { Connection } from 'typeorm';
 import { ProfSectionGroupsModel } from './prof-section-groups.entity';
+import { khourySemesterCodes } from './last-registration-model.entity';
 
 @Injectable()
 export class LoginCourseService {
@@ -83,10 +90,17 @@ export class LoginCourseService {
 
     // If Prof, save the JSON data
     if (info.courses[0] && !isKhouryCourse(info.courses[0])) {
-      await ProfSectionGroupsModel.create({
-        profId: user.id,
-        sectionGroups: info.courses,
-      }).save();
+      const profSectionGroups = await ProfSectionGroupsModel.findOne({
+        where: { profId: user.id },
+      });
+      if (profSectionGroups) {
+        profSectionGroups.sectionGroups = info.courses as KhouryProfCourse[];
+      } else {
+        await ProfSectionGroupsModel.create({
+          profId: user.id,
+          sectionGroups: info.courses,
+        }).save();
+      }
     }
 
     user.courses = userCourses;
@@ -139,17 +153,12 @@ export class LoginCourseService {
     season: Season;
     year: number;
   } {
-    const courseSeasonMap = {
-      '10': 'Fall',
-      '30': 'Spring',
-      '40': 'Summer_1',
-      '50': 'Summer_Full',
-      '60': 'Summer_2',
-    };
-
     // parsing time
     let year = Number(khourySemester.slice(0, 4));
-    const season = courseSeasonMap[khourySemester.slice(-2)];
+    const semesterCode = khourySemester.slice(-2);
+    const season = Object.keys(khourySemesterCodes).find(
+      (key) => khourySemesterCodes[key] === semesterCode,
+    ) as Season;
     // edge case for Fall semester, included in the next academic year
     if (season === 'Fall') {
       year--;
