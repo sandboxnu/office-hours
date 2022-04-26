@@ -587,11 +587,10 @@ describe('Course Integration', () => {
       });
 
       const editCourseTomato = {
-        courseId: course.id,
         name: 'Tomato',
         icalURL: 'https://calendar.google.com/calendar/ical/tomato/basic.ics',
         coordinator_email: 'tomato@gmail.com',
-        crns: [30303, 67890],
+        crns: [67890],
       };
 
       // update crns, coordinator email, name, icalURL
@@ -612,6 +611,10 @@ describe('Course Integration', () => {
         where: { crn: 67890, courseId: course.id },
       });
       expect(crnCourseMap).toBeDefined();
+      const crnCourseMapDeleted = await CourseSectionMappingModel.findOne({
+        where: { crn: 30303, courseId: course.id },
+      });
+      expect(crnCourseMapDeleted).toBeUndefined();
     });
 
     it('test crn mapped to another course for a different semester', async () => {
@@ -646,7 +649,6 @@ describe('Course Integration', () => {
       });
 
       const editCourseCrn = {
-        courseId: potato.id,
         crns: [CRN],
       };
 
