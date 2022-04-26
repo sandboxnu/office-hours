@@ -48,6 +48,10 @@ const RightQueueInfoRow = styled.div`
   align-items: center;
 `;
 
+const QueueInfoTags = styled.div`
+  display: flex;
+`;
+
 const QuestionNumberSpan = styled.span`
   font-size: 24px;
 `;
@@ -149,11 +153,7 @@ const OpenQueueCard = ({
         borderRadius: "6px 6px 0 0",
       }}
       className={"open-queue-card"}
-      title={
-        <span>
-          {queue.room} <i>{queue.isProfessorQueue ? `(Professor)` : ``}</i>{" "}
-        </span>
-      }
+      title={<span>{queue.room} </span>}
       extra={
         <span>
           <QueueSizeSpan>{queue.queueSize}</QueueSizeSpan> in queue
@@ -167,17 +167,24 @@ const OpenQueueCard = ({
         </HeaderDiv>
         <RightQueueInfoRow>
           <Space direction="vertical" align="end" size="middle">
-            {!queue.allowQuestions && (
-              <Tooltip title="This queue is no longer accepting questions">
-                <Tag
-                  icon={<StopOutlined />}
-                  color="error"
-                  style={{ margin: 0 }}
-                >
-                  Not Accepting Questions
+            <QueueInfoTags>
+              {queue?.isProfessorQueue && (
+                <Tag color="blue" style={{ margin: 0 }}>
+                  Professor Queue
                 </Tag>
-              </Tooltip>
-            )}
+              )}
+              {!queue.allowQuestions && (
+                <Tooltip title="This queue is no longer accepting questions">
+                  <Tag
+                    icon={<StopOutlined />}
+                    color="error"
+                    style={{ margin: 0 }}
+                  >
+                    Not Accepting Questions
+                  </Tag>
+                </Tooltip>
+              )}
+            </QueueInfoTags>
             <Link
               href="/course/[cid]/queue/[qid]"
               as={`/course/${cid}/queue/${queue.id}`}
