@@ -75,4 +75,15 @@ body {
   .rbc-toolbar {
     visibility: hidden;
   }
+  .fc-col-header-cell-cushion {
+    visibility: hidden;
+  }
+
+  .fc-toolbar-title {
+    visibility: hidden;
+  }
+
+  .fc-event {
+    visibility: hidden;
+  }
 }
