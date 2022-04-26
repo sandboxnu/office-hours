@@ -68,9 +68,8 @@ const RightMenu = styled.div`
 `;
 
 const BarsMenu = styled(Button)`
-  height: 32px;
+  height: 30px;
   padding: 6px;
-  margin-top: 8px;
   display: none;
   background: none;
 
@@ -80,9 +79,10 @@ const BarsMenu = styled(Button)`
 `;
 
 const BarsButton = styled.span`
-  display: block;
+  vertical-align: middle;
   width: 20px;
   height: 2px;
+  margin-bottom: 5px;
   background: #1890ff;
   position: relative;
 

@@ -156,7 +156,7 @@ export default function SettingsPage({
                   }
                 }}
               >
-                Delete my Profile Picture
+                Remove photo
               </ProfilePicButton>
             )}
           </Col>
