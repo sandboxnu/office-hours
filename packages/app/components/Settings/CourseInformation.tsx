@@ -115,7 +115,7 @@ export default function CourseInfo({
         <Form.Item label="Registered CRNs" name="crns">
           {crns.map((crn) => (
             <Tag
-              closeIcon={<DeleteTwoTone twoToneColor="#eb2f96" />}
+              closeIcon={<DeleteTwoTone twoToneColor="#F76C6C" />}
               key={crn}
               closable={true}
               onClose={() => handleCRNDelete(crn)}
@@ -138,7 +138,7 @@ export default function CourseInfo({
           ) : (
             <Tag
               icon={<PlusCircleOutlined />}
-              color="#108ee9"
+              color="#408FEA"
               className="add-crn"
               onClick={showInput}
             >
