@@ -1,10 +1,10 @@
 import { ReactElement, useState, useEffect, useRef } from "react";
-import FullCalendar from "@fullcalendar/react"; // must go before plugins
-import timeGridPlugin from "@fullcalendar/timegrid";
+import FullCalendar, { EventContentArg } from "@fullcalendar/react"; // must go before plugins
+import timeGridPlugin, { DayTimeColsView } from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import iCalendarPlugin from "@fullcalendar/icalendar";
-import { Button, Spin } from "antd";
+import { Button, Spin, Tooltip } from "antd";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import { Role } from "@koh/common";
 import styled from "styled-components";
@@ -39,7 +39,7 @@ type ScheduleProps = {
 
 export default function SchedulePanel({
   courseId,
-  defaultView = "timeGridWeek"
+  defaultView = "timeGridWeek",
 }: ScheduleProps): ReactElement {
   // iCalendarPlugin uses XMLHttpRequest, which is not available when Next.js is trying to
   // server-side render the page. Using state to only render the <FullCalendar> component after
@@ -52,17 +52,32 @@ export default function SchedulePanel({
   useEffect(() => {
     // it is now safe to render the client-side only component
     setIsClientSide(true);
-  });
+  }, []);
+
+  // allows us to render tooltips around events (in case of cluttered calendars)
+  const renderEventContent = (arg: EventContentArg) => {
+    const data = calendarRef.current.getApi().getCurrentData();
+    const viewSpec = data.viewSpecs[arg.view.type].component;
+    if (viewSpec === DayTimeColsView) {
+      return (
+        <Tooltip title={`${arg.timeText}: ${arg.event.title}`}>
+          <span>
+            <strong>{arg.timeText}</strong> {arg.event.title}
+          </span>
+        </Tooltip>
+      );
+    }
+  };
 
   const fetchCalUrl = (refresh: boolean) =>
     `/api/v1/resources/calendar/${courseId}/refresh=${refresh}`;
 
   const refetchEvents = () => {
     const calApi = calendarRef.current.getApi();
-    calApi.getEventSources().forEach(src => src.remove());
+    calApi.getEventSources().forEach((src) => src.remove());
     calApi.addEventSource({
       url: fetchCalUrl(true),
-      format: "ics"
+      format: "ics",
     });
   };
 
@@ -79,19 +94,20 @@ export default function SchedulePanel({
               timeGridPlugin,
               iCalendarPlugin,
               dayGridPlugin,
-              listPlugin
+              listPlugin,
             ]}
             events={{
               url: fetchCalUrl(false),
-              format: "ics"
+              format: "ics",
             }}
+            scrollTime="08:00:00" // auto set each day's view to begin at 8AM
             initialView={defaultView}
             headerToolbar={{
               start: "title",
               center: "dayGridMonth timeGridWeek timeGridDay listWeek",
-              end: "today prev,next"
+              end: "today prev,next",
             }}
-            loading={loading => {
+            loading={(loading) => {
               // FullCal is stupid so if you setState in this cb you get into an infinite render loop
               // https://stackoverflow.com/questions/66818770/fullcalendar-react-loading-function-problem
               // So we're just floating a spinner on top of the calendar and setting its display property
@@ -99,6 +115,7 @@ export default function SchedulePanel({
                 spinnerRef.current.style.display = loading ? "flex" : "none";
             }}
             height="70vh"
+            eventContent={renderEventContent}
           />
         </CalendarWrapper>
       )}
