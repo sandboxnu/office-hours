@@ -100,6 +100,7 @@ export default function SchedulePanel({
               url: fetchCalUrl(false),
               format: "ics",
             }}
+            scrollTime="08:00:00" // auto set each day's view to begin at 8AM
             initialView={defaultView}
             headerToolbar={{
               start: "title",
