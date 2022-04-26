@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { CacheModule } from '@nestjs/common';
 import { TestTypeOrmModule } from '../../test/util/testUtils';
 import { Connection } from 'typeorm';
 import { InsightsService } from './insights.service';
@@ -23,7 +24,7 @@ describe('InsightsService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TestTypeOrmModule],
+      imports: [TestTypeOrmModule, CacheModule.register()],
       providers: [InsightsService],
     }).compile();
 
