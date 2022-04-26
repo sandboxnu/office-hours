@@ -81,7 +81,7 @@ export default function SchedulePanel({
   };
 
   return (
-    <div>
+    <div className="hide-in-percy">
       <SpinnerContainer ref={spinnerRef}>
         <Spin />
       </SpinnerContainer>
