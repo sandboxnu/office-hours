@@ -1,6 +1,6 @@
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
-import { Form, Input, Tag, Button, message } from "antd";
+import { Form, Input, InputNumber, Tag, Button, Space, message } from "antd";
 import React, { ReactElement, useState } from "react";
 import { useCourse } from "../../hooks/useCourse";
 
@@ -12,17 +12,23 @@ export default function CourseInfo({
   const [form] = Form.useForm();
   const [showCRNInput, setShowCRNInput] = useState(false);
   const { course } = useCourse(courseId);
-  const [crns, setCrns] = useState(course.crns);
-  const [inputCRN, setInputCRN] = useState<number | null>(null);
+  const [crns, setCrns] = useState(
+    course.crns.map((c) => c.toString().padStart(5, "0"))
+  );
+  const [inputCRN, setInputCRN] = useState<string | null>(null);
 
   const showInput = () => {
     setShowCRNInput(true);
   };
 
+  const handleDiscardChanges = async () => {
+    form.setFieldsValue({ ...course });
+    setCrns(course.crns.map((c) => c.toString().padStart(5, "0")));
+  };
+
   const handleSaveChanges = async () => {
     const value = await form.validateFields();
-    value.crns = crns;
-    console.log(value);
+    value.crns = Array.from(new Set(crns));
 
     try {
       await API.course.editCourseInfo(course.id, value);
@@ -33,24 +39,28 @@ export default function CourseInfo({
   };
 
   const handleCRNAdd = () => {
-    setCrns([...crns, inputCRN]);
+    if (inputCRN) {
+      setCrns([...crns, inputCRN]);
+    }
     setShowCRNInput(false);
     setInputCRN(null);
   };
 
   const handleCRNDelete = (crn) => {
-    setCrns(crns.filter((c) => c !== crn));
+    crns.splice(crns.indexOf(crn), 1);
+    setCrns(crns);
   };
 
   return (
     <div>
-      <Button
-        onClick={handleSaveChanges}
-        type="primary"
-        style={{ marginTop: "30px" }}
-      >
-        Save Changes
-      </Button>
+      <Space style={{ marginTop: "30px", marginBottom: "20px" }}>
+        <Button onClick={handleDiscardChanges}>Discard Changes</Button>
+
+        <Button onClick={handleSaveChanges} type="primary">
+          Save Changes
+        </Button>
+      </Space>
+
       <Form form={form} layout="vertical" initialValues={course}>
         <Form.Item
           name="name"
@@ -114,18 +124,25 @@ export default function CourseInfo({
             </Tag>
           ))}
           {showCRNInput ? (
-            <Input
-              type="number"
-              size="small"
+            <InputNumber<string>
+              size="large"
               className="tag-input"
               value={inputCRN}
-              onChange={(evt) => setInputCRN(parseInt(evt.target.value))}
+              maxLength={5}
+              min={"00000"}
+              onChange={(evt) => setInputCRN(evt.padStart(5, "0"))}
               onBlur={handleCRNAdd}
               onPressEnter={handleCRNAdd}
+              stringMode
             />
           ) : (
-            <Tag className="add-crn" onClick={showInput}>
-              <PlusOutlined /> Add CRN
+            <Tag
+              icon={<PlusCircleOutlined />}
+              color="#108ee9"
+              className="add-crn"
+              onClick={showInput}
+            >
+              Add CRN
             </Tag>
           )}
         </Form.Item>
