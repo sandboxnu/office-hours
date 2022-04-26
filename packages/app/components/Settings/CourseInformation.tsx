@@ -1,4 +1,4 @@
-import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import { DeleteTwoTone, PlusCircleOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import { Form, Input, InputNumber, Tag, Button, Space, message } from "antd";
 import React, { ReactElement, useState } from "react";
@@ -115,7 +115,7 @@ export default function CourseInfo({
         <Form.Item label="Registered CRNs" name="crns">
           {crns.map((crn) => (
             <Tag
-              closeIcon={<DeleteOutlined />}
+              closeIcon={<DeleteTwoTone twoToneColor="#eb2f96" />}
               key={crn}
               closable={true}
               onClose={() => handleCRNDelete(crn)}
