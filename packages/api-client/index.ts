@@ -3,7 +3,7 @@ import {
   CreateAlertResponse,
   CreateQuestionParams,
   CreateQuestionResponse,
-  DateRangeType,
+  InsightParamsType,
   DesktopNotifBody,
   DesktopNotifPartial,
   GetAlertsResponse,
@@ -263,7 +263,7 @@ class APIClient {
     get: async (
       courseId: number,
       insightName: string,
-      params: DateRangeType
+      params: InsightParamsType
     ): Promise<GetInsightOutputResponse> => {
       return this.req(
         "GET",
