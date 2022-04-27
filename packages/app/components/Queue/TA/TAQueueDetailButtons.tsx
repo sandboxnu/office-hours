@@ -152,6 +152,11 @@ export default function TAQueueDetailButtons({
           false,
           "The student has already been asked to rephrase their question",
         ];
+      } else if (question.status === OpenQuestionStatus.Drafting) {
+        return [
+          false,
+          "The student must finish drafting before they can be asked to rephrase their question",
+        ];
       } else {
         return [true, "Ask the student to add more detail to their question"];
       }
