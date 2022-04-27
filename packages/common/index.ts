@@ -14,6 +14,7 @@ import {
   ValidateIf,
 } from "class-validator";
 import "reflect-metadata";
+import { Cache } from "cache-manager";
 
 export const PROD_URL = "https://officehours.khoury.northeastern.edu";
 export const STAGING_URL = "https://staging.khouryofficehours.com";
@@ -763,7 +764,10 @@ export interface InsightObject {
   roles: Role[];
   component: InsightComponent;
   size: "default" | "small";
-  compute: (insightFilters: any) => Promise<PossibleOutputTypes>;
+  compute: (
+    insightFilters: any,
+    cacheManager?: Cache
+  ) => Promise<PossibleOutputTypes>;
 }
 
 export enum InsightComponent {
@@ -791,6 +795,7 @@ export type BarChartOutputType = {
 export type SimpleTableOutputType = {
   dataSource: StringMap<string>[];
   columns: StringMap<string>[];
+  totalStudents: number;
 };
 
 export type StringMap<T> = {
@@ -800,6 +805,13 @@ export type StringMap<T> = {
 export type DateRangeType = {
   start: string;
   end: string;
+};
+
+export type InsightParamsType = {
+  start: string;
+  end: string;
+  limit: number;
+  offset: number;
 };
 
 export const ERROR_MESSAGES = {

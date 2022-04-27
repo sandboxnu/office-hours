@@ -18,7 +18,6 @@ import ReleaseNotes from "../../../components/Today/ReleaseNotes";
 import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useCourse } from "../../../hooks/useCourse";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
-import TodayPageCreateButton from "../../../components/Today/QueueCreateButton";
 import PopularTimes from "../../../components/Today/PopularTimes/PopularTimes";
 
 const Container = styled.div`
@@ -145,9 +144,6 @@ export default function Today(): ReactElement {
                 />
               )
             }
-            <Row>
-              <TodayPageCreateButton />
-            </Row>
           </TodayCol>
           <TodayCol md={12} sm={24}>
             <SchedulePanel courseId={Number(cid)} defaultView="timeGridDay" />
