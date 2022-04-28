@@ -19,6 +19,7 @@ import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useCourse } from "../../../hooks/useCourse";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import PopularTimes from "../../../components/Today/PopularTimes/PopularTimes";
+import { orderBy } from "lodash";
 
 const Container = styled.div`
   margin-top: 32px;
@@ -71,11 +72,14 @@ export default function Today(): ReactElement {
   const role = useRoleInCourse(Number(cid));
   const { course, mutateCourse } = useCourse(Number(cid));
 
+  const sortByProfOrder = role == Role.PROFESSOR ? "desc" : "asc";
   const sortedQueues =
     course?.queues &&
-    [...course?.queues].sort(
-      ({ isOpen: a }, { isOpen: b }) => Number(b) - Number(a)
-    ); // put open queues first
+    orderBy(
+      course?.queues,
+      ["isOpen", "isProfessorQueue"],
+      ["desc", sortByProfOrder]
+    );
 
   const updateQueueNotes = async (
     queue: QueuePartial,
