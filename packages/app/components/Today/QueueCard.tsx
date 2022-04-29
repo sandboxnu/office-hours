@@ -18,7 +18,7 @@ import styled from "styled-components";
 import { QueuePartial } from "../../../common/index";
 import { KOHAvatar } from "../common/SelfAvatar";
 
-type OpenQueueCard = {
+type QueueCard = {
   queue: QueuePartial;
   isTA: boolean;
   updateQueueNotes: (queue: QueuePartial, queueNotes: string) => Promise<void>;
@@ -123,16 +123,20 @@ const QueueCardButtonRow = styled(Row)`
   padding-top: 10px;
 `;
 
-const OpenQueueCardDivider = styled(Divider)`
+const QueueCardDivider = styled(Divider)`
   margin-top: 12px;
   margin-bottom: 0;
 `;
 
-const OpenQueueCard = ({
+const NotesSkeleton = styled(Skeleton)`
+  width: 60%;
+`;
+
+const QueueCard = ({
   queue,
   isTA,
   updateQueueNotes,
-}: OpenQueueCard): ReactElement => {
+}: QueueCard): ReactElement => {
   const [editingNotes, setEditingNotes] = useState(false);
   const [updatedNotes, setUpdatedNotes] = useState(queue.notes);
   const router = useRouter();
@@ -148,7 +152,7 @@ const OpenQueueCard = ({
   return (
     <PaddedCard
       headStyle={{
-        background: "#25426C",
+        background: queue.isOpen ? "#25426C" : "#25426cbf",
         color: "#FFFFFF",
         borderRadius: "6px 6px 0 0",
       }}
@@ -173,12 +177,12 @@ const OpenQueueCard = ({
                   Professor Queue
                 </Tag>
               )}
-              {!queue.allowQuestions && (
+              {queue.isOpen && !queue.allowQuestions && (
                 <Tooltip title="This queue is no longer accepting questions">
                   <Tag
                     icon={<StopOutlined />}
                     color="error"
-                    style={{ margin: 0 }}
+                    style={{ margin: "0px 0px 0px 8px" }}
                   >
                     Not Accepting Questions
                   </Tag>
@@ -218,7 +222,7 @@ const OpenQueueCard = ({
             </Tooltip>
           ))}
         </div>
-        <OpenQueueCardDivider />
+        <QueueCardDivider />
         {editingNotes ? (
           <NotesDiv>
             <NotesInput
@@ -277,15 +281,28 @@ const OpenQueueCard = ({
   );
 };
 
-export default OpenQueueCard;
+export default QueueCard;
 
-export function OpenQueueCardSkeleton(): ReactElement {
+export function QueueCardSkeleton(): ReactElement {
   return (
-    <PaddedCard>
-      <Skeleton paragraph={{ rows: 2 }} />
-      <Row justify="space-between" align="bottom">
-        <Skeleton.Avatar size={96} />
+    <PaddedCard
+      headStyle={{
+        background: "#25426C",
+        color: "#FFFFFF",
+        borderRadius: "6px 6px 0 0",
+      }}
+      className={"open-queue-card"}
+      title={<Skeleton title={false} paragraph={{ rows: 1 }} />}
+    >
+      <QueueInfoRow>
+        <Skeleton title paragraph={{ rows: 0 }} />
         <Skeleton.Button size="large" />
+      </QueueInfoRow>
+      <Skeleton.Avatar size={96} />
+      <QueueCardDivider />
+      <Row justify="space-between" align="bottom">
+        <NotesSkeleton title={false} paragraph={{ rows: 1 }} />
+        <Skeleton.Button size="large" style={{ marginTop: "12px" }} />
       </Row>
     </PaddedCard>
   );

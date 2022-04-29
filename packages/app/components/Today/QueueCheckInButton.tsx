@@ -31,6 +31,9 @@ export default function TodayPageCheckinButton(): ReactElement {
   const { cid } = router.query;
   const { course, mutateCourse } = useCourse(Number(cid));
   const role = useRoleInCourse(Number(cid));
+  const availableQueues = course?.queues.filter((q) =>
+    role === Role.TA ? !q.isProfessorQueue : true
+  );
   const queueCheckedIn = course?.queues.find((queue) =>
     queue.staffList.find((staff) => staff.id === profile?.id)
   );
@@ -85,7 +88,7 @@ export default function TodayPageCheckinButton(): ReactElement {
             try {
               redirectID = await API.taStatus.checkIn(
                 Number(cid),
-                course?.queues[queueId].room
+                availableQueues[queueId].room
               );
               mutateCourse();
               router.push(
@@ -102,8 +105,7 @@ export default function TodayPageCheckinButton(): ReactElement {
               + Create Queue
             </CreateQueueButton>
           }
-          queues={course.queues}
-          role={role}
+          queues={availableQueues}
         />
       )}
       {createQueueModalVisible && (
