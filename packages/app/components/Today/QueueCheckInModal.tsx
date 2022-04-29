@@ -1,4 +1,4 @@
-import { QueuePartial, Role } from "@koh/common";
+import { QueuePartial } from "@koh/common";
 import { Modal, Select } from "antd";
 import { ReactElement } from "react";
 import { ReactNode, useState } from "react";
@@ -9,7 +9,6 @@ interface QueueCheckInModalProps {
   onSubmit: (queueId: number) => void;
   onCancel: () => void;
   button: ReactNode;
-  role: Role;
   queues: QueuePartial[];
 }
 
@@ -33,7 +32,6 @@ export default function QueueCheckInModal({
   onSubmit,
   onCancel,
   button,
-  role,
   queues,
 }: QueueCheckInModalProps): ReactElement {
   const [queueToCheckInto, setQueueToCheckInto] = useState(-1);
@@ -70,15 +68,13 @@ export default function QueueCheckInModal({
               );
             }}
           >
-            {queues
-              .filter((q) => (role === Role.TA ? !q.isProfessorQueue : true))
-              .map((q, i) => (
-                <Option
-                  key={i}
-                  value={i}
-                  data-cy={`select-queue-${q.room}`}
-                >{`${q.room}`}</Option>
-              ))}
+            {queues.map((q, i) => (
+              <Option
+                key={i}
+                value={i}
+                data-cy={`select-queue-${q.room}`}
+              >{`${q.room}`}</Option>
+            ))}
           </Select>
         </CheckInDropdownContainer>
         <>{button}</>

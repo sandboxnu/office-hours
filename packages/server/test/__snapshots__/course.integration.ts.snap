@@ -108,7 +108,7 @@ Object {
 }
 `;
 
-exports[`Course Integration GET /courses/:id gets queues that are not disabled and not prof queues (TA) 1`] = `
+exports[`Course Integration GET /courses/:id gets queues that are not disabled (TA) 1`] = `
 Object {
   "allowQuestions": false,
   "courseId": 1,
@@ -123,7 +123,7 @@ Object {
 }
 `;
 
-exports[`Course Integration GET /courses/:id gets queues that are not disabled and not prof queues (TA) 2`] = `
+exports[`Course Integration GET /courses/:id gets queues that are not disabled (TA) 2`] = `
 Object {
   "allowQuestions": false,
   "courseId": 1,
@@ -134,6 +134,44 @@ Object {
   "notes": null,
   "queueSize": 0,
   "room": "room 3",
+  "staffList": Array [
+    Object {
+      "defaultMessage": null,
+      "desktopNotifsEnabled": false,
+      "email": "user@neu.edu",
+      "firstName": "User",
+      "hideInsights": Array [],
+      "id": 2,
+      "includeDefaultMessage": true,
+      "insights": Array [
+        "TotalStudents",
+        "TotalQuestionsAsked",
+        "MedianWaitTime",
+        "QuestionTypeBreakdown",
+        "MostActiveStudents",
+        "QuestionToStudentRatio",
+        "MedianHelpingTime",
+      ],
+      "lastName": "Person",
+      "name": "User Person",
+      "phoneNotifsEnabled": false,
+      "photoURL": null,
+    },
+  ],
+}
+`;
+
+exports[`Course Integration GET /courses/:id gets queues that are not disabled (TA) 3`] = `
+Object {
+  "allowQuestions": false,
+  "courseId": 1,
+  "id": 4,
+  "isDisabled": false,
+  "isOpen": true,
+  "isProfessorQueue": true,
+  "notes": null,
+  "queueSize": 0,
+  "room": "room 4",
   "staffList": Array [
     Object {
       "defaultMessage": null,
