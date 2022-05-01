@@ -53,23 +53,19 @@ export default function CourseInfo({
 
   return (
     <div>
-      <Space style={{ marginTop: "30px", marginBottom: "20px" }}>
-        <Button onClick={handleDiscardChanges}>Discard Changes</Button>
-
-        <Button onClick={handleSaveChanges} type="primary">
-          Save Changes
-        </Button>
-      </Space>
-
       <Form form={form} layout="vertical" initialValues={course}>
-        <Form.Item
-          name="name"
-          label="Course Display Name"
-          tooltip="This is the course name that will be displayed within the app"
-          rules={[{ required: true, message: "Please input a display name." }]}
-        >
-          <Input placeholder="ex: CS 2500" maxLength={20} />
-        </Form.Item>
+        <Space style={{ marginTop: "25px" }}>
+          <Form.Item
+            name="name"
+            label="Course Display Name"
+            tooltip="This is the course name that will be displayed within the app"
+            rules={[
+              { required: true, message: "Please input a display name." },
+            ]}
+          >
+            <Input placeholder="ex: CS 2500" maxLength={20} />
+          </Form.Item>
+        </Space>
 
         <Form.Item
           name="coordinator_email"
@@ -92,7 +88,7 @@ export default function CourseInfo({
               See{" "}
               <a
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 href="https://info.khouryofficehours.com/coordinators-manual"
               >
                 here
@@ -115,7 +111,13 @@ export default function CourseInfo({
         <Form.Item label="Registered CRNs" name="crns">
           {crns.map((crn) => (
             <Tag
-              closeIcon={<DeleteTwoTone twoToneColor="#F76C6C" />}
+              style={{ fontSize: "15px" }}
+              closeIcon={
+                <DeleteTwoTone
+                  twoToneColor="#F76C6C"
+                  style={{ fontSize: "15px" }}
+                />
+              }
               key={crn}
               closable={true}
               onClose={() => handleCRNDelete(crn)}
@@ -125,7 +127,7 @@ export default function CourseInfo({
           ))}
           {showCRNInput ? (
             <InputNumber<string>
-              size="large"
+              size={"small"}
               className="tag-input"
               value={inputCRN}
               maxLength={5}
@@ -137,7 +139,8 @@ export default function CourseInfo({
             />
           ) : (
             <Tag
-              icon={<PlusCircleOutlined />}
+              icon={<PlusCircleOutlined style={{ fontSize: "15px" }} />}
+              style={{ fontSize: "14px" }}
               color="#408FEA"
               className="add-crn"
               onClick={showInput}
@@ -147,6 +150,14 @@ export default function CourseInfo({
           )}
         </Form.Item>
       </Form>
+
+      <Space style={{ marginTop: "5px" }}>
+        <Button onClick={handleDiscardChanges}>Discard Changes</Button>
+
+        <Button onClick={handleSaveChanges} type="primary">
+          Save Changes
+        </Button>
+      </Space>
     </div>
   );
 }
