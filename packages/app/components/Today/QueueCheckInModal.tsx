@@ -58,7 +58,7 @@ export default function QueueCheckInModal({
           <Select
             showSearch
             style={{ width: 200 }}
-            placeholder="Select a course"
+            placeholder="Select a queue"
             optionFilterProp="children"
             onChange={onQueueUpdate}
             data-cy="select-existing-queue"
