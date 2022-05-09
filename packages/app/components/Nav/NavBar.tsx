@@ -115,7 +115,7 @@ interface NavBarProps {
 export default function NavBar({ courseId }: NavBarProps): ReactElement {
   const profile = useProfile();
   if (!courseId) {
-    courseId = profile?.courses[0].course.id;
+    courseId = profile?.courses[0]?.course?.id;
   }
 
   const [_defaultCourse, setDefaultCourse] = useLocalStorage(
@@ -138,7 +138,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
 
   const courseSelector = (
     <Menu>
-      {profile?.courses.map((c) => (
+      {profile?.courses?.map((c) => (
         <CoursesMenuItem
           key={c.course.id}
           onClick={() => setDefaultCourse(c.course)}
