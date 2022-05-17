@@ -47,9 +47,10 @@ export class ResourcesService {
         await this.refetchAllCalendars();
 
         return lock.unlock().catch(function (err) {
-          console.error(err);
+          console.error('Error unlocking Redlock:', err);
         });
       });
+      console.log('Successfully updated course calendars');
     } catch (error) {
       console.error('A problem locking Redlock has occurred:', error);
     }
@@ -60,7 +61,14 @@ export class ResourcesService {
     const regex = /calendar-\d+$/;
     fs.readdirSync(process.env.UPLOAD_LOCATION)
       .filter((f) => regex.test(f))
-      .map((f) => fs.unlinkSync(path.join(process.env.UPLOAD_LOCATION, f)));
+      .map((f) => {
+        try {
+          fs.unlinkSync(path.join(process.env.UPLOAD_LOCATION, f));
+          console.log('Unlinked calendar file', f);
+        } catch (error) {
+          console.error(`Error deleting calendar file ${f}:`, error);
+        }
+      });
 
     const courses = await CourseModel.find({ where: { enabled: true } });
     await Promise.all(courses.map((c) => this.refetchCalendar(c)));
@@ -87,6 +95,8 @@ export class ResourcesService {
       (err) => {
         if (err) {
           console.error(ERROR_MESSAGES.resourcesService.saveCalError, err);
+        } else {
+          console.log('Saved calendar for course ', course.id);
         }
       },
     );
