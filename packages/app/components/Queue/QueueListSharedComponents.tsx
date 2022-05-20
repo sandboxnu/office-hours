@@ -96,6 +96,11 @@ const QueueInfo = styled.div`
   margin-bottom: 24px;
 `;
 
+const QueueText = styled.div`
+  height: 200px;
+  overflow-y: auto;
+`;
+
 const DisableQueueButton = styled(QueueInfoColumnButton)`
   color: white;
   background: #da3236;
@@ -193,20 +198,22 @@ export function QueueInfoColumn({
       {queue?.notes && (
         <QueuePropertyRow>
           <NotificationOutlined />
-          <Linkify
-            componentDecorator={(decoratedHref, decoratedText, key) => (
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
-                href={decoratedHref}
-                key={key}
-              >
-                {decoratedText}
-              </a>
-            )}
-          >
-            <QueuePropertyText>{queue.notes}</QueuePropertyText>
-          </Linkify>
+          <QueueText>
+            <Linkify
+              componentDecorator={(decoratedHref, decoratedText, key) => (
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={decoratedHref}
+                  key={key}
+                >
+                  {decoratedText}
+                </a>
+              )}
+            >
+              <QueuePropertyText>{queue.notes}</QueuePropertyText>
+            </Linkify>
+          </QueueText>
         </QueuePropertyRow>
       )}
       <QueueUpToDateInfo queueId={queueId} />
