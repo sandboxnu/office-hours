@@ -97,8 +97,9 @@ const QueueInfo = styled.div`
 `;
 
 const QueueText = styled.div`
-  height: 200px;
+  max-height: 200px;
   overflow-y: auto;
+  width: 100%;
 `;
 
 const DisableQueueButton = styled(QueueInfoColumnButton)`
