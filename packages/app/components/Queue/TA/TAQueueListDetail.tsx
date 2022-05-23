@@ -121,8 +121,8 @@ export default function TAQueueListDetail({
     }
   };
 
-  useHotkeys("up", () => navigateQuestions(true));
-  useHotkeys("down", () => navigateQuestions(false));
+  useHotkeys("up", () => navigateQuestions(true), [questions]);
+  useHotkeys("down", () => navigateQuestions(false), [questions]);
 
   const hasUnresolvedRephraseAlert = questions?.unresolvedAlerts
     ?.map((payload) => (payload as RephraseQuestionPayload).questionId)
