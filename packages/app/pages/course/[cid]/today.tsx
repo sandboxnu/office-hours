@@ -20,6 +20,7 @@ import { useCourse } from "../../../hooks/useCourse";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import PopularTimes from "../../../components/Today/PopularTimes/PopularTimes";
 import { orderBy } from "lodash";
+import ApplyToSandbox from "../../../components/Today/SandboxApplication";
 
 const Container = styled.div`
   margin-top: 32px;
@@ -104,6 +105,7 @@ export default function Today(): ReactElement {
       </Head>
       <ReleaseNotes />
       <WelcomeStudents />
+      <ApplyToSandbox />
       <NavBar courseId={Number(cid)} />
       <Container>
         <Row gutter={64}>
