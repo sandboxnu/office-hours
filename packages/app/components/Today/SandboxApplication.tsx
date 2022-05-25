@@ -36,7 +36,7 @@ export default function ApplyToSandbox(): ReactElement {
         <br />
         <br />
         <div style={{ justifyContent: "space-between", display: "flex" }}>
-          <div>Application closes June 5th 2022.</div>
+          <div>Applications close June 5th 2022.</div>
           <a
             href={"https://www.sandboxnu.com/apply/developer/"}
             target={"_blank"}
