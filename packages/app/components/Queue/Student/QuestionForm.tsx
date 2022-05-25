@@ -83,7 +83,7 @@ export default function QuestionForm({
       setQuestionText(question.text);
       setQuestionTypeInput(question.questionType);
     }
-  }, [question, visible, questionTypeInput, questionText]);
+  }, [question, visible]);
 
   // on question type change, update the question type state
   const onCategoryChange = (e: RadioChangeEvent) => {

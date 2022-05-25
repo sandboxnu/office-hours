@@ -64,7 +64,8 @@ export default function ProfileDrawer({
           </Space>
           <Space>
             <Text keyboard>shift</Text>
-            <Text keyboard>d</Text>Delete the first student&apos;s question
+            <Text keyboard>d</Text>Delete the currently selected student&apos;s
+            question
           </Space>
           <Space>
             <Space size={1}>
