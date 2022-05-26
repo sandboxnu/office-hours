@@ -1,8 +1,11 @@
 import { API } from "@koh/api-client";
-import { ERROR_MESSAGES, OpenQuestionStatus } from "@koh/common";
-import { notification } from "antd";
-import { QuestionStatusKeys, Role } from "@koh/common";
-import { Tooltip } from "antd";
+import {
+  ERROR_MESSAGES,
+  OpenQuestionStatus,
+  QuestionStatusKeys,
+  Role,
+} from "@koh/common";
+import { notification, Tooltip } from "antd";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useCourse } from "../../../hooks/useCourse";
@@ -114,7 +117,8 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
     mutateQuestions();
     openTeams();
   };
-
+  const staffPerms =
+    (!queue.isProfessorQueue && role === Role.TA) || role === Role.PROFESSOR;
   // TODO: figure out tooltips
   if (queue) {
     return (
@@ -122,7 +126,7 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
         <Container>
           <QueueInfoColumn
             queueId={qid}
-            isStaff={true}
+            isStaff={staffPerms}
             buttons={
               <>
                 <EditQueueButton
