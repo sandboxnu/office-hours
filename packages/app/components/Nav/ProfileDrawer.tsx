@@ -32,51 +32,51 @@ interface ProfileDrawerProps {
   courseId: number;
 }
 
+function shortcutInfoContent(role: Role): ReactNode {
+  if (role === Role.STUDENT) {
+    return (
+      <Space direction="vertical" style={{ display: "flex" }}>
+        <Space>
+          <Text keyboard>shift</Text>
+          <Text keyboard>n</Text>Create a new question
+        </Space>
+        <Space>
+          <Text keyboard>shift</Text>
+          <Text keyboard>e</Text>Edit question
+        </Space>
+        <Space size={40}>
+          <Text keyboard>enter</Text>Finish writing question
+        </Space>
+      </Space>
+    );
+  } else {
+    return (
+      <Space direction="vertical" style={{ display: "flex" }}>
+        <Space>
+          <Text keyboard>shift</Text>
+          <Text keyboard>h</Text>Help the next student
+        </Space>
+        <Space>
+          <Text keyboard>shift</Text>
+          <Text keyboard>d</Text>Delete the currently selected student&apos;s
+          question
+        </Space>
+        <Space>
+          <Space size={1}>
+            <Text keyboard>up</Text>/<Text keyboard>down</Text>
+          </Space>
+          Navigate through students
+        </Space>
+      </Space>
+    );
+  }
+}
+
 export default function ProfileDrawer({
   courseId,
 }: ProfileDrawerProps): ReactElement {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const role = useRoleInCourse(courseId);
-
-  function shortcutInfoContent(role: Role): ReactNode {
-    if (role === Role.STUDENT) {
-      return (
-        <Space direction="vertical" style={{ display: "flex" }}>
-          <Space>
-            <Text keyboard>shift</Text>
-            <Text keyboard>n</Text>Create a new question
-          </Space>
-          <Space>
-            <Text keyboard>shift</Text>
-            <Text keyboard>e</Text>Edit question
-          </Space>
-          <Space size={40}>
-            <Text keyboard>enter</Text>Finish writing question
-          </Space>
-        </Space>
-      );
-    } else {
-      return (
-        <Space direction="vertical" style={{ display: "flex" }}>
-          <Space>
-            <Text keyboard>shift</Text>
-            <Text keyboard>h</Text>Help the next student
-          </Space>
-          <Space>
-            <Text keyboard>shift</Text>
-            <Text keyboard>d</Text>Delete the currently selected student&apos;s
-            question
-          </Space>
-          <Space>
-            <Space size={1}>
-              <Text keyboard>up</Text>/<Text keyboard>down</Text>
-            </Space>
-            Navigate through students
-          </Space>
-        </Space>
-      );
-    }
-  }
 
   return (
     <>
@@ -98,6 +98,7 @@ export default function ProfileDrawer({
                     title: "Queue Page Keyboard Shortcuts",
                     content: shortcutInfoContent(role),
                   });
+                  setIsPopoverOpen(false);
                 }}
               >
                 Keyboard Shortcuts
