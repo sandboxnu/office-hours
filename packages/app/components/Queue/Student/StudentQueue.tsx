@@ -26,6 +26,7 @@ import StudentBanner from "./StudentBanner";
 import CantFindModal from "./StudentCantFindModal";
 import StudentQueueCard from "./StudentQueueCard";
 import StudentRemovedFromQueueModal from "./StudentRemovedFromQueueModal";
+import { useHotkeys } from "react-hotkeys-hook";
 
 const Container = styled.div`
   flex: 1;
@@ -271,6 +272,26 @@ export default function StudentQueue({
       isFirstQuestion,
       setIsFirstQuestion,
     ]
+  );
+
+  useHotkeys(
+    "shift+e",
+    () => {
+      if (studentQuestion) {
+        openEditModal();
+      }
+    },
+    [studentQuestion]
+  );
+
+  useHotkeys(
+    "shift+n",
+    () => {
+      if (!studentQuestion && queue?.allowQuestions && !queue?.isDisabled) {
+        joinQueueOpenModal(false).then((res) => setShowJoinPopconfirm(!res));
+      }
+    },
+    [studentQuestion, queue]
   );
 
   if (queue && questions) {
