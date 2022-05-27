@@ -20,6 +20,7 @@ import { EditQueueModal } from "./EditQueueModal";
 import TAQueueListDetail from "./TAQueueListDetail";
 import { useTeams } from "../../../hooks/useTeams";
 import { useDefaultMessage } from "../../../hooks/useDefaultMessage";
+import { useHotkeys } from "react-hotkeys-hook";
 
 /**
  * Method to help student and
@@ -114,6 +115,16 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
     mutateQuestions();
     openTeams();
   };
+
+  useHotkeys(
+    "shift+h",
+    () => {
+      if (isCheckedIn && nextQuestion && !isHelping) {
+        helpNext();
+      }
+    },
+    [isCheckedIn, nextQuestion, isHelping, qid, defaultMessage]
+  );
 
   // TODO: figure out tooltips
   if (queue) {
