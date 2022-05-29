@@ -107,12 +107,6 @@ const DisableQueueButton = styled(QueueInfoColumnButton)`
   }
 `;
 
-const ClearQueueButton = styled(QueueInfoColumnButton)`
-  color: #da3236;
-  background: #fff;
-  border-color: #da3236;
-`;
-
 const QueueManagementBox = styled.div`
   display: flex;
   flex-direction: column;
@@ -220,7 +214,7 @@ export function QueueInfoColumn({
             arrowPointAtCenter={true}
             onConfirm={clearQueue}
           >
-            <ClearQueueButton>Clear Queue</ClearQueueButton>
+            <QueueInfoColumnButton danger>Clear Queue</QueueInfoColumnButton>
           </Popconfirm>
           <DisableQueueButton
             onClick={confirmDisable}
