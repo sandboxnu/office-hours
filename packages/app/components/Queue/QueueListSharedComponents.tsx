@@ -111,6 +111,12 @@ const ClearQueueButton = styled(QueueInfoColumnButton)`
   color: #da3236;
   background: #fff;
   border-color: #da3236;
+  &:hover,
+  &:focus {
+    background: #fc7f81;
+    color: #fff;
+    border-color: #fc7f81;
+  }
 `;
 
 const QueueManagementBox = styled.div`
