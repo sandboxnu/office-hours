@@ -113,9 +113,9 @@ const ClearQueueButton = styled(QueueInfoColumnButton)`
   border-color: #da3236;
   &:hover,
   &:focus {
-    background: #fc7f81;
-    color: #fff;
-    border-color: #fc7f81;
+    background: #fff;
+    color: #fa541c;
+    border-color: #fa541c;
   }
 `;
 
