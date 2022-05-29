@@ -105,7 +105,7 @@ export default function Today(): ReactElement {
       </Head>
       <ReleaseNotes />
       <WelcomeStudents />
-      <ApplyToSandbox />
+      {role != Role.PROFESSOR && <ApplyToSandbox />}
       <NavBar courseId={Number(cid)} />
       <Container>
         <Row gutter={64}>

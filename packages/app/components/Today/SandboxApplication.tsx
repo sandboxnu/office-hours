@@ -2,12 +2,16 @@ import { Modal, Button } from "antd";
 import { ReactElement } from "react";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 
+const APPS_OPEN = new Date("May 30, 2022 8:00:00").getTime();
+const APPS_CLOSE = new Date("June 8, 2022 23:59:59").getTime();
+const TODAY = Date.now();
+
 export default function ApplyToSandbox(): ReactElement {
   const [firstTime, setFirstTime] = useLocalStorage("seenApplyModal", true);
 
   return (
     <Modal
-      visible={firstTime}
+      visible={firstTime && APPS_OPEN < TODAY && TODAY < APPS_CLOSE}
       footer={null}
       onCancel={() => setFirstTime(false)}
       width={625}
