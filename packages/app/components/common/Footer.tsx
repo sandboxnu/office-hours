@@ -1,6 +1,10 @@
 import { ReactElement } from "react";
 import styled from "styled-components";
 
+const APPS_OPEN = new Date("May 30, 2022 8:00:00").getTime();
+const APPS_CLOSE = new Date("June 8, 2022 23:59:59").getTime();
+const TODAY = Date.now();
+
 const FullWidth = styled.footer`
   width: 100%;
   background: #ebebeb;
@@ -41,6 +45,18 @@ export function Footer(): ReactElement {
           GitHub.
         </a>
       </div>
+      {APPS_OPEN < TODAY && TODAY < APPS_CLOSE && (
+        <div>
+          <a
+            onClick={() => {
+              window.open("https://www.sandboxnu.com/apply/developer/");
+            }}
+          >
+            👩🏻‍💻 Apply to Sandbox
+          </a>{" "}
+          today! Applications close June 5th 2022.
+        </div>
+      )}
       <div>
         <a
           onClick={() => {
