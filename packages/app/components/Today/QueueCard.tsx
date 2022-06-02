@@ -69,7 +69,7 @@ const HeaderText = styled.div`
   margin-bottom: 8px;
 `;
 
-const OpenQueueButton = styled(Button)`
+const ViewQueueButton = styled(Button)`
   color: #5f6b79;
   border-radius: 6px;
   font-weight: 500;
@@ -193,22 +193,18 @@ const QueueCard = ({
               href="/course/[cid]/queue/[qid]"
               as={`/course/${cid}/queue/${queue.id}`}
             >
-              <OpenQueueButton
+              <ViewQueueButton
                 style={{}}
                 size="large"
                 data-cy="open-queue-button"
               >
-                Open Queue
-              </OpenQueueButton>
+                View Queue
+              </ViewQueueButton>
             </Link>
           </Space>
         </RightQueueInfoRow>
       </QueueInfoRow>
-      {
-        staffList.length > 1 && (
-          <HeaderText>checked-in staff</HeaderText>
-        ) /*todo: add better text*/
-      }
+      {staffList.length > 1 && <HeaderText>checked-in staff</HeaderText>}
 
       <Row justify="space-between" align="middle">
         <div>
