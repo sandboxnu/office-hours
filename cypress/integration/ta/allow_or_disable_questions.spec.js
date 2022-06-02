@@ -64,7 +64,7 @@ describe("When allow questions is disabled", () => {
 
     cy.visit(`/course/${this.queue.courseId}/today`);
 
-    cy.get(".ant-modal-close-x").click();
+    cy.get(".ant-modal-close-x").click({ multiple: true });
     cy.get(".ant-modal-close-x").should("not.be.visible");
 
     // Check that the queue is not acccpeting new questions on the today page

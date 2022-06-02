@@ -20,7 +20,7 @@ describe("Can successfully check in and out of a queue when their is scheduled o
     cy.visit(`/course/${this.queue.courseId}/today`);
 
     // close "Welcome to Khoury" modal
-    cy.get(".ant-modal-close-x").click();
+    cy.get(".ant-modal-close-x").click({ multiple: true });
 
     taOpenOnline();
 
@@ -53,7 +53,7 @@ describe("Can successfully check in and out of a queue when their is scheduled o
       queueId: "queue.id",
     });
 
-    cy.get(".ant-modal-close-x").click();
+    cy.get(".ant-modal-close-x").click({ multiple: true });
     // Click "Check in"
     taOpenOnline();
     cy.location("pathname").should("contain", "/queue");
@@ -110,7 +110,7 @@ describe("Can successfully check in and out of a queue when their is scheduled o
     cy.visit(`/course/${this.queue.courseId}/today`);
 
     // Wait for page to load
-    cy.get(".ant-modal-close-x").click();
+    cy.get(".ant-modal-close-x").click({ multiple: true });
     cy.get("button").should("contain", "Check In");
 
     // Click "Check in"

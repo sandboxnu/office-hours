@@ -10,7 +10,7 @@ describe("Edit Queue Notes", () => {
 
   it("can successfully edit queue notes as a ta on today page", function () {
     cy.visit(`/course/${this.queue.course.id}/today`);
-    cy.get(".ant-modal-close-x").click();
+    cy.get(".ant-modal-close-x").click({ multiple: true });
     taOpenOnline();
     cy.visit(`/course/${this.queue.course.id}/today`);
 
