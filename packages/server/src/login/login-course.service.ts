@@ -11,7 +11,7 @@ import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
 import { SemesterModel } from 'semester/semester.entity';
-import { Connection } from 'typeorm';
+import { Connection, In, Not } from 'typeorm';
 import { ProfSectionGroupsModel } from './prof-section-groups.entity';
 import { khourySemesterCodes } from './last-registration-model.entity';
 
@@ -194,20 +194,14 @@ export class LoginCourseService {
       Fall: [],
       Spring: [],
     };
-    const courses = (
-      await CourseModel.find({
-        where: { enabled: true },
-        relations: ['semester'],
-      })
-    ).filter(
-      (c) =>
-        // don't get courses that correspond to current sem or are concurrent to current sem
-        !(
-          c.semesterId === currSem.id ||
-          (c.semester.year === currSem.year &&
-            concurrentSeasons[currSem.season].includes(c.semester.season))
-        ),
-    );
+    const concurrentSems = await SemesterModel.find({
+      season: In(concurrentSeasons[currSem.season]),
+      year: currSem.year,
+    });
+    const activeSemIds = [...concurrentSems.map((s) => s.id), currSem.id];
+    const courses = await CourseModel.find({
+      where: { enabled: true, semesterId: Not(In(activeSemIds)) },
+    });
     courses.forEach((c) => (c.enabled = false));
 
     try {
