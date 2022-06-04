@@ -3,6 +3,7 @@ import {
   ERROR_MESSAGES,
   GetCourseOverridesResponse,
   GetCourseResponse,
+  GetCourseUserInfoResponse,
   QueuePartial,
   RegisterCourseParams,
   Role,
@@ -10,7 +11,6 @@ import {
   TACheckoutResponse,
   UpdateCourseOverrideBody,
   UpdateCourseOverrideResponse,
-  UserPartial,
 } from '@koh/common';
 import {
   BadRequestException,
@@ -597,7 +597,7 @@ export class CourseController {
     @Param('page') page: number,
     @Param('role') role?: Role,
     @Query('search') search?: string,
-  ): Promise<UserPartial[]> {
+  ): Promise<GetCourseUserInfoResponse> {
     const pageSize = 50;
     if (!search) {
       search = '';

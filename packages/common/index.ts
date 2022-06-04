@@ -442,6 +442,10 @@ export class GetCourseResponse {
   selfEnroll!: boolean;
 }
 
+export class GetCourseUserInfoResponse {
+  users!: UserPartial[];
+  total!: number;
+}
 export class GetSelfEnrollResponse {
   courses!: CoursePartial[];
 }

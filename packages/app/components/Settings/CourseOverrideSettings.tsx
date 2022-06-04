@@ -13,7 +13,6 @@ const { Column } = Table;
 type CourseOverrideSettingsProps = { courseId: number };
 
 const OverrideContents = styled.div`
-  width: 90%;
   margin-left: auto;
   margin-right: auto;
   padding-top: 50px;
@@ -36,6 +35,8 @@ export default function CourseOverrideSettings({
 
   return (
     <OverrideContents>
+      <h1>Course Overrides</h1>
+      <br />
       <AddOverrideInput courseId={courseId} onAddOverride={() => mutate()} />
       <Table
         dataSource={data?.data.map((row, i) => ({
@@ -69,6 +70,7 @@ export default function CourseOverrideSettings({
           )}
         />
       </Table>
+      <br />
       <div>
         Is Khoury Admin/Banner down? Toggle this to temporarily allow students
         to join your class.{" "}
@@ -80,6 +82,7 @@ export default function CourseOverrideSettings({
           defaultChecked={course?.selfEnroll}
         />
       </div>
+      <br />
       <b>
         You must manually toggle this feature off later, or any student will be
         allowed to join your class.
