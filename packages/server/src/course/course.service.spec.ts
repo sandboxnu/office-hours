@@ -179,7 +179,7 @@ describe('CourseService', () => {
     it('returns everyone for fundies, no role, no search term', async () => {
       const courseId = 1;
       const resp = await service.getUserInfo(courseId, page, pageSize);
-      expect(resp.map((info) => info.name)).toEqual([
+      expect(resp.users.map((info) => info.name)).toEqual([
         'Angela Zheng',
         'Danish Farooq',
         'Iris Liu',
@@ -200,7 +200,7 @@ describe('CourseService', () => {
         search,
         role,
       );
-      expect(resp.map((info) => info.name)).toEqual([
+      expect(resp.users.map((info) => info.name)).toEqual([
         'Danish Farooq',
         'Iris Liu',
       ]);
@@ -216,7 +216,7 @@ describe('CourseService', () => {
         search,
         role,
       );
-      expect(resp.map((info) => info.name)).toEqual([
+      expect(resp.users.map((info) => info.name)).toEqual([
         'Neel Bhalla',
         'Tingwei Shi',
         'Vera Kong',
@@ -233,7 +233,7 @@ describe('CourseService', () => {
         search,
         role,
       );
-      expect(resp.map((info) => info.name)).toEqual([
+      expect(resp.users.map((info) => info.name)).toEqual([
         'Angela Zheng',
         'Sumit De',
       ]);
@@ -249,7 +249,7 @@ describe('CourseService', () => {
         search,
         role,
       );
-      expect(resp.map((info) => info.name)).toEqual(['Danish Farooq']);
+      expect(resp.users.map((info) => info.name)).toEqual(['Danish Farooq']);
     });
 
     it('returns all tas for algo', async () => {
@@ -262,7 +262,7 @@ describe('CourseService', () => {
         search,
         role,
       );
-      expect(resp.map((info) => info.name)).toEqual(['Vera Kong']);
+      expect(resp.users.map((info) => info.name)).toEqual(['Vera Kong']);
     });
 
     it('returns all students for algo', async () => {
@@ -275,7 +275,7 @@ describe('CourseService', () => {
         search,
         role,
       );
-      expect(resp.map((info) => info.name)).toEqual([
+      expect(resp.users.map((info) => info.name)).toEqual([
         'Sumit De',
         'Tingwei Shi',
       ]);
@@ -284,9 +284,8 @@ describe('CourseService', () => {
     it('returns name, email, and photoURL for user', async () => {
       const courseId = 1;
       search = 'tingwei';
-      const user = (
-        await service.getUserInfo(courseId, page, pageSize, search)
-      )[0] as UserPartial;
+      const user = (await service.getUserInfo(courseId, page, pageSize, search))
+        .users[0] as UserPartial;
       expect(user.name).toEqual('Tingwei Shi');
       expect(user.email).toEqual('tshi@northeastern.edu');
       expect(user.photoURL).toEqual(
@@ -299,8 +298,8 @@ describe('CourseService', () => {
       const role = Role.PROFESSOR;
       search = 'danish';
       const user = (
-        await service.getUserInfo(courseId, page, pageSize, search, role)
-      )[0] as UserPartial;
+        await await service.getUserInfo(courseId, page, pageSize, search, role)
+      ).users[0] as UserPartial;
       expect(user.name).toEqual('Danish Farooq');
     });
 
@@ -309,8 +308,8 @@ describe('CourseService', () => {
       const role = Role.PROFESSOR;
       search = 'farooq';
       const user = (
-        await service.getUserInfo(courseId, page, pageSize, search, role)
-      )[0] as UserPartial;
+        await await service.getUserInfo(courseId, page, pageSize, search, role)
+      ).users[0] as UserPartial;
       expect(user.name).toEqual('Danish Farooq');
     });
 
@@ -320,7 +319,7 @@ describe('CourseService', () => {
       search = 'Danish Farooq';
       const user = (
         await service.getUserInfo(courseId, page, pageSize, search, role)
-      )[0] as UserPartial;
+      ).users[0] as UserPartial;
       expect(user.name).toEqual('Danish Farooq');
     });
 
@@ -328,7 +327,7 @@ describe('CourseService', () => {
       const courseId = 1;
       search = 'd';
       const resp = await service.getUserInfo(courseId, page, pageSize, search);
-      expect(resp.map((info) => info.name)).toEqual([
+      expect(resp.users.map((info) => info.name)).toEqual([
         'Danish Farooq',
         'Sumit De',
       ]);
@@ -338,7 +337,7 @@ describe('CourseService', () => {
       const courseId = 1;
       pageSize = 3;
       const resp = await service.getUserInfo(courseId, page, pageSize);
-      expect(resp.map((info) => info.name)).toEqual([
+      expect(resp.users.map((info) => info.name)).toEqual([
         'Angela Zheng',
         'Danish Farooq',
         'Iris Liu',
@@ -350,7 +349,7 @@ describe('CourseService', () => {
       pageSize = 3;
       page = 2;
       const resp = await service.getUserInfo(courseId, page, pageSize);
-      expect(resp.map((info) => info.name)).toEqual([
+      expect(resp.users.map((info) => info.name)).toEqual([
         'Neel Bhalla',
         'Sumit De',
         'Tingwei Shi',
@@ -362,7 +361,7 @@ describe('CourseService', () => {
       pageSize = 3;
       page = 3;
       const resp = await service.getUserInfo(courseId, page, pageSize);
-      expect(resp.map((info) => info.name)).toEqual(['Vera Kong']);
+      expect(resp.users.map((info) => info.name)).toEqual(['Vera Kong']);
     });
 
     it('returns no users for fundies when page size is 3 and page is out of bounds', async () => {
@@ -370,7 +369,7 @@ describe('CourseService', () => {
       pageSize = 3;
       page = 4;
       const resp = await service.getUserInfo(courseId, page, pageSize);
-      expect(resp.map((info) => info.name)).toEqual([]);
+      expect(resp.users.map((info) => info.name)).toEqual([]);
     });
   });
 });
