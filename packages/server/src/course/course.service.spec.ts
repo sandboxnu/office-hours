@@ -173,7 +173,7 @@ describe('CourseService', () => {
     it('returns nothing for a non-existing course id', async () => {
       const courseId = 3;
       const resp = await service.getUserInfo(courseId, page, pageSize);
-      expect(resp).toEqual([]);
+      expect(resp.users).toEqual([]);
     });
 
     it('returns everyone for fundies, no role, no search term', async () => {
