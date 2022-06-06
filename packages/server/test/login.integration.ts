@@ -2,6 +2,7 @@ import { Role } from '@koh/common';
 import { JwtService } from '@nestjs/jwt';
 import { TestingModuleBuilder } from '@nestjs/testing';
 import { CourseModel } from 'course/course.entity';
+import { ProfSectionGroupsModel } from '../src/login/prof-section-groups.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { SemesterModel } from 'semester/semester.entity';
 import { LoginModule } from '../src/login/login.module';
@@ -9,6 +10,7 @@ import { UserModel } from '../src/profile/user.entity';
 import {
   CourseFactory,
   CourseSectionFactory,
+  ProfSectionGroupsFactory,
   SemesterFactory,
   UserCourseFactory,
   UserFactory,
@@ -119,9 +121,10 @@ describe('Login Integration', () => {
       let course;
       let course2;
       let course3;
+
       beforeEach(async () => {
         // Make course mapping so usercourse can be added
-        const semester = await SemesterFactory.create();
+        const semester = await SemesterFactory.create(); // 2020 fall
         course = await CourseFactory.create({
           name: 'CS 2510 Accelerated',
           semester,
@@ -147,6 +150,7 @@ describe('Login Integration', () => {
           course: course3,
         });
       });
+
       it('overwrites courses but not names of existing users', async () => {
         let user = await UserFactory.create({
           firstName: 'Bill',
@@ -351,41 +355,155 @@ describe('Login Integration', () => {
         expect(totalUserCoursesUpdated).toEqual(3);
       });
 
-      it('handles new semester with unregistered courses', async () => {
-        const sem = await SemesterModel.findOne({
-          where: { season: 'Fall', year: 2022 },
-        });
-        expect(sem).toBeUndefined();
+      describe('handles new semester with unregistered courses', () => {
+        const fallSecGroups = [
+          {
+            crns: [23456],
+            semester: '202310', // 2022 fall
+            name: 'Fundies 2 Accel',
+          },
+        ];
 
-        await supertest()
-          .post('/khoury_login')
-          .send({
+        it('saves data for new professor', async () => {
+          expect(
+            await UserModel.findOne({
+              where: { email: 'liu.i@northeastern.edu' },
+            }),
+          ).toBeUndefined();
+
+          await supertest()
+            .post('/khoury_login')
+            .send({
+              email: 'liu.i@northeastern.edu',
+              campus: 1,
+              first_name: 'Iris',
+              last_name: 'Liu',
+              photo_url: 'sdf',
+              courses: fallSecGroups,
+            })
+            .expect(201);
+
+          const prof = await UserModel.findOne({
+            where: { email: 'liu.i@northeastern.edu' },
+            relations: ['courses'],
+          });
+
+          expect(prof.courses).toHaveLength(0); // Does not create user courses
+          const profSectionGroups = await ProfSectionGroupsModel.findOne({
+            where: { profId: prof.id },
+          });
+          expect(profSectionGroups.sectionGroups).toEqual(fallSecGroups);
+        });
+
+        it('saves data for returning professor', async () => {
+          const prof = await UserFactory.create({
             email: 'liu.i@northeastern.edu',
-            campus: 1,
-            first_name: 'Iris',
-            last_name: 'Liu',
-            photo_url: 'sdf',
-            courses: [
-              {
-                crns: [23456],
-                semester: '202310', // 2022 fall
-                name: 'Fundies 2 Accel',
-              },
-            ],
-          })
-          .expect(201);
+            firstName: 'Iris',
+            lastName: 'Liu',
+          });
+          await ProfSectionGroupsFactory.create({
+            prof,
+            sectionGroups: [],
+          });
 
-        const prof = await UserModel.findOne({
-          where: { email: 'liu.i@northeastern.edu' },
-          relations: ['courses'],
+          await supertest()
+            .post('/khoury_login')
+            .send({
+              email: 'liu.i@northeastern.edu',
+              campus: 1,
+              first_name: 'Iris',
+              last_name: 'Liu',
+              photo_url: 'sdf',
+              courses: fallSecGroups,
+            })
+            .expect(201);
+
+          const newSectionGroups = await ProfSectionGroupsModel.findOne({
+            where: { profId: prof.id },
+          });
+          expect(newSectionGroups.sectionGroups).toEqual(fallSecGroups);
         });
 
-        expect(prof.courses).toHaveLength(0); // Does not create user courses
+        it('cycles between semesters', async () => {
+          const summerFull = await SemesterFactory.create({
+            season: 'Summer_Full',
+            year: 2022,
+          });
+          const summer2 = await SemesterFactory.create({
+            season: 'Summer_2',
+            year: 2022,
+          });
+          const course4 = await CourseFactory.create({ semester: summerFull });
+          const course5 = await CourseFactory.create({ semester: summer2 });
 
-        const newSem = await SemesterModel.findOne({
-          where: { season: 'Fall', year: 2022 },
+          const sem = await SemesterModel.findOne({
+            where: { season: 'Fall', year: 2022 },
+          });
+          expect(sem).toBeUndefined();
+
+          await supertest()
+            .post('/khoury_login')
+            .send({
+              email: 'liu.i@northeastern.edu',
+              campus: 1,
+              first_name: 'Iris',
+              last_name: 'Liu',
+              photo_url: 'sdf',
+              courses: fallSecGroups,
+            })
+            .expect(201);
+
+          const newSem = await SemesterModel.findOne({
+            where: { season: 'Fall', year: 2022 },
+          });
+          expect(newSem).toBeDefined();
+
+          const oldCourses: CourseModel[] = [
+            course,
+            course2,
+            course3,
+            course4,
+            course5,
+          ];
+          for (const c of oldCourses) {
+            await c.reload();
+            expect(c.enabled).toBe(false);
+          }
         });
-        expect(newSem).toBeDefined();
+
+        it('does not disable concurrent semester courses', async () => {
+          const summer1 = await SemesterFactory.create({
+            season: 'Summer_1',
+            year: 2022,
+          });
+          const course4 = await CourseFactory.create({ semester: summer1 });
+
+          await supertest()
+            .post('/khoury_login')
+            .send({
+              email: 'liu.i@northeastern.edu',
+              campus: 1,
+              first_name: 'Iris',
+              last_name: 'Liu',
+              photo_url: 'sdf',
+              courses: [
+                {
+                  crns: [23456],
+                  semester: '202250', // 2022 summer full
+                  name: 'Fundies 2 Accel',
+                },
+              ],
+            })
+            .expect(201);
+
+          const oldCourses: CourseModel[] = [course, course2, course3];
+          for (const c of oldCourses) {
+            await c.reload();
+            expect(c.enabled).toBe(false);
+          }
+          await course4.reload();
+          expect(course4.enabled).toBe(true); // concurrent course stays active
+        });
       });
     });
 
