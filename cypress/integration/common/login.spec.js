@@ -9,7 +9,6 @@ describe("Login", () => {
   it("logout works", () => {
     createAndLoginTA();
     cy.visit(`/`);
-    cy.get(".ant-modal-close-x").click({ multiple: true });
     cy.get(".ant-avatar").click({ force: true });
     cy.get("[data-cy='logout-button']").should(
       "have.attr",

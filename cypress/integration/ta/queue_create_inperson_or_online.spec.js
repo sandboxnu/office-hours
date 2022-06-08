@@ -10,11 +10,9 @@ describe('Can successfully create queues', () => {
         it('Creates an in-person queue via modal, and Other TAs can join custom in-person queues', function () {
             const roomName = "Snell 049"
             cy.visit(`/course/${this.ta.course.id}/today`);
-            cy.get(".ant-modal-close-x").click({ multiple: true });
-
+            cy.wait(1500);
 
             cy.get("[data-cy=\"check-in-modal-button\"]").click();
-            cy.wait(500);
 
             // name the other OH field
             cy.get("[data-cy=\"qc-location\"]")
@@ -48,6 +46,7 @@ describe('Can successfully create queues', () => {
                 identifier: "ta2",
                 courseId: "ta.course.id",
             });
+            cy.wait(1500);
 
 
             cy.get("[data-cy='check-in-modal-button']").click();
@@ -84,7 +83,6 @@ describe('Can successfully create queues', () => {
                 courseId: "ta.course.id",
             });
             cy.visit(`/course/${this.ta.course.id}/today`, {timeout: 20000});
-            cy.get(".ant-modal-close-x").click({ multiple: true });
             cy.wait(1000);
             // open the online queue
             taOpenOnline();
@@ -105,7 +103,7 @@ describe('Can successfully create queues', () => {
 
         it('Checks properties of the TA queue-create', function () {
             cy.visit(`/course/${this.ta.course.id}/today`, {timeout: 20000});
-            cy.get(".ant-modal-close-x").click({ multiple: true });
+            cy.wait(1500);
             cy.get("[data-cy=\"check-in-modal-button\"]")
                 .should("be.visible")
                 .should("not.be.disabled")
@@ -175,7 +173,7 @@ describe('Can successfully create queues', () => {
 
         it('Checks properties of the prof queue-create', function () {
             cy.visit(`/course/${this.professor.course.id}/today`, {timeout: 20000});
-            cy.get(".ant-modal-close-x").click({ multiple: true });
+            cy.wait(1500);
             cy.get("[data-cy=\"check-in-modal-button\"]")
                 .should("be.visible")
                 .should("not.be.disabled")

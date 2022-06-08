@@ -18,10 +18,7 @@ describe("Can successfully check in and out of a queue when their is scheduled o
   it("should check in as TA and view open queues on dropdown", function () {
     // Visit the today page
     cy.visit(`/course/${this.queue.courseId}/today`);
-
-    // close "Welcome to Khoury" modal
-    cy.get(".ant-modal-close-x").click({ multiple: true });
-
+    cy.wait(1500);
     taOpenOnline();
 
     // check Queue tab exists with one queue
@@ -53,7 +50,6 @@ describe("Can successfully check in and out of a queue when their is scheduled o
       queueId: "queue.id",
     });
 
-    cy.get(".ant-modal-close-x").click({ multiple: true });
     // Click "Check in"
     taOpenOnline();
     cy.location("pathname").should("contain", "/queue");
@@ -110,10 +106,10 @@ describe("Can successfully check in and out of a queue when their is scheduled o
     cy.visit(`/course/${this.queue.courseId}/today`);
 
     // Wait for page to load
-    cy.get(".ant-modal-close-x").click({ multiple: true });
     cy.get("button").should("contain", "Check In");
 
     // Click "Check in"
+    cy.wait(1500);
     taOpenOnline();
     cy.location("pathname").should("contain", "/queue");
     cy.get("body").should("contain", "There are no questions in the queue");
