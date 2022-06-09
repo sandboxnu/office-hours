@@ -7,6 +7,16 @@ import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { TotalQuestionsAsked } from 'insights/insight-objects';
 import _ from 'lodash';
 
+type AboutPageResource = {
+  lastSemesterUpdated: number | null;
+  semesterData: SemesterData[];
+};
+
+type SemesterData = {
+  name: string;
+  totalQuestionsAsked?: number;
+  totalCourses: number;
+};
 @Injectable()
 export class SemesterService {
   constructor(private connection: Connection) {}
@@ -87,6 +97,7 @@ export class SemesterService {
     try {
       const sem = await SemesterModel.findOne({ id: sid });
       return {
+        name: `${sem.season} ${sem.year}`,
         totalQuestionsAsked: await this.totalQuestionsAsked(sem),
         totalCourses: this.totalCourses(sem),
       };
