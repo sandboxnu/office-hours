@@ -116,5 +116,9 @@ describe('SemesterService', () => {
 
       allCourses2.map((course) => expect(course.enabled).toBeTruthy());
     });
+
+    it('getAboutPageStuff', async () => {
+      await service.updateAboutStats();
+    });
   });
 });

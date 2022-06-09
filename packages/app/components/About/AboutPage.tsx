@@ -1,8 +1,9 @@
 import React, { ReactElement } from "react";
 import styled from "styled-components";
-import { Col, Row, Space } from "antd";
+import { Button, Col, Row, Space } from "antd";
 import ProfileCard from "./ProfileCard";
 import { VerticalDivider } from "../Settings/SettingsPage";
+import stats from "../../static/about.json";
 
 const Title = styled.div`
   text-align: center;
@@ -29,11 +30,16 @@ const ProfilesSection = styled.div`
   margin-bottom: 30px;
 `;
 
+const showData = () => {
+  window.alert(JSON.stringify(stats));
+};
+
 export default function AboutPage(): ReactElement {
   return (
     <Row style={{ padding: "20px 0px", flexFlow: "unset" }}>
       <Col span={7} style={{ margin: "0px 30px" }}>
         <Title>About Us</Title>
+        <Button onClick={showData}>CLICK HERE TO SEE SOME JSON</Button>
         <Description>
           <p>
             Khoury Office Hours is developed and maintained by a group of
