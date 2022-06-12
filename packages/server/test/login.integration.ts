@@ -503,6 +503,36 @@ describe('Login Integration', () => {
           }
           await course4.reload();
           expect(course4.enabled).toBe(true); // concurrent course stays active
+
+          const summer2 = await SemesterModel.findOne({
+            where: {
+              season: 'Summer_Full',
+              year: 2022,
+            },
+          });
+          const course5 = await CourseFactory.create({ semester: summer2 });
+          await supertest()
+            .post('/khoury_login')
+            .send({
+              email: 'liu.i@northeastern.edu',
+              campus: 1,
+              first_name: 'Iris',
+              last_name: 'Liu',
+              photo_url: 'sdf',
+              courses: [
+                {
+                  crns: [23456],
+                  semester: '202260', // 2022 summer 2
+                  name: 'Fundies 2 Accel',
+                },
+              ],
+            })
+            .expect(201);
+
+          await course4.reload();
+          expect(course4.enabled).toBe(false); // summer1 course now disabled
+          await course5.reload();
+          expect(course5.enabled).toBe(true); // summerFull course still active
         });
       });
     });
