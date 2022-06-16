@@ -25,7 +25,9 @@ const QueueMenu = styled(SubMenu)`
   }
 
   &&& .ant-menu-submenu-title {
-    padding: 10px 50px !important;
+    @media (min-width: 650px) {
+      padding: 10px 50px !important;
+    }
   }
 `;
 
@@ -43,8 +45,10 @@ const MenuItem = styled(Menu.Item)`
 `;
 
 const QueueMenuItem = styled(Menu.Item)`
-  z-index: 1;
-  background: #ffffff;
+  @media (min-width: 650px) {
+    z-index: 1;
+    background: #ffffff;
+  }
 `;
 
 export type NavBarTabsItem = NavBarGeneralTabItem | NavBarQueueTabItem;
@@ -105,7 +109,7 @@ export default function NavBarTabs({
   return (
     <HorizontalMenu
       selectedKeys={[currentHref]}
-      mode={horizontal ? "horizontal" : "vertical"}
+      mode={horizontal ? "horizontal" : "inline"}
     >
       {tabs.map((tab) =>
         tab.text !== "Queue"

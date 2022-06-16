@@ -28,13 +28,6 @@ const BorderlessMenu = styled(Menu)`
   border: none;
 `;
 
-const NoPaddingSubMenu = styled(SubMenu)`
-  &&& .ant-menu-submenu-title {
-    padding: 0 16px !important;
-  }
-  color: green;
-`;
-
 const AvatarButton = styled.div`
   cursor: pointer;
 `;
@@ -93,9 +86,9 @@ export default function ProfileDrawer({
     <>
       {isMobile ? (
         <BorderlessMenu mode="inline">
-          <NoPaddingSubMenu title="Profile" key="Profile">
+          <SubMenu title="Profile" key="Profile">
             {renderMenuItems()}
-          </NoPaddingSubMenu>
+          </SubMenu>
         </BorderlessMenu>
       ) : (
         <NoPaddingPopover

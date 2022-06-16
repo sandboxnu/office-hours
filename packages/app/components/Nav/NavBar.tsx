@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useCourse } from "../../hooks/useCourse";
+import { useIsMobile } from "../../hooks/useIsMobile";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useProfile } from "../../hooks/useProfile";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
@@ -90,6 +91,8 @@ interface NavBarProps {
 
 export default function NavBar({ courseId }: NavBarProps): ReactElement {
   const profile = useProfile();
+  const isMobile = useIsMobile();
+
   if (!courseId) {
     courseId = profile?.courses[0]?.course?.id;
   }
@@ -140,14 +143,6 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     },
   ];
 
-  if (role === Role.PROFESSOR) {
-    tabs.push({
-      href: "/course/[cid]/course_admin_panel",
-      as: `/course/${courseId}/course_admin_panel`,
-      text: "Admin Panel",
-    });
-  }
-
   if (openQueues?.length > 0) {
     tabs.push({
       text: "Queue",
@@ -156,7 +151,12 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     });
   }
 
-  if (role === Role.PROFESSOR) {
+  if (role === Role.PROFESSOR && !isMobile) {
+    tabs.push({
+      href: "/course/[cid]/course_admin_panel",
+      as: `/course/${courseId}/course_admin_panel`,
+      text: "Admin Panel",
+    });
     tabs.push({
       href: "/course/[cid]/insights",
       as: `/course/${courseId}/insights`,
