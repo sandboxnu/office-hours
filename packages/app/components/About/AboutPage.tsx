@@ -1,9 +1,18 @@
 import React, { ReactElement } from "react";
 import styled from "styled-components";
-import { Col, Row, Space } from "antd";
+import { Space } from "antd";
 import ProfileCard from "./ProfileCard";
 import { VerticalDivider } from "../Settings/SettingsPage";
 
+const Container = styled.div`
+  padding: 20px 0px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  @media (min-width: 650px) {
+    flex-direction: row;
+  }
+`;
 const Title = styled.div`
   text-align: center;
   color: #212934;
@@ -27,12 +36,15 @@ const ProfilesSection = styled.div`
   flex-wrap: wrap;
   max-width: 100%;
   margin-bottom: 30px;
+  @media (max-width: 650px) {
+    justify-content: center;
+  }
 `;
 
 export default function AboutPage(): ReactElement {
   return (
-    <Row style={{ padding: "20px 0px", flexFlow: "unset" }}>
-      <Col span={7} style={{ margin: "0px 30px" }}>
+    <Container>
+      <div style={{ flexShrink: 3, margin: "0 15px" }}>
         <Title>About Us</Title>
         <Description>
           <p>
@@ -84,43 +96,41 @@ export default function AboutPage(): ReactElement {
             </a>
           </p>
         </Description>
-      </Col>
-      <VerticalDivider />
+      </div>
+      <VerticalDivider style={{ margin: "0px 32px" }} />
       <Space
         direction="vertical"
         size={40}
         style={{ flexGrow: 1, paddingTop: "20px" }}
       >
-        <Col span={20} style={{ maxWidth: "100%" }}>
-          <ProfilesTitle>Current Members</ProfilesTitle>
-          <ProfilesSection>
-            {PROFILES_CURRENT.map((prof, idx) => (
-              <ProfileCard
-                key={idx}
-                name={prof.name}
-                role={prof.role}
-                imgSrc={prof.image}
-                linkedin={prof.linkedin}
-                personalSite={prof.personalSite}
-              />
-            ))}
-          </ProfilesSection>
-          <ProfilesTitle>Past Members</ProfilesTitle>
-          <ProfilesSection>
-            {PROFILES_PAST.map((prof, idx) => (
-              <ProfileCard
-                key={idx}
-                name={prof.name}
-                role={prof.role}
-                imgSrc={prof.image}
-                linkedin={prof.linkedin}
-                personalSite={prof.personalSite}
-              />
-            ))}
-          </ProfilesSection>
-        </Col>
+        <ProfilesTitle>Current Members</ProfilesTitle>
+        <ProfilesSection>
+          {PROFILES_CURRENT.map((prof, idx) => (
+            <ProfileCard
+              key={idx}
+              name={prof.name}
+              role={prof.role}
+              imgSrc={prof.image}
+              linkedin={prof.linkedin}
+              personalSite={prof.personalSite}
+            />
+          ))}
+        </ProfilesSection>
+        <ProfilesTitle>Past Members</ProfilesTitle>
+        <ProfilesSection>
+          {PROFILES_PAST.map((prof, idx) => (
+            <ProfileCard
+              key={idx}
+              name={prof.name}
+              role={prof.role}
+              imgSrc={prof.image}
+              linkedin={prof.linkedin}
+              personalSite={prof.personalSite}
+            />
+          ))}
+        </ProfilesSection>
       </Space>
-    </Row>
+    </Container>
   );
 }
 

@@ -1,4 +1,4 @@
-import { DownOutlined } from "@ant-design/icons";
+import { DownOutlined, MenuOutlined } from "@ant-design/icons";
 import { Role } from "@koh/common";
 import { Button, Drawer, Dropdown, Menu } from "antd";
 import Link from "next/link";
@@ -70,36 +70,12 @@ const RightMenu = styled.div`
 const BarsMenu = styled(Button)`
   height: 32px;
   padding: 6px;
-  margin-top: 8px;
+  color: #3684c6;
   display: none;
   background: none;
 
   @media (max-width: 650px) {
     display: inline-block;
-  }
-`;
-
-const BarsButton = styled.span`
-  display: block;
-  width: 20px;
-  height: 2px;
-  background: #1890ff;
-  position: relative;
-
-  &:after,
-  :before {
-    content: attr(x);
-    width: 20px;
-    position: absolute;
-    top: -6px;
-    left: 0;
-    height: 2px;
-    background: #1890ff;
-  }
-
-  &:after {
-    top: auto;
-    bottom: -6px;
   }
 `;
 
@@ -228,7 +204,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
           </RightMenu>
         </MenuCon>
         <BarsMenu type="primary" onClick={showDrawer}>
-          <BarsButton />
+          <MenuOutlined />
         </BarsMenu>
         <Drawer
           title="Course"

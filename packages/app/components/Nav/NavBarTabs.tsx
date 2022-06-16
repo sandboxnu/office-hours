@@ -9,6 +9,7 @@ const { SubMenu } = Menu;
 
 const HorizontalMenu = styled(Menu)<MenuProps>`
   ${(props) => (props.mode === "horizontal" ? "border-bottom: none" : "")}
+  border: none;
 `;
 
 const QueueMenu = styled(SubMenu)`
