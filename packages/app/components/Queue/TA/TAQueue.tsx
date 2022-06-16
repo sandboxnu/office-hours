@@ -117,10 +117,10 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
     mutateQuestions();
     openTeams();
   };
-  const staffPerms =
-    (!queue.isProfessorQueue && role === Role.TA) || role === Role.PROFESSOR;
   // TODO: figure out tooltips
   if (queue) {
+    const staffPerms =
+      (!queue.isProfessorQueue && role === Role.TA) || role === Role.PROFESSOR;
     return (
       <>
         <Container>
