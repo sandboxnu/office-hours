@@ -120,6 +120,7 @@ export default function EditCourse({
               type: "url",
               message: "Please input your office hours calendar URL.",
             },
+            { required: true, pattern: new RegExp(/.*\.ics/) },
           ]}
         >
           <Input placeholder="https://calendar.google.com/calendar/ical/.../basic.ics" />
