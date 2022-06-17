@@ -7,8 +7,40 @@ import { ExclamationCircleOutlined } from "@ant-design/icons";
 import Router from "next/router";
 import { HeaderTitle } from "./Styled";
 import { useCourse } from "../../hooks/useCourse";
+import styled from "styled-components";
 
 const { confirm } = Modal;
+
+// table gets transposed in mobile view
+const ResponsiveTable = styled(Table)`
+  @media screen and (max-width: 650px) {
+    table thead {
+      display: none;
+    }
+    table td {
+      display: flex;
+      padding: 10px 16px;
+    }
+
+    table td::before {
+      content: attr(label);
+      font-weight: bold;
+      width: 120px;
+      min-width: 120px;
+    }
+
+    table tr {
+      background: #fafafa;
+      margin-bottom: 10px;
+      display: block;
+    }
+  }
+`;
+const WithdrawButton = styled(Button)`
+  @media (min-width: 650px) {
+    margin-left: 20px;
+  }
+`;
 
 export default function CoursePreferenceSettings(): ReactElement {
   const { data: profile, mutate } = useSWR(`api/v1/profile`, async () =>
@@ -56,11 +88,17 @@ export default function CoursePreferenceSettings(): ReactElement {
       title: "Course name",
       dataIndex: "name",
       key: "name",
+      onCell: () => ({
+        label: "Course name", // label is used to display header in transposed mobile view
+      }),
     },
     {
       title: "Role",
       dataIndex: "role",
       key: "role",
+      onCell: () => ({
+        label: "Role",
+      }),
     },
     {
       title: "Instructor",
@@ -69,6 +107,9 @@ export default function CoursePreferenceSettings(): ReactElement {
       render: function createInstructorCell(courseId) {
         return <InstructorCell courseId={courseId} />;
       },
+      onCell: () => ({
+        label: "Instructor",
+      }),
     },
     {
       title: "",
@@ -76,8 +117,7 @@ export default function CoursePreferenceSettings(): ReactElement {
       dataIndex: "courseId",
       render: function withdrawButton(courseId) {
         return (
-          <Button
-            style={{ marginLeft: "20px" }}
+          <WithdrawButton
             type="primary"
             shape="round"
             onClick={() => {
@@ -86,9 +126,12 @@ export default function CoursePreferenceSettings(): ReactElement {
             danger
           >
             Withdraw
-          </Button>
+          </WithdrawButton>
         );
       },
+      onCell: () => ({
+        label: "",
+      }),
     },
   ];
 
@@ -108,7 +151,10 @@ export default function CoursePreferenceSettings(): ReactElement {
         <HeaderTitle>
           <h1>Course Preferences</h1>
         </HeaderTitle>
-        <Table columns={columns} dataSource={createCourseDataSource()} />
+        <ResponsiveTable
+          columns={columns}
+          dataSource={createCourseDataSource()}
+        />
       </div>
     )
   );
