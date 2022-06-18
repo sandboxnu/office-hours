@@ -23,6 +23,10 @@ const CourseRosterComponent = styled.div`
   margin-right: auto;
 `;
 
+const TableBackground = styled.div`
+  backgroundcolor: white;
+`;
+
 export default function CourseRoster({
   courseId,
 }: CourseRosterProps): ReactElement {
@@ -66,7 +70,12 @@ function RenderTable({
   searchPlaceholder,
 }: RenderTableProps): ReactElement {
   const [page, setPage] = useState(1);
+  const [input, setInput] = useState("");
   const [search, setSearch] = useState("");
+  const handleInput = (event) => {
+    event.preventDefault();
+    setInput(event.target.value);
+  };
   const handleSearch = (event) => {
     event.preventDefault();
     setSearch(event.target.value);
@@ -80,35 +89,40 @@ function RenderTable({
     return <Spin tip="Loading..." size="large" />;
   } else {
     return (
-      <div style={{ backgroundColor: "white" }}>
-        <div style={{ backgroundColor: "#f0f0f0", height: "56px" }}>
-          <h3 style={{ position: "relative", left: "10px", top: "14px" }}>
-            {listTitle}
-          </h3>
-        </div>
-        {displaySearchBar && (
-          <Input
-            placeholder={searchPlaceholder}
-            prefix={<SearchOutlined />}
-            value={search}
-            onChange={handleSearch}
-          />
-        )}
-        <List
-          dataSource={data.users}
-          renderItem={(item) => (
-            <List.Item key={item.id}>
-              <List.Item.Meta
-                avatar={<Avatar src={item.photoURL} />}
-                title={item.name}
-              />
-              <div>{item.email}</div>
-            </List.Item>
+      <>
+        <TableBackground>
+          <div style={{ backgroundColor: "#f0f0f0", height: "56px" }}>
+            <h3 style={{ position: "relative", left: "10px", top: "14px" }}>
+              {listTitle}
+            </h3>
+          </div>
+          {displaySearchBar && (
+            <Input
+              placeholder={searchPlaceholder}
+              prefix={<SearchOutlined />}
+              value={input}
+              onChange={handleInput}
+              onPressEnter={handleSearch}
+            />
           )}
-          bordered
-        />
+          <List
+            dataSource={data.users}
+            renderItem={(item) => (
+              <List.Item key={item.id}>
+                <List.Item.Meta
+                  avatar={<Avatar src={item.photoURL} />}
+                  title={item.name}
+                />
+                <div>{item.email}</div>
+              </List.Item>
+            )}
+            bordered
+          />
+        </TableBackground>
+        <br />
         {data.total > 50 && (
           <Pagination
+            style={{ float: "right" }}
             current={page}
             pageSize={50}
             total={data.total}
@@ -116,7 +130,7 @@ function RenderTable({
             showSizeChanger={false}
           />
         )}
-      </div>
+      </>
     );
   }
 }
