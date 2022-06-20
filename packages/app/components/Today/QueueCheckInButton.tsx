@@ -21,7 +21,7 @@ const CreateQueueButton = styled(Button)`
   }
 `;
 
-export default function TodayPageCheckinButton(): ReactElement {
+export default function TodayPageCheckinButton(props): ReactElement {
   // state for check in modal
   const [checkInModalVisible, setCheckInModalVisible] = useState(false);
   const [createQueueModalVisible, setCreateQueueModalVisible] = useState(false);
@@ -123,6 +123,7 @@ export default function TodayPageCheckinButton(): ReactElement {
           size="large"
           data-cy="check-in-modal-button"
           onClick={() => renderProperModal()}
+          {...props}
         >
           Check In
         </CheckinButton>
@@ -132,6 +133,7 @@ export default function TodayPageCheckinButton(): ReactElement {
           courseId={Number(cid)}
           room={queueCheckedIn.room}
           state="CheckedIn"
+          {...props}
         />
       )}
     </>

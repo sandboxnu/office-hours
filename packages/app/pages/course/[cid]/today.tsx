@@ -21,9 +21,13 @@ import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import PopularTimes from "../../../components/Today/PopularTimes/PopularTimes";
 import { orderBy } from "lodash";
 import ApplyToSandbox from "../../../components/Today/SandboxApplication";
+import { useIsMobile } from "../../../hooks/useIsMobile";
 
 const Container = styled.div`
-  margin-top: 32px;
+  margin-top: 14px;
+  @media (min-width: 650px) {
+    margin-top: 32px;
+  }
 `;
 
 const Title = styled.div`
@@ -32,8 +36,25 @@ const Title = styled.div`
   color: #212934;
 `;
 
+const TodayRow = styled(Row)`
+  @media (max-width: 650px) {
+    margin: 0 !important;
+  }
+`;
+
 const TodayCol = styled(Col)`
   margin-bottom: 15px;
+
+  @media (max-width: 650px) {
+    padding: 0 !important;
+  }
+`;
+
+const TodayCheckinButton = styled(TodayPageCheckinButton)`
+  @media (max-width: 650px) {
+    width: 100%;
+    margin-top: 18px;
+  }
 `;
 
 const RoleColorSpan = styled.span`
@@ -54,6 +75,15 @@ function roleToString(role: Role) {
   }
 }
 
+const RoleText = ({ role, ...props }: { role: Role }) => (
+  <div {...props}>
+    <i>
+      You are a <RoleColorSpan>{roleToString(role)}</RoleColorSpan> for this
+      course
+    </i>
+  </div>
+);
+
 function arrayRotate(arr, count) {
   const adjustedCount = (arr.length + count) % arr.length;
   return arr
@@ -68,6 +98,7 @@ const collapseHeatmap = (heatmap: Heatmap): Heatmap =>
   });
 
 export default function Today(): ReactElement {
+  const isMobile = useIsMobile();
   const router = useRouter();
   const { cid } = router.query;
   const role = useRoleInCourse(Number(cid));
@@ -108,20 +139,18 @@ export default function Today(): ReactElement {
       {role != Role.PROFESSOR && <ApplyToSandbox />}
       <NavBar courseId={Number(cid)} />
       <Container>
-        <Row gutter={64}>
+        <TodayRow gutter={64}>
           <TodayCol md={12} xs={24}>
-            <Row justify="space-between">
+            <Row justify={isMobile ? "center" : "space-between"}>
               <Title>Current Office Hours</Title>
-              <TodayPageCheckinButton />
+              {isMobile && <RoleText role={role} />}
+              <TodayCheckinButton />
             </Row>
-            <Row>
-              <div>
-                <i>
-                  You are a <RoleColorSpan>{roleToString(role)}</RoleColorSpan>{" "}
-                  for this course
-                </i>
-              </div>
-            </Row>
+            {!isMobile && (
+              <Row>
+                <RoleText role={role} />
+              </Row>
+            )}
             {course?.queues?.length === 0 ? (
               <h1 style={{ paddingTop: "100px" }}>
                 There are no queues for this course
@@ -151,10 +180,12 @@ export default function Today(): ReactElement {
               )
             }
           </TodayCol>
-          <TodayCol md={12} sm={24}>
-            <SchedulePanel courseId={Number(cid)} defaultView="timeGridDay" />
-          </TodayCol>
-        </Row>
+          {!isMobile && (
+            <TodayCol md={12} sm={24}>
+              <SchedulePanel courseId={Number(cid)} defaultView="timeGridDay" />
+            </TodayCol>
+          )}
+        </TodayRow>
       </Container>
     </StandardPageContainer>
   );
