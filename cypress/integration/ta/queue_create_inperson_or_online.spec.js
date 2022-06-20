@@ -76,6 +76,9 @@ describe('Can successfully create queues', () => {
             // make sure it says our room name (success!, p2 logged in)
             cy.get("[data-cy='room-title']")
                 .contains(roomName);
+            
+            // will this keep cypress from retrying the calendar url?
+            cy.visit("/settings", {timeout: 20000}); 
         });
 
 
