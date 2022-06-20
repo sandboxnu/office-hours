@@ -40,17 +40,15 @@ export class ResourcesController {
           res.sendFile(filename, { root: process.env.UPLOAD_LOCATION });
         } else {
           const course = await CourseModel.findOne(courseId);
-          if (course === null || course === undefined) {
+          if (course === null || course === undefined || !course.enabled) {
             console.error(
               ERROR_MESSAGES.courseController.courseNotFound +
                 ' Course ID: ' +
                 courseId,
             );
-            res
-              .status(HttpStatus.NOT_FOUND)
-              .send({
-                message: ERROR_MESSAGES.courseController.courseNotFound,
-              });
+            res.status(HttpStatus.NOT_FOUND).send({
+              message: ERROR_MESSAGES.courseController.courseNotFound,
+            });
             return;
           }
           try {
@@ -58,14 +56,12 @@ export class ResourcesController {
             res.send(cal);
           } catch (err) {
             console.error(ERROR_MESSAGES.resourcesService.saveCalError, err);
-            res
-              .status(HttpStatus.INTERNAL_SERVER_ERROR)
-              .send({
-                message:
-                  ERROR_MESSAGES.resourcesService.saveCalError +
-                  ': ' +
-                  err.message,
-              });
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+              message:
+                ERROR_MESSAGES.resourcesService.saveCalError +
+                ': ' +
+                err.message,
+            });
           }
         }
       },
