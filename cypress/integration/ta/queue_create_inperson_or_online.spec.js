@@ -80,6 +80,7 @@ describe('Can successfully create queues', () => {
 
 
         it('Join an online queue via modal', function () {
+            cy.visit("/settings", {timeout: 20000});
             createQueue({
                 courseId: "ta.course.id",
             });
