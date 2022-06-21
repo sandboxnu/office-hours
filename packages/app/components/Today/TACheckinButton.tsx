@@ -64,6 +64,7 @@ export default function TACheckinButton({
     <>
       {state === "CheckedIn" && (
         <CheckOutButton
+          {...props}
           type="default"
           size="large"
           disabled={disabled}
@@ -73,20 +74,19 @@ export default function TACheckinButton({
             await API.taStatus.checkOut(courseId, room);
             mutateCourse();
           }}
-          {...props}
         >
           Check Out
         </CheckOutButton>
       )}
       {state === "CheckedOut" && (
         <CheckinButton
+          {...props}
           type="default"
           size="large"
           block={block}
           onClick={() => checkInTA()}
           disabled={disabled || !course}
           data-cy="check-in-button"
-          {...props}
         >
           Check In
         </CheckinButton>

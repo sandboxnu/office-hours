@@ -119,21 +119,21 @@ export default function TodayPageCheckinButton(props): ReactElement {
       )}
       {!queueCheckedIn && role !== Role.STUDENT && (
         <CheckinButton
+          {...props}
           type="default"
           size="large"
           data-cy="check-in-modal-button"
           onClick={() => renderProperModal()}
-          {...props}
         >
           Check In
         </CheckinButton>
       )}
       {queueCheckedIn && role !== Role.STUDENT && (
         <TACheckinButton
+          {...props}
           courseId={Number(cid)}
           room={queueCheckedIn.room}
           state="CheckedIn"
-          {...props}
         />
       )}
     </>
