@@ -24,7 +24,7 @@ const CourseRosterComponent = styled.div`
 `;
 
 const TableBackground = styled.div`
-  backgroundcolor: white;
+  background-color: white;
 `;
 
 export default function CourseRoster({
