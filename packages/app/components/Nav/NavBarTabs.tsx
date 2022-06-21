@@ -73,7 +73,7 @@ interface NavBarTabsProps {
 
 function createQueueTab(queueTabItem: NavBarQueueTabItem) {
   return (
-    <QueueMenu data-cy="queue-tab" title="Queue">
+    <QueueMenu data-cy="queue-tab" title="Queue" key="queue">
       {queueTabItem.queues?.map((openQueue) => (
         <QueueMenuItem
           key={openQueue.id}
