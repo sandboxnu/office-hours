@@ -1,8 +1,8 @@
 import { UserOutlined } from "@ant-design/icons";
 import { Avatar } from "antd";
-import React, { ReactElement } from "react";
+import React, { ReactElement, Ref } from "react";
 import { useProfile } from "../../hooks/useProfile";
-import AvatarWithInitals from "./AvatarWithInitials";
+import { AvatarWithInitals } from "./AvatarWithInitials";
 
 type SelfAvatarProps = {
   size: number;
@@ -33,28 +33,33 @@ export default function SelfAvatar({
   );
 }
 
-export function KOHAvatar({
-  size,
-  photoURL,
-  name,
-  style,
-  className,
-}: KOHAvatarProps): ReactElement {
-  return photoURL ? (
-    <Avatar
-      icon={<UserOutlined />}
-      src={"/api/v1/profile/get_picture/" + photoURL}
-      size={size}
-      style={style}
-      className={className}
-    />
-  ) : (
-    <AvatarWithInitals
-      name={name}
-      size={size}
-      fontSize={(3 / 7) * size}
-      style={style}
-      className={className}
-    />
-  );
-}
+export const KOHAvatar = React.forwardRef(
+  (
+    { size, photoURL, name, style, className, ...props }: KOHAvatarProps,
+    ref: Ref<HTMLElement>
+  ): ReactElement => {
+    return photoURL ? (
+      <Avatar
+        {...props}
+        ref={ref}
+        icon={<UserOutlined />}
+        src={"/api/v1/profile/get_picture/" + photoURL}
+        size={size}
+        style={style}
+        className={className}
+      />
+    ) : (
+      <AvatarWithInitals
+        {...props}
+        ref={ref}
+        name={name}
+        size={size}
+        fontSize={(3 / 7) * size}
+        style={style}
+        className={className}
+      />
+    );
+  }
+);
+
+KOHAvatar.displayName = "KOHAvatar";
