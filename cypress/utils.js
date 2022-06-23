@@ -51,6 +51,9 @@ export const loginUser = (identifier) => {
  */
 const createUserAndLogin = ({ role, courseId, identifier }) => {
   const req = (parsedId) => {
+
+    cy.window().then(win => win.localStorage.setItem('firstTime', false));
+    cy.window().then(win => win.localStorage.setItem('seenApplyModal', false));
     // create the user
     cy.request("POST", "/api/v1/seeds/createUser", {
       role: role,
@@ -221,21 +224,20 @@ export const helpQuestionWithID = (id) => {
  * Opens up the modal and checks into the default option (usually online if created)
  */
 export const taOpenOnline = () => {
+  cy.get("[data-cy='check-in-modal-button']").click();
+  cy.wait(500);
+  cy.get("[data-cy=\"select-existing-queue\"]").click();
+  cy.get('[data-cy="select-queue-Online"]').click();
 
-    cy.get("[data-cy='check-in-modal-button']").click();
-    cy.wait(500);
-    cy.get("[data-cy=\"select-existing-queue\"]").click();
-    cy.get('[data-cy="select-queue-Online"]').click();
-
-    cy.get("[id^=rcDialogTitle]")
-        .contains("Check into a queue")
+  cy.get("[id^=rcDialogTitle]")
+    .contains("Check into a queue")
+    .parent()
+    .parent()
+    .should('have.class', 'ant-modal-content')
+    .within(($content) => {
+      cy.get("span").contains("Check In")
         .parent()
-        .parent()
-        .should('have.class', 'ant-modal-content')
-        .within(($content) => {
-            cy.get("span").contains("Check In")
-                .parent()
-                .should('have.class', 'ant-btn-primary')
-                .click();
-        });
+        .should('have.class', 'ant-btn-primary')
+        .click();
+    });
 }
