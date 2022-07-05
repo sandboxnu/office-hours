@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useCourse } from "../../hooks/useCourse";
+import { useIsMobile } from "../../hooks/useIsMobile";
 import { useProfile } from "../../hooks/useProfile";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import QueueCheckInModal from "./QueueCheckInModal";
@@ -12,16 +13,19 @@ import QueueCreateModal from "./QueueCreateModal";
 import TACheckinButton, { CheckinButton } from "./TACheckinButton";
 
 const CreateQueueButton = styled(Button)`
-  color: white;
-  background: #2a9187;
-  &:hover,
-  &:focus {
+  @media (min-width: 650px) {
     color: white;
-    background: #39aca1;
+    background: #2a9187;
+    &:hover,
+    &:focus {
+      color: white;
+      background: #39aca1;
+    }
   }
 `;
 
 export default function TodayPageCheckinButton(props): ReactElement {
+  const isMobile = useIsMobile();
   // state for check in modal
   const [checkInModalVisible, setCheckInModalVisible] = useState(false);
   const [createQueueModalVisible, setCreateQueueModalVisible] = useState(false);
@@ -101,7 +105,10 @@ export default function TodayPageCheckinButton(props): ReactElement {
           }}
           onCancel={() => setCheckInModalVisible(false)}
           button={
-            <CreateQueueButton onClick={onCreateQueueButtonClick}>
+            <CreateQueueButton
+              type={isMobile ? "link" : "default"}
+              onClick={onCreateQueueButtonClick}
+            >
               + Create Queue
             </CreateQueueButton>
           }

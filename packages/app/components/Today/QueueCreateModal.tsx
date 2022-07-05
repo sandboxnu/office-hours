@@ -4,6 +4,7 @@ import { FormInstance } from "antd/lib/form";
 import TextArea from "antd/lib/input/TextArea";
 import { ReactElement } from "react";
 import { useState } from "react";
+import ModalFooter from "../common/ModalFooter";
 
 interface QueueCreateModalProps {
   visible: boolean;
@@ -53,8 +54,14 @@ export default function QueueCreateModal({
       title={`Create a new queue`}
       visible={visible}
       onCancel={onCancel}
-      okText="Create"
       onOk={() => onSubmit(form)}
+      footer={
+        <ModalFooter
+          onCancel={onCancel}
+          onOk={() => onSubmit(form)}
+          okText="Create"
+        />
+      }
     >
       <Form form={form} layout="vertical">
         <Form.Item
@@ -97,7 +104,6 @@ export default function QueueCreateModal({
             data-cy="qc-location"
             placeholder={"Ex: ISEC 102"}
             disabled={!locEditable}
-            style={{ width: 350 }}
           />
         </Form.Item>
 
