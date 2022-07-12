@@ -10,10 +10,9 @@ describe("Edit Queue Notes", () => {
 
   it("can successfully edit queue notes as a ta on today page", function () {
     cy.visit(`/course/${this.queue.course.id}/today`);
-    cy.get(".ant-modal-close-x").click();
+    cy.wait(1500);
     taOpenOnline();
     cy.visit(`/course/${this.queue.course.id}/today`);
-
 
     cy.get("button[class*='EditNotesButton']").click();
     cy.get("textarea").click().type("alex has a smooth brain");

@@ -15,6 +15,7 @@ export default function ApplyToSandbox(): ReactElement {
       footer={null}
       onCancel={() => setFirstTime(false)}
       width={625}
+      className="hide-in-percy"
     >
       <div>
         <h1> Sandbox Applications Are Now Open! 🎉</h1>

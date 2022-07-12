@@ -114,13 +114,14 @@ const DisableQueueButton = styled(QueueInfoColumnButton)`
 `;
 
 const ClearQueueButton = styled(QueueInfoColumnButton)`
-  background-color: #ff8c00;
-  color: white;
+  color: #d4380d;
+  background: #fff;
+  border-color: #d4380d;
   &:hover,
   &:focus {
-    color: #ff8c00;
     background: #fff;
-    border-color: #ff8c00;
+    color: #da3236;
+    border-color: #da3236;
   }
 `;
 
