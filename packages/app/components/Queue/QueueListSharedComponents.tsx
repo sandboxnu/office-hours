@@ -16,6 +16,7 @@ import { RenderEvery } from "../RenderEvery";
 import { TAStatuses } from "./TAStatuses";
 import { API } from "@koh/api-client";
 import Router from "next/router";
+import { useIsMobile } from "../../hooks/useIsMobile";
 
 export const Container = styled.div`
   display: flex;
@@ -37,13 +38,14 @@ export const NotesText = styled.div`
 // New queue styled components start here
 const InfoColumnContainer = styled.div`
   flex-shrink: 0;
-  padding-bottom: 30px;
+  padding-bottom: 12px;
   position: relative;
   display: flex;
   flex-direction: column;
   @media (min-width: 650px) {
     margin-top: 32px;
     width: 290px;
+    padding-bottom: 30px;
   }
 `;
 
@@ -65,9 +67,18 @@ const QueuePropertyRow = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center; // This kinda funky, not sure how to align the tops of the row
-  margin-bottom: 20px;
   color: #5f6b79;
   font-size: 20px;
+  margin-bottom: 20px;
+  @media (max-width: 650px) {
+    margin-bottom: 0px;
+  }
+`;
+
+const LastQueuePropertyRow = styled(QueuePropertyRow)`
+  @media (max-width: 650px) {
+    margin-bottom: 18px;
+  }
 `;
 
 const QueuePropertyText = styled.div`
@@ -90,10 +101,15 @@ const QueueRoomGroup = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  @media (max-width: 650px) {
+    justify-content: center;
+  }
 `;
 
 const QueueInfo = styled.div`
-  margin-bottom: 24px;
+  @media (min-width: 650px) {
+    margin-bottom: 24px;
+  }
 `;
 
 const QueueText = styled.div`
@@ -146,33 +162,8 @@ export function QueueInfoColumn({
   isStaff,
   buttons,
 }: QueueInfoColumnProps): ReactElement {
-  const { queue, mutateQueue } = useQueue(queueId);
-
-  const disableQueue = async () => {
-    await API.queues.disable(queueId);
-    await mutateQueue();
-    message.success("Successfully disabled queue: " + queue.room);
-    await Router.push("/");
-  };
-
-  const clearQueue = async () => {
-    await API.queues.clean(queueId);
-    await mutateQueue();
-    message.success("Successfully cleaned queue: " + queue.room);
-  };
-
-  const confirmDisable = () => {
-    confirm({
-      title: `Please Confirm!`,
-      icon: <ExclamationCircleOutlined />,
-      style: { whiteSpace: "pre-wrap" },
-      content: `Please confirm that you want to disable the queue: ${queue.room}.\n
-      This queue will no longer appear in the app, and any students currently in the queue will be removed.`,
-      onOk() {
-        disableQueue();
-      },
-    });
-  };
+  const isMobile = useIsMobile();
+  const { queue } = useQueue(queueId);
 
   return (
     <InfoColumnContainer>
@@ -220,32 +211,70 @@ export function QueueInfoColumn({
       )}
       <QueueUpToDateInfo queueId={queueId} />
       {buttons}
-      <StaffH2>Staff</StaffH2>
-      <TAStatuses queueId={queueId} />
-      {isStaff && (
-        <QueueManagementBox>
-          <Popconfirm
-            title={
-              "Are you sure you want to clear all students from the queue?"
-            }
-            okText="Yes"
-            cancelText="No"
-            placement="top"
-            arrowPointAtCenter={true}
-            onConfirm={clearQueue}
-          >
-            <ClearQueueButton>Clear Queue</ClearQueueButton>
-          </Popconfirm>
-          <DisableQueueButton
-            onClick={confirmDisable}
-            data-cy="queue-disable-button"
-            disabled={queue?.isDisabled}
-          >
-            {queue?.isDisabled ? `Queue deleted` : `Delete Queue`}
-          </DisableQueueButton>
-        </QueueManagementBox>
+      {(!isMobile || !isStaff) && (
+        <>
+          <StaffH2>Staff</StaffH2>
+          <TAStatuses queueId={queueId} />
+        </>
       )}
+      {!isMobile && isStaff && <QueueDangerButtons queueId={queueId} />}
     </InfoColumnContainer>
+  );
+}
+
+export function QueueDangerButtons({
+  queueId,
+}: {
+  queueId: number;
+}): ReactElement {
+  const { queue, mutateQueue } = useQueue(queueId);
+
+  const disableQueue = async () => {
+    await API.queues.disable(queueId);
+    await mutateQueue();
+    message.success("Successfully disabled queue: " + queue.room);
+    await Router.push("/");
+  };
+
+  const clearQueue = async () => {
+    await API.queues.clean(queueId);
+    await mutateQueue();
+    message.success("Successfully cleaned queue: " + queue.room);
+  };
+
+  const confirmDisable = () => {
+    confirm({
+      title: `Please Confirm!`,
+      icon: <ExclamationCircleOutlined />,
+      style: { whiteSpace: "pre-wrap" },
+      content: `Please confirm that you want to disable the queue: ${queue.room}.\n
+      This queue will no longer appear in the app, and any students currently in the queue will be removed.`,
+      onOk() {
+        disableQueue();
+      },
+    });
+  };
+
+  return (
+    <QueueManagementBox>
+      <Popconfirm
+        title={"Are you sure you want to clear all students from the queue?"}
+        okText="Yes"
+        cancelText="No"
+        placement="top"
+        arrowPointAtCenter={true}
+        onConfirm={clearQueue}
+      >
+        <ClearQueueButton>Clear Queue</ClearQueueButton>
+      </Popconfirm>
+      <DisableQueueButton
+        onClick={confirmDisable}
+        data-cy="queue-disable-button"
+        disabled={queue?.isDisabled}
+      >
+        {queue?.isDisabled ? `Queue deleted` : `Delete Queue`}
+      </DisableQueueButton>
+    </QueueManagementBox>
   );
 }
 
@@ -253,7 +282,7 @@ function QueueUpToDateInfo({ queueId }: { queueId: number }): ReactElement {
   const [lastUpdated, setLastUpdated] = useState(null);
   const { isLive } = useQueue(queueId, setLastUpdated);
   return (
-    <QueuePropertyRow className="hide-in-percy">
+    <LastQueuePropertyRow className="hide-in-percy">
       {isLive || lastUpdated ? <CloudSyncOutlined /> : <FrownOutlined />}
       <QueuePropertyText className="hide-in-percy">
         {isLive ? (
@@ -274,6 +303,6 @@ function QueueUpToDateInfo({ queueId }: { queueId: number }): ReactElement {
           "Queue may be out of date"
         )}
       </QueuePropertyText>
-    </QueuePropertyRow>
+    </LastQueuePropertyRow>
   );
 }

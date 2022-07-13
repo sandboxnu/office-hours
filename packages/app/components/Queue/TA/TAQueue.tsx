@@ -13,6 +13,7 @@ import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
 import TACheckinButton from "../../Today/TACheckinButton";
 import {
+  QueueDangerButtons,
   QueueInfoColumn,
   QueueInfoColumnButton,
 } from "../QueueListSharedComponents";
@@ -21,6 +22,7 @@ import TAQueueListDetail from "./TAQueueListDetail";
 import { useTeams } from "../../../hooks/useTeams";
 import { useDefaultMessage } from "../../../hooks/useDefaultMessage";
 import { useHotkeys } from "react-hotkeys-hook";
+import { useIsMobile } from "../../../hooks/useIsMobile";
 
 /**
  * Method to help student and
@@ -55,9 +57,19 @@ async function onHelpQuestion(questionId: number): Promise<void> {
 const Container = styled.div`
   flex: 1;
   display: flex;
-  flex-direction: column;
-  @media (min-width: 650px) {
-    flex-direction: row;
+  flex-direction: row;
+  @media (max-width: 650px) {
+    margin-bottom: 20px;
+    margin-top: 15px;
+    flex-direction: column;
+  }
+`;
+
+const CheckInButton = styled.div`
+  margin-bottom: 12px;
+  @media (max-width: 650px) {
+    width: 50%;
+    margin-bottom: 8px !important;
   }
 `;
 
@@ -69,14 +81,28 @@ const HelpNextButton = styled(QueueInfoColumnButton)`
     color: white;
     background: #39aca1;
   }
+  @media (max-width: 650px) {
+    height: 60px;
+  }
 `;
 
 const EditQueueButton = styled(QueueInfoColumnButton)`
   color: #212934;
+  @media (max-width: 650px) {
+    width: 50%;
+    margin-left: 8px;
+    margin-bottom: 8px !important;
+  }
 `;
 
 const MiddleSpacer = styled.div`
   margin-left: 20px;
+`;
+
+const TopButtons = styled.div`
+  @media (max-width: 650px) {
+    display: flex;
+  }
 `;
 
 interface TAQueueProps {
@@ -85,6 +111,7 @@ interface TAQueueProps {
 }
 
 export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
+  const isMobile = useIsMobile();
   const user = useProfile();
   const role = useRoleInCourse(courseId);
   const { queue } = useQueue(qid);
@@ -136,12 +163,35 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
             isStaff={true}
             buttons={
               <>
-                <EditQueueButton
-                  data-cy="editQueue"
-                  onClick={() => setQueueSettingsModal(true)}
-                >
-                  Edit Queue Details
-                </EditQueueButton>
+                <TopButtons>
+                  <CheckInButton style={{ marginBottom: "12px" }}>
+                    <Tooltip
+                      title={
+                        queue.isDisabled &&
+                        "Cannot check into a disabled queue!"
+                      }
+                    >
+                      <TACheckinButton
+                        courseId={courseId}
+                        room={queue?.room}
+                        disabled={
+                          staffCheckedIntoAnotherQueue ||
+                          isHelping ||
+                          (queue.isProfessorQueue && role !== Role.PROFESSOR) ||
+                          queue.isDisabled
+                        }
+                        state={isCheckedIn ? "CheckedIn" : "CheckedOut"}
+                        block
+                      />
+                    </Tooltip>
+                  </CheckInButton>
+                  <EditQueueButton
+                    data-cy="editQueue"
+                    onClick={() => setQueueSettingsModal(true)}
+                  >
+                    Edit Queue Details
+                  </EditQueueButton>
+                </TopButtons>
                 <Tooltip
                   title={!isCheckedIn && "You must check in to help students!"}
                 >
@@ -153,27 +203,6 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
                     Help Next
                   </HelpNextButton>
                 </Tooltip>
-
-                <div style={{ marginBottom: "12px" }}>
-                  <Tooltip
-                    title={
-                      queue.isDisabled && "Cannot check into a disabled queue!"
-                    }
-                  >
-                    <TACheckinButton
-                      courseId={courseId}
-                      room={queue?.room}
-                      disabled={
-                        staffCheckedIntoAnotherQueue ||
-                        isHelping ||
-                        (queue.isProfessorQueue && role !== Role.PROFESSOR) ||
-                        queue.isDisabled
-                      }
-                      state={isCheckedIn ? "CheckedIn" : "CheckedOut"}
-                      block
-                    />
-                  </Tooltip>
-                </div>
               </>
             }
           />
@@ -181,6 +210,7 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
           {user && questions && (
             <TAQueueListDetail queueId={qid} courseId={courseId} />
           )}
+          {isMobile && <QueueDangerButtons queueId={qid} />}
         </Container>
         <EditQueueModal
           queueId={qid}
