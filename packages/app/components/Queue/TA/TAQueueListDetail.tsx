@@ -257,6 +257,9 @@ const EmptyQueueInfo = styled.div`
   flex-direction: column;
   align-items: center;
   margin-top: 30px;
+  @media (max-width: 650px) {
+    margin-bottom: 30px;
+  }
 `;
 
 const NoQuestionsText = styled.div`

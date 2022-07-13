@@ -31,6 +31,23 @@ import {
 } from "../Banner";
 import { useTeams } from "../../../hooks/useTeams";
 import { useHotkeys } from "react-hotkeys-hook";
+import styled from "styled-components";
+
+const ButtonsContainer = styled.div`
+  @media (max-width: 650px) {
+    display: flex;
+    margin-bottom: 20px;
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+`;
+
+const ButtonSpan = styled.span`
+  flex-grow: 1;
+  @media (max-width: 650px) {
+    margin: 0px 3px;
+  }
+`;
 
 const PRORITY_QUEUED_MESSAGE_TEXT =
   "This student has been temporarily removed from the queue. They must select to rejoin the queue and will then be placed in the Priority Queue.";
@@ -106,7 +123,7 @@ export default function TAQueueDetailButtons({
 
   if (question.status === OpenQuestionStatus.Helping) {
     return (
-      <>
+      <ButtonsContainer>
         <Popconfirm
           title="Are you sure you want to send this student back to the queue?"
           okText="Yes"
@@ -117,10 +134,12 @@ export default function TAQueueDetailButtons({
           }}
         >
           <Tooltip title="Requeue Student">
-            <RequeueButton
-              icon={<UndoOutlined />}
-              data-cy="requeue-student-button"
-            />
+            <ButtonSpan>
+              <RequeueButton
+                icon={<UndoOutlined />}
+                data-cy="requeue-student-button"
+              />
+            </ButtonSpan>
           </Tooltip>
         </Popconfirm>
         <Popconfirm
@@ -134,21 +153,24 @@ export default function TAQueueDetailButtons({
           }}
         >
           <Tooltip title="Can't Find">
-            <CantFindButton
-              shape="circle"
-              icon={<CloseOutlined />}
-              data-cy="cant-find-button"
-            />
+            <ButtonSpan>
+              <CantFindButton
+                icon={<CloseOutlined />}
+                data-cy="cant-find-button"
+              />
+            </ButtonSpan>
           </Tooltip>
         </Popconfirm>
         <Tooltip title="Finish Helping">
-          <FinishHelpingButton
-            icon={<CheckOutlined />}
-            onClick={() => changeStatus(ClosedQuestionStatus.Resolved)}
-            data-cy="finish-helping-button"
-          />
+          <ButtonSpan>
+            <FinishHelpingButton
+              icon={<CheckOutlined />}
+              onClick={() => changeStatus(ClosedQuestionStatus.Resolved)}
+              data-cy="finish-helping-button"
+            />
+          </ButtonSpan>
         </Tooltip>
-      </>
+      </ButtonsContainer>
     );
   } else {
     const [canHelp, helpTooltip] = ((): [boolean, string] => {
@@ -181,7 +203,7 @@ export default function TAQueueDetailButtons({
       }
     })();
     return (
-      <>
+      <ButtonsContainer>
         <Popconfirm
           title="Are you sure you want to delete this question from the queue?"
           disabled={!isCheckedIn}
@@ -198,40 +220,38 @@ export default function TAQueueDetailButtons({
                 : "You must check in to remove students from the queue"
             }
           >
-            <span>
+            <ButtonSpan>
               {/* This span is a workaround for tooltip-on-disabled-button 
               https://github.com/ant-design/ant-design/issues/9581#issuecomment-599668648 */}
               <BannerDangerButton
-                shape="circle"
                 icon={<DeleteOutlined />}
                 data-cy="remove-from-queue"
                 disabled={!isCheckedIn}
               />
-            </span>
+            </ButtonSpan>
           </Tooltip>
         </Popconfirm>
         <Tooltip title={rephraseTooltip}>
-          <span>
+          <ButtonSpan>
             <BannerOrangeButton
-              shape="circle"
               icon={<QuestionOutlined />}
               onClick={sendRephraseAlert}
               data-cy="request-rephrase-question"
               disabled={!canRephrase}
             />
-          </span>
+          </ButtonSpan>
         </Tooltip>
         <Tooltip title={helpTooltip}>
-          <span>
+          <ButtonSpan>
             <BannerPrimaryButton
               icon={<PhoneOutlined />}
               onClick={() => helpStudent()}
               disabled={!canHelp}
               data-cy="help-student"
             />
-          </span>
+          </ButtonSpan>
         </Tooltip>
-      </>
+      </ButtonsContainer>
     );
   }
 }

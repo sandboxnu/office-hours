@@ -1,6 +1,9 @@
+import { HourglassOutlined } from "@ant-design/icons";
 import { Question } from "@koh/common";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
+import { useIsMobile } from "../../../hooks/useIsMobile";
+import { getWaitTime } from "../../../utils/TimeUtil";
 import TAQueueDetailButtons from "./TAQueueDetailButtons";
 import TAQueueDetailQuestion from "./TAQueueDetailQuestion";
 
@@ -33,6 +36,8 @@ export default function TAQueueDetail({
   question: Question;
   hasUnresolvedRephraseAlert: boolean;
 }): ReactElement {
+  const isMobile = useIsMobile();
+
   return (
     <Container>
       <Header>
@@ -41,12 +46,19 @@ export default function TAQueueDetail({
           <Email>{question.creator.email}</Email>
         </div>
         <div>
-          <TAQueueDetailButtons
-            courseId={courseId}
-            queueId={queueId}
-            question={question}
-            hasUnresolvedRephraseAlert={hasUnresolvedRephraseAlert}
-          />
+          {isMobile ? (
+            <>
+              {" "}
+              <HourglassOutlined key="h" /> {getWaitTime(question)}{" "}
+            </>
+          ) : (
+            <TAQueueDetailButtons
+              courseId={courseId}
+              queueId={queueId}
+              question={question}
+              hasUnresolvedRephraseAlert={hasUnresolvedRephraseAlert}
+            />
+          )}
         </div>
       </Header>
       <TAQueueDetailQuestion
@@ -55,6 +67,14 @@ export default function TAQueueDetail({
         queueId={queueId}
         hasUnresolvedRephraseAlert={hasUnresolvedRephraseAlert}
       />
+      {isMobile && (
+        <TAQueueDetailButtons
+          courseId={courseId}
+          queueId={queueId}
+          question={question}
+          hasUnresolvedRephraseAlert={hasUnresolvedRephraseAlert}
+        />
+      )}
     </Container>
   );
 }

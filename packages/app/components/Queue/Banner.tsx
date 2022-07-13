@@ -1,6 +1,7 @@
 import { Button } from "antd";
 import { ReactElement, ReactNode } from "react";
 import styled from "styled-components";
+import { useIsMobile } from "../../hooks/useIsMobile";
 
 const BannerContainer = styled.div`
   width: 100%;
@@ -65,7 +66,10 @@ export default function Banner(props: BannerProps): ReactElement {
 }
 
 export function CircleButton({ ...props }: CircleButtonProps): ReactElement {
-  return <Button size="large" shape="circle" {...props} />;
+  const isMobile = useIsMobile();
+  return (
+    <Button size="large" shape={!isMobile ? "circle" : undefined} {...props} />
+  );
 }
 
 /**
@@ -75,6 +79,12 @@ export const BannerButton = styled(CircleButton)`
   margin-left: 16px;
   border: 0;
   background: #fff;
+  @media (max-width: 650px) {
+    border-radius: 6px !important;
+    margin: 0;
+    width: 100% !important;
+    height: 60px !important;
+  }
 `;
 
 export const BannerPrimaryButton = styled(BannerButton)`
