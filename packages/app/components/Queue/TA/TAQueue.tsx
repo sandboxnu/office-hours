@@ -195,13 +195,15 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
                 <Tooltip
                   title={!isCheckedIn && "You must check in to help students!"}
                 >
-                  <HelpNextButton
-                    onClick={helpNext}
-                    disabled={!isCheckedIn || !nextQuestion || isHelping}
-                    data-cy="help-next"
-                  >
-                    Help Next
-                  </HelpNextButton>
+                  <span>
+                    <HelpNextButton
+                      onClick={helpNext}
+                      disabled={!isCheckedIn || !nextQuestion || isHelping}
+                      data-cy="help-next"
+                    >
+                      Help Next
+                    </HelpNextButton>
+                  </span>
                 </Tooltip>
               </>
             }
