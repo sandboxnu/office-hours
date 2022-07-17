@@ -16,7 +16,7 @@ import {
   QuestionStatus,
   RephraseQuestionPayload,
 } from "@koh/common";
-import { message, Popconfirm, Tooltip } from "antd";
+import { message, Tooltip } from "antd";
 import React, { ReactElement, useCallback } from "react";
 import { useDefaultMessage } from "../../../hooks/useDefaultMessage";
 import { useQuestions } from "../../../hooks/useQuestions";
@@ -30,6 +30,7 @@ import {
   RequeueButton,
 } from "../Banner";
 import { useTeams } from "../../../hooks/useTeams";
+import { ResponsivePopconfirm } from "../../common/ResponsivePopconfirm";
 import { useHotkeys } from "react-hotkeys-hook";
 import styled from "styled-components";
 
@@ -124,7 +125,7 @@ export default function TAQueueDetailButtons({
   if (question.status === OpenQuestionStatus.Helping) {
     return (
       <ButtonsContainer>
-        <Popconfirm
+        <ResponsivePopconfirm
           title="Are you sure you want to send this student back to the queue?"
           okText="Yes"
           cancelText="No"
@@ -141,8 +142,8 @@ export default function TAQueueDetailButtons({
               />
             </ButtonSpan>
           </Tooltip>
-        </Popconfirm>
-        <Popconfirm
+        </ResponsivePopconfirm>
+        <ResponsivePopconfirm
           title="Are you sure you can't find this student?"
           okText="Yes"
           cancelText="No"
@@ -160,7 +161,7 @@ export default function TAQueueDetailButtons({
               />
             </ButtonSpan>
           </Tooltip>
-        </Popconfirm>
+        </ResponsivePopconfirm>
         <Tooltip title="Finish Helping">
           <ButtonSpan>
             <FinishHelpingButton
@@ -204,7 +205,7 @@ export default function TAQueueDetailButtons({
     })();
     return (
       <ButtonsContainer>
-        <Popconfirm
+        <ResponsivePopconfirm
           title="Are you sure you want to delete this question from the queue?"
           disabled={!isCheckedIn}
           okText="Yes"
@@ -230,17 +231,24 @@ export default function TAQueueDetailButtons({
               />
             </ButtonSpan>
           </Tooltip>
-        </Popconfirm>
-        <Tooltip title={rephraseTooltip}>
-          <ButtonSpan>
-            <BannerOrangeButton
-              icon={<QuestionOutlined />}
-              onClick={sendRephraseAlert}
-              data-cy="request-rephrase-question"
-              disabled={!canRephrase}
-            />
-          </ButtonSpan>
-        </Tooltip>
+        </ResponsivePopconfirm>
+        <ResponsivePopconfirm
+          title="Ask the student to add more detail? This will not remove them from the queue."
+          disabled={!canRephrase}
+          okText="Yes"
+          cancelText="No"
+          onConfirm={sendRephraseAlert}
+        >
+          <Tooltip title={rephraseTooltip}>
+            <ButtonSpan>
+              <BannerOrangeButton
+                icon={<QuestionOutlined />}
+                data-cy="request-rephrase-question"
+                disabled={!canRephrase}
+              />
+            </ButtonSpan>
+          </Tooltip>
+        </ResponsivePopconfirm>
         <Tooltip title={helpTooltip}>
           <ButtonSpan>
             <BannerPrimaryButton

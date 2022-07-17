@@ -8,12 +8,13 @@ import {
 } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import { OpenQuestionStatus, Question } from "@koh/common";
-import { Button, Col, Popconfirm, Tooltip } from "antd";
+import { Button, Col, Tooltip } from "antd";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { useQueue } from "../../../hooks/useQueue";
 import { useStudentQuestion } from "../../../hooks/useStudentQuestion";
 import { toOrdinal } from "../../../utils/ordinal";
+import { ResponsivePopconfirm } from "../../common/ResponsivePopconfirm";
 import Banner, { BannerButton, BannerDangerButton } from "../Banner";
 
 const BoldNumber = styled.span`
@@ -227,7 +228,7 @@ export default function StudentBanner({
 
 function LeaveQueueButton({ leaveQueue }: { leaveQueue: () => void }) {
   return (
-    <Popconfirm
+    <ResponsivePopconfirm
       title={`Are you sure you want to leave the queue?`}
       okText="Yes"
       cancelText="No"
@@ -239,7 +240,7 @@ function LeaveQueueButton({ leaveQueue }: { leaveQueue: () => void }) {
           icon={<DeleteRowOutlined />}
         />
       </Tooltip>
-    </Popconfirm>
+    </ResponsivePopconfirm>
   );
 }
 

@@ -151,4 +151,7 @@ export const RequeueButton = styled(BannerButton)`
     background: #f0f0f0;
     color: #000000;
   }
+  @media (max-width: 650px) {
+    border-color: #cfd6de;
+  }
 `;

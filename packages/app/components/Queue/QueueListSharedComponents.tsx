@@ -5,7 +5,7 @@ import {
   NotificationOutlined,
   StopOutlined,
 } from "@ant-design/icons";
-import { Button, message, Modal, Popconfirm, Tag, Tooltip } from "antd";
+import { Button, message, Modal, Tag, Tooltip } from "antd";
 import { ButtonProps } from "antd/lib/button";
 import Linkify from "react-linkify";
 import moment from "moment";
@@ -17,6 +17,7 @@ import { TAStatuses } from "./TAStatuses";
 import { API } from "@koh/api-client";
 import Router from "next/router";
 import { useIsMobile } from "../../hooks/useIsMobile";
+import { ResponsivePopconfirm } from "../common/ResponsivePopconfirm";
 
 export const Container = styled.div`
   display: flex;
@@ -257,7 +258,7 @@ export function QueueDangerButtons({
 
   return (
     <QueueManagementBox>
-      <Popconfirm
+      <ResponsivePopconfirm
         title={"Are you sure you want to clear all students from the queue?"}
         okText="Yes"
         cancelText="No"
@@ -266,7 +267,7 @@ export function QueueDangerButtons({
         onConfirm={clearQueue}
       >
         <ClearQueueButton>Clear Queue</ClearQueueButton>
-      </Popconfirm>
+      </ResponsivePopconfirm>
       <DisableQueueButton
         onClick={confirmDisable}
         data-cy="queue-disable-button"

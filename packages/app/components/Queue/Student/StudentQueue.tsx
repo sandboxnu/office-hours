@@ -7,7 +7,7 @@ import {
   Question,
   QuestionType,
 } from "@koh/common";
-import { Card, Col, notification, Popconfirm, Row } from "antd";
+import { Card, Col, notification, Row } from "antd";
 import { Router, useRouter } from "next/router";
 import React, { ReactElement, useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
@@ -27,6 +27,7 @@ import CantFindModal from "./StudentCantFindModal";
 import StudentQueueCard from "./StudentQueueCard";
 import StudentRemovedFromQueueModal from "./StudentRemovedFromQueueModal";
 import { useHotkeys } from "react-hotkeys-hook";
+import { ResponsivePopconfirm } from "../../common/ResponsivePopconfirm";
 
 const Container = styled.div`
   flex: 1;
@@ -316,7 +317,7 @@ export default function StudentQueue({
             isStaff={false}
             buttons={
               !studentQuestion && (
-                <Popconfirm
+                <ResponsivePopconfirm
                   title={
                     <PopConfirmTitle>
                       You already have a question in a queue for this course, so
@@ -341,7 +342,7 @@ export default function StudentQueue({
                   >
                     Join Queue
                   </JoinButton>
-                </Popconfirm>
+                </ResponsivePopconfirm>
               )
             }
           />

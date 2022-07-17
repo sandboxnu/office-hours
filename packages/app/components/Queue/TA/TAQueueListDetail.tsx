@@ -234,7 +234,7 @@ export default function TAQueueListDetail({
         {detail}
       </Container>
     );
-  } else if (selectedQuestionId) {
+  } else if (selectedQuestionId || isGrouping) {
     return (
       <Container>
         <BackToQueue onClick={() => onSelectQuestion(null)}>
