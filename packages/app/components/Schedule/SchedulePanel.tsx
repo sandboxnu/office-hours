@@ -1,54 +1,129 @@
-import { Role } from "@koh/common";
-import moment from "moment";
-import React, { ReactElement } from "react";
-import {
-  Calendar,
-  CalendarProps,
-  Event,
-  momentLocalizer,
-  View,
-} from "react-big-calendar";
-import styled from "styled-components";
-import { useCourse } from "../../hooks/useCourse";
+import { ReactElement, useState, useEffect, useRef } from "react";
+import FullCalendar, { EventContentArg } from "@fullcalendar/react"; // must go before plugins
+import timeGridPlugin, { DayTimeColsView } from "@fullcalendar/timegrid";
+import listPlugin from "@fullcalendar/list";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import iCalendarPlugin from "@fullcalendar/icalendar";
+import { Button, Spin, Tooltip } from "antd";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
-import UpdateCalendarButton from "./UpdateCalendarButton";
+import { Role } from "@koh/common";
+import styled from "styled-components";
+import "./fullcalendar.css";
 
-const ScheduleCalendar = styled(Calendar)<CalendarProps>`
-  height: 70vh;
+const CalendarWrapper = styled.div`
+  margin-bottom: 20px;
+`;
+const UpdateButton = styled(Button)`
+  border-radius: 6px;
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+`;
+const SpinnerContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: #f8f9fb99;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 type ScheduleProps = {
   courseId: number;
-  defaultView?: View;
+  defaultView?: "dayGridMonth" | "timeGridWeek" | "timeGridDay" | "listWeek";
 };
 
 export default function SchedulePanel({
   courseId,
-  defaultView = "week",
+  defaultView = "timeGridWeek",
 }: ScheduleProps): ReactElement {
-  const { course } = useCourse(courseId);
+  // iCalendarPlugin uses XMLHttpRequest, which is not available when Next.js is trying to
+  // server-side render the page. Using state to only render the <FullCalendar> component after
+  // <SchedulePanel> mounts fixes it.
+  const [isClientSide, setIsClientSide] = useState(false);
   const role = useRoleInCourse(courseId);
+  const calendarRef = useRef(null);
+  const spinnerRef = useRef(null);
 
-  const myEvents: Event[] =
-    course?.officeHours.map((e) => ({
-      start: e.startTime,
-      end: e.endTime,
-      title: e.title,
-    })) ?? [];
+  useEffect(() => {
+    // it is now safe to render the client-side only component
+    setIsClientSide(true);
+  }, []);
 
-  const today: Date = new Date();
+  // allows us to render tooltips around events (in case of cluttered calendars)
+  const renderEventContent = (arg: EventContentArg) => {
+    const data = calendarRef.current.getApi().getCurrentData();
+    const viewSpec = data.viewSpecs[arg.view.type].component;
+    if (viewSpec === DayTimeColsView) {
+      return (
+        <Tooltip title={`${arg.timeText}: ${arg.event.title}`}>
+          <span>
+            <strong>{arg.timeText}</strong> {arg.event.title}
+          </span>
+        </Tooltip>
+      );
+    }
+  };
+
+  const fetchCalUrl = (refresh: boolean) =>
+    `/api/v1/resources/calendar/${courseId}/refresh=${refresh}`;
+
+  const refetchEvents = () => {
+    const calApi = calendarRef.current.getApi();
+    calApi.getEventSources().forEach((src) => src.remove());
+    calApi.addEventSource({
+      url: fetchCalUrl(true),
+      format: "ics",
+    });
+  };
+
   return (
     <div>
-      <ScheduleCalendar
-        localizer={momentLocalizer(moment)}
-        events={myEvents}
-        defaultView={defaultView}
-        scrollToTime={
-          new Date(today.getFullYear(), today.getMonth(), today.getDate(), 8)
-        }
-        showMultiDayTimes
-      />
-      {role === Role.PROFESSOR && <UpdateCalendarButton courseId={courseId} />}
+      <SpinnerContainer ref={spinnerRef}>
+        <Spin />
+      </SpinnerContainer>
+      {isClientSide && !isNaN(courseId) && (
+        <CalendarWrapper>
+          <FullCalendar
+            ref={calendarRef}
+            plugins={[
+              timeGridPlugin,
+              iCalendarPlugin,
+              dayGridPlugin,
+              listPlugin,
+            ]}
+            events={{
+              url: fetchCalUrl(false),
+              format: "ics",
+            }}
+            scrollTime="08:00:00" // auto set each day's view to begin at 8AM
+            initialView={defaultView}
+            headerToolbar={{
+              start: "title",
+              center: "dayGridMonth timeGridWeek timeGridDay listWeek",
+              end: "today prev,next",
+            }}
+            loading={(loading) => {
+              // FullCal is stupid so if you setState in this cb you get into an infinite render loop
+              // https://stackoverflow.com/questions/66818770/fullcalendar-react-loading-function-problem
+              // So we're just floating a spinner on top of the calendar and setting its display property
+              if (spinnerRef.current)
+                spinnerRef.current.style.display = loading ? "flex" : "none";
+            }}
+            height="70vh"
+            eventContent={renderEventContent}
+          />
+        </CalendarWrapper>
+      )}
+      {role === Role.PROFESSOR && (
+        <UpdateButton type="primary" onClick={refetchEvents}>
+          Update Calendar
+        </UpdateButton>
+      )}
     </div>
   );
 }

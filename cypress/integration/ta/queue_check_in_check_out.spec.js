@@ -3,16 +3,41 @@ import {
   checkInTA,
   createQueue,
   createQuestion,
-  createQueueWithoutOfficeHour,
+  createQueueWithoutOfficeHour, taOpenOnline,
 } from "../../utils";
 
-describe("Can successfuly check in and out of a queue when their is scheduled office hours", () => {
+describe("Can successfully check in and out of a queue when their is scheduled office hours", () => {
   beforeEach(() => {
     // Set the state
     createAndLoginTA();
     createQueue({
       courseId: "ta.course.id",
     });
+  });
+
+  it("should check in as TA and view open queues on dropdown", function () {
+    // Visit the today page
+    cy.visit(`/course/${this.queue.courseId}/today`);
+    cy.wait(1500);
+    taOpenOnline();
+
+    // check Queue tab exists with one queue
+    cy.get("[data-cy='queue-tab']").should('be.visible').contains("Queue");
+    cy.get("[data-cy='queue-tab']").should(
+        "have.length",
+        "1"
+    );
+
+    // wait for modal to close and then hover over Queue tab for submenu
+    cy.get(".ant-modal").should('not.exist');
+    cy.get("[data-cy='queue-tab']").trigger("mouseover");
+
+    // click the available queue from dropdown to visit
+    cy.get("[data-cy='queue-menu-item-Online']").click();
+
+    // check we went to correct queue page
+    cy.location("pathname").should("contain", "/queue");
+    cy.get("body").should("contain", "There are no questions in the queue");
   });
 
   it("checking in multiple TAs then checking one out", function () {
@@ -25,20 +50,22 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
       queueId: "queue.id",
     });
 
-    cy.get(".ant-modal-close-x").click();
     // Click "Check in"
-    cy.get("[data-cy='check-in-button']").click();
+    taOpenOnline();
     cy.location("pathname").should("contain", "/queue");
 
     // Wait to see that the user has been checked in
     cy.contains("Check Out");
     cy.get("[data-cy='ta-status-card']").should("have.length", "2");
+
+    // wait for queue tab to show up (load course profiles)
+    cy.get("[data-cy='queue-tab']").contains("Queue");
     cy.percySnapshot("TA Queue Page - Two TA's Checked In");
 
     // 1 student should be in the queue
     cy.get(`[data-cy="list-queue"] [data-cy^="queue-list-item"]`).should(
-      "have.length",
-      "1"
+        "have.length",
+        "1"
     );
 
     // Click "Check out"
@@ -48,8 +75,8 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
     // Other TA should still be checked in, and there should still be 1 student in the queue
     cy.get("[data-cy='ta-status-card']").should("have.length", "1");
     cy.get(`[data-cy="list-queue"] [data-cy^="queue-list-item"]`).should(
-      "have.length",
-      "1"
+        "have.length",
+        "1"
     );
     cy.percySnapshot("TA Queue Page - One TA Checked out One TA Checked In");
   });
@@ -79,12 +106,11 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
     cy.visit(`/course/${this.queue.courseId}/today`);
 
     // Wait for page to load
-    cy.get(".ant-modal-close-x").click();
-    cy.contains("No Staff Checked In");
+    cy.get("button").should("contain", "Check In");
 
     // Click "Check in"
-    cy.get("[data-cy='check-in-button']").click();
-
+    cy.wait(1500);
+    taOpenOnline();
     cy.location("pathname").should("contain", "/queue");
     cy.get("body").should("contain", "There are no questions in the queue");
 
@@ -93,50 +119,6 @@ describe("Can successfuly check in and out of a queue when their is scheduled of
     // Click "Check out"
     cy.get("[data-cy='check-out-button']").click();
     cy.get("button").should("contain", "Check In");
-  });
-});
-
-describe("Checking out when office hours end soon", () => {
-  beforeEach(() => {
-    createAndLoginTA();
-    createQueue({
-      courseId: "ta.course.id",
-      closesIn: 5 * 60 * 1000,
-    });
-    checkInTA();
-    createQuestion({ queueId: "queue.id" });
-  });
-
-  it("opens the clean queue page from the queue page", function () {
-    // Visit the queue page
-    cy.visit(`/course/${this.queue.courseId}/queue/${this.queue.id}`);
-    // verify there's 1 student in queue
-    cy.get("[data-cy='list-queue'] [data-cy^='queue-list-item']").should(
-      "have.length",
-      "1"
-    );
-    // Click "Check out"
-    cy.get("[data-cy='check-out-button']").click();
-
-    // click "clear queue" button in modal
-    cy.get("[data-cy='clear-queue-btn']").click();
-
-    // Verify queue is now empty
-    cy.get("body").should("contain", "There are no questions in the queue");
-  });
-
-  it("opens the clean queue page from the today page", function () {
-    cy.visit(`/course/${this.queue.courseId}/today`);
-    // verify 1 student
-    cy.get("div").should("contain", "1 in queue");
-    // close "Welcome to Khoury" modal
-    cy.get(".ant-modal-close-x").click();
-
-    // Click "Check out"
-    cy.get("[data-cy='check-out-button']").click();
-
-    // click "clear queue" button in modal
-    cy.get("[data-cy='clear-queue-btn']").click();
   });
 });
 
@@ -177,13 +159,13 @@ describe("Checking in and out when there arent scheduled office hours, but the o
 
     // Click "Check out"
     cy.get("[data-cy='check-out-button']").click();
-    // click "clear queue" button in modal
-    cy.get("[data-cy='clear-queue-btn']").click();
 
     // No TAs should be checked in, and there should not be any student in the queue
     cy.get("[data-cy='ta-status-card']").should("not.exist");
     cy.get(`[data-cy="list-queue"] [data-cy^="queue-list-item"]`).should(
-      "not.exist"
+      "exist"
     );
+
   });
+
 });

@@ -6,6 +6,7 @@ import { default as React, ReactElement, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { toOrdinal } from "../../../utils/ordinal";
+import { useHotkeys } from "react-hotkeys-hook";
 
 const Container = styled.div`
   max-width: 960px;
@@ -135,6 +136,14 @@ export default function QuestionForm({
       );
     }
   };
+
+  useHotkeys("enter", () => onClickSubmit(), { enableOnTags: ["TEXTAREA"] }, [
+    questionTypeInput,
+    questionText,
+    questionGroupable,
+    router,
+    courseId,
+  ]);
 
   return (
     <Modal

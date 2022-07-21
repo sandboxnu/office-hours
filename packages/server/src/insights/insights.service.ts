@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { Filter, INSIGHTS_MAP } from './insight-objects';
 import {
@@ -7,6 +7,7 @@ import {
   ListInsightsResponse,
 } from '@koh/common';
 import { UserModel } from 'profile/user.entity';
+import { Cache } from 'cache-manager';
 
 type ComputeOutputParams = {
   insight: InsightObject;
@@ -20,14 +21,17 @@ type GenerateAllInsightParams = {
 
 @Injectable()
 export class InsightsService {
-  constructor(private connection: Connection) {}
+  constructor(
+    private connection: Connection,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   // Compute the output data for an insight and add it to the insight response
   async computeOutput({
     insight,
     filters,
   }: ComputeOutputParams): Promise<PossibleOutputTypes> {
-    const output = await insight.compute(filters);
+    const output = await insight.compute(filters, this.cacheManager);
     return output;
   }
 

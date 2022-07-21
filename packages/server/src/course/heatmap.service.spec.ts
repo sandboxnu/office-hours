@@ -1,15 +1,14 @@
-import { ClosedQuestionStatus, Heatmap } from '@koh/common';
 import { CacheModule } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { QuestionModel } from 'question/question.entity';
 import { Connection } from 'typeorm';
 import { TestTypeOrmModule } from '../../test/util/testUtils';
 import { HeatmapService } from './heatmap.service';
-import { OfficeHourModel } from './office-hour.entity';
+import { ClosedQuestionStatus, Heatmap } from '@koh/common';
 
 describe('HeatmapService', () => {
-  let service: HeatmapService;
-  let conn: Connection;
+  let _service: HeatmapService;
+  let _conn: Connection;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -17,12 +16,15 @@ describe('HeatmapService', () => {
       providers: [HeatmapService],
     }).compile();
 
-    service = module.get<HeatmapService>(HeatmapService);
-    conn = module.get<Connection>(Connection);
+    _service = module.get<HeatmapService>(HeatmapService);
+    _conn = module.get<Connection>(Connection);
   });
 
   afterAll(async () => {
-    await conn.close();
+    await _conn.close();
+  });
+  it('_', () => {
+    expect(3).toEqual(2 + 1);
   });
 
   describe('generateHeatmap with replay', () => {
@@ -41,16 +43,6 @@ describe('HeatmapService', () => {
     }
 
     // Return a list of office hour models from a list of ISO String pairs representing start and end times
-    function officehoursFromDates(
-      hoursTimes: [string, string][],
-    ): OfficeHourModel[] {
-      return hoursTimes.map(([start, end]) =>
-        OfficeHourModel.create({
-          startTime: new Date(start),
-          endTime: new Date(end),
-        }),
-      );
-    }
 
     // OCT 8 is a Thursday (EDT timezone)
     const OCT8 = (start: string, end: string): [string, string] => [
@@ -80,12 +72,21 @@ describe('HeatmapService', () => {
     const SAMPLES_PER_BUCKET = 4;
     // Sample timepoints for bucket N are at N:00, N:15, N:30, N:45
 
+    function officehoursFromDates(
+      hoursTimes: [string, string][],
+    ): [number, number][] {
+      return hoursTimes.map(([start, end]) => [
+        new Date(start).getTime(),
+        new Date(end).getTime(),
+      ]);
+    }
+
     // Generate a heatmap from the historical question times and office hours times
     function heatmapFromDates(
       questionTimes: [string, string][],
       hoursTimes: [string, string][],
     ): Heatmap {
-      return service._generateHeatMapWithReplay(
+      return _service._generateHeatMapWithReplay(
         questionsFromDates(questionTimes),
         officehoursFromDates(hoursTimes),
         'America/New_York',
@@ -376,7 +377,7 @@ describe('HeatmapService', () => {
 
     it('returns heatmap during a week with daylight savings, but the course is not in a DST timezone', () => {
       // Honolulu doesn't have DST (Pacific/Honolulu)
-      const heatmap = service._generateHeatMapWithReplay(
+      const heatmap = _service._generateHeatMapWithReplay(
         questionsFromDates([
           [`2020-10-25T04:04:00-1000`, `2020-10-25T04:32:00-1000`],
           [`2020-11-01T05:04:00-1000`, `2020-11-01T05:32:00-1000`],
@@ -488,7 +489,7 @@ describe('HeatmapService', () => {
     });
 
     it('works when the bucketsize and sample interval are different', () => {
-      const heatmap = service._generateHeatMapWithReplay(
+      const heatmap = _service._generateHeatMapWithReplay(
         questionsFromDates([OCT4('03:01', '03:11'), OCT8('05:12', '05:22')]),
         officehoursFromDates([OCT4('03:00', '04:00'), OCT8('05:00', '06:00')]),
         'America/New_York',
