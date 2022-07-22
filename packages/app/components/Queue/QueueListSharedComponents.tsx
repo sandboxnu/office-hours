@@ -76,6 +76,12 @@ const QueuePropertyRow = styled.div`
   }
 `;
 
+const HeadingQueuePropertyRow = styled(QueuePropertyRow)`
+  @media (max-width: 650px) {
+    justify-content: center;
+  }
+`;
+
 const LastQueuePropertyRow = styled(QueuePropertyRow)`
   @media (max-width: 650px) {
     margin-bottom: 18px;
@@ -96,6 +102,10 @@ const QueuePropertyText = styled.div`
 
 const StaffH2 = styled.h2`
   margin-top: 32px;
+  @media (max-width: 650px) {
+    text-align: center;
+    margin-top: 5px;
+  }
 `;
 
 const QueueRoomGroup = styled.div`
@@ -110,6 +120,9 @@ const QueueRoomGroup = styled.div`
 const QueueInfo = styled.div`
   @media (min-width: 650px) {
     margin-bottom: 24px;
+  }
+  @media (max-width: 650px) {
+    margin-bottom: 10px;
   }
 `;
 
@@ -184,9 +197,9 @@ export function QueueInfoColumn({
         </QueueRoomGroup>
 
         {queue?.isProfessorQueue && (
-          <QueuePropertyRow>
+          <HeadingQueuePropertyRow>
             <Tag color="blue">Professor Queue</Tag>
-          </QueuePropertyRow>
+          </HeadingQueuePropertyRow>
         )}
       </QueueInfo>
       {queue?.notes && (
@@ -212,9 +225,9 @@ export function QueueInfoColumn({
       )}
       <QueueUpToDateInfo queueId={queueId} />
       {buttons}
-      {(!isMobile || !isStaff) && (
+      {!(isMobile && isStaff) && (
         <>
-          <StaffH2>Staff</StaffH2>
+          {!isMobile && <StaffH2>Staff</StaffH2>}
           <TAStatuses queueId={queueId} />
         </>
       )}

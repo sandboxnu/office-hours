@@ -22,12 +22,13 @@ import {
   QueueInfoColumnButton,
 } from "../QueueListSharedComponents";
 import QuestionForm from "./QuestionForm";
-import StudentBanner from "./StudentBanner";
+import StudentBanner, { StudentBannerButtons } from "./StudentBanner";
 import CantFindModal from "./StudentCantFindModal";
 import StudentQueueCard from "./StudentQueueCard";
 import StudentRemovedFromQueueModal from "./StudentRemovedFromQueueModal";
 import { useHotkeys } from "react-hotkeys-hook";
 import { ResponsivePopconfirm } from "../../common/ResponsivePopconfirm";
+import { useIsMobile } from "../../../hooks/useIsMobile";
 
 const Container = styled.div`
   flex: 1;
@@ -95,6 +96,7 @@ export default function StudentQueue({
   qid,
   cid,
 }: StudentQueueProps): ReactElement {
+  const isMobile = useIsMobile();
   const { queue } = useQueue(qid);
   const { questions, mutateQuestions } = useQuestions(qid);
   const { studentQuestion, studentQuestionIndex } = useStudentQuestion(qid);
@@ -355,6 +357,15 @@ export default function StudentQueue({
                   editQuestion={openEditModal}
                   leaveQueue={leaveQueue}
                 />
+                {isMobile && (
+                  <div style={{ display: "flex" }}>
+                    <StudentBannerButtons
+                      queueId={qid}
+                      editQuestion={openEditModal}
+                      leaveQueue={leaveQueue}
+                    />
+                  </div>
+                )}
                 <div style={{ marginTop: "40px" }} />
               </>
             )}
@@ -403,6 +414,8 @@ interface QueueProps {
   studentQuestion: Question;
 }
 function QueueQuestions({ questions, studentQuestion }: QueueProps) {
+  const isMobile = useIsMobile();
+
   return (
     <div data-cy="queueQuestions">
       {questions?.length === 0 ? (
@@ -410,15 +423,18 @@ function QueueQuestions({ questions, studentQuestion }: QueueProps) {
       ) : (
         <>
           <QueueHeader>Queue</QueueHeader>
-          <StudentHeaderCard bordered={false}>
+          <StudentHeaderCard
+            bordered={false}
+            bodyStyle={isMobile ? { padding: "20px 10px" } : {}}
+          >
             <CenterRow>
-              <Col flex="0 0 64px">
+              <Col flex={isMobile ? "0 0 30px" : "0 0 64px"}>
                 <HeaderText>#</HeaderText>
               </Col>
               <Col flex="1 1">
                 <HeaderText>question</HeaderText>
               </Col>
-              <Col flex="0 0 80px">
+              <Col flex={isMobile ? "0 0 70px" : "0 0 80px"}>
                 <HeaderText>wait</HeaderText>
               </Col>
             </CenterRow>

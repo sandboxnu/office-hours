@@ -24,6 +24,9 @@ const Title = styled.div`
   font-weight: 300;
   font-size: 24px;
   color: white;
+  @media (max-width: 650px) {
+    font-size: 20px;
+  }
 `;
 const ButtonContainer = styled.div`
   display: flex;
