@@ -23,7 +23,7 @@ const ResponsiveTable = styled(Table)`
     }
 
     table td::before {
-      content: attr(label);
+      content: attr(data-title);
       font-weight: bold;
       width: 120px;
       min-width: 120px;
@@ -89,7 +89,7 @@ export default function CoursePreferenceSettings(): ReactElement {
       dataIndex: "name",
       key: "name",
       onCell: () => ({
-        label: "Course name", // label is used to display header in transposed mobile view
+        "data-title": "Course name", // data-title is used to display header in transposed mobile view
       }),
     },
     {
@@ -97,7 +97,7 @@ export default function CoursePreferenceSettings(): ReactElement {
       dataIndex: "role",
       key: "role",
       onCell: () => ({
-        label: "Role",
+        "data-title": "Role",
       }),
     },
     {
@@ -108,7 +108,7 @@ export default function CoursePreferenceSettings(): ReactElement {
         return <InstructorCell courseId={courseId} />;
       },
       onCell: () => ({
-        label: "Instructor",
+        "data-title": "Instructor",
       }),
     },
     {
@@ -130,7 +130,7 @@ export default function CoursePreferenceSettings(): ReactElement {
         );
       },
       onCell: () => ({
-        label: "",
+        "data-title": "",
       }),
     },
   ];
@@ -152,6 +152,7 @@ export default function CoursePreferenceSettings(): ReactElement {
           <h1>Course Preferences</h1>
         </HeaderTitle>
         <ResponsiveTable
+          // @ts-expect-error  datatype for columns.onCell does not recognize data-* attributes
           columns={columns}
           dataSource={createCourseDataSource()}
         />
