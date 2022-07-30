@@ -17,7 +17,7 @@ describe("Professor can create an override", () => {
     cy.contains(this.student.user.email);
     cy.contains("ta");
 
-    cy.get(".ant-btn > .anticon > svg").click();
+    cy.get("[data-cy='delete-override-button']").click();
     cy.should("not.contain", this.student.user.name);
   });
 });
