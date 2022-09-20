@@ -31,8 +31,8 @@ import {
   UpdateQuestionResponse,
   UpdateQueueParams,
   QueuePartial,
-  UserPartial,
   Role,
+  GetCourseUserInfoResponse,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -86,12 +86,12 @@ class APIClient {
       page: number,
       role?: Role,
       search?: string
-    ) =>
+    ): Promise<GetCourseUserInfoResponse> =>
       this.req(
         "GET",
-        `/api/v1/courses/${courseId}/get_user_info/${page}/${role}`,
-        UserPartial,
-        { search }
+        `/api/v1/courses/${courseId}/get_user_info/${page}/${role}${
+          search ? `?search=${search}` : ""
+        }`
       ),
     getCourseOverrides: async (courseId: number) =>
       this.req(

@@ -8,13 +8,13 @@ import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../hooks/useProfile";
-import CourseOverrideSettings from "./CourseOverrideSettings";
+import CourseRosterPage from "./CourseRosterPage";
 import { SettingsPanelAvatar } from "./SettingsSharedComponents";
 import TACheckInCheckOutTimes from "./TACheckInCheckOutTimes";
 
 export enum CourseAdminOptions {
   CHECK_IN = "CHECK_IN",
-  OVERRIDES = "OVERRIDES",
+  ROSTER = "ROSTER",
 }
 
 interface CourseAdminPageProps {
@@ -77,8 +77,8 @@ export default function CourseAdminPanel({
           <Menu.Item key={CourseAdminOptions.CHECK_IN} icon={<EditOutlined />}>
             TA Check In/Out Times
           </Menu.Item>
-          <Menu.Item key={CourseAdminOptions.OVERRIDES} icon={<BellOutlined />}>
-            Course Overrides
+          <Menu.Item key={CourseAdminOptions.ROSTER} icon={<BellOutlined />}>
+            Course Roster
           </Menu.Item>
         </Menu>
       </Col>
@@ -88,8 +88,8 @@ export default function CourseAdminPanel({
           {currentSettings === CourseAdminOptions.CHECK_IN && (
             <TACheckInCheckOutTimes courseId={courseId} />
           )}
-          {currentSettings === CourseAdminOptions.OVERRIDES && (
-            <CourseOverrideSettings courseId={courseId} />
+          {currentSettings === CourseAdminOptions.ROSTER && (
+            <CourseRosterPage courseId={courseId} />
           )}
         </Col>
       </Space>
