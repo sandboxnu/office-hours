@@ -26,10 +26,10 @@ module.exports = {
   deploy: {
     staging: {
       user: "ubuntu",
-      host: "128.31.24.252",
+      host: "67.205.180.129",
       ref: "origin/dist",
-      repo: "https://github.com/sandboxnu/office-hours.git",
-      path: "/var/www",
+      repo: "https://github.com/ubco-db/office-hours.git",
+      path: "/",
       "pre-deploy-local": "",
       "post-deploy":
         "yarn && yarn typeorm migration:run && yarn pm2 startOrReload ./infrastructure/prod/ecosystem.config.js",
