@@ -1,38 +1,96 @@
-import { Button } from "antd";
-import styled from "styled-components";
+// import { Button } from "antd";
+// import styled from "styled-components";
 import { ReactElement } from "react";
-import { useHomePageRedirect } from "../hooks/useHomePageRedirect";
-import { User } from "@koh/common";
+// import { useHomePageRedirect } from "../hooks/useHomePageRedirect";
+// import { User } from "@koh/common";
 import Router from "next/router";
-import { useProfile } from "../hooks/useProfile";
-
-const Container = styled.div`
-  height: 80vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const ContentContainer = styled.div`
-  text-align: center;
-`;
+// import { useProfile } from "../hooks/useProfile";
+import { useState } from "react";
+import "./signup/styles.css";
+// import { useRouter } from "next/router";
 
 export default function Login(): ReactElement {
-  const profile: User = useProfile();
-  const didRedirect = useHomePageRedirect();
-  if (profile && !didRedirect) {
-    Router.push("/nocourses");
-  }
+  // const profile: User = useProfile();
+  // const didRedirect = useHomePageRedirect();
+  // if (profile && !didRedirect) {
+  //   Router.push("/nocourses");
+  // }
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
+  //put token inside login request
+  const handleSubmit = (event: any) => {
+    event.preventDefault();
+    const loginRequest = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email,
+        password: password
+      })
+    };
+    fetch("http://localhost:3000/api/v1/ubc_login", loginRequest)
+      .then(async response => {
+        const data = await response.json();
+
+        // check for error response
+        if (!response.ok) {
+          // get error message from body or default to response statusText
+          const error = (data && data.message) || response.statusText;
+          return Promise.reject(error);
+        } else {
+          Router.push(`api/v1/login/entry?token=${data.token}`);
+        }
+      })
+      .catch(error => {
+        console.error("There was an error!", error);
+      });
+  };
   return (
-    <Container>
-      <ContentContainer>
-        <h1>You are currently not logged in</h1>
-        <p>Click the button below to login via Khoury Admin</p>
-        <Button href="https://admin.khoury.northeastern.edu/teaching/officehourslogin/">
-          Log in via Khoury Admin
-        </Button>
-      </ContentContainer>
-    </Container>
+    <div>
+      <form onSubmit={handleSubmit} className="form">
+        <nav>
+          <h1>Log into UBC office hours</h1>
+        </nav>
+        <div className="form-body">
+          <div className="email">
+            <label className="form__label" htmlFor="email">
+              Email{" "}
+            </label>
+            <input
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              name="email"
+              type="text"
+              id="email"
+              className="form__input"
+              placeholder="Email"
+            />
+          </div>
+          <div className="password">
+            <label className="form__label" htmlFor="password">
+              Password{" "}
+            </label>
+            <input
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              className="form__input"
+              type="password"
+              id="password"
+              placeholder="Password"
+            />
+          </div>
+        </div>
+        <div className="footer">
+          <button type="submit" className="btn">
+            Login
+          </button>
+        </div>
+        <button>
+          <a href="./signup/signup">Register</a>
+        </button>
+      </form>
+      <div></div>
+    </div>
   );
 }

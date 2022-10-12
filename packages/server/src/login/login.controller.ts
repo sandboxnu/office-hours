@@ -4,6 +4,7 @@ import {
   KhouryDataParams,
   KhouryRedirectResponse,
   Role,
+  UBCOloginParam,
 } from '@koh/common';
 import {
   BadRequestException,
@@ -27,9 +28,11 @@ import { CourseModel } from 'course/course.entity';
 import { User } from 'decorators/user.decorator';
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from 'guards/jwt-auth.guard';
-import * as httpSignature from 'http-signature';
+//import * as httpSignature from 'http-signature';
 import { UserCourseModel } from 'profile/user-course.entity';
+import * as bcrypt from 'bcrypt';
 import { UserModel } from 'profile/user.entity';
+// import { questionEMail } from 'readline-sync';
 import { Connection } from 'typeorm';
 import { NonProductionGuard } from '../guards/non-production.guard';
 import { LoginCourseService } from './login-course.service';
@@ -42,24 +45,90 @@ export class LoginController {
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
+  //front post to this
+  @Post('/ubc_login')
+  async receiveDataFromLogin(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() body: UBCOloginParam,
+  ): Promise<any> {
+    UserModel.findOne({
+      where: { email: body.email },
+    })
+      .then(async user => {
+        if (!user) {
+          return res
+            .status(404)
+            .send({ message: "User Not found, can't register" });
+        }
+
+        const token = await this.jwtService.signAsync(
+          { userId: user.id },
+          { expiresIn: 60 },
+        );
+        if (token === null || token === undefined) {
+          console.error('Temporary JWT is invalid');
+          throw new HttpException(
+            ERROR_MESSAGES.loginController.invalidTempJWTToken,
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+        }
+        bcrypt.compare(body.password, user.password, (err, data) => {
+          //if error than throw error
+          if (err) throw err;
+
+          //if both match than you can do anything
+          if (data) {
+            return res.status(200).send({ token, ...body });
+          } else {
+            return res.status(401).json({ msg: 'Invalid credential' });
+          }
+        });
+      })
+      //   bcrypt.compare(body.password, user.password, function(err, result) {
+      //     if (result) {
+      //       console.log("It matches!")
+      //       const token = this.jwtService.signAsync(
+      //         { userId: user.id },
+      //         { expiresIn: 60 },
+      //       )
+      //       res.status(200).send({token, ...body})
+      //     }
+      //     else {
+      //       console.log("Invalid password!");
+      //       res.status(400).send(user);
+      //       return;
+      //     }
+      //   });
+      // })
+      // return {
+      //   redirect:
+      //     this.configService.get('DOMAIN') + `/api/v1/login/entry?token=${token}`,
+      // })
+      .catch(err => {
+        res.status(500).send({ message: err.message });
+      });
+  }
 
   @Post('/khoury_login')
-  async recieveDataFromKhoury(
+  async receiveDataFromKhoury(
     @Req() req: Request,
     @Body() body: KhouryDataParams,
   ): Promise<KhouryRedirectResponse> {
-    if (process.env.NODE_ENV === 'production') {
-      // Check that request has come from Khoury
-      const parsedRequest = httpSignature.parseRequest(req);
-      const verifySignature = httpSignature.verifyHMAC(
-        parsedRequest,
-        this.configService.get('KHOURY_PRIVATE_KEY'),
-      );
-      if (!verifySignature) {
-        Sentry.captureMessage('Invalid request signature: ' + parsedRequest);
-        throw new UnauthorizedException('Invalid request signature');
-      }
-    }
+    // commented out since we are no longer sending request from Khoury
+
+    // if (process.env.NODE_ENV === 'production') {
+    //   // Check that request has come from Khoury
+    //   const parsedRequest = httpSignature.parseRequest(req);
+    //   const verifySignature = httpSignature.verifyHMAC(
+    //     parsedRequest,
+    //     this.configService.get('KHOURY_PRIVATE_KEY'),
+    //   );
+    //   if (!verifySignature) {
+    //     Sentry.captureMessage('Invalid request signature: ' + parsedRequest);
+    //     throw new UnauthorizedException('Invalid request signature');
+    //   }
+    // }
 
     let user;
     try {
@@ -96,7 +165,7 @@ export class LoginController {
   // NOTE: Although the two routes below are on the backend,
   // they are meant to be visited by the browser so a cookie can be set
 
-  // This is the real admin entry point
+  // This is the real admin entry point, Kevin changed to also just take a user id, change to that sign in only
   @Get('/login/entry')
   async enterFromKhoury(
     @Res() res: Response,
@@ -110,13 +179,13 @@ export class LoginController {
 
     const payload = this.jwtService.decode(token) as { userId: number };
 
-    if (payload === null || payload === undefined) {
-      console.error('Decoded JWT is invalid');
-      throw new HttpException(
-        ERROR_MESSAGES.loginController.invalidPayload,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    // if (payload === null || payload === undefined) {
+    //   console.error('Decoded JWT is invalid');
+    //   throw new HttpException(
+    //     ERROR_MESSAGES.loginController.invalidPayload,
+    //     HttpStatus.INTERNAL_SERVER_ERROR,
+    //   );
+    // }
 
     this.enter(res, payload.userId);
   }
@@ -168,7 +237,7 @@ export class LoginController {
   @Get('self_enroll_courses')
   async selfEnrollEnabledAnywhere(): Promise<GetSelfEnrollResponse> {
     const courses = await CourseModel.find();
-    return { courses: courses.filter((course) => course.selfEnroll) };
+    return { courses: courses.filter(course => course.selfEnroll) };
   }
 
   @Post('create_self_enroll_override/:id')

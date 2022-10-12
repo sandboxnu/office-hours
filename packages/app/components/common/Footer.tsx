@@ -44,6 +44,7 @@ export function Footer(): ReactElement {
         >
           GitHub.
         </a>
+        Edited by kevin
       </div>
       {APPS_OPEN < TODAY && TODAY < APPS_CLOSE && (
         <div>

@@ -1,8 +1,10 @@
 import { Exclude } from 'class-transformer';
 import { INSIGHTS_MAP } from '../insights/insight-objects';
+import * as bcrypt from 'bcrypt';
 import {
   AfterLoad,
   BaseEntity,
+  BeforeInsert,
   Column,
   Entity,
   ManyToMany,
@@ -21,9 +23,14 @@ import { AlertModel } from '../alerts/alerts.entity';
 export class UserModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
+  @Column('int', { nullable: true })
+  sid: number;
 
   @Column('text')
   email: string;
+
+  @Column('text', { nullable: true })
+  password: string | null;
 
   @Column('text', { nullable: true })
   firstName: string;
@@ -40,7 +47,10 @@ export class UserModel extends BaseEntity {
   @Column({ type: 'boolean', default: true })
   includeDefaultMessage: boolean;
 
-  @OneToMany((type) => UserCourseModel, (ucm) => ucm.user)
+  @OneToMany(
+    type => UserCourseModel,
+    ucm => ucm.user,
+  )
   @Exclude()
   courses: UserCourseModel[];
 
@@ -52,23 +62,38 @@ export class UserModel extends BaseEntity {
   @Exclude()
   phoneNotifsEnabled: boolean; // Does user want notifications sent to their phone?
 
-  @OneToMany((type) => DesktopNotifModel, (notif) => notif.user)
+  @OneToMany(
+    type => DesktopNotifModel,
+    notif => notif.user,
+  )
   @Exclude()
   desktopNotifs: DesktopNotifModel[];
 
-  @OneToOne((type) => PhoneNotifModel, (notif) => notif.user)
+  @OneToOne(
+    type => PhoneNotifModel,
+    notif => notif.user,
+  )
   @Exclude()
   phoneNotif: PhoneNotifModel;
 
   @Exclude()
-  @ManyToMany((type) => QueueModel, (queue) => queue.staffList)
+  @ManyToMany(
+    type => QueueModel,
+    queue => queue.staffList,
+  )
   queues: QueueModel[];
 
   @Exclude()
-  @OneToMany((type) => EventModel, (event) => event.user)
+  @OneToMany(
+    type => EventModel,
+    event => event.user,
+  )
   events: EventModel[];
 
-  @OneToMany((type) => AlertModel, (alert) => alert.user)
+  @OneToMany(
+    type => AlertModel,
+    alert => alert.user,
+  )
   alerts: AlertModel[];
 
   @Exclude()
@@ -84,7 +109,7 @@ export class UserModel extends BaseEntity {
       hideInsights = [];
     }
     const insightNames = Object.keys(INSIGHTS_MAP);
-    this.insights = insightNames.filter((name) => !hideInsights.includes(name));
+    this.insights = insightNames.filter(name => !hideInsights.includes(name));
   }
 
   name: string;
@@ -93,4 +118,10 @@ export class UserModel extends BaseEntity {
   setFullNames(): void {
     this.name = this.firstName + ' ' + this.lastName;
   }
+  // @BeforeInsert()
+  // async setPassword(password:string) {
+  //   const saltRounds = 10;
+  //   const salt = await bcrypt.genSalt(saltRounds);
+  //   this.password = await bcrypt.hash(password||this.password, salt);
+  // }
 }

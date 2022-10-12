@@ -21,12 +21,14 @@ import { SeedModule } from './seed/seed.module';
 import { SSEModule } from './sse/sse.module';
 import { SemesterModule } from 'semester/semester.module';
 import { ResourcesModule } from './resources/resources.module';
+import { SignupModule } from 'signup/signup.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeormConfig),
     ScheduleModule.forRoot(),
     LoginModule,
+    SignupModule,
     ProfileModule,
     CourseModule,
     QueueModule,

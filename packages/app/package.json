@@ -49,6 +49,7 @@
     "react-hotkeys-hook": "^3.4.4",
     "react-linkify": "^1.0.0-alpha",
     "react-notion": "^0.8.1",
+    "react-select": "^5.4.0",
     "reconnecting-eventsource": "^1.1.0",
     "styled-components": "^5.1.0",
     "swr": "^0.2.2"

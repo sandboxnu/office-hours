@@ -25,6 +25,7 @@ import {
   Patch,
   Post,
   Query,
+  Res,
   UnauthorizedException,
   UseGuards,
   UseInterceptors,
@@ -33,6 +34,7 @@ import async from 'async';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { Connection } from 'typeorm';
+import { Response } from 'express';
 import { Roles } from '../decorators/roles.decorator';
 import { User, UserId } from '../decorators/user.decorator';
 import { CourseRolesGuard } from '../guards/course-roles.guard';
@@ -56,6 +58,14 @@ export class CourseController {
     private heatmapService: HeatmapService,
     private courseService: CourseService,
   ) {}
+
+  // get all courses
+  @Get()
+  getCourse(@Res() res: Response) {
+    CourseModel.find().then(async courses => {
+      return res.status(200).send(courses);
+    });
+  }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, CourseRolesGuard)
@@ -116,12 +126,12 @@ export class CourseController {
     ) {
       course.queues = await async.filter(
         course.queues,
-        async (q) => !q.isDisabled,
+        async q => !q.isDisabled,
       );
     } else if (userCourseModel.role === Role.STUDENT) {
       course.queues = await async.filter(
         course.queues,
-        async (q) => !q.isDisabled && (await q.checkIsOpen()),
+        async q => !q.isDisabled && (await q.checkIsOpen()),
       );
     }
 
@@ -131,7 +141,7 @@ export class CourseController {
     }
 
     try {
-      await async.each(course.queues, async (q) => {
+      await async.each(course.queues, async q => {
         await q.addQueueSize();
       });
     } catch (err) {
@@ -194,7 +204,7 @@ export class CourseController {
 
     if (
       queues &&
-      queues.some((q) => q.staffList.some((staff) => staff.id === user.id))
+      queues.some(q => q.staffList.some(staff => staff.id === user.id))
     ) {
       throw new UnauthorizedException(
         ERROR_MESSAGES.courseController.checkIn.cannotCheckIntoMultipleQueues,
@@ -385,9 +395,9 @@ export class CourseController {
     }
 
     // Do nothing if user not already in stafflist
-    if (!queue.staffList.find((e) => e.id === user.id)) return;
+    if (!queue.staffList.find(e => e.id === user.id)) return;
 
-    queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
+    queue.staffList = queue.staffList.filter(e => e.id !== user.id);
     if (queue.staffList.length === 0) {
       queue.allowQuestions = false;
     }
@@ -460,7 +470,7 @@ export class CourseController {
     }
 
     return {
-      data: resp.map((row) => ({
+      data: resp.map(row => ({
         id: row.id,
         role: row.role,
         name: row.user.name,
