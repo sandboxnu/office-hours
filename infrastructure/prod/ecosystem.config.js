@@ -26,7 +26,7 @@ module.exports = {
   deploy: {
     staging: {
       user: "ubuntu",
-      host: "67.205.180.129",
+      host: "143.198.226.250",
       ref: "origin/dist",
       repo: "https://github.com/ubco-db/office-hours.git",
       path: "/",
