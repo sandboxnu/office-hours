@@ -35,11 +35,10 @@ export default function Signup(): ReactElement {
 
   useEffect(() => {
     // POST request using fetch inside useEffect React hook
-    const requestOptions = {
-      method: "GET",
-      headers: { "Content-Type": "application/json" }
+    const getOptions = {
+      method: "GET"
     };
-    fetch("http://localhost:3000/api/v1/courses", requestOptions).then(
+    fetch("http://localhost:3000/api/v1/courses", getOptions).then(
       async response => {
         const data = await response.json();
         let courseNames = [];
@@ -51,7 +50,7 @@ export default function Signup(): ReactElement {
         return setCourses(courseNames);
       }
     );
-  }, []);
+  }, [courseId]);
   //send data to create user
   const handleSubmit = async (event: any) => {
     event.preventDefault();
