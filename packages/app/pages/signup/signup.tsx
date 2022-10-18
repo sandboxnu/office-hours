@@ -39,7 +39,7 @@ export default function Signup(): ReactElement {
     const getOptions = {
       method: "GET"
     };
-    fetch("api/v1/courses", getOptions).then(async response => {
+    fetch("/api/v1/courses", getOptions).then(async response => {
       const data = await response.json();
       let courseNames = [];
       for (var i = 0; i < data.length; i++) {
@@ -77,7 +77,7 @@ export default function Signup(): ReactElement {
         selected_course: toArr(selectedOptions)
       })
     };
-    fetch("http://localhost:3000/api/v1/signup/ubc_signup", loginRequest)
+    fetch("/api/v1/signup/ubc_signup", loginRequest)
       .then(async response => {
         const data = await response.json();
         // check for error response
