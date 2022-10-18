@@ -39,18 +39,16 @@ export default function Signup(): ReactElement {
     const getOptions = {
       method: "GET"
     };
-    fetch("http://localhost:3000/api/v1/courses", getOptions).then(
-      async response => {
-        const data = await response.json();
-        let courseNames = [];
-        for (var i = 0; i < data.length; i++) {
-          courseNames.push(data[i].name);
-          courseId.push(data[i].id);
-        }
-        setId(courseNames);
-        return setCourses(courseNames);
+    fetch("api/v1/courses", getOptions).then(async response => {
+      const data = await response.json();
+      let courseNames = [];
+      for (var i = 0; i < data.length; i++) {
+        courseNames.push(data[i].name);
+        courseId.push(data[i].id);
       }
-    );
+      setId(courseNames);
+      return setCourses(courseNames);
+    });
   }, [ErrorFetchedChecker]);
   //send data to create user
   const handleSubmit = async (event: any) => {
