@@ -29,7 +29,7 @@ export const getEnv = (): "production" | "staging" | "dev" => {
     case STAGING_URL:
       return "staging";
     default:
-      return "production";
+      return "dev";
   }
 };
 export const isProd = (): boolean => domain() === PROD_URL;
