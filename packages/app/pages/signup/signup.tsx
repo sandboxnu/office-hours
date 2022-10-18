@@ -9,7 +9,7 @@ import { useState } from "react";
 import Select from "react-select";
 // eslint-disable-next-line @typescript-eslint/ban-types
 
-export default function Signup(): ReactElement {
+export default async function Signup(): ReactElement {
   //get course
   const [courses, setCourses] = useState([""]);
   const [courseId, setId] = useState([""]);
@@ -38,7 +38,7 @@ export default function Signup(): ReactElement {
     const getOptions = {
       method: "GET"
     };
-    fetch("http://localhost:3000/api/v1/courses", getOptions).then(
+    await fetch("http://localhost:3000/api/v1/courses", getOptions).then(
       async response => {
         const data = await response.json();
         let courseNames = [];
