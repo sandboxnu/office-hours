@@ -27,9 +27,9 @@ module.exports = {
     staging: {
       user: "ubuntu",
       host: "143.198.226.250",
-      ref: "origin/dist",
+      ref: "origin/master",
       repo: "https://github.com/ubco-db/office-hours.git",
-      path: "/",
+      path: "/var/www/source",
       "pre-deploy-local": "",
       "post-deploy":
         "yarn && yarn typeorm migration:run && yarn pm2 startOrReload ./infrastructure/prod/ecosystem.config.js",

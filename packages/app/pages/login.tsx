@@ -17,20 +17,17 @@ export default function Login(): ReactElement {
   // }
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  //put token inside login request
-  const handleSubmit = (event: any) => {
-    event.preventDefault();
+  function login() {
     const loginRequest = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: email,
-        password: password
-      })
+        password: password,
+      }),
     };
-    fetch("http://localhost:3000/api/v1/ubc_login", loginRequest)
-      .then(async response => {
+    fetch("/api/v1/ubc_login", loginRequest)
+      .then(async (response) => {
         const data = await response.json();
 
         // check for error response
@@ -39,12 +36,17 @@ export default function Login(): ReactElement {
           const error = (data && data.message) || response.statusText;
           return Promise.reject(error);
         } else {
-          Router.push(`api/v1/login/entry?token=${data.token}`);
+          Router.push(`/api/v1/login/entry?token=${data.token}`);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("There was an error!", error);
       });
+  }
+  //put token inside login request
+  const handleSubmit = (event: any) => {
+    event.preventDefault();
+    login();
   };
   return (
     <div>
@@ -59,7 +61,7 @@ export default function Login(): ReactElement {
             </label>
             <input
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               name="email"
               type="text"
               id="email"
@@ -73,7 +75,7 @@ export default function Login(): ReactElement {
             </label>
             <input
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               className="form__input"
               type="password"
               id="password"

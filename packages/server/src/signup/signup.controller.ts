@@ -63,6 +63,7 @@ export class SignupController {
       }).save();
       // insert student's courses into user course table
       await this.signupService.insertUserCourse(body.selected_course, user1.id);
+      res.status(200).send({ message: 'User has been signed up' });
     } else {
       res.status(400).send({ message: 'User already exists' });
     }

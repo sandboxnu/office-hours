@@ -84,6 +84,7 @@ export class ProfileController {
       'id',
       'email',
       'name',
+      'sid',
       'firstName',
       'lastName',
       'photoURL',

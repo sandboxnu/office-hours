@@ -12,13 +12,14 @@ export default function ProfileSettings(): ReactElement {
   const { data: profile, mutate } = useSWR(`api/v1/profile`, async () =>
     API.profile.index()
   );
+  console.log(profile);
   const isMobile = useIsMobile();
   const [form] = Form.useForm();
 
   const editProfile = async (updateProfile: UpdateProfileParams) => {
     const newProfile = { ...profile, ...updateProfile };
     mutate(newProfile, false);
-    await API.profile.patch(pick(newProfile, ["firstName", "lastName"]));
+    await API.profile.patch(pick(newProfile, ["firstName", "lastName", "sid"]));
     mutate();
     return newProfile;
   };
@@ -59,6 +60,20 @@ export default function ProfileSettings(): ReactElement {
             label="Last Name"
             name="lastName"
             data-cy="lastNameInput"
+            rules={[
+              {
+                required: true,
+                message: "Your name can't be empty!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            style={{ marginLeft: isMobile ? "0" : "10px" }}
+            label="Student ID"
+            name="sid"
+            data-cy="sidInput"
             rules={[
               {
                 required: true,

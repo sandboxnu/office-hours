@@ -10,9 +10,15 @@ body{
   width: 550px;
   margin: 20px auto;
   padding: 20px;
+  display: table;  
   /* height: 600px; */
 }
 
+label { 
+  display: table-cell; }
+input{
+  margin-top: 10px;
+}
 .form-body{
   text-align: left;
   padding: 20px 10px;
@@ -20,15 +26,20 @@ body{
 
 
 .form-body > *{
+  display: table-row;
+
   padding: 5px;
 }
 
 .form__label{
+  margin-top: 20px;
   width: 40%;
 }
 
 .form_input{
+  margin-top: 20px;
   width: 60%;
+  display: table-cell;
 }
 
 .footer{
