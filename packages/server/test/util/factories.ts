@@ -31,16 +31,16 @@ export const TACourseFactory = new Factory(UserCourseModel).attr(
 
 export const SemesterFactory = new Factory(SemesterModel)
   .attr('season', 'Fall')
-  .attr('year', 2020);
+  .attr('year', 2022);
 
 export const CourseFactory = new Factory(CourseModel)
-  .attr('name', 'CS 2500')
+  .attr('name', 'CS 304')
   // calendar is owned by sandboxneu@gmail.com
   .attr(
     'icalURL',
     'https://calendar.google.com/calendar/ical/t6lu2pic7u9otrbpkuk26sl34g%40group.calendar.google.com/public/basic.ics',
   )
-  .attr('sectionGroupName', 'CS 2500')
+  .attr('sectionGroupName', 'CS 304')
   .attr('enabled', true)
   .assocOne('semester', SemesterFactory);
 
@@ -84,7 +84,7 @@ export const EventFactory = new Factory(EventModel)
   .assocOne('course', CourseFactory);
 
 export const LastRegistrationFactory = new Factory(LastRegistrationModel)
-  .attr('lastRegisteredSemester', '202110') // Fall 2020
+  .attr('lastRegisteredSemester', '202210') // Fall 2022
   .assocOne('prof', UserFactory);
 
 export const ProfSectionGroupsFactory = new Factory(ProfSectionGroupsModel)

@@ -14,8 +14,6 @@ Khoury Office Hours was developed by [Sandbox](https://www.sandboxnu.com/), Nort
 
 - Automated office hours scraped from course calendars
 
-- Microsoft Teams integration
-
 - Join the queue from anywhere
 
 - Live TA status cards
@@ -28,23 +26,6 @@ Khoury Office Hours was developed by [Sandbox](https://www.sandboxnu.com/), Nort
 
 - Professor Data Insights
 
-- Login integration with Khoury Admin
-
-## Contribute
-
-> To get started with developing Khoury Office Hours, check out [DEVELOPING.md](https://github.com/sandboxnu/office-hours/blob/master/DEVELOPING.md)
-
-### Step 1
-
-Clone this repo to your local machine using `https://github.com/sandboxnu/office-hours.git`
-
-### Step 2
-
-Hack away! Take a look [here](https://github.com/sandboxnu/office-hours/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) for some good issues to start on.
-
-### Step 3
-
-Create a new pull request using <a href="https://github.com/sandboxnu/office-hours/compare/" target="_blank">`https://github.com/sandboxnu/office-hours/compare/`</a>
 
 ## Support
 

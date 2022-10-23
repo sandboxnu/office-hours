@@ -18,7 +18,7 @@ import {
 } from "@koh/common";
 import { message, Popconfirm, Tooltip } from "antd";
 import React, { ReactElement, useCallback } from "react";
-import { useDefaultMessage } from "../../../hooks/useDefaultMessage";
+//import { useDefaultMessage } from "../../../hooks/useDefaultMessage";
 import { useQuestions } from "../../../hooks/useQuestions";
 import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
 import {
@@ -29,7 +29,7 @@ import {
   FinishHelpingButton,
   RequeueButton,
 } from "../Banner";
-import { useTeams } from "../../../hooks/useTeams";
+//import { useTeams } from "../../../hooks/useTeams";
 import { useHotkeys } from "react-hotkeys-hook";
 
 const PRORITY_QUEUED_MESSAGE_TEXT =
@@ -46,7 +46,7 @@ export default function TAQueueDetailButtons({
   question: Question;
   hasUnresolvedRephraseAlert: boolean;
 }): ReactElement {
-  const defaultMessage = useDefaultMessage();
+  //const defaultMessage = useDefaultMessage();
   const { mutateQuestions } = useQuestions(queueId);
 
   const changeStatus = useCallback(
@@ -58,7 +58,7 @@ export default function TAQueueDetailButtons({
   );
   const { isCheckedIn, isHelping } = useTAInQueueInfo(queueId);
 
-  const openTeams = useTeams(queueId, question.creator.email, defaultMessage);
+  //const openTeams = useTeams(queueId, question.creator.email, defaultMessage);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const sendRephraseAlert = async () => {
@@ -83,7 +83,8 @@ export default function TAQueueDetailButtons({
 
   const helpStudent = () => {
     changeStatus(OpenQuestionStatus.Helping);
-    openTeams();
+    //no supporting teams pop up
+    //openTeams();
   };
   const deleteQuestion = async () => {
     await changeStatus(

@@ -19,8 +19,8 @@ export class QueueAdmin extends AdminEntity {
 
 export class UserAdmin extends AdminEntity {
   entity = UserModel;
-  listDisplay = ['id', 'email', 'name'];
-  searchFields = ['email', 'name'];
+  listDisplay = ['id', 'email', 'firstName'];
+  searchFields = ['email', 'firstName'];
   fields = [
     'id',
     'email',
