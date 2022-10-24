@@ -6,7 +6,7 @@ self.addEventListener("push", async function (event) {
   if (event.data) {
     try {
       await showLocalNotification(
-        "Khoury Office Hours",
+        "UBC Office Hours",
         event.data.text(),
         self.registration
       );

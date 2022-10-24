@@ -72,7 +72,7 @@ export class SeedController {
     tomorrow.setUTCHours(now.getUTCHours() + 19);
 
     const courseExists = await CourseModel.findOne({
-      where: { name: 'CS 2500' },
+      where: { name: 'CS 304' },
     });
     if (!courseExists) {
       // possible collision:

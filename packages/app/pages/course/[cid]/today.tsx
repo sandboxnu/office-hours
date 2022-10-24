@@ -101,7 +101,7 @@ export default function Today(): ReactElement {
   return (
     <StandardPageContainer>
       <Head>
-        <title>{course?.name} | Khoury Office Hours</title>
+        <title>{course?.name} | UBC Office Hours</title>
       </Head>
       <ReleaseNotes />
       <WelcomeStudents />
