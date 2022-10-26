@@ -19,6 +19,7 @@
     "migration:generate": "yarn workspace @koh/server run migration:generate",
     "build": "yarn workspace @koh/server run build && yarn workspace @koh/app run build",
     "ci:start": "yarn concurrently \"yarn dev:proxy\" \"yarn workspace @koh/server prod:start\" \"yarn workspace @koh/app prod:start\"",
+    "prod:start": "yarn concurrently \"yarn workspace @koh/server prod:start\" \"yarn workspace @koh/app prod:start\"",
     "prepare": "husky install"
   },
   "workspaces": {
