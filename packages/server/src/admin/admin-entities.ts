@@ -38,7 +38,7 @@ export class UserCourseAdmin extends AdminEntity {
 
 export class CourseSectionMappingAdmin extends AdminEntity {
   entity = CourseSectionMappingModel;
-  listDisplay = ['id', 'genericCourseName', 'section', 'courseId'];
+  listDisplay = ['id'];
 }
 
 export class SemesterAdmin extends AdminEntity {
