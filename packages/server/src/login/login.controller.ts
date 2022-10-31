@@ -55,11 +55,9 @@ export class LoginController {
     UserModel.findOne({
       where: { email: body.email },
     })
-      .then(async user => {
+      .then(async (user) => {
         if (!user) {
-          return res
-            .status(404)
-            .send({ message: "User Not found, can't register" });
+          return res.status(404).send({ message: 'User Not found' });
         }
 
         const token = await this.jwtService.signAsync(
@@ -81,7 +79,7 @@ export class LoginController {
           if (data) {
             return res.status(200).send({ token, ...body });
           } else {
-            return res.status(401).json({ msg: 'Invalid credential' });
+            return res.status(401).json({ message: 'Invalid credential' });
           }
         });
       })
@@ -105,7 +103,7 @@ export class LoginController {
       //   redirect:
       //     this.configService.get('DOMAIN') + `/api/v1/login/entry?token=${token}`,
       // })
-      .catch(err => {
+      .catch((err) => {
         res.status(500).send({ message: err.message });
       });
   }
@@ -135,7 +133,7 @@ export class LoginController {
       user = await this.loginCourseService.addUserFromKhoury(body);
     } catch (e) {
       Sentry.captureException(e);
-      console.error('Khoury login threw an exception, the body was ', body);
+      console.error('login threw an exception, the body was ', body);
       console.error(e);
       throw new HttpException(
         ERROR_MESSAGES.loginController.addUserFromKhoury,
@@ -237,7 +235,7 @@ export class LoginController {
   @Get('self_enroll_courses')
   async selfEnrollEnabledAnywhere(): Promise<GetSelfEnrollResponse> {
     const courses = await CourseModel.find();
-    return { courses: courses.filter(course => course.selfEnroll) };
+    return { courses: courses.filter((course) => course.selfEnroll) };
   }
 
   @Post('create_self_enroll_override/:id')

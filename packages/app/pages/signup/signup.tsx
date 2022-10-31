@@ -97,96 +97,100 @@ export default function Signup(): ReactElement {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="form">
-      <div className="form-body">
-        <div className="firstName">
-          <label className="form__label" htmlFor="firstName">
-            {" "}
-            First Name{" "}
-          </label>
-          <input
-            name="firstName"
-            type="text"
-            id="firstName"
-            className="form__input"
-            required
-          />
+    <div>
+      <meta name="viewport" content="width=device-width,initial-scale=1" />
+      <form onSubmit={handleSubmit} className="form">
+        <h1>UBC office hour sign up</h1>
+        <div className="form-body">
+          <div className="firstName">
+            <label className="form__label" htmlFor="firstName">
+              {" "}
+              First Name{" "}
+            </label>
+            <input
+              name="firstName"
+              type="text"
+              id="firstName"
+              className="form__input"
+              required
+            />
+          </div>
+          <div className="lastName">
+            <label className="form__label" htmlFor="firstName">
+              {" "}
+              Last Name{" "}
+            </label>
+            <input
+              name="lastName"
+              type="text"
+              id="lastName"
+              className="form__input"
+              required
+            />
+          </div>
+          <div className="sid">
+            <label className="form__label"> Student ID </label>
+            <input name="sid" type="number" required />
+          </div>
+          <div className="email">
+            <label className="form__label" htmlFor="email">
+              {" "}
+              Email{" "}
+            </label>
+            <input
+              name="email"
+              type="text"
+              id="email"
+              className="form__input"
+              required
+            />
+          </div>
+          <div className="password">
+            <label className="form__label" htmlFor="password">
+              Password{" "}
+            </label>
+            <input
+              className="form__input"
+              type="password"
+              id="password"
+              placeholder="Password"
+              required
+            />
+          </div>
+          <div className="confirm-password">
+            <label className="form__label" htmlFor="confirmPassword">
+              Confirm Password{" "}
+            </label>
+            <input
+              className="form__input"
+              type="password"
+              id="confirmPassword"
+              placeholder="Confirm Password"
+              required
+            />
+          </div>
+          Choose your courses
+          <div className="dropdown-container">
+            <Select
+              options={optionList}
+              placeholder="Select courses"
+              value={selectedOptions}
+              onChange={handleSelect}
+              isSearchable={true}
+              isMulti
+            />
+          </div>
         </div>
-        <div className="lastName">
-          <label className="form__label" htmlFor="firstName">
-            {" "}
-            Last Name{" "}
-          </label>
-          <input
-            name="lastName"
-            type="text"
-            id="lastName"
-            className="form__input"
-            required
-          />
+        <div className="footer">
+          <button type="submit" className="btn">
+            Register
+          </button>
         </div>
-        <div className="sid">
-          <label className="form__label"> Student ID </label>
-          <input name="sid" type="number" required />
+        <div>
+          <a href="../login">log in</a>
         </div>
-        <div className="email">
-          <label className="form__label" htmlFor="email">
-            {" "}
-            Email{" "}
-          </label>
-          <input
-            name="email"
-            type="text"
-            id="email"
-            className="form__input"
-            required
-          />
-        </div>
-        <div className="password">
-          <label className="form__label" htmlFor="password">
-            Password{" "}
-          </label>
-          <input
-            className="form__input"
-            type="password"
-            id="password"
-            placeholder="Password"
-            required
-          />
-        </div>
-        <div className="confirm-password">
-          <label className="form__label" htmlFor="confirmPassword">
-            Confirm Password{" "}
-          </label>
-          <input
-            className="form__input"
-            type="password"
-            id="confirmPassword"
-            placeholder="Confirm Password"
-            required
-          />
-        </div>
-        Choose your courses
-        <div className="dropdown-container">
-          <Select
-            options={optionList}
-            placeholder="Select courses"
-            value={selectedOptions}
-            onChange={handleSelect}
-            isSearchable={true}
-            isMulti
-          />
-        </div>
-      </div>
-      <div className="footer">
-        <button type="submit" className="btn">
-          Register
-        </button>
-      </div>
-      <div>
-        <a href="../login">log in</a>
-      </div>
-      <div className="app"></div>
-    </form>
+        <div className="app"></div>
+      </form>
+    </div>
   );
 }

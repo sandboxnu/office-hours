@@ -7,6 +7,7 @@ import Router from "next/router";
 // import { useProfile } from "../hooks/useProfile";
 import { useState } from "react";
 import "./signup/styles.css";
+import { message } from "antd";
 // import { useRouter } from "next/router";
 
 export default function Login(): ReactElement {
@@ -34,6 +35,11 @@ export default function Login(): ReactElement {
         if (!response.ok) {
           // get error message from body or default to response statusText
           const error = (data && data.message) || response.statusText;
+          if (data.message === "Invalid credential") {
+            message.error("Invalid password.");
+          } else {
+            message.error("User Not Found");
+          }
           return Promise.reject(error);
         } else {
           Router.push(`/api/v1/login/entry?token=${data.token}`);
@@ -50,10 +56,9 @@ export default function Login(): ReactElement {
   };
   return (
     <div>
+      <meta name="viewport" content="width=device-width,initial-scale=1" />
       <form onSubmit={handleSubmit} className="form">
-        <nav>
-          <h1>Log into UBC office hours</h1>
-        </nav>
+        <h1>Log into UBC office hours</h1>
         <div className="form-body">
           <div className="email">
             <label className="form__label" htmlFor="email">

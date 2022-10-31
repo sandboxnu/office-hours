@@ -24,7 +24,7 @@ export default function CourseAdminPanelPage(): ReactElement {
     <div>
       <StandardPageContainer>
         <Head>
-          <title>Course Admin Panel | Khoury Office Hours</title>
+          <title>Course Admin Panel | UBC Office Hours</title>
         </Head>
         <NavBar courseId={Number(courseId)} />
         {courseId && (
