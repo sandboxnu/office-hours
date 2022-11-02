@@ -1,9 +1,7 @@
 import {
-  FileTextOutlined,
   LogoutOutlined,
   MacCommandOutlined,
   QuestionCircleOutlined,
-  ReadOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
 import { Menu, Modal, Popover, Typography, Space } from "antd";
@@ -107,30 +105,13 @@ export default function ProfileDrawer({
                 key="1"
                 icon={<QuestionCircleOutlined />}
                 onClick={() => {
-                  window.open("https://info.khouryofficehours.com/help");
+                  window.open("http://example.com");
                   setIsPopoverOpen(false);
                 }}
               >
                 Help Guide
               </Menu.Item>
-              <Menu.Item
-                key="2"
-                icon={<FileTextOutlined />}
-                onClick={() => {
-                  window.open(
-                    "https://info.khouryofficehours.com/release-notes-archive"
-                  );
-                  setIsPopoverOpen(false);
-                }}
-              >
-                Release Notes
-              </Menu.Item>
-              <Menu.Item key="3" icon={<ReadOutlined />}>
-                <Link href={"/about"}>
-                  <a>About Us</a>
-                </Link>
-              </Menu.Item>
-              <Menu.Item key="4" icon={<LogoutOutlined />}>
+              <Menu.Item key="2" icon={<LogoutOutlined />}>
                 <Link href={"/api/v1/logout"}>
                   <a data-cy="logout-button">Logout</a>
                 </Link>

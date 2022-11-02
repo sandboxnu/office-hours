@@ -15,7 +15,7 @@ const FullWidth = styled.footer`
 export function Footer(): ReactElement {
   return (
     <FullWidth>
-      <div>Made by Khoury College Edited by kevin</div>
+      <div>Made by Khoury College, edited by kevin</div>
     </FullWidth>
   );
 }

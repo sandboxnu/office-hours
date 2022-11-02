@@ -23,7 +23,7 @@ export default function Schedule(): ReactElement {
   return (
     <StandardPageContainer>
       <Head>
-        <title>{course?.name} Schedule | Khoury Office Hours</title>
+        <title>{course?.name} Schedule | UBC Office Hours</title>
       </Head>
       <NavBar courseId={Number(cid)} />
       <ScheduleContainer>

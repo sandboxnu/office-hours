@@ -25,6 +25,7 @@ export class UserAdmin extends AdminEntity {
     'id',
     'email',
     'name',
+    'password',
     'desktopNotifsEnabled',
     'phoneNotifsEnabled',
     'queues',

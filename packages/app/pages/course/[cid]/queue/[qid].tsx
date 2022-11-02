@@ -25,7 +25,7 @@ export default function Queue(): ReactElement {
     <StandardPageContainer>
       <Container>
         <Head>
-          <title>{queue?.room} Queue | Khoury Office Hours</title>
+          <title>{queue?.room} Queue | UBC Office Hours</title>
         </Head>
         <NavBar courseId={Number(cid)} />
         {Role.STUDENT === role ? (

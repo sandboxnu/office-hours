@@ -14,13 +14,12 @@ import QueueCard, {
   QueueCardSkeleton,
 } from "../../../components/Today/QueueCard";
 import TodayPageCheckinButton from "../../../components/Today/QueueCheckInButton";
-import ReleaseNotes from "../../../components/Today/ReleaseNotes";
+//import ReleaseNotes from "../../../components/Today/ReleaseNotes";
 import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useCourse } from "../../../hooks/useCourse";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import PopularTimes from "../../../components/Today/PopularTimes/PopularTimes";
 import { orderBy } from "lodash";
-import ApplyToSandbox from "../../../components/Today/SandboxApplication";
 
 const Container = styled.div`
   margin-top: 32px;
@@ -103,9 +102,8 @@ export default function Today(): ReactElement {
       <Head>
         <title>{course?.name} | UBC Office Hours</title>
       </Head>
-      <ReleaseNotes />
       <WelcomeStudents />
-      {role != Role.PROFESSOR && <ApplyToSandbox />}
+      {role != Role.PROFESSOR}
       <NavBar courseId={Number(cid)} />
       <Container>
         <Row gutter={64}>
