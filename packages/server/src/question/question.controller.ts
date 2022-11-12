@@ -17,6 +17,7 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
@@ -24,6 +25,7 @@ import {
   Param,
   Patch,
   Post,
+  Res,
   UnauthorizedException,
   UseGuards,
   UseInterceptors,
@@ -34,6 +36,7 @@ import {
   NotificationService,
   NotifMsgs,
 } from '../notification/notification.service';
+import { Response } from 'express';
 import { Roles } from '../decorators/roles.decorator';
 import { UserCourseModel } from '../profile/user-course.entity';
 import { User, UserId } from '../decorators/user.decorator';
@@ -43,6 +46,8 @@ import { QuestionGroupModel } from './question-group.entity';
 import { QuestionRolesGuard } from '../guards/question-role.guard';
 import { QuestionModel } from './question.entity';
 import { QuestionService } from './question.service';
+import { QuestionTypeModel } from './question-type.entity';
+//import { question } from 'readline-sync';
 
 // NOTE: FIXME: EVERY REQUEST INTO QUESTIONCONTROLLER REQUIRES THE BODY TO HAVE A
 // FIELD questionId OR queueId! If not, stupid weird untraceable bugs will happen
@@ -336,6 +341,73 @@ export class QuestionController {
       }
     }
 
+    return;
+  }
+
+  @Post(':c/:questionType')
+  async addQuestions(
+    @Res() res: Response,
+    @Param('c') course: number,
+    @Param('questionType') type: string,
+  ): Promise<void> {
+    const questionType = await QuestionTypeModel.findOne({
+      where: {
+        cid: course,
+        question: type,
+      },
+    });
+    if (!questionType) {
+      await QuestionTypeModel.create({
+        cid: course,
+        question: type,
+      }).save();
+      res.status(200).send('success');
+      return;
+    } else {
+      res.status(400).send('Question already exists');
+      return;
+    }
+  }
+
+  @Get(':c/questionType')
+  async getQuestionType(
+    @Res() res: Response,
+    @Param('c') course: number,
+  ): Promise<string[]> {
+    const questions = await QuestionTypeModel.find({
+      where: {
+        cid: course,
+      },
+    });
+    if (!questions) {
+      res.status(400).send('None');
+      return;
+    }
+    const strQ: string[] = [];
+    for (let i = 0; i < questions.length; i++) {
+      strQ[i] = questions[i].question;
+    }
+    res.status(200).send(strQ);
+    return strQ;
+  }
+  @Delete(':c/:questionType')
+  async deleteQuestionType(
+    @Res() res: Response,
+    @Param('c') course: number,
+    @Param('questionType') questionType: string,
+  ): Promise<void> {
+    const qt = await QuestionTypeModel.findOne({
+      where: {
+        cid: course,
+        question: questionType,
+      },
+    });
+    if (!qt) {
+      res.status(400).send("question or course doesn't exist");
+      return;
+    }
+    qt.remove();
+    res.status(200).send('success');
     return;
   }
 }

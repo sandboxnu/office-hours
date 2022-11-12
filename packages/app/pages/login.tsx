@@ -56,7 +56,6 @@ export default function Login(): ReactElement {
   };
   return (
     <div>
-      <meta name="viewport" content="width=device-width,initial-scale=1" />
       <form onSubmit={handleSubmit} className="form">
         <h1>Log into UBC office hours</h1>
         <div className="form-body">

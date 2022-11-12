@@ -98,7 +98,6 @@ export default function Signup(): ReactElement {
 
   return (
     <div>
-      <meta name="viewport" content="width=device-width,initial-scale=1" />
       <form onSubmit={handleSubmit} className="form">
         <h1>UBC office hour sign up</h1>
         <div className="form-body">

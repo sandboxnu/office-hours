@@ -1,4 +1,5 @@
-import { QuestionStatus, QuestionType, Role, StatusInQueue } from '@koh/common';
+//got rid of questiontype
+import { QuestionStatus, Role, StatusInQueue } from '@koh/common';
 import { Exclude } from 'class-transformer';
 import {
   BaseEntity,
@@ -62,9 +63,9 @@ export class QuestionModel extends BaseEntity {
   // When the question leaves the queue
   @Column({ nullable: true })
   closedAt: Date;
-
+  // change questionType to string
   @Column('text', { nullable: true })
-  questionType: QuestionType;
+  questionType: string;
 
   @Column('text')
   status: QuestionStatus;

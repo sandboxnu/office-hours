@@ -14,6 +14,7 @@ import { QueueModel } from './src/queue/queue.entity';
 import { AlertModel } from './src/alerts/alerts.entity';
 import { LastRegistrationModel } from './src/login/last-registration-model.entity';
 import { ProfSectionGroupsModel } from './src/login/prof-section-groups.entity';
+import { QuestionTypeModel } from './src/question/question-type.entity';
 config();
 
 // Options only used whe run via CLI
@@ -35,6 +36,7 @@ const typeorm = {
     UserModel,
     UserCourseModel,
     QuestionModel,
+    QuestionTypeModel,
     QueueModel,
     DesktopNotifModel,
     PhoneNotifModel,

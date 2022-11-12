@@ -7,6 +7,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { AlertModel } from '../alerts/alerts.entity';
@@ -14,7 +15,7 @@ import { EventModel } from '../profile/event-model.entity';
 import { UserCourseModel } from '../profile/user-course.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { SemesterModel } from '../semester/semester.entity';
-
+import { QuestionTypeModel } from 'question/question-type.entity';
 @Entity('course_model')
 export class CourseModel extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -35,6 +36,9 @@ export class CourseModel extends BaseEntity {
   @Column('text', { nullable: true })
   @Exclude()
   icalURL: string;
+
+  // @OneToMany(() => QuestionTypeModel, (question_type) => question_type.course)
+  // question_type: QuestionTypeModel
 
   @OneToMany((type) => UserCourseModel, (ucm) => ucm.course)
   @Exclude()

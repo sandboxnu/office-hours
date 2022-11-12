@@ -213,10 +213,10 @@ export class Question {
 
   @Type(() => Date)
   helpedAt?: Date;
-
+  //get rid of QuestionType
   @Type(() => Date)
   closedAt?: Date;
-  questionType?: QuestionType;
+  questionType?: string;
   groupable!: boolean;
   status!: QuestionStatus;
   location?: string;
@@ -551,7 +551,7 @@ export class CreateQuestionParams {
 
   @IsEnum(QuestionType)
   @IsOptional()
-  questionType?: QuestionType;
+  questionType?: string;
 
   @IsBoolean()
   groupable!: boolean;
@@ -573,9 +573,9 @@ export class UpdateQuestionParams {
   @IsOptional()
   text?: string;
 
-  @IsEnum(QuestionType)
+  @IsString()
   @IsOptional()
-  questionType?: QuestionType;
+  questionType?: string;
 
   @IsBoolean()
   @IsOptional()
@@ -707,6 +707,22 @@ export class GetAlertsResponse {
   alerts!: Alert[];
 }
 
+export class questionTypeParam {
+  @IsInt()
+  cid!: number;
+
+  @IsString()
+  @IsOptional()
+  name!: string;
+
+  @IsInt()
+  @IsOptional()
+  queueId?: number;
+}
+export class questionTypeResponse {
+  @Type(() => questionTypeParam)
+  questions!: questionTypeParam[];
+}
 /**
  * Represents the parameters for a course being registered for register_courses endpoint.
  * @param sectionGroupName - The name of the section group.

@@ -1,12 +1,20 @@
-import { OpenQuestionStatus, Question, QuestionType } from "@koh/common";
+import { OpenQuestionStatus, Question } from "@koh/common";
 import { Alert, Button, Input, Modal, Radio } from "antd";
 import { RadioChangeEvent } from "antd/lib/radio";
 import { NextRouter, useRouter } from "next/router";
-import { default as React, ReactElement, useEffect, useState } from "react";
+import {
+  default as React,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import styled from "styled-components";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { toOrdinal } from "../../../utils/ordinal";
 import { useHotkeys } from "react-hotkeys-hook";
+import { API } from "@koh/api-client";
+//import { createReadStream } from "fs";
 
 const Container = styled.div`
   max-width: 960px;
@@ -42,7 +50,7 @@ interface QuestionFormProps {
   leaveQueue: () => void;
   finishQuestion: (
     text: string,
-    questionType: QuestionType,
+    questionType: string,
     groupable: boolean,
     router: NextRouter,
     courseId: number
@@ -68,7 +76,8 @@ export default function QuestionForm({
 
   const drafting = question?.status === OpenQuestionStatus.Drafting;
   const helping = question?.status === OpenQuestionStatus.Helping;
-  const [questionTypeInput, setQuestionTypeInput] = useState<QuestionType>(
+  const [questionsTypeState, setQuestionsTypeState] = useState<string[]>([]);
+  const [questionTypeInput, setQuestionTypeInput] = useState<string>(
     question?.questionType || null
   );
   const [questionText, setQuestionText] = useState<string>(
@@ -84,6 +93,9 @@ export default function QuestionForm({
       setQuestionTypeInput(question.questionType);
     }
   }, [question, visible]);
+  useEffect(() => {
+    getQuestions();
+  }, []);
 
   // on question type change, update the question type state
   const onCategoryChange = (e: RadioChangeEvent) => {
@@ -144,6 +156,12 @@ export default function QuestionForm({
     router,
     courseId,
   ]);
+  // all possible questions, use courseId
+  const courseNumber = Number(courseId);
+  const getQuestions = useCallback(async () => {
+    setQuestionsTypeState(await API.questions.questionTypes(courseNumber));
+    console.log(questionsTypeState);
+  }, []);
 
   return (
     <Modal
@@ -205,14 +223,16 @@ export default function QuestionForm({
           buttonStyle="solid"
           style={{ marginBottom: 48 }}
         >
-          <Radio.Button value={QuestionType.Concept}>Concept</Radio.Button>
-          <Radio.Button value={QuestionType.Clarification}>
-            Clarification
-          </Radio.Button>
-          <Radio.Button value={QuestionType.Testing}>Testing</Radio.Button>
-          <Radio.Button value={QuestionType.Bug}>Bug</Radio.Button>
-          <Radio.Button value={QuestionType.Setup}>Setup</Radio.Button>
-          <Radio.Button value={QuestionType.Other}>Other</Radio.Button>
+          {questionsTypeState.length > 0 ? (
+            questionsTypeState.map((q) => (
+              <Radio.Button key={q} value={q}>
+                {" "}
+                {q}
+              </Radio.Button>
+            ))
+          ) : (
+            <p>Loading...</p>
+          )}
         </Radio.Group>
 
         <QuestionText>What do you need help with?</QuestionText>

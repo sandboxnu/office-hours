@@ -33,6 +33,8 @@ import {
   QueuePartial,
   Role,
   GetCourseUserInfoResponse,
+  // questionTypeParam,
+  // questionTypeResponse,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -209,6 +211,22 @@ class APIClient {
         undefined,
         { queueId }
       ),
+    questionTypes: async (courseId: number): Promise<any> =>
+      this.req("GET", `/api/v1/questions/${courseId}/questionType`, undefined),
+    addQuestionType: async (
+      courseId: number,
+      questionType: string
+    ): Promise<any> =>
+      this.req(
+        "POST",
+        `/api/v1/questions/${courseId}/${questionType}`,
+        undefined
+      ),
+    deleteQuestionType: async (
+      courseId: number,
+      questionType: string
+    ): Promise<void> =>
+      this.req("DELETE", `/api/v1/questions/${courseId}/${questionType}`),
   };
   queues = {
     get: async (queueId: number): Promise<GetQueueResponse> =>
