@@ -1,4 +1,5 @@
 import { API } from "@koh/api-client";
+import { Button } from "antd";
 import moment from "moment";
 import React, { ReactElement, useState } from "react";
 import {
@@ -14,6 +15,14 @@ const TACheckInCheckOutCalendar = styled(Calendar)<CalendarProps>`
   height: 70vh;
   padding-top: 36px;
   padding-left: 36px;
+`;
+
+const DownloadButton = styled(Button)`
+  border-radius: 6px;
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+  margin-left: 36px;
 `;
 
 const CheckinHeader = styled.h1`
@@ -76,6 +85,17 @@ export default function TACheckInCheckOutTimes({
   // portal a modal onto it
   // https://reactjs.org/docs/react-dom.html#createportal
 
+  const exportData = () => {
+    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+      JSON.stringify(data?.taCheckinTimes ?? [])
+    )}`;
+    const link = document.createElement("a");
+    link.href = jsonString;
+    link.download = "checkinCheckoutEventData.json";
+
+    link.click();
+  };
+
   return (
     <div>
       <CheckinHeader>TA Check-In Check-Out Times</CheckinHeader>
@@ -100,6 +120,9 @@ export default function TACheckInCheckOutTimes({
           );
         }}
       />
+      <DownloadButton type="primary" onClick={exportData}>
+        Download check-in/checkout data
+      </DownloadButton>
       {tasWhoAreCurrentlyInOH?.length ? (
         <div>
           <h3>People currently holding office hours:</h3>
