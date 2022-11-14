@@ -19,10 +19,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: echo "::add-matcher::.github/scripts/migration-problem-matcher.json"
-      - name: install node v12
+      - name: install node v14
         uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: 14
       - uses: bahmutov/npm-install@v1
       - name: Check is Migration Needed
         run: .github/scripts/isMigrationNeeded.sh

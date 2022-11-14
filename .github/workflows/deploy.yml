@@ -16,7 +16,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v1
         with:
-          node-version: "12"
+          node-version: "14"
       - name: "set git bot commiter"
         run: git config --global user.name "KOH Build Bot" && git config --global user.email "bot@khouryofficehours.com"
       - name: "merge new changes into dist"
