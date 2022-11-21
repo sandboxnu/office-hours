@@ -51,16 +51,16 @@ export function EditQueueModal({
   const courseNumber = Number(courseId);
   const getQuestions = async () => {
     setQuestionsTypeState(await API.questions.questionTypes(courseNumber));
-    console.log(questionsTypeState);
   };
 
   const onclick = useCallback(
     async (s: string) => {
       await API.questions.deleteQuestionType(courseNumber, s);
       const temp = await API.questions.questionTypes(courseNumber);
-      setQuestionsTypeState(temp);
+      console.log(temp);
+      await setQuestionsTypeState(temp);
     },
-    [courseNumber, questionsTypeState]
+    [courseNumber]
   );
 
   const onAddChange = (e) => {
