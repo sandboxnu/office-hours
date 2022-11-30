@@ -1,4 +1,4 @@
-import { KhouryProfCourse } from '@koh/common';
+import { KhouryProfCourse, QuestionStatusKeys } from '@koh/common';
 import { Injectable } from '@nestjs/common';
 import {
   LastRegistrationModel,
@@ -7,6 +7,8 @@ import {
 import { LoginCourseService } from 'login/login-course.service';
 import { ProfSectionGroupsModel } from 'login/prof-section-groups.entity';
 import { Connection } from 'typeorm';
+import { UserModel } from './user.entity';
+import { QuestionModel } from 'question/question.entity';
 
 @Injectable()
 export class ProfileService {
@@ -15,6 +17,20 @@ export class ProfileService {
     private loginCourseService: LoginCourseService,
   ) {}
 
+  public async inQueue(user: UserModel): Promise<boolean> {
+    const question = await QuestionModel.findOne({
+      where: {
+        creatorId: user.id,
+      },
+    });
+    if (question) {
+      if (question.status === QuestionStatusKeys.Queued) {
+        return true;
+      }
+      return false;
+    }
+    return false;
+  }
   public async getPendingCourses(userId: number): Promise<KhouryProfCourse[]> {
     const profCourses = await ProfSectionGroupsModel.findOne({
       where: {

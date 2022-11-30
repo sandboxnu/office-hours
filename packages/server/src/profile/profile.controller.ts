@@ -2,6 +2,7 @@ import {
   DesktopNotifPartial,
   ERROR_MESSAGES,
   GetProfileResponse,
+  QuestionStatusKeys,
   UpdateProfileParams,
 } from '@koh/common';
 import {
@@ -36,7 +37,10 @@ import { NotificationService } from '../notification/notification.service';
 import { User } from '../decorators/user.decorator';
 import { UserModel } from './user.entity';
 import { ProfileService } from './profile.service';
-
+import { UserCourseModel } from './user-course.entity';
+import { Role } from '@koh/common';
+import { throwError } from 'rxjs';
+import { QuestionModel } from 'question/question.entity';
 @Controller('profile')
 @UseGuards(JwtAuthGuard)
 export class ProfileController {
@@ -45,6 +49,75 @@ export class ProfileController {
     private notifService: NotificationService,
     private profileService: ProfileService,
   ) {}
+
+  //potential problem-should fix later. Currently checking whether question in database, but student can be in different queues(so find with both queues and user id)
+  @Get(':c/id')
+  async getAllStudents(
+    @Param('c') c: number,
+    @Res() res: Response,
+  ): Promise<any> {
+    const studentIds = await UserCourseModel.find({
+      where: {
+        courseId: c,
+        role: Role.STUDENT,
+      },
+    });
+    const students = [];
+    studentIds.forEach((userCourse, i) => {
+      const tempId = userCourse.userId;
+      UserModel.findOne({
+        where: {
+          id: userCourse.userId,
+        },
+      })
+        .then(function (result) {
+          students.push({ value: result.name, id: tempId });
+          if (i + 1 === studentIds.length) {
+            res.status(200).send(students);
+            return students;
+          } else {
+            res.status(400).send('Students in queue or not found ');
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+        });
+    });
+  }
+  @Get(':id/inQueue')
+  async inQueue(
+    @Param('id') id: number,
+    @Res() res: Response,
+  ): Promise<boolean> {
+    await QuestionModel.findOne({
+      where: {
+        creatorId: id,
+      },
+    })
+      .then((question) => {
+        if (question.status === QuestionStatusKeys.Queued) {
+          console.log(question.status);
+          console.log(QuestionStatusKeys.Queued);
+          res.status(200).send(true);
+          return true;
+        }
+        res.status(200).send(false);
+        return false;
+      })
+      .catch((e) => console.log(e));
+    return false;
+  }
+  async getStudentNames(sid: number): Promise<UserModel> {
+    const temp = await UserModel.findOne({
+      where: {
+        id: sid,
+      },
+    });
+    if (!temp) {
+      throwError;
+    }
+    return temp;
+  }
 
   @Get()
   async get(

@@ -17,6 +17,7 @@ import {
   QueueInfoColumnButton,
 } from "../QueueListSharedComponents";
 import { EditQueueModal } from "./EditQueueModal";
+import { AddStudentsModal } from "./TAAddStudent";
 import TAQueueListDetail from "./TAQueueListDetail";
 import { useTeams } from "../../../hooks/useTeams";
 import { useDefaultMessage } from "../../../hooks/useDefaultMessage";
@@ -95,6 +96,8 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
 
   const [queueSettingsModal, setQueueSettingsModal] = useState(false);
 
+  const [addStudentsModal, setAddStudentsModal] = useState(false);
+
   const { course } = useCourse(courseId);
   const staffCheckedIntoAnotherQueue = course?.queues.some(
     (q) =>
@@ -142,6 +145,12 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
                 >
                   Edit Queue Details
                 </EditQueueButton>
+                <EditQueueButton
+                  data-cy="addStudents"
+                  onClick={() => setAddStudentsModal(true)}
+                >
+                  Add Students
+                </EditQueueButton>
                 <Tooltip
                   title={!isCheckedIn && "You must check in to help students!"}
                 >
@@ -186,6 +195,11 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
           queueId={qid}
           visible={queueSettingsModal}
           onClose={() => setQueueSettingsModal(false)}
+        />
+        <AddStudentsModal
+          queueId={qid}
+          visible={addStudentsModal}
+          onClose={() => setAddStudentsModal(false)}
         />
       </>
     );

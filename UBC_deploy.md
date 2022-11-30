@@ -25,7 +25,7 @@ sudo -i -u postgres
 ### install and start redis
 
 sudo apt install redis
-sudo systemctl status redis
+sudo systemctl redis
 
 ### under /var/www
 
@@ -49,7 +49,7 @@ yarn build
 
 yarn global add pm2
 
-pm2 start yarn --interpreter bash --name prod -- prod:start
+pm2 start --name xxx "yarn prod:start"
 
 ### add courses
 

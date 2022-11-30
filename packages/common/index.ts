@@ -549,7 +549,7 @@ export class CreateQuestionParams {
   @IsString()
   text!: string;
 
-  @IsEnum(QuestionType)
+  @IsString()
   @IsOptional()
   questionType?: string;
 

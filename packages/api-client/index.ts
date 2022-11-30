@@ -79,6 +79,12 @@ class APIClient {
       this.req("PATCH", `/api/v1/profile`, undefined, body),
     deleteProfilePicture: async (): Promise<void> =>
       this.req("DELETE", `/api/v1/profile/delete_profile_picture`),
+    getStudentIds: async (courseId: number): Promise<any> =>
+      this.req("GET", `/api/v1/profile/${courseId}/id`, undefined),
+    getStudent: async (sid: number): Promise<any> =>
+      this.req("GET", `/api/v1/profile/${sid}/student`, undefined),
+    inQueue: async (sid: number): Promise<boolean> =>
+      this.req("GET", `/api/v1/profile/${sid}/inQueue`, undefined),
   };
   course = {
     get: async (courseId: number) =>
@@ -191,6 +197,13 @@ class APIClient {
       ),
     create: async (params: CreateQuestionParams) =>
       this.req("POST", `/api/v1/questions`, CreateQuestionResponse, params),
+    TAcreate: async (params: CreateQuestionParams, userId: number) =>
+      this.req(
+        "POST",
+        `/api/v1/questions/TAcreate/${userId}`,
+        CreateQuestionResponse,
+        params
+      ),
     get: async (questionId: number): Promise<GetQuestionResponse> =>
       this.req("GET", `/api/v1/questions/${questionId}`, GetQuestionResponse),
     update: async (questionId: number, params: UpdateQuestionParams) =>
