@@ -33,8 +33,6 @@ export default function Signup(): ReactElement {
     setSelectedOptions(data);
   }
 
-  console.log(toArr(selectedOptions));
-
   useEffect(() => {
     // POST request using fetch inside useEffect React hook
     const getOptions = {

@@ -34,10 +34,6 @@ export function EditQueueModal({
     getQuestions();
   }, []);
 
-  useEffect(() => {
-    console.log("questionsTypeState is changing");
-  }, [questionsTypeState]);
-
   const editQueue = async (updateQueue: UpdateQueueParams) => {
     const newQueue = { ...queue, ...updateQueue };
     mutateQueue(newQueue, false);

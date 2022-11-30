@@ -30,8 +30,6 @@ export default function Login(): ReactElement {
     fetch("/api/v1/ubc_login", loginRequest)
       .then(async (response) => {
         const data = await response.json();
-
-        // check for error response
         if (!response.ok) {
           // get error message from body or default to response statusText
           const error = (data && data.message) || response.statusText;

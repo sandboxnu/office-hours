@@ -76,6 +76,82 @@ export class QuestionController {
     return question;
   }
 
+  @Post('TAcreate/:userId')
+  async TAcreateQuestion(
+    @Body() body: CreateQuestionParams,
+    @Param('userId') userId: number,
+  ): Promise<any> {
+    const { text, questionType, groupable, queueId, force } = body;
+
+    const queue = await QueueModel.findOne({
+      where: { id: queueId },
+      relations: ['staffList'],
+    });
+
+    if (!queue) {
+      throw new NotFoundException(
+        ERROR_MESSAGES.questionController.createQuestion.invalidQueue,
+      );
+    }
+
+    if (!queue.allowQuestions) {
+      throw new BadRequestException(
+        ERROR_MESSAGES.questionController.createQuestion.noNewQuestions,
+      );
+    }
+    if (!(await queue.checkIsOpen())) {
+      throw new BadRequestException(
+        ERROR_MESSAGES.questionController.createQuestion.closedQueue,
+      );
+    }
+
+    const previousUserQuestions = await QuestionModel.find({
+      relations: ['queue'],
+      where: {
+        creatorId: userId,
+        status: In(Object.values(OpenQuestionStatus)),
+      },
+    });
+
+    const previousCourseQuestion = previousUserQuestions.find(
+      (question) => question.queue.courseId === queue.courseId,
+    );
+
+    if (!!previousCourseQuestion) {
+      if (force) {
+        previousCourseQuestion.status = ClosedQuestionStatus.ConfirmedDeleted;
+        await previousCourseQuestion.save();
+      } else {
+        throw new BadRequestException(
+          ERROR_MESSAGES.questionController.createQuestion.oneQuestionAtATime,
+        );
+      }
+    }
+    const user = await UserModel.findOne({
+      where: {
+        id: userId,
+      },
+    });
+    try {
+      const question = await QuestionModel.create({
+        queueId: queueId,
+        creator: user,
+        text,
+        questionType,
+        groupable,
+        status: QuestionStatusKeys.Queued,
+        createdAt: new Date(),
+      }).save();
+      return question;
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ERROR_MESSAGES.questionController.saveQError,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   @Post()
   @Roles(Role.STUDENT)
   async createQuestion(
