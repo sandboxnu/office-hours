@@ -16,7 +16,7 @@ import {
 import "reflect-metadata";
 import { Cache } from "cache-manager";
 
-export const PROD_URL = "https://officehours.khoury.northeastern.edu";
+export const PROD_URL = "https://help.cosc304.ok.ubc.ca";
 export const STAGING_URL = "https://staging.khouryofficehours.com";
 // Get domain. works on node and browser
 const domain = (): string | false =>
@@ -29,7 +29,7 @@ export const getEnv = (): "production" | "staging" | "dev" => {
     case STAGING_URL:
       return "staging";
     default:
-      return "dev";
+      return "production";
   }
 };
 export const isProd = (): boolean => domain() === PROD_URL;
