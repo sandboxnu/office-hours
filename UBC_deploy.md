@@ -51,6 +51,11 @@ yarn global add pm2
 
 pm2 start --name xxx "yarn prod:start"
 
+### some other useful pm2 commands
+
+pm2 stop all
+pm2 delete all
+
 ### add courses
 
 ### Inside root folder run: `yarn cli create:admin <username>` then add your password through stdin.

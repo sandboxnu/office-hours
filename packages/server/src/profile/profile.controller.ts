@@ -75,8 +75,6 @@ export class ProfileController {
           if (i + 1 === studentIds.length) {
             res.status(200).send(students);
             return students;
-          } else {
-            res.status(400).send('Students in queue or not found ');
           }
         })
         .catch((e) => {
@@ -89,24 +87,26 @@ export class ProfileController {
     @Param('id') id: number,
     @Res() res: Response,
   ): Promise<boolean> {
-    await QuestionModel.findOne({
+    const questions = await QuestionModel.find({
       where: {
         creatorId: id,
       },
-    })
-      .then((question) => {
-        if (question.status === QuestionStatusKeys.Queued) {
-          console.log(question.status);
-          console.log(QuestionStatusKeys.Queued);
-          res.status(200).send(true);
-          return true;
-        }
-        res.status(200).send(false);
-        return false;
-      })
-      .catch((e) => console.log(e));
+    });
+    if (!questions) {
+      throwError;
+    }
+    for (let i = 0; i < questions.length; i++) {
+      if (questions[i]?.status === QuestionStatusKeys.Queued) {
+        console.log(questions[i].status);
+        console.log(QuestionStatusKeys.Queued);
+        res.status(200).send(true);
+        return true;
+      }
+    }
+    res.status(200).send(false);
     return false;
   }
+
   async getStudentNames(sid: number): Promise<UserModel> {
     const temp = await UserModel.findOne({
       where: {

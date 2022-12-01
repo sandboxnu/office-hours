@@ -47,33 +47,44 @@ export function AddStudentsModal({
   let students: { value: string; id: number }[] = [];
 
   useEffect(() => {
+    students = [];
     fetchData()
-      .then((response) => {
-        students = response;
-        const tempS = [];
-        const tempId = [];
-        const tempO = [];
-        students.forEach(async (student) => {
-          const b = await API.profile.inQueue(student.id);
-          if (!b) {
-            console.log("student not in queue");
-            tempS.push(student.value);
-            tempId.push(student.id);
-            tempO.push({ value: student.value });
-          }
-        });
-        setStudentsState(tempS);
-        setStudentsIdState(tempId);
-        setOptionsState(tempO);
+      .then((result) => {
+        students = result;
         console.log(students);
+        populateStudents();
       })
       .catch((e) => {
         console.log(e.message);
       });
   }, []);
-  useEffect(() => {
-    return;
-  }, [studentsState]);
+  const populateStudents = () => {
+    const tempS = [];
+    const tempId = [];
+    const tempO = [];
+    students.forEach(async (student) => {
+      const b = await API.profile.inQueue(student.id);
+      console.log(b);
+      if (b) {
+        console.log("student in queue");
+        return;
+      }
+      console.log("student not in queue");
+      // setStudentsState(  [
+      //   ...studentsState, student.value]);
+      // setStudentsIdState(  [
+      //     ...studentsIdState, student.id]);
+      // setOptionsState(  [
+      // ...optionsState, { value: student.value }]);
+      tempO.push({ value: student.value });
+      tempId.push(student.id);
+      tempS.push(student.value);
+    });
+    setStudentsIdState(tempId);
+    setStudentsState(tempS);
+    setOptionsState(tempO);
+    console.log(tempS);
+  };
   const handleSubmit = () => {
     studentsState.forEach((student, i) => {
       console.log(student);
@@ -108,22 +119,29 @@ export function AddStudentsModal({
       )
       .then(() => {
         console.log(studentsState);
-        setStudentsState(
-          studentsIdState.filter((_, index) => {
-            index === i;
-          })
-        );
-        setStudentsIdState(
-          studentsState.filter((_, index) => {
-            index === i;
-          })
-        );
-        setOptionsState(
-          optionsState.filter((_, index) => {
-            index === i;
-          })
-        );
-        console.log(studentsState);
+        // const tempS= [...studentsState.splice(i,1)];
+        // setStudentsState(tempS);
+        // const tempId= [...studentsIdState.splice(i,1)];
+        // setStudentsIdState(tempId);
+        // const tempO= [...optionsState.splice(i,1)];
+        // setOptionsState(tempO);
+        // setStudentsState(
+        //   studentsIdState.filter((_, index) => {
+        //     index !== i;
+        //   })
+        // );
+        // setStudentsIdState(
+        //   studentsState.filter((_, index) => {
+        //     index !== i;
+        //   })
+        // );
+        // setOptionsState(
+        //   optionsState.filter((_, index) => {
+        //     index !== i;
+        //   })
+        // );
+        // console.log(studentsState);
+        // console.log(optionsState);
       });
   };
 
@@ -174,6 +192,7 @@ export function AddStudentsModal({
             </Form>
             {studentsState.length > 0 ? (
               studentsState.map((q, i) => {
+                console.log(studentsState);
                 return (
                   <div style={{ marginTop: 5 }} key={q}>
                     {q}
@@ -188,7 +207,7 @@ export function AddStudentsModal({
                 );
               })
             ) : (
-              <p>There are No Students</p>
+              <p>There are no students or all students are in queue</p>
             )}
           </Collapse.Panel>
         </Collapse>
