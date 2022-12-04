@@ -1,5 +1,5 @@
 import { CreateQuestionParams, Role } from '@koh/common';
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AlertModel } from 'alerts/alerts.entity';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { LastRegistrationModel } from 'login/last-registration-model.entity';
@@ -22,13 +22,13 @@ import {
   UserFactory,
 } from '../../test/util/factories';
 import { CourseModel } from '../course/course.entity';
-import { NonProductionGuard } from '../guards/non-production.guard';
+//import { NonProductionGuard } from '../guards/non-production.guard';
 import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { SeedService } from './seed.service';
 
 @Controller('seeds')
-@UseGuards(NonProductionGuard)
+//@UseGuards(NonProductionGuard)
 export class SeedController {
   constructor(
     private connection: Connection,

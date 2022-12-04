@@ -62,7 +62,7 @@ export class CourseController {
   // get all courses
   @Get()
   getCourse(@Res() res: Response) {
-    CourseModel.find().then(async courses => {
+    CourseModel.find().then(async (courses) => {
       return res.status(200).send(courses);
     });
   }
@@ -78,7 +78,6 @@ export class CourseController {
     const course = await CourseModel.findOne(id, {
       relations: ['queues', 'queues.staffList'],
     });
-
     if (course === null || course === undefined) {
       console.error(
         ERROR_MESSAGES.courseController.courseNotFound + 'Course ID: ' + id,
@@ -126,12 +125,12 @@ export class CourseController {
     ) {
       course.queues = await async.filter(
         course.queues,
-        async q => !q.isDisabled,
+        async (q) => !q.isDisabled,
       );
     } else if (userCourseModel.role === Role.STUDENT) {
       course.queues = await async.filter(
         course.queues,
-        async q => !q.isDisabled && (await q.checkIsOpen()),
+        async (q) => !q.isDisabled && (await q.checkIsOpen()),
       );
     }
 
@@ -141,7 +140,7 @@ export class CourseController {
     }
 
     try {
-      await async.each(course.queues, async q => {
+      await async.each(course.queues, async (q) => {
         await q.addQueueSize();
       });
     } catch (err) {
@@ -204,7 +203,7 @@ export class CourseController {
 
     if (
       queues &&
-      queues.some(q => q.staffList.some(staff => staff.id === user.id))
+      queues.some((q) => q.staffList.some((staff) => staff.id === user.id))
     ) {
       throw new UnauthorizedException(
         ERROR_MESSAGES.courseController.checkIn.cannotCheckIntoMultipleQueues,
@@ -395,9 +394,9 @@ export class CourseController {
     }
 
     // Do nothing if user not already in stafflist
-    if (!queue.staffList.find(e => e.id === user.id)) return;
+    if (!queue.staffList.find((e) => e.id === user.id)) return;
 
-    queue.staffList = queue.staffList.filter(e => e.id !== user.id);
+    queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
     if (queue.staffList.length === 0) {
       queue.allowQuestions = false;
     }
@@ -470,7 +469,7 @@ export class CourseController {
     }
 
     return {
-      data: resp.map(row => ({
+      data: resp.map((row) => ({
         id: row.id,
         role: row.role,
         name: row.user.name,

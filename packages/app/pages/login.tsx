@@ -1,23 +1,33 @@
-// import { Button } from "antd";
-// import styled from "styled-components";
-import { ReactElement } from "react";
-// import { useHomePageRedirect } from "../hooks/useHomePageRedirect";
-// import { User } from "@koh/common";
 import Router from "next/router";
-// import { useProfile } from "../hooks/useProfile";
-import { useState } from "react";
+import { useState, ReactElement } from "react";
 import "./signup/styles.css";
 import { message } from "antd";
-// import { useRouter } from "next/router";
+//import Select from "react-select";
 
 export default function Login(): ReactElement {
-  // const profile: User = useProfile();
-  // const didRedirect = useHomePageRedirect();
-  // if (profile && !didRedirect) {
-  //   Router.push("/nocourses");
-  // }
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // const [courses, setCourses] = useState([]);
+  // const [courseId, setId] = useState([]);
+  // const [selectedOptions, setSelectedOptions] = useState<any[]>([]);
+
+  // useEffect(() => {
+  //   // POST request using fetch inside useEffect React hook
+  //   const getOptions = {
+  //     method: "GET",
+  //   };
+  //   fetch("/api/v1/courses", getOptions).then(async (response) => {
+  //     const data = await response.json();
+  //     const courseNames = [];
+  //     for (let i = 0; i < data.length; i++) {
+  //       courseNames.push(data[i].name);
+  //       courseId.push(data[i].id);
+  //     }
+  //     setId(courseNames);
+  //     setCourses(courseNames);
+  //   });
+  // }, []);
+
   function login() {
     const loginRequest = {
       method: "POST",
@@ -90,6 +100,17 @@ export default function Login(): ReactElement {
             Login
           </button>
         </div>
+        {/* {}
+        <div className="dropdown-container">
+            <Select
+              options={courses}
+              placeholder="Select courses"
+              value={selectedOptions}
+              onChange={handleSelect}
+              isSearchable={true}
+              isMulti
+            />
+        </div> */}
         <button>
           <a href="./signup/signup">Register</a>
         </button>

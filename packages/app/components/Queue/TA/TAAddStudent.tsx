@@ -1,10 +1,11 @@
 import { ReactElement } from "react";
 import Modal from "antd/lib/modal/Modal";
-import { AutoComplete, Button, Form, Collapse } from "antd";
+import { Button, Form, Collapse, message } from "antd";
 import { API } from "@koh/api-client";
 import { default as React, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styled from "styled-components";
+import Select from "react-select";
 
 const OverrideCollapse = styled.div`
   & .ant-collapse-header {
@@ -39,11 +40,12 @@ export function AddStudentsModal({
   //studentState stores all students
   const router = useRouter();
   const courseId = router.query["cid"];
-  const [studentsState, setStudentsState] = useState([]);
-  const [studentsIdState, setStudentsIdState] = useState([]);
-  const [optionsState, setOptionsState] = useState<{ value: string }[]>([]);
-  const [optionState, setOptionState] = useState("");
-  //add condition of when student not in array
+  const [studentsState, setStudentsState] = useState<
+    { value: string; id: number }[]
+  >([]);
+  // const [studentsIdState, setStudentsIdState] = useState([]);
+  const [selectOptions, setSelectOptions] = useState([]);
+  //students store all the students
   let students: { value: string; id: number }[] = [];
 
   useEffect(() => {
@@ -60,8 +62,6 @@ export function AddStudentsModal({
   }, []);
   const populateStudents = () => {
     const tempS = [];
-    const tempId = [];
-    const tempO = [];
     students.forEach(async (student) => {
       const b = await API.profile.inQueue(student.id);
       console.log(b);
@@ -69,28 +69,14 @@ export function AddStudentsModal({
         console.log("student in queue");
         return;
       }
-      console.log("student not in queue");
-      // setStudentsState(  [
-      //   ...studentsState, student.value]);
-      // setStudentsIdState(  [
-      //     ...studentsIdState, student.id]);
-      // setOptionsState(  [
-      // ...optionsState, { value: student.value }]);
-      tempO.push({ value: student.value });
-      tempId.push(student.id);
-      tempS.push(student.value);
+      tempS.push(student);
     });
-    setStudentsIdState(tempId);
     setStudentsState(tempS);
-    setOptionsState(tempO);
     console.log(tempS);
   };
   const handleSubmit = () => {
-    studentsState.forEach((student, i) => {
-      console.log(student);
-      if (student === optionState) {
-        addStudent(i);
-      }
+    selectOptions.forEach((student, i) => {
+      addStudent(i);
     });
   };
   const courseNumber = Number(courseId);
@@ -104,7 +90,12 @@ export function AddStudentsModal({
   };
 
   const addStudent = async (i) => {
-    console.log("gonna add students");
+    const currentStudent = selectOptions[i];
+    const b = await API.profile.inQueue(currentStudent.id);
+    if (b) {
+      message.error("Student already in queue.");
+      return;
+    }
     await API.questions
       .TAcreate(
         {
@@ -115,36 +106,37 @@ export function AddStudentsModal({
           force: true,
           groupable: false,
         },
-        studentsIdState[i]
+        currentStudent.id
       )
       .then(() => {
-        console.log(studentsState);
-        // const tempS= [...studentsState.splice(i,1)];
-        // setStudentsState(tempS);
-        // const tempId= [...studentsIdState.splice(i,1)];
-        // setStudentsIdState(tempId);
-        // const tempO= [...optionsState.splice(i,1)];
-        // setOptionsState(tempO);
-        // setStudentsState(
-        //   studentsIdState.filter((_, index) => {
-        //     index !== i;
-        //   })
-        // );
-        // setStudentsIdState(
-        //   studentsState.filter((_, index) => {
-        //     index !== i;
-        //   })
-        // );
-        // setOptionsState(
-        //   optionsState.filter((_, index) => {
-        //     index !== i;
-        //   })
-        // );
+        message.success("Student(s) added");
+        //if possible, update students and make them dissappear from list after addition
+
         // console.log(studentsState);
-        // console.log(optionsState);
+        // let tempS=[];
+        // tempS=studentsState.filter((student)=>{student.id===currentStudent.id});
+        // let tempSelected=[];
+        // tempSelected= selectOptions.filter((student)=>{student.id===currentStudent.id});
+        // setSelectOptions(tempSelected);
+        // setStudentsState(tempS);
+        // console.log(studentsState);
+        // console.log(selectOptions);
+      })
+      .catch(() => {
+        message.error("Can't add student".concat(currentStudent.value));
       });
+    return false;
   };
 
+  const handleSelect = (data) => {
+    setSelectOptions(data);
+  };
+  function toObj(arr) {
+    const lst = [];
+    for (let i = 0; i < arr.length; ++i)
+      lst.push({ value: arr[i].value, label: arr[i].value, id: arr[i].id });
+    return lst;
+  }
   return (
     <Modal
       title="Add Students to queue"
@@ -154,7 +146,6 @@ export function AddStudentsModal({
         onClose();
       }}
     >
-      <p>Available Student to be added: </p>
       <OverrideCollapse>
         <Collapse defaultActiveKey={[1]} ghost expandIconPosition="right">
           <Collapse.Panel
@@ -170,19 +161,16 @@ export function AddStudentsModal({
           >
             <Form onFinish={handleSubmit}>
               <Form.Item name="name">
-                <AutoComplete
-                  style={{ marginTop: 10, width: 200 }}
-                  options={optionsState}
+                <Select
+                  options={toObj(studentsState)}
                   placeholder="search for student"
-                  onChange={(value) => setOptionState(value)}
-                  filterOption={(inputValue, option) =>
-                    option!.value
-                      .toUpperCase()
-                      .indexOf(inputValue.toUpperCase()) !== -1
-                  }
+                  value={selectOptions}
+                  onChange={handleSelect}
+                  isSearchable={true}
+                  isMulti
                 />
                 <Button
-                  style={{ marginLeft: 15 }}
+                  style={{ marginLeft: 15, marginTop: 15 }}
                   htmlType="submit"
                   className="btn"
                 >
@@ -191,21 +179,7 @@ export function AddStudentsModal({
               </Form.Item>
             </Form>
             {studentsState.length > 0 ? (
-              studentsState.map((q, i) => {
-                console.log(studentsState);
-                return (
-                  <div style={{ marginTop: 5 }} key={q}>
-                    {q}
-                    <Button
-                      onClick={() => addStudent(i)}
-                      style={{ marginLeft: 30 }}
-                      key={q}
-                    >
-                      Add
-                    </Button>
-                  </div>
-                );
-              })
+              <p>Search for students to be added</p>
             ) : (
               <p>There are no students or all students are in queue</p>
             )}

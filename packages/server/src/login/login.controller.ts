@@ -83,26 +83,6 @@ export class LoginController {
           }
         });
       })
-      //   bcrypt.compare(body.password, user.password, function(err, result) {
-      //     if (result) {
-      //       console.log("It matches!")
-      //       const token = this.jwtService.signAsync(
-      //         { userId: user.id },
-      //         { expiresIn: 60 },
-      //       )
-      //       res.status(200).send({token, ...body})
-      //     }
-      //     else {
-      //       console.log("Invalid password!");
-      //       res.status(400).send(user);
-      //       return;
-      //     }
-      //   });
-      // })
-      // return {
-      //   redirect:
-      //     this.configService.get('DOMAIN') + `/api/v1/login/entry?token=${token}`,
-      // })
       .catch((err) => {
         res.status(500).send({ message: err.message });
       });
@@ -113,21 +93,6 @@ export class LoginController {
     @Req() req: Request,
     @Body() body: KhouryDataParams,
   ): Promise<KhouryRedirectResponse> {
-    // commented out since we are no longer sending request from Khoury
-
-    // if (process.env.NODE_ENV === 'production') {
-    //   // Check that request has come from Khoury
-    //   const parsedRequest = httpSignature.parseRequest(req);
-    //   const verifySignature = httpSignature.verifyHMAC(
-    //     parsedRequest,
-    //     this.configService.get('KHOURY_PRIVATE_KEY'),
-    //   );
-    //   if (!verifySignature) {
-    //     Sentry.captureMessage('Invalid request signature: ' + parsedRequest);
-    //     throw new UnauthorizedException('Invalid request signature');
-    //   }
-    // }
-
     let user;
     try {
       user = await this.loginCourseService.addUserFromKhoury(body);
@@ -165,7 +130,7 @@ export class LoginController {
 
   // This is the real admin entry point, Kevin changed to also just take a user id, change to that sign in only
   @Get('/login/entry')
-  async enterFromKhoury(
+  async enterUBCOH(
     @Res() res: Response,
     @Query('token') token: string,
   ): Promise<void> {
