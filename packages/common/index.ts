@@ -32,7 +32,7 @@ export const getEnv = (): "production" | "staging" | "dev" => {
       return "production";
   }
 };
-export const isProd = (): boolean => true;
+export const isProd = (): boolean => domain() === PROD_URL;
 
 // TODO: Clean this up, move it somwhere else, use moment???
 // a - b, in minutes
