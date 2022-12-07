@@ -107,18 +107,6 @@ export class ProfileController {
     return false;
   }
 
-  async getStudentNames(sid: number): Promise<UserModel> {
-    const temp = await UserModel.findOne({
-      where: {
-        id: sid,
-      },
-    });
-    if (!temp) {
-      throwError;
-    }
-    return temp;
-  }
-
   @Get()
   async get(
     @User(['courses', 'courses.course', 'phoneNotif', 'desktopNotifs'])

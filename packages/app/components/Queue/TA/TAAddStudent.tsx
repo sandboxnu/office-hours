@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { ReactElement, useCallback } from "react";
 import Modal from "antd/lib/modal/Modal";
 import { Button, Form, Collapse, message } from "antd";
 import { API } from "@koh/api-client";
@@ -43,12 +43,18 @@ export function AddStudentsModal({
   const [studentsState, setStudentsState] = useState<
     { value: string; id: number }[]
   >([]);
-  // const [studentsIdState, setStudentsIdState] = useState([]);
+  const [questionsTypeState, setQuestionsTypeState] = useState<string[]>([]);
+  const [selectedQuestionType, setSelectedQuestionType] = useState<string>(
+    "Default grading type"
+  );
   const [selectOptions, setSelectOptions] = useState([]);
   //students store all the students
   let students: { value: string; id: number }[] = [];
-
+  const getQuestions = async () => {
+    setQuestionsTypeState(await API.questions.questionTypes(courseNumber));
+  };
   useEffect(() => {
+    getQuestions();
     students = [];
     fetchData()
       .then((result) => {
@@ -88,7 +94,6 @@ export function AddStudentsModal({
       return response.json();
     }
   };
-
   const addStudent = async (i) => {
     const currentStudent = selectOptions[i];
     const b = await API.profile.inQueue(currentStudent.id);
@@ -100,7 +105,7 @@ export function AddStudentsModal({
       .TAcreate(
         {
           text: "For grading",
-          questionType: "Grading",
+          questionType: selectedQuestionType,
           queueId: queueId,
           location: null,
           force: true,
@@ -131,6 +136,13 @@ export function AddStudentsModal({
   const handleSelect = (data) => {
     setSelectOptions(data);
   };
+  const onQTclick = useCallback(
+    async (s: string) => {
+      setSelectedQuestionType(s);
+      console.log(s);
+    },
+    [courseNumber]
+  );
   function toObj(arr) {
     const lst = [];
     for (let i = 0; i < arr.length; ++i)
@@ -146,6 +158,23 @@ export function AddStudentsModal({
         onClose();
       }}
     >
+      <h3>Current question type: {selectedQuestionType}</h3>
+      <h3>
+        Choose question type:{" "}
+        <Button.Group style={{ marginBottom: 10 }}>
+          {questionsTypeState.length > 0 ? (
+            questionsTypeState.map((q) => {
+              return (
+                <Button onClick={() => onQTclick(q)} key={q}>
+                  {q}
+                </Button>
+              );
+            })
+          ) : (
+            <p>There are No Question Types</p>
+          )}
+        </Button.Group>
+      </h3>
       <OverrideCollapse>
         <Collapse defaultActiveKey={[1]} ghost expandIconPosition="right">
           <Collapse.Panel
