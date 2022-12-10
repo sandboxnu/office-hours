@@ -33,6 +33,7 @@ import {
   QueuePartial,
   Role,
   GetCourseUserInfoResponse,
+  UBCOuserParam,
   // questionTypeParam,
   // questionTypeResponse,
 } from "@koh/common";
@@ -72,6 +73,10 @@ class APIClient {
     return responseClass ? plainToClass(responseClass, res) : res;
   }
 
+  signup = {
+    registerStudent: async (student: UBCOuserParam) =>
+      this.req("POST", `/api/v1/signup/ubc_signup`, undefined, student),
+  };
   profile = {
     index: async (): Promise<GetProfileResponse> =>
       this.req("GET", `/api/v1/profile`, GetProfileResponse),

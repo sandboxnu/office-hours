@@ -354,21 +354,18 @@ export class UBCOuserParam {
   last_name!: string;
 
   @IsArray()
-  selected_course!: [];
+  selected_course!: string[];
 
   @IsInt()
   sid!: number;
 
-  // @IsInt()
-  // campus!: number;
-
   @IsOptional()
   @IsString()
-  photo_url!: string;
+  photo_url?: string;
 
   @IsOptional()
   @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
-  courses!: KhouryCourse[] | KhouryProfCourse[];
+  courses?: KhouryCourse[] | KhouryProfCourse[];
 }
 export class KhouryDataParams {
   @IsString()

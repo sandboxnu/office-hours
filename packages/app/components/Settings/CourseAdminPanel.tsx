@@ -2,6 +2,7 @@ import {
   BellOutlined,
   EditOutlined,
   QuestionCircleOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
 import { Col, Menu, Row, Space, Tooltip } from "antd";
 import { useRouter } from "next/router";
@@ -11,10 +12,11 @@ import { useProfile } from "../../hooks/useProfile";
 import CourseRosterPage from "./CourseRosterPage";
 import { SettingsPanelAvatar } from "./SettingsSharedComponents";
 import TACheckInCheckOutTimes from "./TACheckInCheckOutTimes";
-
+import AddStudentsToCourse from "./AddStudentsToCourse";
 export enum CourseAdminOptions {
   CHECK_IN = "CHECK_IN",
   ROSTER = "ROSTER",
+  ADD = "ADD",
 }
 
 interface CourseAdminPageProps {
@@ -80,6 +82,9 @@ export default function CourseAdminPanel({
           <Menu.Item key={CourseAdminOptions.ROSTER} icon={<BellOutlined />}>
             Course Roster
           </Menu.Item>
+          <Menu.Item key={CourseAdminOptions.ADD} icon={<UploadOutlined />}>
+            Add students to course
+          </Menu.Item>
         </Menu>
       </Col>
       <VerticalDivider />
@@ -90,6 +95,9 @@ export default function CourseAdminPanel({
           )}
           {currentSettings === CourseAdminOptions.ROSTER && (
             <CourseRosterPage courseId={courseId} />
+          )}
+          {currentSettings === CourseAdminOptions.ADD && (
+            <AddStudentsToCourse courseId={courseId} />
           )}
         </Col>
       </Space>

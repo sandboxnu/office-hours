@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { UserModel } from 'profile/user.entity';
 import { SignupService } from './signup.service';
+import { CourseModel } from 'course/course.entity';
 
 @Controller('signup')
 export class SignupController {
@@ -29,14 +30,23 @@ export class SignupController {
       where: { email: body.email },
     });
     if (user) {
-      res.status(400).send({ message: 'User already exists' });
-      return;
+      res.status(300).send({ message: 'User already exists' });
+      console.log('user exists');
+      return 'exists';
     }
+    const courses = [];
+    body.selected_course.forEach((course) => {
+      courses.push(
+        CourseModel.findOne({
+          where: { name: course },
+        }),
+      );
+    });
     if (!user) {
       const salt = await bcrypt.genSalt(10);
       const password = await bcrypt.hash(body.password, salt);
       const user1 = await UserModel.create({
-        courses: body.selected_course,
+        courses: courses,
         email: body.email,
         firstName: body.first_name,
         lastName: body.last_name,
@@ -47,6 +57,7 @@ export class SignupController {
       // insert student's courses into user course table
       await this.signupService.insertUserCourse(body.selected_course, user1.id);
       res.status(200).send({ message: 'User has been signed up' });
+      return 'success';
     }
   }
 }
