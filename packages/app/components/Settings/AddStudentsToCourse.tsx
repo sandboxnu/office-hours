@@ -39,7 +39,7 @@ export default function AddStudentsToCourse({
         console.log(temp);
         console.log(course);
         const tempStudent = {
-          email: temp[0] + temp[1] + "@ubc.ca",
+          email: temp[2] + "@ubc.ca",
           password: temp[2],
           first_name: temp[0],
           last_name: temp[1],
