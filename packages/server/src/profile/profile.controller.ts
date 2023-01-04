@@ -25,6 +25,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import nodemailer from 'nodemailer';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as checkDiskSpace from 'check-disk-space';
 import { Response } from 'express';
@@ -61,6 +62,25 @@ export class ProfileController {
     @Res() res: Response,
     @Param('e') e: string,
   ): Promise<any> {
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.mailtrap.io',
+      port: 2525,
+      auth: {
+        user: 'ca9b9cce379050',
+        pass: '8f86e600f1db47',
+      },
+    });
+
+    // send mail with defined transport object
+    const info = await transporter.sendMail({
+      from: 'lilsus267111@gmail.com', // sender address
+      to: 'kevinwang1262000@gmail.com', // list of receivers
+      subject: 'Your email reset link', // Subject line
+      text: 'here', // plain text body
+    });
+
+    console.log('Message sent: %s', info.messageId);
+    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
     UserModel.findOne({
       where: { email: e },
     })
@@ -121,6 +141,7 @@ export class ProfileController {
     //final step to send below link to user's email
     this.configService.get<string>('DOMAIN').startsWith('https://');
     res.redirect(302, `/forgetpassword/reset/${authToken}`);
+    this.profileService.mail('blah', 'kevinwang1262000@gmail.com');
   }
   //two functions, one is verify user through authToken, another is to update password using userId and new password
   @Get('verify_token')
