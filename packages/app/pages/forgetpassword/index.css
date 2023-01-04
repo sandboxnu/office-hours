@@ -1,0 +1,17 @@
+.login-form {
+  align-self: center;
+  margin-top: 20%;
+  font-size: xx-large;
+}
+.login-form-forgot {
+  float: right;
+}
+.ant-col-rtl .login-form-forgot {
+  float: left;
+}
+.login-form-button {
+  width: fit-content;
+}
+.email-input {
+  width: 20em;
+}

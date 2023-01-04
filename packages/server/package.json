@@ -56,6 +56,7 @@
     "nestjs-command": "^1.5.0",
     "nestjs-redis": "^1.2.8",
     "node-ical": "^0.11.3",
+    "nodemailer": "^6.8.0",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "pg": "^8.2.1",

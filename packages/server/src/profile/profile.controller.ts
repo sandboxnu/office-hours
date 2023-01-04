@@ -17,8 +17,10 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Res,
   ServiceUnavailableException,
+  UnauthorizedException,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -41,17 +43,119 @@ import { UserCourseModel } from './user-course.entity';
 import { Role } from '@koh/common';
 import { throwError } from 'rxjs';
 import { QuestionModel } from 'question/question.entity';
+import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 @Controller('profile')
-@UseGuards(JwtAuthGuard)
 export class ProfileController {
   constructor(
     private connection: Connection,
     private notifService: NotificationService,
     private profileService: ProfileService,
+    private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
+  //forgetpassword route used for creating links to be sent to the email
+  @Post('/forgetpassword/:e')
+  async forgetpassword(
+    @Res() res: Response,
+    @Param('e') e: string,
+  ): Promise<any> {
+    UserModel.findOne({
+      where: { email: e },
+    })
+      .then(async user => {
+        if (!user) {
+          throw new HttpException(
+            ERROR_MESSAGES.profileController.accountNotAvailable,
+            HttpStatus.NOT_FOUND,
+          );
+        }
+        const token = await this.jwtService.signAsync(
+          { userId: user.id },
+          { expiresIn: 60 },
+        );
+        if (token === null || token === undefined) {
+          console.error('Temporary JWT is invalid');
+          throw new HttpException(
+            ERROR_MESSAGES.loginController.invalidTempJWTToken,
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+        }
+        return res.status(200).send({ token, e });
+      })
+      .catch(err => {
+        res.status(500).send({ message: err });
+      });
+  }
+  // enter reset page
+  @Get('/enter_resetpassword')
+  async enterReset(
+    @Res() res: Response,
+    @Query('token') token: string,
+  ): Promise<void> {
+    const isVerified = await this.jwtService.verifyAsync(token);
 
+    if (!isVerified) {
+      throw new UnauthorizedException();
+    }
+
+    const payload = this.jwtService.decode(token) as { userId: number };
+    this.enter(res, payload.userId);
+  }
+  // Set cookie and redirect to proper page
+  private async enter(res: Response, userId: number) {
+    // Expires in 30 days
+    const authToken = await this.jwtService.signAsync({
+      userId,
+      expiresIn: 60 * 10,
+    });
+
+    if (authToken === null || authToken === undefined) {
+      console.error('Authroziation JWT is invalid');
+      throw new HttpException(
+        ERROR_MESSAGES.loginController.invalidTempJWTToken,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+    //final step to send below link to user's email
+    this.configService.get<string>('DOMAIN').startsWith('https://');
+    res.redirect(302, `/forgetpassword/reset/${authToken}`);
+  }
+  //two functions, one is verify user through authToken, another is to update password using userId and new password
+  @Get('verify_token')
+  async verifyToken(@Query('token') token: string): Promise<boolean> {
+    const isVerified = await this.jwtService.verifyAsync(token).catch(() => {
+      return false;
+    });
+    if (!isVerified) {
+      return false;
+    }
+    return true;
+  }
+  @Patch(':password/update_password')
+  async updatePassword(
+    @Param('password') p: string,
+    @Query('token') token: string,
+  ): Promise<void> {
+    const payload = this.jwtService.decode(token) as { userId: number };
+    UserModel.findOne({
+      where: { id: payload.userId },
+    }).then(async user => {
+      if (!user) {
+        throw new NotFoundException();
+      } else {
+        console.log(p);
+        const salt = await bcrypt.genSalt(10);
+        const newPassword = await bcrypt.hash(p, salt);
+        user = Object.assign(user, { password: newPassword });
+        await user.save();
+      }
+    });
+  }
   //potential problem-should fix later. Currently checking whether question in database, but student can be in different queues(so find with both queues and user id)
   @Get(':c/id')
+  @UseGuards(JwtAuthGuard)
   async getAllStudents(
     @Param('c') c: number,
     @Res() res: Response,
@@ -70,19 +174,20 @@ export class ProfileController {
           id: userCourse.userId,
         },
       })
-        .then(function (result) {
+        .then(function(result) {
           students.push({ value: result.name, id: tempId });
           if (i + 1 === studentIds.length) {
             res.status(200).send(students);
             return students;
           }
         })
-        .catch((e) => {
+        .catch(e => {
           console.error(e);
         });
     });
   }
   @Get(':id/inQueue')
+  @UseGuards(JwtAuthGuard)
   async inQueue(
     @Param('id') id: number,
     @Res() res: Response,
@@ -108,6 +213,7 @@ export class ProfileController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   async get(
     @User(['courses', 'courses.course', 'phoneNotif', 'desktopNotifs'])
     user: UserModel,
@@ -121,8 +227,8 @@ export class ProfileController {
     }
 
     const courses = user.courses
-      .filter((userCourse) => userCourse.course.enabled)
-      .map((userCourse) => {
+      .filter(userCourse => userCourse.course.enabled)
+      .map(userCourse => {
         return {
           course: {
             id: userCourse.courseId,
@@ -132,14 +238,12 @@ export class ProfileController {
         };
       });
 
-    const desktopNotifs: DesktopNotifPartial[] = user.desktopNotifs.map(
-      (d) => ({
-        endpoint: d.endpoint,
-        id: d.id,
-        createdAt: d.createdAt,
-        name: d.name,
-      }),
-    );
+    const desktopNotifs: DesktopNotifPartial[] = user.desktopNotifs.map(d => ({
+      endpoint: d.endpoint,
+      id: d.id,
+      createdAt: d.createdAt,
+      name: d.name,
+    }));
 
     const userResponse = pick(user, [
       'id',
@@ -176,6 +280,7 @@ export class ProfileController {
   }
 
   @Patch()
+  @UseGuards(JwtAuthGuard)
   async patch(
     @Body() userPatch: UpdateProfileParams,
     @User(['courses', 'courses.course', 'phoneNotif', 'desktopNotifs'])
@@ -200,6 +305,7 @@ export class ProfileController {
   }
 
   @Post('/upload_picture')
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FileInterceptor('file', {
       storage: memoryStorage(),
@@ -210,7 +316,7 @@ export class ProfileController {
     @User() user: UserModel,
   ): Promise<void> {
     if (user.photoURL) {
-      fs.unlink(process.env.UPLOAD_LOCATION + '/' + user.photoURL, (err) => {
+      fs.unlink(process.env.UPLOAD_LOCATION + '/' + user.photoURL, err => {
         console.error(
           'Error deleting previous picture at: ',
           user.photoURL,
@@ -232,8 +338,12 @@ export class ProfileController {
     const fileName =
       user.id +
       '-' +
-      Math.random().toString(36).substring(2, 15) +
-      Math.random().toString(36).substring(2, 15);
+      Math.random()
+        .toString(36)
+        .substring(2, 15) +
+      Math.random()
+        .toString(36)
+        .substring(2, 15);
 
     await sharp(file.buffer)
       .resize(256)
@@ -244,6 +354,7 @@ export class ProfileController {
   }
 
   @Get('/get_picture/:photoURL')
+  @UseGuards(JwtAuthGuard)
   async getImage(
     @Param('photoURL') photoURL: string,
     @Res() res: Response,
@@ -268,11 +379,12 @@ export class ProfileController {
   }
 
   @Delete('/delete_profile_picture')
+  @UseGuards(JwtAuthGuard)
   async deleteProfilePicture(@User() user: UserModel): Promise<void> {
     if (user.photoURL) {
       fs.unlink(
         process.env.UPLOAD_LOCATION + '/' + user.photoURL,
-        async (err) => {
+        async err => {
           if (err) {
             const errMessage =
               'Error deleting previous picture at : ' +
