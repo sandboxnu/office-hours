@@ -2992,11 +2992,14 @@
   resolved "https://registry.yarnpkg.com/@types/d3-timer/-/d3-timer-2.0.1.tgz#ffb6620d290624f3726aa362c0c8a4b44c8d7200"
   integrity sha512-TF8aoF5cHcLO7W7403blM7L1T+6NF3XMyN3fxyUolq2uOcFeicG/khQg/dGxiCJWoAcmYulYN7LYSRKO54IXaA==
 
+<<<<<<< HEAD
 "@types/ejs@^3.0.3":
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/@types/ejs/-/ejs-3.1.1.tgz#29c539826376a65e7f7d672d51301f37ed718f6d"
   integrity sha512-RQul5wEfY7BjWm0sYY86cmUN/pcXWGyVxWX93DFFJvcrxax5zKlieLwA3T77xJGwNcZW0YW6CYG70p1m8xPFmA==
 
+=======
+>>>>>>> 9aedec50226f129c938bf6e836aa3765d5cb6645
 "@types/eslint-scope@^3.7.0":
   version "3.7.4"
   resolved "https://registry.yarnpkg.com/@types/eslint-scope/-/eslint-scope-3.7.4.tgz#37fc1223f0786c39627068a12e94d6e6fc61de16"
@@ -3843,7 +3846,11 @@ acorn@^7.1.0, acorn@^7.1.1, acorn@^7.4.0:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-7.4.1.tgz#feaed255973d2e77555b83dbc08851a6c63520fa"
   integrity sha512-nQyp0o1/mNdbTO1PO6kHkwSrmgZ0MT/jCCpNiwbUjGoRN4dlBhqJtoQuCnEOKzgTVwg0ZWiCoQy6SxMebQVh8A==
 
+<<<<<<< HEAD
 acorn@^8.0.4, acorn@^8.7.0:
+=======
+acorn@^8.0.4:
+>>>>>>> 9aedec50226f129c938bf6e836aa3765d5cb6645
   version "8.8.1"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.8.1.tgz#0a3f9cbecc4ec3bea6f0a80b66ae8dd2da250b73"
   integrity sha512-7zFpHzhnqYKrkYdUjF1HI1bzd0VygEGX8lFk4k5zVMqHEoES+P+7TKI+EvLO9WVMJ8eekdO0aDEK044xTXwPPA==
@@ -11773,7 +11780,11 @@ node-releases@^2.0.1:
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.1.tgz#3d1d395f204f1f2f29a54358b9fb678765ad2fc5"
   integrity sha512-CqyzN6z7Q6aMeF/ktcMVTzhAHCEpf8SOarwpzpf8pNBY2k5/oM34UHldUwp8VKI7uxct2HxSRdJjBaZeESzcxA==
 
+<<<<<<< HEAD
 nodemailer@6.8.0, nodemailer@^6.6.3:
+=======
+nodemailer@^6.8.0:
+>>>>>>> 9aedec50226f129c938bf6e836aa3765d5cb6645
   version "6.8.0"
   resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.8.0.tgz#804bcc5256ee5523bc914506ee59f8de8f0b1cd5"
   integrity sha512-EjYvSmHzekz6VNkNd12aUqAco+bOkRe3Of5jVhltqKhEsjw/y0PYPJfp83+s9Wzh1dspYAkUW/YNQ350NATbSQ==

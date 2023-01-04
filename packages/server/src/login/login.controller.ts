@@ -48,14 +48,13 @@ export class LoginController {
   //front post to this
   @Post('/ubc_login')
   async receiveDataFromLogin(
-    @Req() req: Request,
     @Res() res: Response,
     @Body() body: UBCOloginParam,
   ): Promise<any> {
     UserModel.findOne({
       where: { email: body.email },
     })
-      .then(async (user) => {
+      .then(async user => {
         if (!user) {
           return res.status(404).send({ message: 'User Not found' });
         }
@@ -83,7 +82,7 @@ export class LoginController {
           }
         });
       })
-      .catch((err) => {
+      .catch(err => {
         res.status(500).send({ message: err.message });
       });
   }
@@ -200,7 +199,7 @@ export class LoginController {
   @Get('self_enroll_courses')
   async selfEnrollEnabledAnywhere(): Promise<GetSelfEnrollResponse> {
     const courses = await CourseModel.find();
-    return { courses: courses.filter((course) => course.selfEnroll) };
+    return { courses: courses.filter(course => course.selfEnroll) };
   }
 
   @Post('create_self_enroll_override/:id')

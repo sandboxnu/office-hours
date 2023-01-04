@@ -1,12 +1,19 @@
 import Router from "next/router";
-import { useState, ReactElement } from "react";
-import "./signup/styles.css";
-import { message } from "antd";
+import { ReactElement } from "react";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import { message, Button, Form, Input } from "antd";
 //import Select from "react-select";
+import styled from "styled-components";
+
+const Container = styled.div`
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  width: 300px;
+  padding-top: 100px;
+`;
 
 export default function Login(): ReactElement {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   // const [courses, setCourses] = useState([]);
   // const [courseId, setId] = useState([]);
   // const [selectedOptions, setSelectedOptions] = useState<any[]>([]);
@@ -28,17 +35,17 @@ export default function Login(): ReactElement {
   //   });
   // }, []);
 
-  function login() {
+  function login(values: any) {
     const loginRequest = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: email,
-        password: password,
-      }),
+        email: values.username,
+        password: values.password
+      })
     };
     fetch("/api/v1/ubc_login", loginRequest)
-      .then(async (response) => {
+      .then(async response => {
         const data = await response.json();
         if (!response.ok) {
           // get error message from body or default to response statusText
@@ -53,69 +60,60 @@ export default function Login(): ReactElement {
           Router.push(`/api/v1/login/entry?token=${data.token}`);
         }
       })
-      .catch((error) => {
+      .catch(error => {
         console.error("There was an error!", error);
       });
   }
   //put token inside login request
-  const handleSubmit = (event: any) => {
-    event.preventDefault();
-    login();
-  };
+
   return (
-    <div>
-      <form onSubmit={handleSubmit} className="form">
-        <h1>Log into UBC office hours</h1>
-        <div className="form-body">
-          <div className="email">
-            <label className="form__label" htmlFor="email">
-              Email{" "}
-            </label>
-            <input
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              name="email"
-              type="text"
-              id="email"
-              className="form__input"
-              placeholder="Email"
-            />
-          </div>
-          <div className="password">
-            <label className="form__label" htmlFor="password">
-              Password{" "}
-            </label>
-            <input
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="form__input"
-              type="password"
-              id="password"
-              placeholder="Password"
-            />
-          </div>
-        </div>
-        <div className="footer">
-          <button type="submit" className="btn">
-            Login
-          </button>
-        </div>
-        {/* {}
-        <div className="dropdown-container">
-            <Select
-              options={courses}
-              placeholder="Select courses"
-              value={selectedOptions}
-              onChange={handleSelect}
-              isSearchable={true}
-              isMulti
-            />
-        </div> */}
-        <button>
-          <a href="./signup/signup">Register</a>
-        </button>
-      </form>
-      <div></div>
-    </div>
+    <Container>
+      <Form
+        name="normal_login"
+        className="login-form"
+        initialValues={{ remember: true }}
+        onFinish={login}
+      >
+        <Form.Item
+          name="username"
+          rules={[{ required: true, message: "Please input your Username!" }]}
+        >
+          <Input
+            prefix={<UserOutlined className="site-form-item-icon" />}
+            placeholder="Username"
+          />
+        </Form.Item>
+        <Form.Item
+          name="password"
+          rules={[{ required: true, message: "Please input your Password!" }]}
+        >
+          <Input
+            prefix={<LockOutlined className="site-form-item-icon" />}
+            type="password"
+            placeholder="Password"
+          />
+        </Form.Item>
+        <Form.Item>
+          <a
+            style={{ float: "right", marginTop: "-10px" }}
+            href="./forgetpassword/forget"
+          >
+            Forgot password
+          </a>
+        </Form.Item>
+
+        <Form.Item style={{ marginTop: "-15px" }}>
+          <Button
+            style={{ width: "100%", marginTop: "-15px" }}
+            type="primary"
+            htmlType="submit"
+            className="login-form-button"
+          >
+            Log in
+          </Button>
+          Or <a href="./signup/signup">register now!</a>
+        </Form.Item>
+      </Form>
+    </Container>
   );
 }
