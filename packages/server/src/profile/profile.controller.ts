@@ -2,8 +2,10 @@ import {
   DesktopNotifPartial,
   ERROR_MESSAGES,
   GetProfileResponse,
+  isProd,
   QuestionStatusKeys,
   UpdateProfileParams,
+  PROD_URL,
 } from '@koh/common';
 import {
   BadRequestException,
@@ -25,7 +27,6 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import nodemailer from 'nodemailer';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as checkDiskSpace from 'check-disk-space';
 import { Response } from 'express';
@@ -47,6 +48,7 @@ import { QuestionModel } from 'question/question.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { MailService } from 'mail/mail.service';
 @Controller('profile')
 export class ProfileController {
   constructor(
@@ -55,6 +57,7 @@ export class ProfileController {
     private profileService: ProfileService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private mailService: MailService,
   ) {}
   //forgetpassword route used for creating links to be sent to the email
   @Post('/forgetpassword/:e')
@@ -62,29 +65,11 @@ export class ProfileController {
     @Res() res: Response,
     @Param('e') e: string,
   ): Promise<any> {
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.mailtrap.io',
-      port: 2525,
-      auth: {
-        user: 'ca9b9cce379050',
-        pass: '8f86e600f1db47',
-      },
-    });
-
-    // send mail with defined transport object
-    const info = await transporter.sendMail({
-      from: 'lilsus267111@gmail.com', // sender address
-      to: 'kevinwang1262000@gmail.com', // list of receivers
-      subject: 'Your email reset link', // Subject line
-      text: 'here', // plain text body
-    });
-
-    console.log('Message sent: %s', info.messageId);
-    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+    //send mail test
     UserModel.findOne({
       where: { email: e },
     })
-      .then(async user => {
+      .then(async (user) => {
         if (!user) {
           throw new HttpException(
             ERROR_MESSAGES.profileController.accountNotAvailable,
@@ -104,7 +89,7 @@ export class ProfileController {
         }
         return res.status(200).send({ token, e });
       })
-      .catch(err => {
+      .catch((err) => {
         res.status(500).send({ message: err });
       });
   }
@@ -119,18 +104,19 @@ export class ProfileController {
     if (!isVerified) {
       throw new UnauthorizedException();
     }
-
     const payload = this.jwtService.decode(token) as { userId: number };
     this.enter(res, payload.userId);
   }
-  // Set cookie and redirect to proper page
+
   private async enter(res: Response, userId: number) {
-    // Expires in 30 days
+    // Expires in 6 minutes
     const authToken = await this.jwtService.signAsync({
       userId,
       expiresIn: 60 * 10,
     });
-
+    const user = await UserModel.findOne({
+      where: { id: userId },
+    });
     if (authToken === null || authToken === undefined) {
       console.error('Authroziation JWT is invalid');
       throw new HttpException(
@@ -140,8 +126,19 @@ export class ProfileController {
     }
     //final step to send below link to user's email
     this.configService.get<string>('DOMAIN').startsWith('https://');
-    res.redirect(302, `/forgetpassword/reset/${authToken}`);
-    this.profileService.mail('blah', 'kevinwang1262000@gmail.com');
+    if (isProd()) {
+      console.log('prod mode');
+      this.profileService.mail(
+        PROD_URL + `/forgetpassword/reset/${authToken}`,
+        user.email,
+      );
+    } else {
+      this.profileService.mail(
+        this.configService.get<string>('DOMAIN') +
+          `/forgetpassword/reset/${authToken}`,
+        user.email,
+      );
+    }
   }
   //two functions, one is verify user through authToken, another is to update password using userId and new password
   @Get('verify_token')
@@ -162,7 +159,7 @@ export class ProfileController {
     const payload = this.jwtService.decode(token) as { userId: number };
     UserModel.findOne({
       where: { id: payload.userId },
-    }).then(async user => {
+    }).then(async (user) => {
       if (!user) {
         throw new NotFoundException();
       } else {
@@ -195,14 +192,14 @@ export class ProfileController {
           id: userCourse.userId,
         },
       })
-        .then(function(result) {
+        .then(function (result) {
           students.push({ value: result.name, id: tempId });
           if (i + 1 === studentIds.length) {
             res.status(200).send(students);
             return students;
           }
         })
-        .catch(e => {
+        .catch((e) => {
           console.error(e);
         });
     });
@@ -248,8 +245,8 @@ export class ProfileController {
     }
 
     const courses = user.courses
-      .filter(userCourse => userCourse.course.enabled)
-      .map(userCourse => {
+      .filter((userCourse) => userCourse.course.enabled)
+      .map((userCourse) => {
         return {
           course: {
             id: userCourse.courseId,
@@ -259,12 +256,14 @@ export class ProfileController {
         };
       });
 
-    const desktopNotifs: DesktopNotifPartial[] = user.desktopNotifs.map(d => ({
-      endpoint: d.endpoint,
-      id: d.id,
-      createdAt: d.createdAt,
-      name: d.name,
-    }));
+    const desktopNotifs: DesktopNotifPartial[] = user.desktopNotifs.map(
+      (d) => ({
+        endpoint: d.endpoint,
+        id: d.id,
+        createdAt: d.createdAt,
+        name: d.name,
+      }),
+    );
 
     const userResponse = pick(user, [
       'id',
@@ -337,7 +336,7 @@ export class ProfileController {
     @User() user: UserModel,
   ): Promise<void> {
     if (user.photoURL) {
-      fs.unlink(process.env.UPLOAD_LOCATION + '/' + user.photoURL, err => {
+      fs.unlink(process.env.UPLOAD_LOCATION + '/' + user.photoURL, (err) => {
         console.error(
           'Error deleting previous picture at: ',
           user.photoURL,
@@ -359,12 +358,8 @@ export class ProfileController {
     const fileName =
       user.id +
       '-' +
-      Math.random()
-        .toString(36)
-        .substring(2, 15) +
-      Math.random()
-        .toString(36)
-        .substring(2, 15);
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15);
 
     await sharp(file.buffer)
       .resize(256)
@@ -405,7 +400,7 @@ export class ProfileController {
     if (user.photoURL) {
       fs.unlink(
         process.env.UPLOAD_LOCATION + '/' + user.photoURL,
-        async err => {
+        async (err) => {
           if (err) {
             const errMessage =
               'Error deleting previous picture at : ' +
