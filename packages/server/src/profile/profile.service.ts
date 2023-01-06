@@ -9,14 +9,18 @@ import { ProfSectionGroupsModel } from 'login/prof-section-groups.entity';
 import { Connection } from 'typeorm';
 import { UserModel } from './user.entity';
 import { QuestionModel } from 'question/question.entity';
-
+import { MailService } from 'mail/mail.service';
 @Injectable()
 export class ProfileService {
   constructor(
     private connection: Connection,
+    private mailService: MailService,
     private loginCourseService: LoginCourseService,
   ) {}
-
+  public async mail(url: string, receiver: string): Promise<void> {
+    // const testAccount = await nodemailer.createTestAccount();
+    await this.mailService.sendUserConfirmation(url, receiver);
+  }
   public async inQueue(user: UserModel): Promise<boolean> {
     const question = await QuestionModel.findOne({
       where: {

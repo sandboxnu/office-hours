@@ -29,7 +29,7 @@ export const getEnv = (): "production" | "staging" | "dev" => {
     case STAGING_URL:
       return "staging";
     default:
-      return "production";
+      return "dev";
   }
 };
 export const isProd = (): boolean => domain() === PROD_URL;
@@ -63,6 +63,7 @@ export class User {
   name!: string;
   photoURL!: string;
   defaultMessage?: string;
+  sid?: number;
   includeDefaultMessage!: boolean;
   courses!: UserCourse[];
   pendingCourses?: KhouryProfCourse[];
@@ -356,8 +357,9 @@ export class UBCOuserParam {
   @IsArray()
   selected_course!: string[];
 
+  @IsOptional()
   @IsInt()
-  sid!: number;
+  sid?: number;
 
   @IsOptional()
   @IsString()
@@ -446,9 +448,10 @@ export class UpdateProfileParams {
   @IsString()
   @IsOptional()
   firstName?: string;
+
   @IsString()
   @IsOptional()
-  sid?: string;
+  sid?: number;
 
   @IsString()
   @IsOptional()

@@ -36,9 +36,9 @@ export default function Signup(): ReactElement {
   useEffect(() => {
     // POST request using fetch inside useEffect React hook
     const getOptions = {
-      method: "GET",
+      method: "GET"
     };
-    fetch("/api/v1/courses", getOptions).then(async (response) => {
+    fetch("/api/v1/courses", getOptions).then(async response => {
       const data = await response.json();
       let courseNames = [];
       for (var i = 0; i < data.length; i++) {
@@ -58,7 +58,7 @@ export default function Signup(): ReactElement {
       confirm: event.target.confirmPassword.value,
       firstName: event.target.firstName.value,
       lastName: event.target.lastName.value,
-      sid: event.target.sid.value,
+      sid: event.target.sid.value
     };
     if (inputdata.password !== inputdata.confirm) {
       alert("passwords don't match, try again");
@@ -73,11 +73,11 @@ export default function Signup(): ReactElement {
         first_name: inputdata.firstName,
         last_name: inputdata.lastName,
         sid: parseInt(inputdata.sid),
-        selected_course: toArr(selectedOptions),
-      }),
+        selected_course: toArr(selectedOptions)
+      })
     };
     fetch("/api/v1/signup/ubc_signup", loginRequest)
-      .then(async (response) => {
+      .then(async response => {
         // check for error response
         if (!response.ok) {
           // get error message from body or default to response statusText
@@ -88,8 +88,7 @@ export default function Signup(): ReactElement {
           Router.push("../login");
         }
       })
-      .catch((error) => {
-        console.error("There was an error!", error);
+      .catch(error => {
         message.error("There was an error.");
       });
   };

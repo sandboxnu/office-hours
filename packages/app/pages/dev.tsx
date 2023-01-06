@@ -1,7 +1,7 @@
 import { API } from "@koh/api-client";
-// import { isProd } from "@koh/common";
+import { isProd } from "@koh/common";
 import { Button, Divider } from "antd";
-// import DefaultErrorPage from "next/error";
+import DefaultErrorPage from "next/error";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
 
@@ -40,9 +40,9 @@ const DevPageButton = styled(Button)`
 `;
 
 export default function DevPanel(): ReactElement {
-  // if (isProd()) {
-  //   return <DefaultErrorPage statusCode={404} />;
-  // }
+  if (isProd()) {
+    return <DefaultErrorPage statusCode={404} />;
+  }
   return (
     <Container>
       <h1>
