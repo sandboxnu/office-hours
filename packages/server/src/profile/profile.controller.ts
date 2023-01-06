@@ -2,7 +2,7 @@ import {
   DesktopNotifPartial,
   ERROR_MESSAGES,
   GetProfileResponse,
-  isProd,
+  // isProd,
   QuestionStatusKeys,
   UpdateProfileParams,
   PROD_URL,
@@ -125,20 +125,24 @@ export class ProfileController {
       );
     }
     //final step to send below link to user's email
-    this.configService.get<string>('DOMAIN').startsWith('https://');
-    if (isProd()) {
-      console.log('prod mode');
-      this.profileService.mail(
-        PROD_URL + `/forgetpassword/reset/${authToken}`,
-        user.email,
-      );
-    } else {
-      this.profileService.mail(
-        this.configService.get<string>('DOMAIN') +
-          `/forgetpassword/reset/${authToken}`,
-        user.email,
-      );
-    }
+    // currently the following code are commented due to problems in configurations of env.
+    // if (isProd()) {
+    //   console.log('prod mode');
+    //   this.profileService.mail(
+    //     PROD_URL + `/forgetpassword/reset/${authToken}`,
+    //     user.email,
+    //   );
+    // } else {
+    //   this.profileService.mail(
+    //     this.configService.get<string>('DOMAIN') +
+    //       `/forgetpassword/reset/${authToken}`,
+    //     user.email,
+    //   );
+    // }
+    this.profileService.mail(
+      PROD_URL + `/forgetpassword/reset/${authToken}`,
+      user.email,
+    );
   }
   //two functions, one is verify user through authToken, another is to update password using userId and new password
   @Get('verify_token')
