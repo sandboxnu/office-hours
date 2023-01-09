@@ -176,6 +176,7 @@ export class ProfileController {
     });
   }
   //potential problem-should fix later. Currently checking whether question in database, but student can be in different queues(so find with both queues and user id)
+
   @Get(':c/id')
   @UseGuards(JwtAuthGuard)
   async getAllStudents(
@@ -249,25 +250,27 @@ export class ProfileController {
     }
 
     const courses = user.courses
-      .filter((userCourse) => userCourse.course.enabled)
-      .map((userCourse) => {
-        return {
-          course: {
-            id: userCourse.courseId,
-            name: userCourse.course.name,
-          },
-          role: userCourse.role,
-        };
-      });
+      ? user.courses
+          .filter((userCourse) => userCourse.course.enabled)
+          .map((userCourse) => {
+            return {
+              course: {
+                id: userCourse.courseId,
+                name: userCourse.course.name,
+              },
+              role: userCourse.role,
+            };
+          })
+      : [];
 
-    const desktopNotifs: DesktopNotifPartial[] = user.desktopNotifs.map(
-      (d) => ({
-        endpoint: d.endpoint,
-        id: d.id,
-        createdAt: d.createdAt,
-        name: d.name,
-      }),
-    );
+    const desktopNotifs: DesktopNotifPartial[] = user.desktopNotifs
+      ? user.desktopNotifs.map((d) => ({
+          endpoint: d.endpoint,
+          id: d.id,
+          createdAt: d.createdAt,
+          name: d.name,
+        }))
+      : [];
 
     const userResponse = pick(user, [
       'id',
@@ -307,11 +310,10 @@ export class ProfileController {
   @UseGuards(JwtAuthGuard)
   async patch(
     @Body() userPatch: UpdateProfileParams,
-    @User(['courses', 'courses.course', 'phoneNotif', 'desktopNotifs'])
+    @User()
     user: UserModel,
   ): Promise<GetProfileResponse> {
     user = Object.assign(user, userPatch);
-
     // check that the user is trying to update the phone notifs
     if (userPatch.phoneNotifsEnabled && userPatch.phoneNumber) {
       // only register new phone if the notifs are enables and the phone number is new
@@ -323,7 +325,9 @@ export class ProfileController {
       }
     }
 
-    await user.save();
+    await user.save().catch((e) => {
+      console.log(e);
+    });
 
     return this.get(user);
   }

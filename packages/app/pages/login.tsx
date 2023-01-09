@@ -74,6 +74,7 @@ export default function Login(): ReactElement {
         initialValues={{ remember: true }}
         onFinish={login}
       >
+        <h1>UBC Office Hour</h1>
         <Form.Item
           name="username"
           rules={[{ required: true, message: "Please input your Username!" }]}

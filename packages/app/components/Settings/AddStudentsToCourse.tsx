@@ -34,6 +34,7 @@ export default function AddStudentsToCourse({
   const addStudents = async (students: string) => {
     const lines = students.split("\r\n");
     lines.forEach(async (student, i) => {
+      //temp[0]=FN, temp[1]=LN, temp[2]=sid
       const temp = student.split(",");
       if (i !== 0) {
         console.log(temp);

@@ -459,6 +459,10 @@ export class UpdateProfileParams {
 
   @IsString()
   @IsOptional()
+  email?: string;
+
+  @IsString()
+  @IsOptional()
   defaultMessage?: string;
 
   @IsBoolean()
