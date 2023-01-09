@@ -48,7 +48,6 @@ export class LoginController {
   //front post to this
   @Post('/ubc_login')
   async receiveDataFromLogin(
-    @Req() req: Request,
     @Res() res: Response,
     @Body() body: UBCOloginParam,
   ): Promise<any> {

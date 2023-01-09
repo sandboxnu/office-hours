@@ -89,7 +89,6 @@ export default function Signup(): ReactElement {
         }
       })
       .catch((error) => {
-        console.error("There was an error!", error);
         message.error("There was an error.");
       });
   };
