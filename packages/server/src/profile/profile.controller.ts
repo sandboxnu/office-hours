@@ -66,6 +66,7 @@ export class ProfileController {
     @Param('e') e: string,
   ): Promise<any> {
     //send mail test
+    console.log(process.env.DB_URL);
     UserModel.findOne({
       where: { email: e },
     })
