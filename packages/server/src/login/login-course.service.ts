@@ -95,6 +95,7 @@ export class LoginCourseService {
       });
       if (profSectionGroups) {
         profSectionGroups.sectionGroups = info.courses as KhouryProfCourse[];
+        await profSectionGroups.save();
       } else {
         await ProfSectionGroupsModel.create({
           profId: user.id,

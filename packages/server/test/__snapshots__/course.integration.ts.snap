@@ -1,22 +1,105 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Course Integration GET /courses/:id gets all queues that are not disabled (prof) 1`] = `
+Object {
+  "allowQuestions": false,
+  "courseId": 1,
+  "id": 2,
+  "isDisabled": false,
+  "isOpen": false,
+  "isProfessorQueue": false,
+  "notes": null,
+  "queueSize": 0,
+  "room": "room 2",
+  "staffList": Array [],
+}
+`;
+
+exports[`Course Integration GET /courses/:id gets all queues that are not disabled (prof) 2`] = `
+Object {
+  "allowQuestions": false,
+  "courseId": 1,
+  "id": 3,
+  "isDisabled": false,
+  "isOpen": true,
+  "isProfessorQueue": false,
+  "notes": null,
+  "queueSize": 0,
+  "room": "room 3",
+  "staffList": Array [
+    Object {
+      "defaultMessage": null,
+      "desktopNotifsEnabled": false,
+      "email": "user@neu.edu",
+      "firstName": "User",
+      "hideInsights": Array [],
+      "id": 2,
+      "includeDefaultMessage": true,
+      "insights": Array [
+        "TotalStudents",
+        "TotalQuestionsAsked",
+        "MedianWaitTime",
+        "QuestionTypeBreakdown",
+        "MostActiveStudents",
+        "QuestionToStudentRatio",
+        "MedianHelpingTime",
+      ],
+      "lastName": "Person",
+      "name": "User Person",
+      "phoneNotifsEnabled": false,
+      "photoURL": null,
+    },
+  ],
+}
+`;
+
+exports[`Course Integration GET /courses/:id gets all queues that are not disabled (prof) 3`] = `
+Object {
+  "allowQuestions": false,
+  "courseId": 1,
+  "id": 4,
+  "isDisabled": false,
+  "isOpen": true,
+  "isProfessorQueue": true,
+  "notes": null,
+  "queueSize": 0,
+  "room": "room 4",
+  "staffList": Array [
+    Object {
+      "defaultMessage": null,
+      "desktopNotifsEnabled": false,
+      "email": "user@neu.edu",
+      "firstName": "User",
+      "hideInsights": Array [],
+      "id": 2,
+      "includeDefaultMessage": true,
+      "insights": Array [
+        "TotalStudents",
+        "TotalQuestionsAsked",
+        "MedianWaitTime",
+        "QuestionTypeBreakdown",
+        "MostActiveStudents",
+        "QuestionToStudentRatio",
+        "MedianHelpingTime",
+      ],
+      "lastName": "Person",
+      "name": "User Person",
+      "phoneNotifsEnabled": false,
+      "photoURL": null,
+    },
+  ],
+}
+`;
+
 exports[`Course Integration GET /courses/:id gets office hours no queues, since no queue is happening right now 1`] = `
 Object {
   "coordinator_email": null,
   "crns": Array [],
   "enabled": true,
   "heatmap": false,
-  "icalURL": "http://hi.com",
+  "icalURL": "https://calendar.google.com/calendar/ical/t6lu2pic7u9otrbpkuk26sl34g%40group.calendar.google.com/public/basic.ics",
   "id": 1,
   "name": "CS 2500",
-  "officeHours": Array [
-    Object {
-      "endTime": "2020-05-20T15:30:00.000Z",
-      "id": 1,
-      "startTime": "2020-05-20T14:00:00.000Z",
-      "title": "Alex & Stanley",
-    },
-  ],
   "queues": Array [],
   "sectionGroupName": "CS 2500",
   "selfEnroll": false,
@@ -25,10 +108,138 @@ Object {
 }
 `;
 
+exports[`Course Integration GET /courses/:id gets queues that are not disabled (TA) 1`] = `
+Object {
+  "allowQuestions": false,
+  "courseId": 1,
+  "id": 2,
+  "isDisabled": false,
+  "isOpen": false,
+  "isProfessorQueue": false,
+  "notes": null,
+  "queueSize": 0,
+  "room": "room 2",
+  "staffList": Array [],
+}
+`;
+
+exports[`Course Integration GET /courses/:id gets queues that are not disabled (TA) 2`] = `
+Object {
+  "allowQuestions": false,
+  "courseId": 1,
+  "id": 3,
+  "isDisabled": false,
+  "isOpen": true,
+  "isProfessorQueue": false,
+  "notes": null,
+  "queueSize": 0,
+  "room": "room 3",
+  "staffList": Array [
+    Object {
+      "defaultMessage": null,
+      "desktopNotifsEnabled": false,
+      "email": "user@neu.edu",
+      "firstName": "User",
+      "hideInsights": Array [],
+      "id": 2,
+      "includeDefaultMessage": true,
+      "insights": Array [
+        "TotalStudents",
+        "TotalQuestionsAsked",
+        "MedianWaitTime",
+        "QuestionTypeBreakdown",
+        "MostActiveStudents",
+        "QuestionToStudentRatio",
+        "MedianHelpingTime",
+      ],
+      "lastName": "Person",
+      "name": "User Person",
+      "phoneNotifsEnabled": false,
+      "photoURL": null,
+    },
+  ],
+}
+`;
+
+exports[`Course Integration GET /courses/:id gets queues that are not disabled (TA) 3`] = `
+Object {
+  "allowQuestions": false,
+  "courseId": 1,
+  "id": 4,
+  "isDisabled": false,
+  "isOpen": true,
+  "isProfessorQueue": true,
+  "notes": null,
+  "queueSize": 0,
+  "room": "room 4",
+  "staffList": Array [
+    Object {
+      "defaultMessage": null,
+      "desktopNotifsEnabled": false,
+      "email": "user@neu.edu",
+      "firstName": "User",
+      "hideInsights": Array [],
+      "id": 2,
+      "includeDefaultMessage": true,
+      "insights": Array [
+        "TotalStudents",
+        "TotalQuestionsAsked",
+        "MedianWaitTime",
+        "QuestionTypeBreakdown",
+        "MostActiveStudents",
+        "QuestionToStudentRatio",
+        "MedianHelpingTime",
+      ],
+      "lastName": "Person",
+      "name": "User Person",
+      "phoneNotifsEnabled": false,
+      "photoURL": null,
+    },
+  ],
+}
+`;
+
+exports[`Course Integration POST /courses/:id/generate_queue/:room correctly propagates notes,profq,and name 1`] = `
+Object {
+  "allowQuestions": true,
+  "courseId": Any<Number>,
+  "id": Any<Number>,
+  "isDisabled": false,
+  "isProfessorQueue": false,
+  "notes": "example note 1",
+  "room": "abcd1",
+}
+`;
+
+exports[`Course Integration POST /courses/:id/generate_queue/:room correctly propagates notes,profq,and name 2`] = `
+Object {
+  "allowQuestions": true,
+  "courseId": Any<Number>,
+  "id": Any<Number>,
+  "isDisabled": false,
+  "isProfessorQueue": true,
+  "notes": "example note 7",
+  "room": "abcd2",
+}
+`;
+
+exports[`Course Integration POST /courses/:id/generate_queue/:room correctly propagates notes,profq,and name 3`] = `
+Object {
+  "allowQuestions": true,
+  "courseId": Any<Number>,
+  "id": Any<Number>,
+  "isDisabled": false,
+  "isProfessorQueue": false,
+  "notes": "ta queue",
+  "room": "abcd3",
+}
+`;
+
 exports[`Course Integration POST /courses/:id/ta_location/:room checks a TA into an existing queue 1`] = `
 Object {
   "allowQuestions": true,
   "id": 1,
+  "isDisabled": false,
   "isProfessorQueue": false,
   "notes": null,
   "room": "Online",

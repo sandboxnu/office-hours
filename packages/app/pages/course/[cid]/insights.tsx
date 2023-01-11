@@ -1,4 +1,5 @@
 import React, { ReactElement, useState } from "react";
+
 import { API } from "@koh/api-client";
 import useSWR from "swr";
 import {
@@ -15,19 +16,25 @@ import {
 import { CardSize } from "antd/lib/card";
 import { InfoCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { useProfile } from "../../../hooks/useProfile";
-import { useRouter } from "next/router";
-import { StandardPageContainer } from "../../../components/common/PageContainer";
 import {
+  BarChartOutputType,
   DateRangeType,
   InsightComponent,
   InsightDisplayInfo,
+  SimpleDisplayOutputType,
+  SimpleTableOutputType,
 } from "@koh/common";
-import NavBar from "../../../components/Nav/NavBar";
+
 import BarChartComponent from "../../../components/Insights/components/BarChartComponent";
 import SimpleDisplayComponent from "../../../components/Insights/components/SimpleDisplayComponent";
 import InsightsDisplayOptions from "../../../components/Insights/components/InsightsDisplayOptions";
 import { SimpleTable } from "../../../components/Insights/components/SimpleTable";
+import NavBar from "../../../components/Nav/NavBar";
+import { StandardPageContainer } from "../../../components/common/PageContainer";
+import { useRouter } from "next/router";
 import styled from "styled-components";
+import { SetStateAction } from "react";
+import { Dispatch } from "react";
 
 const InsightsRowContainer = styled.div`
   display: flex;
@@ -42,6 +49,7 @@ export default function Insights(): ReactElement {
   const { cid } = router.query;
 
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
+  const [mostActiveStudentsPage, setMostActiveStudentsPage] = useState(1);
 
   const { data: allInsights } = useSWR(`api/v1/insights/listAll`, async () =>
     API.insights.list()
@@ -121,11 +129,13 @@ export default function Insights(): ReactElement {
         <InsightsRowContainer>
           {smallInsights?.map((insightName: string) => {
             return (
-              <RenderInsight
+              <MemoizedRenderInsight
                 key={insightName}
                 insightName={insightName}
                 insightDisplay={allInsights[insightName]}
                 dateRange={dateRange}
+                mostActiveStudentsPage={mostActiveStudentsPage}
+                setMostActiveStudentsPage={setMostActiveStudentsPage}
               />
             );
           })}
@@ -133,11 +143,13 @@ export default function Insights(): ReactElement {
         <InsightsRowContainer>
           {defaultInsights?.map((insightName: string) => {
             return (
-              <RenderInsight
+              <MemoizedRenderInsight
                 key={insightName}
                 insightName={insightName}
                 insightDisplay={allInsights[insightName]}
                 dateRange={dateRange}
+                mostActiveStudentsPage={mostActiveStudentsPage}
+                setMostActiveStudentsPage={setMostActiveStudentsPage}
               />
             );
           })}
@@ -151,40 +163,97 @@ interface RenderInsightProps {
   insightName: string;
   insightDisplay: InsightDisplayInfo;
   dateRange: DateRangeType;
+  mostActiveStudentsPage: number;
+  setMostActiveStudentsPage: Dispatch<SetStateAction<number>>;
 }
+
+const equalRenderInsights = (
+  prevProps: RenderInsightProps,
+  nextProps: RenderInsightProps
+): boolean => {
+  if (
+    prevProps.insightName === "MostActiveStudents" &&
+    nextProps.insightName === "MostActiveStudents"
+  ) {
+    return (
+      prevProps.mostActiveStudentsPage === nextProps.mostActiveStudentsPage &&
+      prevProps.dateRange.start === nextProps.dateRange.start &&
+      prevProps.dateRange.end === nextProps.dateRange.end
+    );
+  } else {
+    return (
+      prevProps.insightName === nextProps.insightName &&
+      prevProps.dateRange.start === nextProps.dateRange.start &&
+      prevProps.dateRange.end === nextProps.dateRange.end
+    );
+  }
+};
+const MemoizedRenderInsight = React.memo(RenderInsight, equalRenderInsights);
 
 function RenderInsight({
   insightName,
   insightDisplay,
   dateRange,
+  mostActiveStudentsPage,
+  setMostActiveStudentsPage,
 }: RenderInsightProps): ReactElement {
   const router = useRouter();
   const { cid } = router.query;
 
+  const limit = insightName === "MostActiveStudents" ? 6 : null;
+  const offset =
+    insightName === "MostActiveStudents"
+      ? (mostActiveStudentsPage - 1) * limit
+      : null;
   const { data: insightOutput } = useSWR(
     cid &&
-      `api/v1/insights/${cid}/${insightName}?start=${dateRange.start}&end=${dateRange.end}`,
+      `api/v1/insights/${cid}/${insightName}?start=${dateRange.start}&end=${
+        dateRange.end
+      }${limit ? "limit&6" : ""}${offset ? `offset&${offset}` : ""}`,
     async () =>
       await API.insights.get(Number(cid), insightName, {
         start: dateRange.start,
         end: dateRange.end,
+        limit,
+        offset,
       })
   );
 
-  let DataComponent;
-  switch (insightDisplay.component) {
-    case InsightComponent.SimpleDisplay:
-      DataComponent = SimpleDisplayComponent;
-      break;
-    case InsightComponent.BarChart:
-      DataComponent = BarChartComponent;
-      break;
-    case InsightComponent.SimpleTable:
-      DataComponent = SimpleTable;
-      break;
-    default:
-      // Line below will show error if switch is not exhaustive of all enum values
-      componentDoesNotExist(insightDisplay.component);
+  let insightComponent;
+  if (insightOutput === undefined) {
+    insightComponent = <Spin style={{ margin: "10% 45%" }} />;
+  } else {
+    switch (insightDisplay.component) {
+      case InsightComponent.SimpleDisplay:
+        insightComponent = (
+          <SimpleDisplayComponent
+            key={insightName}
+            output={insightOutput as SimpleDisplayOutputType}
+          />
+        );
+        break;
+      case InsightComponent.BarChart:
+        insightComponent = (
+          <BarChartComponent
+            key={insightName}
+            output={insightOutput as BarChartOutputType}
+          />
+        );
+        break;
+      case InsightComponent.SimpleTable:
+        insightComponent = (
+          <SimpleTable
+            key={insightName}
+            output={insightOutput as SimpleTableOutputType}
+            currentPage={mostActiveStudentsPage}
+            setPage={setMostActiveStudentsPage}
+          />
+        );
+        break;
+      default:
+        // Line below will show error if switch is not exhaustive of all enum values
+        componentDoesNotExist(insightDisplay.component);
+    }
   }
 
   return (
@@ -206,11 +275,7 @@ function RenderInsight({
         </Space>
       }
     >
-      {insightOutput === undefined ? (
-        <Spin style={{ margin: "10% 45%" }} />
-      ) : (
-        <DataComponent key={insightName} output={insightOutput} />
-      )}
+      {insightComponent}
     </Card>
   );
 }

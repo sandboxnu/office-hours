@@ -18,6 +18,9 @@ import {
 } from "../QueueListSharedComponents";
 import { EditQueueModal } from "./EditQueueModal";
 import TAQueueListDetail from "./TAQueueListDetail";
+import { useTeams } from "../../../hooks/useTeams";
+import { useDefaultMessage } from "../../../hooks/useDefaultMessage";
+import { useHotkeys } from "react-hotkeys-hook";
 
 /**
  * Method to help student and
@@ -104,17 +107,24 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
     questions?.queue?.find(
       (question) => question.status === QuestionStatusKeys.Queued
     );
+  const defaultMessage = useDefaultMessage();
+  const openTeams = useTeams(qid, nextQuestion?.creator.email, defaultMessage);
 
   const helpNext = async () => {
     await onHelpQuestion(nextQuestion.id);
     mutateQuestions();
-    const defaultMessage = user.includeDefaultMessage
-      ? user.defaultMessage
-      : "";
-    window.open(
-      `https://teams.microsoft.com/l/chat/0/0?users=${nextQuestion.creator.email}&message=${defaultMessage}`
-    );
+    openTeams();
   };
+
+  useHotkeys(
+    "shift+h",
+    () => {
+      if (isCheckedIn && nextQuestion && !isHelping) {
+        helpNext();
+      }
+    },
+    [isCheckedIn, nextQuestion, isHelping, qid, defaultMessage]
+  );
 
   // TODO: figure out tooltips
   if (queue) {
@@ -123,6 +133,7 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
         <Container>
           <QueueInfoColumn
             queueId={qid}
+            isStaff={true}
             buttons={
               <>
                 <EditQueueButton
@@ -142,18 +153,26 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
                     Help Next
                   </HelpNextButton>
                 </Tooltip>
+
                 <div style={{ marginBottom: "12px" }}>
-                  <TACheckinButton
-                    courseId={courseId}
-                    room={queue?.room}
-                    disabled={
-                      staffCheckedIntoAnotherQueue ||
-                      isHelping ||
-                      (queue.isProfessorQueue && role !== Role.PROFESSOR)
+                  <Tooltip
+                    title={
+                      queue.isDisabled && "Cannot check into a disabled queue!"
                     }
-                    state={isCheckedIn ? "CheckedIn" : "CheckedOut"}
-                    block
-                  />
+                  >
+                    <TACheckinButton
+                      courseId={courseId}
+                      room={queue?.room}
+                      disabled={
+                        staffCheckedIntoAnotherQueue ||
+                        isHelping ||
+                        (queue.isProfessorQueue && role !== Role.PROFESSOR) ||
+                        queue.isDisabled
+                      }
+                      state={isCheckedIn ? "CheckedIn" : "CheckedOut"}
+                      block
+                    />
+                  </Tooltip>
                 </div>
               </>
             }

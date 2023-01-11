@@ -4,8 +4,8 @@ import {
   TACheckinTimesResponse,
   RegisterCourseParams,
   Role,
-  UserPartial,
   EditCourseInfoParams,
+  GetCourseUserInfoResponse,
 } from '@koh/common';
 import {
   HttpException,
@@ -348,7 +348,7 @@ export class CourseService {
     pageSize: number,
     search?: string,
     role?: Role,
-  ): Promise<UserPartial[]> {
+  ): Promise<GetCourseUserInfoResponse> {
     const query = await getRepository(UserModel)
       .createQueryBuilder()
       .leftJoin(
@@ -378,19 +378,21 @@ export class CourseService {
     }
 
     // run query
-    const users = query
-      .select([
-        'UserModel.id',
-        'UserModel.firstName',
-        'UserModel.lastName',
-        'UserModel.photoURL',
-        'UserModel.email',
-      ])
+    const users = query.select([
+      'UserModel.id',
+      'UserModel.firstName',
+      'UserModel.lastName',
+      'UserModel.photoURL',
+      'UserModel.email',
+    ]);
+
+    const total = await users.getCount();
+    const usersSubset = await users
       .orderBy('UserModel.firstName')
       .skip((page - 1) * pageSize)
       .take(pageSize)
       .getMany();
 
-    return users;
+    return { users: usersSubset, total };
   }
 }

@@ -12,6 +12,7 @@ import EmptyGroupList from "./QuestionGrouping/EmptyGroupList";
 import TAGroupDetail from "./QuestionGrouping/TAGroupDetail";
 import TAQueueDetail from "./TAQueueDetail";
 import TAQueueListSection from "./TAQueueListSection";
+import { useHotkeys } from "react-hotkeys-hook";
 
 // The min screen width at which the list and detail become side-by-side
 const SPLIT_DETAIL_BKPT = 900;
@@ -102,6 +103,27 @@ export default function TAQueueListDetail({
   const selectedQuestion = allQuestionsList.find(
     (q) => q.id === selectedQuestionId
   );
+  const navigateQuestions = (isUp: boolean) => {
+    const priorityAndWaitingQuestionIds = [
+      ...questions.priorityQueue,
+      ...questions.queue,
+    ].map((question) => question.id);
+    const numOfQuestions = priorityAndWaitingQuestionIds.length;
+    if (numOfQuestions > 0) {
+      setSelectedQuestionId((prevId) => {
+        const addMinus = isUp ? -1 : 1;
+        const qIdIndex = priorityAndWaitingQuestionIds.indexOf(prevId);
+        const modulusMagic =
+          (((qIdIndex + addMinus) % numOfQuestions) + numOfQuestions) %
+          numOfQuestions;
+        return priorityAndWaitingQuestionIds[prevId ? modulusMagic : 0];
+      });
+    }
+  };
+
+  useHotkeys("up", () => navigateQuestions(true), [questions]);
+  useHotkeys("down", () => navigateQuestions(false), [questions]);
+
   const hasUnresolvedRephraseAlert = questions?.unresolvedAlerts
     ?.map((payload) => (payload as RephraseQuestionPayload).questionId)
     .includes(selectedQuestionId);

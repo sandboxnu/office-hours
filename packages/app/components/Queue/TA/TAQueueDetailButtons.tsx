@@ -29,6 +29,8 @@ import {
   FinishHelpingButton,
   RequeueButton,
 } from "../Banner";
+import { useTeams } from "../../../hooks/useTeams";
+import { useHotkeys } from "react-hotkeys-hook";
 
 const PRORITY_QUEUED_MESSAGE_TEXT =
   "This student has been temporarily removed from the queue. They must select to rejoin the queue and will then be placed in the Priority Queue.";
@@ -56,6 +58,8 @@ export default function TAQueueDetailButtons({
   );
   const { isCheckedIn, isHelping } = useTAInQueueInfo(queueId);
 
+  const openTeams = useTeams(queueId, question.creator.email, defaultMessage);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const sendRephraseAlert = async () => {
     const payload: RephraseQuestionPayload = {
@@ -79,12 +83,26 @@ export default function TAQueueDetailButtons({
 
   const helpStudent = () => {
     changeStatus(OpenQuestionStatus.Helping);
-    if (question.isOnline) {
-      window.open(
-        `https://teams.microsoft.com/l/chat/0/0?users=${question.creator.email}&message=${defaultMessage}`
-      );
-    }
+    openTeams();
   };
+  const deleteQuestion = async () => {
+    await changeStatus(
+      question.status === OpenQuestionStatus.Drafting
+        ? ClosedQuestionStatus.DeletedDraft
+        : LimboQuestionStatus.TADeleted
+    );
+    await API.questions.notify(question.id);
+  };
+
+  useHotkeys(
+    "shift+d",
+    () => {
+      if (isCheckedIn) {
+        deleteQuestion();
+      }
+    },
+    [question]
+  );
 
   if (question.status === OpenQuestionStatus.Helping) {
     return (
@@ -153,6 +171,11 @@ export default function TAQueueDetailButtons({
           false,
           "The student has already been asked to rephrase their question",
         ];
+      } else if (question.status === OpenQuestionStatus.Drafting) {
+        return [
+          false,
+          "The student must finish drafting before they can be asked to rephrase their question",
+        ];
       } else {
         return [true, "Ask the student to add more detail to their question"];
       }
@@ -165,12 +188,7 @@ export default function TAQueueDetailButtons({
           okText="Yes"
           cancelText="No"
           onConfirm={async () => {
-            await changeStatus(
-              question.status === OpenQuestionStatus.Drafting
-                ? ClosedQuestionStatus.DeletedDraft
-                : LimboQuestionStatus.TADeleted
-            );
-            await API.questions.notify(question.id);
+            await deleteQuestion();
           }}
         >
           <Tooltip

@@ -133,7 +133,6 @@ export class QuestionController {
         groupable,
         status: QuestionStatusKeys.Drafting,
         createdAt: new Date(),
-        isOnline: true,
       }).save();
       return question;
     } catch (err) {

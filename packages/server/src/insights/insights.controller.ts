@@ -19,6 +19,7 @@ import {
   ERROR_MESSAGES,
   ListInsightsResponse,
   Role,
+  SimpleTableOutputType,
 } from '@koh/common';
 import { User } from '../decorators/user.decorator';
 import { INSIGHTS_MAP } from './insight-objects';
@@ -43,7 +44,10 @@ export class InsightsController {
     @Param('insightName') insightName: string,
     @Query('start') start: string,
     @Query('end') end: string,
+    @Query('limit') limit: number,
+    @Query('offset') offset: number,
   ): Promise<GetInsightOutputResponse> {
+    // Temporarily disabling insights until we finish refactoring QueueModel
     // Check that the insight name is valid
     const insightNames = Object.keys(INSIGHTS_MAP);
     if (!insightNames.includes(insightName)) {
@@ -74,10 +78,21 @@ export class InsightsController {
       });
     }
 
-    const insight = await this.insightsService.computeOutput({
+    let insight = await this.insightsService.computeOutput({
       insight: INSIGHTS_MAP[insightName],
       filters,
     });
+
+    if (insightName === 'MostActiveStudents') {
+      let dataSource = (insight as SimpleTableOutputType).dataSource;
+      if (offset) {
+        dataSource = dataSource.slice(offset, dataSource.length);
+      }
+      if (limit) {
+        dataSource = dataSource.slice(0, limit);
+      }
+      insight = { ...(insight as SimpleTableOutputType), dataSource };
+    }
 
     return insight;
   }
@@ -106,6 +121,7 @@ export class InsightsController {
     @Body() body: { insightName: string },
     @User() user: UserModel,
   ): Promise<void> {
+    // Temporarily disabling insights until we finish refactoring QueueModel
     await this.insightsService.toggleInsightOff(user, body.insightName);
     return;
   }

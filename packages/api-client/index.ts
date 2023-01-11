@@ -3,7 +3,7 @@ import {
   CreateAlertResponse,
   CreateQuestionParams,
   CreateQuestionResponse,
-  DateRangeType,
+  InsightParamsType,
   DesktopNotifBody,
   DesktopNotifPartial,
   GetAlertsResponse,
@@ -30,8 +30,9 @@ import {
   UpdateQuestionParams,
   UpdateQuestionResponse,
   UpdateQueueParams,
-  UserPartial,
+  QueuePartial,
   Role,
+  GetCourseUserInfoResponse,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -85,15 +86,13 @@ class APIClient {
       page: number,
       role?: Role,
       search?: string
-    ) =>
+    ): Promise<GetCourseUserInfoResponse> =>
       this.req(
         "GET",
-        `/api/v1/courses/${courseId}/get_user_info/${page}/${role}`,
-        UserPartial,
-        { search }
+        `/api/v1/courses/${courseId}/get_user_info/${page}/${role}${
+          search ? `?search=${search}` : ""
+        }`
       ),
-    updateCalendar: async (courseId: number) =>
-      this.req("POST", `/api/v1/courses/${courseId}/update_calendar`),
     getCourseOverrides: async (courseId: number) =>
       this.req(
         "GET",
@@ -168,6 +167,18 @@ class APIClient {
       room: string
     ): Promise<TACheckoutResponse> =>
       this.req("DELETE", `/api/v1/courses/${courseId}/ta_location/${room}`),
+    makeQueue: async (
+      courseId: number,
+      room: string,
+      isProfessorQueue: boolean,
+      notes: string
+    ): Promise<TAUpdateStatusResponse> =>
+      this.req(
+        "POST",
+        `/api/v1/courses/${courseId}/generate_queue/${room}`,
+        QueuePartial,
+        { notes, isProfessorQueue }
+      ),
   };
   questions = {
     index: async (queueId: number) =>
@@ -211,6 +222,8 @@ class APIClient {
       ),
     clean: async (queueId: number): Promise<void> =>
       this.req("POST", `/api/v1/queues/${queueId}/clean`),
+    disable: async (queueId: number): Promise<void> =>
+      this.req("DELETE", `/api/v1/queues/${queueId}`),
   };
   notif = {
     desktop: {
@@ -250,7 +263,7 @@ class APIClient {
     get: async (
       courseId: number,
       insightName: string,
-      params: DateRangeType
+      params: InsightParamsType
     ): Promise<GetInsightOutputResponse> => {
       return this.req(
         "GET",

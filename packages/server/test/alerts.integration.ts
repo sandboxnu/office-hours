@@ -20,8 +20,14 @@ describe('Alerts Integration', () => {
       const course1 = await CourseFactory.create();
       const course2 = await CourseFactory.create();
 
+      const ta = await TACourseFactory.create({
+        user: await UserFactory.create(),
+        course: course1,
+      });
+
       const queue1 = await QueueFactory.create({
         course: course1,
+        staffList: [ta.user],
       });
       const question1 = await QuestionFactory.create({
         queue: queue1,
@@ -29,6 +35,7 @@ describe('Alerts Integration', () => {
 
       const queue2 = await QueueFactory.create({
         course: course2,
+        staffList: [ta.user],
       });
       const question2 = await QuestionFactory.create({
         queue: queue2,

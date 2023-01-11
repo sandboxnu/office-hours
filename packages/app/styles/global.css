@@ -52,6 +52,10 @@ body {
   padding-inline-start: 5px;
 }
 
+.open-queue-card .ant-card-extra {
+  color: #FFFFFF;
+}
+
 @media only percy {
   .hide-in-percy {
     visibility: hidden;
@@ -69,6 +73,17 @@ body {
     visibility: hidden;
   }
   .rbc-toolbar {
+    visibility: hidden;
+  }
+  .fc-col-header-cell-cushion {
+    visibility: hidden;
+  }
+
+  .fc-toolbar-title {
+    visibility: hidden;
+  }
+
+  .fc-event {
     visibility: hidden;
   }
 }
