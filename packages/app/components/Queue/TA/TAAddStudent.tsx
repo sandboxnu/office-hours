@@ -104,7 +104,7 @@ export function AddStudentsModal({
     await API.questions
       .TAcreate(
         {
-          text: "For grading",
+          text: "",
           questionType: selectedQuestionType,
           queueId: queueId,
           location: null,
