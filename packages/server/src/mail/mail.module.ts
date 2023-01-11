@@ -16,8 +16,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         transport: {
           service: 'gmail',
           auth: {
-            user: 'kevinwang1262000@gmail.com',
-            pass: 'wweijhgwvzcmtheu',
+            user: 'ubchelpme@gmail.com',
+            pass: 'geelhkocdxiwqlwa',
           },
         },
       }),

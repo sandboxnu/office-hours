@@ -1,7 +1,7 @@
 import "../index.css";
 import { Button, Form, Input, message } from "antd";
 import { API } from "@koh/api-client";
-import { useRouter } from "next/router";
+import Router, { useRouter } from "next/router";
 import DefaultErrorPage from "next/error";
 import React, { ReactElement, useState } from "react";
 export default function ResetPassword(): ReactElement {
@@ -18,7 +18,7 @@ export default function ResetPassword(): ReactElement {
   const onSend = async (values: any) => {
     await API.profile.updatePassword(values.password, String(hash));
     message.success("Your profile settings have been successfully updated");
-    router.push("../../login");
+    Router.push("../../login");
   };
 
   return (
