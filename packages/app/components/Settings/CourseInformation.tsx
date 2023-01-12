@@ -2,9 +2,19 @@ import { DeleteTwoTone, PlusCircleOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import { Form, Input, InputNumber, Tag, Button, Space, message } from "antd";
 import React, { ReactElement, useState } from "react";
+import styled from "styled-components";
 import { useCourse } from "../../hooks/useCourse";
 
 type CourseOverrideSettingsProps = { courseId: number };
+
+const CRNTag = styled(Tag)`
+  font-size: 15px;
+  padding: 5px 10px;
+`;
+
+const AddCRNTag = styled(CRNTag)`
+  cursor: pointer;
+`;
 
 export default function CourseInfo({
   courseId,
@@ -40,15 +50,18 @@ export default function CourseInfo({
 
   const handleCRNAdd = () => {
     if (inputCRN) {
-      setCrns([...crns, inputCRN]);
+      if (crns.includes(inputCRN)) {
+        message.error(`The CRN ${inputCRN} already exists.`);
+      } else {
+        setCrns([...crns, inputCRN]);
+      }
     }
     setShowCRNInput(false);
     setInputCRN(null);
   };
 
   const handleCRNDelete = (crn) => {
-    crns.splice(crns.indexOf(crn), 1);
-    setCrns(crns);
+    setCrns(crns.filter((c) => c !== crn));
   };
 
   return (
@@ -108,14 +121,13 @@ export default function CourseInfo({
           <Input placeholder="https://calendar.google.com/calendar/ical/.../basic.ics" />
         </Form.Item>
 
-        <Form.Item label="Registered CRNs" name="crns">
+        <Form.Item label="Registered CRNs">
           {crns.map((crn) => (
-            <Tag
-              style={{ fontSize: "15px" }}
+            <CRNTag
               closeIcon={
                 <DeleteTwoTone
                   twoToneColor="#F76C6C"
-                  style={{ fontSize: "15px" }}
+                  style={{ fontSize: "18px" }}
                 />
               }
               key={crn}
@@ -123,11 +135,10 @@ export default function CourseInfo({
               onClose={() => handleCRNDelete(crn)}
             >
               {crn}
-            </Tag>
+            </CRNTag>
           ))}
           {showCRNInput ? (
             <InputNumber<string>
-              size={"small"}
               className="tag-input"
               value={inputCRN}
               maxLength={5}
@@ -138,15 +149,14 @@ export default function CourseInfo({
               stringMode
             />
           ) : (
-            <Tag
+            <AddCRNTag
               icon={<PlusCircleOutlined style={{ fontSize: "15px" }} />}
-              style={{ fontSize: "14px" }}
               color="#408FEA"
               className="add-crn"
               onClick={showInput}
             >
               Add CRN
-            </Tag>
+            </AddCRNTag>
           )}
         </Form.Item>
       </Form>

@@ -142,11 +142,7 @@ export class CourseService {
 
     let courseCrnMaps = await CourseSectionMappingModel.find({ courseId });
     for (const courseCrnMap of courseCrnMaps) {
-      const conflictCourse = await CourseModel.findOne(courseCrnMap.courseId);
-      if (
-        !coursePatch.crns.includes(courseCrnMap.crn) &&
-        conflictCourse.semesterId === course.semesterId
-      ) {
+      if (!coursePatch.crns.includes(courseCrnMap.crn)) {
         try {
           await CourseSectionMappingModel.delete({
             crn: courseCrnMap.crn,
