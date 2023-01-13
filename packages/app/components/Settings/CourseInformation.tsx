@@ -113,7 +113,7 @@ export default function CourseInfo({
           rules={[
             {
               required: true,
-              type: "url",
+              pattern: new RegExp("https://.*.ics"),
               message: "Please input your office hours calendar URL.",
             },
           ]}
