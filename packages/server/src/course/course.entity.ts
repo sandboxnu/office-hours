@@ -37,6 +37,9 @@ export class CourseModel extends BaseEntity {
   @Exclude()
   icalURL: string;
 
+  @Column('text', { nullable: true })
+  @Exclude()
+  zoomLink: string;
   // @OneToMany(() => QuestionTypeModel, (question_type) => question_type.course)
   // question_type: QuestionTypeModel
 

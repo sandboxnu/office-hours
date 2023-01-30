@@ -9,8 +9,10 @@ import {
 import { API } from "@koh/api-client";
 import { OpenQuestionStatus, Question } from "@koh/common";
 import { Button, Col, Popconfirm, Tooltip } from "antd";
+import router from "next/router";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
+import { useCourse } from "../../../hooks/useCourse";
 import { useQueue } from "../../../hooks/useQueue";
 import { useStudentQuestion } from "../../../hooks/useStudentQuestion";
 import { toOrdinal } from "../../../utils/ordinal";
@@ -55,7 +57,8 @@ export default function StudentBanner({
 }: StudentBannerProps): ReactElement {
   const { studentQuestion, studentQuestionIndex } = useStudentQuestion(queueId);
   const isQueueOnline = useQueue(queueId).queue?.room.startsWith("Online");
-
+  const { cid } = router.query;
+  const { course } = useCourse(Number(cid));
   switch (studentQuestion?.status) {
     case "Drafting":
       return (
@@ -127,13 +130,11 @@ export default function StudentBanner({
             <>
               <LeaveQueueButton leaveQueue={leaveQueue} />
               {isQueueOnline && (
-                <Tooltip title="Open Teams DM">
+                <Tooltip title="Open Zoom link">
                   <BannerButton
                     icon={<TeamOutlined />}
                     onClick={() => {
-                      window.open(
-                        `https://teams.microsoft.com/l/chat/0/0?users=${studentQuestion.taHelped.email}`
-                      );
+                      window.open(course.zoomLink);
                     }}
                   />
                 </Tooltip>

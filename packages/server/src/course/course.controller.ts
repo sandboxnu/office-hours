@@ -397,9 +397,7 @@ export class CourseController {
     if (!queue.staffList.find((e) => e.id === user.id)) return;
 
     queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
-    if (queue.staffList.length === 0) {
-      queue.allowQuestions = false;
-    }
+
     try {
       await queue.save();
     } catch (err) {

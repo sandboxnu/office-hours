@@ -19,7 +19,7 @@ import {
 import { EditQueueModal } from "./EditQueueModal";
 import { AddStudentsModal } from "./TAAddStudent";
 import TAQueueListDetail from "./TAQueueListDetail";
-import { useTeams } from "../../../hooks/useTeams";
+// import { useTeams } from "../../../hooks/useTeams";
 import { useDefaultMessage } from "../../../hooks/useDefaultMessage";
 import { useHotkeys } from "react-hotkeys-hook";
 
@@ -111,12 +111,12 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
       (question) => question.status === QuestionStatusKeys.Queued
     );
   const defaultMessage = useDefaultMessage();
-  const openTeams = useTeams(qid, nextQuestion?.creator.email, defaultMessage);
+  // const openTeams = useTeams(qid, nextQuestion?.creator.email, defaultMessage);
 
   const helpNext = async () => {
     await onHelpQuestion(nextQuestion.id);
     mutateQuestions();
-    openTeams();
+    // openTeams();
   };
 
   useHotkeys(

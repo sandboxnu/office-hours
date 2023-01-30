@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import Modal from "antd/lib/modal/Modal";
-import { Switch, Input, Form, Button } from "antd";
+import { Switch, Input, Form, Button, Radio } from "antd";
 import styled from "styled-components";
 import { API } from "@koh/api-client";
 import { useQueue } from "../../../hooks/useQueue";
@@ -8,6 +8,7 @@ import { UpdateQueueParams } from "@koh/common";
 import { pick } from "lodash";
 import { default as React, useEffect, useCallback, useState } from "react";
 import { useRouter } from "next/router";
+import { useCourse } from "../../../hooks/useCourse";
 const NotesInput = styled(Input.TextArea)`
   border-radius: 6px;
   border: 1px solid #b8c4ce;
@@ -30,6 +31,9 @@ export function EditQueueModal({
   const [questionTypeAddState, setQuestionTypeAddState] = useState("");
   const router = useRouter();
   const courseId = router.query["cid"];
+  const course = useCourse(Number(courseId));
+
+  const [zoomLink, setZoomLink] = useState("");
   useEffect(() => {
     getQuestions();
   }, []);
@@ -62,10 +66,20 @@ export function EditQueueModal({
   const onAddChange = (e) => {
     setQuestionTypeAddState(e.target.value);
   };
+  const onZoomLinkChange = (e) => {
+    setZoomLink(e.target.value);
+  };
   const addQuestionType = useCallback(async () => {
     await API.questions.addQuestionType(courseNumber, questionTypeAddState);
     setQuestionsTypeState(await API.questions.questionTypes(courseNumber));
   }, [courseNumber, questionTypeAddState]);
+  const changeZoomLink = async () => {
+    console.log(zoomLink);
+    await API.course.editCourseInfo(Number(courseId), {
+      courseId: Number(courseId),
+      zoomLink: zoomLink,
+    });
+  };
   return (
     <Modal
       title="Edit Queue Details"
@@ -89,23 +103,20 @@ export function EditQueueModal({
           >
             <Switch data-cy="allow-questions-toggle" />
           </Form.Item>
-          <h4>Current Question Types:</h4>
-          <Button.Group style={{ marginBottom: 10 }}>
+          <h4>Current Question Types: (click to delete)</h4>
+          <Radio.Group buttonStyle="solid">
             {questionsTypeState.length > 0 ? (
-              questionsTypeState.map((q) => {
-                return (
-                  <div key={q}>
-                    {q}:
-                    <Button onClick={() => onclick(q)} key={q}>
-                      Delete
-                    </Button>
-                  </div>
-                );
-              })
+              questionsTypeState.map((q) => (
+                <Radio.Button onClick={() => onclick(q)} key={q} value={q}>
+                  {" "}
+                  {q}
+                </Radio.Button>
+              ))
             ) : (
-              <p>There are No Question Types</p>
+              <p>No Questions types</p>
             )}
-          </Button.Group>
+          </Radio.Group>
+
           <Form.Item label="Enter a new question type: " name="add">
             <Input
               allowClear={true}
@@ -114,6 +125,14 @@ export function EditQueueModal({
               onChange={onAddChange}
             />
             <Button onClick={addQuestionType}> Add </Button>
+          </Form.Item>
+          <h4 style={{ marginTop: "20px" }}>
+            Current Zoom link:{" "}
+            {course.course.zoomLink && course.course.zoomLink}
+          </h4>
+          <Form.Item>
+            <Input allowClear={true} onChange={onZoomLinkChange} />
+            <Button onClick={changeZoomLink}> Change Link </Button>
           </Form.Item>
         </Form>
       )}

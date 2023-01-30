@@ -71,7 +71,7 @@ export class QueueModel extends BaseEntity {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-    this.isOpen = this.staffList.length > 0 && !this.isDisabled;
+    this.isOpen = this.staffList.length >= 0 && !this.isDisabled;
     return this.isOpen;
   }
 

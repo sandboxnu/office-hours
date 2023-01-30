@@ -5,7 +5,7 @@ import {
   NotificationOutlined,
   StopOutlined,
 } from "@ant-design/icons";
-import { Button, message, Modal, Popconfirm, Tag, Tooltip } from "antd";
+import { Button, message, Modal, Popconfirm, Tooltip } from "antd";
 import { ButtonProps } from "antd/lib/button";
 import Linkify from "react-linkify";
 import moment from "moment";
@@ -154,7 +154,7 @@ export function QueueInfoColumn({
     message.success("Successfully disabled queue: " + queue.room);
     await Router.push("/");
   };
-
+  console.log(queue);
   const clearQueue = async () => {
     await API.queues.clean(queueId);
     await mutateQueue();
@@ -178,9 +178,6 @@ export function QueueInfoColumn({
     <InfoColumnContainer>
       <QueueInfo>
         <QueueRoomGroup>
-          <QueueTitle data-cy="room-title">
-            {queue?.room} {queue?.isDisabled && <b>(disabled)</b>}
-          </QueueTitle>
           {!queue.allowQuestions && (
             <Tooltip title="This queue is no longer accepting questions">
               <StopOutlined
@@ -191,10 +188,14 @@ export function QueueInfoColumn({
           )}
         </QueueRoomGroup>
 
-        {queue?.isProfessorQueue && (
-          <QueuePropertyRow>
-            <Tag color="blue">Professor Queue</Tag>
-          </QueuePropertyRow>
+        {queue.staffList.length < 1 ? (
+          <h1>
+            No staff checked in, but you can still ask your questions first!
+          </h1>
+        ) : (
+          <QueueTitle data-cy="room-title">
+            {queue?.room} {queue?.isDisabled && <b>(disabled)</b>}
+          </QueueTitle>
         )}
       </QueueInfo>
       {queue?.notes && (

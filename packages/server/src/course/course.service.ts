@@ -192,6 +192,9 @@ export class CourseService {
       course.icalURL = coursePatch.icalURL;
     }
 
+    if (coursePatch.zoomLink) {
+      course.zoomLink = coursePatch.zoomLink;
+    }
     try {
       await course.save();
     } catch (err) {

@@ -9,7 +9,15 @@ import { SemesterModel } from 'semester/semester.entity';
 export class CourseAdmin extends AdminEntity {
   entity = CourseModel;
   listDisplay = ['id', 'name'];
-  fields = ['id', 'name', 'icalURL', 'semesterId', 'enabled', 'timezone'];
+  fields = [
+    'id',
+    'name',
+    'icalURL',
+    'semesterId',
+    'enabled',
+    'timezone',
+    'zoomLink',
+  ];
 }
 
 export class QueueAdmin extends AdminEntity {

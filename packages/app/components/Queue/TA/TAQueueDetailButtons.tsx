@@ -85,6 +85,11 @@ export default function TAQueueDetailButtons({
     changeStatus(OpenQuestionStatus.Helping);
     //no supporting teams pop up
     //openTeams();
+    console.log("help clicked");
+    setTimeout(
+      () => changeStatus(ClosedQuestionStatus.Resolved),
+      60 * 15 * 1000
+    );
   };
   const deleteQuestion = async () => {
     await changeStatus(
