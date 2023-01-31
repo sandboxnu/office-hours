@@ -128,7 +128,11 @@ export function EditQueueModal({
           </Form.Item>
           <h4 style={{ marginTop: "20px" }}>
             Current Zoom link:{" "}
-            {course.course.zoomLink && course.course.zoomLink}
+            {course.course?.zoomLink ? (
+              course.course.zoomLink
+            ) : (
+              <p> Zoomlink not Available</p>
+            )}
           </h4>
           <Form.Item>
             <Input allowClear={true} onChange={onZoomLinkChange} />
