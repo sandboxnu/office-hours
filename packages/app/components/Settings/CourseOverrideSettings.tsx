@@ -19,7 +19,7 @@ const OverrideContents = styled.div`
 `;
 
 export default function CourseOverrideSettings({
-  courseId,
+  courseId
 }: CourseOverrideSettingsProps): ReactElement {
   const { data, mutate } = useSWR(`/api/v1/courses/course_override`, async () =>
     API.course.getCourseOverrides(courseId)
@@ -30,7 +30,7 @@ export default function CourseOverrideSettings({
   const formattedRoles = {
     student: "Student",
     ta: "TA",
-    professor: "Professor",
+    professor: "Professor"
   };
 
   return (
@@ -42,7 +42,7 @@ export default function CourseOverrideSettings({
         dataSource={data?.data.map((row, i) => ({
           ...row,
           key: i,
-          role: formattedRoles[row.role],
+          role: formattedRoles[row.role]
         }))}
       >
         <Column title="Name" dataIndex="name" key="name" />
@@ -56,7 +56,7 @@ export default function CourseOverrideSettings({
               onClick={async () => {
                 await API.course.deleteOverride(courseId, {
                   email: record.email,
-                  role: record.role as Role,
+                  role: record.role as Role
                 });
                 message.success(
                   "Successfully deleted the override for " + record.name
@@ -72,8 +72,8 @@ export default function CourseOverrideSettings({
       </Table>
       <br />
       <div>
-        Is Khoury Admin/Banner down? Toggle this to temporarily allow students
-        to join your class.{" "}
+        Is UBC Admin/Banner down? Toggle this to temporarily allow students to
+        join your class.{" "}
         <Switch
           onChange={async () => {
             await API.course.toggleSelfEnroll(courseId);

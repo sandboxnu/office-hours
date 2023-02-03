@@ -2,7 +2,7 @@ import {
   BellOutlined,
   EditOutlined,
   QuestionCircleOutlined,
-  UploadOutlined,
+  UploadOutlined
 } from "@ant-design/icons";
 import { Col, Menu, Row, Space, Tooltip } from "antd";
 import { useRouter } from "next/router";
@@ -13,10 +13,12 @@ import CourseRosterPage from "./CourseRosterPage";
 import { SettingsPanelAvatar } from "./SettingsSharedComponents";
 import TACheckInCheckOutTimes from "./TACheckInCheckOutTimes";
 import AddStudentsToCourse from "./AddStudentsToCourse";
+import ExportQuestions from "./ExportQuestions";
 export enum CourseAdminOptions {
   CHECK_IN = "CHECK_IN",
   ROSTER = "ROSTER",
   ADD = "ADD",
+  EXPORT = "EXPORT"
 }
 
 interface CourseAdminPageProps {
@@ -37,7 +39,7 @@ const CenteredText = styled.p`
 
 export default function CourseAdminPanel({
   defaultPage,
-  courseId,
+  courseId
 }: CourseAdminPageProps): ReactElement {
   const profile = useProfile();
   const [currentSettings, setCurrentSettings] = useState(
@@ -73,7 +75,7 @@ export default function CourseAdminPanel({
         </CenteredText>
         <Menu
           defaultSelectedKeys={[currentSettings]}
-          onClick={(e) => setCurrentSettings(e.key as CourseAdminOptions)}
+          onClick={e => setCurrentSettings(e.key as CourseAdminOptions)}
           style={{ background: "#f8f9fb", paddingTop: "20px" }}
         >
           <Menu.Item key={CourseAdminOptions.CHECK_IN} icon={<EditOutlined />}>
@@ -84,6 +86,9 @@ export default function CourseAdminPanel({
           </Menu.Item>
           <Menu.Item key={CourseAdminOptions.ADD} icon={<UploadOutlined />}>
             Add students to course
+          </Menu.Item>
+          <Menu.Item key={CourseAdminOptions.EXPORT} icon={<UploadOutlined />}>
+            Export questions
           </Menu.Item>
         </Menu>
       </Col>
@@ -98,6 +103,9 @@ export default function CourseAdminPanel({
           )}
           {currentSettings === CourseAdminOptions.ADD && (
             <AddStudentsToCourse courseId={courseId} />
+          )}
+          {currentSettings === CourseAdminOptions.EXPORT && (
+            <ExportQuestions courseId={courseId} />
           )}
         </Col>
       </Space>

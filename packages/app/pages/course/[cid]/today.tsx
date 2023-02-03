@@ -126,6 +126,7 @@ export default function Today(): ReactElement {
               </h1>
             ) : (
               sortedQueues?.map((q) => (
+                q.allowQuestions &&
                 <QueueCard
                   key={q.id}
                   queue={q}

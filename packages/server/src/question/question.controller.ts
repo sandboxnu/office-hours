@@ -76,6 +76,21 @@ export class QuestionController {
     return question;
   }
 
+  @Get('allQuestions/:cid')
+  async getAllQuestions(@Param('cid') cid: number): Promise<QuestionModel[]> {
+    const questions = await QuestionModel.find({
+      relations: ['queue'],
+      where: {
+        queue: {
+          courseId: cid,
+        },
+      },
+    });
+    if (questions === undefined) {
+      throw new NotFoundException();
+    }
+    return questions;
+  }
   @Post('TAcreate/:userId')
   async TAcreateQuestion(
     @Body() body: CreateQuestionParams,
@@ -114,7 +129,7 @@ export class QuestionController {
     });
 
     const previousCourseQuestion = previousUserQuestions.find(
-      (question) => question.queue.courseId === queue.courseId,
+      question => question.queue.courseId === queue.courseId,
     );
 
     if (!!previousCourseQuestion) {
@@ -191,7 +206,7 @@ export class QuestionController {
     });
 
     const previousCourseQuestion = previousUserQuestions.find(
-      (question) => question.queue.courseId === queue.courseId,
+      question => question.queue.courseId === queue.courseId,
     );
 
     if (!!previousCourseQuestion) {
@@ -352,7 +367,7 @@ export class QuestionController {
       relations: ['taHelped', 'creator'],
     });
 
-    if (!questions.every((q) => q.groupable)) {
+    if (!questions.every(q => q.groupable)) {
       throw new BadRequestException(
         ERROR_MESSAGES.questionController.groupQuestions.notGroupable,
       );

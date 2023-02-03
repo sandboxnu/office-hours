@@ -3,8 +3,7 @@ import {
   BookOutlined,
   DeleteOutlined,
   UploadOutlined,
-  UserOutlined,
-  WindowsOutlined,
+  UserOutlined
 } from "@ant-design/icons";
 import { Collapse } from "antd";
 import { API } from "@koh/api-client";
@@ -27,7 +26,7 @@ export enum SettingsOptions {
   PROFILE = "PROFILE",
   NOTIFICATIONS = "NOTIFICATIONS",
   TEAMS_SETTINGS = "TEAMS_SETTINGS",
-  PREFERENCES = "PREFERENCES",
+  PREFERENCES = "PREFERENCES"
 }
 
 interface SettingsPageProps {
@@ -50,13 +49,11 @@ const ProfilePicButton = styled(Button)`
 const { Panel } = Collapse;
 
 export default function SettingsPage({
-  defaultPage,
+  defaultPage
 }: SettingsPageProps): ReactElement {
-  const {
-    data: profile,
-    error,
-    mutate,
-  } = useSWR(`api/v1/profile`, async () => API.profile.index());
+  const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
+    API.profile.index()
+  );
   const router = useRouter();
   const { cid } = router.query;
   const role = useRoleInCourse(Number(cid));
@@ -75,7 +72,7 @@ export default function SettingsPage({
     setAvatarSize(windowWidth / widthDivider);
   });
 
-  const beforeUpload = (file) => {
+  const beforeUpload = file => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
 
     if (!isJpgOrPng) {
@@ -100,7 +97,7 @@ export default function SettingsPage({
         <Row
           style={{
             marginTop: avatarSize / 6,
-            justifyContent: `${isMobile ? "left" : "center"}`,
+            justifyContent: `${isMobile ? "left" : "center"}`
           }}
         >
           {uploading ? (
@@ -112,7 +109,7 @@ export default function SettingsPage({
                 marginTop: avatarSize / 6,
                 marginBottom: avatarSize / 12,
                 marginLeft: avatarSize / 6,
-                marginRight: avatarSize / 6,
+                marginRight: avatarSize / 6
               }}
             />
           ) : (
@@ -128,7 +125,7 @@ export default function SettingsPage({
               action={"/api/v1/profile/upload_picture"}
               beforeUpload={beforeUpload}
               showUploadList={false}
-              onChange={(info) => {
+              onChange={info => {
                 setUploading(info.file.status === "uploading");
                 mutate();
               }}
@@ -188,19 +185,19 @@ export default function SettingsPage({
         <Menu
           style={{ background: "none", marginTop: "10px" }}
           defaultSelectedKeys={[currentSettings]}
-          onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}
+          onClick={e => setCurrentSettings(e.key as SettingsOptions)}
         >
           <Menu.Item key={SettingsOptions.PROFILE} icon={<UserOutlined />}>
             Personal Information
           </Menu.Item>
-          {isTAOrProfessor && (
+          {/* {isTAOrProfessor && (
             <Menu.Item
               key={SettingsOptions.TEAMS_SETTINGS}
               icon={<WindowsOutlined />}
             >
               Teams Settings
             </Menu.Item>
-          )}
+          )} */}
           <Menu.Item
             key={SettingsOptions.NOTIFICATIONS}
             icon={<BellOutlined />}
