@@ -2,7 +2,8 @@ import {
   BellOutlined,
   EditOutlined,
   QuestionCircleOutlined,
-  UploadOutlined
+  UploadOutlined,
+  DownloadOutlined
 } from "@ant-design/icons";
 import { Col, Menu, Row, Space, Tooltip } from "antd";
 import { useRouter } from "next/router";
@@ -87,7 +88,10 @@ export default function CourseAdminPanel({
           <Menu.Item key={CourseAdminOptions.ADD} icon={<UploadOutlined />}>
             Add students to course
           </Menu.Item>
-          <Menu.Item key={CourseAdminOptions.EXPORT} icon={<UploadOutlined />}>
+          <Menu.Item
+            key={CourseAdminOptions.EXPORT}
+            icon={<DownloadOutlined />}
+          >
             Export questions
           </Menu.Item>
         </Menu>

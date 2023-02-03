@@ -16,9 +16,7 @@ export default function AddStudentsToCourse({
   courseId
 }: CourseRosterPageProps): ReactElement {
   const { data } = useSWR(`/api/v1/questions/allQuestions`, async () => {
-    const temp = await API.questions.getAllQuestions(courseId);
-    console.log(temp);
-    return temp;
+    return await API.questions.getAllQuestions(courseId);
   });
   const dataToConvert = {
     data: data,
