@@ -16,7 +16,7 @@ export default function CourseAdminPanelPage(): ReactElement {
   const role = useRoleInCourse(Number(courseId));
   const defaultPage = router.query["defaultPage"] as CourseAdminOptions;
 
-  if (role !== Role.PROFESSOR) {
+  if (role !== Role.PROFESSOR && role !== Role.TA ) {
     return <DefaultErrorPage statusCode={404} />;
   }
 

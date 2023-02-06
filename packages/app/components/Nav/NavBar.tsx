@@ -164,7 +164,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     },
   ];
 
-  if (role === Role.PROFESSOR) {
+  if (role === Role.PROFESSOR || role ===Role.TA) {
     tabs.push({
       href: "/course/[cid]/course_admin_panel",
       as: `/course/${courseId}/course_admin_panel`,

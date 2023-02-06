@@ -15,11 +15,15 @@ import { SettingsPanelAvatar } from "./SettingsSharedComponents";
 import TACheckInCheckOutTimes from "./TACheckInCheckOutTimes";
 import AddStudentsToCourse from "./AddStudentsToCourse";
 import ExportQuestions from "./ExportQuestions";
+import EditQuestions from "./EditQuestions";
+import { useRoleInCourse } from "../../hooks/useRoleInCourse";
+import { Role } from "@koh/common";
 export enum CourseAdminOptions {
   CHECK_IN = "CHECK_IN",
   ROSTER = "ROSTER",
   ADD = "ADD",
-  EXPORT = "EXPORT"
+  EXPORT = "EXPORT",
+  EDIT = "EDIT"
 }
 
 interface CourseAdminPageProps {
@@ -42,6 +46,7 @@ export default function CourseAdminPanel({
   defaultPage,
   courseId
 }: CourseAdminPageProps): ReactElement {
+  const role = useRoleInCourse(Number(courseId));
   const profile = useProfile();
   const [currentSettings, setCurrentSettings] = useState(
     defaultPage || CourseAdminOptions.CHECK_IN
@@ -79,20 +84,33 @@ export default function CourseAdminPanel({
           onClick={e => setCurrentSettings(e.key as CourseAdminOptions)}
           style={{ background: "#f8f9fb", paddingTop: "20px" }}
         >
-          <Menu.Item key={CourseAdminOptions.CHECK_IN} icon={<EditOutlined />}>
-            TA Check In/Out Times
-          </Menu.Item>
-          <Menu.Item key={CourseAdminOptions.ROSTER} icon={<BellOutlined />}>
-            Course Roster
-          </Menu.Item>
-          <Menu.Item key={CourseAdminOptions.ADD} icon={<UploadOutlined />}>
-            Add students to course
-          </Menu.Item>
+
+          {
+            role === Role.PROFESSOR && (
+              <>
+            <Menu.Item key={CourseAdminOptions.CHECK_IN} icon={<EditOutlined />}>
+              TA Check In/Out Times
+            </Menu.Item>
+            <Menu.Item key={CourseAdminOptions.ROSTER} icon={<BellOutlined />}>
+              Course Roster
+            </Menu.Item>
+            <Menu.Item key={CourseAdminOptions.ADD} icon={<UploadOutlined />}>
+              Add students to course
+            </Menu.Item>
+              </>
+            )
+          }
           <Menu.Item
             key={CourseAdminOptions.EXPORT}
             icon={<DownloadOutlined />}
           >
             Export questions
+          </Menu.Item>
+          <Menu.Item
+            key={CourseAdminOptions.EDIT}
+            icon={<EditOutlined />}
+          >
+            Edit questions
           </Menu.Item>
         </Menu>
       </Col>
@@ -110,6 +128,9 @@ export default function CourseAdminPanel({
           )}
           {currentSettings === CourseAdminOptions.EXPORT && (
             <ExportQuestions courseId={courseId} />
+          )}
+          {currentSettings === CourseAdminOptions.EDIT && (
+            <EditQuestions courseId={courseId} />
           )}
         </Col>
       </Space>

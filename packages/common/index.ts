@@ -190,6 +190,7 @@ export type Heatmap = Array<number>;
  * @param id - The unique id number for a student question.
  * @param creator - The Student that has created the question.
  * @param text - The text descritipn of what he/she needs help with.
+ * @param creatorId - userId of question creator
  * @param createdAt - The date string for the time that the Ticket was created. Ex: "2020-09-12T12:00:00-04:00"
  * @param helpedAt - The date string for the time that the TA began helping the Student.
  * @param closedAt - The date string for the time that the TA finished helping the Student.
@@ -206,6 +207,8 @@ export class Question {
 
   text?: string;
 
+  creatorId?: number;
+
   @Type(() => UserPartial)
   taHelped?: UserPartial;
 
@@ -214,12 +217,17 @@ export class Question {
 
   @Type(() => Date)
   helpedAt?: Date;
-  //get rid of QuestionType
+
+
   @Type(() => Date)
   closedAt?: Date;
+
   questionType?: string;
+
   groupable!: boolean;
+
   status!: QuestionStatus;
+  
   location?: string;
 }
 
@@ -427,6 +435,35 @@ export function isKhouryCourse(
   );
 }
 
+export class questions {
+  @IsInt()
+  id!: number;
+
+  @IsInt()
+  queueId?: number;
+
+  @IsString()
+  text?: string;
+
+  @IsString()
+  questionType?: string;
+
+  @IsDate()
+  @Type(() => Date)
+  createdAt!: Date;
+
+  @IsString()
+  status?: string;
+  
+  @IsString()
+  location?: string;
+
+  @IsString()
+  creatorName?: string;
+
+  @IsString()
+  helpName?: string;
+}
 export interface KhouryRedirectResponse {
   redirect: string;
 }

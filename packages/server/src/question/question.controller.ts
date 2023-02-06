@@ -7,6 +7,7 @@ import {
   GroupQuestionsParams,
   LimboQuestionStatus,
   OpenQuestionStatus,
+  questions,
   QuestionStatusKeys,
   Role,
   UpdateQuestionParams,
@@ -47,7 +48,7 @@ import { QuestionRolesGuard } from '../guards/question-role.guard';
 import { QuestionModel } from './question.entity';
 import { QuestionService } from './question.service';
 import { QuestionTypeModel } from './question-type.entity';
-//import { question } from 'readline-sync';
+import { pick } from 'lodash';
 
 // NOTE: FIXME: EVERY REQUEST INTO QUESTIONCONTROLLER REQUIRES THE BODY TO HAVE A
 // FIELD questionId OR queueId! If not, stupid weird untraceable bugs will happen
@@ -77,9 +78,9 @@ export class QuestionController {
   }
 
   @Get('allQuestions/:cid')
-  async getAllQuestions(@Param('cid') cid: number): Promise<QuestionModel[]> {
+  async getAllQuestions(@Param('cid') cid: number): Promise<questions[]> {
     const questions = await QuestionModel.find({
-      relations: ['queue'],
+      relations: ['queue', 'creator', 'taHelped'],
       where: {
         queue: {
           courseId: cid,
@@ -89,7 +90,12 @@ export class QuestionController {
     if (questions === undefined) {
       throw new NotFoundException();
     }
-    return questions;
+    const questionRes = questions.map((q)=>{
+      const temp= pick(q, ['id', 'queueId', 'text', 'questionType', 'createdAt', 'helpedAt', 'closedAt', 'status', 'location']);
+      Object.assign(temp, {creatorName: q.creator?.name, helpName: q.taHelped?.name});
+      return temp;
+    })
+    return questionRes;
   }
   @Post('TAcreate/:userId')
   async TAcreateQuestion(
@@ -282,33 +288,36 @@ export class QuestionController {
       return question;
     }
 
-    // If not creator, check if user is TA/PROF of course of question
-    const isTaOrProf =
-      (await UserCourseModel.count({
-        where: {
-          userId,
-          courseId: question.queue.courseId,
-          role: In([Role.TA, Role.PROFESSOR]),
-        },
-      })) > 0;
 
-    if (isTaOrProf) {
-      if (Object.keys(body).length !== 1 || Object.keys(body)[0] !== 'status') {
-        throw new UnauthorizedException(
-          ERROR_MESSAGES.questionController.updateQuestion.taOnlyEditQuestionStatus,
-        );
-      }
-      await this.questionService.validateNotHelpingOther(body.status, userId);
-      return await this.questionService.changeStatus(
-        body.status,
-        question,
-        userId,
-      );
-    } else {
-      throw new UnauthorizedException(
-        ERROR_MESSAGES.questionController.updateQuestion.loginUserCantEdit,
-      );
-    }
+    //below code is originally for permission level control. got rid of since instructors need to edit questions. 
+
+    // If not creator, check if user is TA/PROF of course of question
+    // const isTaOrProf =
+    //   (await UserCourseModel.count({
+    //     where: {
+    //       userId,
+    //       courseId: question.queue.courseId,
+    //       role: In([Role.TA, Role.PROFESSOR]),
+    //     },
+    //   })) > 0;
+
+    // if (isTaOrProf) {
+    //   if (Object.keys(body).length !== 1 || Object.keys(body)[0] !== 'status') {
+    //     throw new UnauthorizedException(
+    //       ERROR_MESSAGES.questionController.updateQuestion.taOnlyEditQuestionStatus,
+    //     );
+    //   }
+    //   await this.questionService.validateNotHelpingOther(body.status, userId);
+    //   return await this.questionService.changeStatus(
+    //     body.status,
+    //     question,
+    //     userId,
+    //   );
+    // } else {
+    //   throw new UnauthorizedException(
+    //     ERROR_MESSAGES.questionController.updateQuestion.loginUserCantEdit,
+    //   );
+    // }
   }
 
   @Post(':questionId/notify')

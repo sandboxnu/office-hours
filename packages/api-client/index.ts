@@ -31,11 +31,10 @@ import {
   UpdateQuestionResponse,
   UpdateQueueParams,
   QueuePartial,
-  Role,
+  Role,  
   GetCourseUserInfoResponse,
-  UBCOuserParam
-  // questionTypeParam,
-  // questionTypeResponse,
+  UBCOuserParam,
+  questions
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -217,7 +216,7 @@ class APIClient {
         CreateQuestionResponse,
         params
       ),
-    getAllQuestions: async (cid: number): Promise<any> =>
+    getAllQuestions: async (cid: number): Promise<questions[]> =>
       this.req("GET", `/api/v1/questions/allQuestions/${cid}`, undefined),
     get: async (questionId: number): Promise<GetQuestionResponse> =>
       this.req("GET", `/api/v1/questions/${questionId}`, GetQuestionResponse),

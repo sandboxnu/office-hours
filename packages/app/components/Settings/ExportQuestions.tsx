@@ -24,14 +24,16 @@ export default function AddStudentsToCourse({
     delimiter: ",",
     headers: [
       "id",
-      "Text",
+      "AskerId",
+      "text",
+      "questionType",
       "createdAt",
       "helpedAt",
       "closedAt",
-      "questionType",
       "status",
       "location",
-      "groupable"
+      "askerName",
+      "helperName"
     ]
   };
   if (!data) {
