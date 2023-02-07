@@ -140,7 +140,7 @@ export default function StudentQueue({
   }, [mutateQuestions, studentQuestionId]);
 
   const finishQuestion = useCallback(
-    async (text: string, questionType: QuestionType, groupable: boolean, location:string) => {
+    async (text: string, questionType: QuestionType, groupable: boolean, location: string) => {
       const updateStudent = {
         text,
         questionType,
