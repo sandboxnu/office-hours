@@ -3,7 +3,6 @@ type CourseRosterPageProps = { courseId: number };
 import { API } from "@koh/api-client";
 import { SearchOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Popconfirm, Select, Space, Table, Typography } from 'antd';
-{/* prettier-ignore */}
 import type { ColumnType } from 'antd/es/table';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import Highlighter from 'react-highlight-words';

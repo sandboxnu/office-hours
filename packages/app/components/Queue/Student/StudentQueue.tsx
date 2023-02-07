@@ -140,7 +140,7 @@ export default function StudentQueue({
   }, [mutateQuestions, studentQuestionId]);
 
   const finishQuestion = useCallback(
-    async (text: string, questionType: QuestionType, groupable: boolean) => {
+    async (text: string, questionType: QuestionType, groupable: boolean, location:string) => {
       const updateStudent = {
         text,
         questionType,
@@ -149,6 +149,7 @@ export default function StudentQueue({
           studentQuestionStatus === OpenQuestionStatus.Drafting
             ? OpenQuestionStatus.Queued
             : studentQuestionStatus,
+        location,
       };
 
       const updatedQuestionFromStudent = await API.questions.update(
@@ -243,10 +244,11 @@ export default function StudentQueue({
       qt: QuestionType,
       groupable: true,
       router: Router,
-      cid: number
+      cid: number,
+      location: string
     ) => {
       deleteDraftQuestion();
-      finishQuestion(text, qt, groupable);
+      finishQuestion(text, qt, groupable, location);
       closeEditModal();
       if (isFirstQuestion) {
         notification.warn({

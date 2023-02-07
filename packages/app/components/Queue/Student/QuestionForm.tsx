@@ -53,7 +53,8 @@ interface QuestionFormProps {
     questionType: string,
     groupable: boolean,
     router: NextRouter,
-    courseId: number
+    courseId: number,
+    location: string,
   ) => void;
   position: number;
   cancel: () => void;
@@ -86,7 +87,8 @@ export default function QuestionForm({
   const [questionGroupable, setQuestionGroupable] = useState<boolean>(
     question?.groupable !== undefined && question?.groupable
   );
-
+  
+  const [inperson, setInperson] = useState<boolean>(false);
   useEffect(() => {
     if (question && !visible) {
       setQuestionText(question.text);
@@ -135,7 +137,15 @@ export default function QuestionForm({
       groupable: e.target.value,
     });
   };
-
+  const onLocationChange = (e: RadioChangeEvent) => {
+    setInperson(e.target.value);
+    const questionFromStorage = storageQuestion ?? {}
+    setStoredQuestion({
+      id: question?.id,
+      ...questionFromStorage,
+      location: (inperson? 'In Person': 'Online'),
+    });
+  };
   // on button submit click, conditionally choose to go back to the queue
   const onClickSubmit = () => {
     if (questionTypeInput && questionText && questionText !== "") {
@@ -144,7 +154,8 @@ export default function QuestionForm({
         questionTypeInput,
         questionGroupable,
         router,
-        Number(courseId)
+        Number(courseId),
+        (inperson? 'In Person': 'Online')
       );
     }
   };
@@ -249,6 +260,17 @@ export default function QuestionForm({
           don&apos;t frame your question in a way that gives away the answer.
         </QuestionCaption>
 
+        <QuestionText>
+          Are you joining in person office hours?
+        </QuestionText>
+        <Radio.Group
+          value={inperson}
+          onChange={onLocationChange}
+          style={{ marginBottom: 5 }}
+        >
+          <Radio value={true}>Yes</Radio>
+          <Radio value={false}>No</Radio>
+        </Radio.Group>
         <QuestionText>
           Would you like the option of being helped in a group session?
         </QuestionText>
