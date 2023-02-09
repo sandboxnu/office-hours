@@ -71,7 +71,7 @@ export function Footer(): ReactElement {
         <a
           onClick={() => {
             window.open(
-              "https://forms.monday.com/forms/06be3745a411353ad295249d43835d38"
+              "https://docs.google.com/forms/d/e/1FAIpQLSfuNOqKcEPrZCTpPPYhlPot31TV3LZ8fDzdFgTChPSoJ0lksw/viewform?usp=sf_link"
             );
           }}
         >
