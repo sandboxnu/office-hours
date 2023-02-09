@@ -11,7 +11,7 @@ import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
 import { SemesterModel } from 'semester/semester.entity';
-import { Connection } from 'typeorm';
+import { Connection, In, Not } from 'typeorm';
 import { ProfSectionGroupsModel } from './prof-section-groups.entity';
 import { khourySemesterCodes } from './last-registration-model.entity';
 
@@ -113,7 +113,7 @@ export class LoginCourseService {
     courseCRN: number,
     semester: string, // 6-digit semester code
   ): Promise<CourseModel> {
-    const semModel = await this.getSemester(semester);
+    const semModel = await this.getOrTransitionSemester(semester);
     const courseSectionModel =
       await CourseSectionMappingModel.createQueryBuilder('section_mapping')
         .leftJoinAndSelect('section_mapping.course', 'course')
@@ -168,7 +168,10 @@ export class LoginCourseService {
     return { season, year };
   }
 
-  private async getSemester(khourySemester: string) {
+  // Return SemesterModel for the given khoury semester string. If the SemesterModel
+  // does not already exist in the database, create the new semester as well as disable
+  // all courses from the previous semester.
+  private async getOrTransitionSemester(khourySemester: string) {
     const { season, year } = this.parseKhourySemester(khourySemester);
     let semModel = await SemesterModel.findOne({ where: { season, year } });
     if (!semModel) {
@@ -177,8 +180,35 @@ export class LoginCourseService {
         year,
         courses: [],
       }).save();
+      await this.disablePrevCourses(semModel);
     }
     return semModel;
+  }
+
+  private async disablePrevCourses(currSem: SemesterModel) {
+    // Seasons that run at the same time and should therefore not be disabled
+    const concurrentSeasons: { [key in Season]: Season[] } = {
+      Summer_1: ['Summer_Full'],
+      Summer_2: ['Summer_Full'],
+      Summer_Full: ['Summer_1', 'Summer_2'],
+      Fall: [],
+      Spring: [],
+    };
+    const concurrentSems = await SemesterModel.find({
+      season: In(concurrentSeasons[currSem.season]),
+      year: currSem.year,
+    });
+    const activeSemIds = [...concurrentSems.map((s) => s.id), currSem.id];
+    const courses = await CourseModel.find({
+      where: { enabled: true, semesterId: Not(In(activeSemIds)) },
+    });
+    courses.forEach((c) => (c.enabled = false));
+
+    try {
+      await CourseModel.save(courses);
+    } catch (err) {
+      console.error('Failed to disable previous courses: ', err);
+    }
   }
 
   private hasUserCourse(
