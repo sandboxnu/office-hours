@@ -90,6 +90,7 @@ export const LastRegistrationFactory = new Factory(LastRegistrationModel)
 export const ProfSectionGroupsFactory = new Factory(ProfSectionGroupsModel)
   .assocOne('prof', UserFactory)
   .attr('sectionGroups', []);
+
 export const AlertFactory = new Factory(AlertModel)
   .attr('alertType', AlertType.REPHRASE_QUESTION)
   .attr('sent', new Date(Date.now() - 86400000))
