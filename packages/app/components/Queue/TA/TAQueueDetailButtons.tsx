@@ -4,7 +4,7 @@ import {
   DeleteOutlined,
   PhoneOutlined,
   QuestionOutlined,
-  UndoOutlined,
+  UndoOutlined
 } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import {
@@ -14,7 +14,7 @@ import {
   OpenQuestionStatus,
   Question,
   QuestionStatus,
-  RephraseQuestionPayload,
+  RephraseQuestionPayload
 } from "@koh/common";
 import { message, Popconfirm, Tooltip } from "antd";
 import React, { ReactElement, useCallback } from "react";
@@ -27,7 +27,7 @@ import {
   BannerPrimaryButton,
   CantFindButton,
   FinishHelpingButton,
-  RequeueButton,
+  RequeueButton
 } from "../Banner";
 //import { useTeams } from "../../../hooks/useTeams";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -39,7 +39,7 @@ export default function TAQueueDetailButtons({
   courseId,
   queueId,
   question,
-  hasUnresolvedRephraseAlert,
+  hasUnresolvedRephraseAlert
 }: {
   courseId: number;
   queueId: number;
@@ -65,14 +65,14 @@ export default function TAQueueDetailButtons({
     const payload: RephraseQuestionPayload = {
       queueId,
       questionId: question.id,
-      courseId,
+      courseId
     };
     try {
       await API.alerts.create({
         alertType: AlertType.REPHRASE_QUESTION,
         courseId,
         payload,
-        targetUserId: question.creator.id,
+        targetUserId: question.creator.id
       });
       await mutateQuestions();
       message.success("Successfully asked student to rephrase their question.");
@@ -83,13 +83,11 @@ export default function TAQueueDetailButtons({
 
   const helpStudent = () => {
     changeStatus(OpenQuestionStatus.Helping);
-    //no supporting teams pop up
-    //openTeams();
-    console.log("help clicked");
-    setTimeout(
-      () => changeStatus(ClosedQuestionStatus.Resolved),
-      60 * 15 * 1000
-    );
+    // editing: shouldn't log students out after 15 minutes
+    // setTimeout(
+    //   () => changeStatus(ClosedQuestionStatus.Resolved),
+    //   60 * 15 * 1000
+    // );
   };
   const deleteQuestion = async () => {
     await changeStatus(
@@ -170,17 +168,17 @@ export default function TAQueueDetailButtons({
       if (!isCheckedIn) {
         return [
           false,
-          "You must check in to ask this student to rephrase their question",
+          "You must check in to ask this student to rephrase their question"
         ];
       } else if (hasUnresolvedRephraseAlert) {
         return [
           false,
-          "The student has already been asked to rephrase their question",
+          "The student has already been asked to rephrase their question"
         ];
       } else if (question.status === OpenQuestionStatus.Drafting) {
         return [
           false,
-          "The student must finish drafting before they can be asked to rephrase their question",
+          "The student must finish drafting before they can be asked to rephrase their question"
         ];
       } else {
         return [true, "Ask the student to add more detail to their question"];

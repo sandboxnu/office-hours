@@ -14,8 +14,6 @@ import QueueCard, {
   QueueCardSkeleton,
 } from "../../../components/Today/QueueCard";
 import TodayPageCheckinButton from "../../../components/Today/QueueCheckInButton";
-//import ReleaseNotes from "../../../components/Today/ReleaseNotes";
-import WelcomeStudents from "../../../components/Today/WelcomeStudents";
 import { useCourse } from "../../../hooks/useCourse";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import PopularTimes from "../../../components/Today/PopularTimes/PopularTimes";
@@ -102,8 +100,6 @@ export default function Today(): ReactElement {
       <Head>
         <title>{course?.name} | UBC Office Hours</title>
       </Head>
-      <WelcomeStudents />
-      {role != Role.PROFESSOR}
       <NavBar courseId={Number(cid)} />
       <Container>
         <Row gutter={64}>
@@ -126,13 +122,15 @@ export default function Today(): ReactElement {
               </h1>
             ) : (
               sortedQueues?.map((q) => (
-                q.allowQuestions &&
-                <QueueCard
+                 (q.staffList.length!== 0 || (role=== Role.PROFESSOR || role=== Role.TA))? (
+                  <QueueCard
                   key={q.id}
                   queue={q}
                   isTA={role === Role.TA || role === Role.PROFESSOR}
                   updateQueueNotes={updateQueueNotes}
                 />
+                ): <></>
+
               ))
             )}
             {!course && <QueueCardSkeleton />}

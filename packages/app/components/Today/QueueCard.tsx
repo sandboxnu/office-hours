@@ -8,7 +8,7 @@ import {
   Skeleton,
   Space,
   Tag,
-  Tooltip,
+  Tooltip
 } from "antd";
 import Linkify from "react-linkify";
 import Link from "next/link";
@@ -135,7 +135,7 @@ const NotesSkeleton = styled(Skeleton)`
 const QueueCard = ({
   queue,
   isTA,
-  updateQueueNotes,
+  updateQueueNotes
 }: QueueCard): ReactElement => {
   const [editingNotes, setEditingNotes] = useState(false);
   const [updatedNotes, setUpdatedNotes] = useState(queue.notes);
@@ -148,13 +148,12 @@ const QueueCard = ({
     setEditingNotes(false);
     updateQueueNotes(queue, updatedNotes);
   };
-
   return (
     <PaddedCard
       headStyle={{
         background: queue.isOpen ? "#25426C" : "#25426cbf",
         color: "#FFFFFF",
-        borderRadius: "6px 6px 0 0",
+        borderRadius: "6px 6px 0 0"
       }}
       className={"open-queue-card"}
       title={<span>{queue.room} </span>}
@@ -204,15 +203,13 @@ const QueueCard = ({
           </Space>
         </RightQueueInfoRow>
       </QueueInfoRow>
-      {
-        staffList.length > 1 && (
-          <HeaderText>checked-in staff</HeaderText>
-        ) /*todo: add better text*/
-      }
+      {staffList.length > 1 && (
+        <HeaderText>checked-in staff</HeaderText>
+      ) /*todo: add better text*/}
 
       <Row justify="space-between" align="middle">
         <div>
-          {staffList.map((staffMember) => (
+          {staffList.map(staffMember => (
             <Tooltip key={staffMember.id} title={staffMember.name}>
               <StyledKOHAvatar
                 size={96}
@@ -228,7 +225,7 @@ const QueueCard = ({
             <NotesInput
               defaultValue={queue.notes}
               value={updatedNotes}
-              onChange={(e) => setUpdatedNotes(e.target.value as any)}
+              onChange={e => setUpdatedNotes(e.target.value as any)}
             />
           </NotesDiv>
         ) : queue.notes ? (
@@ -289,7 +286,7 @@ export function QueueCardSkeleton(): ReactElement {
       headStyle={{
         background: "#25426C",
         color: "#FFFFFF",
-        borderRadius: "6px 6px 0 0",
+        borderRadius: "6px 6px 0 0"
       }}
       className={"open-queue-card"}
       title={<Skeleton title={false} paragraph={{ rows: 1 }} />}

@@ -90,11 +90,24 @@ export class QuestionController {
     if (questions === undefined) {
       throw new NotFoundException();
     }
-    const questionRes = questions.map((q)=>{
-      const temp= pick(q, ['id', 'queueId', 'text', 'questionType', 'createdAt', 'helpedAt', 'closedAt', 'status', 'location']);
-      Object.assign(temp, {creatorName: q.creator?.name, helpName: q.taHelped?.name});
+    const questionRes = questions.map(q => {
+      const temp = pick(q, [
+        'id',
+        'queueId',
+        'text',
+        'questionType',
+        'createdAt',
+        'helpedAt',
+        'closedAt',
+        'status',
+        'location',
+      ]);
+      Object.assign(temp, {
+        creatorName: q.creator?.name,
+        helpName: q.taHelped?.name,
+      });
       return temp;
-    })
+    });
     return questionRes;
   }
   @Post('TAcreate/:userId')
@@ -288,36 +301,35 @@ export class QuestionController {
       return question;
     }
 
+    //below code is originally for permission level control. got rid of since instructors need to edit questions.
 
-    //below code is originally for permission level control. got rid of since instructors need to edit questions. 
+    //If not creator, check if user is TA/PROF of course of question
+    const isTaOrProf =
+      (await UserCourseModel.count({
+        where: {
+          userId,
+          courseId: question.queue.courseId,
+          role: In([Role.TA, Role.PROFESSOR]),
+        },
+      })) > 0;
 
-    // If not creator, check if user is TA/PROF of course of question
-    // const isTaOrProf =
-    //   (await UserCourseModel.count({
-    //     where: {
-    //       userId,
-    //       courseId: question.queue.courseId,
-    //       role: In([Role.TA, Role.PROFESSOR]),
-    //     },
-    //   })) > 0;
-
-    // if (isTaOrProf) {
-    //   if (Object.keys(body).length !== 1 || Object.keys(body)[0] !== 'status') {
-    //     throw new UnauthorizedException(
-    //       ERROR_MESSAGES.questionController.updateQuestion.taOnlyEditQuestionStatus,
-    //     );
-    //   }
-    //   await this.questionService.validateNotHelpingOther(body.status, userId);
-    //   return await this.questionService.changeStatus(
-    //     body.status,
-    //     question,
-    //     userId,
-    //   );
-    // } else {
-    //   throw new UnauthorizedException(
-    //     ERROR_MESSAGES.questionController.updateQuestion.loginUserCantEdit,
-    //   );
-    // }
+    if (isTaOrProf) {
+      if (Object.keys(body).length !== 1 || Object.keys(body)[0] !== 'status') {
+        throw new UnauthorizedException(
+          ERROR_MESSAGES.questionController.updateQuestion.taOnlyEditQuestionStatus,
+        );
+      }
+      await this.questionService.validateNotHelpingOther(body.status, userId);
+      return await this.questionService.changeStatus(
+        body.status,
+        question,
+        userId,
+      );
+    } else {
+      throw new UnauthorizedException(
+        ERROR_MESSAGES.questionController.updateQuestion.loginUserCantEdit,
+      );
+    }
   }
 
   @Post(':questionId/notify')
