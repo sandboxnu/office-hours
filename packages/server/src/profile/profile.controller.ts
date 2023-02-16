@@ -68,7 +68,7 @@ export class ProfileController {
     UserModel.findOne({
       where: { email: e },
     })
-      .then(async (user) => {
+      .then(async user => {
         if (!user) {
           throw new HttpException(
             ERROR_MESSAGES.profileController.accountNotAvailable,
@@ -88,7 +88,7 @@ export class ProfileController {
         }
         return res.status(200).send({ token, e });
       })
-      .catch((err) => {
+      .catch(err => {
         res.status(500).send({ message: err });
       });
   }
@@ -162,7 +162,7 @@ export class ProfileController {
     const payload = this.jwtService.decode(token) as { userId: number };
     UserModel.findOne({
       where: { id: payload.userId },
-    }).then(async (user) => {
+    }).then(async user => {
       if (!user) {
         throw new NotFoundException();
       } else {
@@ -175,38 +175,57 @@ export class ProfileController {
     });
   }
   //potential problem-should fix later. Currently checking whether question in database, but student can be in different queues(so find with both queues and user id)
-
+  //get all student in course
   @Get(':c/id')
   @UseGuards(JwtAuthGuard)
   async getAllStudents(
     @Param('c') c: number,
     @Res() res: Response,
   ): Promise<any> {
-    const studentIds = await UserCourseModel.find({
+    const students = await UserCourseModel.find({
+      relations: ['user'],
       where: {
         courseId: c,
         role: Role.STUDENT,
       },
     });
-    const students = [];
-    studentIds.forEach((userCourse, i) => {
-      const tempId = userCourse.userId;
-      UserModel.findOne({
-        where: {
-          id: userCourse.userId,
-        },
-      })
-        .then(function (result) {
-          students.push({ value: result.name, id: tempId });
-          if (i + 1 === studentIds.length) {
-            res.status(200).send(students);
-            return students;
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-        });
-    });
+    if (students) {
+      const temp = students.map(student => {
+        return { value: student.user.name, id: student.user.id };
+      });
+      res.status(200).send(temp);
+      return temp;
+    }
+    // const usersNotInQueue=await getRepository(UserModel).createQueryBuilder()
+    // .leftJoin(UserCourseModel,'QuestionModel', '"UserModel".id!= "QuestionModel"."creator"')
+    // const students = [];
+    // // const query = await getRepository(UserModel)
+    // // .createQueryBuilder()
+    // // .leftJoin(
+    // //   UserCourseModel,
+    // //   'UserCourseModel',
+    // //   '"UserModel".id = "UserCourseModel"."userId"',
+    // // )
+    // // .where('"UserCourseModel"."courseId" = :courseId', { courseId });
+
+    // studentIds.forEach((userCourse, i) => {
+    //   const tempId = userCourse.userId;
+    //   UserModel.findOne({
+    //     where: {
+    //       id: userCourse.userId,
+    //     },
+    //   })
+    //     .then(function (result) {
+    //       students.push({ value: result.name, id: tempId });
+    //       if (i + 1 === studentIds.length) {
+    //         res.status(200).send(students);
+    //         return students;
+    //       }
+    //     })
+    //     .catch((e) => {
+    //       console.error(e);
+    //     });
+    // });
   }
   @Get(':id/inQueue')
   @UseGuards(JwtAuthGuard)
@@ -250,8 +269,8 @@ export class ProfileController {
 
     const courses = user.courses
       ? user.courses
-          .filter((userCourse) => userCourse.course.enabled)
-          .map((userCourse) => {
+          .filter(userCourse => userCourse.course.enabled)
+          .map(userCourse => {
             return {
               course: {
                 id: userCourse.courseId,
@@ -263,7 +282,7 @@ export class ProfileController {
       : [];
 
     const desktopNotifs: DesktopNotifPartial[] = user.desktopNotifs
-      ? user.desktopNotifs.map((d) => ({
+      ? user.desktopNotifs.map(d => ({
           endpoint: d.endpoint,
           id: d.id,
           createdAt: d.createdAt,
@@ -324,7 +343,7 @@ export class ProfileController {
       }
     }
 
-    await user.save().catch((e) => {
+    await user.save().catch(e => {
       console.log(e);
     });
 
@@ -343,7 +362,7 @@ export class ProfileController {
     @User() user: UserModel,
   ): Promise<void> {
     if (user.photoURL) {
-      fs.unlink(process.env.UPLOAD_LOCATION + '/' + user.photoURL, (err) => {
+      fs.unlink(process.env.UPLOAD_LOCATION + '/' + user.photoURL, err => {
         console.error(
           'Error deleting previous picture at: ',
           user.photoURL,
@@ -365,8 +384,12 @@ export class ProfileController {
     const fileName =
       user.id +
       '-' +
-      Math.random().toString(36).substring(2, 15) +
-      Math.random().toString(36).substring(2, 15);
+      Math.random()
+        .toString(36)
+        .substring(2, 15) +
+      Math.random()
+        .toString(36)
+        .substring(2, 15);
 
     await sharp(file.buffer)
       .resize(256)
@@ -407,7 +430,7 @@ export class ProfileController {
     if (user.photoURL) {
       fs.unlink(
         process.env.UPLOAD_LOCATION + '/' + user.photoURL,
-        async (err) => {
+        async err => {
           if (err) {
             const errMessage =
               'Error deleting previous picture at : ' +

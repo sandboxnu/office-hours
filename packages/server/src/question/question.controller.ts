@@ -301,8 +301,6 @@ export class QuestionController {
       return question;
     }
 
-    //below code is originally for permission level control. got rid of since instructors need to edit questions.
-
     //If not creator, check if user is TA/PROF of course of question
     const isTaOrProf =
       (await UserCourseModel.count({

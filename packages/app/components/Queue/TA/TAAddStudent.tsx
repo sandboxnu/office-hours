@@ -35,7 +35,7 @@ interface EditQueueModalProps {
 export function AddStudentsModal({
   queueId,
   visible,
-  onClose,
+  onClose
 }: EditQueueModalProps): ReactElement {
   //studentState stores all students
   const router = useRouter();
@@ -49,26 +49,22 @@ export function AddStudentsModal({
   );
   const [selectOptions, setSelectOptions] = useState([]);
   //students store all the students
-  let students: { value: string; id: number }[] = [];
+  // let students: { value: string; id: number }[] = [];
   const getQuestions = async () => {
     setQuestionsTypeState(await API.questions.questionTypes(courseNumber));
   };
   useEffect(() => {
     getQuestions();
-    students = [];
-    fetchData()
-      .then((result) => {
-        students = result;
-        console.log(students);
-        populateStudents();
-      })
-      .catch((e) => {
-        console.log(e.message);
-      });
+    populateStudents();
   }, []);
-  const populateStudents = () => {
+  const courseNumber = Number(courseId);
+  const populateStudents = async () => {
     const tempS = [];
-    students.forEach(async (student) => {
+    const students = await API.profile.getAllStudents(courseNumber);
+    if (!students) {
+      console.error("can't get all students");
+    }
+    students.forEach(async student => {
       const b = await API.profile.inQueue(student.id);
       console.log(b);
       if (b) {
@@ -85,16 +81,7 @@ export function AddStudentsModal({
       addStudent(i);
     });
   };
-  const courseNumber = Number(courseId);
-  const fetchData = async () => {
-    const response = await fetch(`/api/v1/profile/${courseNumber}/id`);
-    if (!response.ok) {
-      throw new Error("Data could not be fetched!");
-    } else {
-      return response.json();
-    }
-  };
-  const addStudent = async (i) => {
+  const addStudent = async i => {
     const currentStudent = selectOptions[i];
     const b = await API.profile.inQueue(currentStudent.id);
     if (b) {
@@ -109,23 +96,16 @@ export function AddStudentsModal({
           queueId: queueId,
           location: null,
           force: true,
-          groupable: false,
+          groupable: false
         },
         currentStudent.id
       )
       .then(() => {
         message.success("Student(s) added");
-        //if possible, update students and make them dissappear from list after addition
-
-        // console.log(studentsState);
-        // let tempS=[];
-        // tempS=studentsState.filter((student)=>{student.id===currentStudent.id});
-        // let tempSelected=[];
-        // tempSelected= selectOptions.filter((student)=>{student.id===currentStudent.id});
-        // setSelectOptions(tempSelected);
-        // setStudentsState(tempS);
-        // console.log(studentsState);
-        // console.log(selectOptions);
+        setStudentsState(
+          studentsState.filter(student => student.id !== currentStudent.id)
+        );
+        setSelectOptions([]);
       })
       .catch(() => {
         message.error("Can't add student".concat(currentStudent.value));
@@ -133,13 +113,12 @@ export function AddStudentsModal({
     return false;
   };
 
-  const handleSelect = (data) => {
+  const handleSelect = data => {
     setSelectOptions(data);
   };
   const onQTclick = useCallback(
     async (s: string) => {
       setSelectedQuestionType(s);
-      console.log(s);
     },
     [courseNumber]
   );
@@ -158,12 +137,15 @@ export function AddStudentsModal({
         onClose();
       }}
     >
-      <h3>Current question type: {selectedQuestionType}</h3>
       <h3>
-        Choose question type:{" "}
+        Current question type:{" "}
+        <strong style={{ color: "blue" }}> {selectedQuestionType}</strong>
+      </h3>
+      <h3>
+        Change question type:{" "}
         <Button.Group style={{ marginBottom: 10 }}>
           {questionsTypeState.length > 0 ? (
-            questionsTypeState.map((q) => {
+            questionsTypeState.map(q => {
               return (
                 <Button onClick={() => onQTclick(q)} key={q}>
                   {q}
@@ -189,7 +171,7 @@ export function AddStudentsModal({
             showArrow={true}
           >
             <Form onFinish={handleSubmit}>
-              <Form.Item name="name">
+              <Form.Item>
                 <Select
                   options={toObj(studentsState)}
                   placeholder="search for student"

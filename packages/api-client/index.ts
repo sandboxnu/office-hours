@@ -31,7 +31,7 @@ import {
   UpdateQuestionResponse,
   UpdateQueueParams,
   QueuePartial,
-  Role,  
+  Role,
   GetCourseUserInfoResponse,
   UBCOuserParam,
   questions
@@ -83,7 +83,7 @@ class APIClient {
       this.req("PATCH", `/api/v1/profile`, undefined, body),
     deleteProfilePicture: async (): Promise<void> =>
       this.req("DELETE", `/api/v1/profile/delete_profile_picture`),
-    getStudentIds: async (courseId: number): Promise<any> =>
+    getAllStudents: async (courseId: number): Promise<any> =>
       this.req("GET", `/api/v1/profile/${courseId}/id`, undefined),
     getStudent: async (sid: number): Promise<any> =>
       this.req("GET", `/api/v1/profile/${sid}/student`, undefined),

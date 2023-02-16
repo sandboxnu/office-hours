@@ -18,9 +18,7 @@ export default function ProfileSettings(): ReactElement {
   const editProfile = async (updateProfile: UpdateProfileParams) => {
     const newProfile = { ...profile, ...updateProfile };
     mutate(newProfile, false);
-    await API.profile.patch(
-      pick(newProfile, ["firstName", "lastName", "email"])
-    );
+    await API.profile.patch(pick(newProfile, ["email"]));
     mutate();
     return newProfile;
   };
@@ -42,7 +40,7 @@ export default function ProfileSettings(): ReactElement {
       </HeaderTitle>
       <Form wrapperCol={{ span: 18 }} form={form} initialValues={profile}>
         <ResponsiveFormRow>
-          <Form.Item
+          {/* <Form.Item
             label="First Name"
             name="firstName"
             data-cy="firstNameInput"
@@ -68,7 +66,7 @@ export default function ProfileSettings(): ReactElement {
             ]}
           >
             <Input />
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item
             style={{ marginLeft: isMobile ? "0" : "10px" }}
             label="Email"
@@ -77,8 +75,8 @@ export default function ProfileSettings(): ReactElement {
             rules={[
               {
                 required: true,
-                message: "Your email can't be empty!",
-              },
+                message: "Your email can't be empty!"
+              }
             ]}
           >
             <Input />
