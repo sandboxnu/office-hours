@@ -177,7 +177,7 @@ export class CourseController {
 
   @Patch(':id/edit_course')
   @UseGuards(JwtAuthGuard, CourseRolesGuard)
-  @Roles(Role.PROFESSOR)
+  @Roles(Role.PROFESSOR, Role.TA)
   async editCourseInfo(
     @Param('id') courseId: number,
     @Body() coursePatch: EditCourseInfoParams,

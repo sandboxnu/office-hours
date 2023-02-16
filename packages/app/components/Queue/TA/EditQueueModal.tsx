@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import Modal from "antd/lib/modal/Modal";
-import { Switch, Input, Form, Button, Radio } from "antd";
+import { Switch, Input, Form, Button, Radio, message } from "antd";
 import styled from "styled-components";
 import { API } from "@koh/api-client";
 import { useQueue } from "../../../hooks/useQueue";
@@ -32,7 +32,9 @@ export function EditQueueModal({
   const router = useRouter();
   const courseId = router.query["cid"];
   const course = useCourse(Number(courseId));
-
+  const [currentZoomLink, setCurrentZoomLink] = useState(
+    course.course?.zoomLink
+  );
   const [zoomLink, setZoomLink] = useState("");
   useEffect(() => {
     getQuestions();
@@ -73,11 +75,15 @@ export function EditQueueModal({
     setQuestionsTypeState(await API.questions.questionTypes(courseNumber));
   }, [courseNumber, questionTypeAddState]);
   const changeZoomLink = async () => {
-    console.log(zoomLink);
-    await API.course.editCourseInfo(Number(courseId), {
-      courseId: Number(courseId),
-      zoomLink: zoomLink
-    });
+    await API.course
+      .editCourseInfo(Number(courseId), {
+        courseId: Number(courseId),
+        zoomLink: zoomLink
+      })
+      .then(() => {
+        message.success("Zoom link Changed");
+        setCurrentZoomLink(zoomLink);
+      });
   };
   return (
     <Modal
@@ -127,8 +133,8 @@ export function EditQueueModal({
           </Form.Item>
           <h4 style={{ marginTop: "20px" }}>
             Current Zoom link:{" "}
-            {course.course?.zoomLink ? (
-              course.course.zoomLink
+            {currentZoomLink ? (
+              <p style={{ color: "blue" }}>{currentZoomLink} </p>
             ) : (
               <p> Zoomlink not Available</p>
             )}
