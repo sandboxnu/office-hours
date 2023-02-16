@@ -14,7 +14,7 @@ import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
 import TACheckinButton from "../../Today/TACheckinButton";
 import {
   QueueInfoColumn,
-  QueueInfoColumnButton,
+  QueueInfoColumnButton
 } from "../QueueListSharedComponents";
 import { EditQueueModal } from "./EditQueueModal";
 import { AddStudentsModal } from "./TAAddStudent";
@@ -30,7 +30,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 async function onHelpQuestion(questionId: number): Promise<void> {
   try {
     await API.questions.update(questionId, {
-      status: OpenQuestionStatus.Helping,
+      status: OpenQuestionStatus.Helping
     });
   } catch (e) {
     if (
@@ -46,8 +46,8 @@ async function onHelpQuestion(questionId: number): Promise<void> {
         duration: 3,
         className: "hide-in-percy",
         style: {
-          width: 450,
-        },
+          width: 450
+        }
       });
     }
   }
@@ -100,15 +100,15 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
 
   const { course } = useCourse(courseId);
   const staffCheckedIntoAnotherQueue = course?.queues.some(
-    (q) =>
+    q =>
       q.id !== qid &&
-      q.staffList.some((staffMember) => staffMember.id === user?.id)
+      q.staffList.some(staffMember => staffMember.id === user?.id)
   );
 
   const nextQuestion =
     questions?.priorityQueue[0] || // gets the first item of priority queue if it exists
     questions?.queue?.find(
-      (question) => question.status === QuestionStatusKeys.Queued
+      question => question.status === QuestionStatusKeys.Queued
     );
   const defaultMessage = useDefaultMessage();
   // const openTeams = useTeams(qid, nextQuestion?.creator.email, defaultMessage);
@@ -147,6 +147,7 @@ export default function TAQueue({ qid, courseId }: TAQueueProps): ReactElement {
                 </EditQueueButton>
                 <EditQueueButton
                   data-cy="addStudents"
+                  disabled={!isCheckedIn}
                   onClick={() => setAddStudentsModal(true)}
                 >
                   Add Students
