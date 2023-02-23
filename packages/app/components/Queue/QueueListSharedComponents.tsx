@@ -3,7 +3,7 @@ import {
   ExclamationCircleOutlined,
   FrownOutlined,
   NotificationOutlined,
-  StopOutlined,
+  StopOutlined
 } from "@ant-design/icons";
 import { Button, message, Modal, Popconfirm, Tooltip, Switch } from "antd";
 import { ButtonProps } from "antd/lib/button";
@@ -144,7 +144,7 @@ interface QueueInfoColumnProps {
 export function QueueInfoColumn({
   queueId,
   isStaff,
-  buttons,
+  buttons
 }: QueueInfoColumnProps): ReactElement {
   const { queue, mutateQueue } = useQueue(queueId);
   const [away, setAway] = useState(false);
@@ -170,7 +170,7 @@ export function QueueInfoColumn({
       This queue will no longer appear in the app, and any students currently in the queue will be removed.`,
       onOk() {
         disableQueue();
-      },
+      }
     });
   };
   const checkAway = (checked: boolean) => {
@@ -239,9 +239,7 @@ export function QueueInfoColumn({
             checkedChildren="Answering"
             unCheckedChildren="Away"
             style={{ width: "200px", marginTop: "-50px", marginBottom: "50px" }}
-          >
-            {" "}
-          </Switch>
+          />
           <Popconfirm
             title={
               "Are you sure you want to clear all students from the queue?"

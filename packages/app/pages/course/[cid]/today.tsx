@@ -17,6 +17,7 @@ import TodayPageCheckinButton from "../../../components/Today/QueueCheckInButton
 import { useCourse } from "../../../hooks/useCourse";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import PopularTimes from "../../../components/Today/PopularTimes/PopularTimes";
+import AsyncQuestionCard from "../../../components/AsyncQuestion/AsyncQuestionCard";
 import { orderBy } from "lodash";
 
 const Container = styled.div`
@@ -117,9 +118,10 @@ export default function Today(): ReactElement {
               </div>
             </Row>
             {course?.queues?.length === 0 ? (
-              <h1 style={{ paddingTop: "100px" }}>
-                There are no queues for this course
-              </h1>
+              <> <h1 style={{ paddingTop: "100px" }}>
+              There are no queues for this course, try asking async questions
+            </h1>
+            <AsyncQuestionCard></AsyncQuestionCard></>
             ) : (
               sortedQueues?.map((q) => (
                  (q.staffList.length!== 0 || (role=== Role.PROFESSOR || role=== Role.TA))? (
@@ -134,6 +136,7 @@ export default function Today(): ReactElement {
               ))
             )}
             {!course && <QueueCardSkeleton />}
+            <AsyncQuestionCard></AsyncQuestionCard>
             {
               // This only works with UTC offsets in the form N:00, to help with other offsets, the size of the array might have to change to a size of 24*7*4 (for every 15 min interval)
               course && course.heatmap && (
