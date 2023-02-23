@@ -18,12 +18,14 @@ import ExportQuestions from "./ExportQuestions";
 import EditQuestions from "./EditQuestions";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import { Role } from "@koh/common";
+import EditCourse from "./EditCourse";
 export enum CourseAdminOptions {
   CHECK_IN = "CHECK_IN",
   ROSTER = "ROSTER",
   ADD = "ADD",
   EXPORT = "EXPORT",
-  EDIT = "EDIT"
+  EDIT = "EDIT",
+  EDIT_COURSE="EDIT_COURSE"
 }
 
 interface CourseAdminPageProps {
@@ -91,6 +93,9 @@ export default function CourseAdminPanel({
             <Menu.Item key={CourseAdminOptions.CHECK_IN} icon={<EditOutlined />}>
               TA Check In/Out Times
             </Menu.Item>
+            <Menu.Item key={CourseAdminOptions.EDIT_COURSE} icon={<EditOutlined />}>
+              Edit course details
+            </Menu.Item>
             <Menu.Item key={CourseAdminOptions.ROSTER} icon={<BellOutlined />}>
               Course Roster
             </Menu.Item>
@@ -117,6 +122,9 @@ export default function CourseAdminPanel({
       <VerticalDivider />
       <Space direction="vertical" size={40} style={{ flexGrow: 1 }}>
         <Col span={20}>
+        {currentSettings === CourseAdminOptions.EDIT_COURSE && (
+            <EditCourse courseId={courseId} />
+          )}
           {currentSettings === CourseAdminOptions.CHECK_IN && (
             <TACheckInCheckOutTimes courseId={courseId} />
           )}

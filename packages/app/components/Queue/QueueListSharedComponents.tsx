@@ -239,9 +239,7 @@ export function QueueInfoColumn({
             checkedChildren="Answering"
             unCheckedChildren="Away"
             style={{ width: "200px", marginTop: "-50px", marginBottom: "50px" }}
-          >
-            {" "}
-          </Switch>
+          />
           <Popconfirm
             title={
               "Are you sure you want to clear all students from the queue?"

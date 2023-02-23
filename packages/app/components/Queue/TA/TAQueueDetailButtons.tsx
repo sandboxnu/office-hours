@@ -31,6 +31,7 @@ import {
 } from "../Banner";
 //import { useTeams } from "../../../hooks/useTeams";
 import { useHotkeys } from "react-hotkeys-hook";
+import { useCourse } from "../../../hooks/useCourse";
 
 const PRORITY_QUEUED_MESSAGE_TEXT =
   "This student has been temporarily removed from the queue. They must select to rejoin the queue and will then be placed in the Priority Queue.";
@@ -47,12 +48,16 @@ export default function TAQueueDetailButtons({
   hasUnresolvedRephraseAlert: boolean;
 }): ReactElement {
   //const defaultMessage = useDefaultMessage();
+  const course=useCourse(courseId);
   const { mutateQuestions } = useQuestions(queueId);
 
   const changeStatus = useCallback(
     async (status: QuestionStatus) => {
       await API.questions.update(question.id, { status });
       mutateQuestions();
+      if(status===ClosedQuestionStatus.Resolved){
+        message.warning("Your Question is ended");
+      }
     },
     [question.id, mutateQuestions]
   );
@@ -84,10 +89,12 @@ export default function TAQueueDetailButtons({
   const helpStudent = () => {
     changeStatus(OpenQuestionStatus.Helping);
     // editing: shouldn't log students out after 15 minutes
-    // setTimeout(
-    //   () => changeStatus(ClosedQuestionStatus.Resolved),
-    //   60 * 15 * 1000
-    // );
+    if (course.course.questionTimer){
+      setTimeout(
+        () => {changeStatus(ClosedQuestionStatus.Resolved)},
+        course.course.questionTimer* 60 * 1000
+      );
+    }
   };
   const deleteQuestion = async () => {
     await changeStatus(

@@ -126,6 +126,7 @@ export class CourseService {
     courseId: number,
     coursePatch: EditCourseInfoParams,
   ): Promise<void> {
+    console.log(coursePatch)
     const course = await CourseModel.findOne(courseId);
     if (course === null || course === undefined) {
       throw new HttpException(
@@ -194,6 +195,9 @@ export class CourseService {
 
     if (coursePatch.zoomLink) {
       course.zoomLink = coursePatch.zoomLink;
+    }
+    if (coursePatch.questionTimer) {
+      course.questionTimer = coursePatch.questionTimer;
     }
     try {
       await course.save();

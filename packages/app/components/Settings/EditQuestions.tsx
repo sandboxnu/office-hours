@@ -213,7 +213,6 @@ export default function AddStudentsToCourse({
       key: 'creatorName',
       sorter: (a, b) => a.creatorName.length - b.creatorName.length,
       width: '15%',
-      fixed:'left',
       editable: false,
       ...getColumnSearchProps('creatorName')
     },
@@ -230,7 +229,7 @@ export default function AddStudentsToCourse({
       dataIndex: 'status',
       key: 'status',
       width: 150,
-      editable: true,
+      editable: false,
       ...getColumnSearchProps('status'),
     },
     {
@@ -254,13 +253,11 @@ export default function AddStudentsToCourse({
       key: 'text',
       ...getColumnSearchProps('text'),
       editable: true,
-      sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'operation',
       dataIndex: 'operation',
       width: 100,
-      fixed: 'right',
       editable: false,
       // render: (_: any, record) =>
       //   <a onClick={() => editQuestion(record.id)}>Edit</a>
@@ -300,7 +297,7 @@ export default function AddStudentsToCourse({
         record,
         inputType: "text",
         dataIndex: col.dataIndex,
-        title: col.title,
+        title: String(col.title),
         editing: isEditing(record)
       })
     };

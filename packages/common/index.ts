@@ -523,7 +523,9 @@ export class GetCourseResponse {
   icalURL!: string;
 
   zoomLink!: string;
-
+  
+  questionTimer?: number;
+  
   selfEnroll!: boolean;
 }
 
@@ -811,6 +813,10 @@ export class EditCourseInfoParams {
   @IsString()
   @IsOptional()
   zoomLink?: string;
+
+  @IsString()
+  @IsOptional()
+  questionTimer?: number;
 
   @IsArray()
   @IsOptional()

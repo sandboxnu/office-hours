@@ -105,7 +105,7 @@ export default function Today(): ReactElement {
         <Row gutter={64}>
           <TodayCol md={12} xs={24}>
             <Row justify="space-between">
-              <Title>Current Office Hours</Title>
+              <Title>Current Office Hours ({course?.questionTimer} Minutes question limit)</Title>
               <TodayPageCheckinButton />
             </Row>
             <Row>

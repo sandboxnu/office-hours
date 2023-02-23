@@ -40,8 +40,10 @@ export class CourseModel extends BaseEntity {
   @Column('text', { nullable: true })
   @Exclude()
   zoomLink: string;
-  // @OneToMany(() => QuestionTypeModel, (question_type) => question_type.course)
-  // question_type: QuestionTypeModel
+
+  @Column('integer', { nullable: true })
+  @Exclude()
+  questionTimer:number;
 
   @OneToMany((type) => UserCourseModel, (ucm) => ucm.course)
   @Exclude()
