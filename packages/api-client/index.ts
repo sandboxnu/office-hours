@@ -34,10 +34,7 @@ import {
   Role,
   GetCourseUserInfoResponse,
   UBCOuserParam,
-  questions,
-  CreateAsyncQuestions,
-  AsyncQuestionResponse,
-  UpdateAsyncQuestions
+  questions
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -102,12 +99,6 @@ class APIClient {
       this.req("GET", `/api/v1/profile/verify_token?token=${token}`, undefined)
   };
   course = {
-    getAsyncQuestions: async (cid: number) =>
-      this.req(
-        "GET",
-        `/api/v1/courses/${cid}/questions`,
-        AsyncQuestionResponse
-      ),
     get: async (courseId: number) =>
       this.req("GET", `/api/v1/courses/${courseId}`, GetCourseResponse),
     getUserInfo: async (
@@ -208,12 +199,6 @@ class APIClient {
         QueuePartial,
         { notes, isProfessorQueue }
       )
-  };
-  asyncQuestions = {
-    create: async (body: CreateAsyncQuestions, cid: number) =>
-      this.req("POST", `/api/v1/asyncQuestions/${cid}`, undefined, body),
-    update: async (qid: number, body: UpdateAsyncQuestions) =>
-      this.req("PATCH", `/api/v1/asyncQuestions/${qid}`, undefined, body)
   };
   questions = {
     index: async (queueId: number) =>

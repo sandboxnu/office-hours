@@ -22,7 +22,7 @@ import { SSEModule } from './sse/sse.module';
 import { SemesterModule } from 'semester/semester.module';
 import { ResourcesModule } from './resources/resources.module';
 import { SignupModule } from 'signup/signup.module';
-import { asyncQuestionModule } from 'asyncQuestion/asyncQuestion.module';
+
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeormConfig),
@@ -36,7 +36,6 @@ import { asyncQuestionModule } from 'asyncQuestion/asyncQuestion.module';
     QuestionModule,
     SeedModule,
     ResourcesModule,
-    asyncQuestionModule,
     ConfigModule.forRoot({
       envFilePath: [
         '.env',

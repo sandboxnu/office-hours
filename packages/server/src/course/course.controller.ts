@@ -1,6 +1,4 @@
 import {
-  AsyncQuestionResponse,
-  asyncQuestionStatus,
   EditCourseInfoParams,
   ERROR_MESSAGES,
   GetCourseOverridesResponse,
@@ -23,7 +21,6 @@ import {
   Get,
   HttpException,
   HttpStatus,
-  NotFoundException,
   Param,
   Patch,
   Post,
@@ -50,7 +47,6 @@ import { QueueSSEService } from '../queue/queue-sse.service';
 import { CourseService } from './course.service';
 import { HeatmapService } from './heatmap.service';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
-import { AsyncQuestionModel } from 'asyncQuestion/asyncQuestion.entity';
 
 @Controller('courses')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -69,36 +65,6 @@ export class CourseController {
     CourseModel.find().then(async courses => {
       return res.status(200).send(courses);
     });
-  }
-  @Get(':cid/questions')
-  @UseGuards(JwtAuthGuard)
-  async getAsyncQuestions(
-    @Param('cid') cid: number,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @User() user: UserModel,
-  ): Promise<AsyncQuestionResponse> {
-    const questionsDB = await AsyncQuestionModel.find({
-      where: {
-        courseId: cid,
-      },
-      relations: ['creator'],
-    });
-    if (!questionsDB) {
-      throw NotFoundException;
-    }
-    const questions = new AsyncQuestionResponse();
-    questions.helpedQuestions = questionsDB.filter(
-      question => question.status === asyncQuestionStatus.Resolved,
-    );
-    questions.waitingQuestions = questionsDB.filter(
-      question => question.status === asyncQuestionStatus.Waiting,
-    );
-    questions.otherQuestions = questionsDB.filter(
-      question =>
-        question.status === asyncQuestionStatus.StudentDeleted ||
-        question.status === asyncQuestionStatus.TADeleted,
-    );
-    return questions;
   }
 
   @Get(':id')
