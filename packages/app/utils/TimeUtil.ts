@@ -1,12 +1,6 @@
-import { AsyncQuestion, Question, QueuePartial } from "@koh/common";
+import { Question, QueuePartial } from "@koh/common";
 
 export function getWaitTime(question: Question): string {
-  const now = new Date();
-  const difference = now.getTime() - question.createdAt.getTime();
-  return formatWaitTime(difference / 60000);
-}
-
-export function getAsyncWaitTime(question: AsyncQuestion): string {
   const now = new Date();
   const difference = now.getTime() - question.createdAt.getTime();
   return formatWaitTime(difference / 60000);
