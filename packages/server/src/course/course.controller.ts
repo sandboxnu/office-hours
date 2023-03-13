@@ -66,7 +66,7 @@ export class CourseController {
   // get all courses
   @Get()
   getCourse(@Res() res: Response) {
-    CourseModel.find().then(async courses => {
+    CourseModel.find().then(async (courses) => {
       return res.status(200).send(courses);
     });
   }
@@ -77,26 +77,32 @@ export class CourseController {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     @User() user: UserModel,
   ): Promise<AsyncQuestionResponse> {
-    const questionsDB = await AsyncQuestionModel.find({
+    const all = await AsyncQuestionModel.find({
       where: {
         courseId: cid,
       },
-      relations: ['creator'],
+      relations: ['creator', 'course', 'images'],
     });
-    if (!questionsDB) {
+    if (!all) {
       throw NotFoundException;
     }
+    const questionsDB = all.filter((question) =>
+      question.course.asyncQuestionDisplayTypes.includes(question.questionType),
+    );
     const questions = new AsyncQuestionResponse();
     questions.helpedQuestions = questionsDB.filter(
-      question => question.status === asyncQuestionStatus.Resolved,
+      (question) => question.status === asyncQuestionStatus.Resolved,
     );
     questions.waitingQuestions = questionsDB.filter(
-      question => question.status === asyncQuestionStatus.Waiting,
+      (question) => question.status === asyncQuestionStatus.Waiting,
     );
     questions.otherQuestions = questionsDB.filter(
-      question =>
+      (question) =>
         question.status === asyncQuestionStatus.StudentDeleted ||
         question.status === asyncQuestionStatus.TADeleted,
+    );
+    questions.visibleQuestions = questionsDB.filter(
+      (question) => question.visible === true,
     );
     return questions;
   }
@@ -159,12 +165,12 @@ export class CourseController {
     ) {
       course.queues = await async.filter(
         course.queues,
-        async q => !q.isDisabled,
+        async (q) => !q.isDisabled,
       );
     } else if (userCourseModel.role === Role.STUDENT) {
       course.queues = await async.filter(
         course.queues,
-        async q => !q.isDisabled && (await q.checkIsOpen()),
+        async (q) => !q.isDisabled && (await q.checkIsOpen()),
       );
     }
 
@@ -174,7 +180,7 @@ export class CourseController {
     }
 
     try {
-      await async.each(course.queues, async q => {
+      await async.each(course.queues, async (q) => {
         await q.addQueueSize();
       });
     } catch (err) {
@@ -237,7 +243,7 @@ export class CourseController {
 
     if (
       queues &&
-      queues.some(q => q.staffList.some(staff => staff.id === user.id))
+      queues.some((q) => q.staffList.some((staff) => staff.id === user.id))
     ) {
       throw new UnauthorizedException(
         ERROR_MESSAGES.courseController.checkIn.cannotCheckIntoMultipleQueues,
@@ -428,9 +434,9 @@ export class CourseController {
     }
 
     // Do nothing if user not already in stafflist
-    if (!queue.staffList.find(e => e.id === user.id)) return;
+    if (!queue.staffList.find((e) => e.id === user.id)) return;
 
-    queue.staffList = queue.staffList.filter(e => e.id !== user.id);
+    queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
     if (queue.staffList.length === 0) {
       queue.allowQuestions = false;
     }
@@ -503,7 +509,7 @@ export class CourseController {
     }
 
     return {
-      data: resp.map(row => ({
+      data: resp.map((row) => ({
         id: row.id,
         role: row.role,
         name: row.user.name,

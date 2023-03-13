@@ -2,12 +2,14 @@
 import { asyncQuestionStatus } from '@koh/common';
 import { Exclude } from 'class-transformer';
 import { CourseModel } from 'course/course.entity';
+import { ImageModel } from 'images/image.entity';
 import {
   BaseEntity,
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   SelectQueryBuilder,
 } from 'typeorm';
@@ -18,22 +20,29 @@ export class AsyncQuestionModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(type => CourseModel)
+  @ManyToOne((type) => CourseModel)
   @JoinColumn({ name: 'courseId' })
   @Exclude()
   course: CourseModel;
+
+  @OneToMany((type) => ImageModel, (image) => image.asyncQuestion)
+  @Exclude()
+  images: ImageModel[];
 
   @Column({ nullable: true })
   @Exclude()
   courseId: number;
 
   @Column('text')
+  questionAbstract: string;
+
+  @Column('text', { nullable: true })
   questionText: string;
 
   @Column('text', { nullable: true })
   answerText: string;
 
-  @ManyToOne(type => UserModel)
+  @ManyToOne((type) => UserModel)
   @JoinColumn({ name: 'creatorId' })
   creator: UserModel;
 
@@ -41,7 +50,7 @@ export class AsyncQuestionModel extends BaseEntity {
   @Exclude()
   creatorId: number;
 
-  @ManyToOne(type => UserModel)
+  @ManyToOne((type) => UserModel)
   @JoinColumn({ name: 'taHelpedId' })
   taHelped: UserModel;
 
@@ -62,4 +71,7 @@ export class AsyncQuestionModel extends BaseEntity {
 
   @Column('text')
   status: asyncQuestionStatus;
+
+  @Column('boolean', { nullable: true })
+  visible: boolean;
 }

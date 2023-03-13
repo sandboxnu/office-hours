@@ -16,6 +16,7 @@ import { LastRegistrationModel } from './src/login/last-registration-model.entit
 import { ProfSectionGroupsModel } from './src/login/prof-section-groups.entity';
 import { QuestionTypeModel } from './src/question/question-type.entity';
 import { AsyncQuestionModel } from './src/asyncQuestion/asyncQuestion.entity';
+import { ImageModel } from 'images/image.entity';
 config();
 
 // Options only used whe run via CLI
@@ -47,6 +48,7 @@ const typeorm = {
     EventModel,
     QuestionGroupModel,
     AlertModel,
+    ImageModel,
     LastRegistrationModel,
     ProfSectionGroupsModel,
   ],

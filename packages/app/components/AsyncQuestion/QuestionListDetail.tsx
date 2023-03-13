@@ -1,15 +1,13 @@
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useWindowWidth } from "@react-hook/window-size";
-import { Skeleton } from "antd";
+import { Skeleton, Spin } from "antd";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useProfile } from "../../hooks/useProfile";
-import TAquestionDetail from "./TA/TAquestionDetail";
 import TAquestionListSection from "./TA/TAquestionListSection";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
-import { useRouter } from "next/router";
 import { Role, AsyncQuestion } from "@koh/common";
-import StudentQuestionDetail from "./Student/StudentQuestionDetail";
+import { QuestionDetail } from "./QuestionDetail";
 import { useAsnycQuestions } from "../../hooks/useAsyncQuestions";
 
 // The min screen width at which the list and detail become side-by-side
@@ -63,24 +61,20 @@ const BackToQueue = styled.div`
  * this is shared, they all have the same group of students. Middle part student has an extra section for their own questions.
  */
 export default function QuestionListDetail({
-  courseId
+  courseId,
 }: {
   courseId: number;
 }): ReactElement {
-  // const user = useProfile();
-  // TODO: add
-  const router = useRouter();
-  const { cid } = router.query;
-  const role = useRoleInCourse(Number(cid));
+  const role = useRoleInCourse(courseId);
   const profile = useProfile();
   const [selectedQuestionId, setSelectedQuestionId] = useState<number>(null);
   const isSideBySide = useWindowWidth() >= SPLIT_DETAIL_BKPT;
-  const { questions } = useAsnycQuestions(Number(cid));
+  const { questions } = useAsnycQuestions(courseId);
   const allQuestionsList: AsyncQuestion[] = questions
     ? [
         ...questions.helpedQuestions,
         ...questions.otherQuestions,
-        ...questions.waitingQuestions
+        ...questions.waitingQuestions,
       ]
     : [];
   const onSelectQuestion = (qId: number) => {
@@ -88,10 +82,17 @@ export default function QuestionListDetail({
     console.log(qId);
   };
   const selectedQuestion = allQuestionsList.find(
-    q => q.id === selectedQuestionId
+    (q) => q.id === selectedQuestionId
   );
-  if (!selectedQuestionId && allQuestionsList.length) {
-    onSelectQuestion(questions.waitingQuestions[0].id);
+  if (
+    !selectedQuestionId &&
+    allQuestionsList.length &&
+    questions.visibleQuestions.length > 0
+  ) {
+    onSelectQuestion(questions.visibleQuestions[0].id);
+  }
+  if (!profile) {
+    return <Spin tip="Loading..." size="large" />;
   }
   if (!questions) {
     return <Skeleton />;
@@ -104,9 +105,21 @@ export default function QuestionListDetail({
       </EmptyQueueInfo>
     );
   }
+  //check whether there are questions for students.
   const studentQuestions = allQuestionsList.filter(
-    q => q.creatorId === profile.id
+    (q) => q.creatorId === profile.id
   );
+  if (
+    Role.STUDENT === role &&
+    questions.visibleQuestions.length < 1 &&
+    studentQuestions.length < 1
+  ) {
+    return (
+      <EmptyQueueInfo>
+        <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
+      </EmptyQueueInfo>
+    );
+  }
   const list = (
     <List>
       {Role.STUDENT === role ? (
@@ -121,32 +134,43 @@ export default function QuestionListDetail({
           />
         </div>
       ) : (
-        <></>
+        <>
+          <div data-cy="list-helping">
+            <TAquestionListSection
+              title="Waiting In Line"
+              questions={questions.waitingQuestions}
+              onClickQuestion={onSelectQuestion}
+              selectedQuestionId={selectedQuestionId}
+              collapsible
+              showNumbers
+            />
+          </div>
+          <div data-cy="list-resolved">
+            <TAquestionListSection
+              title="Resolved Questions"
+              questions={questions.helpedQuestions}
+              onClickQuestion={onSelectQuestion}
+              selectedQuestionId={selectedQuestionId}
+              collapsible
+              showNumbers
+            />
+          </div>
+          <div data-cy="list-deleted">
+            <TAquestionListSection
+              title="Deleted Questions"
+              questions={questions.otherQuestions}
+              onClickQuestion={onSelectQuestion}
+              selectedQuestionId={selectedQuestionId}
+              collapsible
+              showNumbers
+            />
+          </div>
+        </>
       )}
-      <div data-cy="list-helping">
+      <div data-cy="visible questions">
         <TAquestionListSection
-          title="Waiting In Line"
-          questions={questions.waitingQuestions}
-          onClickQuestion={onSelectQuestion}
-          selectedQuestionId={selectedQuestionId}
-          collapsible
-          showNumbers
-        />
-      </div>
-      <div data-cy="list-resolved">
-        <TAquestionListSection
-          title="Resolved Questions"
-          questions={questions.helpedQuestions}
-          onClickQuestion={onSelectQuestion}
-          selectedQuestionId={selectedQuestionId}
-          collapsible
-          showNumbers
-        />
-      </div>
-      <div data-cy="list-deleted">
-        <TAquestionListSection
-          title="Deleted Questions"
-          questions={questions.otherQuestions}
+          title="Questions visible to all"
+          questions={questions.visibleQuestions}
           onClickQuestion={onSelectQuestion}
           selectedQuestionId={selectedQuestionId}
           collapsible
@@ -156,24 +180,21 @@ export default function QuestionListDetail({
     </List>
   );
 
-  //student side: can edit own question (check creator of question), otherwise can only see. TA can edit any question.
-  const detail =
-    Role.STUDENT !== role ? (
+  //student side: can edit own question (check creator of question), can only see visible questions. TA can see and edit any question.
+  let detail;
+  if (selectedQuestion) {
+    detail = (
       <Detail>
-        <TAquestionDetail
-          courseId={courseId}
+        <QuestionDetail
+          userId={profile.id}
+          isStudent={Role.STUDENT === role}
           question={selectedQuestion}
-        ></TAquestionDetail>
-      </Detail>
-    ) : (
-      <Detail>
-        <StudentQuestionDetail
-          question={selectedQuestion}
-          studentId={profile.id}
-        ></StudentQuestionDetail>
+        ></QuestionDetail>
       </Detail>
     );
-
+  } else {
+    detail = <div>No Questions in the section</div>;
+  }
   if (isSideBySide) {
     return (
       <Container>

@@ -6,6 +6,7 @@ import * as Sentry from '@sentry/node';
 import * as Tracing from '@sentry/tracing';
 import * as cookieParser from 'cookie-parser';
 import * as morgan from 'morgan';
+import * as bodyParser from 'body-parser';
 import { AppModule } from './app.module';
 import { StripUndefinedPipe } from './stripUndefined.pipe';
 
@@ -32,6 +33,8 @@ export async function bootstrap(hot: any): Promise<void> {
   addGlobalsToApp(app);
   app.setGlobalPrefix('api/v1');
   app.use(morgan('dev'));
+  app.use(bodyParser.json({ limit: '50mb' }));
+  app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
   await app.listen(3002);
 
   if (hot) {

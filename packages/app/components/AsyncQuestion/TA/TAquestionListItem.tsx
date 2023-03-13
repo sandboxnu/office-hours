@@ -4,7 +4,7 @@ import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { getAsyncWaitTime } from "../../../utils/TimeUtil";
 import { KOHAvatar } from "../../common/SelfAvatar";
-import { AsyncQuestion } from "@koh/common";
+import { AsyncQuestion, asyncQuestionStatus } from "@koh/common";
 // import { truncate } from "../Queue/QueueUtils";
 
 export const Container = styled.div<{ selected: boolean }>`
@@ -48,7 +48,7 @@ export default function TAquestionListItem({
   selected,
   question,
   onClick,
-  showCheckbox
+  showCheckbox,
 }: {
   index: number | false;
   selected: boolean;
@@ -59,7 +59,7 @@ export default function TAquestionListItem({
   // const isDrafting = question.status === OpenQuestionStatus.Drafting;
 
   const metaInfo: [ReactElement, string][] = [
-    [<HourglassOutlined key="h" />, getAsyncWaitTime(question)]
+    [<HourglassOutlined key="h" />, getAsyncWaitTime(question)],
   ];
   // if (!isDrafting) {
   //   metaInfo.push([<QuestionOutlined key="q" />, question.questionType]);
@@ -88,8 +88,12 @@ export default function TAquestionListItem({
         </AvatarContainer>
         <QuestionInfoContainer>
           <Name>{question.creator?.name}</Name>
-          <QuestionText>{<i>{question.questionType}</i>}</QuestionText>
-          <QuestionMetaRow info={metaInfo} />
+          <QuestionText>{<i>{question.questionAbstract}</i>}</QuestionText>
+          {question.status !== asyncQuestionStatus.Resolved ? (
+            <QuestionMetaRow info={metaInfo} />
+          ) : (
+            <></>
+          )}
         </QuestionInfoContainer>
       </BodyContainer>
     </Container>
@@ -113,7 +117,7 @@ const Spacer = styled.div`
   margin-left: 5px;
 `;
 function QuestionMetaRow({
-  info
+  info,
 }: {
   info: [ReactElement, string][];
 }): ReactElement {
@@ -124,10 +128,10 @@ function QuestionMetaRow({
           i > 0 && <Divider key={text}>|</Divider>,
           icon,
           <Spacer key={text + "space"} />,
-          text
+          text,
         ])
         .flat()
-        .filter(e => !!e)}
+        .filter((e) => !!e)}
     </RowContainer>
   );
 }

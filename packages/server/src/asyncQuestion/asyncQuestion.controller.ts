@@ -5,6 +5,8 @@ import {
   AsyncQuestion,
   asyncQuestionStatus,
   UpdateAsyncQuestions,
+  sendEmailAsync,
+  asyncQuestionEventType,
 } from '@koh/common';
 import {
   Body,
@@ -17,7 +19,6 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { Connection } from 'typeorm';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 // import {
 //   NotificationService,
@@ -30,11 +31,12 @@ import { UserModel } from '../profile/user.entity';
 import { AsyncQuestionModel } from './asyncQuestion.entity';
 import { asyncQuestionService } from './asyncQuestion.service';
 import { CourseModel } from 'course/course.entity';
+import { MailService } from 'mail/mail.service';
 @Controller('asyncQuestions')
 @UseGuards(JwtAuthGuard)
 export class asyncQuestionController {
   constructor(
-    private connection: Connection,
+    private mailService: MailService,
     private questionService: asyncQuestionService,
   ) {}
 
@@ -46,7 +48,7 @@ export class asyncQuestionController {
     @User() user: UserModel,
   ): Promise<any> {
     // const { text, questionType, groupable, queueId, force } = body;
-
+    console.log(body);
     const c = await CourseModel.findOne({
       where: { id: cid },
     });
@@ -81,15 +83,18 @@ export class asyncQuestionController {
     //   }
     // }
 
+    //check whether there are images to be added
     try {
       const question = await AsyncQuestionModel.create({
         courseId: cid,
         creator: user,
         creatorId: user.id,
         course: c,
-        questionText: body.questionText,
-        questionType: 'default',
+        questionAbstract: body.questionAbstract,
+        questionText: body.questionText || null,
+        questionType: body.questionType,
         status: asyncQuestionStatus.Waiting,
+        visible: body.visible || false,
         createdAt: new Date(),
       }).save();
       return question;
@@ -101,6 +106,12 @@ export class asyncQuestionController {
       );
     }
   }
+  // @Post()
+  // @UseInterceptors(FileInterceptor('file'))
+  // async addImage( @UploadedFile() file: Express.Multer.File): Promise<ImageModel> {
+  //   return this.ImageService.uploadImage(file.buffer, file.originalname);
+  // }
+
   @Patch(':questionId')
   async updateQuestion(
     @Param('questionId') questionId: number,
@@ -108,7 +119,7 @@ export class asyncQuestionController {
   ): Promise<AsyncQuestion> {
     const question = await AsyncQuestionModel.findOne({
       where: { id: questionId },
-      relations: ['creator'],
+      relations: ['creator', 'images'],
     });
     if (question === undefined) {
       throw new NotFoundException();
@@ -144,7 +155,29 @@ export class asyncQuestionController {
 
     Object.assign(question, body);
     question.closedAt = new Date();
-    question.save();
+    question.save().then(async () => {
+      //send notification
+      const receiver = await UserModel.findOne({
+        where: {
+          id: question.creatorId,
+        },
+      });
+      if (!receiver) {
+        throw NotFoundException;
+      }
+      const post: sendEmailAsync = {
+        receiver: receiver.email,
+        subject: 'UBC helpme Async question status change',
+        type: asyncQuestionEventType.deleted,
+      };
+      if (body.status === asyncQuestionStatus.Resolved) {
+        post.type = asyncQuestionEventType.answered;
+        this.mailService.sendEmail(post);
+      } else if (body.status === asyncQuestionStatus.TADeleted) {
+        post.type = asyncQuestionEventType.deleted;
+        this.mailService.sendEmail(post);
+      }
+    });
     return question;
   }
 }

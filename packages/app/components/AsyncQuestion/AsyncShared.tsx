@@ -3,7 +3,7 @@ import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import { AsyncQuestionForm } from "./Student/AsyncQuestionForm";
-
+import { EditAsyncQuestionModal } from "./TA/EditAsyncQuestionModal";
 import { QueueInfoColumnButton } from "../Queue/QueueListSharedComponents";
 // import { useTeams } from "../../../hooks/useTeams";
 import { QuestionListShared } from "./QuestionListShared";
@@ -29,11 +29,16 @@ const MiddleSpacer = styled.div`
   margin-left: 20px;
 `;
 
-export default function AsyncShared({ courseId }: any): ReactElement {
+export default function AsyncShared({
+  courseId,
+}: {
+  courseId: number;
+}): ReactElement {
   const role = useRoleInCourse(courseId);
 
   const [studentQuestionModal, setStudentQuestionModal] = useState(false);
 
+  const [TAeditDetails, setTAeditDetails] = useState(false);
   // const [addStudentsModal, setAddStudentsModal] = useState(false);
 
   // const { course } = useCourse(courseId);
@@ -61,7 +66,10 @@ export default function AsyncShared({ courseId }: any): ReactElement {
             isStaff={true}
             buttons={
               <>
-                <EditQueueButton data-cy="editQueue">
+                <EditQueueButton
+                  data-cy="editQueue"
+                  onClick={() => setTAeditDetails(true)}
+                >
                   Edit Queue Details
                 </EditQueueButton>
                 {/* <EditQueueButton
@@ -85,8 +93,13 @@ export default function AsyncShared({ courseId }: any): ReactElement {
           />
         )}
         <AsyncQuestionForm
+          question={undefined}
           visible={studentQuestionModal}
           onClose={() => setStudentQuestionModal(false)}
+        />
+        <EditAsyncQuestionModal
+          visible={TAeditDetails}
+          onClose={() => setTAeditDetails(false)}
         />
         <MiddleSpacer />
         <QuestionListDetail courseId={courseId} />

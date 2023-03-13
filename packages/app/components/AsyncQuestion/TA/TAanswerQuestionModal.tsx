@@ -1,23 +1,10 @@
-import { ReactElement } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import Modal from "antd/lib/modal/Modal";
-import { Input, Form, Button, message } from "antd";
-import styled from "styled-components";
+import { Input, Form, Button, message, Checkbox, Image } from "antd";
 import { API } from "@koh/api-client";
 import { AsyncQuestion, asyncQuestionStatus } from "@koh/common";
 import { default as React } from "react";
 
-const QuestionHeader = styled.div`
-  font-size: 18px;
-  color: #595959;
-`;
-const QuestionAsker = styled(QuestionHeader)`
-  font-weight: 600;
-`;
-const QuestionDetails = styled.div`
-  font-size: 18px;
-  color: #595959;
-  border: 1px black;
-`;
 interface EditQueueModalProps {
   visible: boolean;
   onClose: () => void;
@@ -27,17 +14,22 @@ interface EditQueueModalProps {
 export function AnswerQuestionModal({
   visible,
   question,
-  onClose
+  onClose,
 }: EditQueueModalProps): ReactElement {
   const [form] = Form.useForm();
-
-  const postReponse = async value => {
+  const [visibleStatus, setVisibleStatus] = useState(false);
+  //use questions for form validation
+  useEffect(() => {
+    form.setFieldsValue(question);
+  }, [question]);
+  const postReponse = async (value) => {
     await API.asyncQuestions
       .update(question.id, {
-        answerText: value.response,
-        status: asyncQuestionStatus.Resolved
+        answerText: value.answerText,
+        visible: visibleStatus,
+        status: asyncQuestionStatus.Resolved,
       })
-      .then(value => {
+      .then((value) => {
         if (value) {
           message.success("Response posted/edited");
         } else {
@@ -59,25 +51,39 @@ export function AnswerQuestionModal({
           type="primary"
           onClick={async () => {
             const value = await form.validateFields();
+            console.log(value);
             postReponse(value);
             onClose();
           }}
         >
           Submit
-        </Button>
+        </Button>,
       ]}
     >
-      <div>
-        <>
-          <QuestionAsker>
-            <p>Question:</p>{" "}
-          </QuestionAsker>
-          <QuestionDetails>{question.questionText}</QuestionDetails>
-        </>
-      </div>
-      <Form form={form}>
+      <span>
+        <h2>Question:</h2>
+        <p> {question.questionText}</p>
+        {question?.images.map((i) => {
+          return (
+            <Image
+              height={100}
+              src={`/api/v1/image/${i.id}`}
+              alt="none"
+              key={i.id}
+            />
+          );
+        })}
+      </span>
+      <h2>Your response:</h2>
+      <Form
+        form={form}
+        initialValues={{
+          answerText: question.answerText,
+          visible: question.visible,
+        }}
+      >
         <Form.Item
-          name="response"
+          name="answerText"
           rules={[{ required: true, message: "Please input your response." }]}
         >
           <Input.TextArea
@@ -85,6 +91,11 @@ export function AnswerQuestionModal({
             allowClear={true}
             placeholder={"Your response to the question"}
           />
+        </Form.Item>
+        <Form.Item name="visible" valuePropName="checked">
+          <Checkbox onChange={(e) => setVisibleStatus(e.target.checked)}>
+            Make visible to all students
+          </Checkbox>
         </Form.Item>
       </Form>
     </Modal>

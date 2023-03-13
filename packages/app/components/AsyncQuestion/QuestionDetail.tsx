@@ -2,7 +2,9 @@ import React, { ReactElement } from "react";
 import styled from "styled-components";
 // import TAquestionDetailButtons from "./TAquestionDetailButtons";
 import { AsyncQuestion, asyncQuestionStatus } from "@koh/common";
-import StudentQuestionDetailButtons from "./StudentQuestionDetailButtons";
+import StudentQuestionDetailButtons from "./Student/StudentQuestionDetailButtons";
+import { Image } from "antd";
+import TAquestionDetailButtons from "./TA/TAquestionDetailButtons";
 
 const Container = styled.div``;
 
@@ -31,11 +33,9 @@ const QuestionCardBox = styled.div`
 const QuestionHeader = styled.div`
   font-size: 18px;
   color: #595959;
-  margin-bottom: 20px;
 `;
 const QuestionAsker = styled(QuestionHeader)`
   font-weight: 600;
-  margin-bottom: 10px;
 `;
 const QuestionDetails = styled.div`
   font-size: 14px;
@@ -52,37 +52,61 @@ const QuestionTypePill = styled.span`
  *  Details about the stuent's question
  */
 
-export default function StudentQuestionDetail({
+export function QuestionDetail({
+  userId,
+  isStudent,
   question,
-  studentId
 }: {
+  userId: number;
+  isStudent: boolean;
   question: AsyncQuestion;
-  studentId: number;
 }): ReactElement {
   return (
     <Container>
       <Header>
-        {studentId === question.creatorId ? (
-          <div>
-            <strong>{question.creator?.name}</strong>
-            <Email>{question.creator?.email}</Email>
-          </div>
+        {isStudent ? (
+          userId === question.creatorId ? (
+            <>
+              <div>
+                <strong> Posted by a curious Student</strong>
+              </div>
+              <div>{<StudentQuestionDetailButtons question={question} />}</div>
+            </>
+          ) : (
+            <>
+              <div>
+                <strong> Posted by a curious Student</strong>
+              </div>
+            </>
+          )
         ) : (
-          <div>
-            <strong> Posted by a curious Student</strong>
-          </div>
+          <>
+            <div>
+              <strong>{question.creator?.name}</strong>
+              <Email>{question.creator?.email}</Email>
+            </div>
+            <div>{<TAquestionDetailButtons question={question} />}</div>
+          </>
         )}
-
-        <div>{<StudentQuestionDetailButtons question={question} />}</div>
       </Header>
       <QuestionCardBox>
         <div>
           <>
             <QuestionAsker>
-              <p>Question:</p>{" "}
+              <p>Question: {question.questionAbstract}</p>
             </QuestionAsker>
             <QuestionTypePill>{question.questionType}</QuestionTypePill>
             <QuestionDetails>{question.questionText}</QuestionDetails>
+            {question?.images.map((i) => {
+              return (
+                <Image
+                  height={100}
+                  src={`/api/v1/image/${i.id}`}
+                  alt="none"
+                  key={i.id}
+                />
+              );
+            })}
           </>
           {question.status === asyncQuestionStatus.Resolved ? (
             <>
@@ -96,7 +120,6 @@ export default function StudentQuestionDetail({
           )}
         </div>
       </QuestionCardBox>
-      <QuestionCardBox></QuestionCardBox>
     </Container>
   );
 }

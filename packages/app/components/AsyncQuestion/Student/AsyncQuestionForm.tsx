@@ -1,11 +1,12 @@
-import { ReactElement } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import Modal from "antd/lib/modal/Modal";
-import { Input, Form, Button, message } from "antd";
+import { Input, Form, message, Radio } from "antd";
 import styled from "styled-components";
 import { API } from "@koh/api-client";
 
 import { default as React } from "react";
 import { useRouter } from "next/router";
+import { AsyncQuestion } from "@koh/common";
 
 const Container = styled.div`
   max-width: 960px;
@@ -27,41 +28,104 @@ const QuestionCaption = styled.div`
 `;
 
 interface EditQueueModalProps {
+  question: AsyncQuestion;
   visible: boolean;
   onClose: () => void;
 }
 
 export function AsyncQuestionForm({
+  question,
   visible,
-  onClose
+  onClose,
 }: EditQueueModalProps): ReactElement {
   const router = useRouter();
   const cid = router.query["cid"];
   const [form] = Form.useForm();
+  // image stuff
+  const [selectedImage, setSelectedImage] = useState(null);
 
-  // const [questionTypeInput, setQuestionTypeInput] = useState<string>("Default Type");
-
-  // const [questionTypes, setQuestionTypes] = useState(null);
-  // const onCategoryChange = (e: RadioChangeEvent) => {
-  //   setQuestionTypeInput(e.target.value);
-  // };
+  const [preview, setPreview] = useState<string>();
+  const [questionTypeInput, setQuestionTypeInput] = useState<string>(
+    question?.questionType || "general question"
+  );
+  const [questionTypes, setQuestionTypes] = useState(null);
+  const onCategoryChange = (e) => {
+    setQuestionTypeInput(e.target.value);
+  };
   // const courseId=Number(cid);
-  // useEffect(() => {
-  //   getQuestions();
-  // }, []);
-  // const getQuestions = async () => {
-  //   await API.questions.questionTypes(courseId).then((result)=>{
-  //     setQuestionTypes(result);
-  //     console.log(result);
-  //   })
-  //   console.log(questionTypes);
-  // };
-  const onFinish = async value => {
-    await API.asyncQuestions.create(
-      { questionType: "default type", questionText: value.questionText },
-      Number(cid)
-    );
+  useEffect(() => {
+    getQuestions();
+  }, []);
+  const getQuestions = async () => {
+    await API.questions.questionTypes(Number(cid)).then((result) => {
+      setQuestionTypes(result);
+    });
+  };
+  //image stuff
+  useEffect(() => {
+    if (!selectedImage) {
+      setPreview(undefined);
+      return;
+    }
+    const objectURL = window.URL.createObjectURL(selectedImage);
+    console.log(objectURL);
+    setPreview(objectURL);
+    return () => window.URL.revokeObjectURL(objectURL);
+  }, [selectedImage]);
+  //create function to update question. if question undefined create, if question, update. if question and has new image, update image too.
+  const createQuestion = async (value) => {
+    await API.asyncQuestions
+      .create(
+        {
+          questionType: questionTypeInput,
+          questionText: value.questionText,
+          questionAbstract: value.QuestionAbstract,
+        },
+        Number(cid)
+      )
+      .then((response) => {
+        if (selectedImage && response) {
+          const data = new FormData();
+          data.append("AsyncQuestionId", String(response.id));
+          data.append("file", selectedImage);
+          fetch("/api/v1/image", {
+            method: "POST",
+            body: data,
+          }).catch((err) => {
+            message.warning(err + ": Image failed to upload");
+          });
+        }
+      });
     message.success("Question Posted");
+  };
+  const updateQuestion = async (value) => {
+    await API.asyncQuestions
+      .update(question.id, {
+        questionType: questionTypeInput,
+        questionText: value.questionText,
+        questionAbstract: value.QuestionAbstract,
+      })
+      .then((response) => {
+        if (selectedImage && response) {
+          const data = new FormData();
+          data.append("ImageId", String(response.images[0].id));
+          data.append("file", selectedImage);
+          fetch(`/api/v1/image/${response.images[0].id}/update`, {
+            method: "PATCH",
+            body: data,
+          }).catch((err) => {
+            message.warning(err + ": Image failed to upload");
+          });
+        }
+      });
+    message.success("Question Posted");
+  };
+  const onFinish = (value) => {
+    if (!question) {
+      createQuestion(value);
+    } else {
+      updateQuestion(value);
+    }
   };
   return (
     <Modal
@@ -75,58 +139,68 @@ export function AsyncQuestionForm({
       }}
     >
       <Container>
-        <Form form={form}>
+        <Form
+          form={form}
+          initialValues={{
+            QuestionAbstract: question?.questionAbstract,
+            images: question?.images[0],
+          }}
+        >
           <QuestionText>What do you need help with?</QuestionText>
-          <Form.Item
-            rules={[{ required: true, message: "Please input your question" }]}
-            name="questionText"
-          >
+          <Form.Item name="QuestionAbstract" rules={[{ required: true }]}>
+            <Input placeholder="Question abstract" maxLength={50}></Input>
+          </Form.Item>
+          <Form.Item name="questionText">
             <Input.TextArea
               allowClear={true}
-              placeholder="I’m having trouble understanding list abstractions, particularly in Assignment 5."
+              placeholder="Question details(optional)"
               autoSize={{ minRows: 3, maxRows: 6 }}
             />
           </Form.Item>
           <QuestionCaption>
-            Be as descriptive and specific as possible in your answer. Your name
-            will be hidden to other students, but your question will be visible
-            so don&apos;t frame your question in a way that gives away the
-            answer.
+            Your question will not be visible to other students unless
+            professors manually changes it
           </QuestionCaption>
 
           <QuestionText>
             What category does your question fall under?
           </QuestionText>
-          {/* <Radio.Group
-          value={questionTypeInput}
-          onChange={onCategoryChange}
-          buttonStyle="solid"
-          style={{ marginBottom: 48 }}
-        >
-          {questionTypes!==null? (
-            questionTypes.map((q) => (
-              <Radio.Button key={q} value={q}>
-                {" "}
-                {q}
-              </Radio.Button>
-            ))
-          ) : (
-            <p>Loading...</p>
-          )}
-        </Radio.Group> */}
-          <h1>{cid}</h1>
-          <QuestionCaption>
-            Clicking Yes may result in a shorter wait time if others have the
-            same question as you.
-          </QuestionCaption>
-          <Button
-            style={{ margin: "0 8px" }}
-            onClick={() => {
-              form.resetFields();
-            }}
+          <Radio.Group
+            value={questionTypeInput}
+            onChange={onCategoryChange}
+            buttonStyle="solid"
+            style={{ marginBottom: 48 }}
           >
-            Clear
-          </Button>
+            {questionTypes !== null ? (
+              questionTypes.map((q) => (
+                <Radio.Button key={q} value={q}>
+                  {" "}
+                  {q}
+                </Radio.Button>
+              ))
+            ) : (
+              <p>Loading...</p>
+            )}
+          </Radio.Group>
+          <Form.Item name="images">
+            <Input
+              type="file"
+              onChange={(event) => {
+                console.log(event.target.files[0]);
+                setSelectedImage(event.target.files[0]);
+              }}
+              name="questionImage"
+            ></Input>
+            {preview ? (
+              <img
+                src={preview}
+                style={{ maxWidth: "100%", padding: "10px" }}
+                alt="none"
+              />
+            ) : (
+              <></>
+            )}
+          </Form.Item>
         </Form>
       </Container>
     </Modal>
