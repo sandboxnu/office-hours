@@ -29,7 +29,7 @@ import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { UserModel } from '../profile/user.entity';
 import { AsyncQuestionModel } from './asyncQuestion.entity';
-import { asyncQuestionService } from './asyncQuestion.service';
+import { AsyncQuestionService } from './asyncQuestion.service';
 import { CourseModel } from 'course/course.entity';
 import { MailService } from 'mail/mail.service';
 @Controller('asyncQuestions')
@@ -37,7 +37,7 @@ import { MailService } from 'mail/mail.service';
 export class asyncQuestionController {
   constructor(
     private mailService: MailService,
-    private questionService: asyncQuestionService,
+    private questionService: AsyncQuestionService,
   ) {}
 
   @Post(':cid')
