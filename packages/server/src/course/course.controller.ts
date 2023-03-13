@@ -1,4 +1,6 @@
 import {
+  AsyncQuestionResponse,
+  asyncQuestionStatus,
   EditCourseInfoParams,
   ERROR_MESSAGES,
   GetCourseOverridesResponse,
@@ -21,6 +23,7 @@ import {
   Get,
   HttpException,
   HttpStatus,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -47,6 +50,7 @@ import { QueueSSEService } from '../queue/queue-sse.service';
 import { CourseService } from './course.service';
 import { HeatmapService } from './heatmap.service';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
+import { AsyncQuestionModel } from 'asyncQuestion/asyncQuestion.entity';
 
 @Controller('courses')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -62,9 +66,45 @@ export class CourseController {
   // get all courses
   @Get()
   getCourse(@Res() res: Response) {
-    CourseModel.find().then(async courses => {
+    CourseModel.find().then(async (courses) => {
       return res.status(200).send(courses);
     });
+  }
+  @Get(':cid/questions')
+  @UseGuards(JwtAuthGuard)
+  async getAsyncQuestions(
+    @Param('cid') cid: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    @User() user: UserModel,
+  ): Promise<AsyncQuestionResponse> {
+    const all = await AsyncQuestionModel.find({
+      where: {
+        courseId: cid,
+      },
+      relations: ['creator', 'course', 'images'],
+    });
+    if (!all) {
+      throw NotFoundException;
+    }
+    const questionsDB = all.filter((question) =>
+      question.course.asyncQuestionDisplayTypes.includes(question.questionType),
+    );
+    const questions = new AsyncQuestionResponse();
+    questions.helpedQuestions = questionsDB.filter(
+      (question) => question.status === asyncQuestionStatus.Resolved,
+    );
+    questions.waitingQuestions = questionsDB.filter(
+      (question) => question.status === asyncQuestionStatus.Waiting,
+    );
+    questions.otherQuestions = questionsDB.filter(
+      (question) =>
+        question.status === asyncQuestionStatus.StudentDeleted ||
+        question.status === asyncQuestionStatus.TADeleted,
+    );
+    questions.visibleQuestions = questionsDB.filter(
+      (question) => question.visible === true,
+    );
+    return questions;
   }
 
   @Get(':id')
@@ -125,12 +165,12 @@ export class CourseController {
     ) {
       course.queues = await async.filter(
         course.queues,
-        async q => !q.isDisabled,
+        async (q) => !q.isDisabled,
       );
     } else if (userCourseModel.role === Role.STUDENT) {
       course.queues = await async.filter(
         course.queues,
-        async q => !q.isDisabled && (await q.checkIsOpen()),
+        async (q) => !q.isDisabled && (await q.checkIsOpen()),
       );
     }
 
@@ -140,7 +180,7 @@ export class CourseController {
     }
 
     try {
-      await async.each(course.queues, async q => {
+      await async.each(course.queues, async (q) => {
         await q.addQueueSize();
       });
     } catch (err) {
@@ -203,7 +243,7 @@ export class CourseController {
 
     if (
       queues &&
-      queues.some(q => q.staffList.some(staff => staff.id === user.id))
+      queues.some((q) => q.staffList.some((staff) => staff.id === user.id))
     ) {
       throw new UnauthorizedException(
         ERROR_MESSAGES.courseController.checkIn.cannotCheckIntoMultipleQueues,
@@ -394,9 +434,9 @@ export class CourseController {
     }
 
     // Do nothing if user not already in stafflist
-    if (!queue.staffList.find(e => e.id === user.id)) return;
+    if (!queue.staffList.find((e) => e.id === user.id)) return;
 
-    queue.staffList = queue.staffList.filter(e => e.id !== user.id);
+    queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
     if (queue.staffList.length === 0) {
       queue.allowQuestions = false;
     }
@@ -469,7 +509,7 @@ export class CourseController {
     }
 
     return {
-      data: resp.map(row => ({
+      data: resp.map((row) => ({
         id: row.id,
         role: row.role,
         name: row.user.name,

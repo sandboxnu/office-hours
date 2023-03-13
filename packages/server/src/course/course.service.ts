@@ -126,7 +126,7 @@ export class CourseService {
     courseId: number,
     coursePatch: EditCourseInfoParams,
   ): Promise<void> {
-    console.log(coursePatch)
+    console.log(coursePatch);
     const course = await CourseModel.findOne(courseId);
     if (course === null || course === undefined) {
       throw new HttpException(
@@ -198,6 +198,10 @@ export class CourseService {
     }
     if (coursePatch.questionTimer) {
       course.questionTimer = coursePatch.questionTimer;
+    }
+
+    if (coursePatch.asyncQuestionDisplayTypes) {
+      course.asyncQuestionDisplayTypes = coursePatch.asyncQuestionDisplayTypes;
     }
     try {
       await course.save();

@@ -218,7 +218,6 @@ export class Question {
   @Type(() => Date)
   helpedAt?: Date;
 
-
   @Type(() => Date)
   closedAt?: Date;
 
@@ -227,7 +226,7 @@ export class Question {
   groupable!: boolean;
 
   status!: QuestionStatus;
-  
+
   location?: string;
 }
 
@@ -239,6 +238,14 @@ export enum QuestionType {
   Bug = "Bug",
   Setup = "Setup",
   Other = "Other",
+}
+
+// Type of async question events
+export enum asyncQuestionEventType {
+  answered = "answered",
+  deleted = "deleted",
+  madeVisible = "madeVisible",
+  created = "created",
 }
 
 export enum OpenQuestionStatus {
@@ -264,6 +271,12 @@ export enum ClosedQuestionStatus {
   Stale = "Stale",
 }
 
+export enum asyncQuestionStatus {
+  Resolved = "Resolved",
+  TADeleted = "TADeleted",
+  StudentDeleted = "StudentDeleted",
+  Waiting = "Waiting",
+}
 export const StatusInQueue = [
   OpenQuestionStatus.Drafting,
   OpenQuestionStatus.Queued,
@@ -301,7 +314,63 @@ export class QuestionGroup {
 
   //Might want to add a list of students in group so they can be added without a question
 }
+/**
+ * A Question is created when a student wants help from a TA.
+ */
+export class AsyncQuestion {
+  @IsOptional()
+  @IsInt()
+  id?: number;
 
+  @Type(() => UserPartial)
+  creator?: UserPartial;
+
+  @IsOptional()
+  images?: Image[];
+
+  @IsOptional()
+  @IsString()
+  questionAbstract?: string;
+
+  @IsOptional()
+  @IsString()
+  questionText?: string;
+
+  @IsOptional()
+  @IsString()
+  answerText?: string;
+
+  @IsOptional()
+  @IsInt()
+  creatorId?: number;
+
+  @Type(() => UserPartial)
+  taHelped?: UserPartial;
+
+  @Type(() => Date)
+  createdAt?: Date;
+
+  @Type(() => Date)
+  closedAt?: Date;
+
+  @IsOptional()
+  @IsString()
+  questionType?: string;
+
+  @IsOptional()
+  @IsString()
+  status?: asyncQuestionStatus;
+
+  @IsOptional()
+  @IsBoolean()
+  visible?: boolean;
+}
+
+export class Image {
+  @IsOptional()
+  @IsInt()
+  id?: number;
+}
 // /**
 //  * A Semester object, representing a schedule semester term for the purposes of a course.
 //  * @param season - The season of this semester.
@@ -454,7 +523,7 @@ export class questions {
 
   @IsString()
   status?: string;
-  
+
   @IsString()
   location?: string;
 
@@ -523,10 +592,12 @@ export class GetCourseResponse {
   icalURL!: string;
 
   zoomLink!: string;
-  
+
   questionTimer?: number;
-  
+
   selfEnroll!: boolean;
+
+  asyncQuestionDisplayTypes?: string[];
 }
 
 export class GetCourseUserInfoResponse {
@@ -583,6 +654,19 @@ export class ListQuestionsResponse {
   unresolvedAlerts?: Array<AlertPayload>;
 }
 
+export class AsyncQuestionResponse {
+  @Type(() => Question)
+  waitingQuestions!: Array<AsyncQuestion>;
+
+  @Type(() => Question)
+  helpedQuestions!: Array<AsyncQuestion>;
+
+  @Type(() => Question)
+  otherQuestions!: Array<AsyncQuestion>;
+
+  @Type(() => Question)
+  visibleQuestions!: Array<AsyncQuestion>;
+}
 export class GetQuestionResponse extends Question {}
 
 export class GetStudentQuestionResponse extends Question {
@@ -653,6 +737,10 @@ export class ResolveGroupParams {
   @IsInt()
   queueId!: number;
 }
+
+export class CreateAsyncQuestions extends AsyncQuestion {}
+
+export class UpdateAsyncQuestions extends AsyncQuestion {}
 
 export type TAUpdateStatusResponse = QueuePartial;
 export type QueueNotePayloadType = {
@@ -796,7 +884,7 @@ export class RegisterCourseParams {
 
 export class EditCourseInfoParams {
   @IsNumber()
-  courseId!: number;
+  courseId?: number;
 
   @IsString()
   @IsOptional()
@@ -817,6 +905,10 @@ export class EditCourseInfoParams {
   @IsString()
   @IsOptional()
   questionTimer?: number;
+
+  @IsArray()
+  @IsOptional()
+  asyncQuestionDisplayTypes?: string[];
 
   @IsArray()
   @IsOptional()
@@ -929,6 +1021,11 @@ export type InsightParamsType = {
   offset: number;
 };
 
+export type sendEmailAsync = {
+  receiver: string;
+  subject: string;
+  type: asyncQuestionEventType;
+};
 export const ERROR_MESSAGES = {
   common: {
     pageOutOfBounds: "Can't retrieve out of bounds page.",
@@ -1040,6 +1137,9 @@ export const ERROR_MESSAGES = {
     notInCourse: "Not In This Course",
     mustBeRoleToJoinCourse: (roles: string[]): string =>
       `You must have one of roles [${roles.join(", ")}] to access this course`,
+  },
+  mailService: {
+    mailFailed: "Mail was not sent to user",
   },
   profileController: {
     accountNotAvailable: "The user account is undefined",

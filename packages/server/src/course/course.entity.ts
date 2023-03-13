@@ -1,5 +1,7 @@
 import { Heatmap } from '@koh/common';
+import { AsyncQuestionModel } from 'asyncQuestion/asyncQuestion.entity';
 import { Exclude } from 'class-transformer';
+import { QuestionTypeModel } from 'question/question-type.entity';
 import {
   BaseEntity,
   Column,
@@ -15,7 +17,6 @@ import { EventModel } from '../profile/event-model.entity';
 import { UserCourseModel } from '../profile/user-course.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { SemesterModel } from '../semester/semester.entity';
-import { QuestionTypeModel } from 'question/question-type.entity';
 @Entity('course_model')
 export class CourseModel extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -43,7 +44,7 @@ export class CourseModel extends BaseEntity {
 
   @Column('integer', { nullable: true })
   @Exclude()
-  questionTimer:number;
+  questionTimer: number;
 
   @OneToMany((type) => UserCourseModel, (ucm) => ucm.course)
   @Exclude()
@@ -81,4 +82,14 @@ export class CourseModel extends BaseEntity {
   // WARNING: THIS SHOULD ONLY BE USED AS A TEMPORARY MEASURE WHEN THINGS LIKE BANNER ARE DOWN
   @Column('boolean', { nullable: true, default: false })
   selfEnroll: boolean;
+
+  @OneToMany(
+    (type) => AsyncQuestionModel,
+    (asyncQuestion) => asyncQuestion.course,
+  )
+  @Exclude()
+  images: AsyncQuestionModel[];
+
+  @Column('text', { array: true, nullable: true })
+  asyncQuestionDisplayTypes: string[];
 }

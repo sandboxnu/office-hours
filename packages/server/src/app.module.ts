@@ -22,7 +22,9 @@ import { SSEModule } from './sse/sse.module';
 import { SemesterModule } from 'semester/semester.module';
 import { ResourcesModule } from './resources/resources.module';
 import { SignupModule } from 'signup/signup.module';
-
+import { asyncQuestionModule } from 'asyncQuestion/asyncQuestion.module';
+import { ImageModule } from 'images/image.module';
+import { MailModule } from 'mail/mail.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeormConfig),
@@ -35,7 +37,9 @@ import { SignupModule } from 'signup/signup.module';
     NotificationModule,
     QuestionModule,
     SeedModule,
+    MailModule,
     ResourcesModule,
+    asyncQuestionModule,
     ConfigModule.forRoot({
       envFilePath: [
         '.env',
@@ -49,6 +53,7 @@ import { SignupModule } from 'signup/signup.module';
     BackfillModule,
     ReleaseNotesModule,
     InsightsModule,
+    ImageModule,
     // Only use 'pub' for publishing events, 'sub' for subscribing, and 'db' for writing to key/value store
     RedisModule.register([{ name: 'pub' }, { name: 'sub' }, { name: 'db' }]),
     HealthcheckModule,

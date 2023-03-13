@@ -42,7 +42,6 @@ export default function TACheckinButton({
   const router = useRouter();
 
   const { course, mutateCourse } = useCourse(courseId);
-
   async function checkInTA() {
     // to see old check in in person functionality look at commit b4768bbfb0f36444c80961703bdbba01ff4a5596
     //trying to limit changes to the frontend, all queues will have the room online
@@ -50,6 +49,14 @@ export default function TACheckinButton({
     try {
       const redirectID = await API.taStatus.checkIn(courseId, room);
       mutateCourse();
+      //3 hrs before checking a TA out
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const checkoutTimer = setTimeout(async () => {
+        message.warning("You are checked out automatically after 3 hours");
+        await API.taStatus.checkOut(courseId, room);
+        mutateCourse();
+      }, 1000 * 60 * 60 * 3);
+
       router.push(
         "/course/[cid]/queue/[qid]",
         `/course/${courseId}/queue/${redirectID.id}`

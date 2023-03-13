@@ -62,7 +62,14 @@ export default function TodayPageCheckinButton(): ReactElement {
         Number(cid),
         queueRequest.officeHourName
       );
+
       mutateCourse();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const checkoutTimer = setTimeout(async () => {
+        message.warning("You are checked out automatically after 3 hours");
+        await API.taStatus.checkOut(Number(cid), queueRequest.officeHourName);
+        mutateCourse();
+      }, 1000 * 60 * 60 * 3);
       router.push(
         "/course/[cid]/queue/[qid]",
         `/course/${Number(cid)}/queue/${redirectID.id}`
@@ -90,6 +97,17 @@ export default function TodayPageCheckinButton(): ReactElement {
                 Number(cid),
                 availableQueues[queueId].room
               );
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              const checkoutTimer = setTimeout(async () => {
+                message.warning(
+                  "You are checked out automatically after 3 hours"
+                );
+                await API.taStatus.checkOut(
+                  Number(cid),
+                  availableQueues[queueId].room
+                );
+                mutateCourse();
+              }, 1000 * 60 * 60 * 3);
               mutateCourse();
               router.push(
                 "/course/[cid]/queue/[qid]",
