@@ -103,7 +103,9 @@ export class CourseController {
         question.status === asyncQuestionStatus.TADeleted,
     );
     questions.visibleQuestions = questionsDB.filter(
-      (question) => question.visible === true,
+      (question) =>
+        question.visible === true &&
+        question.status !== asyncQuestionStatus.TADeleted,
     );
     return questions;
   }

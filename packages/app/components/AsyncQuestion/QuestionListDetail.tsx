@@ -155,7 +155,7 @@ export default function QuestionListDetail({
               showNumbers
             />
           </div>
-          <div data-cy="list-deleted">
+          {/* <div data-cy="list-deleted">
             <TAquestionListSection
               title="Deleted Questions"
               questions={questions.otherQuestions}
@@ -164,7 +164,7 @@ export default function QuestionListDetail({
               collapsible
               showNumbers
             />
-          </div>
+          </div> */}
         </>
       )}
       <div data-cy="visible questions">
@@ -193,7 +193,7 @@ export default function QuestionListDetail({
       </Detail>
     );
   } else {
-    detail = <div>No Questions in the section</div>;
+    detail = <h1>No Questions in the section</h1>;
   }
   if (isSideBySide) {
     return (

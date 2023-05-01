@@ -194,3 +194,38 @@ export class asyncQuestionController {
     return question;
   }
 }
+//delete questions currently not implemented.
+
+// @Delete(':questionId')
+// async deleteQuestion(
+//     @Param('questionId') questionId: number,
+//     @Body() body: UpdateAsyncQuestions,
+//   ): Promise<AsyncQuestion> {
+//     const question = await AsyncQuestionModel.findOne({
+//       where: { id: questionId },
+//       relations: ['creator', 'images'],
+//     });
+//     if (!question) {
+//       throw new NotFoundException();
+//     }
+
+//     const receiver = await UserModel.findOne({
+//       where: {
+//         id: question.creatorId,
+//       },
+//     });
+//     if (!receiver) {
+//       throw NotFoundException;
+//     }
+
+//     const post: sendEmailAsync = {
+//       receiver: receiver.email,
+//       subject: 'UBC helpme Async question status change',
+//       type: asyncQuestionEventType.deleted,
+//     };
+//     this.mailService.sendEmail(post);
+
+//     return question;
+//   }
+
+// }
