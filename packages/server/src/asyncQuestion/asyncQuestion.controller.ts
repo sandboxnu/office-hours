@@ -32,6 +32,7 @@ import { AsyncQuestionModel } from './asyncQuestion.entity';
 import { asyncQuestionService } from './asyncQuestion.service';
 import { CourseModel } from 'course/course.entity';
 import { MailService } from 'mail/mail.service';
+import { UserCourseModel } from 'profile/user-course.entity';
 @Controller('asyncQuestions')
 @UseGuards(JwtAuthGuard)
 export class asyncQuestionController {
@@ -97,6 +98,18 @@ export class asyncQuestionController {
         visible: body.visible || false,
         createdAt: new Date(),
       }).save();
+      const professors = await UserCourseModel.findOne({
+        where: {
+          role: Role.PROFESSOR,
+        },
+      });
+      console.log(professors);
+      // const post: sendEmailAsync = {
+      //   receiver: professors.user.email,
+      //   subject: 'UBC helpme Async question created',
+      //   type: asyncQuestionEventType.created,
+      // };
+      // this.mailService.sendEmail(post);
       return question;
     } catch (err) {
       console.error(err);

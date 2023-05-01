@@ -1,6 +1,7 @@
 import {
   AsyncQuestionResponse,
   asyncQuestionStatus,
+  CoursePartial,
   EditCourseInfoParams,
   ERROR_MESSAGES,
   GetCourseOverridesResponse,
@@ -28,7 +29,6 @@ import {
   Patch,
   Post,
   Query,
-  Res,
   UnauthorizedException,
   UseGuards,
   UseInterceptors,
@@ -37,7 +37,6 @@ import async from 'async';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { Connection } from 'typeorm';
-import { Response } from 'express';
 import { Roles } from '../decorators/roles.decorator';
 import { User, UserId } from '../decorators/user.decorator';
 import { CourseRolesGuard } from '../guards/course-roles.guard';
@@ -65,10 +64,12 @@ export class CourseController {
 
   // get all courses
   @Get()
-  getCourse(@Res() res: Response) {
-    CourseModel.find().then(async (courses) => {
-      return res.status(200).send(courses);
-    });
+  async getAllCourses(): Promise<CoursePartial[]> {
+    const courses = await CourseModel.find();
+    if (!courses) {
+      throw new NotFoundException();
+    }
+    return courses.map((course) => ({ id: course.id, name: course.name }));
   }
   @Get(':cid/questions')
   @UseGuards(JwtAuthGuard)
