@@ -1,6 +1,6 @@
 import { ReactElement, useCallback } from "react";
 import Modal from "antd/lib/modal/Modal";
-import { Button, Form, Collapse, message } from "antd";
+import { Button, Form, Collapse, message, Radio } from "antd";
 import { API } from "@koh/api-client";
 import { default as React, useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -35,7 +35,7 @@ interface EditQueueModalProps {
 export function AddStudentsModal({
   queueId,
   visible,
-  onClose
+  onClose,
 }: EditQueueModalProps): ReactElement {
   //studentState stores all students
   const router = useRouter();
@@ -64,7 +64,7 @@ export function AddStudentsModal({
     if (!students) {
       console.error("can't get all students");
     }
-    students.forEach(async student => {
+    students.forEach(async (student) => {
       const b = await API.profile.inQueue(student.id);
       console.log(b);
       if (b) {
@@ -81,7 +81,7 @@ export function AddStudentsModal({
       addStudent(i);
     });
   };
-  const addStudent = async i => {
+  const addStudent = async (i) => {
     const currentStudent = selectOptions[i];
     const b = await API.profile.inQueue(currentStudent.id);
     if (b) {
@@ -96,14 +96,14 @@ export function AddStudentsModal({
           queueId: queueId,
           location: null,
           force: true,
-          groupable: false
+          groupable: false,
         },
         currentStudent.id
       )
       .then(() => {
         message.success("Student(s) added");
         setStudentsState(
-          studentsState.filter(student => student.id !== currentStudent.id)
+          studentsState.filter((student) => student.id !== currentStudent.id)
         );
         setSelectOptions([]);
       })
@@ -113,7 +113,7 @@ export function AddStudentsModal({
     return false;
   };
 
-  const handleSelect = data => {
+  const handleSelect = (data) => {
     setSelectOptions(data);
   };
   const onQTclick = useCallback(
@@ -132,7 +132,6 @@ export function AddStudentsModal({
     <Modal
       title="Add Students to queue"
       visible={visible}
-      onCancel={onClose}
       onOk={async () => {
         onClose();
       }}
@@ -141,22 +140,24 @@ export function AddStudentsModal({
         Current question type:{" "}
         <strong style={{ color: "blue" }}> {selectedQuestionType}</strong>
       </h3>
-      <h3>
-        Change question type:{" "}
-        <Button.Group style={{ marginBottom: 10 }}>
-          {questionsTypeState.length > 0 ? (
-            questionsTypeState.map(q => {
-              return (
-                <Button onClick={() => onQTclick(q)} key={q}>
-                  {q}
-                </Button>
-              );
-            })
-          ) : (
-            <p>There are No Question Types</p>
-          )}
-        </Button.Group>
-      </h3>
+      <h3> Change question type: </h3>
+      <Radio.Group buttonStyle="solid">
+        {questionsTypeState.length > 0 ? (
+          questionsTypeState.map((q) => {
+            return (
+              <Radio.Button
+                style={{ color: "white" }}
+                onClick={() => onQTclick(q)}
+                key={q}
+              >
+                {q}
+              </Radio.Button>
+            );
+          })
+        ) : (
+          <p>There are No Question Types</p>
+        )}
+      </Radio.Group>
       <OverrideCollapse>
         <Collapse defaultActiveKey={[1]} ghost expandIconPosition="right">
           <Collapse.Panel
