@@ -5,7 +5,6 @@ import "../styles/global.css";
 import { Footer } from "../components/common/Footer";
 import styled from "styled-components";
 import { ReactElement } from "react";
-import Head from "next/head";
 import { ErrorBoundary } from "../components/common/ErrorBoundary";
 import * as Sentry from "@sentry/node";
 
@@ -34,9 +33,6 @@ function MyApp({ Component, pageProps }: AppProps): ReactElement {
     <Layout>
       <Content>
         <ErrorBoundary>
-          <Head>
-            <meta name="viewport" content="viewport-fit=cover" />
-          </Head>
           <Component {...pageProps} />
         </ErrorBoundary>
       </Content>

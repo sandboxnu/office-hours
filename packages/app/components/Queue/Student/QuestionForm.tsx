@@ -54,7 +54,7 @@ interface QuestionFormProps {
     groupable: boolean,
     router: NextRouter,
     courseId: number,
-    location: string,
+    location: string
   ) => void;
   position: number;
   cancel: () => void;
@@ -87,7 +87,7 @@ export default function QuestionForm({
   const [questionGroupable, setQuestionGroupable] = useState<boolean>(
     question?.groupable !== undefined && question?.groupable
   );
-  
+
   const [inperson, setInperson] = useState<boolean>(false);
   useEffect(() => {
     if (question && !visible) {
@@ -139,11 +139,11 @@ export default function QuestionForm({
   };
   const onLocationChange = (e: RadioChangeEvent) => {
     setInperson(e.target.value);
-    const questionFromStorage = storageQuestion ?? {}
+    const questionFromStorage = storageQuestion ?? {};
     setStoredQuestion({
       id: question?.id,
       ...questionFromStorage,
-      location: (inperson? 'In Person': 'Online'),
+      location: inperson ? "In Person" : "Online",
     });
   };
   // on button submit click, conditionally choose to go back to the queue
@@ -155,7 +155,7 @@ export default function QuestionForm({
         questionGroupable,
         router,
         Number(courseId),
-        (inperson? 'In Person': 'Online')
+        inperson ? "In Person" : "Online"
       );
     }
   };
@@ -195,9 +195,7 @@ export default function QuestionForm({
           <SaveChangesButton
             data-cy="finishQuestion"
             type="primary"
-            disabled={
-              !questionTypeInput || !questionText || questionText === ""
-            }
+            disabled={!questionTypeInput}
             onClick={onClickSubmit}
           >
             {drafting ? "Finish" : "Save Changes"}
@@ -260,9 +258,7 @@ export default function QuestionForm({
           don&apos;t frame your question in a way that gives away the answer.
         </QuestionCaption>
 
-        <QuestionText>
-          Are you joining in person office hours?
-        </QuestionText>
+        <QuestionText>Are you joining in person office hours?</QuestionText>
         <Radio.Group
           value={inperson}
           onChange={onLocationChange}

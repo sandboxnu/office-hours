@@ -9,6 +9,7 @@ import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import { Role, AsyncQuestion } from "@koh/common";
 import { QuestionDetail } from "./QuestionDetail";
 import { useAsnycQuestions } from "../../hooks/useAsyncQuestions";
+import StudentListSection from "./Student/StudentListSection";
 
 // The min screen width at which the list and detail become side-by-side
 const SPLIT_DETAIL_BKPT = 900;
@@ -123,16 +124,28 @@ export default function QuestionListDetail({
   const list = (
     <List>
       {Role.STUDENT === role ? (
-        <div data-cy="your-questions">
-          <TAquestionListSection
-            title="Your Questions"
-            questions={studentQuestions}
-            onClickQuestion={onSelectQuestion}
-            selectedQuestionId={selectedQuestionId}
-            collapsible
-            showNumbers
-          />
-        </div>
+        <>
+          <div data-cy="your-questions">
+            <StudentListSection
+              title="Your Questions"
+              questions={studentQuestions}
+              onClickQuestion={onSelectQuestion}
+              selectedQuestionId={selectedQuestionId}
+              collapsible
+              showNumbers
+            />
+          </div>
+          <div data-cy="visible questions">
+            <StudentListSection
+              title="Questions visible to all"
+              questions={questions.visibleQuestions}
+              onClickQuestion={onSelectQuestion}
+              selectedQuestionId={selectedQuestionId}
+              collapsible
+              showNumbers
+            />
+          </div>
+        </>
       ) : (
         <>
           <div data-cy="list-helping">
@@ -155,6 +168,16 @@ export default function QuestionListDetail({
               showNumbers
             />
           </div>
+          <div data-cy="visible questions">
+            <TAquestionListSection
+              title="Questions visible to all"
+              questions={questions.visibleQuestions}
+              onClickQuestion={onSelectQuestion}
+              selectedQuestionId={selectedQuestionId}
+              collapsible
+              showNumbers
+            />
+          </div>
           {/* <div data-cy="list-deleted">
             <TAquestionListSection
               title="Deleted Questions"
@@ -167,16 +190,6 @@ export default function QuestionListDetail({
           </div> */}
         </>
       )}
-      <div data-cy="visible questions">
-        <TAquestionListSection
-          title="Questions visible to all"
-          questions={questions.visibleQuestions}
-          onClickQuestion={onSelectQuestion}
-          selectedQuestionId={selectedQuestionId}
-          collapsible
-          showNumbers
-        />
-      </div>
     </List>
   );
 

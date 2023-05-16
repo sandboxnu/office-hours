@@ -35,15 +35,12 @@ const AvatarContainer = styled.div`
 `;
 const QuestionInfoContainer = styled.div``;
 
-const Name = styled.div`
-  color: #212934;
-`;
 const QuestionText = styled.div`
   padding-right: 8px;
   color: #595959;
 `;
 
-export default function TAquestionListItem({
+export default function StudentListItem({
   index,
   selected,
   question,
@@ -81,14 +78,13 @@ export default function TAquestionListItem({
           >
             <KOHAvatar
               size={40}
-              name={question.creator.name}
+              name={"Q"}
               photoURL={question.creator.photoURL}
             />
           </Badge>
         </AvatarContainer>
         <QuestionInfoContainer>
-          <Name>{question.creator?.name}</Name>
-          <QuestionText>{<i>{question.questionAbstract}</i>}</QuestionText>
+          <QuestionText> {question.questionAbstract}</QuestionText>
           {question.status === asyncQuestionStatus.TADeleted ? (
             <div style={{ color: "red" }}>Deleted</div>
           ) : question.status !== asyncQuestionStatus.Resolved ? (
