@@ -5,7 +5,7 @@ import {
   NotificationOutlined,
   StopOutlined,
 } from "@ant-design/icons";
-import { Button, message, Modal, Popconfirm, Tooltip, Switch } from "antd";
+import { Button, message, Modal, Popconfirm, Tooltip } from "antd";
 import { ButtonProps } from "antd/lib/button";
 import Linkify from "react-linkify";
 import moment from "moment";
@@ -147,7 +147,7 @@ export function QueueInfoColumn({
   buttons,
 }: QueueInfoColumnProps): ReactElement {
   const { queue, mutateQueue } = useQueue(queueId);
-  const [away, setAway] = useState(false);
+  // const [away, setAway] = useState(false);
   const disableQueue = async () => {
     await API.queues.disable(queueId);
     await mutateQueue();
@@ -173,13 +173,13 @@ export function QueueInfoColumn({
       },
     });
   };
-  const checkAway = (checked: boolean) => {
-    if (!checked) {
-      setAway(true);
-    } else {
-      setAway(false);
-    }
-  };
+  // const checkAway = (checked: boolean) => {
+  //   if (!checked) {
+  //     setAway(true);
+  //   } else {
+  //     setAway(false);
+  //   }
+  // };
   return (
     <InfoColumnContainer>
       <QueueInfo>
@@ -198,8 +198,6 @@ export function QueueInfoColumn({
           <h1>
             No staff checked in, but you can still ask your questions first!
           </h1>
-        ) : away ? (
-          <h1>Instructor away, brb</h1>
         ) : (
           <QueueTitle data-cy="room-title">
             {queue?.room} {queue?.isDisabled && <b>(disabled)</b>}
@@ -233,13 +231,13 @@ export function QueueInfoColumn({
       <TAStatuses queueId={queueId} />
       {isStaff && (
         <QueueManagementBox>
-          <p>Toggle to indicate away </p>
+          {/* <p>Toggle to indicate away </p>
           <Switch
             onChange={checkAway}
             checkedChildren="Answering"
             unCheckedChildren="Away"
             style={{ width: "200px", marginTop: "-50px", marginBottom: "50px" }}
-          />
+          /> */}
           <Popconfirm
             title={
               "Are you sure you want to clear all students from the queue?"

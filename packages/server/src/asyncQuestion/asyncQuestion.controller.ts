@@ -32,6 +32,7 @@ import { AsyncQuestionModel } from './asyncQuestion.entity';
 import { AsyncQuestionService } from './asyncQuestion.service';
 import { CourseModel } from 'course/course.entity';
 import { MailService } from 'mail/mail.service';
+import { UserCourseModel } from 'profile/user-course.entity';
 @Controller('asyncQuestions')
 @UseGuards(JwtAuthGuard)
 export class asyncQuestionController {
@@ -97,6 +98,18 @@ export class asyncQuestionController {
         visible: body.visible || false,
         createdAt: new Date(),
       }).save();
+      const professors = await UserCourseModel.findOne({
+        where: {
+          role: Role.PROFESSOR,
+        },
+      });
+      console.log(professors);
+      // const post: sendEmailAsync = {
+      //   receiver: professors.user.email,
+      //   subject: 'UBC helpme Async question created',
+      //   type: asyncQuestionEventType.created,
+      // };
+      // this.mailService.sendEmail(post);
       return question;
     } catch (err) {
       console.error(err);
@@ -181,3 +194,38 @@ export class asyncQuestionController {
     return question;
   }
 }
+//delete questions currently not implemented.
+
+// @Delete(':questionId')
+// async deleteQuestion(
+//     @Param('questionId') questionId: number,
+//     @Body() body: UpdateAsyncQuestions,
+//   ): Promise<AsyncQuestion> {
+//     const question = await AsyncQuestionModel.findOne({
+//       where: { id: questionId },
+//       relations: ['creator', 'images'],
+//     });
+//     if (!question) {
+//       throw new NotFoundException();
+//     }
+
+//     const receiver = await UserModel.findOne({
+//       where: {
+//         id: question.creatorId,
+//       },
+//     });
+//     if (!receiver) {
+//       throw NotFoundException;
+//     }
+
+//     const post: sendEmailAsync = {
+//       receiver: receiver.email,
+//       subject: 'UBC helpme Async question status change',
+//       type: asyncQuestionEventType.deleted,
+//     };
+//     this.mailService.sendEmail(post);
+
+//     return question;
+//   }
+
+// }

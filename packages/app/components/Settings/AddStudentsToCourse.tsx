@@ -17,7 +17,7 @@ export default function AddStudentsToCourse({
 }: CourseRosterPageProps): ReactElement {
   const [file, setFile] = useState();
   const fileReader = new FileReader();
-  const course = useCourse(courseId).course.name;
+  const { course } = useCourse(courseId);
   const handleOnChange = (e) => {
     setFile(e.target.files[0]);
   };
@@ -45,7 +45,7 @@ export default function AddStudentsToCourse({
           first_name: temp[0],
           last_name: temp[1],
           sid: Number(temp[2]),
-          selected_course: [course],
+          selected_course: [course.id],
         };
         await API.signup
           .registerStudent(tempStudent)
