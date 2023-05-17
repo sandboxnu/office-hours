@@ -83,14 +83,18 @@ export class ImageController {
     //check whether related question is visible. If not, only prof and creator can see.
     if (!image.asyncQuestion.visible) {
       const usercourse = await UserCourseModel.findOne({
-        where: { userId: user.id },
+        where: {
+          userId: user.id,
+          courseId: image.asyncQuestion.courseId,
+        },
       });
       if (!usercourse) {
         throw new NotFoundException();
       }
       if (
         user.id !== image.asyncQuestion.creatorId &&
-        usercourse.role === Role.STUDENT
+        usercourse.role === Role.STUDENT &&
+        image.asyncQuestion.visible == false
       )
         throw new UnauthorizedException();
     }

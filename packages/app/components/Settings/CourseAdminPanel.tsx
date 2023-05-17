@@ -3,7 +3,7 @@ import {
   EditOutlined,
   QuestionCircleOutlined,
   UploadOutlined,
-  DownloadOutlined
+  DownloadOutlined,
 } from "@ant-design/icons";
 import { Col, Menu, Row, Space, Tooltip } from "antd";
 import { useRouter } from "next/router";
@@ -18,14 +18,14 @@ import ExportQuestions from "./ExportQuestions";
 import EditQuestions from "./EditQuestions";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import { Role } from "@koh/common";
-import EditCourse from "./EditCourse";
+//import EditCourse from "./EditCourse";
 export enum CourseAdminOptions {
   CHECK_IN = "CHECK_IN",
   ROSTER = "ROSTER",
   ADD = "ADD",
   EXPORT = "EXPORT",
   EDIT = "EDIT",
-  EDIT_COURSE="EDIT_COURSE"
+  EDIT_COURSE = "EDIT_COURSE",
 }
 
 interface CourseAdminPageProps {
@@ -46,7 +46,7 @@ const CenteredText = styled.p`
 
 export default function CourseAdminPanel({
   defaultPage,
-  courseId
+  courseId,
 }: CourseAdminPageProps): ReactElement {
   const role = useRoleInCourse(Number(courseId));
   const profile = useProfile();
@@ -83,38 +83,38 @@ export default function CourseAdminPanel({
         </CenteredText>
         <Menu
           defaultSelectedKeys={[currentSettings]}
-          onClick={e => setCurrentSettings(e.key as CourseAdminOptions)}
+          onClick={(e) => setCurrentSettings(e.key as CourseAdminOptions)}
           style={{ background: "#f8f9fb", paddingTop: "20px" }}
         >
-
-          {
-            role === Role.PROFESSOR && (
-              <>
-            <Menu.Item key={CourseAdminOptions.CHECK_IN} icon={<EditOutlined />}>
-              TA Check In/Out Times
-            </Menu.Item>
-            <Menu.Item key={CourseAdminOptions.EDIT_COURSE} icon={<EditOutlined />}>
+          {role === Role.PROFESSOR && (
+            <>
+              <Menu.Item
+                key={CourseAdminOptions.CHECK_IN}
+                icon={<EditOutlined />}
+              >
+                TA Check In/Out Times
+              </Menu.Item>
+              {/* <Menu.Item key={CourseAdminOptions.EDIT_COURSE} icon={<EditOutlined />}>
               Edit course details
-            </Menu.Item>
-            <Menu.Item key={CourseAdminOptions.ROSTER} icon={<BellOutlined />}>
-              Course Roster
-            </Menu.Item>
-            <Menu.Item key={CourseAdminOptions.ADD} icon={<UploadOutlined />}>
-              Add students to course
-            </Menu.Item>
-              </>
-            )
-          }
+            </Menu.Item> */}
+              <Menu.Item
+                key={CourseAdminOptions.ROSTER}
+                icon={<BellOutlined />}
+              >
+                Course Roster
+              </Menu.Item>
+              <Menu.Item key={CourseAdminOptions.ADD} icon={<UploadOutlined />}>
+                Add students to course
+              </Menu.Item>
+            </>
+          )}
           <Menu.Item
             key={CourseAdminOptions.EXPORT}
             icon={<DownloadOutlined />}
           >
             Export questions
           </Menu.Item>
-          <Menu.Item
-            key={CourseAdminOptions.EDIT}
-            icon={<EditOutlined />}
-          >
+          <Menu.Item key={CourseAdminOptions.EDIT} icon={<EditOutlined />}>
             Edit questions
           </Menu.Item>
         </Menu>
@@ -122,9 +122,9 @@ export default function CourseAdminPanel({
       <VerticalDivider />
       <Space direction="vertical" size={40} style={{ flexGrow: 1 }}>
         <Col span={20}>
-        {currentSettings === CourseAdminOptions.EDIT_COURSE && (
+          {/* {currentSettings === CourseAdminOptions.EDIT_COURSE && (
             <EditCourse courseId={courseId} />
-          )}
+          )} */}
           {currentSettings === CourseAdminOptions.CHECK_IN && (
             <TACheckInCheckOutTimes courseId={courseId} />
           )}

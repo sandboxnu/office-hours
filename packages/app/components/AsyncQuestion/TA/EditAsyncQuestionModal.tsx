@@ -76,7 +76,9 @@ export function EditAsyncQuestionModal({
             questionsTypeState.map((q) => (
               <Radio.Button
                 onClick={() => {
-                  if (displayedTypeState.includes(q)) {
+                  if (!displayedTypeState) {
+                    setDisplayTypeState([q]);
+                  } else if (displayedTypeState.includes(q)) {
                     message.warn("type already added");
                   } else {
                     setDisplayTypeState([...displayedTypeState, q]);
