@@ -1,8 +1,12 @@
 import { Module } from '@nestjs/common';
+import { NotificationModule } from '../notification/notification.module';
 import { asyncQuestionController } from './asyncQuestion.controller';
-import { AsyncQuestionService } from './asyncQuestion.service';
+import { asyncQuestionService } from './asyncQuestion.service';
+
 @Module({
   controllers: [asyncQuestionController],
-  providers: [AsyncQuestionService],
+  providers: [asyncQuestionService],
+  imports: [NotificationModule],
+  exports: [asyncQuestionService],
 })
 export class asyncQuestionModule {}

@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
-
+import { Injectable } from '@nestjs/common';
 @Injectable()
-export class AsyncQuestionService {
-  constructor(private connection: Connection) {}
+export class asyncQuestionService {
+  constructor(
+    private connection: Connection, // private notifService: NotificationService,
+  ) {}
 }
