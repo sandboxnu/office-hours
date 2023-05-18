@@ -431,7 +431,7 @@ export class UBCOuserParam {
   @IsString()
   last_name!: string;
 
-  @IsArray()
+  @IsInt()
   selected_course!: number;
 
   @IsOptional()

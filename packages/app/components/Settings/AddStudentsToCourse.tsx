@@ -45,7 +45,7 @@ export default function AddStudentsToCourse({
           first_name: temp[0],
           last_name: temp[1],
           sid: Number(temp[2]),
-          selected_course: [course.id],
+          selected_course: course.id,
         };
         await API.signup
           .registerStudent(tempStudent)
