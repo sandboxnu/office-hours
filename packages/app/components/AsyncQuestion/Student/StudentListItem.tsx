@@ -85,7 +85,8 @@ export default function StudentListItem({
         </AvatarContainer>
         <QuestionInfoContainer>
           <QuestionText> {question.questionAbstract}</QuestionText>
-          {question.status === asyncQuestionStatus.TADeleted ? (
+          {question.status === asyncQuestionStatus.TADeleted ||
+          question.status === asyncQuestionStatus.StudentDeleted ? (
             <div style={{ color: "red" }}>Deleted</div>
           ) : question.status !== asyncQuestionStatus.Resolved ? (
             <QuestionMetaRow info={metaInfo} />

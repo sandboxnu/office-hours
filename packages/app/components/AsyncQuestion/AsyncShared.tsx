@@ -8,6 +8,8 @@ import { QueueInfoColumnButton } from "../Queue/QueueListSharedComponents";
 // import { useTeams } from "../../../hooks/useTeams";
 import { QuestionListShared } from "./QuestionListShared";
 import QuestionListDetail from "./QuestionListDetail";
+import { API } from "@koh/api-client";
+import { message } from "antd";
 /**
  * Method to help student and
  * pop open notification if another TA helped at same time (race condition)
@@ -39,10 +41,13 @@ export default function AsyncShared({
   const [studentQuestionModal, setStudentQuestionModal] = useState(false);
 
   const [TAeditDetails, setTAeditDetails] = useState(false);
-  // const [addStudentsModal, setAddStudentsModal] = useState(false);
-
-  // const { course } = useCourse(courseId);
-
+  const changeDisplayTypes = async () => {
+    await API.course.editCourseInfo(Number(courseId), {
+      courseId: Number(courseId),
+      asyncQuestionDisplayTypes: ["all"],
+    });
+    message.success("Display types updated");
+  };
   return (
     <>
       <Container>
@@ -70,22 +75,14 @@ export default function AsyncShared({
                   data-cy="editQueue"
                   onClick={() => setTAeditDetails(true)}
                 >
-                  Edit Queue Details
+                  Edit displayed question types
                 </EditQueueButton>
-                {/* <EditQueueButton
+                <EditQueueButton
                   data-cy="addStudents"
+                  onClick={() => changeDisplayTypes()}
                 >
-                  Add Students
+                  Show all questions
                 </EditQueueButton>
-                <Tooltip
-                  title="async"
-                >
-                  <HelpNextButton
-                    data-cy="help-next"
-                  >
-                    Help Next
-                  </HelpNextButton>
-                </Tooltip> */}
 
                 <div style={{ marginBottom: "12px" }}></div>
               </>

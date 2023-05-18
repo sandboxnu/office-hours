@@ -75,8 +75,6 @@ export class CourseController {
   @UseGuards(JwtAuthGuard)
   async getAsyncQuestions(
     @Param('cid') cid: number,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @User() user: UserModel,
   ): Promise<AsyncQuestionResponse> {
     const all = await AsyncQuestionModel.find({
       where: {
@@ -87,9 +85,19 @@ export class CourseController {
     if (!all) {
       throw NotFoundException;
     }
-    const questionsDB = all.filter((question) =>
-      question.course.asyncQuestionDisplayTypes.includes(question.questionType),
-    );
+    const course = await CourseModel.findOne({
+      where: {
+        id: cid,
+      },
+    });
+    let questionsDB = all;
+    if (course.asyncQuestionDisplayTypes[0] !== 'all') {
+      questionsDB = all.filter((question) =>
+        question.course.asyncQuestionDisplayTypes.includes(
+          question.questionType,
+        ),
+      );
+    }
     const questions = new AsyncQuestionResponse();
     questions.helpedQuestions = questionsDB.filter(
       (question) => question.status === asyncQuestionStatus.Resolved,

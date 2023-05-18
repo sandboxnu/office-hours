@@ -89,7 +89,8 @@ export default function TAquestionListItem({
         <QuestionInfoContainer>
           <Name>{question.creator?.name}</Name>
           <QuestionText>{<i>{question.questionAbstract}</i>}</QuestionText>
-          {question.status === asyncQuestionStatus.TADeleted ? (
+          {question.status === asyncQuestionStatus.TADeleted ||
+          question.status === asyncQuestionStatus.StudentDeleted ? (
             <div style={{ color: "red" }}>Deleted</div>
           ) : question.status !== asyncQuestionStatus.Resolved ? (
             <QuestionMetaRow info={metaInfo} />

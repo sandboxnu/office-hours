@@ -2,7 +2,6 @@ import { API } from "@koh/api-client";
 import { AsyncQuestionResponse } from "@koh/common";
 
 import useSWR, { responseInterface } from "swr";
-
 type questionsResponse = responseInterface<AsyncQuestionResponse, any>;
 
 interface UseQuestionReturn {
@@ -12,10 +11,10 @@ interface UseQuestionReturn {
 }
 
 export function useAsnycQuestions(cid: number): UseQuestionReturn {
-  const key = cid && `/api/v1/queues/${cid}/questions`;
-  // Subscribe to sse
+  const key = cid && `/api/v1/courses/${cid}/questions`;
+  //Subscribe to sse
   // const isLive = useEventSource(
-  //   qid && `/api/v1/queues/${qid}/sse`,
+  //   cid && `/api/v1/queues/${qid}/sse`,
   //   "question",
   //   useCallback(
   //     (data: SSEQueueResponse) => {
@@ -36,7 +35,7 @@ export function useAsnycQuestions(cid: number): UseQuestionReturn {
     error: questionsError,
     mutate: mutateQuestions,
   } = useSWR(key, async () => API.course.getAsyncQuestions(Number(cid)), {
-    // refreshInterval: isLive ? 0 : 10 * 1000,
+    refreshInterval: 0,
   });
 
   return { questions, questionsError, mutateQuestions };

@@ -19,6 +19,9 @@ export default function StudentQuestionDetailButtons({
   // };
   // const [form] = Form.useForm();
 
+  if (question.status !== asyncQuestionStatus.Waiting) {
+    return <></>;
+  }
   return (
     <>
       <Popconfirm
