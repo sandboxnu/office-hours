@@ -90,6 +90,6 @@ export class CourseModel extends BaseEntity {
   @Exclude()
   images: AsyncQuestionModel[];
 
-  @Column('text', { array: true, nullable: true })
+  @Column('text', { nullable: true, default: [] })
   asyncQuestionDisplayTypes: string[];
 }

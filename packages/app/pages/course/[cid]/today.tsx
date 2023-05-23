@@ -124,23 +124,16 @@ export default function Today(): ReactElement {
                   There are no queues for this course, try asking async
                   questions
                 </h1>
-                <AsyncQuestionCard></AsyncQuestionCard>
               </>
             ) : (
-              sortedQueues?.map((q) =>
-                q.staffList.length !== 0 ||
-                role === Role.PROFESSOR ||
-                role === Role.TA ? (
-                  <QueueCard
-                    key={q.id}
-                    queue={q}
-                    isTA={role === Role.TA || role === Role.PROFESSOR}
-                    updateQueueNotes={updateQueueNotes}
-                  />
-                ) : (
-                  <></>
-                )
-              )
+              sortedQueues?.map((q) => (
+                <QueueCard
+                  key={q.id}
+                  queue={q}
+                  isTA={role === Role.TA || role === Role.PROFESSOR}
+                  updateQueueNotes={updateQueueNotes}
+                />
+              ))
             )}
             {!course && <QueueCardSkeleton />}
             <AsyncQuestionCard></AsyncQuestionCard>
