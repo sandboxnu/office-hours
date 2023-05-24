@@ -30,7 +30,8 @@ const inCLI = {
 const typeorm = {
   type: 'postgres',
   url:
-    process.env.DB_URL || 'postgres://helpme:helpme22@cosc304.ok.ubc.ca:5432',
+    process.env.DB_URL ||
+    'postgres://helpme:helpme22@cosc304.ok.ubc.ca:5432/helpmedb',
   synchronize: process.env.NODE_ENV !== 'production',
   entities: [
     CourseModel,
