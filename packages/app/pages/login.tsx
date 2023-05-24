@@ -19,7 +19,8 @@ class option {
 }
 export default function Login(): ReactElement {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [loginInfo, setLoginInfo] = useState(null);
+  const [pass, setPass] = useState("");
+  const [uname, setUname] = useState("");
   const [cOptions, setCOptions] = useState<option[]>(null);
   const [selectedCourse, setSelectedCourse] = useState<number>(null);
   useEffect(() => {
@@ -44,17 +45,17 @@ export default function Login(): ReactElement {
   function onChange(value: number) {
     setSelectedCourse(value);
   }
-  function submit(values: any) {
+  function submit() {
     // get all course ids with userid
     // if courseids.length==1 log in using login(values, course), if not stop. >2 then set modal to true.
     // modal calls modalSubmit that sends info to login to login.
-    setLoginInfo(values);
+    console.log(uname);
     const courses = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: values.username,
-        password: values.password,
+        email: uname,
+        password: pass,
       }),
     };
     fetch(`/api/v1/getAllcourses`, courses)
@@ -91,12 +92,13 @@ export default function Login(): ReactElement {
     setIsModalOpen(false);
   };
   function login(course: number) {
+    console.log(uname);
     const loginRequest = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: loginInfo.username,
-        password: loginInfo.password,
+        email: uname,
+        password: pass,
       }),
     };
     fetch(`/api/v1/ubc_login/${course}`, loginRequest)
@@ -121,6 +123,12 @@ export default function Login(): ReactElement {
         console.error("There was an error!", error);
       });
   }
+  const onPassChange = (e) => {
+    setPass(e.target.value);
+  };
+  const onUserNameChange = (e) => {
+    setUname(e.target.value);
+  };
   //put token inside login request
   if (!cOptions) {
     return <Spin tip="Loading..." size="large" />;
@@ -140,6 +148,7 @@ export default function Login(): ReactElement {
           >
             <Input
               prefix={<UserOutlined className="site-form-item-icon" />}
+              onChange={onUserNameChange}
               placeholder="Username"
             />
           </Form.Item>
@@ -149,6 +158,7 @@ export default function Login(): ReactElement {
           >
             <Input
               prefix={<LockOutlined className="site-form-item-icon" />}
+              onChange={onPassChange}
               type="password"
               placeholder="Password"
             />

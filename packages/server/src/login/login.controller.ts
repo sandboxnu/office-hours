@@ -60,7 +60,6 @@ export class LoginController {
         courseId: cid,
       },
     });
-    console.log(userCourse);
     if (!userCourse) {
       return res.status(400).json({ message: 'NotInCourse' });
     }
