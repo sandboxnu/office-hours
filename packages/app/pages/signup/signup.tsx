@@ -13,24 +13,11 @@ import { message } from "antd";
 export default function Signup(): ReactElement {
   var ErrorFetchedChecker = false;
   //get course
-  const [courses, setCourses] = useState([""]);
-  const [courseId, setId] = useState([""]);
-  const [selectedOptions, setSelectedOptions] = useState<any[]>([]);
-  // Array of all options
-  function toObj(arr) {
-    var lst = [];
-    for (var i = 0; i < arr.length; ++i)
-      lst.push({ value: arr[i], label: arr[i] });
-    return lst;
-  }
-  function toArr(obj) {
-    var lst = [];
-    for (var i = 0; i < obj.length; ++i) lst.push(obj[i].value);
-    return lst;
-  }
-  const optionList = toObj(courses);
+  const [courses, setCourses] = useState([]);
+  const [selectedOption, setSelectedOption] = useState({ value: 0, label: "" });
+
   function handleSelect(data) {
-    setSelectedOptions(data);
+    setSelectedOption(data);
   }
 
   useEffect(() => {
@@ -40,13 +27,11 @@ export default function Signup(): ReactElement {
     };
     fetch("/api/v1/courses", getOptions).then(async (response) => {
       const data = await response.json();
-      let courseNames = [];
+      let course = [];
       for (var i = 0; i < data.length; i++) {
-        courseNames.push(data[i].name);
-        courseId.push(data[i].id);
+        course.push({ value: data[i].id, label: data[i].name });
       }
-      setId(courseNames);
-      return setCourses(courseNames);
+      setCourses(course);
     });
   }, [ErrorFetchedChecker]);
   //send data to create user
@@ -73,7 +58,7 @@ export default function Signup(): ReactElement {
         first_name: inputdata.firstName,
         last_name: inputdata.lastName,
         sid: parseInt(inputdata.sid),
-        selected_course: toArr(selectedOptions),
+        selected_course: selectedOption.value,
       }),
     };
     fetch("/api/v1/signup/ubc_signup", loginRequest)
@@ -168,12 +153,11 @@ export default function Signup(): ReactElement {
           Choose your courses
           <div className="dropdown-container">
             <Select
-              options={optionList}
+              options={courses}
               placeholder="Select courses"
-              value={selectedOptions}
+              value={selectedOption}
               onChange={handleSelect}
               isSearchable={true}
-              isMulti
             />
           </div>
         </div>

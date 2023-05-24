@@ -34,12 +34,10 @@ export class SignupController {
     @Res() res: Response,
     @Body() body: UBCOuserParam,
   ): Promise<any> {
-    //create new user or add new course model, 3 tables update, usermodel add usercourse, courseModel add userCourse, new usercourse row
-    //first check whether user exists. If not create user.
-    //then loop through body.select_courses to check whether usercourse exists, if not create user course. If true then no actions.
-    //add updated userCourse[] to both user and course models.
     const course = await CourseModel.findOne(body.selected_course);
+    console.log(body);
     if (!course) {
+      console.log('course');
       throw new NotFoundException();
     }
     let user = await UserModel.findOne({
