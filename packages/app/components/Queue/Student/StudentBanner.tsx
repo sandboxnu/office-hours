@@ -143,7 +143,6 @@ export default function StudentBanner({
           }
           content={
             <Bullets>
-              <li>The question will be timed out after {course?.questionTimer} minutes</li>
               <li>Be respectful of the TA’s time</li>
               <li>Come prepared with your question!</li>
             </Bullets>

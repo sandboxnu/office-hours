@@ -1,6 +1,6 @@
 import { ReactElement, useCallback } from "react";
 import Modal from "antd/lib/modal/Modal";
-import { Button, Form, Collapse, message, Radio } from "antd";
+import { Form, Collapse, message, Radio } from "antd";
 import { API } from "@koh/api-client";
 import { default as React, useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -132,7 +132,9 @@ export function AddStudentsModal({
     <Modal
       title="Add Students to queue"
       visible={visible}
+      onCancel={onClose}
       onOk={async () => {
+        handleSubmit();
         onClose();
       }}
     >
@@ -181,13 +183,13 @@ export function AddStudentsModal({
                   isSearchable={true}
                   isMulti
                 />
-                <Button
+                {/* <Button
                   style={{ marginLeft: 15, marginTop: 15 }}
                   htmlType="submit"
                   className="btn"
                 >
                   Add
-                </Button>
+                </Button> */}
               </Form.Item>
             </Form>
             {studentsState.length > 0 ? (

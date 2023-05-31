@@ -71,15 +71,15 @@ export default function ProfileSettings(): ReactElement {
             style={{ marginLeft: isMobile ? "0" : "10px" }}
             label="Email"
             name="email"
-            data-cy="sidInput"
+            data-cy="emailInput"
             rules={[
               {
                 required: true,
-                message: "Your email can't be empty!"
-              }
+                message: "Your email can't be empty!",
+              },
             ]}
           >
-            <Input />
+            <Input style={{ width: "300px" }} />
           </Form.Item>
         </ResponsiveFormRow>
       </Form>

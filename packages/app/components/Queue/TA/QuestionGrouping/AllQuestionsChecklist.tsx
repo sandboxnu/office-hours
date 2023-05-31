@@ -4,12 +4,10 @@ import { Question, User } from "@koh/common";
 import { Checkbox, Tooltip } from "antd";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
-import { useDefaultMessage } from "../../../../hooks/useDefaultMessage";
 import { useTAInQueueInfo } from "../../../../hooks/useTAInQueueInfo";
 import { BannerPrimaryButton } from "../../Banner";
 import { Header } from "../TAQueueDetail";
 import TAQueueListItem from "../TAQueueListItem";
-import { useTeams } from "../../../../hooks/useTeams";
 
 export const Description = styled.div`
   font-size: 12px;
@@ -51,11 +49,11 @@ export default function AllQuestionsCheckList({
     } else if (isHelping) {
       return [false, "You are already helping a student"];
     } else {
-      return [true, "Create Group & Call"];
+      return [true, "Help all selected students"];
     }
   })();
 
-  const defaultMessage = useDefaultMessage();
+  // const defaultMessage = useDefaultMessage();
 
   const onQuestionChecked = (q) => {
     if (!checkedQuestions.has(q.id)) {
@@ -73,12 +71,12 @@ export default function AllQuestionsCheckList({
     }
   };
 
-  const usersInLink = allQuestions
-    .filter((question) => checkedQuestions.has(question.id))
-    .map((question) => question.creator.email)
-    .join(",");
+  // const usersInLink = allQuestions
+  //   .filter((question) => checkedQuestions.has(question.id))
+  //   .map((question) => question.creator.email)
+  //   .join(",");
 
-  const openTeams = useTeams(queueId, usersInLink, defaultMessage);
+  // const openTeams = useTeams(queueId, usersInLink, defaultMessage);
 
   return (
     <div>
@@ -106,7 +104,6 @@ export default function AllQuestionsCheckList({
                     queueId: queueId,
                   });
                   onStartCall();
-                  openTeams();
                 }}
                 disabled={!canHelp || checkedQuestions.size === 0}
                 data-cy="help-student"

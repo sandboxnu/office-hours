@@ -60,7 +60,6 @@ export default function TAQueueListSection({
             </Title>
           }
           showArrow={collapsible}
-          collapsible="disabled"
         >
           {questions.length === 0 ? (
             emptyDisplay

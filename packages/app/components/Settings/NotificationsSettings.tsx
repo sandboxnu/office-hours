@@ -5,7 +5,7 @@ import {
   ERROR_MESSAGES,
   UpdateProfileParams,
 } from "@koh/common";
-import { Button, Form, Input, List, message, Switch, Tooltip } from "antd";
+import { Button, Form, List, message, Switch, Tooltip } from "antd";
 import { pick } from "lodash";
 import { HeaderTitle } from "./Styled";
 import React, { ReactElement, useEffect, useState } from "react";
@@ -88,7 +88,17 @@ export default function NotificationsSettings(): ReactElement {
               )
             }
           </Form.Item>
-          <Form.Item
+          <Tooltip title="Notification still doesn't work? Click here!">
+            <QuestionCircleOutlined
+              style={{ marginTop: "30px", float: "right", fontSize: "25px" }}
+              onClick={() =>
+                window.open(
+                  "https://www.makeuseof.com/google-chrome-notifications-not-working-fixes/"
+                )
+              }
+            />
+          </Tooltip>
+          {/* <Form.Item
             style={{ marginTop: "30px", flex: 1 }}
             label="Enable SMS notifications"
             name="phoneNotifsEnabled"
@@ -114,9 +124,9 @@ export default function NotificationsSettings(): ReactElement {
                 </Form.Item>
               )
             }
-          </Form.Item>
+          </Form.Item> */}
         </Form>
-        <Tooltip title="Click for help guide">
+        {/* <Tooltip title="Click for help guide">
           <QuestionCircleOutlined
             style={{ float: "right", fontSize: "25px" }}
             onClick={() =>
@@ -125,12 +135,12 @@ export default function NotificationsSettings(): ReactElement {
               )
             }
           />
-        </Tooltip>
+        </Tooltip> */}
         <Button
           key="submit"
           type="primary"
           onClick={handleOk}
-          style={{ marginBottom: "15px" }}
+          style={{ marginTop: "30px", marginBottom: "15px" }}
         >
           Save
         </Button>

@@ -3,11 +3,10 @@ import {
   BookOutlined,
   DeleteOutlined,
   UploadOutlined,
-  UserOutlined
+  UserOutlined,
 } from "@ant-design/icons";
 import { Collapse } from "antd";
 import { API } from "@koh/api-client";
-import { Role } from "@koh/common";
 import { useWindowWidth } from "@react-hook/window-size";
 import { Button, Col, Menu, message, Row, Skeleton, Space, Upload } from "antd";
 import React, { ReactElement, useEffect, useState } from "react";
@@ -19,14 +18,12 @@ import TeamsSettings from "./TeamsSettings";
 import CoursePreferenceSettings from "./CoursePreferenceSettings";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { SettingsPanelAvatar } from "./SettingsSharedComponents";
-import { useRoleInCourse } from "../../hooks/useRoleInCourse";
-import { useRouter } from "next/router";
 
 export enum SettingsOptions {
   PROFILE = "PROFILE",
   NOTIFICATIONS = "NOTIFICATIONS",
   TEAMS_SETTINGS = "TEAMS_SETTINGS",
-  PREFERENCES = "PREFERENCES"
+  PREFERENCES = "PREFERENCES",
 }
 
 interface SettingsPageProps {
@@ -49,15 +46,13 @@ const ProfilePicButton = styled(Button)`
 const { Panel } = Collapse;
 
 export default function SettingsPage({
-  defaultPage
+  defaultPage,
 }: SettingsPageProps): ReactElement {
-  const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
-    API.profile.index()
-  );
-  const router = useRouter();
-  const { cid } = router.query;
-  const role = useRoleInCourse(Number(cid));
-  const isTAOrProfessor = role === Role.TA || role === Role.PROFESSOR;
+  const {
+    data: profile,
+    error,
+    mutate,
+  } = useSWR(`api/v1/profile`, async () => API.profile.index());
 
   const [currentSettings, setCurrentSettings] = useState(
     defaultPage || SettingsOptions.PROFILE
@@ -72,7 +67,7 @@ export default function SettingsPage({
     setAvatarSize(windowWidth / widthDivider);
   });
 
-  const beforeUpload = file => {
+  const beforeUpload = (file) => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
 
     if (!isJpgOrPng) {
@@ -97,7 +92,7 @@ export default function SettingsPage({
         <Row
           style={{
             marginTop: avatarSize / 6,
-            justifyContent: `${isMobile ? "left" : "center"}`
+            justifyContent: `${isMobile ? "left" : "center"}`,
           }}
         >
           {uploading ? (
@@ -109,7 +104,7 @@ export default function SettingsPage({
                 marginTop: avatarSize / 6,
                 marginBottom: avatarSize / 12,
                 marginLeft: avatarSize / 6,
-                marginRight: avatarSize / 6
+                marginRight: avatarSize / 6,
               }}
             />
           ) : (
@@ -125,7 +120,7 @@ export default function SettingsPage({
               action={"/api/v1/profile/upload_picture"}
               beforeUpload={beforeUpload}
               showUploadList={false}
-              onChange={info => {
+              onChange={(info) => {
                 setUploading(info.file.status === "uploading");
                 mutate();
               }}
@@ -169,11 +164,11 @@ export default function SettingsPage({
           <Panel header="Personal Information" key="profile">
             <ProfileSettings />
           </Panel>
-          {isTAOrProfessor && (
+          {/* {isTAOrProfessor && (
             <Panel header="Teams Settings" key="teams_settings">
               <TeamsSettings />
             </Panel>
-          )}
+          )} */}
           <Panel header="Notifications" key="notifications">
             <NotificationsSettings />
           </Panel>
@@ -185,7 +180,7 @@ export default function SettingsPage({
         <Menu
           style={{ background: "none", marginTop: "10px" }}
           defaultSelectedKeys={[currentSettings]}
-          onClick={e => setCurrentSettings(e.key as SettingsOptions)}
+          onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}
         >
           <Menu.Item key={SettingsOptions.PROFILE} icon={<UserOutlined />}>
             Personal Information

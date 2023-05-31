@@ -148,7 +148,7 @@ export default function QuestionForm({
   };
   // on button submit click, conditionally choose to go back to the queue
   const onClickSubmit = () => {
-    if (questionTypeInput && questionText && questionText !== "") {
+    if (questionTypeInput) {
       finishQuestion(
         questionText,
         questionTypeInput,
@@ -171,7 +171,6 @@ export default function QuestionForm({
   const courseNumber = Number(courseId);
   const getQuestions = useCallback(async () => {
     setQuestionsTypeState(await API.questions.questionTypes(courseNumber));
-    console.log(questionsTypeState);
   }, []);
 
   return (
