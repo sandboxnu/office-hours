@@ -40,6 +40,7 @@ import {
   UpdateAsyncQuestions,
   AsyncQuestion,
   CoursePartial,
+  Calendar,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -274,6 +275,15 @@ class APIClient {
     ): Promise<void> =>
       this.req("DELETE", `/api/v1/questions/${courseId}/${questionType}`),
   };
+
+  calendar = {
+    addCalendar: async (body: Calendar): Promise<Calendar> =>
+      this.req("POST", `/api/v1/calendar`, undefined, body),
+    getEvents: async (cid: number): Promise<Calendar[]> =>
+      this.req("GET", `/api/v1/calendar/${cid}`),
+    deleteEvent: async (eventId: number): Promise<Calendar> =>
+      this.req("DELETE", `/api/v1/calendar/${eventId}/delete`),
+  };
   queues = {
     get: async (queueId: number): Promise<GetQueueResponse> =>
       this.req("GET", `/api/v1/queues/${queueId}`, GetQueueResponse),
@@ -287,7 +297,7 @@ class APIClient {
     clean: async (queueId: number): Promise<void> =>
       this.req("POST", `/api/v1/queues/${queueId}/clean`),
     disable: async (queueId: number): Promise<void> =>
-      this.req("DELETE", `/api/v1/queues/${queueId}`),
+      this.req("DELETE", `/api/v1/queues/${queueId}/get`),
   };
   notif = {
     desktop: {

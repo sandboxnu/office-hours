@@ -1,6 +1,6 @@
 import { API } from "@koh/api-client";
 import { Heatmap, QueuePartial, Role } from "@koh/common";
-import { Col, Row } from "antd";
+import { Col, Row, Spin } from "antd";
 import { chunk, mean } from "lodash";
 import moment from "moment";
 import Head from "next/head";
@@ -95,67 +95,71 @@ export default function Today(): ReactElement {
     });
     mutateCourse();
   };
-
-  return (
-    <StandardPageContainer>
-      <Head>
-        <title>{course?.name} | UBC Office Hours</title>
-      </Head>
-      <NavBar courseId={Number(cid)} />
-      <Container>
-        <Row gutter={64}>
-          <TodayCol md={12} xs={24}>
-            <Row justify="space-between">
-              <Title>Current Office Hours</Title>
-              <TodayPageCheckinButton />
-            </Row>
-            <Row>
-              <div>
-                <i>
-                  You are a <RoleColorSpan>{roleToString(role)}</RoleColorSpan>{" "}
-                  for this course
-                </i>
-              </div>
-            </Row>
-            {course?.queues?.length === 0 ? (
-              <>
-                {" "}
-                <h1 style={{ paddingTop: "100px" }}>
-                  There are no queues for this course, try asking async
-                  questions
-                </h1>
-              </>
-            ) : (
-              sortedQueues?.map((q) => (
-                <QueueCard
-                  key={q.id}
-                  queue={q}
-                  isTA={role === Role.TA || role === Role.PROFESSOR}
-                  updateQueueNotes={updateQueueNotes}
-                />
-              ))
-            )}
-            {!course && <QueueCardSkeleton />}
-            <AsyncQuestionCard></AsyncQuestionCard>
-            {
-              // This only works with UTC offsets in the form N:00, to help with other offsets, the size of the array might have to change to a size of 24*7*4 (for every 15 min interval)
-              course && course.heatmap && (
-                <PopularTimes
-                  heatmap={collapseHeatmap(
-                    arrayRotate(
-                      course.heatmap,
-                      -Math.floor(moment().utcOffset() / 15)
-                    )
-                  )}
-                />
-              )
-            }
-          </TodayCol>
-          <TodayCol md={12} sm={24}>
-            <SchedulePanel courseId={Number(cid)} defaultView="timeGridDay" />
-          </TodayCol>
-        </Row>
-      </Container>
-    </StandardPageContainer>
-  );
+  if (!course) {
+    return <Spin tip="Loading..." size="large" />;
+  } else {
+    return (
+      <StandardPageContainer>
+        <Head>
+          <title>{course?.name} | UBC Office Hours</title>
+        </Head>
+        <NavBar courseId={Number(cid)} />
+        <Container>
+          <Row gutter={64}>
+            <TodayCol md={12} xs={24}>
+              <Row justify="space-between">
+                <Title>Current Office Hours</Title>
+                <TodayPageCheckinButton />
+              </Row>
+              <Row>
+                <div>
+                  <i>
+                    You are a{" "}
+                    <RoleColorSpan>{roleToString(role)}</RoleColorSpan> for this
+                    course
+                  </i>
+                </div>
+              </Row>
+              {course?.queues?.length === 0 ? (
+                <>
+                  {" "}
+                  <h1 style={{ paddingTop: "100px" }}>
+                    There are no queues for this course, try asking async
+                    questions
+                  </h1>
+                </>
+              ) : (
+                sortedQueues?.map((q) => (
+                  <QueueCard
+                    key={q.id}
+                    queue={q}
+                    isTA={role === Role.TA || role === Role.PROFESSOR}
+                    updateQueueNotes={updateQueueNotes}
+                  />
+                ))
+              )}
+              {!course && <QueueCardSkeleton />}
+              <AsyncQuestionCard></AsyncQuestionCard>
+              {
+                // This only works with UTC offsets in the form N:00, to help with other offsets, the size of the array might have to change to a size of 24*7*4 (for every 15 min interval)
+                course && course.heatmap && (
+                  <PopularTimes
+                    heatmap={collapseHeatmap(
+                      arrayRotate(
+                        course.heatmap,
+                        -Math.floor(moment().utcOffset() / 15)
+                      )
+                    )}
+                  />
+                )
+              }
+            </TodayCol>
+            <TodayCol md={12} sm={24}>
+              <SchedulePanel courseId={Number(cid)} defaultView="timeGridDay" />
+            </TodayCol>
+          </Row>
+        </Container>
+      </StandardPageContainer>
+    );
+  }
 }

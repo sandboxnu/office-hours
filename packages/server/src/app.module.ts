@@ -11,6 +11,7 @@ import { ReleaseNotesModule } from 'release-notes/release-notes.module';
 import * as typeormConfig from '../ormconfig';
 import { AdminModule } from './admin/admin.module';
 import { CourseModule } from './course/course.module';
+import { CalendarModule } from './calendar/calendar.module';
 import { HealthcheckModule } from './healthcheck/healthcheck.module';
 import { LoginModule } from './login/login.module';
 import { NotificationModule } from './notification/notification.module';
@@ -40,6 +41,7 @@ import { MailModule } from 'mail/mail.module';
     MailModule,
     ResourcesModule,
     asyncQuestionModule,
+    CalendarModule,
     ConfigModule.forRoot({
       envFilePath: [
         '.env',

@@ -17,6 +17,7 @@ import { ProfSectionGroupsModel } from './src/login/prof-section-groups.entity';
 import { QuestionTypeModel } from './src/question/question-type.entity';
 import { AsyncQuestionModel } from './src/asyncQuestion/asyncQuestion.entity';
 import { ImageModel } from 'images/image.entity';
+import { CalendarModel } from 'calendar/calendar.entity';
 config();
 
 // Options only used whe run via CLI
@@ -40,6 +41,7 @@ const typeorm = {
     UserModel,
     UserCourseModel,
     QuestionModel,
+
     AsyncQuestionModel,
     QuestionTypeModel,
     QueueModel,
@@ -50,6 +52,7 @@ const typeorm = {
     QuestionGroupModel,
     AlertModel,
     ImageModel,
+    CalendarModel,
     LastRegistrationModel,
     ProfSectionGroupsModel,
   ],

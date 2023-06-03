@@ -504,6 +504,29 @@ export function isKhouryCourse(
   );
 }
 
+export class Calendar {
+  @IsString()
+  title!: string;
+
+  @IsDate()
+  @Type(() => Date)
+  start!: Date;
+
+  @IsDate()
+  @Type(() => Date)
+  end!: Date;
+
+  @IsNumber()
+  cid!: number;
+
+  @IsArray()
+  @IsOptional()
+  daysOfWeek?: string[];
+
+  @IsBoolean()
+  @IsOptional()
+  allDay?: boolean;
+}
 export class questions {
   @IsInt()
   id!: number;
