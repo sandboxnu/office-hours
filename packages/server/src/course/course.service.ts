@@ -140,8 +140,26 @@ export class CourseService {
       );
     }
 
+    let courseCrnMaps = await CourseSectionMappingModel.find({ courseId });
+    for (const courseCrnMap of courseCrnMaps) {
+      if (!coursePatch.crns.includes(courseCrnMap.crn)) {
+        try {
+          await CourseSectionMappingModel.delete({
+            crn: courseCrnMap.crn,
+            courseId: course.id,
+          });
+        } catch (err) {
+          console.error(err);
+          throw new HttpException(
+            ERROR_MESSAGES.courseController.createCourseMappings,
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+        }
+      }
+    }
+
     for (const crn of new Set(coursePatch.crns)) {
-      const courseCrnMaps = await CourseSectionMappingModel.find({
+      courseCrnMaps = await CourseSectionMappingModel.find({
         crn: crn,
       });
 

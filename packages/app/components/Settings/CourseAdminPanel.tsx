@@ -2,6 +2,7 @@ import {
   BellOutlined,
   EditOutlined,
   QuestionCircleOutlined,
+  BookOutlined,
 } from "@ant-design/icons";
 import { Col, Menu, Row, Space, Tooltip } from "antd";
 import { useRouter } from "next/router";
@@ -11,9 +12,11 @@ import { useProfile } from "../../hooks/useProfile";
 import CourseRosterPage from "./CourseRosterPage";
 import { SettingsPanelAvatar } from "./SettingsSharedComponents";
 import TACheckInCheckOutTimes from "./TACheckInCheckOutTimes";
+import CourseInformation from "./CourseInformation";
 
 export enum CourseAdminOptions {
   CHECK_IN = "CHECK_IN",
+  INFO = "INFO",
   ROSTER = "ROSTER",
 }
 
@@ -80,11 +83,17 @@ export default function CourseAdminPanel({
           <Menu.Item key={CourseAdminOptions.ROSTER} icon={<BellOutlined />}>
             Course Roster
           </Menu.Item>
+          <Menu.Item key={CourseAdminOptions.INFO} icon={<BookOutlined />}>
+            Course Information
+          </Menu.Item>
         </Menu>
       </Col>
       <VerticalDivider />
       <Space direction="vertical" size={40} style={{ flexGrow: 1 }}>
         <Col span={20}>
+          {currentSettings === CourseAdminOptions.INFO && (
+            <CourseInformation courseId={courseId} />
+          )}
           {currentSettings === CourseAdminOptions.CHECK_IN && (
             <TACheckInCheckOutTimes courseId={courseId} />
           )}
