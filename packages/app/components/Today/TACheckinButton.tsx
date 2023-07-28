@@ -38,6 +38,7 @@ export default function TACheckinButton({
   state,
   disabled = false,
   block = false,
+  ...props
 }: TACheckinButtonProps): ReactElement {
   const router = useRouter();
 
@@ -63,6 +64,7 @@ export default function TACheckinButton({
     <>
       {state === "CheckedIn" && (
         <CheckOutButton
+          {...props}
           type="default"
           size="large"
           disabled={disabled}
@@ -78,6 +80,7 @@ export default function TACheckinButton({
       )}
       {state === "CheckedOut" && (
         <CheckinButton
+          {...props}
           type="default"
           size="large"
           block={block}

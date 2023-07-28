@@ -2,11 +2,28 @@ import { Question } from "@koh/common";
 import { Badge, Col, Row } from "antd";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
+import { useIsMobile } from "../../hooks/useIsMobile";
 import { useQuestions } from "../../hooks/useQuestions";
 import { useQueue } from "../../hooks/useQueue";
 import { formatWaitTime } from "../../utils/TimeUtil";
 import { KOHAvatar } from "../common/SelfAvatar";
 import { RenderEvery } from "../RenderEvery";
+
+const Container = styled(Col)`
+  margin-bottom: 16px;
+  @media (max-width: 650px) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+  }
+`;
+
+const CardContainer = styled(Col)`
+  @media (max-width: 650px) {
+    width: calc(50% - 10px);
+    margin: 5px;
+  }
+`;
 
 interface StatusRowProps {
   queueId: number;
@@ -34,9 +51,9 @@ export function TAStatuses({ queueId }: StatusRowProps): ReactElement {
   }
 
   return (
-    <Col style={{ marginBottom: "16px" }}>
+    <Container style={{ marginBottom: "16px" }}>
       {staffList.map((ta) => (
-        <Col key={ta.id}>
+        <CardContainer key={ta.id}>
           <StatusCard
             taName={ta.name}
             taPhotoURL={ta.photoURL}
@@ -44,9 +61,9 @@ export function TAStatuses({ queueId }: StatusRowProps): ReactElement {
             helpedAt={taToQuestion[ta.id]?.helpedAt}
             grouped={groups.some((g) => g.creator.id === ta.id)}
           />
-        </Col>
+        </CardContainer>
       ))}
-    </Col>
+    </Container>
   );
 }
 
@@ -56,12 +73,19 @@ const StyledCard = styled.div`
   border-radius: 6px;
   padding: 16px;
   display: flex;
-  margin-bottom: 16px;
+  align-items: center;
+  height: 100%;
+  @media (min-width: 650px) {
+    margin-bottom: 16px;
+  }
 `;
 
 const CardContent = styled.div`
   margin-left: 16px;
   flex-grow: 1;
+  @media (max-width: 650px) {
+    margin-left: 10px;
+  }
 `;
 const TAName = styled.div`
   font-weight: bold;
@@ -89,11 +113,12 @@ function StatusCard({
   helpedAt,
   grouped,
 }: StatusCardProps): ReactElement {
+  const isMobile = useIsMobile();
   const isBusy = !!helpedAt;
   return (
     <StyledCard data-cy="ta-status-card">
       <KOHAvatar
-        size={48}
+        size={isMobile ? 36 : 48}
         name={taName}
         photoURL={taPhotoURL}
         style={{ flexShrink: 0 }}
@@ -106,15 +131,17 @@ function StatusCard({
             {isBusy ? "Busy" : "Available"}
           </span>
         </Row>
-        <HelpingInfo>
-          {grouped ? (
-            "Helping a group"
-          ) : isBusy ? (
-            <HelpingFor studentName={studentName} helpedAt={helpedAt} />
-          ) : (
-            "Looking for my next student..."
-          )}
-        </HelpingInfo>
+        {!isMobile && (
+          <HelpingInfo>
+            {grouped ? (
+              "Helping a group"
+            ) : isBusy ? (
+              <HelpingFor studentName={studentName} helpedAt={helpedAt} />
+            ) : (
+              "Looking for my next student..."
+            )}
+          </HelpingInfo>
+        )}
       </CardContent>
     </StyledCard>
   );

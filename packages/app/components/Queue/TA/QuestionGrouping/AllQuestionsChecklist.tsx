@@ -10,10 +10,15 @@ import { BannerPrimaryButton } from "../../Banner";
 import { Header } from "../TAQueueDetail";
 import TAQueueListItem from "../TAQueueListItem";
 import { useTeams } from "../../../../hooks/useTeams";
+import { useIsMobile } from "../../../../hooks/useIsMobile";
 
 export const Description = styled.div`
   font-size: 12px;
   color: #8895a6;
+`;
+export const GroupingButtonContainer = styled.div`
+  padding: 8px;
+  border-bottom: 1px solid #cfd6de;
 `;
 const SelectAllContainer = styled.div`
   padding: 3px 8px;
@@ -41,6 +46,7 @@ export default function AllQuestionsCheckList({
   queueId: number;
   onStartCall: () => void;
 }): ReactElement {
+  const isMobile = useIsMobile();
   const [checkedQuestions, setCheckedQuestions] = useState<Set<number>>(
     new Set()
   );
@@ -80,6 +86,26 @@ export default function AllQuestionsCheckList({
 
   const openTeams = useTeams(queueId, usersInLink, defaultMessage);
 
+  const CallButton = ({ children }: { children?: React.ReactChild }) => (
+    <span>
+      <BannerPrimaryButton
+        icon={<PhoneOutlined />}
+        onClick={() => {
+          API.questions.group({
+            questionIds: Array.from(checkedQuestions),
+            queueId: queueId,
+          });
+          onStartCall();
+          openTeams();
+        }}
+        disabled={!canHelp || checkedQuestions.size === 0}
+        data-cy="help-student"
+      >
+        {children}
+      </BannerPrimaryButton>
+    </span>
+  );
+
   return (
     <div>
       <Header>
@@ -95,26 +121,19 @@ export default function AllQuestionsCheckList({
             ) : null}
           </Description>
         </div>
-        <div>
-          <Tooltip title={helpTooltip}>
-            <span>
-              <BannerPrimaryButton
-                icon={<PhoneOutlined />}
-                onClick={() => {
-                  API.questions.group({
-                    questionIds: Array.from(checkedQuestions),
-                    queueId: queueId,
-                  });
-                  onStartCall();
-                  openTeams();
-                }}
-                disabled={!canHelp || checkedQuestions.size === 0}
-                data-cy="help-student"
-              />
-            </span>
-          </Tooltip>
-        </div>
+        {!isMobile && (
+          <div>
+            <Tooltip title={helpTooltip}>
+              <CallButton />
+            </Tooltip>
+          </div>
+        )}
       </Header>
+      {isMobile && (
+        <GroupingButtonContainer>
+          <CallButton>{helpTooltip}</CallButton>
+        </GroupingButtonContainer>
+      )}
       <SelectAllContainer>
         <Checkbox
           checked={allQuestions.length === checkedQuestions.size}

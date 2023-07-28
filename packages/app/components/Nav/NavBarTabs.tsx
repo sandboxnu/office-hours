@@ -9,6 +9,7 @@ const { SubMenu } = Menu;
 
 const HorizontalMenu = styled(Menu)<MenuProps>`
   ${(props) => (props.mode === "horizontal" ? "border-bottom: none" : "")}
+  border: none;
 `;
 
 const QueueMenu = styled(SubMenu)`
@@ -24,7 +25,9 @@ const QueueMenu = styled(SubMenu)`
   }
 
   &&& .ant-menu-submenu-title {
-    padding: 10px 50px !important;
+    @media (min-width: 650px) {
+      padding: 10px 50px !important;
+    }
   }
 `;
 
@@ -42,8 +45,10 @@ const MenuItem = styled(Menu.Item)`
 `;
 
 const QueueMenuItem = styled(Menu.Item)`
-  z-index: 1;
-  background: #ffffff;
+  @media (min-width: 650px) {
+    z-index: 1;
+    background: #ffffff;
+  }
 `;
 
 export type NavBarTabsItem = NavBarGeneralTabItem | NavBarQueueTabItem;
@@ -68,7 +73,7 @@ interface NavBarTabsProps {
 
 function createQueueTab(queueTabItem: NavBarQueueTabItem) {
   return (
-    <QueueMenu data-cy="queue-tab" title="Queue">
+    <QueueMenu data-cy="queue-tab" title="Queue" key="queue">
       {queueTabItem.queues?.map((openQueue) => (
         <QueueMenuItem
           key={openQueue.id}
@@ -104,7 +109,7 @@ export default function NavBarTabs({
   return (
     <HorizontalMenu
       selectedKeys={[currentHref]}
-      mode={horizontal ? "horizontal" : "vertical"}
+      mode={horizontal ? "horizontal" : "inline"}
     >
       {tabs.map((tab) =>
         tab.text !== "Queue"

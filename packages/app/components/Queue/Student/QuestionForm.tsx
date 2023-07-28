@@ -1,5 +1,5 @@
 import { OpenQuestionStatus, Question, QuestionType } from "@koh/common";
-import { Alert, Button, Input, Modal, Radio } from "antd";
+import { Alert, Input, Modal, Radio } from "antd";
 import { RadioChangeEvent } from "antd/lib/radio";
 import { NextRouter, useRouter } from "next/router";
 import { default as React, ReactElement, useEffect, useState } from "react";
@@ -7,6 +7,8 @@ import styled from "styled-components";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { toOrdinal } from "../../../utils/ordinal";
 import { useHotkeys } from "react-hotkeys-hook";
+import { useIsMobile } from "../../../hooks/useIsMobile";
+import ModalFooter from "../../common/ModalFooter";
 
 const Container = styled.div`
   max-width: 960px;
@@ -27,13 +29,19 @@ const QuestionCaption = styled.div`
   margin-bottom: 32px;
 `;
 
-const FormButton = styled(Button)`
-  margin-left: 8px;
+const ButtonRadioGroup = styled(Radio.Group)`
+  display: flex;
+  flex-wrap: wrap;
+  @media (max-width: 650px) {
+    justify-content: center;
+  }
 `;
 
-const SaveChangesButton = styled(Button)`
-  margin-left: 8px;
-  background: #3684c6;
+const CategoryRadio = styled(Radio.Button)`
+  @media (max-width: 650px) {
+    flex-grow: 1;
+  }
+  margin: 3px;
 `;
 
 interface QuestionFormProps {
@@ -59,6 +67,7 @@ export default function QuestionForm({
   position,
   cancel,
 }: QuestionFormProps): ReactElement {
+  const isMobile = useIsMobile();
   const [storageQuestion, setStoredQuestion] = useLocalStorage(
     "draftQuestion",
     null
@@ -145,6 +154,11 @@ export default function QuestionForm({
     courseId,
   ]);
 
+  const groupingOptions = [
+    { value: true, text: "Yes" },
+    { value: false, text: "No" },
+  ];
+
   return (
     <Modal
       visible={visible}
@@ -155,25 +169,20 @@ export default function QuestionForm({
       }}
       title={drafting ? "Describe your question" : "Edit your question"}
       footer={
-        <div>
-          {drafting ? (
-            <FormButton danger onClick={leaveQueue}>
-              Leave Queue
-            </FormButton>
-          ) : (
-            <FormButton onClick={cancel}>Cancel</FormButton>
-          )}
-          <SaveChangesButton
-            data-cy="finishQuestion"
-            type="primary"
-            disabled={
-              !questionTypeInput || !questionText || questionText === ""
-            }
-            onClick={onClickSubmit}
-          >
-            {drafting ? "Finish" : "Save Changes"}
-          </SaveChangesButton>
-        </div>
+        <ModalFooter
+          onCancel={drafting ? leaveQueue : cancel}
+          onOk={onClickSubmit}
+          okText={drafting ? "Finish" : "Save Changes"}
+          cancelText={drafting ? "Leave Queue" : "Cancel"}
+          okButtonProps={{
+            // @ts-expect-error idk how to make it accept the data-cy prop
+            "data-cy": "finishQuestion",
+            type: "primary",
+            disabled:
+              !questionTypeInput || !questionText || questionText === "",
+          }}
+          cancelButtonProps={{ danger: drafting }}
+        />
       }
     >
       <Container>
@@ -199,21 +208,22 @@ export default function QuestionForm({
         <QuestionText>
           What category does your question fall under?
         </QuestionText>
-        <Radio.Group
+        <ButtonRadioGroup
           value={questionTypeInput}
           onChange={onCategoryChange}
           buttonStyle="solid"
           style={{ marginBottom: 48 }}
+          size={isMobile ? "large" : undefined}
         >
-          <Radio.Button value={QuestionType.Concept}>Concept</Radio.Button>
-          <Radio.Button value={QuestionType.Clarification}>
+          <CategoryRadio value={QuestionType.Concept}>Concept</CategoryRadio>
+          <CategoryRadio value={QuestionType.Clarification}>
             Clarification
-          </Radio.Button>
-          <Radio.Button value={QuestionType.Testing}>Testing</Radio.Button>
-          <Radio.Button value={QuestionType.Bug}>Bug</Radio.Button>
-          <Radio.Button value={QuestionType.Setup}>Setup</Radio.Button>
-          <Radio.Button value={QuestionType.Other}>Other</Radio.Button>
-        </Radio.Group>
+          </CategoryRadio>
+          <CategoryRadio value={QuestionType.Testing}>Testing</CategoryRadio>
+          <CategoryRadio value={QuestionType.Bug}>Bug</CategoryRadio>
+          <CategoryRadio value={QuestionType.Setup}>Setup</CategoryRadio>
+          <CategoryRadio value={QuestionType.Other}>Other</CategoryRadio>
+        </ButtonRadioGroup>
 
         <QuestionText>What do you need help with?</QuestionText>
         <Input.TextArea
@@ -232,14 +242,25 @@ export default function QuestionForm({
         <QuestionText>
           Would you like the option of being helped in a group session?
         </QuestionText>
-        <Radio.Group
+        <ButtonRadioGroup
           value={questionGroupable}
           onChange={onGroupableChange}
           style={{ marginBottom: 5 }}
+          buttonStyle={isMobile ? "solid" : "outline"}
+          size={isMobile ? "large" : undefined}
         >
-          <Radio value={true}>Yes</Radio>
-          <Radio value={false}>No</Radio>
-        </Radio.Group>
+          {groupingOptions.map(({ value, text }) =>
+            isMobile ? (
+              <Radio.Button style={{ margin: "3px" }} key={text} value={value}>
+                {text}
+              </Radio.Button>
+            ) : (
+              <Radio key={text} value={value}>
+                {text}
+              </Radio>
+            )
+          )}
+        </ButtonRadioGroup>
         <QuestionCaption>
           Clicking Yes may result in a shorter wait time if others have the same
           question as you.

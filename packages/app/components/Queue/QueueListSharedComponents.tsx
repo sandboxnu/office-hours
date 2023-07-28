@@ -5,7 +5,7 @@ import {
   NotificationOutlined,
   StopOutlined,
 } from "@ant-design/icons";
-import { Button, message, Modal, Popconfirm, Tag, Tooltip } from "antd";
+import { Button, message, Modal, Tag, Tooltip } from "antd";
 import { ButtonProps } from "antd/lib/button";
 import Linkify from "react-linkify";
 import moment from "moment";
@@ -16,6 +16,8 @@ import { RenderEvery } from "../RenderEvery";
 import { TAStatuses } from "./TAStatuses";
 import { API } from "@koh/api-client";
 import Router from "next/router";
+import { useIsMobile } from "../../hooks/useIsMobile";
+import { ResponsivePopconfirm } from "../common/ResponsivePopconfirm";
 
 export const Container = styled.div`
   display: flex;
@@ -37,13 +39,14 @@ export const NotesText = styled.div`
 // New queue styled components start here
 const InfoColumnContainer = styled.div`
   flex-shrink: 0;
-  padding-bottom: 30px;
+  padding-bottom: 12px;
   position: relative;
   display: flex;
   flex-direction: column;
   @media (min-width: 650px) {
     margin-top: 32px;
     width: 290px;
+    padding-bottom: 30px;
   }
 `;
 
@@ -65,9 +68,24 @@ const QueuePropertyRow = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center; // This kinda funky, not sure how to align the tops of the row
-  margin-bottom: 20px;
   color: #5f6b79;
   font-size: 20px;
+  margin-bottom: 20px;
+  @media (max-width: 650px) {
+    margin-bottom: 0px;
+  }
+`;
+
+const HeadingQueuePropertyRow = styled(QueuePropertyRow)`
+  @media (max-width: 650px) {
+    justify-content: center;
+  }
+`;
+
+const LastQueuePropertyRow = styled(QueuePropertyRow)`
+  @media (max-width: 650px) {
+    margin-bottom: 18px;
+  }
 `;
 
 const QueuePropertyText = styled.div`
@@ -84,16 +102,28 @@ const QueuePropertyText = styled.div`
 
 const StaffH2 = styled.h2`
   margin-top: 32px;
+  @media (max-width: 650px) {
+    text-align: center;
+    margin-top: 5px;
+  }
 `;
 
 const QueueRoomGroup = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  @media (max-width: 650px) {
+    justify-content: center;
+  }
 `;
 
 const QueueInfo = styled.div`
-  margin-bottom: 24px;
+  @media (min-width: 650px) {
+    margin-bottom: 24px;
+  }
+  @media (max-width: 650px) {
+    margin-bottom: 10px;
+  }
 `;
 
 const QueueText = styled.div`
@@ -146,6 +176,71 @@ export function QueueInfoColumn({
   isStaff,
   buttons,
 }: QueueInfoColumnProps): ReactElement {
+  const isMobile = useIsMobile();
+  const { queue } = useQueue(queueId);
+
+  return (
+    <InfoColumnContainer>
+      <QueueInfo>
+        <QueueRoomGroup>
+          <QueueTitle data-cy="room-title">
+            {queue?.room} {queue?.isDisabled && <b>(disabled)</b>}
+          </QueueTitle>
+          {!queue.allowQuestions && (
+            <Tooltip title="This queue is no longer accepting questions">
+              <StopOutlined
+                data-cy="stopQuestions"
+                style={{ color: "red", fontSize: "24px", marginLeft: "8px" }}
+              />
+            </Tooltip>
+          )}
+        </QueueRoomGroup>
+
+        {queue?.isProfessorQueue && (
+          <HeadingQueuePropertyRow>
+            <Tag color="blue">Professor Queue</Tag>
+          </HeadingQueuePropertyRow>
+        )}
+      </QueueInfo>
+      {queue?.notes && (
+        <QueuePropertyRow>
+          <NotificationOutlined />
+          <QueueText>
+            <Linkify
+              componentDecorator={(decoratedHref, decoratedText, key) => (
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={decoratedHref}
+                  key={key}
+                >
+                  {decoratedText}
+                </a>
+              )}
+            >
+              <QueuePropertyText>{queue.notes}</QueuePropertyText>
+            </Linkify>
+          </QueueText>
+        </QueuePropertyRow>
+      )}
+      <QueueUpToDateInfo queueId={queueId} />
+      {buttons}
+      {!(isMobile && isStaff) && (
+        <>
+          {!isMobile && <StaffH2>Staff</StaffH2>}
+          <TAStatuses queueId={queueId} />
+        </>
+      )}
+      {!isMobile && isStaff && <QueueDangerButtons queueId={queueId} />}
+    </InfoColumnContainer>
+  );
+}
+
+export function QueueDangerButtons({
+  queueId,
+}: {
+  queueId: number;
+}): ReactElement {
   const { queue, mutateQueue } = useQueue(queueId);
 
   const disableQueue = async () => {
@@ -175,77 +270,25 @@ export function QueueInfoColumn({
   };
 
   return (
-    <InfoColumnContainer>
-      <QueueInfo>
-        <QueueRoomGroup>
-          <QueueTitle data-cy="room-title">
-            {queue?.room} {queue?.isDisabled && <b>(disabled)</b>}
-          </QueueTitle>
-          {!queue.allowQuestions && (
-            <Tooltip title="This queue is no longer accepting questions">
-              <StopOutlined
-                data-cy="stopQuestions"
-                style={{ color: "red", fontSize: "24px", marginLeft: "8px" }}
-              />
-            </Tooltip>
-          )}
-        </QueueRoomGroup>
-
-        {queue?.isProfessorQueue && (
-          <QueuePropertyRow>
-            <Tag color="blue">Professor Queue</Tag>
-          </QueuePropertyRow>
-        )}
-      </QueueInfo>
-      {queue?.notes && (
-        <QueuePropertyRow>
-          <NotificationOutlined />
-          <QueueText>
-            <Linkify
-              componentDecorator={(decoratedHref, decoratedText, key) => (
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href={decoratedHref}
-                  key={key}
-                >
-                  {decoratedText}
-                </a>
-              )}
-            >
-              <QueuePropertyText>{queue.notes}</QueuePropertyText>
-            </Linkify>
-          </QueueText>
-        </QueuePropertyRow>
-      )}
-      <QueueUpToDateInfo queueId={queueId} />
-      {buttons}
-      <StaffH2>Staff</StaffH2>
-      <TAStatuses queueId={queueId} />
-      {isStaff && (
-        <QueueManagementBox>
-          <Popconfirm
-            title={
-              "Are you sure you want to clear all students from the queue?"
-            }
-            okText="Yes"
-            cancelText="No"
-            placement="top"
-            arrowPointAtCenter={true}
-            onConfirm={clearQueue}
-          >
-            <ClearQueueButton>Clear Queue</ClearQueueButton>
-          </Popconfirm>
-          <DisableQueueButton
-            onClick={confirmDisable}
-            data-cy="queue-disable-button"
-            disabled={queue?.isDisabled}
-          >
-            {queue?.isDisabled ? `Queue deleted` : `Delete Queue`}
-          </DisableQueueButton>
-        </QueueManagementBox>
-      )}
-    </InfoColumnContainer>
+    <QueueManagementBox>
+      <ResponsivePopconfirm
+        title={"Are you sure you want to clear all students from the queue?"}
+        okText="Yes"
+        cancelText="No"
+        placement="top"
+        arrowPointAtCenter={true}
+        onConfirm={clearQueue}
+      >
+        <ClearQueueButton>Clear Queue</ClearQueueButton>
+      </ResponsivePopconfirm>
+      <DisableQueueButton
+        onClick={confirmDisable}
+        data-cy="queue-disable-button"
+        disabled={queue?.isDisabled}
+      >
+        {queue?.isDisabled ? `Queue deleted` : `Delete Queue`}
+      </DisableQueueButton>
+    </QueueManagementBox>
   );
 }
 
@@ -253,7 +296,7 @@ function QueueUpToDateInfo({ queueId }: { queueId: number }): ReactElement {
   const [lastUpdated, setLastUpdated] = useState(null);
   const { isLive } = useQueue(queueId, setLastUpdated);
   return (
-    <QueuePropertyRow className="hide-in-percy">
+    <LastQueuePropertyRow className="hide-in-percy">
       {isLive || lastUpdated ? <CloudSyncOutlined /> : <FrownOutlined />}
       <QueuePropertyText className="hide-in-percy">
         {isLive ? (
@@ -274,6 +317,6 @@ function QueueUpToDateInfo({ queueId }: { queueId: number }): ReactElement {
           "Queue may be out of date"
         )}
       </QueuePropertyText>
-    </QueuePropertyRow>
+    </LastQueuePropertyRow>
   );
 }

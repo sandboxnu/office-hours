@@ -234,7 +234,7 @@ export default function TAQueueListDetail({
         {detail}
       </Container>
     );
-  } else if (selectedQuestionId) {
+  } else if (selectedQuestionId || isGrouping) {
     return (
       <Container>
         <BackToQueue onClick={() => onSelectQuestion(null)}>
@@ -257,6 +257,9 @@ const EmptyQueueInfo = styled.div`
   flex-direction: column;
   align-items: center;
   margin-top: 30px;
+  @media (max-width: 650px) {
+    margin-bottom: 30px;
+  }
 `;
 
 const NoQuestionsText = styled.div`

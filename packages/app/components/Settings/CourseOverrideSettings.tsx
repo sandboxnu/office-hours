@@ -66,6 +66,7 @@ export default function CourseOverrideSettings({
               type="link"
               style={{ textAlign: "center" }}
               icon={<DeleteOutlined style={{ color: "red" }} />}
+              data-cy="delete-override-button"
             />
           )}
         />

@@ -100,7 +100,7 @@ export default function SettingsPage({
         <Row
           style={{
             marginTop: avatarSize / 6,
-            justifyContent: `${isMobile ? "left" : "center"}`,
+            justifyContent: "center",
           }}
         >
           {uploading ? (
@@ -118,7 +118,7 @@ export default function SettingsPage({
           ) : (
             <SettingsPanelAvatar avatarSize={avatarSize} />
           )}
-          <Col>
+          <Col style={{ textAlign: "center" }}>
             {profile && (
               <h2>
                 {profile.firstName} {profile.lastName}
@@ -156,7 +156,7 @@ export default function SettingsPage({
                   }
                 }}
               >
-                Delete my Profile Picture
+                Delete photo
               </ProfilePicButton>
             )}
           </Col>
@@ -168,7 +168,7 @@ export default function SettingsPage({
   const SettingsMenu = () => (
     <>
       {isMobile ? (
-        <Collapse accordion style={{ marginTop: "10px" }}>
+        <Collapse accordion style={{ margin: "10px 0px" }}>
           <Panel header="Personal Information" key="profile">
             <ProfileSettings />
           </Panel>

@@ -1,4 +1,4 @@
-import { DownOutlined } from "@ant-design/icons";
+import { DownOutlined, MenuOutlined } from "@ant-design/icons";
 import { Role } from "@koh/common";
 import { Button, Drawer, Dropdown, Menu } from "antd";
 import Link from "next/link";
@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useCourse } from "../../hooks/useCourse";
+import { useIsMobile } from "../../hooks/useIsMobile";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useProfile } from "../../hooks/useProfile";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
@@ -70,36 +71,12 @@ const RightMenu = styled.div`
 const BarsMenu = styled(Button)`
   height: 32px;
   padding: 6px;
-  margin-top: 8px;
+  color: #3684c6;
   display: none;
   background: none;
 
   @media (max-width: 650px) {
     display: inline-block;
-  }
-`;
-
-const BarsButton = styled.span`
-  display: block;
-  width: 20px;
-  height: 2px;
-  background: #1890ff;
-  position: relative;
-
-  &:after,
-  :before {
-    content: attr(x);
-    width: 20px;
-    position: absolute;
-    top: -6px;
-    left: 0;
-    height: 2px;
-    background: #1890ff;
-  }
-
-  &:after {
-    top: auto;
-    bottom: -6px;
   }
 `;
 
@@ -114,6 +91,8 @@ interface NavBarProps {
 
 export default function NavBar({ courseId }: NavBarProps): ReactElement {
   const profile = useProfile();
+  const isMobile = useIsMobile();
+
   if (!courseId) {
     courseId = profile?.courses[0]?.course?.id;
   }
@@ -164,14 +143,6 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     },
   ];
 
-  if (role === Role.PROFESSOR) {
-    tabs.push({
-      href: "/course/[cid]/course_admin_panel",
-      as: `/course/${courseId}/course_admin_panel`,
-      text: "Admin Panel",
-    });
-  }
-
   if (openQueues?.length > 0) {
     tabs.push({
       text: "Queue",
@@ -180,7 +151,12 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     });
   }
 
-  if (role === Role.PROFESSOR) {
+  if (role === Role.PROFESSOR && !isMobile) {
+    tabs.push({
+      href: "/course/[cid]/course_admin_panel",
+      as: `/course/${courseId}/course_admin_panel`,
+      text: "Admin Panel",
+    });
     tabs.push({
       href: "/course/[cid]/insights",
       as: `/course/${courseId}/insights`,
@@ -228,7 +204,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
           </RightMenu>
         </MenuCon>
         <BarsMenu type="primary" onClick={showDrawer}>
-          <BarsButton />
+          <MenuOutlined />
         </BarsMenu>
         <Drawer
           title="Course"

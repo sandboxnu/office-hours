@@ -7,6 +7,7 @@ import Head from "next/head";
 import NavBar from "../../../components/Nav/NavBar";
 import SchedulePanel from "../../../components/Schedule/SchedulePanel";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
+import { useIsMobile } from "../../../hooks/useIsMobile";
 
 const ScheduleContainer = styled.div`
   margin-top: 32px;
@@ -16,6 +17,7 @@ const ScheduleContainer = styled.div`
 export default function Schedule(): ReactElement {
   useProfile(); // Check logged in so we can redirect to login page
   const router = useRouter();
+  const isMobile = useIsMobile();
   const { cid } = router.query;
 
   const { course } = useCourse(Number(cid));
@@ -27,7 +29,10 @@ export default function Schedule(): ReactElement {
       </Head>
       <NavBar courseId={Number(cid)} />
       <ScheduleContainer>
-        <SchedulePanel courseId={Number(cid)} />
+        <SchedulePanel
+          courseId={Number(cid)}
+          defaultView={isMobile ? "timeGridDay" : undefined}
+        />
       </ScheduleContainer>
     </StandardPageContainer>
   );

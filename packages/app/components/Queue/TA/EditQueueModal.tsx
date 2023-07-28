@@ -6,6 +6,7 @@ import { API } from "@koh/api-client";
 import { useQueue } from "../../../hooks/useQueue";
 import { UpdateQueueParams } from "@koh/common";
 import { pick } from "lodash";
+import ModalFooter from "../../common/ModalFooter";
 
 const NotesInput = styled(Input.TextArea)`
   border-radius: 6px;
@@ -36,21 +37,24 @@ export function EditQueueModal({
     mutateQueue();
   };
 
+  const handleOk = async () => {
+    const value = await form.validateFields();
+    await editQueue(value);
+    onClose();
+  };
+
   return (
     <Modal
       title="Edit Queue Details"
       visible={visible}
       onCancel={onClose}
-      onOk={async () => {
-        const value = await form.validateFields();
-        await editQueue(value);
-        onClose();
-      }}
+      onOk={handleOk}
+      footer={<ModalFooter onCancel={onClose} onOk={handleOk} />}
     >
       {queue && (
         <Form form={form} initialValues={queue}>
           <Form.Item label="Queue Notes" name="notes">
-            <NotesInput allowClear={true} placeholder={""} />
+            <NotesInput rows={4} allowClear={true} placeholder={""} />
           </Form.Item>
           <Form.Item
             label="Allow New Questions"
