@@ -314,8 +314,37 @@ export class QuestionGroup {
 
   //Might want to add a list of students in group so they can be added without a question
 }
+
 /**
- * A Question is created when a student wants help from a TA.
+ * Course is created when there is a new course
+ */
+
+export class createCourse {
+  @IsString()
+  name!: string;
+
+  @IsString()
+  section!: string;
+
+  @IsOptional()
+  @IsString()
+  zoomLink?: string;
+
+  @IsOptional()
+  @IsString()
+  coordinatorEmail?: string;
+
+  @IsInt()
+  semester!: number;
+
+  @IsBoolean()
+  enabled!: boolean;
+
+  @IsString()
+  timezone!: string;
+}
+/**
+ * An async question is created when a student wants help from a TA.
  */
 export class AsyncQuestion {
   @IsOptional()
@@ -604,7 +633,7 @@ export class GetCourseResponse {
   name!: string;
 
   @Type(() => QueuePartial)
-  queues!: QueuePartial[];
+  queues?: QueuePartial[];
 
   heatmap!: Heatmap | false;
   coordinator_email!: string;
@@ -612,7 +641,7 @@ export class GetCourseResponse {
   @Type(() => Number)
   crns!: number[];
 
-  icalURL!: string;
+  icalURL?: string;
 
   zoomLink!: string;
 
@@ -896,7 +925,7 @@ export class RegisterCourseParams {
   name!: string;
 
   @IsString()
-  iCalURL!: string;
+  iCalURL?: string;
 
   @IsString()
   coordinator_email!: string;
@@ -924,6 +953,13 @@ export class EditCourseInfoParams {
   @IsString()
   @IsOptional()
   zoomLink?: string;
+
+  @IsString()
+  @IsOptional()
+  timezone?: string;
+
+  @IsOptional()
+  enabled?: boolean;
 
   @IsString()
   @IsOptional()

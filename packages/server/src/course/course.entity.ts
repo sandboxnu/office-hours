@@ -5,6 +5,7 @@ import { QuestionTypeModel } from 'question/question-type.entity';
 import {
   BaseEntity,
   Column,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -92,4 +93,7 @@ export class CourseModel extends BaseEntity {
 
   @Column('text', { array: true, nullable: true, default: [] })
   asyncQuestionDisplayTypes: string[];
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }

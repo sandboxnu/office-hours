@@ -267,10 +267,9 @@ export class ProfileController {
         HttpStatus.NOT_FOUND,
       );
     }
-
     const courses = user.courses
       ? user.courses
-          .filter((userCourse) => userCourse.course.enabled)
+          .filter((userCourse) => userCourse?.course?.enabled)
           .map((userCourse) => {
             return {
               course: {

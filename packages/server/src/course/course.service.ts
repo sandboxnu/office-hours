@@ -136,6 +136,7 @@ export class CourseService {
     }
 
     if (Object.values(coursePatch).some((x) => x === null || x === '')) {
+      console.log('No values provded for update');
       throw new BadRequestException(
         ERROR_MESSAGES.courseController.updateCourse,
       );
@@ -198,6 +199,14 @@ export class CourseService {
     }
     if (coursePatch.questionTimer) {
       course.questionTimer = coursePatch.questionTimer;
+    }
+
+    if (coursePatch.timezone) {
+      course.timezone = coursePatch.timezone;
+    }
+
+    if (coursePatch.enabled) {
+      course.enabled = coursePatch.enabled;
     }
 
     if (coursePatch.asyncQuestionDisplayTypes) {

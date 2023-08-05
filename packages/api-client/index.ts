@@ -41,6 +41,7 @@ import {
   AsyncQuestion,
   CoursePartial,
   Calendar,
+  createCourse,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -103,6 +104,14 @@ class APIClient {
       ),
     verifyResetPassword: async (token: string): Promise<boolean> =>
       this.req("GET", `/api/v1/profile/verify_token?token=${token}`, undefined),
+  };
+  site_admin = {
+    getCourses: async (): Promise<GetCourseResponse[]> =>
+      this.req("GET", "/api/v1/site_admin/all_courses"),
+    createCourse: async (body: createCourse): Promise<any> =>
+      this.req("POST", `/api/v1/site_admin/course`, undefined, body),
+    deleteCourse: async (cid: number): Promise<GetCourseResponse> =>
+      this.req("DELETE", `/api/v1/site_admin/${cid}/deleteCourse`),
   };
   course = {
     getAsyncQuestions: async (cid: number) =>
