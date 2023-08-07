@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Injectable,
   HttpService,
@@ -30,30 +31,25 @@ export class ResourcesService {
    */
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
   public async refetchAllCalendarsJob(): Promise<void> {
-    const resource = 'locks:icalcron';
-    const ttl = 60000;
-
-    const redisDB = await this.redisService.getClient('db');
-
-    const redlock = new Redlock([redisDB]);
-
-    redlock.on('clientError', function (err) {
-      console.error('A redis error has occurred:', err);
-    });
-
-    try {
-      await redlock.lock(resource, ttl).then(async (lock) => {
-        console.log('updating course icals');
-        await this.refetchAllCalendars();
-
-        return lock.unlock().catch(function (err) {
-          console.error('Error unlocking Redlock:', err);
-        });
-      });
-      console.log('Successfully updated course calendars');
-    } catch (error) {
-      console.error('A problem locking Redlock has occurred:', error);
-    }
+    // const resource = 'locks:icalcron';
+    // const ttl = 60000;
+    // const redisDB = await this.redisService.getClient('db');
+    // const redlock = new Redlock([redisDB]);
+    // redlock.on('clientError', function (err) {
+    //   console.error('A redis error has occurred:', err);
+    // });
+    // try {
+    //   await redlock.lock(resource, ttl).then(async (lock) => {
+    //     console.log('updating course icals');
+    //     await this.refetchAllCalendars();
+    //     return lock.unlock().catch(function (err) {
+    //       console.error('Error unlocking Redlock:', err);
+    //     });
+    //   });
+    //   console.log('Successfully updated course calendars');
+    // } catch (error) {
+    //   console.error('A problem locking Redlock has occurred:', error);
+    // }
   }
 
   private async refetchAllCalendars(): Promise<void> {
