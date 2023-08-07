@@ -49,7 +49,7 @@ yarn build
 
 yarn global add pm2
 
-pm2 start --name xxx "yarn prod:start"
+pm2 start --name helpme "yarn prod:start"
 
 ### some other useful pm2 commands
 

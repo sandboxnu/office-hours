@@ -26,6 +26,7 @@ import { SignupModule } from 'signup/signup.module';
 import { asyncQuestionModule } from 'asyncQuestion/asyncQuestion.module';
 import { ImageModule } from 'images/image.module';
 import { MailModule } from 'mail/mail.module';
+import { SiteAdminModule } from 'site-admin/site-admin.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeormConfig),
@@ -42,6 +43,7 @@ import { MailModule } from 'mail/mail.module';
     ResourcesModule,
     asyncQuestionModule,
     CalendarModule,
+    SiteAdminModule,
     ConfigModule.forRoot({
       envFilePath: [
         '.env',

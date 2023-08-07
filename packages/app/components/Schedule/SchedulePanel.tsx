@@ -160,7 +160,7 @@ export default function SchedulePanel({
               selectable={true}
               editable={true}
               ref={calendarRef}
-              plugins={[timeGridPlugin, listPlugin]}
+              plugins={[dayGridPlugin, timeGridPlugin, listPlugin]}
               events={events}
               scrollTime="10:00:00" // auto set each day's view to begin at 8AM
               initialView={defaultView}
