@@ -1,24 +1,15 @@
-import {
-  DesktopNotifBody,
-  DesktopNotifPartial,
-  ERROR_MESSAGES,
-  TwilioBody,
-} from '@koh/common';
+import { DesktopNotifBody, DesktopNotifPartial } from '@koh/common';
 import {
   Body,
   Controller,
   Delete,
   Get,
-  Header,
-  Headers,
   NotFoundException,
   Param,
   Post,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as twilio from 'twilio';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { UserId } from '../decorators/user.decorator';
 import { DesktopNotifModel } from './desktop-notif.entity';
@@ -71,41 +62,5 @@ export class NotificationController {
     } else {
       throw new NotFoundException();
     }
-  }
-
-  // Webhook from twilio
-  @Post('/phone/verify')
-  @Header('Content-Type', 'text/xml')
-  async verifyPhoneUser(
-    @Body() body: TwilioBody,
-    @Headers('x-twilio-signature') twilioSignature: string,
-  ): Promise<string> {
-    const message = body.Body.trim().toUpperCase();
-    const senderNumber = body.From;
-
-    const twilioAuthToken = this.configService.get('TWILIOAUTHTOKEN');
-
-    const isValidated = twilio.validateRequest(
-      twilioAuthToken,
-      twilioSignature.trim(),
-      `${this.configService.get('DOMAIN')}/api/v1/notifications/phone/verify`,
-      body,
-    );
-
-    if (!isValidated) {
-      throw new UnauthorizedException(
-        ERROR_MESSAGES.notificationController.messageNotFromTwilio,
-      );
-    }
-
-    const messageToUser = await this.notifService.verifyPhone(
-      senderNumber,
-      message,
-    );
-    const MessagingResponse = twilio.twiml.MessagingResponse;
-    const twiml = new MessagingResponse();
-    twiml.message(messageToUser);
-
-    return twiml.toString();
   }
 }
