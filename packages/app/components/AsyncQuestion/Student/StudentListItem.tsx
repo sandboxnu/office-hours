@@ -64,7 +64,6 @@ export default function StudentListItem({
   return (
     <Container
       selected={selected}
-      data-cy={`queue-list-item-${question.id}`}
       onClick={onClick}
     >
       {showCheckbox && <StyledCheckbox checked={selected} />}
@@ -86,7 +85,7 @@ export default function StudentListItem({
         <QuestionInfoContainer>
           <QuestionText> {question.questionAbstract}</QuestionText>
           {question.status === asyncQuestionStatus.TADeleted ||
-          question.status === asyncQuestionStatus.StudentDeleted ? (
+            question.status === asyncQuestionStatus.StudentDeleted ? (
             <div style={{ color: "red" }}>Deleted</div>
           ) : question.status !== asyncQuestionStatus.Resolved ? (
             <QuestionMetaRow info={metaInfo} />
