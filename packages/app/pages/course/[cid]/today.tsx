@@ -7,6 +7,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
+import GPTChatbotPage from "../../../components/Chatbot/Chatbot";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
 import NavBar from "../../../components/Nav/NavBar";
 import SchedulePanel from "../../../components/Schedule/SchedulePanel";
@@ -140,6 +141,7 @@ export default function Today(): ReactElement {
               )}
               {!course && <QueueCardSkeleton />}
               <AsyncQuestionCard></AsyncQuestionCard>
+
               {
                 // This only works with UTC offsets in the form N:00, to help with other offsets, the size of the array might have to change to a size of 24*7*4 (for every 15 min interval)
                 course && course.heatmap && (
@@ -153,6 +155,7 @@ export default function Today(): ReactElement {
                   />
                 )
               }
+              <GPTChatbotPage />
             </TodayCol>
             <TodayCol md={12} sm={24}>
               <SchedulePanel courseId={Number(cid)} defaultView="timeGridDay" />
