@@ -8,9 +8,10 @@ The system was developed by Khoury College, but the forked project is adapted to
 [Developing Guide](DEVELOPING.md)
 
 TEST TEST TEST! 
+-There are 2 major parts of testing that we need to worry about, the Jest routes testing under packages/src/server and integration testing in cypress folder. The integration testing is outdated.
+## -Deployment
 
-
-## Testing and Deployment
+[Deployment Guide](UBC_deploy.md)
 
 
 ## License
