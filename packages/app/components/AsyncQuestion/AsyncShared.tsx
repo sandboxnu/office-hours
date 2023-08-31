@@ -6,7 +6,7 @@ import { AsyncQuestionForm } from "./Student/AsyncQuestionForm";
 import { EditAsyncQuestionModal } from "./TA/EditAsyncQuestionModal";
 import { QueueInfoColumnButton } from "../Queue/QueueListSharedComponents";
 // import { useTeams } from "../../../hooks/useTeams";
-import { QuestionListShared } from "./QuestionListShared";
+import { SettingsLeftPanel } from "./SettingsLeftPanel";
 import QuestionListDetail from "./QuestionListDetail";
 import { API } from "@koh/api-client";
 import { message } from "antd";
@@ -52,12 +52,11 @@ export default function AsyncShared({
     <>
       <Container>
         {role === Role.STUDENT ? (
-          <QuestionListShared
+          <SettingsLeftPanel
             isStaff={false}
             buttons={
               <>
                 <EditQueueButton
-                  data-cy="postQuestion"
                   onClick={() => setStudentQuestionModal(true)}
                 >
                   Post your Question
@@ -67,18 +66,16 @@ export default function AsyncShared({
             }
           />
         ) : (
-          <QuestionListShared
+          <SettingsLeftPanel
             isStaff={true}
             buttons={
               <>
                 <EditQueueButton
-                  data-cy="editQueue"
                   onClick={() => setTAeditDetails(true)}
                 >
                   Edit displayed question types
                 </EditQueueButton>
                 <EditQueueButton
-                  data-cy="addStudents"
                   onClick={() => changeDisplayTypes()}
                 >
                   Show all questions

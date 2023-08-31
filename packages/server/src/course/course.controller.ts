@@ -60,7 +60,7 @@ export class CourseController {
     private queueSSEService: QueueSSEService,
     private heatmapService: HeatmapService,
     private courseService: CourseService,
-  ) {}
+  ) { }
 
   // get all courses
   @Get()
@@ -90,27 +90,28 @@ export class CourseController {
         id: cid,
       },
     });
-    let questionsDB = all;
-    if (course.asyncQuestionDisplayTypes[0] !== 'all') {
-      questionsDB = all.filter((question) =>
-        question.course.asyncQuestionDisplayTypes.includes(
-          question.questionType,
-        ),
-      );
-    }
+    // This will enable viewing with displaytypes function
+    // let questionsDB = all;
+    // if (course.asyncQuestionDisplayTypes[0] !== 'all') {
+    //   questionsDB = all.filter((question) =>
+    //     question.course.asyncQuestionDisplayTypes.includes(
+    //       question.questionType,
+    //     ),
+    //   );
+    // }
     const questions = new AsyncQuestionResponse();
-    questions.helpedQuestions = questionsDB.filter(
+    questions.helpedQuestions = all.filter(
       (question) => question.status === asyncQuestionStatus.Resolved,
     );
-    questions.waitingQuestions = questionsDB.filter(
+    questions.waitingQuestions = all.filter(
       (question) => question.status === asyncQuestionStatus.Waiting,
     );
-    questions.otherQuestions = questionsDB.filter(
+    questions.otherQuestions = all.filter(
       (question) =>
         question.status === asyncQuestionStatus.StudentDeleted ||
         question.status === asyncQuestionStatus.TADeleted,
     );
-    questions.visibleQuestions = questionsDB.filter(
+    questions.visibleQuestions = all.filter(
       (question) =>
         question.visible === true &&
         question.status !== asyncQuestionStatus.TADeleted,
@@ -146,9 +147,9 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.courseOfficeHourError +
-          '\n' +
-          'Error message: ' +
-          err,
+        '\n' +
+        'Error message: ' +
+        err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.courseHeatMapError,
@@ -197,9 +198,9 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.updatedQueueError +
-          '\n' +
-          'Error message: ' +
-          err,
+        '\n' +
+        'Error message: ' +
+        err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.updatedQueueError,
@@ -213,9 +214,9 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.courseOfficeHourError +
-          '\n' +
-          'Error message: ' +
-          err,
+        '\n' +
+        'Error message: ' +
+        err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.courseCrnsError,
@@ -307,8 +308,8 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.saveQueueError +
-          '\nError message: ' +
-          err,
+        '\nError message: ' +
+        err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.saveQueueError,
@@ -327,8 +328,8 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.createEventError +
-          '\nError message: ' +
-          err,
+        '\nError message: ' +
+        err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.createEventError,
@@ -341,8 +342,8 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.createEventError +
-          '\nError message: ' +
-          err,
+        '\nError message: ' +
+        err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.updatedQueueError,
@@ -410,8 +411,8 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.saveQueueError +
-          '\nError message: ' +
-          err,
+        '\nError message: ' +
+        err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.saveQueueError,
@@ -456,8 +457,8 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.saveQueueError +
-          '\nError Message: ' +
-          err,
+        '\nError Message: ' +
+        err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.saveQueueError,
@@ -476,8 +477,8 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.createEventError +
-          '\nError message: ' +
-          err,
+        '\nError message: ' +
+        err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.createEventError,
@@ -490,8 +491,8 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.createEventError +
-          '\nError message: ' +
-          err,
+        '\nError message: ' +
+        err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.updatedQueueError,

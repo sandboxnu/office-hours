@@ -4,6 +4,15 @@ This app helps student navigate and queue in office hours. It solves the complex
 
 The system was developed by Khoury College, but the forked project is adapted to use in UBCO.
 
+## Developing
+[Developing Guide](DEVELOPING.md)
+
+TEST TEST TEST! 
+
+
+## Testing and Deployment
+
+
 ## License
 
 [GPL](https://github.com/sandboxnu/office-hours/blob/master/LICENSE)
