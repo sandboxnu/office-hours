@@ -73,7 +73,6 @@ const AsyncQuestionCard = (): ReactElement => {
               <OpenQueueButton
                 style={{}}
                 size="large"
-                data-cy="open-queue-button"
               >
                 Open Queue
               </OpenQueueButton>

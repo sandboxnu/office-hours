@@ -59,61 +59,18 @@ const QueueText = styled.div`
   width: 100%;
 `;
 
-// const DisableQueueButton = styled(QueueInfoColumnButton)`
-//   color: white;
-//   background: #da3236;
-//   &:hover,
-//   &:focus {
-//     color: #da3236;
-//     background: #fff;
-//     border-color: #da3236;
-//   }
-// `;
-
-// const ClearQueueButton = styled(QueueInfoColumnButton)`
-//   color: #d4380d;
-//   background: #fff;
-//   border-color: #d4380d;
-//   &:hover,
-//   &:focus {
-//     background: #fff;
-//     color: #da3236;
-//     border-color: #da3236;
-//   }
-// `;
-
-// const QueueManagementBox = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   justify-content: flex-end;
-//   color: white;
-//   width: 100%;
-//   height: 100%;
-//   bottom: 0;
-// `;
-
 interface QueueInfoColumnProps {
   isStaff: boolean;
   buttons: ReactNode;
 }
 
-export function QuestionListShared({
+export function SettingsLeftPanel({
   buttons,
 }: QueueInfoColumnProps): ReactElement {
   return (
     <InfoColumnContainer>
       <QueueInfo>
         <h2>Asynchronous question center</h2>
-        {/* <QueueRoomGroup>
-          {(
-            <Tooltip title="This queue is no longer accepting questions">
-              <StopOutlined
-                data-cy="stopQuestions"
-                style={{ color: "red", fontSize: "24px", marginLeft: "8px" }}
-              />
-            </Tooltip>
-          )}
-        </QueueRoomGroup> */}
       </QueueInfo>
       {
         <QueuePropertyRow>
@@ -137,32 +94,3 @@ export function QuestionListShared({
     </InfoColumnContainer>
   );
 }
-
-// function QueueUpToDateInfo({ queueId }: { queueId: number }): ReactElement {
-//   const [lastUpdated, setLastUpdated] = useState(null);
-//   const { isLive } = useQueue(queueId, setLastUpdated);
-//   return (
-//     <QueuePropertyRow className="hide-in-percy">
-//       {isLive || lastUpdated ? <CloudSyncOutlined /> : <FrownOutlined />}
-//       <QueuePropertyText className="hide-in-percy">
-//         {isLive ? (
-//           "Queue up to date"
-//         ) : lastUpdated ? (
-//           <RenderEvery
-//             render={() => {
-//               const secondsAgo = (Date.now() - lastUpdated.getTime()) / 1000;
-//               return `Queue updated ${
-//                 secondsAgo < 60
-//                   ? Math.ceil(secondsAgo) + "s"
-//                   : moment(lastUpdated).fromNow(true)
-//               } ago`;
-//             }}
-//             interval={1000}
-//           />
-//         ) : (
-//           "Queue may be out of date"
-//         )}
-//       </QueuePropertyText>
-//     </QueuePropertyRow>
-//   );
-// }

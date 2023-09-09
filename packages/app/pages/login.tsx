@@ -46,10 +46,6 @@ export default function Login(): ReactElement {
     setSelectedCourse(value);
   }
   function submit() {
-    // get all course ids with userid
-    // if courseids.length==1 log in using login(values, course), if not stop. >2 then set modal to true.
-    // modal calls modalSubmit that sends info to login to login.
-    console.log(uname);
     const courses = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -74,9 +70,13 @@ export default function Login(): ReactElement {
           return Promise.reject(error);
         } else {
           if (data.length == 1) {
+            console.log("log in");
             login(data[0].courseId);
           } else if (data.length > 1) {
             setIsModalOpen(true);
+            console.log("modal open");
+          } else {
+            message.error("Not registered in any course");
           }
         }
       })
@@ -187,7 +187,7 @@ export default function Login(): ReactElement {
         </Form>
         <Modal
           title="Basic Modal"
-          visible={isModalOpen}
+          open={isModalOpen}
           onOk={handleOk}
           onCancel={handleCancel}
         >
