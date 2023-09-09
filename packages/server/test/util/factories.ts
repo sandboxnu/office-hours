@@ -14,7 +14,7 @@ import { LastRegistrationModel } from 'login/last-registration-model.entity';
 import { ProfSectionGroupsModel } from 'login/prof-section-groups.entity';
 
 export const UserFactory = new Factory(UserModel)
-  .attr('email', `user@neu.edu`)
+  .attr('email', `user@ubc.ca`)
   .attr('firstName', 'User')
   .attr('lastName', 'Person')
   .attr('hideInsights', []);

@@ -19,5 +19,5 @@ const proxy = createProxyMiddleware({
 });
 
 app.use("/", proxy);
-app.listen(80);
-console.log("Proxy up on http://localhost:80");
+app.listen(3000);
+console.log("Proxy up on http://localhost:3000");

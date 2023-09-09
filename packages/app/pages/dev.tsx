@@ -35,9 +35,9 @@ const PageHeader = styled.div`
   margin-top: 40px;
 `;
 
-const DevPageButton = styled(Button)`
-  margin-right: 15px;
-`;
+// const DevPageButton = styled(Button)`
+//   margin-right: 15px;
+// `;
 
 export default function DevPanel(): ReactElement {
   if (isProd()) {
@@ -49,7 +49,7 @@ export default function DevPanel(): ReactElement {
         <PageHeader>[ For Development Use Only ]</PageHeader>
       </h1>
       <LoginContainer>
-        <Divider plain>
+        {/* <Divider plain>
           <h3>Login</h3>
         </Divider>
         <a href="/api/v1/login/dev?userId=1">
@@ -81,7 +81,7 @@ export default function DevPanel(): ReactElement {
           <DevPageButton type="default" htmlType="submit">
             Login as <b> No Course User</b>
           </DevPageButton>
-        </a>
+        </a> */}
       </LoginContainer>
       <SeedingContainer>
         <Divider plain>

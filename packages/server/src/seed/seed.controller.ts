@@ -11,7 +11,9 @@ import { UserCourseModel } from 'profile/user-course.entity';
 import { UserModel } from 'profile/user.entity';
 import { QuestionGroupModel } from 'question/question-group.entity';
 import { SemesterModel } from 'semester/semester.entity';
+import { AsyncQuestionModel } from 'asyncQuestion/asyncQuestion.entity';
 import { Connection, getManager } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import {
   CourseFactory,
   EventFactory,
@@ -33,13 +35,14 @@ export class SeedController {
   constructor(
     private connection: Connection,
     private seedService: SeedService,
-  ) {}
+  ) { }
 
   @Get('delete')
   async deleteAll(): Promise<string> {
     await this.seedService.deleteAll(LastRegistrationModel);
     await this.seedService.deleteAll(ProfSectionGroupsModel);
     await this.seedService.deleteAll(QuestionModel);
+    await this.seedService.deleteAll(AsyncQuestionModel);
     await this.seedService.deleteAll(QuestionGroupModel);
     await this.seedService.deleteAll(QueueModel);
     await this.seedService.deleteAll(UserCourseModel);
@@ -57,12 +60,15 @@ export class SeedController {
     return 'Data successfully reset';
   }
 
+
   @Get('create')
   async createSeeds(): Promise<string> {
     // First delete the old data
     await this.deleteAll();
 
     // Then add the new seed data
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword1 = await bcrypt.hash('seed', salt);
     const now = new Date();
 
     const yesterday = new Date();
@@ -83,25 +89,26 @@ export class SeedController {
       // you will need to reseed data!
       const semester = await SemesterFactory.create({
         season: 'Fall',
-        year: 2020,
+        year: 2023,
       });
       await CourseFactory.create({
-        timezone: 'America/New_York',
+        timezone: 'America/Los_Angeles',
         semesterId: semester.id,
       });
     }
 
     const course = await CourseModel.findOne({
-      where: { name: 'CS 2500' },
+      where: { name: 'CS 304' },
     });
 
     const userExists = await UserModel.findOne();
     if (!userExists) {
       // Student 1
       const user1 = await UserFactory.create({
-        email: 'liu.sta@northeastern.edu',
-        firstName: 'Stanley',
-        lastName: 'Liu',
+        email: 'kw@ubc.ca',
+        firstName: 'kevin',
+        lastName: 'wang',
+        password: hashedPassword1
       });
       await UserCourseFactory.create({
         user: user1,
@@ -111,9 +118,10 @@ export class SeedController {
 
       // Student 2
       const user2 = await UserFactory.create({
-        email: 'takayama.a@northeastern.edu',
-        firstName: 'Alex',
-        lastName: 'Takayama',
+        email: 'Justin@ubc.ca',
+        firstName: 'Justin',
+        lastName: 'Schultz',
+        password: hashedPassword1
       });
       await UserCourseFactory.create({
         user: user2,
@@ -124,9 +132,10 @@ export class SeedController {
 
       // TA 1
       const user3 = await UserFactory.create({
-        email: 'stenzel.w@northeastern.edu',
-        firstName: 'Will',
-        lastName: 'Stenzel',
+        email: 'big@ubc.ca',
+        firstName: 'Big',
+        lastName: 'Boy',
+        password: hashedPassword1
       });
       await UserCourseFactory.create({
         user: user3,
@@ -135,27 +144,27 @@ export class SeedController {
       });
       // TA 2
       const user4 = await UserFactory.create({
-        email: 'chu.daj@northeastern.edu',
-        firstName: 'Da-Jin',
-        lastName: 'Chu',
+        email: 'small@ubc.ca',
+        firstName: 'Small',
+        lastName: 'Boy',
+        password: hashedPassword1
       });
       await UserCourseFactory.create({
         user: user4,
         role: Role.TA,
         course: course,
       });
-      // Professor (Snarky!!)
+      // Professor 
       const user5 = await UserFactory.create({
-        email: 'li.edwa@northeastern.edu',
-        firstName: 'Eddy',
-        lastName: 'Li',
-        photoURL:
-          'https://ca.slack-edge.com/TE565NU79-UR6P32JBT-a6c89822c544-512',
+        email: 'bigRamon@ubc.ca',
+        firstName: 'Ramon',
+        lastName: 'Lawrence',
         insights: [
           'QuestionTypeBreakdown',
           'TotalQuestionsAsked',
           'TotalStudents',
         ],
+        password: hashedPassword1
       });
       await UserCourseFactory.create({
         user: user5,
@@ -185,7 +194,7 @@ export class SeedController {
 
     const eventTA = await UserModel.findOne({
       where: {
-        firstName: 'Will',
+        firstName: 'Big',
       },
     });
 
@@ -221,7 +230,7 @@ export class SeedController {
     });
 
     const professorQueue = await QueueFactory.create({
-      room: "Professor Li's Hours",
+      room: "Professor Lawrence's Hours",
       course: course,
       allowQuestions: true,
       isProfessorQueue: true,
