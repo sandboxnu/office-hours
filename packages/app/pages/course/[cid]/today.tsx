@@ -7,7 +7,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
 import styled from "styled-components";
-import GPTChatbotPage from "../../../components/Chatbot/Chatbot";
+// import GPTChatbotPage from "../../../components/Chatbot/Chatbot";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
 import NavBar from "../../../components/Nav/NavBar";
 import SchedulePanel from "../../../components/Schedule/SchedulePanel";
@@ -155,8 +155,8 @@ export default function Today(): ReactElement {
                   />
                 )
               }
-              <GPTChatbotPage />
             </TodayCol>
+
             <TodayCol md={12} sm={24}>
               <SchedulePanel courseId={Number(cid)} defaultView="timeGridDay" />
             </TodayCol>
