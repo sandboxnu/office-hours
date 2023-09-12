@@ -80,44 +80,40 @@ export default function ProfileDrawer({
     <>
       <NoPaddingPopover
         content={
-          isPopoverOpen && (
-            <Menu mode="inline">
-              <Menu.Item icon={<SettingOutlined />}>
-                <Link
-                  href={{ pathname: "/settings", query: { cid: courseId } }}
-                >
-                  <a>Settings</a>
-                </Link>
-              </Menu.Item>
-              <Menu.Item
-                icon={<MacCommandOutlined />}
-                onClick={() => {
-                  Modal.info({
-                    title: "Queue Page Keyboard Shortcuts",
-                    content: shortcutInfoContent(role),
-                  });
-                  setIsPopoverOpen(false);
-                }}
-              >
-                Keyboard Shortcuts
-              </Menu.Item>
-              <Menu.Item
-                key="1"
-                icon={<QuestionCircleOutlined />}
-                onClick={() => {
-                  window.open("http://example.com");
-                  setIsPopoverOpen(false);
-                }}
-              >
-                Help Guide
-              </Menu.Item>
-              <Menu.Item key="2" icon={<LogoutOutlined />}>
-                <Link href={"/api/v1/logout"}>
-                  <a data-cy="logout-button">Logout</a>
-                </Link>
-              </Menu.Item>
-            </Menu>
-          )
+          <Menu mode="inline">
+            <Menu.Item icon={<SettingOutlined />}>
+              <Link href={{ pathname: "/settings", query: { cid: courseId } }}>
+                <a>Settings</a>
+              </Link>
+            </Menu.Item>
+            <Menu.Item
+              icon={<MacCommandOutlined />}
+              onClick={() => {
+                Modal.info({
+                  title: "Queue Page Keyboard Shortcuts",
+                  content: shortcutInfoContent(role),
+                });
+                setIsPopoverOpen(false);
+              }}
+            >
+              Keyboard Shortcuts
+            </Menu.Item>
+            <Menu.Item
+              key="1"
+              icon={<QuestionCircleOutlined />}
+              onClick={() => {
+                window.open("http://example.com");
+                setIsPopoverOpen(false);
+              }}
+            >
+              Help Guide
+            </Menu.Item>
+            <Menu.Item key="2" icon={<LogoutOutlined />}>
+              <Link href={"/api/v1/logout"}>
+                <a data-cy="logout-button">Logout</a>
+              </Link>
+            </Menu.Item>
+          </Menu>
         }
         placement="bottomRight"
         trigger="click"
