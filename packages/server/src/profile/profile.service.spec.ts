@@ -12,6 +12,8 @@ import { TestTypeOrmModule, TestConfigModule } from '../../test/util/testUtils';
 import { ProfileService } from './profile.service';
 import { UserModel } from './user.entity';
 
+jest.useFakeTimers();
+
 describe('ProfileService', () => {
   let service: ProfileService;
 

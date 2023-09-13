@@ -80,7 +80,7 @@
   "devDependencies": {
     "@nestjs/cli": "^7.5.0",
     "@nestjs/schematics": "^7.0.1",
-    "@nestjs/testing": "^7.5.0",
+    "@nestjs/testing": "^8.0.3",
     "@types/async": "^3.2.3",
     "@types/cache-manager": "^2.10.3",
     "@types/connect-redis": "^0.0.16",
