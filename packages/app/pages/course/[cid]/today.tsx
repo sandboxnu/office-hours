@@ -14,6 +14,7 @@ import SchedulePanel from "../../../components/Schedule/SchedulePanel";
 import QueueCard, {
   QueueCardSkeleton,
 } from "../../../components/Today/QueueCard";
+import { ChatbotComponent } from "../../../components/Chatbot/Chatbot";
 import TodayPageCheckinButton from "../../../components/Today/QueueCheckInButton";
 import { useCourse } from "../../../hooks/useCourse";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
@@ -156,10 +157,10 @@ export default function Today(): ReactElement {
                 )
               }
             </TodayCol>
-
             <TodayCol md={12} sm={24}>
               <SchedulePanel courseId={Number(cid)} defaultView="timeGridDay" />
             </TodayCol>
+            <ChatbotComponent />
           </Row>
         </Container>
       </StandardPageContainer>
