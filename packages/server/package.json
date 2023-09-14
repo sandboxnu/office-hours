@@ -65,7 +65,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.4",
-    "sharp": "^0.27.0",
+    "sharp": "^0.30.5",
     "source-map-support": "^0.5.19",
     "twilio": "^3.47.0",
     "typeorm": "^0.2.25",
