@@ -10,7 +10,6 @@ import { mocked } from 'ts-jest/utils';
 import { Connection } from 'typeorm';
 import { addGlobalsToApp } from '../../src/bootstrap';
 import { LoginModule } from '../../src/login/login.module';
-import { TwilioService } from '../../src/notification/twilio/twilio.service';
 
 export interface SupertestOptions {
   userId?: number;
@@ -26,14 +25,6 @@ export const TestTypeOrmModule = TypeOrmModule.forRoot({
   entities: ['./**/*.entity.ts'],
   synchronize: true,
 });
-
-// Fake twilio so we don't try to text people in tests
-export const mockTwilio = {
-  getFullPhoneNumber: async (s: string): Promise<string> => {
-    return s.startsWith('real') ? s : 'real' + s;
-  },
-  sendSMS: async (): Promise<null> => null,
-};
 
 export const TestConfigModule = ConfigModule.forRoot({
   envFilePath: ['.env.development'],
@@ -61,9 +52,7 @@ export function setupIntegrationTest(
           { name: 'db' },
         ]),
       ],
-    })
-      .overrideProvider(TwilioService)
-      .useValue(mockTwilio);
+    });
 
     if (modifyModule) {
       testModuleBuilder = modifyModule(testModuleBuilder);
