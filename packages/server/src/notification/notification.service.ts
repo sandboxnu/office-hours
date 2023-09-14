@@ -1,12 +1,9 @@
-import { ERROR_MESSAGES } from '@koh/common';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DeepPartial } from 'typeorm';
 import * as webPush from 'web-push';
 import { UserModel } from '../profile/user.entity';
 import { DesktopNotifModel } from './desktop-notif.entity';
-import { PhoneNotifModel } from './phone-notif.entity';
-import { TwilioService } from './twilio/twilio.service';
 
 export const NotifMsgs = {
   phone: {
@@ -39,10 +36,7 @@ export const NotifMsgs = {
 export class NotificationService {
   desktopPublicKey: string;
 
-  constructor(
-    private configService: ConfigService,
-    private twilioService: TwilioService,
-  ) {
+  constructor(private configService: ConfigService) {
     webPush.setVapidDetails(
       this.configService.get('EMAIL'),
       this.configService.get('PUBLICKEY'),
@@ -65,46 +59,6 @@ export class NotificationService {
     return dn;
   }
 
-  async registerPhone(phoneNumber: string, user: UserModel): Promise<void> {
-    const fullNumber = await this.twilioService.getFullPhoneNumber(phoneNumber);
-    if (!fullNumber) {
-      throw new BadRequestException(
-        ERROR_MESSAGES.notificationService.registerPhone,
-      );
-    }
-
-    let phoneNotifModel = await PhoneNotifModel.findOne({
-      userId: user.id,
-    });
-
-    if (phoneNotifModel) {
-      // Phone number has not changed
-      if (phoneNotifModel.phoneNumber === fullNumber) {
-        return;
-      } else {
-        // Need to just change it
-        phoneNotifModel.phoneNumber = fullNumber;
-        phoneNotifModel.verified = false;
-        await phoneNotifModel.save();
-      }
-    } else {
-      phoneNotifModel = await PhoneNotifModel.create({
-        phoneNumber: fullNumber,
-        userId: user.id,
-        verified: false,
-      }).save();
-
-      // MUTATE so if user.save() is called later it doesn't dis-associate
-      user.phoneNotif = phoneNotifModel;
-    }
-
-    await this.notifyPhone(
-      phoneNotifModel,
-      "You've signed up for phone notifications for Khoury Office Hours. To verify your number, please respond to this message with YES. To unsubscribe, respond to this message with NO or STOP",
-      true,
-    );
-  }
-
   // Notify user on all platforms
   async notifyUser(userId: number, message: string): Promise<void> {
     const notifModelsOfUser = await UserModel.findOne({
@@ -121,9 +75,6 @@ export class NotificationService {
           this.notifyDesktop(nm, message),
         ),
       );
-    }
-    if (notifModelsOfUser.phoneNotif && notifModelsOfUser.phoneNotifsEnabled) {
-      this.notifyPhone(notifModelsOfUser.phoneNotif, message, false);
     }
   }
 
@@ -142,44 +93,6 @@ export class NotificationService {
       );
     } catch (error) {
       await DesktopNotifModel.remove(nm);
-    }
-  }
-
-  // notifies a user via phone number
-  async notifyPhone(
-    pn: PhoneNotifModel,
-    message: string,
-    force: boolean,
-  ): Promise<void> {
-    if (force || pn.verified) {
-      try {
-        await this.twilioService.sendSMS(pn.phoneNumber, message);
-      } catch (error) {
-        console.error('problem sending message', error);
-      }
-    }
-  }
-
-  async verifyPhone(phoneNumber: string, message: string): Promise<string> {
-    const phoneNotif = await PhoneNotifModel.findOne({
-      where: { phoneNumber: phoneNumber },
-    });
-
-    if (!phoneNotif) {
-      return NotifMsgs.phone.COULD_NOT_FIND_NUMBER;
-    } else if (message !== 'YES' && message !== 'NO' && message !== 'STOP') {
-      return NotifMsgs.phone.WRONG_MESSAGE;
-    } else if (message === 'NO' || message === 'STOP') {
-      // did some more digging, STOP just stops messages completely, we'll never receive it
-      // so uh... there's probably a way to do that
-      await PhoneNotifModel.delete(phoneNotif);
-      return NotifMsgs.phone.UNREGISTER;
-    } else if (phoneNotif.verified) {
-      return NotifMsgs.phone.DUPLICATE;
-    } else {
-      phoneNotif.verified = true;
-      await phoneNotif.save();
-      return NotifMsgs.phone.OK;
     }
   }
 }

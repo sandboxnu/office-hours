@@ -1,7 +1,6 @@
 import { QuestionStatusKeys } from '@koh/common';
 import { TestingModule, Test } from '@nestjs/testing';
 import { NotificationService } from 'notification/notification.service';
-import { TwilioService } from 'notification/twilio/twilio.service';
 import { Connection } from 'typeorm';
 import {
   QueueFactory,
@@ -10,11 +9,7 @@ import {
   UserFactory,
   TACourseFactory,
 } from '../../test/util/factories';
-import {
-  mockTwilio,
-  TestTypeOrmModule,
-  TestConfigModule,
-} from '../../test/util/testUtils';
+import { TestTypeOrmModule, TestConfigModule } from '../../test/util/testUtils';
 import { QuestionGroupModel } from './question-group.entity';
 import { QuestionModel } from './question.entity';
 import { QuestionService } from './question.service';
@@ -27,11 +22,8 @@ describe('QuestionService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestTypeOrmModule, TestConfigModule],
-      providers: [QuestionService, NotificationService, TwilioService],
-    })
-      .overrideProvider(TwilioService)
-      .useValue(mockTwilio)
-      .compile();
+      providers: [QuestionService, NotificationService],
+    }).compile();
 
     service = module.get<QuestionService>(QuestionService);
     conn = module.get<Connection>(Connection);

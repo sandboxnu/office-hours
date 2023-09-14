@@ -5,7 +5,7 @@ import {
   ERROR_MESSAGES,
   UpdateProfileParams,
 } from "@koh/common";
-import { Button, Form, Input, List, message, Switch, Tooltip } from "antd";
+import { Button, Form, List, message, Switch, Tooltip } from "antd";
 import { pick } from "lodash";
 import { HeaderTitle } from "./Styled";
 import React, { ReactElement, useEffect, useState } from "react";
@@ -85,33 +85,6 @@ export default function NotificationsSettings(): ReactElement {
             {() =>
               form?.getFieldValue("desktopNotifsEnabled") && (
                 <DeviceNotifPanel />
-              )
-            }
-          </Form.Item>
-          <Form.Item
-            style={{ marginTop: "30px", flex: 1 }}
-            label="Enable SMS notifications"
-            name="phoneNotifsEnabled"
-            valuePropName="checked"
-          >
-            <Switch />
-          </Form.Item>
-          <Form.Item shouldUpdate noStyle>
-            {() =>
-              form?.getFieldValue("phoneNotifsEnabled") && (
-                <Form.Item
-                  label="Phone #"
-                  name="phoneNumber"
-                  rules={[
-                    {
-                      required: true,
-                      message:
-                        "Please input your number to enable text notifications",
-                    },
-                  ]}
-                >
-                  <Input placeholder={"XXX-XXX-XXXX"} />
-                </Form.Item>
               )
             }
           </Form.Item>
