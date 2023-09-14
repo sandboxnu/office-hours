@@ -4,9 +4,9 @@ import { Cache } from 'cache-manager';
 import { ClosedQuestionStatus, Heatmap, timeDiffInMins } from '@koh/common';
 import moment = require('moment');
 import { CourseModel } from './course.entity';
-import { MoreThan } from 'typeorm';
+import { MoreThan, Not } from 'typeorm';
 import { QuestionModel } from '../question/question.entity';
-import { EventModel } from '../profile/event-model.entity';
+import { EventModel, EventType } from '../profile/event-model.entity';
 import { Command, Positional } from 'nestjs-command';
 import { inRange, mean, range } from 'lodash';
 import 'moment-timezone';
@@ -54,7 +54,11 @@ export class HeatmapService {
     }
 
     const taEvents = await EventModel.find({
-      where: { time: MoreThan(recent), courseId },
+      where: {
+        time: MoreThan(recent),
+        courseId,
+        eventType: Not(EventType.TA_CHECKED_OUT_FORCED),
+      },
     });
 
     if (taEvents.length === 0) {
