@@ -36,17 +36,18 @@ export default function AboutPage(): ReactElement {
         <Title>About Us</Title>
         <Description>
           <p>
-            Khoury Office Hours is developed and maintained by a group of
+            Khoury Office Hours was a project originally built by a group of
             student developers and designers from
             <a href="https://www.sandboxnu.com/"> Sandbox</a>, the student-led
-            software consultancy at Northeastern. Our mission is to enhance the
+            software consultancy at Northeastern. The mission is to enhance the
             student experience by making office hours more efficient and
             transparent.
           </p>
           <p>
             We began developing Khoury Office Hours in May 2020, and first
-            launched the app in Fall 2020 to 4 courses. We now support around 20
-            courses with over 2,500 registered users. Check us out{" "}
+            launched the app in Fall 2020 to 4 courses. Over the years, the tool
+            has become a staple at the university, supporting 20+ classes each
+            semester. Check us out{" "}
             <a href="https://news.northeastern.edu/2021/02/02/this-app-helps-students-get-more-face-time-with-professors/">
               {" "}
               in the news{" "}
@@ -54,34 +55,10 @@ export default function AboutPage(): ReactElement {
             to learn more.
           </p>
           <p>
-            Our team is always open to feedback. If you&apos;re interested in
-            contributing or have questions, feel free to take a look at our have
-            questions, feel free to take a look at our
-            <a href="https://github.com/sandboxnu/office-hours"> GitHub</a> or
-            email us at
-            <a href="mailto:info@khouryofficehours.com">
-              {" "}
-              info@khouryofficehours.com
-            </a>
-          </p>
-          <p>
-            <strong>Contact: </strong>
-            <a href="mailto:info@khouryofficehours.com">
-              {" "}
-              info@khouryofficehours.com
-            </a>
-          </p>
-          <p>
-            <strong>GitHub: </strong>
-            <a href="https://github.com/sandboxnu/office-hours">
-              https://github.com/sandboxnu/office-hours
-            </a>
-          </p>
-          <p>
-            <strong>Informational Site: </strong>
-            <a href="https://info.khouryofficehours.com/">
-              https://info.khouryofficehours.com/
-            </a>
+            As the product matured, and a lot of the original developers
+            graduated, the school began to take over the app in the Fall of
+            2022, with a complete handoff in Summer 2023. The app is now under
+            the supervision of the Khoury College of Computer Sciences.
           </p>
         </Description>
       </Col>
@@ -92,19 +69,6 @@ export default function AboutPage(): ReactElement {
         style={{ flexGrow: 1, paddingTop: "20px" }}
       >
         <Col span={20} style={{ maxWidth: "100%" }}>
-          <ProfilesTitle>Current Members</ProfilesTitle>
-          <ProfilesSection>
-            {PROFILES_CURRENT.map((prof, idx) => (
-              <ProfileCard
-                key={idx}
-                name={prof.name}
-                role={prof.role}
-                imgSrc={prof.image}
-                linkedin={prof.linkedin}
-                personalSite={prof.personalSite}
-              />
-            ))}
-          </ProfilesSection>
           <ProfilesTitle>Past Members</ProfilesTitle>
           <ProfilesSection>
             {PROFILES_PAST.map((prof, idx) => (
@@ -128,7 +92,7 @@ export default function AboutPage(): ReactElement {
 // https://buildbrothers.com/gdrive-generator/
 // which is described in this article: https://blog.usejournal.com/host-static-images-for-your-apps-or-website-on-google-drive-hotlink-to-gdrive-images-358d6fcf8ef7
 // The images are stored in the drive folder Sandbox Members/Office Hours/About Page Images
-const PROFILES_CURRENT = [
+const PROFILES_PAST = [
   {
     name: "Danish Farooq",
     role: "Project Lead",
@@ -170,8 +134,19 @@ const PROFILES_CURRENT = [
   {
     name: "Tingwei Shi",
     role: "Developer",
-    image: "https://drive.google.com/uc?id=1GrUpNThyLoazwM3RkCNHr2dB2HxDOUTY",
+    image: "https://drive.google.com/file/d/1DfO4JM_Arrifm5miqRBxGZek_-rwJjna",
     linkedin: "https://www.linkedin.com/in/tingwei-shi",
+  },
+  {
+    name: "Angela Zheng",
+    role: "Designer",
+    image: "https://www.linkedin.com/in/angela-zheng-/",
+  },
+  {
+    name: "Sumit De",
+    role: "Developer",
+    image: "https://drive.google.com/file/d/1ec3ELGi3iuawF_-rT3Hn9ooaj8yP02HS",
+    linkedin: "https://www.linkedin.com/in/sumit-de-a6a09217b/",
   },
   {
     name: "Megan Chong",
@@ -180,9 +155,6 @@ const PROFILES_CURRENT = [
     linkedin: "https://www.linkedin.com/in/megan-chong-/",
     personalSite: "https://www.megan-chong.com",
   },
-];
-
-const PROFILES_PAST = [
   {
     name: "Aislin Black",
     role: "Developer",
