@@ -18,6 +18,8 @@ import { QuestionTypeModel } from './src/question/question-type.entity';
 import { AsyncQuestionModel } from './src/asyncQuestion/asyncQuestion.entity';
 import { ImageModel } from 'images/image.entity';
 import { CalendarModel } from 'calendar/calendar.entity';
+import { ChatbotQuestionModel } from 'chatbot/question.entity';
+import { InteractionModel } from 'chatbot/interaction.entity';
 config();
 
 // Options only used whe run via CLI
@@ -41,7 +43,8 @@ const typeorm = {
     UserModel,
     UserCourseModel,
     QuestionModel,
-
+    ChatbotQuestionModel,
+    InteractionModel,
     AsyncQuestionModel,
     QuestionTypeModel,
     QueueModel,

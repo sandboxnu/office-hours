@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input, Button, Card, Avatar, List, Spin } from "antd";
 import styled from "styled-components";
+import { API } from "@koh/api-client";
 import { UserOutlined, RobotOutlined } from "@ant-design/icons";
+import router from "next/router";
+import { useProfile } from "../../hooks/useProfile";
 
 const ChatbotContainer = styled.div`
   position: fixed;
@@ -41,7 +44,11 @@ interface Message {
 
 export const ChatbotComponent: React.FC = () => {
   const [input, setInput] = useState("");
+  const { cid } = router.query;
+  const profile = useProfile();
   const [isLoading, setIsLoading] = useState(false);
+  const [interactionId, setInteractionId] = useState<number | null>(null);
+
   const [messages, setMessages] = useState<Message[]>([
     {
       type: "apiMessage",
@@ -49,6 +56,12 @@ export const ChatbotComponent: React.FC = () => {
     }
   ]);
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      setInteractionId(null);
+    };
+  }, []);
 
   const query = async (data: { question: string; history: Message[] }) => {
     try {
@@ -63,7 +76,6 @@ export const ChatbotComponent: React.FC = () => {
         }
       );
       if (response.ok) {
-        // this ensures the response was successful
         const json = await response.json();
         return json;
       } else {
@@ -80,6 +92,28 @@ export const ChatbotComponent: React.FC = () => {
     setMessages([...messages, { type: "userMessage", message: input }]);
 
     const result = await query({ question: input, history: messages });
+    let currentInteractionId = interactionId; // start with the current state value
+
+    if (!interactionId) {
+      console.log({
+        courseId: Number(cid),
+        userId: profile.id
+      });
+      const interaction = await API.chatbot.createInteraction({
+        courseId: Number(cid),
+        userId: profile.id
+      });
+      setInteractionId(interaction.id);
+
+      currentInteractionId = interaction.id; // Update the current value if a new interaction was created
+    }
+
+    // Use currentInteractionId for the createQuestion call
+    await API.chatbot.createQuestion({
+      interactionId: currentInteractionId,
+      questionText: input,
+      responseText: result
+    });
     setIsLoading(false);
     if (result != null) {
       setMessages([

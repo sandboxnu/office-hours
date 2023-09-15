@@ -27,6 +27,7 @@ import { asyncQuestionModule } from 'asyncQuestion/asyncQuestion.module';
 import { ImageModule } from 'images/image.module';
 import { MailModule } from 'mail/mail.module';
 import { SiteAdminModule } from 'site-admin/site-admin.module';
+import { ChatbotModule } from './chatbot/chatbot.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeormConfig),
@@ -63,6 +64,7 @@ import { SiteAdminModule } from 'site-admin/site-admin.module';
     HealthcheckModule,
     AlertsModule,
     SemesterModule,
+    ChatbotModule,
   ],
 })
 export class AppModule {}
