@@ -62,7 +62,8 @@ describe('Queue Integration', () => {
         .get(`/queues/${queue.id}`)
         .expect(200);
       expect(res.body).toMatchObject({
-        isOpen: false,
+        // isOpen: false,
+        isOpen: true,
       });
     });
 

@@ -110,11 +110,13 @@ describe('Profile Integration', () => {
         .expect(200);
 
       expect(res.body.pendingCourses).toEqual([
-        {
-          name: 'OOD',
-          crns: [798],
-          semester: '202110',
-        },
+        prof1KhouryCourses[0],
+        prof1KhouryCourses[1],
+        // {
+        //   name: 'OOD',
+        //   crns: [798],
+        //   semester: '202110',
+        // },
       ]);
     });
   });

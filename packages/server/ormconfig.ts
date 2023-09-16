@@ -41,7 +41,6 @@ const typeorm = {
     UserModel,
     UserCourseModel,
     QuestionModel,
-
     AsyncQuestionModel,
     QuestionTypeModel,
     QueueModel,

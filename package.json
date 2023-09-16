@@ -10,6 +10,7 @@
     "tsc": "yarn workspaces run tsc",
     "lint": "eslint packages/ --ext .ts,.tsx .",
     "test": "yarn workspace @koh/server test",
+    "test:cov": "yarn workspace @koh/server test:cov",
     "typeorm": "yarn workspace @koh/server typeorm",
     "dev": "concurrently -n \"server,app,proxy\" \"yarn workspace @koh/server dev\" \"yarn workspace @koh/app dev\" \"yarn dev:proxy\"",
     "dev:proxy": "node infrastructure/dev/devProxy.js",
