@@ -3,10 +3,9 @@
 exports[`Course Integration GET /courses/:id gets all queues that are not disabled (prof) 1`] = `
 Object {
   "allowQuestions": false,
-  "courseId": 1,
   "id": 2,
   "isDisabled": false,
-  "isOpen": false,
+  "isOpen": true,
   "isProfessorQueue": false,
   "notes": null,
   "queueSize": 0,
@@ -18,7 +17,6 @@ Object {
 exports[`Course Integration GET /courses/:id gets all queues that are not disabled (prof) 2`] = `
 Object {
   "allowQuestions": false,
-  "courseId": 1,
   "id": 3,
   "isDisabled": false,
   "isOpen": true,
@@ -29,10 +27,8 @@ Object {
   "staffList": Array [
     Object {
       "defaultMessage": null,
-      "desktopNotifsEnabled": false,
-      "email": "user@neu.edu",
+      "email": "user@ubc.ca",
       "firstName": "User",
-      "hideInsights": Array [],
       "id": 2,
       "includeDefaultMessage": true,
       "insights": Array [
@@ -46,8 +42,9 @@ Object {
       ],
       "lastName": "Person",
       "name": "User Person",
-      "phoneNotifsEnabled": false,
+      "password": null,
       "photoURL": null,
+      "sid": null,
     },
   ],
 }
@@ -56,7 +53,6 @@ Object {
 exports[`Course Integration GET /courses/:id gets all queues that are not disabled (prof) 3`] = `
 Object {
   "allowQuestions": false,
-  "courseId": 1,
   "id": 4,
   "isDisabled": false,
   "isOpen": true,
@@ -67,10 +63,8 @@ Object {
   "staffList": Array [
     Object {
       "defaultMessage": null,
-      "desktopNotifsEnabled": false,
-      "email": "user@neu.edu",
+      "email": "user@ubc.ca",
       "firstName": "User",
-      "hideInsights": Array [],
       "id": 2,
       "includeDefaultMessage": true,
       "insights": Array [
@@ -84,8 +78,9 @@ Object {
       ],
       "lastName": "Person",
       "name": "User Person",
-      "phoneNotifsEnabled": false,
+      "password": null,
       "photoURL": null,
+      "sid": null,
     },
   ],
 }
@@ -93,28 +88,31 @@ Object {
 
 exports[`Course Integration GET /courses/:id gets office hours no queues, since no queue is happening right now 1`] = `
 Object {
+  "asyncQuestionDisplayTypes": Array [],
   "coordinator_email": null,
   "crns": Array [],
+  "deletedAt": null,
   "enabled": true,
   "heatmap": false,
   "icalURL": "https://calendar.google.com/calendar/ical/t6lu2pic7u9otrbpkuk26sl34g%40group.calendar.google.com/public/basic.ics",
   "id": 1,
-  "name": "CS 2500",
+  "name": "CS 304",
+  "questionTimer": null,
   "queues": Array [],
-  "sectionGroupName": "CS 2500",
+  "sectionGroupName": "CS 304",
   "selfEnroll": false,
   "semesterId": 1,
   "timezone": "America/New_York",
+  "zoomLink": null,
 }
 `;
 
 exports[`Course Integration GET /courses/:id gets queues that are not disabled (TA) 1`] = `
 Object {
   "allowQuestions": false,
-  "courseId": 1,
   "id": 2,
   "isDisabled": false,
-  "isOpen": false,
+  "isOpen": true,
   "isProfessorQueue": false,
   "notes": null,
   "queueSize": 0,
@@ -126,7 +124,6 @@ Object {
 exports[`Course Integration GET /courses/:id gets queues that are not disabled (TA) 2`] = `
 Object {
   "allowQuestions": false,
-  "courseId": 1,
   "id": 3,
   "isDisabled": false,
   "isOpen": true,
@@ -137,10 +134,8 @@ Object {
   "staffList": Array [
     Object {
       "defaultMessage": null,
-      "desktopNotifsEnabled": false,
-      "email": "user@neu.edu",
+      "email": "user@ubc.ca",
       "firstName": "User",
-      "hideInsights": Array [],
       "id": 2,
       "includeDefaultMessage": true,
       "insights": Array [
@@ -154,8 +149,9 @@ Object {
       ],
       "lastName": "Person",
       "name": "User Person",
-      "phoneNotifsEnabled": false,
+      "password": null,
       "photoURL": null,
+      "sid": null,
     },
   ],
 }
@@ -164,7 +160,6 @@ Object {
 exports[`Course Integration GET /courses/:id gets queues that are not disabled (TA) 3`] = `
 Object {
   "allowQuestions": false,
-  "courseId": 1,
   "id": 4,
   "isDisabled": false,
   "isOpen": true,
@@ -175,10 +170,8 @@ Object {
   "staffList": Array [
     Object {
       "defaultMessage": null,
-      "desktopNotifsEnabled": false,
-      "email": "user@neu.edu",
+      "email": "user@ubc.ca",
       "firstName": "User",
-      "hideInsights": Array [],
       "id": 2,
       "includeDefaultMessage": true,
       "insights": Array [
@@ -192,8 +185,9 @@ Object {
       ],
       "lastName": "Person",
       "name": "User Person",
-      "phoneNotifsEnabled": false,
+      "password": null,
       "photoURL": null,
+      "sid": null,
     },
   ],
 }
@@ -246,7 +240,7 @@ Object {
   "staffList": Array [
     Object {
       "defaultMessage": null,
-      "email": "user@neu.edu",
+      "email": "user@ubc.ca",
       "firstName": "User",
       "id": 1,
       "includeDefaultMessage": true,
@@ -261,7 +255,9 @@ Object {
       ],
       "lastName": "Person",
       "name": "User Person",
+      "password": null,
       "photoURL": null,
+      "sid": null,
     },
   ],
 }

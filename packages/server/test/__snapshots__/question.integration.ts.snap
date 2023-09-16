@@ -6,7 +6,7 @@ Object {
   "createdAt": "2020-03-01T05:00:00.000Z",
   "creator": Object {
     "defaultMessage": null,
-    "email": "user@neu.edu",
+    "email": "user@ubc.ca",
     "firstName": "User",
     "id": 1,
     "includeDefaultMessage": true,
@@ -21,7 +21,9 @@ Object {
     ],
     "lastName": "Person",
     "name": "User Person",
+    "password": null,
     "photoURL": null,
+    "sid": null,
   },
   "groupable": true,
   "helpedAt": null,
