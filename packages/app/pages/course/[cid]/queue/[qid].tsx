@@ -22,25 +22,6 @@ export default function Queue(): ReactElement {
   const role = useRoleInCourse(Number(cid));
   const { queue } = useQueue(Number(qid));
 
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.type = "module";
-    script.innerHTML = `
-      import Chatbot from "https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js";
-      Chatbot.init({
-          chatflowid: "a4ca60fe-cba1-4b37-8099-b540b18026f1",
-          apiHost: "http://localhost:3000",
-          /* ... other settings */
-      });
-    `;
-    document.body.appendChild(script);
-
-    // Cleanup on unmount
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, [role]);
-
   return (
     <StandardPageContainer>
       <Container>

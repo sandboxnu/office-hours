@@ -65,16 +65,13 @@ export const ChatbotComponent: React.FC = () => {
 
   const query = async (data: { question: string; history: Message[] }) => {
     try {
-      const response = await fetch(
-        "http://localhost:3000/api/v1/prediction/a4ca60fe-cba1-4b37-8099-b540b18026f1",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(data)
-        }
-      );
+      const response = await fetch(process.env.NEXT_PUBLIC_FLOWISE_API, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
       if (response.ok) {
         const json = await response.json();
         return json;
@@ -130,57 +127,63 @@ export const ChatbotComponent: React.FC = () => {
     }
     setInput("");
   };
+  const apiUrl = process.env.NEXT_PUBLIC_FLOWISE_API;
 
-  return (
-    <ChatbotContainer style={{ zIndex: 1000 }}>
-      {isOpen ? (
-        <Card
-          title="Chatbot"
-          extra={<a onClick={() => setIsOpen(false)}>Close</a>}
-        >
-          <List
-            dataSource={messages}
-            renderItem={item => (
-              <List.Item style={{ padding: "5px 0" }}>
-                {item.type === "userMessage" ? (
-                  <UserMessageContainer>
-                    <UserMessage> {item.message}</UserMessage>
-                    <Avatar size="small" icon={<UserOutlined />} />
-                  </UserMessageContainer>
-                ) : (
-                  <ApiMessageContainer>
-                    <Avatar size="small" icon={<RobotOutlined />} />
-                    <ApiMessage> {item.message}</ApiMessage>
-                  </ApiMessageContainer>
-                )}
-              </List.Item>
+  if (!apiUrl) {
+    console.error("API URL not defined.");
+  } else {
+    return (
+      <ChatbotContainer style={{ zIndex: 1000 }}>
+        {isOpen ? (
+          <Card
+            title="Chatbot"
+            extra={<a onClick={() => setIsOpen(false)}>Close</a>}
+          >
+            <List
+              dataSource={messages}
+              renderItem={item => (
+                <List.Item style={{ padding: "5px 0" }}>
+                  {item.type === "userMessage" ? (
+                    <UserMessageContainer>
+                      <UserMessage> {item.message}</UserMessage>
+                      <Avatar size="small" icon={<UserOutlined />} />
+                    </UserMessageContainer>
+                  ) : (
+                    <ApiMessageContainer>
+                      <Avatar size="small" icon={<RobotOutlined />} />
+                      <ApiMessage> {item.message}</ApiMessage>
+                    </ApiMessageContainer>
+                  )}
+                </List.Item>
+              )}
+            />
+
+            {isLoading && (
+              <Spin style={{ display: "block", marginBottom: "10px" }} />
             )}
-          />
-
-          {isLoading && (
-            <Spin style={{ display: "block", marginBottom: "10px" }} />
-          )}
-          <Input
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            placeholder="Ask something..."
-            onPressEnter={handleAsk}
-            suffix={
-              <Button type="primary" onClick={handleAsk}>
-                Ask
-              </Button>
-            }
-          />
-        </Card>
-      ) : (
-        <Button
-          type="primary"
-          icon={<RobotOutlined />}
-          onClick={() => setIsOpen(true)}
-        >
-          Chat with us!
-        </Button>
-      )}
-    </ChatbotContainer>
-  );
+            <Input
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              placeholder="Ask something..."
+              onPressEnter={handleAsk}
+              suffix={
+                <Button type="primary" onClick={handleAsk}>
+                  Ask
+                </Button>
+              }
+            />
+          </Card>
+        ) : (
+          <Button
+            type="primary"
+            icon={<RobotOutlined />}
+            onClick={() => setIsOpen(true)}
+          >
+            Chat with us!
+          </Button>
+        )}
+      </ChatbotContainer>
+    );
+  }
+  return <></>;
 };
