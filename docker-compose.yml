@@ -4,7 +4,7 @@ services:
   postgresql:
     image: postgres:11.5
     ports:
-      - 5432:5432
+      - "5432:5432"
     volumes:
       - ./docker-postgresql-multiple-databases:/docker-entrypoint-initdb.d
       - pg:/var/lib/postgresql/data
@@ -12,10 +12,33 @@ services:
       - POSTGRES_MULTIPLE_DATABASES=dev,test
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=
+    networks:
+      - api
   redis:
     image: redis:alpine
     ports:
       - "6379:6379"
+    networks:
+      - api
+  api:
+    container_name: helpme_api
+    command: yarn dev
+    ports: 
+      - "80:3000"
+    depends_on:
+      - postgresql
+      - redis
+    env_file:
+      - ./packages/server/.env.development
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - api
 
 volumes:
   pg:
+
+networks:
+  api:
+    driver: bridge

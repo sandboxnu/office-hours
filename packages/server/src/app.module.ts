@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -59,7 +60,11 @@ import { SiteAdminModule } from 'site-admin/site-admin.module';
     InsightsModule,
     ImageModule,
     // Only use 'pub' for publishing events, 'sub' for subscribing, and 'db' for writing to key/value store
-    RedisModule.register([{ name: 'pub' }, { name: 'sub' }, { name: 'db' }]),
+    RedisModule.register([
+      { name: 'pub', host: process.env.REDIS_HOST || 'localhost' },
+      { name: 'sub', host: process.env.REDIS_HOST || 'localhost' },
+      { name: 'db', host: process.env.REDIS_HOST || 'localhost' },
+    ]),
     HealthcheckModule,
     AlertsModule,
     SemesterModule,
