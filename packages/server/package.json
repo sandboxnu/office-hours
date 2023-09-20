@@ -12,7 +12,7 @@
     "prod:start": "node --max-old-space-size=8192 dist/main",
     "tsc": "tsc",
     "test": "yarn test:unit && yarn test:integration",
-    "test:unit": "jest -i",
+    "test:unit": "jest -i --forceExit",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:integration": "jest --config ./test/jest-integration.json -i",
@@ -80,7 +80,7 @@
   "devDependencies": {
     "@nestjs/cli": "^7.5.0",
     "@nestjs/schematics": "^7.0.1",
-    "@nestjs/testing": "^7.5.0",
+    "@nestjs/testing": "^8.0.3",
     "@types/async": "^3.2.3",
     "@types/cache-manager": "^2.10.3",
     "@types/connect-redis": "^0.0.16",

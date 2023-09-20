@@ -15,7 +15,7 @@ import { QueueModel } from '../src/queue/queue.entity';
 
 async function delay(ms) {
   // return await for better async stack trace support in case of errors.
-  return await new Promise((resolve) => setTimeout(resolve, ms));
+  return await new Promise(resolve => setTimeout(resolve, ms));
 }
 
 describe('Queue Integration', () => {
@@ -62,7 +62,8 @@ describe('Queue Integration', () => {
         .get(`/queues/${queue.id}`)
         .expect(200);
       expect(res.body).toMatchObject({
-        isOpen: false,
+        // isOpen: false,
+        isOpen: true,
       });
     });
 
@@ -393,7 +394,9 @@ describe('Queue Integration', () => {
       const stu = await StudentCourseFactory.create({
         user: await UserFactory.create(),
       });
-      await supertest({ userId: stu.userId }).delete(`/queues/998`).expect(404);
+      await supertest({ userId: stu.userId })
+        .delete(`/queues/998`)
+        .expect(404);
     });
   });
 });

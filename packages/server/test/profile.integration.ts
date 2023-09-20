@@ -76,7 +76,9 @@ describe('Profile Integration', () => {
 
     it('returns 401 when not logged in', async () => {
       await UserFactory.create();
-      await supertest().get('/profile').expect(401);
+      await supertest()
+        .get('/profile')
+        .expect(401);
     });
 
     it('returns pending courses when they exist', async () => {
@@ -110,11 +112,13 @@ describe('Profile Integration', () => {
         .expect(200);
 
       expect(res.body.pendingCourses).toEqual([
-        {
-          name: 'OOD',
-          crns: [798],
-          semester: '202110',
-        },
+        prof1KhouryCourses[0],
+        prof1KhouryCourses[1],
+        // {
+        //   name: 'OOD',
+        //   crns: [798],
+        //   semester: '202110',
+        // },
       ]);
     });
   });

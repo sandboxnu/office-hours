@@ -14,7 +14,7 @@ Object {
   "defaultMessage": null,
   "desktopNotifs": Array [],
   "desktopNotifsEnabled": false,
-  "email": "user@neu.edu",
+  "email": "user@ubc.ca",
   "firstName": "User",
   "id": 1,
   "includeDefaultMessage": true,
@@ -31,5 +31,6 @@ Object {
   "name": "User Person",
   "phoneNotifsEnabled": false,
   "photoURL": null,
+  "sid": null,
 }
 `;

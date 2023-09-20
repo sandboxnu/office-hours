@@ -18,14 +18,18 @@ describe('Seed Integration', () => {
     await QuestionFactory.create({ queue: queue });
     await QuestionFactory.create({ queue: queue });
 
-    const response = await supertest().get('/seeds/delete').expect(200);
+    const response = await supertest()
+      .get('/seeds/delete')
+      .expect(200);
 
     expect(response.text).toBe('Data successfully reset');
   });
 
   it('GET /seeds/create', async () => {
     await CourseFactory.create();
-    const response = await supertest().get('/seeds/create').expect(200);
+    const response = await supertest()
+      .get('/seeds/create')
+      .expect(200);
 
     expect(response.text).toBe('Data successfully seeded');
 
@@ -44,7 +48,7 @@ describe('Seed Integration', () => {
       user: {
         defaultMessage: null,
         desktopNotifsEnabled: false,
-        email: 'user@neu.edu',
+        email: 'user@ubc.ca',
         id: 1,
         includeDefaultMessage: true,
         phoneNotifsEnabled: false,
