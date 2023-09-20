@@ -23,13 +23,13 @@ services:
   api:
     container_name: helpme_api
     command: yarn dev
-    ports: 
+    ports:
       - "80:3000"
     depends_on:
       - postgresql
       - redis
     env_file:
-      - ./packages/server/.env.development
+      - ./packages/server/.env.docker
     build:
       context: .
       dockerfile: Dockerfile
