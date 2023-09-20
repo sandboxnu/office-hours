@@ -3,8 +3,6 @@ import { ChatbotService } from './chatbot.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { InteractionModel } from './interaction.entity';
 import { ChatbotQuestionModel } from './question.entity';
-import { CourseModel } from 'course/course.entity';
-import { UserModel } from 'profile/user.entity';
 import { ChatBotQuestionParams, InteractionParams } from '@koh/common';
 
 @Controller('chatbot')
