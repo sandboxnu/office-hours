@@ -6,7 +6,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./docker-postgresql-multiple-databases:/docker-entrypoint-initdb.d
+      - ./infrastructure/dev/docker-postgresql-multiple-databases:/docker-entrypoint-initdb.d
       - pg:/var/lib/postgresql/data
     environment:
       - POSTGRES_MULTIPLE_DATABASES=dev,test
