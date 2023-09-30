@@ -12,7 +12,7 @@ module.exports = {
     "prettier",
     "prettier/@typescript-eslint",
   ],
-  ignorePatterns: [".eslintrc.js"],
+  ignorePatterns: [".eslintrc.js", "./langchain-services/**/*"],
   root: true,
   env: {
     node: true,
