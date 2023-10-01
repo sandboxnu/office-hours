@@ -2,7 +2,10 @@ const express = require('express');
 const app = express();
 const PORT = 3003;
 
-app.post('/prediction', (req, res) => {
+app.get('/', (req: any, res: any) => {
+  res.send('Hello, World!');
+});
+app.post('/prediction', (req: any, res: any) => {
   const { question, history } = req.body;
 
   // Some basic validation 
