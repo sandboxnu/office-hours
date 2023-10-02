@@ -73,6 +73,8 @@ export class User {
   phoneNotifsEnabled!: boolean;
   phoneNumber!: string;
   insights!: string[];
+  userRole!: string;
+  organizationRole!: string;
 }
 
 export class DesktopNotifPartial {
@@ -124,6 +126,24 @@ export enum Role {
   TA = "ta",
   PROFESSOR = "professor",
 }
+
+/**
+ * Represents one of two possible roles for the global account
+ */
+export enum UserRole {
+  USER = "user",
+  ADMIN = "admin",
+}
+
+/**
+ * Represents a user's role in an organization.
+ */
+export enum OrganizationRole {
+  MEMBER = "member",
+  ADMIN = "admin",
+  professor = "professor",
+}
+
 /**
  * A Queue that students can join with thier tickets.
  * @param id - The unique id number for a Queue.

@@ -45,6 +45,7 @@ Object {
       "password": null,
       "photoURL": null,
       "sid": null,
+      "userRole": "user",
     },
   ],
 }
@@ -81,6 +82,7 @@ Object {
       "password": null,
       "photoURL": null,
       "sid": null,
+      "userRole": "user",
     },
   ],
 }
@@ -152,6 +154,7 @@ Object {
       "password": null,
       "photoURL": null,
       "sid": null,
+      "userRole": "user",
     },
   ],
 }
@@ -188,6 +191,7 @@ Object {
       "password": null,
       "photoURL": null,
       "sid": null,
+      "userRole": "user",
     },
   ],
 }
@@ -258,6 +262,7 @@ Object {
       "password": null,
       "photoURL": null,
       "sid": null,
+      "userRole": "user",
     },
   ],
 }

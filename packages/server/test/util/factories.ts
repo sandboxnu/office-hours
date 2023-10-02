@@ -12,6 +12,7 @@ import { QuestionModel } from '../../src/question/question.entity';
 import { QueueModel } from '../../src/queue/queue.entity';
 import { LastRegistrationModel } from 'login/last-registration-model.entity';
 import { ProfSectionGroupsModel } from 'login/prof-section-groups.entity';
+import { OrganizationModel } from '../../src/organization/organization.entity';
 
 export const UserFactory = new Factory(UserModel)
   .attr('email', `user@ubc.ca`)
@@ -96,3 +97,11 @@ export const AlertFactory = new Factory(AlertModel)
   .assocOne('user', UserFactory)
   .assocOne('course', CourseFactory)
   .attr('payload', {});
+
+export const OrganizationFactory = new Factory(OrganizationModel)
+  .attr('name', 'UBCO')
+  .attr('description', 'UBC Okanagan')
+  .attr(
+    'logoUrl',
+    'https://etug.ca/wp-content/uploads/2014/03/ubc-e1523034593970.png',
+  );

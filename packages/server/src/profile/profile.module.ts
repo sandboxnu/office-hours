@@ -8,6 +8,7 @@ import { LoginCourseService } from 'login/login-course.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy';
 import { MailModule } from 'mail/mail.module';
+import { OrganizationModule } from '../organization/organization.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { MailModule } from 'mail/mail.module';
         secret: configService.get('JWT_SECRET'),
       }),
     }),
+    OrganizationModule,
   ],
   controllers: [ProfileController],
   providers: [JwtStrategy, ProfileService, LoginCourseService],

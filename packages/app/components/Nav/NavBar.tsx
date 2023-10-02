@@ -1,6 +1,6 @@
 import { DownOutlined } from "@ant-design/icons";
 import { Role } from "@koh/common";
-import { Button, Drawer, Dropdown, Menu } from "antd";
+import { Modal, Button, Drawer, Dropdown, Menu, Image, message } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
@@ -164,7 +164,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     },
   ];
 
-  if (role === Role.PROFESSOR || role ===Role.TA) {
+  if (role === Role.PROFESSOR || role === Role.TA) {
     tabs.push({
       href: "/course/[cid]/course_admin_panel",
       as: `/course/${courseId}/course_admin_panel`,
@@ -188,8 +188,17 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     });
   }
 
+  const [messageApi, easterEggHolder] = message.useMessage();
+
+  const success = () => {
+    messageApi.open({
+      type: "success",
+      content: "Okay... maybe there was one easter egg 🥚🥚🥚",
+    });
+  };
   return courseId ? (
     <>
+      {easterEggHolder}
       <NavBG />
       <AlertsContainer courseId={courseId} />
       <Nav>
@@ -215,6 +224,10 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
             </Dropdown>
           ) : (
             <Logo>
+              <Image
+                width={40}
+                src="https://ires.ubc.ca/files/2020/11/cropped-UBC-Okanagan-1-logo.jpg"
+              />
               <span>{course?.name}</span>
             </Logo>
           )}
@@ -242,6 +255,38 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
           <ProfileDrawer courseId={courseId} />
         </Drawer>
       </Nav>
+
+      <Modal
+        title="[System Message] Exciting News: Introducing Organizations!"
+        open={true}
+        closable={false}
+        footer={[
+          <Button key="ok" type="primary">
+            OK
+          </Button>,
+        ]}
+      >
+        <p>
+          🎉 We&lsquo;re thrilled to announce a new feature that we are working
+          on: Organizations 🏢
+          <br />
+          <br />
+          As part of this work, we need to add your account to one of the
+          existing organizations. <br />
+          <br />
+          Before adding you to your organization, we just wanted to share this
+          update with you before we automatically migrate your account when you
+          click the button below.
+          <br />
+          <br />
+          Once you click the button below, this message will no longer appear.
+          <br />
+          <br />
+          <small style={{ fontSize: "3px", cursor: "none" }} onClick={success}>
+            No easter egss here 🥚🥚🥚
+          </small>
+        </p>
+      </Modal>
     </>
   ) : null;
 }

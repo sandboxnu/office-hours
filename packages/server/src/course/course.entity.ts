@@ -1,5 +1,5 @@
 import { Heatmap } from '@koh/common';
-import { AsyncQuestionModel } from 'asyncQuestion/asyncQuestion.entity';
+import { AsyncQuestionModel } from '../asyncQuestion/asyncQuestion.entity';
 import { Exclude } from 'class-transformer';
 import { QuestionTypeModel } from 'question/question-type.entity';
 import {

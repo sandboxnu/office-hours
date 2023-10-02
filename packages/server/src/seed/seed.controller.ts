@@ -12,6 +12,7 @@ import { UserModel } from 'profile/user.entity';
 import { QuestionGroupModel } from 'question/question-group.entity';
 import { SemesterModel } from 'semester/semester.entity';
 import { AsyncQuestionModel } from 'asyncQuestion/asyncQuestion.entity';
+import { OrganizationModel } from 'organization/organization.entity';
 import { Connection, getManager } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import {
@@ -22,6 +23,7 @@ import {
   SemesterFactory,
   UserCourseFactory,
   UserFactory,
+  OrganizationFactory,
 } from '../../test/util/factories';
 import { CourseModel } from '../course/course.entity';
 //import { NonProductionGuard } from '../guards/non-production.guard';
@@ -35,7 +37,7 @@ export class SeedController {
   constructor(
     private connection: Connection,
     private seedService: SeedService,
-  ) { }
+  ) {}
 
   @Get('delete')
   async deleteAll(): Promise<string> {
@@ -54,12 +56,12 @@ export class SeedController {
     await this.seedService.deleteAll(CourseSectionMappingModel);
     await this.seedService.deleteAll(CourseModel);
     await this.seedService.deleteAll(SemesterModel);
+    await this.seedService.deleteAll(OrganizationModel);
     const manager = getManager();
     manager.query('ALTER SEQUENCE user_model_id_seq RESTART WITH 1;');
 
     return 'Data successfully reset';
   }
-
 
   @Get('create')
   async createSeeds(): Promise<string> {
@@ -108,7 +110,7 @@ export class SeedController {
         email: 'kw@ubc.ca',
         firstName: 'kevin',
         lastName: 'wang',
-        password: hashedPassword1
+        password: hashedPassword1,
       });
       await UserCourseFactory.create({
         user: user1,
@@ -121,7 +123,7 @@ export class SeedController {
         email: 'Justin@ubc.ca',
         firstName: 'Justin',
         lastName: 'Schultz',
-        password: hashedPassword1
+        password: hashedPassword1,
       });
       await UserCourseFactory.create({
         user: user2,
@@ -135,7 +137,7 @@ export class SeedController {
         email: 'big@ubc.ca',
         firstName: 'Big',
         lastName: 'Boy',
-        password: hashedPassword1
+        password: hashedPassword1,
       });
       await UserCourseFactory.create({
         user: user3,
@@ -147,14 +149,14 @@ export class SeedController {
         email: 'small@ubc.ca',
         firstName: 'Small',
         lastName: 'Boy',
-        password: hashedPassword1
+        password: hashedPassword1,
       });
       await UserCourseFactory.create({
         user: user4,
         role: Role.TA,
         course: course,
       });
-      // Professor 
+      // Professor
       const user5 = await UserFactory.create({
         email: 'bigRamon@ubc.ca',
         firstName: 'Ramon',
@@ -164,7 +166,7 @@ export class SeedController {
           'TotalQuestionsAsked',
           'TotalStudents',
         ],
-        password: hashedPassword1
+        password: hashedPassword1,
       });
       await UserCourseFactory.create({
         user: user5,
@@ -177,6 +179,13 @@ export class SeedController {
       room: 'Online',
       course: course,
       allowQuestions: true,
+    });
+
+    await OrganizationFactory.create({
+      name: 'UBCO',
+      description: 'UBC Okanagan',
+      logoUrl:
+        'https://ires.ubc.ca/files/2020/11/cropped-UBC-Okanagan-1-logo.jpg',
     });
 
     await QuestionFactory.create({
