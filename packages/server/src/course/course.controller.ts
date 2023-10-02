@@ -50,6 +50,7 @@ import { CourseService } from './course.service';
 import { HeatmapService } from './heatmap.service';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { AsyncQuestionModel } from 'asyncQuestion/asyncQuestion.entity';
+import { OrganizationCourseModel } from 'organization/organization-course.entity';
 
 @Controller('courses')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -60,7 +61,7 @@ export class CourseController {
     private queueSSEService: QueueSSEService,
     private heatmapService: HeatmapService,
     private courseService: CourseService,
-  ) { }
+  ) {}
 
   // get all courses
   @Get()
@@ -85,11 +86,11 @@ export class CourseController {
     if (!all) {
       throw NotFoundException;
     }
-    const course = await CourseModel.findOne({
-      where: {
-        id: cid,
-      },
-    });
+    // const course = await CourseModel.findOne({
+    //   where: {
+    //     id: cid,
+    //   },
+    // });
     // This will enable viewing with displaytypes function
     // let questionsDB = all;
     // if (course.asyncQuestionDisplayTypes[0] !== 'all') {
@@ -128,7 +129,7 @@ export class CourseController {
   ): Promise<GetCourseResponse> {
     // TODO: for all course endpoint, check if they're a student or a TA
     const course = await CourseModel.findOne(id, {
-      relations: ['queues', 'queues.staffList'],
+      relations: ['queues', 'queues.staffList', 'organizationCourse'],
     });
     if (course === null || course === undefined) {
       console.error(
@@ -147,9 +148,9 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.courseOfficeHourError +
-        '\n' +
-        'Error message: ' +
-        err,
+          '\n' +
+          'Error message: ' +
+          err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.courseHeatMapError,
@@ -198,9 +199,9 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.updatedQueueError +
-        '\n' +
-        'Error message: ' +
-        err,
+          '\n' +
+          'Error message: ' +
+          err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.updatedQueueError,
@@ -208,15 +209,29 @@ export class CourseController {
       );
     }
 
-    const course_response = { ...course, crns: null };
+    const organizationCourse = await OrganizationCourseModel.findOne({
+      where: {
+        courseId: id,
+      },
+      relations: ['organization'],
+    });
+
+    const organization =
+      organizationCourse === undefined ? null : organizationCourse.organization;
+
+    const course_response = {
+      ...course,
+      crns: null,
+      organizationCourse: organization,
+    };
     try {
       course_response.crns = await CourseSectionMappingModel.find({ course });
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.courseOfficeHourError +
-        '\n' +
-        'Error message: ' +
-        err,
+          '\n' +
+          'Error message: ' +
+          err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.courseCrnsError,
@@ -308,8 +323,8 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.saveQueueError +
-        '\nError message: ' +
-        err,
+          '\nError message: ' +
+          err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.saveQueueError,
@@ -328,8 +343,8 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.createEventError +
-        '\nError message: ' +
-        err,
+          '\nError message: ' +
+          err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.createEventError,
@@ -342,8 +357,8 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.createEventError +
-        '\nError message: ' +
-        err,
+          '\nError message: ' +
+          err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.updatedQueueError,
@@ -411,8 +426,8 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.saveQueueError +
-        '\nError message: ' +
-        err,
+          '\nError message: ' +
+          err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.saveQueueError,
@@ -457,8 +472,8 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.saveQueueError +
-        '\nError Message: ' +
-        err,
+          '\nError Message: ' +
+          err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.saveQueueError,
@@ -477,8 +492,8 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.createEventError +
-        '\nError message: ' +
-        err,
+          '\nError message: ' +
+          err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.createEventError,
@@ -491,8 +506,8 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.createEventError +
-        '\nError message: ' +
-        err,
+          '\nError message: ' +
+          err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.updatedQueueError,

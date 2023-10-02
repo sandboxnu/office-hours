@@ -379,14 +379,14 @@ class APIClient {
   };
 
   organizations = {
-    addMember: async (organizationId: number, userId: number): Promise<void> =>
+    addMember: async (userId: number, organizationId: number): Promise<void> =>
       this.req(
         "POST",
         `/api/v1/organization/${organizationId}/add_member/${userId}`
       ),
     addCourse: async (
-      organizationId: number,
-      courseId: number
+      courseId: number,
+      organizationId: number
     ): Promise<void> =>
       this.req(
         "POST",

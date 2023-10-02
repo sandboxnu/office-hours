@@ -12,6 +12,7 @@ import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import AlertsContainer from "./AlertsContainer";
 import NavBarTabs, { NavBarTabsItem } from "./NavBarTabs";
 import ProfileDrawer from "./ProfileDrawer";
+import { API } from "@koh/api-client";
 
 const Nav = styled.nav`
   padding: 0px 0px;
@@ -123,11 +124,23 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     null
   );
   const [visible, setVisible] = useState<boolean>(false);
+  const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(true);
   const { pathname } = useRouter();
   const { course } = useCourse(courseId);
   const role = useRoleInCourse(courseId);
 
   const openQueues = course?.queues?.filter((queue) => queue.isOpen);
+
+  const addMember = async () => {
+    setUpdateModalVisible(false);
+    await API.organizations.addMember(profile.id, 1);
+
+    const courseProfile = profile.courses.find((c) => c.course.id === courseId);
+
+    if (courseProfile.role == "professor") {
+      await API.organizations.addCourse(courseId, 1);
+    }
+  };
 
   const showDrawer = () => {
     setVisible(true);
@@ -224,10 +237,13 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
             </Dropdown>
           ) : (
             <Logo>
-              <Image
-                width={40}
-                src="https://ires.ubc.ca/files/2020/11/cropped-UBC-Okanagan-1-logo.jpg"
-              />
+              {course?.organizationCourse && (
+                <Image
+                  width={40}
+                  preview={false}
+                  src={course.organizationCourse.logoUrl}
+                />
+              )}
               <span>{course?.name}</span>
             </Logo>
           )}
@@ -256,37 +272,42 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
         </Drawer>
       </Nav>
 
-      <Modal
-        title="[System Message] Exciting News: Introducing Organizations!"
-        open={true}
-        closable={false}
-        footer={[
-          <Button key="ok" type="primary">
-            OK
-          </Button>,
-        ]}
-      >
-        <p>
-          🎉 We&lsquo;re thrilled to announce a new feature that we are working
-          on: Organizations 🏢
-          <br />
-          <br />
-          As part of this work, we need to add your account to one of the
-          existing organizations. <br />
-          <br />
-          Before adding you to your organization, we just wanted to share this
-          update with you before we automatically migrate your account when you
-          click the button below.
-          <br />
-          <br />
-          Once you click the button below, this message will no longer appear.
-          <br />
-          <br />
-          <small style={{ fontSize: "3px", cursor: "none" }} onClick={success}>
-            No easter egss here 🥚🥚🥚
-          </small>
-        </p>
-      </Modal>
+      {profile.organizationRole === null && (
+        <Modal
+          title="[System Message] Exciting News: Introducing Organizations!"
+          open={updateModalVisible}
+          closable={false}
+          footer={[
+            <Button key="ok" type="primary" onClick={addMember}>
+              OK
+            </Button>,
+          ]}
+        >
+          <p>
+            🎉 We&lsquo;re thrilled to announce a new feature that we are
+            working on: Organizations 🏢
+            <br />
+            <br />
+            As part of this work, we need to add your account to one of the
+            existing organizations. <br />
+            <br />
+            Before adding you to your organization, we just wanted to share this
+            update with you before we automatically migrate your account when
+            you click the button below.
+            <br />
+            <br />
+            Once you click the button below, this message will no longer appear.
+            <br />
+            <br />
+            <small
+              style={{ fontSize: "3px", cursor: "none" }}
+              onClick={success}
+            >
+              No easter egss here 🥚🥚🥚
+            </small>
+          </p>
+        </Modal>
+      )}
     </>
   ) : null;
 }

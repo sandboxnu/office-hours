@@ -648,6 +648,16 @@ export class UpdateProfileParams {
   includeDefaultMessage?: boolean;
 }
 
+export class OrganizationPartial {
+  id!: number;
+  name!: string;
+  logoUrl?: string;
+  bannerUrl?: string;
+  websiteUrl?: string;
+  ssoEnabled?: boolean;
+  ssoUrl?: string;
+}
+
 export class GetCourseResponse {
   id!: number;
   name!: string;
@@ -670,6 +680,9 @@ export class GetCourseResponse {
   selfEnroll!: boolean;
 
   asyncQuestionDisplayTypes?: string[];
+
+  @Type(() => OrganizationPartial)
+  organizationCourse?: OrganizationPartial;
 }
 
 export class GetCourseUserInfoResponse {
@@ -1108,6 +1121,10 @@ export type sendEmailAsync = {
 export const ERROR_MESSAGES = {
   common: {
     pageOutOfBounds: "Can't retrieve out of bounds page.",
+  },
+  organizationController: {
+    userAlreadyInOrganization: "User is already in organization",
+    courseAlreadyInOrganization: "Course is already in organization",
   },
   courseController: {
     checkIn: {

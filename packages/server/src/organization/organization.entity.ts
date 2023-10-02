@@ -40,4 +40,11 @@ export class OrganizationModel extends BaseEntity {
     (organizationUser) => organizationUser.organization,
   )
   organizationUsers: OrganizationUserModel[];
+
+  @Exclude()
+  @OneToMany(
+    (type) => OrganizationUserModel,
+    (organizationUser) => organizationUser.organization,
+  )
+  organizationCourses: OrganizationUserModel[];
 }
