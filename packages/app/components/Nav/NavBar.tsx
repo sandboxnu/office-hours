@@ -272,7 +272,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
         </Drawer>
       </Nav>
 
-      {profile.organizationRole === null && (
+      {profile?.organizationRole === null && (
         <Modal
           title="[System Message] Exciting News: Introducing Organizations!"
           open={updateModalVisible}
