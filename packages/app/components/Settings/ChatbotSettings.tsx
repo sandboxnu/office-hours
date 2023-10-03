@@ -1,12 +1,22 @@
 import { SearchOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
 import { Role } from "@koh/common";
-import { Divider, Input, List, Pagination, Spin } from "antd";
+import {
+  Divider,
+  Input,
+  List,
+  Pagination,
+  Spin,
+  Button,
+  Popconfirm,
+  Space
+} from "antd";
 import Avatar from "antd/lib/avatar/avatar";
 import { useState } from "react";
 import { ReactElement } from "react";
 import styled from "styled-components";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
+// import { EditStudentModal } from "./EditStudentModal";
 
 type CourseRosterProps = { courseId: number };
 
@@ -16,6 +26,7 @@ type RenderTableProps = {
   listTitle: string;
   displaySearchBar: boolean;
   searchPlaceholder: string;
+  // modifyFunction: (newValue: UBCOuserParam) => void;
 };
 
 const CourseRosterComponent = styled.div`
@@ -27,9 +38,15 @@ const TableBackground = styled.div`
   background-color: white;
 `;
 
-export default function AddStudents({
+export default function ChatbotSettings({
   courseId
 }: CourseRosterProps): ReactElement {
+  const [editStudentModal, setEditStudentModal] = useState(null);
+
+  const modifyEditStudentModal = newValue => {
+    setEditStudentModal(newValue);
+  };
+
   return (
     <div>
       <CourseRosterComponent>
@@ -40,10 +57,16 @@ export default function AddStudents({
           listTitle={"Students"}
           displaySearchBar={true}
           searchPlaceholder="Search students"
+          // modifyFunction={modifyEditStudentModal}
         />
         <br />
         <Divider />
       </CourseRosterComponent>
+      {/* <EditStudentModal
+                courseId={courseId}
+                student={editStudentModal}
+                onClose={() => setEditStudentModal(null)}
+            /> */}
     </div>
   );
 }
@@ -54,10 +77,26 @@ function RenderTable({
   listTitle,
   displaySearchBar,
   searchPlaceholder
-}: RenderTableProps): ReactElement {
+}: // modifyFunction,
+RenderTableProps): ReactElement {
   const [page, setPage] = useState(1);
   const [input, setInput] = useState("");
   const [search, setSearch] = useState("");
+  const [isVisible, setIsVisible] = useState(null);
+
+  const showPopconfirm = itemId => {
+    setIsVisible(itemId);
+  };
+
+  // const handleConfirm = (itemId) => {
+  //     handleDelete(itemId);
+  //     setIsVisible(null);
+  // };
+
+  const handleCancel = () => {
+    setIsVisible(null);
+  };
+
   const handleInput = event => {
     event.preventDefault();
     setInput(event.target.value);
@@ -67,6 +106,14 @@ function RenderTable({
     setSearch(event.target.value);
     setPage(1);
   };
+  // const handleDelete = async (userId) => {
+  //     try {
+  //         await API.profile.deleteStudent(userId);
+  //         mutate(`${role}/${page}/${search}`);
+  //     } catch (error) {
+  //         console.error("Failed to delete user:", error);
+  //     }
+  // };
   const { data } = useSWR(
     `${role}/${page}/${search}`,
     async () => await API.course.getUserInfo(courseId, page, role, search)
@@ -105,7 +152,30 @@ function RenderTable({
                   avatar={<Avatar src={item.photoURL} />}
                   title={item.name}
                 />
-                <div>{item.email}</div>
+                <Space>
+                  <div>{item.email}</div>
+                  <Button
+                    type="primary"
+                    onClick={async e => {
+                      e.currentTarget.blur();
+                      const student = await API.profile.getStudent(item.id);
+                      // modifyFunction(student);
+                    }}
+                  >
+                    Edit
+                  </Button>
+                  <Button type="danger" onClick={() => showPopconfirm(item.id)}>
+                    Delete
+                  </Button>
+                </Space>
+                {/* {isVisible && (
+                                    <Popconfirm
+                                        title="Are you sure?"
+                                        onConfirm={() => handleConfirm(item.id)}
+                                        onCancel={handleCancel}
+                                        visible={isVisible === item.id}
+                                    ></Popconfirm>
+                                )} */}
               </List.Item>
             )}
             bordered

@@ -3,7 +3,7 @@ import {
   EditOutlined,
   QuestionCircleOutlined,
   UploadOutlined,
-  DownloadOutlined,
+  DownloadOutlined
 } from "@ant-design/icons";
 import { Col, Menu, Row, Space, Tooltip } from "antd";
 import { useRouter } from "next/router";
@@ -18,6 +18,7 @@ import ExportQuestions from "./ExportQuestions";
 import EditQuestions from "./EditQuestions";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import { Role } from "@koh/common";
+import ChatbotSettings from "./ChatbotSettings";
 //import EditCourse from "./EditCourse";
 export enum CourseAdminOptions {
   CHECK_IN = "CHECK_IN",
@@ -26,6 +27,7 @@ export enum CourseAdminOptions {
   EXPORT = "EXPORT",
   EDIT = "EDIT",
   EDIT_COURSE = "EDIT_COURSE",
+  CHATBOT_SETTINGS = "CHATBOT_SETTINGS"
 }
 
 interface CourseAdminPageProps {
@@ -46,7 +48,7 @@ const CenteredText = styled.p`
 
 export default function CourseAdminPanel({
   defaultPage,
-  courseId,
+  courseId
 }: CourseAdminPageProps): ReactElement {
   const role = useRoleInCourse(Number(courseId));
   const profile = useProfile();
@@ -83,7 +85,7 @@ export default function CourseAdminPanel({
         </CenteredText>
         <Menu
           defaultSelectedKeys={[currentSettings]}
-          onClick={(e) => setCurrentSettings(e.key as CourseAdminOptions)}
+          onClick={e => setCurrentSettings(e.key as CourseAdminOptions)}
           style={{ background: "#f8f9fb", paddingTop: "20px" }}
         >
           {role === Role.PROFESSOR && (
@@ -117,6 +119,12 @@ export default function CourseAdminPanel({
           <Menu.Item key={CourseAdminOptions.EDIT} icon={<EditOutlined />}>
             Edit questions
           </Menu.Item>
+          <Menu.Item
+            key={CourseAdminOptions.CHATBOT_SETTINGS}
+            icon={<EditOutlined />}
+          >
+            Chatbot
+          </Menu.Item>
         </Menu>
       </Col>
       <VerticalDivider />
@@ -139,6 +147,9 @@ export default function CourseAdminPanel({
           )}
           {currentSettings === CourseAdminOptions.EDIT && (
             <EditQuestions courseId={courseId} />
+          )}
+          {currentSettings === CourseAdminOptions.CHATBOT_SETTINGS && (
+            <ChatbotSettings courseId={courseId} />
           )}
         </Col>
       </Space>
