@@ -126,7 +126,10 @@ class APIClient {
     createQuestion: async (
       body: ChatBotQuestionParams
     ): Promise<ChatbotQuestion> =>
-      this.req("POST", `/api/v1/chatbot/question`, undefined, body)
+      this.req("POST", `/api/v1/chatbot/question`, undefined, body),
+
+    addFeedback: async (body: { questionId: number; userScore: number }) =>
+      this.req("POST", `/api/v1/chatbot/feedback`, undefined, body)
   };
 
   course = {

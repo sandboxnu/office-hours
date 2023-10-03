@@ -28,4 +28,7 @@ export class ChatbotQuestionModel extends BaseEntity {
 
   @Column()
   timestamp: Date;
+
+  @Column({ default: 0 })
+  userScore: number;
 }

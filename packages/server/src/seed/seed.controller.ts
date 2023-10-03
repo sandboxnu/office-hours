@@ -35,7 +35,7 @@ export class SeedController {
   constructor(
     private connection: Connection,
     private seedService: SeedService,
-  ) { }
+  ) {}
 
   @Get('delete')
   async deleteAll(): Promise<string> {
@@ -59,7 +59,6 @@ export class SeedController {
 
     return 'Data successfully reset';
   }
-
 
   @Get('create')
   async createSeeds(): Promise<string> {
@@ -108,7 +107,7 @@ export class SeedController {
         email: 'kw@ubc.ca',
         firstName: 'kevin',
         lastName: 'wang',
-        password: hashedPassword1
+        password: hashedPassword1,
       });
       await UserCourseFactory.create({
         user: user1,
@@ -121,7 +120,7 @@ export class SeedController {
         email: 'Justin@ubc.ca',
         firstName: 'Justin',
         lastName: 'Schultz',
-        password: hashedPassword1
+        password: hashedPassword1,
       });
       await UserCourseFactory.create({
         user: user2,
@@ -135,7 +134,7 @@ export class SeedController {
         email: 'big@ubc.ca',
         firstName: 'Big',
         lastName: 'Boy',
-        password: hashedPassword1
+        password: hashedPassword1,
       });
       await UserCourseFactory.create({
         user: user3,
@@ -147,14 +146,14 @@ export class SeedController {
         email: 'small@ubc.ca',
         firstName: 'Small',
         lastName: 'Boy',
-        password: hashedPassword1
+        password: hashedPassword1,
       });
       await UserCourseFactory.create({
         user: user4,
         role: Role.TA,
         course: course,
       });
-      // Professor 
+      // Professor
       const user5 = await UserFactory.create({
         email: 'bigRamon@ubc.ca',
         firstName: 'Ramon',
@@ -164,7 +163,7 @@ export class SeedController {
           'TotalQuestionsAsked',
           'TotalStudents',
         ],
-        password: hashedPassword1
+        password: hashedPassword1,
       });
       await UserCourseFactory.create({
         user: user5,
