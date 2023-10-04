@@ -206,7 +206,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
   const success = () => {
     messageApi.open({
       type: "success",
-      content: "Okay... maybe there was one easter egg 🥚🥚🥚",
+      content: "Wow.. You found an easter egg.. Do you think there is more? 🤔",
     });
   };
   return courseId ? (
@@ -303,7 +303,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
               style={{ fontSize: "3px", cursor: "none" }}
               onClick={success}
             >
-              No easter egss here 🥚🥚🥚
+              No easter eggs here 🥚🥚🥚
             </small>
           </p>
         </Modal>
