@@ -44,19 +44,19 @@ export const ChatbotComponent: React.FC = () => {
   >([
     {
       question: "When is the midterm?",
-      answer: "October 11, 2023"
+      answer: "October 11, 2023",
     },
     {
       question: "When is the final?",
-      answer: "December 16, 2023"
-    }
+      answer: "December 16, 2023",
+    },
   ]);
 
   const [messages, setMessages] = useState<Message[]>([
     {
       type: "apiMessage",
-      message: "Hello, how can I assist you?"
-    }
+      message: "Hello, how can I assist you?",
+    },
   ]);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -70,14 +70,14 @@ export const ChatbotComponent: React.FC = () => {
     try {
       const data = {
         question: input,
-        history: messages
+        history: messages,
       };
       const response = await fetch("/chat/ask", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
       const json = await response.json();
       return json;
@@ -93,14 +93,14 @@ export const ChatbotComponent: React.FC = () => {
       console.log(questionId, answer);
       const data = {
         questionId,
-        answer
+        answer,
       };
       const response = await fetch("/chat/question", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
       const json = await response.json();
       return json;
@@ -124,11 +124,11 @@ export const ChatbotComponent: React.FC = () => {
     if (!interactionId) {
       console.log({
         courseId: Number(cid),
-        userId: profile.id
+        userId: profile.id,
       });
       const interaction = await API.chatbot.createInteraction({
         courseId: Number(cid),
-        userId: profile.id
+        userId: profile.id,
       });
       setInteractionId(interaction.id);
 
@@ -139,7 +139,7 @@ export const ChatbotComponent: React.FC = () => {
     const question = await API.chatbot.createQuestion({
       interactionId: currentInteractionId,
       questionText: input,
-      responseText: answer
+      responseText: answer,
     });
 
     await addQuestionVector(question.id, input);
@@ -151,8 +151,8 @@ export const ChatbotComponent: React.FC = () => {
         type: "apiMessage",
         message: answer,
         sourceDocuments: sourceDocuments,
-        questionId: question.id
-      }
+        questionId: question.id,
+      },
     ]);
 
     setIsLoading(false);
@@ -165,8 +165,8 @@ export const ChatbotComponent: React.FC = () => {
       { type: "userMessage", message: question },
       {
         type: "apiMessage",
-        message: answer
-      }
+        message: answer,
+      },
     ]);
   };
 
@@ -178,6 +178,8 @@ export const ChatbotComponent: React.FC = () => {
     }
   };
 
+  console.log(messages);
+
   return (
     <ChatbotContainer style={{ zIndex: 1000 }}>
       {isOpen ? (
@@ -185,100 +187,105 @@ export const ChatbotComponent: React.FC = () => {
           title="Chatbot"
           extra={<a onClick={() => setIsOpen(false)}>Close</a>}
         >
-          {messages &&
-            messages.map(item => (
-              <>
-                {item.type === "userMessage" ? (
-                  <div className="flex justify-end align-items-start m-1 mb-3">
-                    <div className="max-w-[300px] bg-blue-900 text-white px-3 py-2 rounded-xl mr-2">
-                      {" "}
-                      {item.message}
-                    </div>
-                    <Avatar size="small" icon={<UserOutlined />} />
-                  </div>
-                ) : (
-                  <div className="flex flex-grow mb-3 group items-start">
-                    <Avatar size="small" icon={<RobotOutlined />} />
-                    <div className="flex flex-col gap-1 ml-2">
-                      <div className="flex gap-2 items-start">
-                        <div className="max-w-[280px] bg-slate-100 px-3 py-2 rounded-xl">
-                          {" "}
-                          {item.message}
-                        </div>
-                        {item.questionId && (
-                          <div className="hidden justify-end gap-2 items-center group-hover:flex">
-                            <div className="px-3 py-2 bg-slate-100 rounded-xl flex gap-2 w-fit">
-                              <Feedback
-                                questionId={item.questionId}
-                                handleFeedback={handleFeedback}
-                              />
-                            </div>
-                          </div>
-                        )}
+          <div className="overflow-y-auto max-h-[600px]">
+            {messages &&
+              messages.map((item) => (
+                <>
+                  {item.type === "userMessage" ? (
+                    <div className="flex justify-end align-items-start m-1 mb-3">
+                      <div className="max-w-[300px] bg-blue-900 text-white px-3 py-2 rounded-xl mr-2">
+                        {" "}
+                        {item.message}
                       </div>
-                      <div className="flex flex-col gap-1">
-                        {item.sourceDocuments &&
-                          item.sourceDocuments.map(sourceDocument => (
-                            <div
-                              className="font-semibold flex justify-start align-items-start gap-3 bg-slate-100 rounded-xl p-1 w-fit"
-                              key={sourceDocument.name}
-                            >
-                              <p className="px-2 py-1">{sourceDocument.name}</p>
-                              <div className="flex gap-1">
-                                {sourceDocument.pages &&
-                                  sourceDocument.pages.map(page => (
-                                    <div
-                                      className="cursor-pointer transition bg-blue-100 rounded-lg flex justify-center items-center font-semibold px-3 h-full hover:bg-blue-800 hover:text-white"
-                                      key={`${sourceDocument.name}-${page}`}
-                                    >
-                                      <p className="leading-4 text-xs h-fit w-fit">
-                                        {`p. ${page}`}
-                                      </p>
-                                    </div>
-                                  ))}
+                      <Avatar size="small" icon={<UserOutlined />} />
+                    </div>
+                  ) : (
+                    <div className="flex flex-grow mb-3 group items-start">
+                      <Avatar size="small" icon={<RobotOutlined />} />
+                      <div className="flex flex-col gap-1 ml-2">
+                        <div className="flex gap-2 items-start">
+                          <div className="max-w-[280px] bg-slate-100 px-3 py-2 rounded-xl">
+                            {" "}
+                            {item.message}
+                          </div>
+                          {item.questionId && (
+                            <div className="hidden justify-end gap-2 items-center group-hover:flex">
+                              <div className="px-3 py-2 bg-slate-100 rounded-xl flex gap-2 w-fit">
+                                <Feedback
+                                  questionId={item.questionId}
+                                  handleFeedback={handleFeedback}
+                                />
                               </div>
                             </div>
-                          ))}
+                          )}
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          {item.sourceDocuments &&
+                            item.sourceDocuments.map((sourceDocument) => (
+                              <div
+                                className="font-semibold flex justify-start align-items-start gap-3 bg-slate-100 rounded-xl p-1 w-fit"
+                                key={sourceDocument.name}
+                              >
+                                <p className="px-2 py-1">
+                                  {sourceDocument.name}
+                                </p>
+                                <div className="flex gap-1">
+                                  {sourceDocument.pages &&
+                                    sourceDocument.pages.map((page) => (
+                                      <div
+                                        className="cursor-pointer transition bg-blue-100 rounded-lg flex justify-center items-center font-semibold px-3 h-full hover:bg-blue-800 hover:text-white"
+                                        key={`${sourceDocument.name}-${page}`}
+                                      >
+                                        <p className="leading-4 text-xs h-fit w-fit">
+                                          {`p. ${page}`}
+                                        </p>
+                                      </div>
+                                    ))}
+                                </div>
+                              </div>
+                            ))}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
-              </>
-            ))}
+                  )}
+                </>
+              ))}
 
-          {preDeterminedQuestions &&
-            !isLoading &&
-            preDeterminedQuestions.map(question => (
-              <div
-                className="flex justify-end align-items-start m-1 mb-1"
-                key={question.question}
-              >
+            {preDeterminedQuestions &&
+              !isLoading &&
+              messages.length < 2 &&
+              preDeterminedQuestions.map((question) => (
                 <div
-                  onClick={() =>
-                    answerPreDeterminedQuestion(
-                      question.question,
-                      question.answer
-                    )
-                  }
-                  className="transition max-w-[300px] border-2 border-blue-900 text-blue-900 px-3 py-2 rounded-xl mr-2 hover:text-white hover:bg-blue-900 bg-transparent cursor-pointer"
+                  className="flex justify-end align-items-start m-1 mb-1"
+                  key={question.question}
                 >
-                  {" "}
-                  {question.question}
+                  <div
+                    onClick={() =>
+                      answerPreDeterminedQuestion(
+                        question.question,
+                        question.answer
+                      )
+                    }
+                    className="transition max-w-[300px] border-2 border-blue-900 text-blue-900 px-3 py-2 rounded-xl mr-2 hover:text-white hover:bg-blue-900 bg-transparent cursor-pointer"
+                  >
+                    {" "}
+                    {question.question}
+                  </div>
                 </div>
-              </div>
-            ))}
-          {/* TODO: Remove, answers should stream*/}
-          {isLoading && (
-            <Spin
-              style={{
-                display: "block",
-                marginBottom: "10px"
-              }}
-            />
-          )}
+              ))}
+            {/* TODO: Remove, answers should stream*/}
+            {isLoading && (
+              <Spin
+                style={{
+                  display: "block",
+                  marginBottom: "10px",
+                }}
+              />
+            )}
+          </div>
           <Input
             value={input}
-            onChange={e => setInput(e.target.value)}
+            onChange={(e) => setInput(e.target.value)}
             placeholder="Ask something..."
             onPressEnter={handleAsk}
             suffix={
