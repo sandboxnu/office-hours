@@ -24,7 +24,7 @@ export class OrganizationController {
     @Res() res: Response,
     @Param('oid') oid: string,
     @Param('cid') cid: string,
-  ): Promise<any> {
+  ): Promise<void> {
     CourseModel.findOne({
       where: { id: cid },
     })
@@ -77,7 +77,7 @@ export class OrganizationController {
     @Res() res: Response,
     @Param('oid') oid: string,
     @Param('uid') uid: string,
-  ): Promise<any> {
+  ): Promise<void> {
     UserModel.findOne({
       where: { id: uid },
     })
