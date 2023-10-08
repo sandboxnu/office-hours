@@ -29,8 +29,10 @@ Object {
   ],
   "lastName": "Person",
   "name": "User Person",
+  "organizationRole": null,
   "phoneNotifsEnabled": false,
   "photoURL": null,
   "sid": null,
+  "userRole": "user",
 }
 `;

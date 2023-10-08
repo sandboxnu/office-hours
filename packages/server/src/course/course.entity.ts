@@ -1,5 +1,5 @@
 import { Heatmap } from '@koh/common';
-import { AsyncQuestionModel } from 'asyncQuestion/asyncQuestion.entity';
+import { AsyncQuestionModel } from '../asyncQuestion/asyncQuestion.entity';
 import { Exclude } from 'class-transformer';
 import { QuestionTypeModel } from 'question/question-type.entity';
 import {
@@ -18,6 +18,7 @@ import { EventModel } from '../profile/event-model.entity';
 import { UserCourseModel } from '../profile/user-course.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { SemesterModel } from '../semester/semester.entity';
+import { OrganizationCourseModel } from '../organization/organization-course.entity';
 @Entity('course_model')
 export class CourseModel extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -96,4 +97,14 @@ export class CourseModel extends BaseEntity {
 
   @DeleteDateColumn()
   deletedAt?: Date;
+
+  @ManyToOne(
+    (type) => OrganizationCourseModel,
+    (organizationCourse) => organizationCourse.course,
+  )
+  @Exclude()
+  organizationCourse: OrganizationCourseModel;
+
+  @Column({ nullable: true })
+  organizationCourseId: number;
 }

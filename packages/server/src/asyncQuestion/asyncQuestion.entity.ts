@@ -1,8 +1,8 @@
 //got rid of questiontype
 import { asyncQuestionStatus } from '@koh/common';
 import { Exclude } from 'class-transformer';
-import { CourseModel } from 'course/course.entity';
-import { ImageModel } from 'images/image.entity';
+import { CourseModel } from '../course/course.entity';
+import { ImageModel } from '../images/image.entity';
 import {
   BaseEntity,
   Column,
