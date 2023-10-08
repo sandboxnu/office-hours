@@ -5,6 +5,7 @@ import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { Document } from "langchain/document";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { PineconeStore } from "langchain/vectorstores/pinecone";
+import { FaissStore } from "langchain/vectorstores/faiss";
 import { PineconeClient } from "@pinecone-database/pinecone";
 import { RetrievalQAChain, VectorDBQAChain } from "langchain/chains";
 import { OpenAI } from "langchain/llms/openai";
@@ -32,42 +33,38 @@ export class ChatbotService {
   // Could rename 'documents' to 'resources' for more accurate wording when its not only PDFs
   // filePath currently relative
 
-  documentStore: PineconeStore;
-  questionIndex: any;
+  documentStore: FaissStore;
+  documentStoreDirectory: string;
+
+  questionStore: FaissStore;
+  questionStoreDirectory: string;
+
   embeddings: OpenAIEmbeddings;
 
-  init = async () => {
-    const embeddings = new OpenAIEmbeddings();
-    // {
-    //     openAIApiKey: process.env.OPENAI_API_KEY,
-    //     modelName: "ada",
-    // }
+  init = async (): Promise<void> => {
+    this.documentStoreDirectory = "documentStore";
+    this.questionStoreDirectory = "questionStore";
 
-    const documentClient = new PineconeClient();
-    await documentClient.init({
-      apiKey: process.env.PINECONE_API_KEY_DOCUMENT || "",
-      environment: process.env.PINECONE_ENVIRONMENT_DOCUMENT || ""
-    });
-    const documentIndex = documentClient.Index(
-      process.env.PINECONE_INDEX_NAME_DOCUMENT || ""
-    );
+    this.embeddings = new OpenAIEmbeddings();
 
-    const documentStore = await PineconeStore.fromExistingIndex(embeddings, {
-      pineconeIndex: documentIndex
-    });
+    // Modify to create empty vector store saves upon creation of the chatbot
+    try {
+      this.documentStore = await FaissStore.load(
+        this.documentStoreDirectory,
+        this.embeddings
+      );
+    } catch (e) {
+      this.documentStore = await FaissStore.fromDocuments([], this.embeddings);
+    }
 
-    const questionClient = new PineconeClient();
-    await questionClient.init({
-      apiKey: process.env.PINECONE_API_KEY_QUESTION || "",
-      environment: process.env.PINECONE_ENVIRONMENT_QUESTION || ""
-    });
-    const questionIndex = questionClient.Index(
-      process.env.PINECONE_INDEX_NAME_QUESTION || ""
-    );
-
-    this.documentStore = documentStore;
-    this.questionIndex = questionIndex;
-    this.embeddings = embeddings;
+    try {
+      this.questionStore = await FaissStore.load(
+        this.questionStoreDirectory,
+        this.embeddings
+      );
+    } catch (e) {
+      this.questionStore = await FaissStore.fromDocuments([], this.embeddings);
+    }
   };
 
   getDirectoryLoader = async (filePath: string) => {
@@ -87,16 +84,18 @@ export class ChatbotService {
     return directoryLoader;
   };
 
+  // TODO: May have to individually add documents to ensure correct corresponding IDs
   addDocuments = async (documents: Document[]) => {
-    // Returns Ids of documents for storing and possible future deletion
+    // Add documents & retrieve corresponding ids, save new documentStore
     const ids = await this.documentStore.addDocuments(documents);
+    await this.documentStore.save(this.documentStoreDirectory);
+
     return ids;
   };
 
   deleteDocuments = async (ids: string[]) => {
-    await this.documentStore.delete({
-      ids
-    });
+    const numberOfDocumentsRemoved = await this.documentStore.delete(ids);
+    return numberOfDocumentsRemoved;
   };
 
   loadDocuments = async (directoryLoader: DirectoryLoader) => {
@@ -114,7 +113,8 @@ export class ChatbotService {
     return documentChunks;
   };
 
-  initializePineconeStore = async (filePath: string) => {
+  // Assumes empty stores, could be made to delete all data before initializing
+  initializeStores = async (filePath: string) => {
     const directoryLoader = await this.getDirectoryLoader(filePath);
     const rawDocuments = await this.loadDocuments(directoryLoader);
     const documentChunks = await this.splitDocuments(rawDocuments);
@@ -127,6 +127,7 @@ export class ChatbotService {
 
     const similarDocuments = await this.getSimilarDocuments(query);
     const similarQuestions = await this.getSimilarQuestions(query);
+    console.log(similarQuestions);
 
     // Convert to nested class to handle PDFs, TXTs, Webpages, etc
     const groupedSourceDocuments: {
@@ -134,38 +135,28 @@ export class ChatbotService {
     } = {};
     chainResponse.sourceDocuments.map((sourceDocument: any) => {
       let group: Set<string> =
-        groupedSourceDocuments[sourceDocument.metadata["pdf.info.Title"]];
+        groupedSourceDocuments[sourceDocument.metadata.pdf.info.Title];
 
       if (!group) {
         group = new Set<string>();
       }
-      group.add(sourceDocument.metadata["loc.pageNumber"]);
-      groupedSourceDocuments[sourceDocument.metadata["pdf.info.Title"]] = group;
+      group.add(sourceDocument.metadata.loc.pageNumber);
+      groupedSourceDocuments[sourceDocument.metadata.pdf.info.Title] = group;
     });
-    // { 'COSC 404 - R-Trees': Set(5) { 8, 2, 23 }, 'COSC 404 - B-Trees': Set(5) { 4, 9 }}
 
     const groupedSimilarDocuments: {
       [key: string]: Set<string>;
     } = {};
     similarDocuments.map((similarDocument: any) => {
       let group: Set<string> =
-        groupedSimilarDocuments[similarDocument.metadata["pdf.info.Title"]];
+        groupedSimilarDocuments[similarDocument.metadata.pdf.info.Title];
 
       if (!group) {
         group = new Set<string>();
       }
-      group.add(similarDocument.metadata["loc.pageNumber"]);
-      groupedSimilarDocuments[
-        similarDocument.metadata["pdf.info.Title"]
-      ] = group;
+      group.add(similarDocument.metadata.loc.pageNumber);
+      groupedSimilarDocuments[similarDocument.metadata.pdf.info.Title] = group;
     });
-
-    // await this.insertQuestion({
-    //     query,
-    //     answer: chainResponse.text,
-    //     sourceDocuments: groupedSourceDocuments,
-    //     similarDocuments: groupedSimilarDocuments,
-    // });
 
     const formattedSourceDocuments: GroupedDocument[] = [];
     for (const key in groupedSourceDocuments) {
@@ -187,7 +178,7 @@ export class ChatbotService {
       answer: chainResponse.text,
       sourceDocuments: formattedSourceDocuments,
       similarDocuments: formattedSimilarDocuments,
-      similarQuestions: similarQuestions.matches
+      similarQuestions: similarQuestions
     };
   };
 
@@ -236,8 +227,8 @@ export class ChatbotService {
     return response;
   };
 
-  historyToString = (history: Message[]) => {
-    history = history.slice(-2);
+  historyToString = (history: Message[], historyLength = 2) => {
+    history = history.slice(-1 * historyLength);
     let str = "";
     for (const message of history) {
       str += `
@@ -249,10 +240,26 @@ export class ChatbotService {
   };
 
   getSimilarDocuments = async (query: string, k = 5, score = false) => {
-    if (score) {
-      return this.documentStore.similaritySearchWithScore(query, k);
-    } else {
-      return this.documentStore.similaritySearch(query, k);
+    try {
+      if (score) {
+        return this.documentStore.similaritySearchWithScore(query, k);
+      } else {
+        return this.documentStore.similaritySearch(query, k);
+      }
+    } catch (e) {
+      return [];
+    }
+  };
+
+  getSimilarQuestions = async (query: string, k = 5, score = false) => {
+    try {
+      if (score) {
+        return this.questionStore.similaritySearchWithScore(query, k);
+      } else {
+        return this.questionStore.similaritySearch(query, k);
+      }
+    } catch (e) {
+      return [];
     }
   };
 
@@ -263,53 +270,27 @@ export class ChatbotService {
     questionId: number;
     query: string;
   }) => {
-    // TODO: Add record to postgres database and retrieve ID of inserted record
-    // Update database schema to store sourceDocuments and similarDocuments
-    // Update this.createQuestion parameters
-
-    console.log(questionId, query);
     const questionVector = await this.embeddings.embedQuery(query);
 
-    const vectorRecords = [
-      {
-        id: String(questionId),
-        values: questionVector,
-        metadata: {
-          question: query
-        }
-      }
-    ];
+    const ids = await this.questionStore.addVectors(
+      [questionVector],
+      [new Document({ pageContent: query, metadata: { id: questionId } })]
+    );
 
-    await this.questionIndex.upsert({
-      upsertRequest: {
-        vectors: vectorRecords
-      }
-    });
-  };
-
-  getSimilarQuestions = async (question: string) => {
-    const questionVector = await this.embeddings.embedQuery(question);
-
-    const similarQuestions = await this.questionIndex.query({
-      queryRequest: {
-        vector: questionVector,
-        topK: 5,
-        includeMetadata: true
-      }
-    });
-    return similarQuestions;
+    await this.questionStore.save(this.questionStoreDirectory);
+    return ids;
   };
 
   getEmbeddings = () => {
     return this.embeddings;
   };
 
-  // Currently using free version of Pinecone which only allows 1 index. Refactor once paid
-  getPineconeDocumentStore = () => {
+  // Currently using free version of which only allows 1 index. Refactor once paid
+  getDocumentStore = () => {
     return this.documentStore;
   };
 
-  getPineconeQuestionIndex = () => {
-    return this.questionIndex;
+  getQuestionStore = () => {
+    return this.questionStore;
   };
 }

@@ -45,6 +45,15 @@ app.post("/question", async (req: any, res: any) => {
   res.json({});
 });
 
+app.get("/seed", async (req: any, res: any) => {
+  const chatbot = new ChatbotService();
+  await chatbot.init();
+
+  await chatbot.initializeStores("./tempDocs/");
+
+  res.json({});
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
