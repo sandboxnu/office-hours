@@ -6,6 +6,7 @@ import { default as React, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 import Select from "react-select";
+import { OpenQuestionStatus } from "@koh/common";
 
 const OverrideCollapse = styled.div`
   & .ant-collapse-header {
@@ -48,6 +49,22 @@ export function AddStudentsModal({
     "Default grading type"
   );
   const [selectOptions, setSelectOptions] = useState([]);
+
+  const handleCheckboxChange = (id) => {
+    const newSelectOptions = [...selectOptions];
+
+    for (const option of newSelectOptions) {
+      option.help = false;
+    }
+
+    const selectedOption = newSelectOptions.find((option) => option.id === id);
+    if (selectedOption) {
+      selectedOption.help = true;
+    }
+
+    setSelectOptions(newSelectOptions);
+  };
+
   //students store all the students
   // let students: { value: string; id: number }[] = [];
   const getQuestions = async () => {
@@ -66,15 +83,12 @@ export function AddStudentsModal({
     }
     students.forEach(async (student) => {
       const b = await API.profile.inQueue(student.id);
-      console.log(b);
       if (b) {
-        console.log("student in queue");
         return;
       }
       tempS.push(student);
     });
     setStudentsState(tempS);
-    console.log(tempS);
   };
   const handleSubmit = () => {
     selectOptions.forEach((student, i) => {
@@ -91,7 +105,7 @@ export function AddStudentsModal({
     await API.questions
       .TAcreate(
         {
-          text: "",
+          text: currentStudent.question,
           questionType: selectedQuestionType,
           queueId: queueId,
           location: null,
@@ -100,12 +114,17 @@ export function AddStudentsModal({
         },
         currentStudent.id
       )
-      .then(() => {
+      .then(async (response) => {
         message.success("Student(s) added");
         setStudentsState(
           studentsState.filter((student) => student.id !== currentStudent.id)
         );
         setSelectOptions([]);
+        if (selectOptions[i].help == true) {
+          await API.questions.update(response.id, {
+            status: OpenQuestionStatus.Helping,
+          });
+        }
       })
       .catch(() => {
         message.error("Can't add student".concat(currentStudent.value));
@@ -128,6 +147,16 @@ export function AddStudentsModal({
       lst.push({ value: arr[i].value, label: arr[i].value, id: arr[i].id });
     return lst;
   }
+
+  const handleChange = (e, id) => {
+    const newQuestion = e.target.value;
+    setSelectOptions((prevOptions) =>
+      prevOptions.map((option) =>
+        option.id === id ? { ...option, question: newQuestion } : option
+      )
+    );
+  };
+
   return (
     <Modal
       title="Add Students to queue"
@@ -197,6 +226,34 @@ export function AddStudentsModal({
             ) : (
               <p>There are no students or all students are in queue</p>
             )}
+            {selectOptions.length >= 1 ? (
+              <>
+                <br />
+                {selectOptions.map((option, index) => (
+                  <div key={index}>
+                    <strong>
+                      <p>{option.value}</p>
+                    </strong>
+                    <Form onFinish={handleSubmit}>
+                      <Form.Item>
+                        <input
+                          placeholder={`Enter ${option.value}'s question`}
+                          style={{ width: "100%", height: "40px" }}
+                          onChange={(e) => handleChange(e, option.id)}
+                        />
+                      </Form.Item>
+                      <Form.Item>
+                        <input
+                          type="checkbox"
+                          onChange={() => handleCheckboxChange(option.id)}
+                        />
+                        <label>Help {option.value} (optional)</label>
+                      </Form.Item>
+                    </Form>
+                  </div>
+                ))}
+              </>
+            ) : null}
           </Collapse.Panel>
         </Collapse>
       </OverrideCollapse>
