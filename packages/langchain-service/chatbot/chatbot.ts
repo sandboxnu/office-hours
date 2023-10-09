@@ -17,11 +17,15 @@ interface GroupedDocument {
   pages: string[];
 }
 
+type DocumentRecord =
+  | [Document<Record<string, any>>, number] // With Score
+  | Document<Record<string, any>>;
+
 export interface ChatbotResponse {
   answer: string;
   sourceDocuments: GroupedDocument[];
   similarDocuments: GroupedDocument[];
-  similarQuestions: any[]; // TODO: Find correct datatype
+  similarQuestions: DocumentRecord[]; // TODO: Find correct datatype
 }
 
 interface Message {
@@ -127,7 +131,6 @@ export class ChatbotService {
 
     const similarDocuments = await this.getSimilarDocuments(query);
     const similarQuestions = await this.getSimilarQuestions(query);
-    console.log(similarQuestions);
 
     // Convert to nested class to handle PDFs, TXTs, Webpages, etc
     const groupedSourceDocuments: {
@@ -240,9 +243,7 @@ export class ChatbotService {
   };
 
   getSimilarDocuments = async (query: string, k = 5, score = false) => {
-    let similarDocuments:
-      | [Document<Record<string, any>>, number][] // With Score
-      | Document<Record<string, any>>[] = []; // Without Score
+    let similarDocuments: DocumentRecord[] = []; // Without Score
 
     try {
       if (score) {
@@ -259,9 +260,7 @@ export class ChatbotService {
   };
 
   getSimilarQuestions = async (query: string, k = 5, score = false) => {
-    let similarQuestions:
-      | [Document<Record<string, any>>, number][] // With Score
-      | Document<Record<string, any>>[] = []; // Without Score
+    let similarQuestions: DocumentRecord[] = []; // Without Score
 
     try {
       if (score) {
