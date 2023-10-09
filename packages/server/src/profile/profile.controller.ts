@@ -63,9 +63,6 @@ export class ProfileController {
     private organizationService: OrganizationService,
   ) {}
 
-  // Number of courses to retrieve from database per user
-  private SEARCH_COURSE_LIMIT = 10;
-
   //forgetpassword route used for creating links to be sent to the email
   @Post('/forgetpassword/:e')
   async forgetpassword(

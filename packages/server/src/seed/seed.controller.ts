@@ -43,6 +43,11 @@ export class SeedController {
 
   @Get('delete')
   async deleteAll(): Promise<string> {
+    // NOTE: order of deletion matters for tables with foreign keys.
+    // Children tables should be removed as early as possible.
+
+    await this.seedService.deleteAll(OrganizationCourseModel);
+    await this.seedService.deleteAll(OrganizationUserModel);
     await this.seedService.deleteAll(LastRegistrationModel);
     await this.seedService.deleteAll(ProfSectionGroupsModel);
     await this.seedService.deleteAll(QuestionModel);
@@ -58,8 +63,6 @@ export class SeedController {
     await this.seedService.deleteAll(CourseSectionMappingModel);
     await this.seedService.deleteAll(CourseModel);
     await this.seedService.deleteAll(SemesterModel);
-    await this.seedService.deleteAll(OrganizationCourseModel);
-    await this.seedService.deleteAll(OrganizationUserModel);
     await this.seedService.deleteAll(OrganizationModel);
     const manager = getManager();
     manager.query('ALTER SEQUENCE user_model_id_seq RESTART WITH 1;');
