@@ -18,7 +18,7 @@ const CoursesSection = styled.div`
 
 export default function Courses(): ReactElement {
   const profile: User = useProfile();
-  // console.log(profile)
+
   return profile ? (
     <>
       <StandardPageContainer>

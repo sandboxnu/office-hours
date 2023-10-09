@@ -9,7 +9,7 @@ export default function Home(): ReactElement {
   const profile: User = useProfile();
   const didRedirect = useHomePageRedirect();
   if (profile && !didRedirect) {
-    Router.push("/nocourses");
+    Router.push("/courses");
   } else {
     return (
       <div

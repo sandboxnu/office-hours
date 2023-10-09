@@ -130,6 +130,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
   const showDrawer = () => {
     setVisible(true);
   };
+
   const onClose = () => {
     setVisible(false);
   };
@@ -174,8 +175,8 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
       profile?.organization.organizationRole === OrganizationRole.PROFESSOR
     ) {
       globalTabs.push({
-        href: "course/add",
-        as: "course/add",
+        href: "/course/add",
+        as: "/course/add",
         text: "Add Course",
       });
     }
