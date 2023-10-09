@@ -110,8 +110,7 @@ export function AddStudentsModal({
     await API.questions
       .TAcreate(
         {
-          text: currentStudent.question,
-          questionType: selectedQuestionType,
+          text: currentStudent.question ?? "",
           queueId: queueId,
           location: null,
           force: true,
