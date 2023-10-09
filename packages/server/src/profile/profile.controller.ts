@@ -477,19 +477,4 @@ export class ProfileController {
       );
     }
   }
-
-  @Get('/courses')
-  @UseGuards(JwtAuthGuard)
-  async getCourses(
-    @User(['courses'])
-    user: UserModel,
-  ): Promise<any> {
-    const courses = await UserCourseModel.find({
-      where: {
-        userId: user.id,
-      },
-      take: this.SEARCH_COURSE_LIMIT,
-    });
-    return courses;
-  }
 }
