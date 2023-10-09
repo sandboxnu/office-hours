@@ -53,13 +53,18 @@ export function AddStudentsModal({
   const handleCheckboxChange = (id) => {
     const newSelectOptions = [...selectOptions];
 
-    for (const option of newSelectOptions) {
-      option.help = false;
-    }
-
     const selectedOption = newSelectOptions.find((option) => option.id === id);
+
     if (selectedOption) {
-      selectedOption.help = true;
+      const newHelpStatus = !selectedOption.help;
+
+      for (const option of newSelectOptions) {
+        option.help = false;
+      }
+
+      if (newHelpStatus) {
+        selectedOption.help = true;
+      }
     }
 
     setSelectOptions(newSelectOptions);
@@ -226,15 +231,15 @@ export function AddStudentsModal({
             ) : (
               <p>There are no students or all students are in queue</p>
             )}
-            {selectOptions.length >= 1 ? (
+            {selectOptions.length > 0 ? (
               <>
                 <br />
-                {selectOptions.map((option, index) => (
-                  <div key={index}>
-                    <strong>
-                      <p>{option.value}</p>
-                    </strong>
-                    <Form onFinish={handleSubmit}>
+                <Form onFinish={handleSubmit}>
+                  {selectOptions.map((option, index) => (
+                    <div key={index}>
+                      <strong>
+                        <p>{option.value}</p>
+                      </strong>
                       <Form.Item>
                         <input
                           placeholder={`Enter ${option.value}'s question`}
@@ -245,13 +250,14 @@ export function AddStudentsModal({
                       <Form.Item>
                         <input
                           type="checkbox"
+                          checked={option.help}
                           onChange={() => handleCheckboxChange(option.id)}
                         />
                         <label>Help {option.value} (optional)</label>
                       </Form.Item>
-                    </Form>
-                  </div>
-                ))}
+                    </div>
+                  ))}
+                </Form>
               </>
             ) : null}
           </Collapse.Panel>
