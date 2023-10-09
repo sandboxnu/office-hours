@@ -32,7 +32,6 @@ export default function Login(): ReactElement {
         if (!response.ok) {
           // get error message from body or default to response statusText
           const error = (data && data.message) || response.statusText;
-          console.log(data);
           if (data.message === "Invalid credential") {
             message.error("Invalid password.");
           } else {
