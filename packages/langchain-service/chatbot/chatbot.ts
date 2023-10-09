@@ -240,26 +240,40 @@ export class ChatbotService {
   };
 
   getSimilarDocuments = async (query: string, k = 5, score = false) => {
+    let similarDocuments:
+      | [Document<Record<string, any>>, number][] // With Score
+      | Document<Record<string, any>>[] = []; // Without Score
+
     try {
       if (score) {
-        return this.documentStore.similaritySearchWithScore(query, k);
+        similarDocuments = await this.documentStore.similaritySearchWithScore(
+          query,
+          k
+        );
       } else {
-        return this.documentStore.similaritySearch(query, k);
+        similarDocuments = await this.documentStore.similaritySearch(query, k);
       }
-    } catch (e) {
-      return [];
+    } finally {
+      return similarDocuments;
     }
   };
 
   getSimilarQuestions = async (query: string, k = 5, score = false) => {
+    let similarQuestions:
+      | [Document<Record<string, any>>, number][] // With Score
+      | Document<Record<string, any>>[] = []; // Without Score
+
     try {
       if (score) {
-        return this.questionStore.similaritySearchWithScore(query, k);
+        similarQuestions = await this.questionStore.similaritySearchWithScore(
+          query,
+          k
+        );
       } else {
-        return this.questionStore.similaritySearch(query, k);
+        similarQuestions = await this.questionStore.similaritySearch(query, k);
       }
-    } catch (e) {
-      return [];
+    } finally {
+      return similarQuestions;
     }
   };
 

@@ -89,8 +89,6 @@ export const ChatbotComponent: React.FC = () => {
 
   const addQuestionVector = async (questionId: number, query: string) => {
     try {
-      console.log("Adding");
-      console.log(questionId, query);
       const data = {
         questionId,
         query
