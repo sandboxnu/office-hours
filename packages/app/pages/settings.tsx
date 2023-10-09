@@ -14,7 +14,7 @@ export default function Settings(): ReactElement {
   return (
     <StandardPageContainer>
       <Head>
-        <title>Settings | Khoury Office Hours</title>
+        <title>Settings</title>
       </Head>
       <NavBar courseId={Number(courseId)} />
 

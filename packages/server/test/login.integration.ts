@@ -31,7 +31,7 @@ describe('Login Integration', () => {
         .get(`/login/entry/1?token=${token}`)
         .expect(302);
 
-      expect(res.header['location']).toBe('/course/1/today');
+      expect(res.header['location']).toBe('/courses');
       expect(res.get('Set-Cookie')[0]).toContain('userId');
     });
 
@@ -44,7 +44,7 @@ describe('Login Integration', () => {
         .get(`/login/entry/1?token=${token}`)
         .expect(302);
 
-      expect(res.header['location']).toBe('/course/1/today');
+      expect(res.header['location']).toBe('/courses');
       expect(res.get('Set-Cookie')[0]).toContain('userId');
     });
 

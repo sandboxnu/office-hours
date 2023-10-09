@@ -156,7 +156,8 @@ export class LoginController {
   }
 
   // Set cookie and redirect to proper page
-  private async enter(res: Response, userId: number, cid: number) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private async enter(res: Response, userId: number, _cid: number) {
     // Expires in 30 days
     const authToken = await this.jwtService.signAsync({
       userId,
@@ -176,7 +177,7 @@ export class LoginController {
       .startsWith('https://');
     res
       .cookie('auth_token', authToken, { httpOnly: true, secure: isSecure })
-      .redirect(302, `/course/${cid}/today`);
+      .redirect(302, `/courses`);
   }
 
   @Get('/logout')

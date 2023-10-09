@@ -74,7 +74,7 @@ export class User {
   phoneNumber!: string;
   insights!: string[];
   userRole!: string;
-  organizationRole!: string;
+  organization!: OrganizationUserPartial;
 }
 
 export class DesktopNotifPartial {
@@ -141,7 +141,7 @@ export enum UserRole {
 export enum OrganizationRole {
   MEMBER = "member",
   ADMIN = "admin",
-  professor = "professor",
+  PROFESSOR = "professor",
 }
 
 /**
@@ -656,6 +656,14 @@ export class OrganizationPartial {
   websiteUrl?: string;
   ssoEnabled?: boolean;
   ssoUrl?: string;
+}
+
+export class OrganizationUserPartial {
+  id!: number;
+  organizationName!: string;
+  organizationDescription!: string;
+  organizationLogoUrl!: string;
+  organizationRole!: string;
 }
 
 export class GetCourseResponse {
