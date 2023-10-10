@@ -128,8 +128,16 @@ class APIClient {
     ): Promise<ChatbotQuestion> =>
       this.req("POST", `/api/v1/chatbot/question`, undefined, body),
 
-    addFeedback: async (body: { questionId: number; userScore: number }) =>
-      this.req("POST", `/api/v1/chatbot/feedback`, undefined, body)
+    editQuestion: async (body: {
+      data: ChatBotQuestionParams;
+      questionId: number;
+    }): Promise<ChatbotQuestion> =>
+      this.req("PATCH", `/api/v1/chatbot/question`, undefined, body),
+
+    deleteQuestion: async (
+      body: ChatBotQuestionParams
+    ): Promise<ChatbotQuestion> =>
+      this.req("DELETE", `/api/v1/chatbot/question`, undefined, body)
   };
 
   course = {

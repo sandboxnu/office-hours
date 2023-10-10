@@ -712,13 +712,16 @@ export class ChatBotQuestionParams {
   interactionId?: number;
 
   @IsString()
-  questionText!: string;
+  questionText?: string;
 
   @IsString()
-  responseText!: string;
+  responseText?: string;
 
   @IsBoolean()
   suggested?: boolean;
+
+  @IsInt()
+  userScore?: number;
 
   @IsArray()
   sourceDocuments?: {

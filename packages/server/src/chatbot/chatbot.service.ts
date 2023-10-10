@@ -48,28 +48,16 @@ export class ChatbotService {
     return await interaction.save();
   }
 
-  async addFeedback(questionId: number, userScore: number) {
-    const question = await ChatbotQuestionModel.findOne(questionId);
-    if (!question) {
-      throw new HttpException(
-        'Question not found based on the provided ID.',
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
-    const result = await ChatbotQuestionModel.createQueryBuilder()
-      .update()
-      .where({ id: questionId })
-      .set({ userScore: userScore })
-      .callListeners(false)
-      .execute();
-
-    return result;
-  }
-
   async createQuestion(
     data: ChatBotQuestionParams,
   ): Promise<ChatbotQuestionModel> {
+    if (!data.interactionId || !data.questionText || !data.responseText) {
+      throw new HttpException(
+        'Missing question properties.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const interaction = await InteractionModel.findOne(data.interactionId);
     if (!interaction) {
       throw new HttpException(
@@ -100,21 +88,19 @@ export class ChatbotService {
     return question;
   }
 
-  // Professors/TA can only change the suggested property
   async editQuestion(data: ChatBotQuestionParams, questionId: number) {
-    if (!data.suggested) {
+    const question = await ChatbotQuestionModel.findOne(questionId);
+    if (!question) {
       throw new HttpException(
-        'Suggested property is required.',
-        HttpStatus.BAD_REQUEST,
+        'Question not found based on the provided ID.',
+        HttpStatus.NOT_FOUND,
       );
     }
 
     const chatQuestion = await ChatbotQuestionModel.createQueryBuilder()
       .update()
       .where({ id: questionId })
-      .set({
-        suggested: data.suggested,
-      })
+      .set(data)
       .callListeners(false)
       .execute();
 

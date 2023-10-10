@@ -25,14 +25,6 @@ export class ChatbotController {
     return await this.ChatbotService.createInteraction(body);
   }
 
-  @Post('feedback')
-  async addFeedback(@Body() body: { questionId: number; userScore: number }) {
-    return await this.ChatbotService.addFeedback(
-      body.questionId,
-      body.userScore,
-    );
-  }
-
   @Post('question')
   async addQuestion(
     @Body() body: any, //ChatbotQuestionParams

@@ -174,7 +174,12 @@ export const ChatbotComponent: React.FC = () => {
 
   const handleFeedback = async (questionId: number, userScore: number) => {
     try {
-      await API.chatbot.addFeedback({ questionId, userScore });
+      await API.chatbot.editQuestion({
+        data: {
+          userScore
+        },
+        questionId
+      });
     } catch (e) {
       console.log(e);
     }

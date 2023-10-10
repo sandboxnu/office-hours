@@ -19,6 +19,7 @@ import EditQuestions from "./EditQuestions";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import { Role } from "@koh/common";
 import ChatbotSettings from "./ChatbotSettings";
+import ChatbotQuestions from "./ChatbotQuestions";
 //import EditCourse from "./EditCourse";
 export enum CourseAdminOptions {
   CHECK_IN = "CHECK_IN",
@@ -149,7 +150,7 @@ export default function CourseAdminPanel({
             <EditQuestions courseId={courseId} />
           )}
           {currentSettings === CourseAdminOptions.CHATBOT_SETTINGS && (
-            <ChatbotSettings courseId={courseId} />
+            <ChatbotQuestions courseId={courseId} />
           )}
         </Col>
       </Space>
