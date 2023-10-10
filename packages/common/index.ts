@@ -11,7 +11,8 @@ import {
   IsObject,
   IsOptional,
   IsString,
-  ValidateIf
+  ValidateIf,
+  isBoolean
 } from "class-validator";
 import "reflect-metadata";
 import { Cache } from "cache-manager";
@@ -708,13 +709,23 @@ export class InteractionParams {
 
 export class ChatBotQuestionParams {
   @IsInt()
-  interactionId!: number;
+  interactionId?: number;
 
   @IsString()
   questionText!: string;
 
   @IsString()
-  responseText?: string;
+  responseText!: string;
+
+  @IsBoolean()
+  suggested?: boolean;
+
+  @IsArray()
+  sourceDocuments?: {
+    title: string;
+    type: string;
+    parts: string[];
+  }[];
 }
 
 export class UpdateCourseOverrideResponse extends GetCourseOverridesRow {}

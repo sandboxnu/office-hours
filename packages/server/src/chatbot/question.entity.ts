@@ -17,7 +17,7 @@ export class ChatbotQuestionModel extends BaseEntity {
   @JoinColumn({ name: 'interaction' })
   interaction: InteractionModel;
 
-  @Column()
+  @Column({ nullable: true })
   interactionId: number;
 
   @Column()
@@ -26,9 +26,12 @@ export class ChatbotQuestionModel extends BaseEntity {
   @Column()
   responseText: string;
 
-  @Column()
+  @Column({ default: () => 'CURRENT_TIMESTAMP' })
   timestamp: Date;
 
   @Column({ default: 0 })
   userScore: number;
+
+  @Column({ default: false })
+  suggested: boolean;
 }

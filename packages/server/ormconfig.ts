@@ -20,6 +20,7 @@ import { ImageModel } from 'images/image.entity';
 import { CalendarModel } from 'calendar/calendar.entity';
 import { ChatbotQuestionModel } from 'chatbot/question.entity';
 import { InteractionModel } from 'chatbot/interaction.entity';
+import { QuestionDocumentModel } from 'chatbot/questionDocument.entity';
 config();
 
 // Options only used whe run via CLI
@@ -58,6 +59,7 @@ const typeorm = {
     CalendarModel,
     LastRegistrationModel,
     ProfSectionGroupsModel,
+    QuestionDocumentModel,
   ],
   keepConnectionAlive: true,
   logging:

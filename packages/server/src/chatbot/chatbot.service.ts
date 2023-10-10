@@ -3,13 +3,8 @@ import { InteractionModel } from './interaction.entity';
 import { ChatbotQuestionModel } from './question.entity';
 import { CourseModel } from 'course/course.entity';
 import { UserModel } from 'profile/user.entity';
-import {
-  ChatBotQuestionParams,
-  Interaction,
-  InteractionParams,
-} from '@koh/common';
-import { QuestionModel } from 'question/question.entity';
-import { PredeterminedQuestionModel } from './predeterminedQuestion.entity';
+import { ChatBotQuestionParams, InteractionParams } from '@koh/common';
+import { QuestionDocumentModel } from './questionDocument.entity';
 
 export interface ChatbotResponse {
   answer: string;
@@ -53,28 +48,6 @@ export class ChatbotService {
     return await interaction.save();
   }
 
-  async createQuestion(
-    data: ChatBotQuestionParams,
-  ): Promise<ChatbotQuestionModel> {
-    const interaction = await InteractionModel.findOne(data.interactionId);
-    if (!interaction) {
-      throw new HttpException(
-        'Interaction not found based on the provided ID.',
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
-    const question = ChatbotQuestionModel.create({
-      interaction,
-      interactionId: data.interactionId,
-      questionText: data.questionText,
-      responseText: data.responseText,
-      timestamp: new Date(),
-    });
-
-    return await question.save();
-  }
-
   async addFeedback(questionId: number, userScore: number) {
     const question = await ChatbotQuestionModel.findOne(questionId);
     if (!question) {
@@ -94,39 +67,63 @@ export class ChatbotService {
     return result;
   }
 
-  // TODO: Decide if predetermined questions are subject to the similarity search (Inserted into the vertorDB)
-  async createPredeterminedQuestion(data: {
-    question: string;
-    answer: string;
-  }) {
-    const predeterminedQuestion = PredeterminedQuestionModel.create({
-      question: data.question,
-      answer: data.answer,
+  async createQuestion(
+    data: ChatBotQuestionParams,
+  ): Promise<ChatbotQuestionModel> {
+    const interaction = await InteractionModel.findOne(data.interactionId);
+    if (!interaction) {
+      throw new HttpException(
+        'Interaction not found based on the provided ID.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const question = ChatbotQuestionModel.create({
+      interaction,
+      interactionId: data.interactionId,
+      questionText: data.questionText,
+      responseText: data.responseText,
     });
 
-    return await predeterminedQuestion.save();
+    await question.save();
+
+    const questionDocuments = data.sourceDocuments.map(sourceDocument => ({
+      ...sourceDocument,
+      question,
+      questionId: question.id,
+    }));
+
+    const documents = QuestionDocumentModel.create(questionDocuments);
+
+    await QuestionDocumentModel.save(documents);
+
+    return question;
   }
 
-  async editPredeterminedQuestion(data: {
-    predeterminedQuestionId: number;
-    question: string;
-    answer: string;
-  }) {
-    const predeterminedQuestion = await PredeterminedQuestionModel.createQueryBuilder()
+  // Professors/TA can only change the suggested property
+  async editQuestion(data: ChatBotQuestionParams, questionId: number) {
+    if (!data.suggested) {
+      throw new HttpException(
+        'Suggested property is required.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const chatQuestion = await ChatbotQuestionModel.createQueryBuilder()
       .update()
-      .where({ id: data.predeterminedQuestionId })
-      .set({ question: data.question, answer: data.answer })
+      .where({ id: questionId })
+      .set({
+        suggested: data.suggested,
+      })
       .callListeners(false)
       .execute();
 
-    return predeterminedQuestion;
+    return chatQuestion;
   }
 
-  async deletePredeterminedQuestion(data: { predeterminedQuestionId: number }) {
-    const predeterminedQuestion = await PredeterminedQuestionModel.findOne(
-      data.predeterminedQuestionId,
-    );
+  async deleteQuestion(questionId: number) {
+    const chatQuestion = await ChatbotQuestionModel.findOne(questionId);
 
-    return await predeterminedQuestion.remove();
+    return await chatQuestion.remove();
   }
 }

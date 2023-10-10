@@ -25,13 +25,6 @@ export class ChatbotController {
     return await this.ChatbotService.createInteraction(body);
   }
 
-  @Post('question')
-  async addQuestion(
-    @Body() body: ChatBotQuestionParams,
-  ): Promise<ChatbotQuestionModel> {
-    return await this.ChatbotService.createQuestion(body);
-  }
-
   @Post('feedback')
   async addFeedback(@Body() body: { questionId: number; userScore: number }) {
     return await this.ChatbotService.addFeedback(
@@ -40,38 +33,26 @@ export class ChatbotController {
     );
   }
 
-  @Post('predeterminedQuestion')
-  async createPredeterminedQuestion(
-    @Body() body: { question: string; answer: string },
-  ) {
-    return await this.ChatbotService.createPredeterminedQuestion({
-      question: body.question,
-      answer: body.answer,
-    });
+  @Post('question')
+  async addQuestion(
+    @Body() body: any, //ChatbotQuestionParams
+  ): Promise<ChatbotQuestionModel> {
+    return await this.ChatbotService.createQuestion(body);
   }
 
-  @Patch('predeterminedQuestion')
-  async editPredeterminedQuestion(
+  @Patch('question')
+  async editQuestion(
     @Body()
     body: {
-      predeterminedQuestionId: number;
-      question: string;
-      answer: string;
+      data: ChatBotQuestionParams;
+      questionId: number;
     },
   ) {
-    return await this.ChatbotService.editPredeterminedQuestion({
-      predeterminedQuestionId: body.predeterminedQuestionId,
-      question: body.question,
-      answer: body.answer,
-    });
+    return await this.ChatbotService.editQuestion(body.data, body.questionId);
   }
 
-  @Delete('predeterminedQuestion')
-  async deletePredeterminedQuestion(
-    @Body() body: { predeterminedQuestionId: number },
-  ) {
-    return await this.ChatbotService.deletePredeterminedQuestion({
-      predeterminedQuestionId: body.predeterminedQuestionId,
-    });
+  @Delete('question')
+  async deleteQuestion(@Body() body: { questionId: number }) {
+    return await this.ChatbotService.deleteQuestion(body.questionId);
   }
 }
