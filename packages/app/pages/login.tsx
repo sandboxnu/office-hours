@@ -30,14 +30,14 @@ export default function Login(): ReactElement {
     }
   }, []);
   const getCourses = async () => {
-    await API.course.getAllCourses().then((courses) => {
+    await API.course.getAllCourses().then(courses => {
       if (!courses) {
         message.warning("courses not found");
         return;
       }
-      const CourseOptions = courses.map((course) => ({
+      const CourseOptions = courses.map(course => ({
         value: course.id,
-        label: course.name,
+        label: course.name
       }));
       setCOptions(CourseOptions);
     });
@@ -51,11 +51,11 @@ export default function Login(): ReactElement {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: uname,
-        password: pass,
-      }),
+        password: pass
+      })
     };
     fetch(`/api/v1/getAllcourses`, courses)
-      .then(async (response) => {
+      .then(async response => {
         const data = await response.json();
         if (!response.ok) {
           // get error message from body or default to response statusText
@@ -80,7 +80,7 @@ export default function Login(): ReactElement {
           }
         }
       })
-      .catch((error) => {
+      .catch(error => {
         console.error("There was an error!", error);
       });
   }
@@ -98,11 +98,11 @@ export default function Login(): ReactElement {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: uname,
-        password: pass,
-      }),
+        password: pass
+      })
     };
     fetch(`/api/v1/ubc_login/${course}`, loginRequest)
-      .then(async (response) => {
+      .then(async response => {
         const data = await response.json();
         if (!response.ok) {
           // get error message from body or default to response statusText
@@ -119,14 +119,14 @@ export default function Login(): ReactElement {
           Router.push(`/api/v1/login/entry/${course}?token=${data.token}`);
         }
       })
-      .catch((error) => {
+      .catch(error => {
         console.error("There was an error!", error);
       });
   }
-  const onPassChange = (e) => {
+  const onPassChange = e => {
     setPass(e.target.value);
   };
-  const onUserNameChange = (e) => {
+  const onUserNameChange = e => {
     setUname(e.target.value);
   };
   //put token inside login request
@@ -144,7 +144,12 @@ export default function Login(): ReactElement {
           <h1>UBC HelpMe</h1>
           <Form.Item
             name="username"
-            rules={[{ required: true, message: "Please input your Username!" }]}
+            rules={[
+              {
+                required: true,
+                message: "Please input your Username!"
+              }
+            ]}
           >
             <Input
               prefix={<UserOutlined className="site-form-item-icon" />}
@@ -154,7 +159,12 @@ export default function Login(): ReactElement {
           </Form.Item>
           <Form.Item
             name="password"
-            rules={[{ required: true, message: "Please input your Password!" }]}
+            rules={[
+              {
+                required: true,
+                message: "Please input your Password!"
+              }
+            ]}
           >
             <Input
               prefix={<LockOutlined className="site-form-item-icon" />}
