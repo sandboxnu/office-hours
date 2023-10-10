@@ -17,8 +17,8 @@ const ChatbotContainer = styled.div`
 `;
 
 interface SourceDocument {
-  name: string;
-  pages: string[];
+  title: string;
+  parts: string[];
 }
 
 interface PreDeterminedQuestion {
@@ -72,7 +72,7 @@ export const ChatbotComponent: React.FC = () => {
         question: input,
         history: messages
       };
-      const response = await fetch("/chat/ask", {
+      const response = await fetch("/chat/ask/COSC404", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -93,7 +93,7 @@ export const ChatbotComponent: React.FC = () => {
         questionId,
         query
       };
-      const response = await fetch("/chat/question", {
+      const response = await fetch("/chat/question/COSC404", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -131,11 +131,17 @@ export const ChatbotComponent: React.FC = () => {
       currentInteractionId = interaction.id; // Update the current value if a new interaction was created
     }
 
+    const formattedSourceDocument = sourceDocuments.map(sourceDocument => ({
+      ...sourceDocument,
+      parts: sourceDocument.parts.map(part => part.toString())
+    }));
+
     // Use currentInteractionId for the createQuestion call
     const question = await API.chatbot.createQuestion({
       interactionId: currentInteractionId,
       questionText: input,
-      responseText: answer
+      responseText: answer,
+      sourceDocuments: formattedSourceDocument
     });
 
     await addQuestionVector(question.id, input);
@@ -218,20 +224,20 @@ export const ChatbotComponent: React.FC = () => {
                             item.sourceDocuments.map(sourceDocument => (
                               <div
                                 className="font-semibold flex justify-start align-items-start gap-3 bg-slate-100 rounded-xl p-1 w-fit"
-                                key={sourceDocument.name}
+                                key={sourceDocument.title}
                               >
                                 <p className="px-2 py-1">
-                                  {sourceDocument.name}
+                                  {sourceDocument.title}
                                 </p>
                                 <div className="flex gap-1">
-                                  {sourceDocument.pages &&
-                                    sourceDocument.pages.map(page => (
+                                  {sourceDocument.parts &&
+                                    sourceDocument.parts.map(part => (
                                       <div
                                         className="cursor-pointer transition bg-blue-100 rounded-lg flex justify-center items-center font-semibold px-3 h-full hover:bg-blue-800 hover:text-white"
-                                        key={`${sourceDocument.name}-${page}`}
+                                        key={`${sourceDocument.title}-${part}`}
                                       >
                                         <p className="leading-4 text-xs h-fit w-fit">
-                                          {`p. ${page}`}
+                                          {`p. ${part}`}
                                         </p>
                                       </div>
                                     ))}
