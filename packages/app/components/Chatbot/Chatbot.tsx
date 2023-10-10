@@ -12,7 +12,7 @@ const ChatbotContainer = styled.div`
   position: fixed;
   bottom: 20px;
   right: 20px;
-  width: 450px;
+  width: 400px;
   zindex: 9999;
 `;
 
@@ -223,17 +223,19 @@ export const ChatbotComponent: React.FC = () => {
                           {item.sourceDocuments &&
                             item.sourceDocuments.map(sourceDocument => (
                               <div
-                                className="font-semibold flex justify-start align-items-start gap-3 bg-slate-100 rounded-xl p-1 w-fit"
+                                className="font-semibold flex justify-start align-items-start gap-3 bg-slate-100 rounded-xl p-1 w-fit h-fit max-w-[280px]"
                                 key={sourceDocument.title}
                               >
-                                <p className="px-2 py-1">
-                                  {sourceDocument.title}
-                                </p>
-                                <div className="flex gap-1">
+                                <div className="px-2 py-1 w-[65%] flex items-start justify-center">
+                                  <p className="m-auto">
+                                    {sourceDocument.title}
+                                  </p>
+                                </div>
+                                <div className="flex flex-wrap gap-1 items-center justify-center">
                                   {sourceDocument.parts &&
                                     sourceDocument.parts.map(part => (
                                       <div
-                                        className="cursor-pointer transition bg-blue-100 rounded-lg flex justify-center items-center font-semibold px-3 h-full hover:bg-blue-800 hover:text-white"
+                                        className="flex-grow cursor-pointer transition bg-blue-100 rounded-lg flex justify-center items-center font-semibold px-3 py-2 hover:bg-blue-800 hover:text-white"
                                         key={`${sourceDocument.title}-${part}`}
                                       >
                                         <p className="leading-4 text-xs h-fit w-fit">
