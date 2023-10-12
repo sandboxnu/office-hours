@@ -202,5 +202,29 @@ describe('Profile Integration', () => {
       profile = await supertest({ userId: user.id }).get('/profile');
       expect(profile.body?.includeDefaultMessage).toEqual(false);
     });
+
+    it('lets user change email', async () => {
+      const user = await UserFactory.create();
+      let profile = await supertest({ userId: user.id }).get('/profile');
+      const newEmail = 'new_test_email@ubc.ca';
+
+      expect(profile.body?.email).toEqual(user.email);
+      await supertest({ userId: user.id })
+        .patch('/profile')
+        .send({ email: newEmail })
+        .expect(200);
+
+      profile = await supertest({ userId: user.id }).get('/profile');
+      expect(profile.body?.email).toEqual(newEmail);
+    });
+
+    it('fails to change user email when email is used by another user', async () => {
+      const user = await UserFactory.create();
+
+      await supertest({ userId: user.id })
+        .patch('/profile')
+        .send({ email: user.email })
+        .expect(400);
+    });
   });
 });

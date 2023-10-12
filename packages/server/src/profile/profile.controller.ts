@@ -15,7 +15,6 @@ import {
   Get,
   HttpException,
   HttpStatus,
-  InternalServerErrorException,
   NotFoundException,
   Param,
   Patch,
@@ -345,7 +344,7 @@ export class ProfileController {
         },
       });
       if (email) {
-        throw new InternalServerErrorException('Email already in db');
+        throw new BadRequestException('Email already in db');
       }
     }
     user = Object.assign(user, userPatch);
