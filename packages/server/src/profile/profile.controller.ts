@@ -345,7 +345,6 @@ export class ProfileController {
         },
       });
       if (email) {
-        console.log(email);
         throw new InternalServerErrorException('Email already in db');
       }
     }
