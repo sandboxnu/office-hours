@@ -339,12 +339,13 @@ export class ProfileController {
     user: UserModel,
   ): Promise<GetProfileResponse> {
     if (userPatch.email) {
-      const email = UserModel.findOne({
+      const email = await UserModel.findOne({
         where: {
           email: userPatch.email,
         },
       });
       if (email) {
+        console.log(email);
         throw new InternalServerErrorException('Email already in db');
       }
     }
