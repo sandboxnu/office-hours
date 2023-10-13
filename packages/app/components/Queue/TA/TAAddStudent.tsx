@@ -66,7 +66,6 @@ export function AddStudentsModal({
         selectedOption.help = true;
       }
     }
-
     setSelectOptions(newSelectOptions);
   };
 
@@ -75,10 +74,12 @@ export function AddStudentsModal({
   const getQuestions = async () => {
     setQuestionsTypeState(await API.questions.questionTypes(courseNumber));
   };
+
   useEffect(() => {
     getQuestions();
     populateStudents();
   }, []);
+
   const courseNumber = Number(courseId);
   const populateStudents = async () => {
     const tempS = [];
@@ -95,11 +96,13 @@ export function AddStudentsModal({
     });
     setStudentsState(tempS);
   };
+
   const handleSubmit = () => {
     selectOptions.forEach((student, i) => {
       addStudent(i);
     });
   };
+
   const addStudent = async (i) => {
     const currentStudent = selectOptions[i];
     const b = await API.profile.inQueue(currentStudent.id);
@@ -137,14 +140,19 @@ export function AddStudentsModal({
   };
 
   const handleSelect = (data) => {
-    setSelectOptions(data);
+    if (data) {
+      data.help = true;
+    }
+    setSelectOptions(data ?? []);
   };
+
   const onQTclick = useCallback(
     async (s: string) => {
       setSelectedQuestionType(s);
     },
     [courseNumber]
   );
+
   function toObj(arr) {
     const lst = [];
     for (let i = 0; i < arr.length; ++i)
