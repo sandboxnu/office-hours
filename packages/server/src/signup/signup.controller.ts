@@ -73,7 +73,7 @@ export class SignupController {
     }
 
     let userCourse = await UserCourseModel.findOne({
-      where: { courseId: body.selected_course, user: UserModel },
+      where: { courseId: body.selected_course, userId: user.id },
     });
     if (userCourse) {
       res

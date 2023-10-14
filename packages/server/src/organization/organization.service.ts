@@ -15,4 +15,16 @@ export class OrganizationService {
     }
     return organizationUser.role;
   }
+
+  public async getOrganizationIdForUser(userId: number): Promise<number> {
+    const organizationUser = await OrganizationUserModel.findOne({
+      where: {
+        userId,
+      },
+    });
+    if (!organizationUser) {
+      return null;
+    }
+    return organizationUser.organizationId;
+  }
 }

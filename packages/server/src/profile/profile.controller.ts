@@ -321,6 +321,9 @@ export class ProfileController {
     const organizationRole =
       await this.organizationService.getOrganizationRoleByUserId(user.id);
 
+    const organizationId =
+      await this.organizationService.getOrganizationIdForUser(user.id);
+
     return {
       ...userResponse,
       courses,
@@ -328,6 +331,7 @@ export class ProfileController {
       desktopNotifs,
       pendingCourses,
       organizationRole,
+      organizationId,
     };
   }
 

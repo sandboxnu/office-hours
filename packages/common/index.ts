@@ -75,6 +75,7 @@ export class User {
   insights!: string[];
   userRole!: string;
   organizationRole!: string;
+  organizationId!: number;
 }
 
 export class DesktopNotifPartial {
@@ -683,6 +684,7 @@ export class GetCourseResponse {
 
   @Type(() => OrganizationPartial)
   organizationCourse?: OrganizationPartial;
+  courseInviteCode!: string;
 }
 
 export class GetCourseUserInfoResponse {
@@ -1006,6 +1008,10 @@ export class EditCourseInfoParams {
   @IsOptional()
   @Type(() => Number)
   crns?: number[];
+
+  @IsString()
+  @IsOptional()
+  courseInviteCode?: string;
 }
 
 export class SemesterPartial {

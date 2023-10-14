@@ -107,4 +107,7 @@ export class CourseModel extends BaseEntity {
 
   @Column({ nullable: true })
   organizationCourseId: number;
+
+  @Column({ nullable: true })
+  courseInviteCode: string;
 }

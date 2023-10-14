@@ -133,6 +133,7 @@ export class LoginController {
     @Res() res: Response,
     @Param('cid') cid: number,
     @Query('token') token: string,
+    @Query('redirect') redirect?: string,
   ): Promise<void> {
     const isVerified = await this.jwtService.verifyAsync(token);
 
@@ -141,7 +142,7 @@ export class LoginController {
     }
 
     const payload = this.jwtService.decode(token) as { userId: number };
-    this.enter(res, payload.userId, cid);
+    await this.enter(res, payload.userId, cid, redirect);
   }
 
   // This is for login on development only
@@ -156,7 +157,12 @@ export class LoginController {
   }
 
   // Set cookie and redirect to proper page
-  private async enter(res: Response, userId: number, cid: number) {
+  private async enter(
+    res: Response,
+    userId: number,
+    cid: number,
+    redirect?: string,
+  ) {
     // Expires in 30 days
     const authToken = await this.jwtService.signAsync({
       userId,
@@ -164,7 +170,7 @@ export class LoginController {
     });
 
     if (authToken === null || authToken === undefined) {
-      console.error('Authroziation JWT is invalid');
+      console.error('Authorization JWT is invalid');
       throw new HttpException(
         ERROR_MESSAGES.loginController.invalidTempJWTToken,
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -174,9 +180,14 @@ export class LoginController {
     const isSecure = this.configService
       .get<string>('DOMAIN')
       .startsWith('https://');
-    res
-      .cookie('auth_token', authToken, { httpOnly: true, secure: isSecure })
-      .redirect(302, `/course/${cid}/today`);
+
+    res.cookie('auth_token', authToken, { httpOnly: true, secure: isSecure });
+
+    if (redirect) {
+      res.redirect(302, redirect);
+    } else {
+      res.redirect(302, `/course/${cid}/today`);
+    }
   }
 
   @Get('/logout')
