@@ -384,6 +384,8 @@ class APIClient {
         "POST",
         `/api/v1/organization/${organizationId}/add_member/${userId}`
       ),
+    get: async (organizationId: number): Promise<any> =>
+      this.req("GET", `/api/v1/organization/${organizationId}`),
     addCourse: async (
       courseId: number,
       organizationId: number

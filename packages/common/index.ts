@@ -666,6 +666,16 @@ export class OrganizationUserPartial {
   organizationRole!: string;
 }
 
+export class GetOrganizationResponse {
+  id!: number;
+  name!: string;
+  logoUrl?: string;
+  bannerUrl?: string;
+  websiteUrl?: string;
+  ssoEnabled?: boolean;
+  ssoUrl?: string;
+}
+
 export class GetCourseResponse {
   id!: number;
   name!: string;
@@ -1133,6 +1143,7 @@ export const ERROR_MESSAGES = {
   organizationController: {
     userAlreadyInOrganization: "User is already in organization",
     courseAlreadyInOrganization: "Course is already in organization",
+    organizationNotFound: "Organization not found",
   },
   courseController: {
     checkIn: {

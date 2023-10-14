@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Controller,
+  Get,
   HttpException,
   HttpStatus,
   Param,
@@ -15,6 +16,7 @@ import { OrganizationUserModel } from './organization-user.entity';
 import { JwtAuthGuard } from 'guards/jwt-auth.guard';
 import { CourseModel } from 'course/course.entity';
 import { OrganizationCourseModel } from './organization-course.entity';
+import { OrganizationModel } from './organization.entity';
 
 @Controller('organization')
 export class OrganizationController {
@@ -65,6 +67,26 @@ export class OrganizationController {
           .catch((err) => {
             res.status(500).send({ message: err });
           });
+      })
+      .catch((err) => {
+        res.status(500).send({ message: err });
+      });
+  }
+
+  @Get(':oid')
+  @UseGuards(JwtAuthGuard)
+  async get(@Res() res: Response, @Param('oid') oid: string): Promise<void> {
+    OrganizationModel.findOne({
+      where: { id: oid },
+    })
+      .then((organization) => {
+        if (!organization) {
+          return res.status(HttpStatus.NOT_FOUND).send({
+            message: ERROR_MESSAGES.organizationController.organizationNotFound,
+          });
+        }
+
+        res.status(HttpStatus.OK).send(organization);
       })
       .catch((err) => {
         res.status(500).send({ message: err });
