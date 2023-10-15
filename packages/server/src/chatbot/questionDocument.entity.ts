@@ -21,7 +21,7 @@ export class QuestionDocumentModel extends BaseEntity {
   questionId: number;
 
   @Column()
-  title: string;
+  name: string;
 
   @Column()
   type: string;

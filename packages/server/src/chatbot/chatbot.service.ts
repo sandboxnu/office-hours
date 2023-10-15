@@ -82,7 +82,6 @@ export class ChatbotService {
     }));
 
     const documents = QuestionDocumentModel.create(questionDocuments);
-
     await QuestionDocumentModel.save(documents);
 
     return question;

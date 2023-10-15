@@ -94,6 +94,7 @@ export const ChatbotComponent: React.FC = () => {
         questionId,
         query
       };
+      console.log(data);
       const response = await fetch("/chat/question/COSC404", {
         method: "POST",
         headers: {
@@ -137,6 +138,13 @@ export const ChatbotComponent: React.FC = () => {
       ...sourceDocument,
       parts: sourceDocument.parts.map(part => part.toString())
     }));
+
+    console.log({
+      interactionId: currentInteractionId,
+      questionText: input,
+      responseText: answer,
+      sourceDocuments: formattedSourceDocument
+    });
 
     // Use currentInteractionId for the createQuestion call
     const question = await API.chatbot.createQuestion({

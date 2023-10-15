@@ -757,7 +757,7 @@ export class ChatBotQuestionParams {
 
   @IsArray()
   sourceDocuments?: {
-    title: string;
+    name: string;
     type: string;
     parts: string[];
   }[];
