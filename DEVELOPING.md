@@ -1,3 +1,19 @@
+# Developing Guidelines
+
+- [Installation](#installation)
+- [Technologies](#technologies)
+- [File Structure](#file-structure)
+- [Developing](#developing)
+  - [Running locally outside of Docker container](#running-locally-outside-of-docker-container)
+  - [Running locally within a Docker container](#running-locally-within-a-docker-container)
+- [Migrations](#migrations)
+  - [Adding an API Route](#adding-an-api-route)
+  - [Adding to the frontend app](#adding-to-the-frontend-app)
+  - [Testing](#testing)
+  - [Installing new packages](#installing-new-packages)
+- [Style](#style)
+- [Production](#production)
+
 ## Installation
 
 1. [Get Docker](https://docs.docker.com/get-docker/) so we can automatically run and setup Postgres
@@ -46,9 +62,25 @@ The `infrastructure` folder is for docker and other deployment files. You can mo
 
 ## Developing
 
+### Running locally outside of Docker container
+
 Run `yarn dev` at root level to get everything running and hot-reloading. `yarn test` at root level runs all tests, but you can also selectively run tests by running `yarn test` while inside a package. Be sure to have the db running with `yarn dev:db:up` before running dev or tests.
 
 Your IDE should do type-checking for you. You can run type-checks manually with `yarn tsc`.
+
+### Running locally within a Docker container
+
+Docker container uses a different environment variable file that can be found [here](packages/server/.env.docker). This file should stay up to date within other environment variable files.
+
+The docker image should only be used on cloud service or developer to verify the final changes in pull request; this is because API service's image needs to be rebuild when new code changes are made. Instead, follow the steps in this [section](#running-locally-outside-of-docker-container) if you constantly making changes to the API.
+
+1. Start the database and api services within a Docker:
+
+```bash
+docker-compose build && docker-compose up
+```
+
+2. Visit the app at http://localhost:80 (or http://localhost)
 
 ## Migrations
 
@@ -84,7 +116,7 @@ package, `cd packages/app` and then `yarn add <FRONTEND PACKAGE>`
 
 [Prettier](https://prettier.io/), a highly opinionated code formatter, runs right before you commit to git. So don't worry about formatting your code! Prettier will clean it all up. You can also get the Prettier extension in most IDEs, or run `yarn pretty-quick` if you want to.
 
-# Production
+## Production
 
 If you have prod ssh access, deploy master to prod with `./deploy.sh <prod username>`.
 

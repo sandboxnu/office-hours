@@ -1,4 +1,4 @@
-import { CourseModel } from 'course/course.entity';
+import { CourseModel } from '../course/course.entity';
 import { Exclude } from 'class-transformer';
 import {
   BaseEntity,

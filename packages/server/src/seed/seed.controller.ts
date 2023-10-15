@@ -12,6 +12,7 @@ import { UserModel } from 'profile/user.entity';
 import { QuestionGroupModel } from 'question/question-group.entity';
 import { SemesterModel } from 'semester/semester.entity';
 import { AsyncQuestionModel } from 'asyncQuestion/asyncQuestion.entity';
+import { OrganizationModel } from 'organization/organization.entity';
 import { Connection, getManager } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import {
@@ -22,6 +23,7 @@ import {
   SemesterFactory,
   UserCourseFactory,
   UserFactory,
+  OrganizationFactory,
 } from '../../test/util/factories';
 import { CourseModel } from '../course/course.entity';
 //import { NonProductionGuard } from '../guards/non-production.guard';
@@ -54,6 +56,7 @@ export class SeedController {
     await this.seedService.deleteAll(CourseSectionMappingModel);
     await this.seedService.deleteAll(CourseModel);
     await this.seedService.deleteAll(SemesterModel);
+    await this.seedService.deleteAll(OrganizationModel);
     const manager = getManager();
     manager.query('ALTER SEQUENCE user_model_id_seq RESTART WITH 1;');
 
@@ -176,6 +179,13 @@ export class SeedController {
       room: 'Online',
       course: course,
       allowQuestions: true,
+    });
+
+    await OrganizationFactory.create({
+      name: 'UBCO',
+      description: 'UBC Okanagan',
+      logoUrl:
+        'https://ires.ubc.ca/files/2020/11/cropped-UBC-Okanagan-1-logo.jpg',
     });
 
     await QuestionFactory.create({

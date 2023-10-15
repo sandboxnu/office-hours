@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -27,6 +28,7 @@ import { ImageModule } from 'images/image.module';
 import { MailModule } from 'mail/mail.module';
 import { SiteAdminModule } from 'site-admin/site-admin.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
+import { OrganizationModule } from 'organization/organization.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeormConfig),
@@ -58,11 +60,16 @@ import { ChatbotModule } from './chatbot/chatbot.module';
     InsightsModule,
     ImageModule,
     // Only use 'pub' for publishing events, 'sub' for subscribing, and 'db' for writing to key/value store
-    RedisModule.register([{ name: 'pub' }, { name: 'sub' }, { name: 'db' }]),
+    RedisModule.register([
+      { name: 'pub', host: process.env.REDIS_HOST || 'localhost' },
+      { name: 'sub', host: process.env.REDIS_HOST || 'localhost' },
+      { name: 'db', host: process.env.REDIS_HOST || 'localhost' },
+    ]),
     HealthcheckModule,
     AlertsModule,
     SemesterModule,
     ChatbotModule,
+    OrganizationModule,
   ],
 })
 export class AppModule {}

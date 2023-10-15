@@ -11,7 +11,7 @@ import {
   IsObject,
   IsOptional,
   IsString,
-  ValidateIf
+  ValidateIf,
 } from "class-validator";
 import "reflect-metadata";
 import { Cache } from "cache-manager";
@@ -73,6 +73,8 @@ export class User {
   phoneNotifsEnabled!: boolean;
   phoneNumber!: string;
   insights!: string[];
+  userRole!: string;
+  organizationRole!: string;
 }
 
 export class DesktopNotifPartial {
@@ -122,7 +124,7 @@ export type UserCourse = {
 export enum Role {
   STUDENT = "student",
   TA = "ta",
-  PROFESSOR = "professor"
+  PROFESSOR = "professor",
 }
 
 // chatbot questions and interactions
@@ -140,6 +142,23 @@ export class Interaction {
   course?: GetCourseResponse;
   user!: User;
   timestamp!: Date;
+}
+
+/**
+ * Represents one of two possible roles for the global account
+ */
+export enum UserRole {
+  USER = "user",
+  ADMIN = "admin",
+}
+
+/**
+ * Represents a user's role in an organization.
+ */
+export enum OrganizationRole {
+  MEMBER = "member",
+  ADMIN = "admin",
+  professor = "professor",
 }
 
 /**
@@ -255,7 +274,7 @@ export enum QuestionType {
   Testing = "Testing",
   Bug = "Bug",
   Setup = "Setup",
-  Other = "Other"
+  Other = "Other",
 }
 
 // Type of async question events
@@ -263,14 +282,14 @@ export enum asyncQuestionEventType {
   answered = "answered",
   deleted = "deleted",
   madeVisible = "madeVisible",
-  created = "created"
+  created = "created",
 }
 
 export enum OpenQuestionStatus {
   Drafting = "Drafting",
   Queued = "Queued",
   Helping = "Helping",
-  PriorityQueued = "PriorityQueued"
+  PriorityQueued = "PriorityQueued",
 }
 
 /**
@@ -279,25 +298,25 @@ export enum OpenQuestionStatus {
 export enum LimboQuestionStatus {
   CantFind = "CantFind", // represents when a student can't be found by a TA
   ReQueueing = "ReQueueing", // represents when a TA wants to get back to a student later and give them the option to be put into the priority queue
-  TADeleted = "TADeleted" // When a TA deletes a question for a multitude of reasons
+  TADeleted = "TADeleted", // When a TA deletes a question for a multitude of reasons
 }
 
 export enum ClosedQuestionStatus {
   Resolved = "Resolved",
   DeletedDraft = "DeletedDraft",
   ConfirmedDeleted = "ConfirmedDeleted",
-  Stale = "Stale"
+  Stale = "Stale",
 }
 
 export enum asyncQuestionStatus {
   Resolved = "Resolved",
   TADeleted = "TADeleted",
   StudentDeleted = "StudentDeleted",
-  Waiting = "Waiting"
+  Waiting = "Waiting",
 }
 export const StatusInQueue = [
   OpenQuestionStatus.Drafting,
-  OpenQuestionStatus.Queued
+  OpenQuestionStatus.Queued,
 ];
 
 export const StatusInPriorityQueue = [OpenQuestionStatus.PriorityQueued];
@@ -308,7 +327,7 @@ export const StatusSentToCreator = [
   OpenQuestionStatus.Helping,
   LimboQuestionStatus.ReQueueing,
   LimboQuestionStatus.CantFind,
-  LimboQuestionStatus.TADeleted
+  LimboQuestionStatus.TADeleted,
 ];
 
 // Ticket Status - Represents a given status of as student's ticket
@@ -317,7 +336,7 @@ export type QuestionStatus = keyof typeof QuestionStatusKeys;
 export const QuestionStatusKeys = {
   ...OpenQuestionStatus,
   ...ClosedQuestionStatus,
-  ...LimboQuestionStatus
+  ...LimboQuestionStatus,
 };
 
 export class QuestionGroup {
@@ -616,7 +635,7 @@ export class UpdateProfileParams {
   @IsOptional()
   phoneNotifsEnabled?: boolean;
 
-  @ValidateIf(o => o.phoneNotifsEnabled)
+  @ValidateIf((o) => o.phoneNotifsEnabled)
   @IsString()
   @IsNotEmpty()
   phoneNumber?: string;
@@ -646,6 +665,16 @@ export class UpdateProfileParams {
   includeDefaultMessage?: boolean;
 }
 
+export class OrganizationPartial {
+  id!: number;
+  name!: string;
+  logoUrl?: string;
+  bannerUrl?: string;
+  websiteUrl?: string;
+  ssoEnabled?: boolean;
+  ssoUrl?: string;
+}
+
 export class GetCourseResponse {
   id!: number;
   name!: string;
@@ -668,6 +697,9 @@ export class GetCourseResponse {
   selfEnroll!: boolean;
 
   asyncQuestionDisplayTypes?: string[];
+
+  @Type(() => OrganizationPartial)
+  organizationCourse?: OrganizationPartial;
 }
 
 export class GetCourseUserInfoResponse {
@@ -878,7 +910,7 @@ export class TACheckinPair {
 }
 
 export enum AlertType {
-  REPHRASE_QUESTION = "rephraseQuestion"
+  REPHRASE_QUESTION = "rephraseQuestion",
 }
 
 export class AlertPayload {}
@@ -1076,7 +1108,7 @@ export interface InsightObject {
 export enum InsightComponent {
   SimpleDisplay = "SimpleDisplay",
   BarChart = "BarChart",
-  SimpleTable = "SimpleTable"
+  SimpleTable = "SimpleTable",
 }
 
 export type PossibleOutputTypes =
@@ -1124,12 +1156,16 @@ export type sendEmailAsync = {
 };
 export const ERROR_MESSAGES = {
   common: {
-    pageOutOfBounds: "Can't retrieve out of bounds page."
+    pageOutOfBounds: "Can't retrieve out of bounds page.",
+  },
+  organizationController: {
+    userAlreadyInOrganization: "User is already in organization",
+    courseAlreadyInOrganization: "Course is already in organization",
   },
   courseController: {
     checkIn: {
       cannotCheckIntoMultipleQueues:
-        "Cannot check into multiple queues at the same time"
+        "Cannot check into multiple queues at the same time",
     },
     courseAlreadyRegistered: "One or more of the courses is already registered",
     courseNotFound: "The course was not found",
@@ -1159,14 +1195,14 @@ export const ERROR_MESSAGES = {
     invalidApplyURL:
       "You are unauthorized to submit an application. Please email help@khouryofficehours.com for the correct URL.",
     crnAlreadyRegistered: (crn: number, courseId: number): string =>
-      `The CRN ${crn} already exists for another course with course id ${courseId}`
+      `The CRN ${crn} already exists for another course with course id ${courseId}`,
   },
   questionController: {
     createQuestion: {
       invalidQueue: "Posted to an invalid queue",
       noNewQuestions: "Queue not allowing new questions",
       closedQueue: "Queue is closed",
-      oneQuestionAtATime: "You can't create more than one question at a time."
+      oneQuestionAtATime: "You can't create more than one question at a time.",
     },
     updateQuestion: {
       fsmViolation: (
@@ -1179,32 +1215,32 @@ export const ERROR_MESSAGES = {
       otherTAHelping: "Another TA is currently helping with this question",
       otherTAResolved: "Another TA has already resolved this question",
       taHelpingOther: "TA is already helping someone else",
-      loginUserCantEdit: "Logged-in user does not have edit access"
+      loginUserCantEdit: "Logged-in user does not have edit access",
     },
     groupQuestions: {
-      notGroupable: "One or more of the questions is not groupable"
+      notGroupable: "One or more of the questions is not groupable",
     },
     saveQError: "Unable to save a question",
     notFound: "Question not found",
-    unableToNotifyUser: "Unable to notify user"
+    unableToNotifyUser: "Unable to notify user",
   },
   loginController: {
     receiveDataFromKhoury: "Invalid request signature",
     invalidPayload: "The decoded JWT payload is invalid",
     invalidTempJWTToken: "Error occurred while signing a JWT token",
     addUserFromKhoury:
-      "Error occurred while translating account from Khoury to Office Hours"
+      "Error occurred while translating account from Khoury to Office Hours",
   },
   notificationController: {
-    messageNotFromTwilio: "Message not from Twilio"
+    messageNotFromTwilio: "Message not from Twilio",
   },
   notificationService: {
-    registerPhone: "phone number invalid"
+    registerPhone: "phone number invalid",
   },
   questionRoleGuard: {
     questionNotFound: "Question not found",
     queueOfQuestionNotFound: "Cannot find queue of question",
-    queueDoesNotExist: "This queue does not exist!"
+    queueDoesNotExist: "This queue does not exist!",
   },
   queueController: {
     getQueue: "An error occurred while trying to retrieve a Queue",
@@ -1212,41 +1248,41 @@ export const ERROR_MESSAGES = {
     saveQueue: "Unable to save queue",
     cleanQueue: "Unable to clean queue",
     cannotCloseQueue: "Unable to close professor queue as a TA",
-    missingStaffList: "Stafflist relation not present on Queue"
+    missingStaffList: "Stafflist relation not present on Queue",
   },
   queueRoleGuard: {
-    queueNotFound: "Queue not found"
+    queueNotFound: "Queue not found",
   },
   releaseNotesController: {
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     releaseNotesTime: (e: any): string =>
-      "Error Parsing release notes time: " + e
+      "Error Parsing release notes time: " + e,
   },
   insightsController: {
     insightUnathorized: "User is not authorized to view this insight",
     insightNameNotFound: "The insight requested was not found",
-    insightsDisabled: "Insights are currently unavailable, sorry :("
+    insightsDisabled: "Insights are currently unavailable, sorry :(",
   },
   roleGuard: {
     notLoggedIn: "Must be logged in",
     noCourseIdFound: "No courseid found",
     notInCourse: "Not In This Course",
     mustBeRoleToJoinCourse: (roles: string[]): string =>
-      `You must have one of roles [${roles.join(", ")}] to access this course`
+      `You must have one of roles [${roles.join(", ")}] to access this course`,
   },
   mailService: {
-    mailFailed: "Mail was not sent to user"
+    mailFailed: "Mail was not sent to user",
   },
   profileController: {
     accountNotAvailable: "The user account is undefined",
     userResponseNotFound: "The user response was not found",
     noDiskSpace:
-      "There is no disk space left to store an image. Please immediately contact your course staff and let them know. They will contact the Khoury Office Hours team as soon as possible."
+      "There is no disk space left to store an image. Please immediately contact your course staff and let them know. They will contact the Khoury Office Hours team as soon as possible.",
   },
   alertController: {
     duplicateAlert: "This alert has already been sent",
     notActiveAlert: "This is not an alert that's open for the current user",
-    incorrectPayload: "The payload provided was not of the correct type"
+    incorrectPayload: "The payload provided was not of the correct type",
   },
   sseService: {
     getSubClient: "Unable to get the redis subscriber client",
@@ -1262,11 +1298,11 @@ export const ERROR_MESSAGES = {
     roomMembers: "Unable to get room members",
     serialize: "Unable to serialize payload",
     publish: "Publisher client is unable to publish",
-    clientIdNotFound: "Client ID not found during subscribing to client"
+    clientIdNotFound: "Client ID not found during subscribing to client",
   },
   resourcesService: {
     noDiskSpace:
       "There is no disk space left to store a iCal file. Please immediately contact your course staff and let them know. They will contact the Khoury Office Hours team as soon as possible.",
-    saveCalError: "There was an error saving an iCal to disk"
-  }
+    saveCalError: "There was an error saving an iCal to disk",
+  },
 };

@@ -50,6 +50,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { MailService } from 'mail/mail.service';
+import { OrganizationService } from '../organization/organization.service';
 @Controller('profile')
 export class ProfileController {
   constructor(
@@ -59,6 +60,7 @@ export class ProfileController {
     private jwtService: JwtService,
     private configService: ConfigService,
     private mailService: MailService,
+    private organizationService: OrganizationService,
   ) {}
   //forgetpassword route used for creating links to be sent to the email
   @Post('/forgetpassword/:e')
@@ -303,6 +305,7 @@ export class ProfileController {
       'desktopNotifsEnabled',
       'phoneNotifsEnabled',
       'insights',
+      'userRole',
     ]);
 
     if (userResponse === null || userResponse === undefined) {
@@ -315,12 +318,16 @@ export class ProfileController {
 
     const pendingCourses = await this.profileService.getPendingCourses(user.id);
 
+    const organizationRole =
+      await this.organizationService.getOrganizationRoleByUserId(user.id);
+
     return {
       ...userResponse,
       courses,
       phoneNumber: user.phoneNotif?.phoneNumber,
       desktopNotifs,
       pendingCourses,
+      organizationRole,
     };
   }
 

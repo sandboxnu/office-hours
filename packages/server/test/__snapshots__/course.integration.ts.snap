@@ -45,6 +45,7 @@ Object {
       "password": null,
       "photoURL": null,
       "sid": null,
+      "userRole": "user",
     },
   ],
 }
@@ -81,6 +82,7 @@ Object {
       "password": null,
       "photoURL": null,
       "sid": null,
+      "userRole": "user",
     },
   ],
 }
@@ -97,6 +99,8 @@ Object {
   "icalURL": "https://calendar.google.com/calendar/ical/t6lu2pic7u9otrbpkuk26sl34g%40group.calendar.google.com/public/basic.ics",
   "id": 1,
   "name": "CS 304",
+  "organizationCourse": null,
+  "organizationCourseId": null,
   "questionTimer": null,
   "queues": Array [],
   "sectionGroupName": "CS 304",
@@ -152,6 +156,7 @@ Object {
       "password": null,
       "photoURL": null,
       "sid": null,
+      "userRole": "user",
     },
   ],
 }
@@ -188,6 +193,7 @@ Object {
       "password": null,
       "photoURL": null,
       "sid": null,
+      "userRole": "user",
     },
   ],
 }
@@ -258,6 +264,7 @@ Object {
       "password": null,
       "photoURL": null,
       "sid": null,
+      "userRole": "user",
     },
   ],
 }

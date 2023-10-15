@@ -24,6 +24,7 @@ Object {
     "password": null,
     "photoURL": null,
     "sid": null,
+    "userRole": "user",
   },
   "groupable": true,
   "helpedAt": null,
