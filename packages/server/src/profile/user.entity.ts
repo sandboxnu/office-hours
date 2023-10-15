@@ -18,6 +18,8 @@ import { QueueModel } from '../queue/queue.entity';
 import { EventModel } from './event-model.entity';
 import { UserCourseModel } from './user-course.entity';
 import { AlertModel } from '../alerts/alerts.entity';
+import { UserRole } from '@koh/common';
+import { OrganizationUserModel } from '../organization/organization-user.entity';
 
 @Entity('user_model')
 export class UserModel extends BaseEntity {
@@ -62,6 +64,9 @@ export class UserModel extends BaseEntity {
   @Exclude()
   phoneNotifsEnabled: boolean; // Does user want notifications sent to their phone?
 
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
+  userRole: UserRole;
+
   @OneToMany(
     type => DesktopNotifModel,
     notif => notif.user,
@@ -101,6 +106,13 @@ export class UserModel extends BaseEntity {
   hideInsights: string[];
 
   insights: string[];
+
+  @Exclude()
+  @OneToOne(
+    type => OrganizationUserModel,
+    ou => ou.userId,
+  )
+  organizationUser: OrganizationUserModel;
 
   @AfterLoad()
   computeInsights(): void {

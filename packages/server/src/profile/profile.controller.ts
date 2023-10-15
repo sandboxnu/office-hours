@@ -50,6 +50,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { MailService } from 'mail/mail.service';
+import { OrganizationService } from '../organization/organization.service';
 @Controller('profile')
 export class ProfileController {
   constructor(
@@ -59,6 +60,7 @@ export class ProfileController {
     private jwtService: JwtService,
     private configService: ConfigService,
     private mailService: MailService,
+    private organizationService: OrganizationService,
   ) {}
   //forgetpassword route used for creating links to be sent to the email
   @Post('/forgetpassword/:e')
@@ -69,7 +71,7 @@ export class ProfileController {
     UserModel.findOne({
       where: { email: e },
     })
-      .then(async (user) => {
+      .then(async user => {
         if (!user) {
           throw new HttpException(
             ERROR_MESSAGES.profileController.accountNotAvailable,
@@ -89,7 +91,7 @@ export class ProfileController {
         }
         return res.status(200).send({ token, e });
       })
-      .catch((err) => {
+      .catch(err => {
         res.status(500).send({ message: err });
       });
   }
@@ -163,7 +165,7 @@ export class ProfileController {
     const payload = this.jwtService.decode(token) as { userId: number };
     UserModel.findOne({
       where: { id: payload.userId },
-    }).then(async (user) => {
+    }).then(async user => {
       if (!user) {
         throw new NotFoundException();
       } else {
@@ -191,7 +193,7 @@ export class ProfileController {
       },
     });
     if (students) {
-      const temp = students.map((student) => {
+      const temp = students.map(student => {
         return { value: student.user.name, id: student.user.id };
       });
       res.status(200).send(temp);
@@ -269,8 +271,8 @@ export class ProfileController {
     }
     const courses = user.courses
       ? user.courses
-          .filter((userCourse) => userCourse?.course?.enabled)
-          .map((userCourse) => {
+          .filter(userCourse => userCourse?.course?.enabled)
+          .map(userCourse => {
             return {
               course: {
                 id: userCourse.courseId,
@@ -282,7 +284,7 @@ export class ProfileController {
       : [];
 
     const desktopNotifs: DesktopNotifPartial[] = user.desktopNotifs
-      ? user.desktopNotifs.map((d) => ({
+      ? user.desktopNotifs.map(d => ({
           endpoint: d.endpoint,
           id: d.id,
           createdAt: d.createdAt,
@@ -303,6 +305,7 @@ export class ProfileController {
       'desktopNotifsEnabled',
       'phoneNotifsEnabled',
       'insights',
+      'userRole',
     ]);
 
     if (userResponse === null || userResponse === undefined) {
@@ -315,12 +318,17 @@ export class ProfileController {
 
     const pendingCourses = await this.profileService.getPendingCourses(user.id);
 
+    const organizationRole = await this.organizationService.getOrganizationRoleByUserId(
+      user.id,
+    );
+
     return {
       ...userResponse,
       courses,
       phoneNumber: user.phoneNotif?.phoneNumber,
       desktopNotifs,
       pendingCourses,
+      organizationRole,
     };
   }
 
@@ -353,7 +361,7 @@ export class ProfileController {
       }
     }
 
-    await user.save().catch((e) => {
+    await user.save().catch(e => {
       console.log(e);
     });
 
@@ -372,7 +380,7 @@ export class ProfileController {
     @User() user: UserModel,
   ): Promise<void> {
     if (user.photoURL) {
-      fs.unlink(process.env.UPLOAD_LOCATION + '/' + user.photoURL, (err) => {
+      fs.unlink(process.env.UPLOAD_LOCATION + '/' + user.photoURL, err => {
         console.error(
           'Error deleting previous picture at: ',
           user.photoURL,
@@ -394,8 +402,12 @@ export class ProfileController {
     const fileName =
       user.id +
       '-' +
-      Math.random().toString(36).substring(2, 15) +
-      Math.random().toString(36).substring(2, 15);
+      Math.random()
+        .toString(36)
+        .substring(2, 15) +
+      Math.random()
+        .toString(36)
+        .substring(2, 15);
 
     await sharp(file.buffer)
       .resize(256)
@@ -436,7 +448,7 @@ export class ProfileController {
     if (user.photoURL) {
       fs.unlink(
         process.env.UPLOAD_LOCATION + '/' + user.photoURL,
-        async (err) => {
+        async err => {
           if (err) {
             const errMessage =
               'Error deleting previous picture at : ' +

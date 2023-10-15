@@ -405,6 +405,22 @@ class APIClient {
       this.req("PATCH", `/api/v1/alerts/${alertId}`)
   };
 
+  organizations = {
+    addMember: async (userId: number, organizationId: number): Promise<void> =>
+      this.req(
+        "POST",
+        `/api/v1/organization/${organizationId}/add_member/${userId}`
+      ),
+    addCourse: async (
+      courseId: number,
+      organizationId: number
+    ): Promise<void> =>
+      this.req(
+        "POST",
+        `/api/v1/organization/${organizationId}/add_course/${courseId}`
+      )
+  };
+
   constructor(baseURL = "") {
     this.axios = Axios.create({ baseURL: baseURL });
   }

@@ -1,4 +1,4 @@
-import { AsyncQuestionModel } from 'asyncQuestion/asyncQuestion.entity';
+import { AsyncQuestionModel } from '../asyncQuestion/asyncQuestion.entity';
 import { Exclude } from 'class-transformer';
 import {
   BaseEntity,
@@ -20,7 +20,7 @@ export class ImageModel extends BaseEntity {
   @Column({ nullable: true })
   visible: number;
 
-  @ManyToOne((type) => AsyncQuestionModel)
+  @ManyToOne(type => AsyncQuestionModel)
   @JoinColumn({ name: 'AsyncQuestion' })
   @Exclude()
   asyncQuestion: AsyncQuestionModel;

@@ -74,6 +74,8 @@ export class User {
   phoneNotifsEnabled!: boolean;
   phoneNumber!: string;
   insights!: string[];
+  userRole!: string;
+  organizationRole!: string;
 }
 
 export class DesktopNotifPartial {
@@ -141,6 +143,23 @@ export class Interaction {
   course?: GetCourseResponse;
   user!: User;
   timestamp!: Date;
+}
+
+/**
+ * Represents one of two possible roles for the global account
+ */
+export enum UserRole {
+  USER = "user",
+  ADMIN = "admin"
+}
+
+/**
+ * Represents a user's role in an organization.
+ */
+export enum OrganizationRole {
+  MEMBER = "member",
+  ADMIN = "admin",
+  professor = "professor"
 }
 
 /**
@@ -647,6 +666,16 @@ export class UpdateProfileParams {
   includeDefaultMessage?: boolean;
 }
 
+export class OrganizationPartial {
+  id!: number;
+  name!: string;
+  logoUrl?: string;
+  bannerUrl?: string;
+  websiteUrl?: string;
+  ssoEnabled?: boolean;
+  ssoUrl?: string;
+}
+
 export class GetCourseResponse {
   id!: number;
   name!: string;
@@ -669,6 +698,9 @@ export class GetCourseResponse {
   selfEnroll!: boolean;
 
   asyncQuestionDisplayTypes?: string[];
+
+  @Type(() => OrganizationPartial)
+  organizationCourse?: OrganizationPartial;
 }
 
 export class GetCourseUserInfoResponse {
@@ -1139,6 +1171,10 @@ export type sendEmailAsync = {
 export const ERROR_MESSAGES = {
   common: {
     pageOutOfBounds: "Can't retrieve out of bounds page."
+  },
+  organizationController: {
+    userAlreadyInOrganization: "User is already in organization",
+    courseAlreadyInOrganization: "Course is already in organization"
   },
   courseController: {
     checkIn: {

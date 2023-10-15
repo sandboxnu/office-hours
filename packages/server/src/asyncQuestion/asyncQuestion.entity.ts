@@ -1,8 +1,8 @@
 //got rid of questiontype
 import { asyncQuestionStatus } from '@koh/common';
 import { Exclude } from 'class-transformer';
-import { CourseModel } from 'course/course.entity';
-import { ImageModel } from 'images/image.entity';
+import { CourseModel } from '../course/course.entity';
+import { ImageModel } from '../images/image.entity';
 import {
   BaseEntity,
   Column,
@@ -20,12 +20,15 @@ export class AsyncQuestionModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne((type) => CourseModel)
+  @ManyToOne(type => CourseModel)
   @JoinColumn({ name: 'courseId' })
   @Exclude()
   course: CourseModel;
 
-  @OneToMany((type) => ImageModel, (image) => image.asyncQuestion)
+  @OneToMany(
+    type => ImageModel,
+    image => image.asyncQuestion,
+  )
   @Exclude()
   images: ImageModel[];
 
@@ -42,7 +45,7 @@ export class AsyncQuestionModel extends BaseEntity {
   @Column('text', { nullable: true })
   answerText: string;
 
-  @ManyToOne((type) => UserModel)
+  @ManyToOne(type => UserModel)
   @JoinColumn({ name: 'creatorId' })
   creator: UserModel;
 
@@ -50,7 +53,7 @@ export class AsyncQuestionModel extends BaseEntity {
   @Exclude()
   creatorId: number;
 
-  @ManyToOne((type) => UserModel)
+  @ManyToOne(type => UserModel)
   @JoinColumn({ name: 'taHelpedId' })
   taHelped: UserModel;
 

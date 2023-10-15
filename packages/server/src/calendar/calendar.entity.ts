@@ -1,4 +1,4 @@
-import { CourseModel } from 'course/course.entity';
+import { CourseModel } from '../course/course.entity';
 import { Exclude } from 'class-transformer';
 import {
   BaseEntity,
@@ -29,7 +29,7 @@ export class CalendarModel extends BaseEntity {
   @Column({ nullable: true })
   allDay: boolean;
 
-  @ManyToOne((type) => CourseModel)
+  @ManyToOne(type => CourseModel)
   @JoinColumn({ name: 'course' })
   @Exclude()
   course: CourseModel;

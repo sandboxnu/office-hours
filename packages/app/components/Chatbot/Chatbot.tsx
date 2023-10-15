@@ -17,7 +17,7 @@ const ChatbotContainer = styled.div`
 `;
 
 interface SourceDocument {
-  title: string;
+  name: string;
   parts: string[];
 }
 
@@ -80,6 +80,7 @@ export const ChatbotComponent: React.FC = () => {
         body: JSON.stringify(data)
       });
       const json = await response.json();
+      console.log(json);
       return json;
     } catch (error) {
       console.error("Error fetching from Flowise API:", error);
@@ -112,6 +113,7 @@ export const ChatbotComponent: React.FC = () => {
     setIsLoading(true);
 
     const result = await query();
+    console.log(query);
     const answer = result.answer || "Sorry, I couldn't find the answer";
     const sourceDocuments = result.sourceDocuments || [];
 
@@ -189,10 +191,10 @@ export const ChatbotComponent: React.FC = () => {
     <ChatbotContainer style={{ zIndex: 1000 }}>
       {isOpen ? (
         <Card
-          title="Chatbot"
+          title="CS304 chatbot"
           extra={<a onClick={() => setIsOpen(false)}>Close</a>}
         >
-          <div className="overflow-y-auto max-h-[800px]">
+          <div className="overflow-y-auto max-h-[700px]">
             {messages &&
               messages.map(item => (
                 <>
@@ -229,19 +231,17 @@ export const ChatbotComponent: React.FC = () => {
                             item.sourceDocuments.map(sourceDocument => (
                               <div
                                 className="font-semibold flex justify-start align-items-start gap-3 bg-slate-100 rounded-xl p-1 w-fit h-fit max-w-[280px]"
-                                key={sourceDocument.title}
+                                key={sourceDocument.name}
                               >
-                                <div className="px-2 py-1 w-[65%] flex items-start justify-center">
-                                  <p className="m-auto">
-                                    {sourceDocument.title}
-                                  </p>
-                                </div>
-                                <div className="flex flex-wrap gap-1 items-center justify-center">
+                                <p className="px-2 py-1">
+                                  {sourceDocument.name}
+                                </p>
+                                <div className="flex gap-1">
                                   {sourceDocument.parts &&
                                     sourceDocument.parts.map(part => (
                                       <div
                                         className="flex-grow cursor-pointer transition bg-blue-100 rounded-lg flex justify-center items-center font-semibold px-3 py-2 hover:bg-blue-800 hover:text-white"
-                                        key={`${sourceDocument.title}-${part}`}
+                                        key={`${sourceDocument.name}-${part}`}
                                       >
                                         <p className="leading-4 text-xs h-fit w-fit">
                                           {`p. ${part}`}
@@ -296,7 +296,11 @@ export const ChatbotComponent: React.FC = () => {
             placeholder="Ask something..."
             onPressEnter={handleAsk}
             suffix={
-              <Button type="primary" onClick={handleAsk}>
+              <Button
+                type="primary"
+                className="bg-blue-900"
+                onClick={handleAsk}
+              >
                 Ask
               </Button>
             }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Module } from '@nestjs/common';
 import {
   AdminCoreModuleFactory,
@@ -20,7 +21,10 @@ import * as session from 'express-session';
 import * as connectRedis from 'connect-redis';
 import { createClient } from 'redis';
 
-const redisClient = createClient();
+const redisClient = createClient({
+  host: process.env.REDIS_HOST || 'localhost',
+});
+
 const RedisStore = connectRedis(session);
 
 // This stops redisClient from causing jest tests to hang from an open handler

@@ -50,6 +50,7 @@ import { CourseService } from './course.service';
 import { HeatmapService } from './heatmap.service';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { AsyncQuestionModel } from 'asyncQuestion/asyncQuestion.entity';
+import { OrganizationCourseModel } from 'organization/organization-course.entity';
 
 @Controller('courses')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -60,7 +61,7 @@ export class CourseController {
     private queueSSEService: QueueSSEService,
     private heatmapService: HeatmapService,
     private courseService: CourseService,
-  ) { }
+  ) {}
 
   // get all courses
   @Get()
@@ -69,7 +70,7 @@ export class CourseController {
     if (!courses) {
       throw new NotFoundException();
     }
-    return courses.map((course) => ({ id: course.id, name: course.name }));
+    return courses.map(course => ({ id: course.id, name: course.name }));
   }
   @Get(':cid/questions')
   @UseGuards(JwtAuthGuard)
@@ -85,11 +86,11 @@ export class CourseController {
     if (!all) {
       throw NotFoundException;
     }
-    const course = await CourseModel.findOne({
-      where: {
-        id: cid,
-      },
-    });
+    // const course = await CourseModel.findOne({
+    //   where: {
+    //     id: cid,
+    //   },
+    // });
     // This will enable viewing with displaytypes function
     // let questionsDB = all;
     // if (course.asyncQuestionDisplayTypes[0] !== 'all') {
@@ -101,18 +102,18 @@ export class CourseController {
     // }
     const questions = new AsyncQuestionResponse();
     questions.helpedQuestions = all.filter(
-      (question) => question.status === asyncQuestionStatus.Resolved,
+      question => question.status === asyncQuestionStatus.Resolved,
     );
     questions.waitingQuestions = all.filter(
-      (question) => question.status === asyncQuestionStatus.Waiting,
+      question => question.status === asyncQuestionStatus.Waiting,
     );
     questions.otherQuestions = all.filter(
-      (question) =>
+      question =>
         question.status === asyncQuestionStatus.StudentDeleted ||
         question.status === asyncQuestionStatus.TADeleted,
     );
     questions.visibleQuestions = all.filter(
-      (question) =>
+      question =>
         question.visible === true &&
         question.status !== asyncQuestionStatus.TADeleted,
     );
@@ -128,7 +129,7 @@ export class CourseController {
   ): Promise<GetCourseResponse> {
     // TODO: for all course endpoint, check if they're a student or a TA
     const course = await CourseModel.findOne(id, {
-      relations: ['queues', 'queues.staffList'],
+      relations: ['queues', 'queues.staffList', 'organizationCourse'],
     });
     if (course === null || course === undefined) {
       console.error(
@@ -147,9 +148,9 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.courseOfficeHourError +
-        '\n' +
-        'Error message: ' +
-        err,
+          '\n' +
+          'Error message: ' +
+          err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.courseHeatMapError,
@@ -177,12 +178,12 @@ export class CourseController {
     ) {
       course.queues = await async.filter(
         course.queues,
-        async (q) => !q.isDisabled,
+        async q => !q.isDisabled,
       );
     } else if (userCourseModel.role === Role.STUDENT) {
       course.queues = await async.filter(
         course.queues,
-        async (q) => !q.isDisabled && (await q.checkIsOpen()),
+        async q => !q.isDisabled && (await q.checkIsOpen()),
       );
     }
 
@@ -192,15 +193,15 @@ export class CourseController {
     }
 
     try {
-      await async.each(course.queues, async (q) => {
+      await async.each(course.queues, async q => {
         await q.addQueueSize();
       });
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.updatedQueueError +
-        '\n' +
-        'Error message: ' +
-        err,
+          '\n' +
+          'Error message: ' +
+          err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.updatedQueueError,
@@ -208,15 +209,29 @@ export class CourseController {
       );
     }
 
-    const course_response = { ...course, crns: null };
+    const organizationCourse = await OrganizationCourseModel.findOne({
+      where: {
+        courseId: id,
+      },
+      relations: ['organization'],
+    });
+
+    const organization =
+      organizationCourse === undefined ? null : organizationCourse.organization;
+
+    const course_response = {
+      ...course,
+      crns: null,
+      organizationCourse: organization,
+    };
     try {
       course_response.crns = await CourseSectionMappingModel.find({ course });
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.courseOfficeHourError +
-        '\n' +
-        'Error message: ' +
-        err,
+          '\n' +
+          'Error message: ' +
+          err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.courseCrnsError,
@@ -255,7 +270,7 @@ export class CourseController {
 
     if (
       queues &&
-      queues.some((q) => q.staffList.some((staff) => staff.id === user.id))
+      queues.some(q => q.staffList.some(staff => staff.id === user.id))
     ) {
       throw new UnauthorizedException(
         ERROR_MESSAGES.courseController.checkIn.cannotCheckIntoMultipleQueues,
@@ -308,8 +323,8 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.saveQueueError +
-        '\nError message: ' +
-        err,
+          '\nError message: ' +
+          err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.saveQueueError,
@@ -328,8 +343,8 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.createEventError +
-        '\nError message: ' +
-        err,
+          '\nError message: ' +
+          err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.createEventError,
@@ -342,8 +357,8 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.createEventError +
-        '\nError message: ' +
-        err,
+          '\nError message: ' +
+          err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.updatedQueueError,
@@ -411,8 +426,8 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.saveQueueError +
-        '\nError message: ' +
-        err,
+          '\nError message: ' +
+          err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.saveQueueError,
@@ -446,9 +461,9 @@ export class CourseController {
     }
 
     // Do nothing if user not already in stafflist
-    if (!queue.staffList.find((e) => e.id === user.id)) return;
+    if (!queue.staffList.find(e => e.id === user.id)) return;
 
-    queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
+    queue.staffList = queue.staffList.filter(e => e.id !== user.id);
     if (queue.staffList.length === 0) {
       queue.allowQuestions = false;
     }
@@ -457,8 +472,8 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.saveQueueError +
-        '\nError Message: ' +
-        err,
+          '\nError Message: ' +
+          err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.saveQueueError,
@@ -477,8 +492,8 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.createEventError +
-        '\nError message: ' +
-        err,
+          '\nError message: ' +
+          err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.createEventError,
@@ -491,8 +506,8 @@ export class CourseController {
     } catch (err) {
       console.error(
         ERROR_MESSAGES.courseController.createEventError +
-        '\nError message: ' +
-        err,
+          '\nError message: ' +
+          err,
       );
       throw new HttpException(
         ERROR_MESSAGES.courseController.updatedQueueError,
@@ -521,7 +536,7 @@ export class CourseController {
     }
 
     return {
-      data: resp.map((row) => ({
+      data: resp.map(row => ({
         id: row.id,
         role: row.role,
         name: row.user.name,
