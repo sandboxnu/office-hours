@@ -192,7 +192,7 @@ export const ChatbotComponent: React.FC = () => {
           title="Chatbot"
           extra={<a onClick={() => setIsOpen(false)}>Close</a>}
         >
-          <div className="overflow-y-auto max-h-[600px]">
+          <div className="overflow-y-auto max-h-[800px]">
             {messages &&
               messages.map(item => (
                 <>
