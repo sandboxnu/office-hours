@@ -2,7 +2,7 @@
 
 exports[`OrganizationService getOrganizationAndRoleByUserId should return the organization and role of the organizationUser 1`] = `
 Object {
-  "id": 2,
+  "id": 1,
   "organizationDescription": "UBC Okanagan",
   "organizationLogoUrl": "https://etug.ca/wp-content/uploads/2014/03/ubc-e1523034593970.png",
   "organizationName": "UBCO",

@@ -12,7 +12,9 @@ import {
   ExperimentOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-import Main from "../../components/Organization/Main";
+import MainTab from "../../components/Organization/MainTab";
+import SettingsTab from "../../components/Organization/SettingsTab";
+import UsersTab from "../../components/Organization/UsersTab";
 import DefaultErrorPage from "next/error";
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -81,7 +83,18 @@ export default function Settings(): React.ReactElement {
           </Col>
           <Col xs={{ span: 24 }} sm={{ span: 18 }}>
             {selectedMenuItem === "main" && (
-              <Main userName={profile?.firstName + " " + profile?.lastName} />
+              <MainTab
+                userName={profile?.firstName + " " + profile?.lastName}
+                organizationId={organization?.id}
+              />
+            )}
+
+            {selectedMenuItem === "users" && (
+              <UsersTab organizationId={organization?.id} profile={profile} />
+            )}
+
+            {selectedMenuItem === "settings" && (
+              <SettingsTab organization={organization} />
             )}
           </Col>
         </Row>

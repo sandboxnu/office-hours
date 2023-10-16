@@ -6,20 +6,30 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
   Res,
   UseGuards,
 } from '@nestjs/common';
 import { UserModel } from 'profile/user.entity';
 import { Response } from 'express';
-import { ERROR_MESSAGES, OrganizationRole } from '@koh/common';
+import {
+  ERROR_MESSAGES,
+  GetOrganizationUsersResponse,
+  OrganizationRole,
+} from '@koh/common';
 import { OrganizationUserModel } from './organization-user.entity';
 import { JwtAuthGuard } from 'guards/jwt-auth.guard';
+import { OrganizationRolesGuard } from 'guards/organization-roles.guard';
 import { CourseModel } from 'course/course.entity';
 import { OrganizationCourseModel } from './organization-course.entity';
 import { OrganizationModel } from './organization.entity';
+import { Roles } from 'decorators/roles.decorator';
+import { OrganizationService, UserResponse } from './organization.service';
 
 @Controller('organization')
 export class OrganizationController {
+  constructor(private organizationService: OrganizationService) {}
+
   @Post(':oid/add_course/:cid')
   @UseGuards(JwtAuthGuard)
   async addCourseToOrganization(
@@ -91,6 +101,64 @@ export class OrganizationController {
       .catch((err) => {
         res.status(500).send({ message: err });
       });
+  }
+
+  @Get(':oid/stats')
+  @UseGuards(JwtAuthGuard, OrganizationRolesGuard)
+  @Roles(OrganizationRole.ADMIN)
+  async getStats(@Param('oid') oid: number): Promise<{
+    members: number;
+    courses: number;
+    membersProfessors: number;
+  }> {
+    const members = await OrganizationUserModel.count({
+      where: {
+        organizationId: oid,
+      },
+    });
+
+    const courses = await OrganizationCourseModel.count({
+      where: {
+        organizationId: oid,
+      },
+    });
+
+    const membersProfessors = await OrganizationUserModel.count({
+      where: {
+        organizationId: oid,
+        role: OrganizationRole.PROFESSOR,
+      },
+    });
+
+    return {
+      members,
+      courses,
+      membersProfessors,
+    };
+  }
+
+  @Get(':oid/get_users/:page?')
+  @UseGuards(JwtAuthGuard, OrganizationRolesGuard)
+  @Roles(OrganizationRole.ADMIN)
+  async getUsers(
+    @Param('oid') oid: number,
+    @Param('page') page: number,
+    @Query('search') search: string,
+  ): Promise<UserResponse[]> {
+    const pageSize = 50;
+
+    if (!search) {
+      search = '';
+    }
+
+    const users = await this.organizationService.getUsers(
+      oid,
+      page,
+      pageSize,
+      search,
+    );
+
+    return users;
   }
 
   @Post(':oid/add_member/:uid')

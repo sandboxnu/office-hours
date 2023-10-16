@@ -1,9 +1,24 @@
-import { Card, Col, Row } from "antd";
+import { Card, Col, Row, Spin } from "antd";
 import { ReactElement } from "react";
 import "./styles.css";
+import useSWR from "swr";
+import { API } from "@koh/api-client";
 
-export default function Main({ userName }: { userName: string }): ReactElement {
-  return (
+export default function MainTab({
+  userName,
+  organizationId,
+}: {
+  userName: string;
+  organizationId: number;
+}): ReactElement {
+  const { data } = useSWR(
+    `/api/v1/organization/${organizationId}/stats`,
+    async () => await API.organizations.getStats(organizationId)
+  );
+
+  return !data ? (
+    <Spin tip="Loading..." />
+  ) : (
     <>
       <div>
         <span style={{ fontWeight: 400, color: "#64657c" }}>Welcome Back,</span>
@@ -16,7 +31,7 @@ export default function Main({ userName }: { userName: string }): ReactElement {
         <Col xs={{ span: 24 }} sm={{ span: 8 }}>
           <Card className="firstCard" hoverable={true}>
             <div style={{ textAlign: "right" }}>
-              <h2 className="titleCardStatistics">200</h2>
+              <h2 className="titleCardStatistics">{data.members}</h2>
               <span className="cardDescription">Members</span>
             </div>
           </Card>
@@ -24,7 +39,7 @@ export default function Main({ userName }: { userName: string }): ReactElement {
         <Col xs={{ span: 24 }} sm={{ span: 8 }}>
           <Card className="secondCard" hoverable={true}>
             <div style={{ textAlign: "right" }}>
-              <h2 className="titleCardStatistics">200</h2>
+              <h2 className="titleCardStatistics">{data.courses}</h2>
               <span className="cardDescription">Courses</span>
             </div>
           </Card>
@@ -32,7 +47,7 @@ export default function Main({ userName }: { userName: string }): ReactElement {
         <Col xs={{ span: 24 }} sm={{ span: 8 }}>
           <Card className="thirdCard" hoverable={true}>
             <div style={{ textAlign: "right" }}>
-              <h2 className="titleCardStatistics">1</h2>
+              <h2 className="titleCardStatistics">{data.membersProfessors}</h2>
               <span className="cardDescription">Professors</span>
             </div>
           </Card>

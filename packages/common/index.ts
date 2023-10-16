@@ -669,6 +669,7 @@ export class OrganizationUserPartial {
 export class GetOrganizationResponse {
   id!: number;
   name!: string;
+  description?: string;
   logoUrl?: string;
   bannerUrl?: string;
   websiteUrl?: string;
@@ -707,6 +708,16 @@ export class GetCourseUserInfoResponse {
   users!: UserPartial[];
   total!: number;
 }
+
+export class GetOrganizationUsersResponse {
+  userId!: number;
+  userFirstName!: string;
+  userLastName!: string;
+  userEmail!: string;
+  userPhotoUrl!: string;
+  userOrganizationRole!: string;
+}
+
 export class GetSelfEnrollResponse {
   courses!: CoursePartial[];
 }
@@ -1250,6 +1261,10 @@ export const ERROR_MESSAGES = {
     notLoggedIn: "Must be logged in",
     noCourseIdFound: "No courseid found",
     notInCourse: "Not In This Course",
+    mustBeRoleToAccess: (roles: string[]): string =>
+      `You must have one of roles [${roles.join(
+        ", "
+      )}] to access this information`,
     mustBeRoleToJoinCourse: (roles: string[]): string =>
       `You must have one of roles [${roles.join(", ")}] to access this course`,
   },

@@ -384,8 +384,21 @@ class APIClient {
         "POST",
         `/api/v1/organization/${organizationId}/add_member/${userId}`
       ),
+    getStats: async (organizationId: number): Promise<any> =>
+      this.req("GET", `/api/v1/organization/${organizationId}/stats`),
     get: async (organizationId: number): Promise<any> =>
       this.req("GET", `/api/v1/organization/${organizationId}`),
+    getUsers: async (
+      organizationId: number,
+      page: number,
+      search?: string
+    ): Promise<any> =>
+      this.req(
+        "GET",
+        `/api/v1/organization/${organizationId}/get_users/${page}${
+          search ? `?search=${search}` : ""
+        }`
+      ),
     addCourse: async (
       courseId: number,
       organizationId: number

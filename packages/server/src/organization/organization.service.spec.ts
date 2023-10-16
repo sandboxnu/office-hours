@@ -62,11 +62,6 @@ describe('OrganizationService', () => {
         organizationId: organization.id,
       }).save();
 
-      await OrganizationUserModel.create({
-        userId: user.id,
-        organizationId: organization.id,
-      }).save();
-
       const organizationUserModel =
         await service.getOrganizationAndRoleByUserId(user.id);
       expect(organizationUserModel).toMatchSnapshot();

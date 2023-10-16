@@ -1,5 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { OrganizationUserModel } from './organization-user.entity';
+import { UserModel } from 'profile/user.entity';
+import { Brackets, getRepository } from 'typeorm';
+
+export interface UserResponse {
+  userId: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  photoUrl: string | null;
+  organizationRole: string;
+}
 
 @Injectable()
 export class OrganizationService {
@@ -14,6 +25,67 @@ export class OrganizationService {
       return null;
     }
     return organizationUser.role;
+  }
+
+  public async getUsers(
+    organizationId: number,
+    page: number,
+    pageSize: number,
+    search?: string,
+  ): Promise<UserResponse[]> {
+    const organizationUsers = await getRepository(OrganizationUserModel)
+      .createQueryBuilder()
+      .leftJoin(
+        UserModel,
+        'UserModel',
+        'UserModel.id = OrganizationUserModel.userId',
+      )
+      .where('OrganizationUserModel.organizationId = :organizationId', {
+        organizationId,
+      });
+
+    if (search) {
+      const likeSearch = `%${search.replace(' ', '')}%`.toUpperCase();
+      organizationUsers.andWhere(
+        new Brackets((q) => {
+          q.where(
+            'CONCAT(UPPER("UserModel"."firstName"), UPPER("UserModel"."lastName")) like :searchString',
+            {
+              searchString: likeSearch,
+            },
+          );
+        }),
+      );
+    }
+
+    const users = organizationUsers.select([
+      'UserModel.id as userId',
+      'UserModel.firstName as userFirstName',
+      'UserModel.lastName as userLastName',
+      'UserModel.email as userEmail',
+      'UserModel.photoURL as userPhotoUrl',
+      'OrganizationUserModel.role as userOrganizationRole',
+    ]);
+
+    const usersSubset = await users
+      .orderBy('UserModel.firstName')
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
+      // .getMany() wouldn't work here because relations are not working well with getMany()
+      .getRawMany();
+
+    const usersResponse = usersSubset.map((user) => {
+      return {
+        userId: user.userid,
+        firstName: user.userfirstname,
+        lastName: user.userlastname,
+        email: user.useremail,
+        photoUrl: user.userphotourl,
+        organizationRole: user.userorganizationrole,
+      };
+    });
+
+    return usersResponse;
   }
 
   public async getOrganizationAndRoleByUserId(userId: number): Promise<any> {
