@@ -75,7 +75,7 @@ export class ChatbotService {
 
     await question.save();
 
-    const questionDocuments = data.sourceDocuments.map(sourceDocument => ({
+    const questionDocuments = data.sourceDocuments.map((sourceDocument) => ({
       ...sourceDocument,
       question,
       questionId: question.id,
@@ -87,7 +87,10 @@ export class ChatbotService {
     return question;
   }
 
-  async editQuestion(data: ChatBotQuestionParams, questionId: number) {
+  async editQuestion(
+    data: { userScore: number; suggested: boolean },
+    questionId: number,
+  ) {
     const question = await ChatbotQuestionModel.findOne(questionId);
     if (!question) {
       throw new HttpException(
@@ -95,15 +98,9 @@ export class ChatbotService {
         HttpStatus.NOT_FOUND,
       );
     }
-
-    const chatQuestion = await ChatbotQuestionModel.createQueryBuilder()
-      .update()
-      .where({ id: questionId })
-      .set(data)
-      .callListeners(false)
-      .execute();
-
-    return chatQuestion;
+    Object.assign(question, data);
+    question.save();
+    return question;
   }
 
   async deleteQuestion(questionId: number) {

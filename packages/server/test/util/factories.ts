@@ -13,6 +13,7 @@ import { QueueModel } from '../../src/queue/queue.entity';
 import { LastRegistrationModel } from 'login/last-registration-model.entity';
 import { ProfSectionGroupsModel } from 'login/prof-section-groups.entity';
 import { OrganizationModel } from '../../src/organization/organization.entity';
+import { InteractionModel } from 'chatbot/interaction.entity';
 
 export const UserFactory = new Factory(UserModel)
   .attr('email', `user@ubc.ca`)
@@ -105,3 +106,7 @@ export const OrganizationFactory = new Factory(OrganizationModel)
     'logoUrl',
     'https://etug.ca/wp-content/uploads/2014/03/ubc-e1523034593970.png',
   );
+export const InteractionFactory = new Factory(InteractionModel)
+  .assocOne('course', CourseFactory)
+  .assocOne('user', UserFactory)
+  .attr('timestamp', new Date());

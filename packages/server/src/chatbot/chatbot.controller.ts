@@ -27,7 +27,7 @@ export class ChatbotController {
 
   @Post('question')
   async addQuestion(
-    @Body() body: any, //ChatbotQuestionParams
+    @Body() body: { userScore: number; suggested: boolean },
   ): Promise<ChatbotQuestionModel> {
     return await this.ChatbotService.createQuestion(body);
   }
@@ -36,7 +36,7 @@ export class ChatbotController {
   async editQuestion(
     @Body()
     body: {
-      data: ChatBotQuestionParams;
+      data: { userScore: number; suggested: boolean };
       questionId: number;
     },
   ) {
