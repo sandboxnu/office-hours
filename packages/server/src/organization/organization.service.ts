@@ -9,6 +9,7 @@ export interface UserResponse {
   lastName: string;
   email: string;
   photoUrl: string | null;
+  userRole: string;
   organizationRole: string;
 }
 
@@ -64,6 +65,7 @@ export class OrganizationService {
       'UserModel.lastName as userLastName',
       'UserModel.email as userEmail',
       'UserModel.photoURL as userPhotoUrl',
+      'UserModel.userRole as userRole',
       'OrganizationUserModel.role as userOrganizationRole',
     ]);
 
@@ -81,6 +83,7 @@ export class OrganizationService {
         lastName: user.userlastname,
         email: user.useremail,
         photoUrl: user.userphotourl,
+        userRole: user.userrole,
         organizationRole: user.userorganizationrole,
       };
     });

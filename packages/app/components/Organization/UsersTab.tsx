@@ -1,6 +1,6 @@
 import { SearchOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
-import { OrganizationRole } from "@koh/common";
+import { OrganizationRole, UserRole } from "@koh/common";
 import {
   Card,
   Spin,
@@ -26,6 +26,7 @@ interface UserData {
   lastName: string;
   email: string;
   photoUrl: string;
+  userRole: string;
   organizationRole: string;
 }
 
@@ -92,20 +93,31 @@ export default function UsersTab({
                         style={{ width: 100 }}
                         disabled={
                           item.userId === profile.id ||
-                          item.organizationRole === OrganizationRole.ADMIN
+                          item.organizationRole.toLowerCase() ===
+                            OrganizationRole.ADMIN.toLowerCase() ||
+                          item.userRole.toLowerCase() ===
+                            UserRole.ADMIN.toLowerCase()
                         }
                         options={Object.keys(OrganizationRole).map((role) => ({
                           label: role.toLowerCase(),
                           value: role.toLowerCase(),
                           disabled:
+                            item.userId === profile.id ||
+                            item.userRole.toLowerCase() ===
+                              UserRole.ADMIN.toLowerCase() ||
                             role.toLowerCase() ===
-                            item.organizationRole.toLowerCase(),
+                              item.organizationRole.toLowerCase(),
                         }))}
                       />,
                       <Button
                         key=""
                         type="primary"
-                        disabled={item.userId === profile.id}
+                        disabled={
+                          item.userId === profile.id ||
+                          item.userRole.toLowerCase() ===
+                            UserRole.ADMIN.toLowerCase() ||
+                          item.organizationRole === OrganizationRole.ADMIN
+                        }
                       >
                         Edit
                       </Button>,
