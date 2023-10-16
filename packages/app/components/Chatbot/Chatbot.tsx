@@ -139,13 +139,6 @@ export const ChatbotComponent: React.FC = () => {
       parts: sourceDocument.parts.map(part => part.toString())
     }));
 
-    console.log({
-      interactionId: currentInteractionId,
-      questionText: input,
-      responseText: answer,
-      sourceDocuments: formattedSourceDocument
-    });
-
     // Use currentInteractionId for the createQuestion call
     const question = await API.chatbot.createQuestion({
       interactionId: currentInteractionId,

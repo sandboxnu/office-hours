@@ -5,6 +5,7 @@ import { CourseModel } from 'course/course.entity';
 import { UserModel } from 'profile/user.entity';
 import { ChatBotQuestionParams, InteractionParams } from '@koh/common';
 import { QuestionDocumentModel } from './questionDocument.entity';
+import { createQueryBuilder, getRepository } from 'typeorm';
 
 export interface ChatbotResponse {
   answer: string;
@@ -15,6 +16,19 @@ export interface ChatbotResponse {
     [key: string]: Set<string>;
   };
   similarQuestions: any[]; // TODO: Find correct datatype
+}
+
+export interface ChatQuestion {
+  id: string;
+  question: string;
+  answer: string;
+  user: string;
+  sourceDocuments: {
+    name: string;
+    type: string;
+    parts: string[];
+  }[];
+  suggested: boolean;
 }
 
 @Injectable()
@@ -46,6 +60,56 @@ export class ChatbotService {
     });
 
     return await interaction.save();
+  }
+
+  async getQuestions(
+    questionText: string,
+    pageSize: number,
+    currentPage: number,
+  ): Promise<{
+    chatQuestions: ChatQuestion[];
+    total: number;
+  }> {
+    const skip = pageSize * (currentPage - 1);
+    const limit = pageSize;
+
+    const questions = await createQueryBuilder('chatbot_questions_model', 'q')
+      .leftJoinAndSelect('q.sourceDocuments', 's')
+      .innerJoinAndSelect('q.interaction', 'i')
+      .innerJoinAndSelect('i.user', 'u')
+      .where('q.questionText like :questionText', {
+        questionText: `%${questionText}%`,
+      })
+      .skip(skip)
+      .take(limit)
+      .orderBy('q.id', 'ASC')
+      .getMany();
+
+    const formattedQuestions: ChatQuestion[] = questions.map(
+      (question: any) => ({
+        id: question.id,
+        question: question.questionText,
+        answer: question.responseText,
+        user: `${question.interaction.user.firstName} ${question.interaction.user.lastName}`,
+        sourceDocuments: question.sourceDocuments.map(sourceDocument => ({
+          name: sourceDocument.name,
+          type: sourceDocument.type,
+          parts: sourceDocument.parts,
+        })),
+        suggested: question.suggested,
+      }),
+    );
+
+    const total = await createQueryBuilder('chatbot_questions_model', 'q')
+      .where('q.questionText like :questionText', {
+        questionText: `%${questionText}%`,
+      })
+      .getCount();
+
+    return {
+      chatQuestions: formattedQuestions,
+      total: total,
+    };
   }
 
   async createQuestion(

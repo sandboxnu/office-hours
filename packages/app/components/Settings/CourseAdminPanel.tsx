@@ -120,12 +120,12 @@ export default function CourseAdminPanel({
           <Menu.Item key={CourseAdminOptions.EDIT} icon={<EditOutlined />}>
             Edit questions
           </Menu.Item>
-          {/* <Menu.Item
-                        key={CourseAdminOptions.CHATBOT_SETTINGS}
-                        icon={<EditOutlined />}
-                    >
-                        Chatbot
-                    </Menu.Item> */}
+          <Menu.Item
+            key={CourseAdminOptions.CHATBOT_SETTINGS}
+            icon={<EditOutlined />}
+          >
+            Chatbot
+          </Menu.Item>
         </Menu>
       </Col>
       <VerticalDivider />
@@ -149,10 +149,9 @@ export default function CourseAdminPanel({
           {currentSettings === CourseAdminOptions.EDIT && (
             <EditQuestions courseId={courseId} />
           )}
-          {/* {currentSettings ===
-                        CourseAdminOptions.CHATBOT_SETTINGS && (
-                        <ChatbotQuestions courseId={courseId} />
-                    )} */}
+          {currentSettings === CourseAdminOptions.CHATBOT_SETTINGS && (
+            <ChatbotQuestions courseId={courseId} />
+          )}
         </Col>
       </Space>
     </Row>

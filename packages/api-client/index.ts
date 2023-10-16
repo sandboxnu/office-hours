@@ -53,6 +53,24 @@ import { ClassType } from "class-transformer/ClassTransformer";
 // Return type of array item, if T is an array
 type ItemIfArray<T> = T extends (infer I)[] ? I : T;
 
+export interface ChatQuestion {
+  id: string;
+  question: string;
+  answer: string;
+  user: string;
+  sourceDocuments: {
+    name: string;
+    type: string;
+    parts: string[];
+  }[];
+  suggested: boolean;
+}
+
+export interface ChatQuestionResponse {
+  chatQuestions: ChatQuestion[];
+  total: number;
+}
+
 class APIClient {
   private axios: AxiosInstance;
 
@@ -122,6 +140,17 @@ class APIClient {
       userId: number;
     }): Promise<Interaction> =>
       this.req("POST", `/api/v1/chatbot/interaction`, undefined, body),
+
+    getQuestions: async (
+      questionText: string,
+      pageSize: number,
+      currentPage: number
+    ): Promise<ChatQuestionResponse> =>
+      this.req(
+        "GET",
+        `/api/v1/chatbot/question?questionText=${questionText}&pageSize=${pageSize}&currentPage=${currentPage}`,
+        undefined
+      ),
 
     createQuestion: async (
       body: ChatBotQuestionParams

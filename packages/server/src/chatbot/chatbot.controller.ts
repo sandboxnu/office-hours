@@ -5,8 +5,11 @@ import {
   UseGuards,
   Patch,
   Delete,
+  Param,
+  Query,
+  Get,
 } from '@nestjs/common';
-import { ChatbotService } from './chatbot.service';
+import { ChatQuestion, ChatbotService } from './chatbot.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { InteractionModel } from './interaction.entity';
 import { ChatbotQuestionModel } from './question.entity';
@@ -23,6 +26,19 @@ export class ChatbotController {
     @Body() body: InteractionParams,
   ): Promise<InteractionModel> {
     return await this.ChatbotService.createInteraction(body);
+  }
+
+  @Get('question')
+  async getQuestions(
+    @Query('questionText') questionText: string,
+    @Query('pageSize') pageSize: number,
+    @Query('currentPage') currentPage: number,
+  ): Promise<{ chatQuestions: ChatQuestion[]; total: number }> {
+    return await this.ChatbotService.getQuestions(
+      questionText,
+      pageSize,
+      currentPage,
+    );
   }
 
   @Post('question')
