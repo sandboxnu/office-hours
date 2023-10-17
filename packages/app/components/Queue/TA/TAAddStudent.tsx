@@ -1,6 +1,6 @@
 import { ReactElement, useCallback } from "react";
 import Modal from "antd/lib/modal/Modal";
-import { Form, Collapse, message, Radio } from "antd";
+import { Form, Collapse, message, Radio, Checkbox } from "antd";
 import { API } from "@koh/api-client";
 import { default as React, useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -50,22 +50,14 @@ export function AddStudentsModal({
   );
   const [selectOptions, setSelectOptions] = useState([]);
 
+  // invert the help status of selected option and set others to false
   const handleCheckboxChange = (id) => {
-    const newSelectOptions = [...selectOptions];
-
-    const selectedOption = newSelectOptions.find((option) => option.id === id);
-
-    if (selectedOption) {
-      const newHelpStatus = !selectedOption.help;
-
-      for (const option of newSelectOptions) {
-        option.help = false;
-      }
-
-      if (newHelpStatus) {
-        selectedOption.help = true;
-      }
-    }
+    const newSelectOptions = selectOptions.map((option) => {
+      return {
+        ...option,
+        help: option.id === id ? !option.help : false,
+      };
+    });
     setSelectOptions(newSelectOptions);
   };
 
@@ -140,8 +132,8 @@ export function AddStudentsModal({
   };
 
   const handleSelect = (data) => {
-    if (data) {
-      data.help = true;
+    if (data[0]) {
+      data[0].help = true;
     }
     setSelectOptions(data ?? []);
   };
@@ -160,11 +152,10 @@ export function AddStudentsModal({
     return lst;
   }
 
-  const handleChange = (e, id) => {
-    const newQuestion = e.target.value;
+  const handleChange = (value, id) => {
     setSelectOptions((prevOptions) =>
       prevOptions.map((option) =>
-        option.id === id ? { ...option, question: newQuestion } : option
+        option.id === id ? { ...option, question: value } : option
       )
     );
   };
@@ -251,16 +242,19 @@ export function AddStudentsModal({
                         <input
                           placeholder={`Enter ${option.value}'s question`}
                           style={{ width: "100%", height: "40px" }}
-                          onChange={(e) => handleChange(e, option.id)}
+                          onChange={(e) =>
+                            handleChange(e.target.value, option.id)
+                          }
                         />
                       </Form.Item>
                       <Form.Item>
-                        <input
-                          type="checkbox"
+                        <Checkbox
+                          style={{ fontSize: "18px" }} // Increase the font size to make it bigger
                           checked={option.help}
                           onChange={() => handleCheckboxChange(option.id)}
-                        />
-                        <label>Help {option.value} (optional)</label>
+                        >
+                          Help {option.value} (optional)
+                        </Checkbox>
                       </Form.Item>
                     </div>
                   ))}
