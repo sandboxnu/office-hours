@@ -100,37 +100,40 @@ export default function ChatbotSettings(): ReactElement {
     }
   }
 
+  const uploadFiles = async () => {
+    for (const file of files) {
+      try {
+        const formData = new FormData()
+        formData.append('file', file)
+
+        const uploadedDocument = await fetch(`/chat/${cid}/document`, {
+          method: 'POST',
+          body: formData,
+        })
+
+        const documentJSON = await uploadedDocument.json()
+
+        const response = await API.chatbot.addDocument({
+          data: {
+            name: documentJSON.name,
+            type: documentJSON.type,
+            subDocumentIds: documentJSON.subDocumentIds,
+          },
+          courseId: Number(cid),
+        })
+
+        console.log('Uploaded')
+        toast.success('File uploaded.')
+      } catch (e) {
+        toast.error('Failed to upload file.')
+      }
+    }
+  }
+
   const handleFileUpload = async () => {
-    await Promise.all(
-      files.map(async (file) => {
-        try {
-          const formData = new FormData()
-          formData.append('file', file)
+    await uploadFiles()
 
-          const uploadedDocument = await fetch(`/chat/${cid}/document`, {
-            method: 'POST',
-            body: formData,
-          })
-
-          const documentJSON = await uploadedDocument.json()
-
-          const response = API.chatbot.addDocument({
-            data: {
-              name: documentJSON.name,
-              type: documentJSON.type,
-              subDocumentIds: documentJSON.subDocumentIds,
-            },
-            courseId: Number(cid),
-          })
-
-          toast.success('File uploaded.')
-          return response
-        } catch (e) {
-          toast.error('Failed to upload file.')
-        }
-      }),
-    )
-
+    console.log('Done')
     const fileInput = document.getElementById('files')
     if (fileInput) {
       fileInput.value = ''
@@ -142,6 +145,9 @@ export default function ChatbotSettings(): ReactElement {
     try {
       const res1 = await fetch(`/chat/${cid}/document`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ subDocumentIds: document.subDocumentIds }),
       })
       const res2 = await API.chatbot.deleteDocument({ documentId: document.id })
