@@ -399,6 +399,17 @@ class APIClient {
           search ? `?search=${search}` : ""
         }`
       ),
+    getCourses: async (
+      organizationId: number,
+      page: number,
+      search?: string
+    ): Promise<any> =>
+      this.req(
+        "GET",
+        `/api/v1/organization/${organizationId}/get_courses/${page}${
+          search ? `?search=${search}` : ""
+        }`
+      ),
     addCourse: async (
       courseId: number,
       organizationId: number

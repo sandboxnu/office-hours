@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Organization Integration GET /organization/:oid/get_courses/:page? should return 200 when user is an admin 1`] = `
+Array [
+  Object {
+    "courseId": 1,
+    "courseName": "CS 304",
+  },
+]
+`;
+
+exports[`Organization Integration GET /organization/:oid/get_stats should return 200 when user is an admin 1`] = `
+Object {
+  "courses": 1,
+  "members": 2,
+  "membersProfessors": 1,
+}
+`;
+
+exports[`Organization Integration GET /organization/:oid/get_users/:page? should return 200 when user is an admin 1`] = `
+Array [
+  Object {
+    "email": "user@ubc.ca",
+    "firstName": "User",
+    "lastName": "Person",
+    "organizationRole": "admin",
+    "photoUrl": null,
+    "userId": 1,
+    "userRole": "user",
+  },
+]
+`;

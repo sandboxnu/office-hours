@@ -12,11 +12,11 @@ export default function MainTab({
   organizationId: number;
 }): ReactElement {
   const { data } = useSWR(
-    `/api/v1/organization/${organizationId}/stats`,
+    organizationId ? `/api/v1/organization/${organizationId}/stats` : null,
     async () => await API.organizations.getStats(organizationId)
   );
 
-  return !data ? (
+  return !data || organizationId === undefined ? (
     <Spin tip="Loading..." />
   ) : (
     <>

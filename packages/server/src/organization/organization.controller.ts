@@ -12,11 +12,7 @@ import {
 } from '@nestjs/common';
 import { UserModel } from 'profile/user.entity';
 import { Response } from 'express';
-import {
-  ERROR_MESSAGES,
-  GetOrganizationUsersResponse,
-  OrganizationRole,
-} from '@koh/common';
+import { ERROR_MESSAGES, OrganizationRole } from '@koh/common';
 import { OrganizationUserModel } from './organization-user.entity';
 import { JwtAuthGuard } from 'guards/jwt-auth.guard';
 import { OrganizationRolesGuard } from 'guards/organization-roles.guard';
@@ -24,7 +20,11 @@ import { CourseModel } from 'course/course.entity';
 import { OrganizationCourseModel } from './organization-course.entity';
 import { OrganizationModel } from './organization.entity';
 import { Roles } from 'decorators/roles.decorator';
-import { OrganizationService, UserResponse } from './organization.service';
+import {
+  OrganizationService,
+  UserResponse,
+  CourseResponse,
+} from './organization.service';
 
 @Controller('organization')
 export class OrganizationController {
@@ -159,6 +159,30 @@ export class OrganizationController {
     );
 
     return users;
+  }
+
+  @Get(':oid/get_courses/:page?')
+  @UseGuards(JwtAuthGuard, OrganizationRolesGuard)
+  @Roles(OrganizationRole.ADMIN)
+  async getCourses(
+    @Param('oid') oid: number,
+    @Param('page') page: number,
+    @Query('search') search: string,
+  ): Promise<CourseResponse[]> {
+    const pageSize = 50;
+
+    if (!search) {
+      search = '';
+    }
+
+    const courses = await this.organizationService.getCourses(
+      oid,
+      page,
+      pageSize,
+      search,
+    );
+
+    return courses;
   }
 
   @Post(':oid/add_member/:uid')

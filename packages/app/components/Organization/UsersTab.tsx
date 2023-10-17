@@ -11,9 +11,9 @@ import {
   Button,
   Select,
 } from "antd";
-import { ReactElement, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import styled from "styled-components";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { useProfile } from "../../hooks/useProfile";
 
 const TableBackground = styled.div`
@@ -53,12 +53,19 @@ export default function UsersTab({
       setPage(1);
     };
 
-    const { data } = useSWR(
-      `${page}/${search}`,
+    useEffect(() => {
+      return () => {
+        // Clear the cache for the "UsersTab" component
+        mutate(`users/${page}/${search}`);
+      };
+    }, [page, search]);
+
+    const { data: users } = useSWR(
+      `users/${page}/${search}`,
       async () => await API.organizations.getUsers(organizationId, page, search)
     );
 
-    if (!data) {
+    if (!users) {
       return (
         <Spin
           tip="Loading..."
@@ -80,7 +87,7 @@ export default function UsersTab({
 
             <List
               style={{ marginTop: 20 }}
-              dataSource={data}
+              dataSource={users}
               renderItem={(item: UserData) => (
                 <>
                   <List.Item
@@ -133,7 +140,7 @@ export default function UsersTab({
               )}
             />
           </TableBackground>
-          {data.total > 50 && (
+          {users.total > 50 && (
             <Pagination
               style={{ float: "right" }}
               current={page}

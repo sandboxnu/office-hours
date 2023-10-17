@@ -17,7 +17,7 @@ export function useOrganization(organizationId: number): UseOrganizationReturn {
     mutate: mutateOrganization,
   } = useSWR(
     organizationId && `/api/v1/organizations/${organizationId}`,
-    async () => API.organizations.get(organizationId)
+    async () => await API.organizations.get(organizationId)
   );
 
   return {

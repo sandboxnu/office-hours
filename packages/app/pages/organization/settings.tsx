@@ -16,6 +16,7 @@ import MainTab from "../../components/Organization/MainTab";
 import SettingsTab from "../../components/Organization/SettingsTab";
 import UsersTab from "../../components/Organization/UsersTab";
 import DefaultErrorPage from "next/error";
+import CoursesTab from "../../components/Organization/CoursesTab";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -91,6 +92,10 @@ export default function Settings(): React.ReactElement {
 
             {selectedMenuItem === "users" && (
               <UsersTab organizationId={organization?.id} profile={profile} />
+            )}
+
+            {selectedMenuItem === "courses" && (
+              <CoursesTab organizationId={organization?.id} />
             )}
 
             {selectedMenuItem === "settings" && (

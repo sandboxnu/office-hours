@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { OrganizationUserModel } from './organization-user.entity';
 import { UserModel } from 'profile/user.entity';
 import { Brackets, getRepository } from 'typeorm';
+import { OrganizationCourseModel } from './organization-course.entity';
+import { CourseModel } from 'course/course.entity';
 
 export interface UserResponse {
   userId: number;
@@ -11,6 +13,11 @@ export interface UserResponse {
   photoUrl: string | null;
   userRole: string;
   organizationRole: string;
+}
+
+export interface CourseResponse {
+  courseId: number;
+  courseName: string;
 }
 
 @Injectable()
@@ -26,6 +33,56 @@ export class OrganizationService {
       return null;
     }
     return organizationUser.role;
+  }
+
+  public async getCourses(
+    organizationId: number,
+    page: number,
+    pageSize: number,
+    search?: string,
+  ): Promise<CourseResponse[]> {
+    const organizationCourses = await getRepository(OrganizationCourseModel)
+      .createQueryBuilder()
+      .leftJoin(
+        CourseModel,
+        'CourseModel',
+        'CourseModel.id = OrganizationCourseModel.courseId',
+      )
+      .where('OrganizationCourseModel.organizationId = :organizationId', {
+        organizationId,
+      });
+
+    if (search) {
+      const likeSearch = `%${search.replace(' ', '')}%`.toUpperCase();
+      organizationCourses.andWhere(
+        new Brackets((q) => {
+          q.where('UPPER("CourseModel"."name") like :searchString', {
+            searchString: likeSearch,
+          });
+        }),
+      );
+    }
+
+    const courses = organizationCourses.select([
+      'CourseModel.id as courseId',
+      'CourseModel.name as courseName',
+    ]);
+
+    const coursesSubset = await courses
+      .orderBy('CourseModel.name')
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
+      // .getMany() wouldn't work here because relations are not working well with getMany()
+      .getRawMany();
+
+    const coursesResponse = coursesSubset.map((course) => {
+      return {
+        courseId: course.courseid,
+        courseName: course.coursename,
+      };
+    });
+
+    return coursesResponse;
   }
 
   public async getUsers(

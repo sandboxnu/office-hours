@@ -1,5 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`OrganizationService getCourses should return organization courses 1`] = `
+Array [
+  Object {
+    "courseId": 1,
+    "courseName": "CS 304",
+  },
+]
+`;
+
 exports[`OrganizationService getOrganizationAndRoleByUserId should return the organization and role of the organizationUser 1`] = `
 Object {
   "id": 1,
@@ -8,4 +17,27 @@ Object {
   "organizationName": "UBCO",
   "organizationRole": "member",
 }
+`;
+
+exports[`OrganizationService getUsers should return organization users 1`] = `
+Array [
+  Object {
+    "email": "user@ubc.ca",
+    "firstName": "User",
+    "lastName": "Person",
+    "organizationRole": "member",
+    "photoUrl": null,
+    "userId": 1,
+    "userRole": "user",
+  },
+  Object {
+    "email": "user@ubc.ca",
+    "firstName": "User",
+    "lastName": "Person",
+    "organizationRole": "member",
+    "photoUrl": null,
+    "userId": 2,
+    "userRole": "user",
+  },
+]
 `;
