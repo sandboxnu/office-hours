@@ -1,4 +1,13 @@
-import { Checkbox, Form, Input, Pagination, Table, Tooltip } from 'antd'
+import {
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  Modal,
+  Pagination,
+  Table,
+  Tooltip,
+} from 'antd'
 import { FormInstance } from 'antd/es/form'
 import { ColumnType, ColumnsType } from 'antd/es/table'
 import React, { ReactElement, useEffect, useState } from 'react'
@@ -24,6 +33,9 @@ export interface ChatQuestionResponse {
 }
 
 export default function ChatbotQuestions(): ReactElement {
+  const [form] = Form.useForm()
+  const [addModelOpen, setAddModelOpen] = useState(false)
+
   const [search, setSearch] = useState('')
   const debouncedValue = useDebounce<string>(search, 500)
 
@@ -146,8 +158,56 @@ export default function ChatbotQuestions(): ReactElement {
     setLoading(false)
   }
 
+  const addQuestion = async () => {
+    setAddModelOpen(false)
+    return
+  }
+
   return (
-    <div className="m-auto max-w-[800px]">
+    <div className="m-auto my-5 max-w-[800px]">
+      <Modal
+        title="Create a new question for your students!"
+        open={addModelOpen}
+        closable={false}
+        footer={[
+          <Button key="ok" type="primary" onClick={addQuestion}>
+            Submit
+          </Button>,
+        ]}
+      >
+        <Form form={form}>
+          <Form.Item
+            name="questionText"
+            rules={[{ required: true, message: 'Please provide a question.' }]}
+          >
+            <Input placeholder="Question" />
+          </Form.Item>
+          <Form.Item
+            name="responseText"
+            rules={[{ required: true, message: 'Please provide an answer.' }]}
+          >
+            <Input placeholder="Answer" />
+          </Form.Item>
+          <Form.Item
+            name="suggested"
+            rules={[{ required: true, message: 'Please input password!' }]}
+          >
+            <input type="checkbox"></input>
+          </Form.Item>
+        </Form>
+      </Modal>
+      <div className="flex w-full items-center justify-between">
+        <div className="">
+          <h3 className="m-0 p-0 text-4xl font-bold text-gray-900">
+            View Chatbot Questions
+          </h3>
+          <p className="text-[16px] font-medium text-gray-600">
+            View and manage the questions being asked of your chatbot
+          </p>
+        </div>
+        <Button onClick={() => setAddModelOpen(true)}>Add Question</Button>
+      </div>
+      <hr className="my-5 w-full"></hr>
       <Input
         placeholder={'Search question...'}
         // prefix={<SearchOutlined />}

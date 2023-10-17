@@ -3,9 +3,14 @@ import { InteractionModel } from './interaction.entity';
 import { ChatbotQuestionModel } from './question.entity';
 import { CourseModel } from 'course/course.entity';
 import { UserModel } from 'profile/user.entity';
-import { ChatBotQuestionParams, InteractionParams } from '@koh/common';
+import {
+  ChatBotQuestionParams,
+  DocumentParams,
+  InteractionParams,
+} from '@koh/common';
 import { QuestionDocumentModel } from './questionDocument.entity';
 import { createQueryBuilder, getRepository } from 'typeorm';
+import { ChatbotDocumentModel } from './chatbotDocument.entity';
 
 export interface ChatbotResponse {
   answer: string;
@@ -29,6 +34,13 @@ export interface ChatQuestion {
     parts: string[];
   }[];
   suggested: boolean;
+}
+
+export interface ChatDocument {
+  id: string;
+  name: string;
+  type: string;
+  subDocumentIds: string[];
 }
 
 @Injectable()
@@ -91,7 +103,7 @@ export class ChatbotService {
         question: question.questionText,
         answer: question.responseText,
         user: `${question.interaction.user.firstName} ${question.interaction.user.lastName}`,
-        sourceDocuments: question.sourceDocuments.map(sourceDocument => ({
+        sourceDocuments: question.sourceDocuments.map((sourceDocument) => ({
           name: sourceDocument.name,
           type: sourceDocument.type,
           parts: sourceDocument.parts,
@@ -139,7 +151,7 @@ export class ChatbotService {
 
     await question.save();
 
-    const questionDocuments = data.sourceDocuments.map(sourceDocument => ({
+    const questionDocuments = data.sourceDocuments.map((sourceDocument) => ({
       ...sourceDocument,
       question,
       questionId: question.id,
@@ -174,5 +186,83 @@ export class ChatbotService {
     const chatQuestion = await ChatbotQuestionModel.findOne(questionId);
 
     return await chatQuestion.remove();
+  }
+
+  async getDocuments(
+    courseId: number,
+    searchText: string,
+    pageSize: number,
+    currentPage: number,
+  ): Promise<{
+    chatDocuments: ChatDocument[];
+    total: number;
+  }> {
+    const skip = pageSize * (currentPage - 1);
+    const limit = pageSize;
+
+    const documents = await createQueryBuilder('chatbot_document_model', 'd')
+      .leftJoinAndSelect('d.course', 'c')
+      .where('d.name like :searchText', {
+        searchText: `%${searchText}%`,
+      })
+      .skip(skip)
+      .take(limit)
+      .orderBy('d.id', 'ASC')
+      .getMany();
+
+    const formattedDocuments: ChatDocument[] = documents.map(
+      (document: any) => ({
+        id: document.id,
+        name: document.name,
+        type: document.type,
+        subDocumentIds: document.subDocumentIds,
+      }),
+    );
+
+    const total = await createQueryBuilder('chatbot_document_model', 'd')
+      .where('d.name like :searchText', {
+        searchText: `%${searchText}%`,
+      })
+      .getCount();
+
+    return {
+      chatDocuments: formattedDocuments,
+      total: total,
+    };
+  }
+
+  async addDocument(
+    data: DocumentParams,
+    courseId: number,
+  ): Promise<ChatbotDocumentModel> {
+    if (!data.name || !data.type || !data.subDocumentIds) {
+      throw new HttpException(
+        'Missing question properties.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const course = await CourseModel.findOne(courseId);
+    if (!course) {
+      throw new HttpException(
+        'Course not found based on the provided ID.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const document = ChatbotDocumentModel.create({
+      course,
+      name: data.name,
+      type: data.type,
+      subDocumentIds: data.subDocumentIds,
+    });
+
+    return await document.save();
+  }
+
+  async deleteDocument(documentId: number) {
+    const chatbotDocument = await ChatbotDocumentModel.findOne(documentId);
+
+    return await chatbotDocument.remove();
   }
 }
