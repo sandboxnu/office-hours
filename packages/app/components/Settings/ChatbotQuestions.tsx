@@ -13,6 +13,7 @@ import { ColumnType, ColumnsType } from 'antd/es/table'
 import React, { ReactElement, useEffect, useState } from 'react'
 import { API } from '@koh/api-client'
 import { useDebounce } from '../../hooks/useDebounce'
+import toast from 'react-hot-toast'
 
 export interface ChatQuestion {
   id: string
@@ -159,8 +160,23 @@ export default function ChatbotQuestions(): ReactElement {
   }
 
   const addQuestion = async () => {
-    setAddModelOpen(false)
-    return
+    const formData = await form.validateFields()
+
+    try {
+      const question = await API.chatbot.createQuestion({
+        questionText: formData.questionText,
+        responseText: formData.responseText,
+        suggested: formData.suggested,
+      })
+
+      getQuestions()
+      setAddModelOpen(false)
+      toast.success('Question added.')
+    } catch (e) {
+      toast.error('Failed to add question.')
+    } finally {
+      form.resetFields()
+    }
   }
 
   return (
@@ -168,8 +184,10 @@ export default function ChatbotQuestions(): ReactElement {
       <Modal
         title="Create a new question for your students!"
         open={addModelOpen}
-        closable={false}
         footer={[
+          <Button key="ok" type="ghost" onClick={() => setAddModelOpen(false)}>
+            Cancel
+          </Button>,
           <Button key="ok" type="primary" onClick={addQuestion}>
             Submit
           </Button>,
@@ -188,11 +206,11 @@ export default function ChatbotQuestions(): ReactElement {
           >
             <Input placeholder="Answer" />
           </Form.Item>
-          <Form.Item
-            name="suggested"
-            rules={[{ required: true, message: 'Please input password!' }]}
-          >
-            <input type="checkbox"></input>
+          <Form.Item name="suggested" valuePropName="checked">
+            <div className="flex gap-2">
+              <input type="checkbox" />
+              <p>Suggested</p>
+            </div>
           </Form.Item>
         </Form>
       </Modal>

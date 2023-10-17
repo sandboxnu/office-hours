@@ -65,7 +65,7 @@ export default function ChatbotSettings(): ReactElement {
     {
       title: '',
       render: (text, record, index) => (
-        <p onClick={() => handleDeleteDocument(record)}>Delete</p>
+        <Button onClick={() => handleDeleteDocument(record)}>Delete</Button>
       ),
     },
   ]
@@ -101,13 +101,13 @@ export default function ChatbotSettings(): ReactElement {
   }
 
   const handleFileUpload = async () => {
-    Promise.all(
+    await Promise.all(
       files.map(async (file) => {
         try {
           const formData = new FormData()
           formData.append('file', file)
 
-          const uploadedDocument = await fetch('/chat/COSC304/document', {
+          const uploadedDocument = await fetch(`/chat/${cid}/document`, {
             method: 'POST',
             body: formData,
           })
@@ -126,22 +126,30 @@ export default function ChatbotSettings(): ReactElement {
           toast.success('File uploaded.')
           return response
         } catch (e) {
-          toast.success('File upload failed.')
+          toast.error('Failed to upload file.')
         }
       }),
     )
+
+    const fileInput = document.getElementById('files')
+    if (fileInput) {
+      fileInput.value = ''
+    }
+    getDocuments()
   }
 
   const handleDeleteDocument = async (document: ChatbotDocument) => {
-    const res1 = await fetch('/chat/COSC404/document', {
-      method: 'DELETE',
-      body: JSON.stringify({ subDocumentIds: document.subDocumentIds }),
-    })
-    const res2 = await API.chatbot.deleteDocument({ documentId: document.id })
-
-    console.log(res1)
-    console.log(res2)
-    return
+    try {
+      const res1 = await fetch(`/chat/${cid}/document`, {
+        method: 'DELETE',
+        body: JSON.stringify({ subDocumentIds: document.subDocumentIds }),
+      })
+      const res2 = await API.chatbot.deleteDocument({ documentId: document.id })
+      toast.success('Document deleted.')
+      getDocuments()
+    } catch (e) {
+      toast.error('Failed to delete document.')
+    }
   }
 
   return (

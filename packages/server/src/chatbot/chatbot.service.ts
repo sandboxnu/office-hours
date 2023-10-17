@@ -127,7 +127,7 @@ export class ChatbotService {
   async createQuestion(
     data: ChatBotQuestionParams,
   ): Promise<ChatbotQuestionModel> {
-    if (!data.interactionId || !data.questionText || !data.responseText) {
+    if (!data.questionText || !data.responseText) {
       throw new HttpException(
         'Missing question properties.',
         HttpStatus.BAD_REQUEST,
@@ -147,18 +147,21 @@ export class ChatbotService {
       interactionId: data.interactionId,
       questionText: data.questionText,
       responseText: data.responseText,
+      suggested: data.suggested,
     });
 
     await question.save();
 
-    const questionDocuments = data.sourceDocuments.map((sourceDocument) => ({
-      ...sourceDocument,
-      question,
-      questionId: question.id,
-    }));
+    if (data.sourceDocuments) {
+      const questionDocuments = data.sourceDocuments.map((sourceDocument) => ({
+        ...sourceDocument,
+        question,
+        questionId: question.id,
+      }));
 
-    const documents = QuestionDocumentModel.create(questionDocuments);
-    await QuestionDocumentModel.save(documents);
+      const documents = QuestionDocumentModel.create(questionDocuments);
+      await QuestionDocumentModel.save(documents);
+    }
 
     return question;
   }

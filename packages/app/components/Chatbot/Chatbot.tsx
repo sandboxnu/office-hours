@@ -72,7 +72,7 @@ export const ChatbotComponent: React.FC = () => {
         question: input,
         history: messages,
       }
-      const response = await fetch('/chat/ask/COSC304', {
+      const response = await fetch(`/chat/${cid}/ask`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -95,7 +95,7 @@ export const ChatbotComponent: React.FC = () => {
         query,
       }
       console.log(data)
-      const response = await fetch('/chat/question/COSC304', {
+      const response = await fetch(`/chat/${cid}/question`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
