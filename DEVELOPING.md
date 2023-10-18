@@ -29,22 +29,22 @@ If you have any questions, feel free to reach out to a member of the team. If yo
 
 ## Technologies
 
-- [Next.js](https://nextjs.org/docs/getting-started) lets us do server-side and client-side React rendering, as well as write backend API endpoints (we don't use this for KOH).
-  It also gives us developer ergonomics like hot reload in dev.
+-   [Next.js](https://nextjs.org/docs/getting-started) lets us do server-side and client-side React rendering, as well as write backend API endpoints (we don't use this for KOH).
+    It also gives us developer ergonomics like hot reload in dev.
 
-- [nestjs](https://nestjs.com/) runs our backend http api. It gives us controllers and services and helps neaten the code
+-   [nestjs](https://nestjs.com/) runs our backend http api. It gives us controllers and services and helps neaten the code
 
-- [Typescript](https://www.typescriptlang.org/docs/home.html) lets us write maintainable, scalable Javascript
+-   [Typescript](https://www.typescriptlang.org/docs/home.html) lets us write maintainable, scalable Javascript
 
-- [Postgresql](https://www.postgresql.org/docs/11/index.html) is a very reliable and popular SQL database that is great for 99% of applications
+-   [Postgresql](https://www.postgresql.org/docs/11/index.html) is a very reliable and popular SQL database that is great for 99% of applications
 
-- [TypeORM](https://typeorm.io/) lets us query Postgres easily and with Typescript validating our schema.
+-   [TypeORM](https://typeorm.io/) lets us query Postgres easily and with Typescript validating our schema.
 
-- [Docker](https://www.docker.com/products/docker-desktop) sets up a consistent Postgres + Redis environment on all developer's machines
+-   [Docker](https://www.docker.com/products/docker-desktop) sets up a consistent Postgres + Redis environment on all developer's machines
 
-- [Redis](https://redis.io/) is used to enable 0 downtime deploy
+-   [Redis](https://redis.io/) is used to enable 0 downtime deploy
 
-- [Cypress](https://www.cypress.io/) is used for frontend E2E tests
+-   [Cypress](https://www.cypress.io/) is used for frontend E2E tests
 
 ## File Structure
 

@@ -1,8 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class OrganizationCourseModel1696214852082
-  implements MigrationInterface
-{
+  implements MigrationInterface {
   name = 'OrganizationCourseModel1696214852082';
 
   public async up(queryRunner: QueryRunner): Promise<void> {

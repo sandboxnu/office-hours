@@ -28,7 +28,7 @@ export class OrganizationController {
     CourseModel.findOne({
       where: { id: cid },
     })
-      .then((course) => {
+      .then(course => {
         if (!course) {
           throw new HttpException(
             ERROR_MESSAGES.courseController.courseNotFound,
@@ -39,7 +39,7 @@ export class OrganizationController {
         OrganizationCourseModel.findOne({
           where: { courseId: cid, organizationId: oid },
         })
-          .then((organizationCourse) => {
+          .then(organizationCourse => {
             if (organizationCourse) {
               throw new HttpException(
                 ERROR_MESSAGES.organizationController.courseAlreadyInOrganization,
@@ -53,20 +53,20 @@ export class OrganizationController {
 
             organizationCourseModel
               .save()
-              .then((_) => {
+              .then(_ => {
                 res
                   .status(200)
                   .send({ message: 'Course added to organization' });
               })
-              .catch((err) => {
+              .catch(err => {
                 res.status(500).send({ message: err });
               });
           })
-          .catch((err) => {
+          .catch(err => {
             res.status(500).send({ message: err });
           });
       })
-      .catch((err) => {
+      .catch(err => {
         res.status(500).send({ message: err });
       });
   }
@@ -81,7 +81,7 @@ export class OrganizationController {
     UserModel.findOne({
       where: { id: uid },
     })
-      .then((user) => {
+      .then(user => {
         if (!user) {
           throw new HttpException(
             ERROR_MESSAGES.profileController.accountNotAvailable,
@@ -92,7 +92,7 @@ export class OrganizationController {
         OrganizationUserModel.findOne({
           where: { userId: uid, organizationId: oid },
         })
-          .then((organizationUser) => {
+          .then(organizationUser => {
             if (organizationUser) {
               throw new HttpException(
                 ERROR_MESSAGES.organizationController.userAlreadyInOrganization,
@@ -107,18 +107,18 @@ export class OrganizationController {
 
             organizationUserModel
               .save()
-              .then((_) => {
+              .then(_ => {
                 res.status(200).send({ message: 'User added to organization' });
               })
-              .catch((err) => {
+              .catch(err => {
                 res.status(500).send({ message: err });
               });
           })
-          .catch((err) => {
+          .catch(err => {
             res.status(500).send({ message: err });
           });
       })
-      .catch((err) => {
+      .catch(err => {
         res.status(500).send({ message: err });
       });
   }

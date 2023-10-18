@@ -25,7 +25,10 @@
   },
   "workspaces": {
     "packages": [
-      "packages/*"
+      "packages/api-client",
+      "packages/app",
+      "packages/common",
+      "packages/server"
     ]
   },
   "devDependencies": {

@@ -22,12 +22,12 @@ import { QueueModule } from './queue/queue.module';
 import { SeedModule } from './seed/seed.module';
 import { SSEModule } from './sse/sse.module';
 import { SemesterModule } from 'semester/semester.module';
-import { ResourcesModule } from './resources/resources.module';
 import { SignupModule } from 'signup/signup.module';
 import { asyncQuestionModule } from 'asyncQuestion/asyncQuestion.module';
 import { ImageModule } from 'images/image.module';
 import { MailModule } from 'mail/mail.module';
 import { SiteAdminModule } from 'site-admin/site-admin.module';
+import { ChatbotModule } from './chatbot/chatbot.module';
 import { OrganizationModule } from 'organization/organization.module';
 @Module({
   imports: [
@@ -42,7 +42,6 @@ import { OrganizationModule } from 'organization/organization.module';
     QuestionModule,
     SeedModule,
     MailModule,
-    ResourcesModule,
     asyncQuestionModule,
     CalendarModule,
     SiteAdminModule,
@@ -69,6 +68,7 @@ import { OrganizationModule } from 'organization/organization.module';
     HealthcheckModule,
     AlertsModule,
     SemesterModule,
+    ChatbotModule,
     OrganizationModule,
   ],
 })

@@ -196,7 +196,8 @@ export function QueueInfoColumn({
 
         {queue.staffList.length < 1 ? (
           <h1>
-            No staff checked in, but you can still ask your questions first!
+            No staff checked in, wait for a staff member to check in to post
+            questions
           </h1>
         ) : (
           <QueueTitle data-cy="room-title">

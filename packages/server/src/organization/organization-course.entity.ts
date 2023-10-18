@@ -17,8 +17,8 @@ export class OrganizationCourseModel extends BaseEntity {
 
   @Exclude()
   @ManyToOne(
-    (type) => OrganizationModel,
-    (organization) => organization.organizationCourses,
+    type => OrganizationModel,
+    organization => organization.organizationCourses,
   )
   organization: OrganizationModel;
 
@@ -26,9 +26,13 @@ export class OrganizationCourseModel extends BaseEntity {
   organizationId: number;
 
   @Exclude()
-  @OneToMany((type) => CourseModel, (course) => course.organizationCourse, {
-    cascade: true,
-  })
+  @OneToMany(
+    type => CourseModel,
+    course => course.organizationCourse,
+    {
+      cascade: true,
+    },
+  )
   course: CourseModel;
 
   @Column({ nullable: true })

@@ -13,9 +13,11 @@ const proxy = createProxyMiddleware({
     "/admin-static": "http://localhost:3002",
     "/admin": "http://localhost:3002/api/v1",
     "/socket.io": "http://localhost:3002",
+    "/chat": "http://localhost:3003"
   },
+  pathRewrite: { '^/chat': '' },  // remove the /flowise path when forwarding
   ws: true,
-  logLevel: "warn",
+  logLevel: "debug",
 });
 
 app.use("/", proxy);

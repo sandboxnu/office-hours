@@ -5,21 +5,23 @@ import { chunk, mean } from "lodash";
 import moment from "moment";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { ReactElement } from "react";
+import React, { ReactElement, useEffect } from "react";
 import styled from "styled-components";
-import GPTChatbotPage from "../../../components/Chatbot/Chatbot";
+// import GPTChatbotPage from "../../../components/Chatbot/Chatbot";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
 import NavBar from "../../../components/Nav/NavBar";
 import SchedulePanel from "../../../components/Schedule/SchedulePanel";
 import QueueCard, {
   QueueCardSkeleton,
 } from "../../../components/Today/QueueCard";
+import { ChatbotComponent } from "../../../components/Chatbot/Chatbot";
 import TodayPageCheckinButton from "../../../components/Today/QueueCheckInButton";
 import { useCourse } from "../../../hooks/useCourse";
 import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 import PopularTimes from "../../../components/Today/PopularTimes/PopularTimes";
 import AsyncQuestionCard from "../../../components/AsyncQuestion/AsyncQuestionCard";
 import { orderBy } from "lodash";
+import { useChatbotContext } from "../../../providers/chatbotProvider";
 
 const Container = styled.div`
   margin-top: 32px;
@@ -67,10 +69,19 @@ const collapseHeatmap = (heatmap: Heatmap): Heatmap =>
   });
 
 export default function Today(): ReactElement {
+  const { setCid, setOpen } = useChatbotContext();
   const router = useRouter();
   const { cid } = router.query;
   const role = useRoleInCourse(Number(cid));
   const { course, mutateCourse } = useCourse(Number(cid));
+
+  useEffect(() => {
+    setOpen(true);
+  }, []);
+
+  useEffect(() => {
+    setCid(cid);
+  }, [cid]);
 
   const sortByProfOrder = role == Role.PROFESSOR ? "desc" : "asc";
   const sortedQueues =
@@ -78,12 +89,12 @@ export default function Today(): ReactElement {
     orderBy(
       course?.queues,
       ["isOpen", "isProfessorQueue"],
-      ["desc", sortByProfOrder]
+      ["desc", sortByProfOrder],
     );
 
   const updateQueueNotes = async (
     queue: QueuePartial,
-    notes: string
+    notes: string,
   ): Promise<void> => {
     const newQueues =
       course &&
@@ -149,13 +160,12 @@ export default function Today(): ReactElement {
                     heatmap={collapseHeatmap(
                       arrayRotate(
                         course.heatmap,
-                        -Math.floor(moment().utcOffset() / 15)
-                      )
+                        -Math.floor(moment().utcOffset() / 15),
+                      ),
                     )}
                   />
                 )
               }
-              <GPTChatbotPage />
             </TodayCol>
             <TodayCol md={12} sm={24}>
               <SchedulePanel courseId={Number(cid)} defaultView="timeGridDay" />

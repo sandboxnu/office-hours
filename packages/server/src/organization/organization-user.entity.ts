@@ -18,13 +18,16 @@ export class OrganizationUserModel extends BaseEntity {
 
   @Exclude()
   @ManyToOne(
-    (type) => OrganizationModel,
-    (organization) => organization.organizationUsers,
+    type => OrganizationModel,
+    organization => organization.organizationUsers,
   )
   organization: OrganizationModel;
 
   @Exclude()
-  @OneToOne((type) => UserModel, (user) => user.organizationUser)
+  @OneToOne(
+    type => UserModel,
+    user => user.organizationUser,
+  )
   organizationUser: UserModel;
 
   @Column({ nullable: true })

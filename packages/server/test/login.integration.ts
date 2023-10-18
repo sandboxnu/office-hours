@@ -5,9 +5,9 @@ import { UserCourseFactory, UserFactory } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
 
 const mockJWT = {
-  signAsync: async (payload) => JSON.stringify(payload),
-  verifyAsync: async (payload) => JSON.parse(payload).token !== 'INVALID_TOKEN',
-  decode: (payload) => JSON.parse(payload),
+  signAsync: async payload => JSON.stringify(payload),
+  verifyAsync: async payload => JSON.parse(payload).token !== 'INVALID_TOKEN',
+  decode: payload => JSON.parse(payload),
 };
 
 describe('Login Integration', () => {
@@ -45,13 +45,16 @@ describe('Login Integration', () => {
     it('request to entry with invalid jwt returns error', async () => {
       const token = await mockJWT.signAsync({ token: 'INVALID_TOKEN' });
 
+
       await supertest().get(`/login/entry?token=${token}`).expect(401);
     });
   });
 
   describe('GET /logout', () => {
     it('makes sure logout endpoint is destroying cookies like a mob boss', async () => {
-      const res = await supertest().get(`/logout`).expect(302);
+      const res = await supertest()
+        .get(`/logout`)
+        .expect(302);
       expect(res.header['location']).toBe('/login');
       expect(res.get('Set-Cookie')[0]).toContain('auth_token=;');
     });

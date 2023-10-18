@@ -29,7 +29,7 @@ export class CalendarModel extends BaseEntity {
   @Column({ nullable: true })
   allDay: boolean;
 
-  @ManyToOne((type) => CourseModel)
+  @ManyToOne(type => CourseModel)
   @JoinColumn({ name: 'course' })
   @Exclude()
   course: CourseModel;

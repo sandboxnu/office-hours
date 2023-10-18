@@ -83,7 +83,9 @@ describe('Profile Integration', () => {
 
     it('returns 401 when not logged in', async () => {
       await UserFactory.create();
-      await supertest().get('/profile').expect(401);
+      await supertest()
+        .get('/profile')
+        .expect(401);
     });
 
     it('returns pending courses when they exist', async () => {

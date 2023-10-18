@@ -6,6 +6,7 @@ import { Footer } from "../components/common/Footer";
 import styled from "styled-components";
 import { ReactElement } from "react";
 import { ErrorBoundary } from "../components/common/ErrorBoundary";
+import { ChatbotContextProvider } from "../providers/chatbotProvider";
 import * as Sentry from "@sentry/node";
 
 if (process.env.NODE_ENV === "production" && typeof window !== "undefined") {
@@ -30,14 +31,16 @@ const Content = styled.div`
 
 function MyApp({ Component, pageProps }: AppProps): ReactElement {
   return (
-    <Layout>
-      <Content>
-        <ErrorBoundary>
-          <Component {...pageProps} />
-        </ErrorBoundary>
-      </Content>
-      <Footer />
-    </Layout>
+    <ChatbotContextProvider>
+      <Layout>
+        <Content>
+          <ErrorBoundary>
+            <Component {...pageProps} />
+          </ErrorBoundary>
+        </Content>
+        <Footer />
+      </Layout>
+    </ChatbotContextProvider>
   );
 }
 

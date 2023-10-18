@@ -19,8 +19,6 @@ import { CourseModel } from 'course/course.entity';
 @UseGuards(JwtAuthGuard)
 export class CalendarController {
   constructor(private readonly calendarService: CalendarService) {}
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   @Post()
   async addEvent(@Body() body: Calendar) {
     const course = await CourseModel.findOne(body.cid);

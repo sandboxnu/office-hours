@@ -36,15 +36,15 @@ export class OrganizationModel extends BaseEntity {
 
   @Exclude()
   @OneToMany(
-    (type) => OrganizationUserModel,
-    (organizationUser) => organizationUser.organization,
+    type => OrganizationUserModel,
+    organizationUser => organizationUser.organization,
   )
   organizationUsers: OrganizationUserModel[];
 
   @Exclude()
   @OneToMany(
-    (type) => OrganizationUserModel,
-    (organizationUser) => organizationUser.organization,
+    type => OrganizationUserModel,
+    organizationUser => organizationUser.organization,
   )
   organizationCourses: OrganizationUserModel[];
 }

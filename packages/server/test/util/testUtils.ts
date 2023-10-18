@@ -21,7 +21,7 @@ export const TestTypeOrmModule = TypeOrmModule.forRoot({
   host: 'localhost',
   port: 5432,
   username: 'postgres',
-  password: '',
+  password: process.env.TESTDBPASS || '',
   database: 'test',
   entities: ['./**/*.entity.ts'],
   synchronize: true,
@@ -103,7 +103,7 @@ const notifMock = mocked({ notifyUser: jest.fn() }, true);
  * const supertest = setupIntegrationTest(QuestionModule, modifyMockNotifs);
  */
 
-export const modifyMockNotifs: ModuleModifier = (t) =>
+export const modifyMockNotifs: ModuleModifier = t =>
   t.overrideProvider(NotificationService).useValue(notifMock);
 export const expectUserNotified = (userId: number): void =>
   expect(notifMock.notifyUser).toHaveBeenCalledWith(userId, expect.any(String));
