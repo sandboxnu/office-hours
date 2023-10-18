@@ -1,11 +1,12 @@
 import { ReactElement, useCallback } from "react";
 import Modal from "antd/lib/modal/Modal";
-import { Form, Collapse, message, Radio } from "antd";
+import { Form, Collapse, message, Radio, Checkbox } from "antd";
 import { API } from "@koh/api-client";
 import { default as React, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 import Select from "react-select";
+import { OpenQuestionStatus } from "@koh/common";
 
 const OverrideCollapse = styled.div`
   & .ant-collapse-header {
@@ -48,15 +49,29 @@ export function AddStudentsModal({
     "Default grading type"
   );
   const [selectOptions, setSelectOptions] = useState([]);
+
+  // invert the help status of selected option and set others to false
+  const handleCheckboxChange = (id) => {
+    const newSelectOptions = selectOptions.map((option) => {
+      return {
+        ...option,
+        help: option.id === id ? !option.help : false,
+      };
+    });
+    setSelectOptions(newSelectOptions);
+  };
+
   //students store all the students
   // let students: { value: string; id: number }[] = [];
   const getQuestions = async () => {
     setQuestionsTypeState(await API.questions.questionTypes(courseNumber));
   };
+
   useEffect(() => {
     getQuestions();
     populateStudents();
   }, []);
+
   const courseNumber = Number(courseId);
   const populateStudents = async () => {
     const tempS = [];
@@ -66,21 +81,20 @@ export function AddStudentsModal({
     }
     students.forEach(async (student) => {
       const b = await API.profile.inQueue(student.id);
-      console.log(b);
       if (b) {
-        console.log("student in queue");
         return;
       }
       tempS.push(student);
     });
     setStudentsState(tempS);
-    console.log(tempS);
   };
+
   const handleSubmit = () => {
     selectOptions.forEach((student, i) => {
       addStudent(i);
     });
   };
+
   const addStudent = async (i) => {
     const currentStudent = selectOptions[i];
     const b = await API.profile.inQueue(currentStudent.id);
@@ -91,8 +105,7 @@ export function AddStudentsModal({
     await API.questions
       .TAcreate(
         {
-          text: "",
-          questionType: selectedQuestionType,
+          text: currentStudent.question ?? "",
           queueId: queueId,
           location: null,
           force: true,
@@ -100,12 +113,17 @@ export function AddStudentsModal({
         },
         currentStudent.id
       )
-      .then(() => {
+      .then(async (response) => {
         message.success("Student(s) added");
         setStudentsState(
           studentsState.filter((student) => student.id !== currentStudent.id)
         );
         setSelectOptions([]);
+        if (selectOptions[i].help == true) {
+          await API.questions.update(response.id, {
+            status: OpenQuestionStatus.Helping,
+          });
+        }
       })
       .catch(() => {
         message.error("Can't add student".concat(currentStudent.value));
@@ -114,20 +132,34 @@ export function AddStudentsModal({
   };
 
   const handleSelect = (data) => {
-    setSelectOptions(data);
+    if (data[0]) {
+      data[0].help = true;
+    }
+    setSelectOptions(data ?? []);
   };
+
   const onQTclick = useCallback(
     async (s: string) => {
       setSelectedQuestionType(s);
     },
     [courseNumber]
   );
+
   function toObj(arr) {
     const lst = [];
     for (let i = 0; i < arr.length; ++i)
       lst.push({ value: arr[i].value, label: arr[i].value, id: arr[i].id });
     return lst;
   }
+
+  const handleChange = (value, id) => {
+    setSelectOptions((prevOptions) =>
+      prevOptions.map((option) =>
+        option.id === id ? { ...option, question: value } : option
+      )
+    );
+  };
+
   return (
     <Modal
       title="Add Students to queue"
@@ -197,6 +229,38 @@ export function AddStudentsModal({
             ) : (
               <p>There are no students or all students are in queue</p>
             )}
+            {selectOptions.length > 0 ? (
+              <>
+                <br />
+                <Form onFinish={handleSubmit}>
+                  {selectOptions.map((option, index) => (
+                    <div key={index}>
+                      <strong>
+                        <p>{option.value}</p>
+                      </strong>
+                      <Form.Item>
+                        <input
+                          placeholder={`Enter ${option.value}'s question`}
+                          style={{ width: "100%", height: "40px" }}
+                          onChange={(e) =>
+                            handleChange(e.target.value, option.id)
+                          }
+                        />
+                      </Form.Item>
+                      <Form.Item>
+                        <Checkbox
+                          style={{ fontSize: "18px" }} // Increase the font size to make it bigger
+                          checked={option.help}
+                          onChange={() => handleCheckboxChange(option.id)}
+                        >
+                          Help {option.value} (optional)
+                        </Checkbox>
+                      </Form.Item>
+                    </div>
+                  ))}
+                </Form>
+              </>
+            ) : null}
           </Collapse.Panel>
         </Collapse>
       </OverrideCollapse>
