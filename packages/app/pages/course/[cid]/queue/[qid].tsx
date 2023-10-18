@@ -9,6 +9,7 @@ import StudentQueue from "../../../../components/Queue/Student/StudentQueue";
 import TAQueue from "../../../../components/Queue/TA/TAQueue";
 import { useQueue } from "../../../../hooks/useQueue";
 import { useRoleInCourse } from "../../../../hooks/useRoleInCourse";
+import { useChatbotContext } from "../../../../providers/chatbotProvider";
 
 const Container = styled.div`
   flex: 1;
@@ -17,11 +18,18 @@ const Container = styled.div`
 `;
 
 export default function Queue(): ReactElement {
+  const { setCid, setOpen } = useChatbotContext();
   const router = useRouter();
   const { cid, qid } = router.query;
   const role = useRoleInCourse(Number(cid));
   const { queue } = useQueue(Number(qid));
+  useEffect(() => {
+    setOpen(true);
+  }, []);
 
+  useEffect(() => {
+    setCid(cid);
+  }, [cid]);
   return (
     <StandardPageContainer>
       <Container>

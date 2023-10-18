@@ -1,4 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  ReactComponentElement,
+  ReactElement,
+  useEffect,
+  useState,
+} from "react";
 import { Input, Button, Card, Avatar, List, Spin } from "antd";
 import styled from "styled-components";
 import { API } from "@koh/api-client";
@@ -33,9 +38,14 @@ export interface Message {
   questionId?: number;
 }
 
-export const ChatbotComponent: React.FC = () => {
+interface ChatbotComponentProps {
+  cid: string;
+}
+
+export const ChatbotComponent: React.FC<ChatbotComponentProps> = ({
+  cid,
+}: ChatbotComponentProps) => {
   const [input, setInput] = useState("");
-  const { cid } = router.query;
   const profile = useProfile();
   const [isLoading, setIsLoading] = useState(false);
   const [interactionId, setInteractionId] = useState<number | null>(null);
@@ -43,20 +53,25 @@ export const ChatbotComponent: React.FC = () => {
     PreDeterminedQuestion[]
   >([
     {
-      question: "When is the midterm?",
-      answer: "October 11, 2023"
+      question: "Can each table have have multiple foreigns keys?",
+      answer: "Yes, each table can have multiple foreign keys.",
     },
     {
-      question: "When is the final?",
-      answer: "December 16, 2023"
-    }
+      question: "What is cardinality, explain related information too",
+      answer:
+        "Cardinality refers to the maximum number of relationship instances that an entity can have in a relationship. It can be one-to-one (1:1), one-to-many (1:* or 1:N), or many-to-many (*:* or N:M) depending on the relationship type.",
+    },
+    {
+      question: "When and where is the final?",
+      answer: "December 16, 2023 8:30AM	in COM 201",
+    },
   ]);
 
   const [messages, setMessages] = useState<Message[]>([
     {
       type: "apiMessage",
-      message: "Hello, how can I assist you?"
-    }
+      message: "Hello, how can I assist you?",
+    },
   ]);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -70,14 +85,14 @@ export const ChatbotComponent: React.FC = () => {
     try {
       const data = {
         question: input,
-        history: messages
+        history: messages,
       };
-      const response = await fetch("/chat/ask/COSC404", {
+      const response = await fetch("/chat/ask/COSC304", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
       const json = await response.json();
       console.log(json);
@@ -92,15 +107,15 @@ export const ChatbotComponent: React.FC = () => {
     try {
       const data = {
         questionId,
-        query
+        query,
       };
       console.log(data);
-      const response = await fetch("/chat/question/COSC404", {
+      const response = await fetch("/chat/question/COSC304", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
       const json = await response.json();
       return json;
@@ -123,27 +138,27 @@ export const ChatbotComponent: React.FC = () => {
     if (!interactionId) {
       console.log({
         courseId: Number(cid),
-        userId: profile.id
+        userId: profile.id,
       });
       const interaction = await API.chatbot.createInteraction({
         courseId: Number(cid),
-        userId: profile.id
+        userId: profile.id,
       });
       setInteractionId(interaction.id);
 
       currentInteractionId = interaction.id; // Update the current value if a new interaction was created
     }
 
-    const formattedSourceDocument = sourceDocuments.map(sourceDocument => ({
+    const formattedSourceDocument = sourceDocuments.map((sourceDocument) => ({
       ...sourceDocument,
-      parts: sourceDocument.parts.map(part => part.toString())
+      parts: sourceDocument.parts.map((part) => part.toString()),
     }));
 
     console.log({
       interactionId: currentInteractionId,
       questionText: input,
       responseText: answer,
-      sourceDocuments: formattedSourceDocument
+      sourceDocuments: formattedSourceDocument,
     });
 
     // Use currentInteractionId for the createQuestion call
@@ -151,7 +166,7 @@ export const ChatbotComponent: React.FC = () => {
       interactionId: currentInteractionId,
       questionText: input,
       responseText: answer,
-      sourceDocuments: formattedSourceDocument
+      sourceDocuments: formattedSourceDocument,
     });
 
     await addQuestionVector(question.id, input);
@@ -163,8 +178,8 @@ export const ChatbotComponent: React.FC = () => {
         type: "apiMessage",
         message: answer,
         sourceDocuments: sourceDocuments,
-        questionId: question.id
-      }
+        questionId: question.id,
+      },
     ]);
 
     setIsLoading(false);
@@ -177,8 +192,8 @@ export const ChatbotComponent: React.FC = () => {
       { type: "userMessage", message: question },
       {
         type: "apiMessage",
-        message: answer
-      }
+        message: answer,
+      },
     ]);
   };
 
@@ -186,15 +201,18 @@ export const ChatbotComponent: React.FC = () => {
     try {
       await API.chatbot.editQuestion({
         data: {
-          userScore
+          userScore,
         },
-        questionId
+        questionId,
       });
     } catch (e) {
       console.log(e);
     }
   };
 
+  if (!cid) {
+    return <></>;
+  }
   return (
     <ChatbotContainer style={{ zIndex: 1000 }}>
       {isOpen ? (
@@ -202,9 +220,9 @@ export const ChatbotComponent: React.FC = () => {
           title="CS304 chatbot"
           extra={<a onClick={() => setIsOpen(false)}>Close</a>}
         >
-          <div className="overflow-y-auto max-h-[700px]">
+          <div className="overflow-y-auto max-h-[600px]">
             {messages &&
-              messages.map(item => (
+              messages.map((item) => (
                 <>
                   {item.type === "userMessage" ? (
                     <div className="flex justify-end align-items-start m-1 mb-3">
@@ -236,7 +254,7 @@ export const ChatbotComponent: React.FC = () => {
                         </div>
                         <div className="flex flex-col gap-1">
                           {item.sourceDocuments &&
-                            item.sourceDocuments.map(sourceDocument => (
+                            item.sourceDocuments.map((sourceDocument) => (
                               <div
                                 className="font-semibold flex justify-start align-items-start gap-3 bg-slate-100 rounded-xl p-1 w-fit h-fit max-w-[280px]"
                                 key={sourceDocument.name}
@@ -246,7 +264,7 @@ export const ChatbotComponent: React.FC = () => {
                                 </p>
                                 <div className="flex gap-1">
                                   {sourceDocument.parts &&
-                                    sourceDocument.parts.map(part => (
+                                    sourceDocument.parts.map((part) => (
                                       <div
                                         className="flex-grow cursor-pointer transition bg-blue-100 rounded-lg flex justify-center items-center font-semibold px-3 py-2 hover:bg-blue-800 hover:text-white"
                                         key={`${sourceDocument.name}-${part}`}
@@ -269,7 +287,7 @@ export const ChatbotComponent: React.FC = () => {
             {preDeterminedQuestions &&
               !isLoading &&
               messages.length < 2 &&
-              preDeterminedQuestions.map(question => (
+              preDeterminedQuestions.map((question) => (
                 <div
                   className="flex justify-end align-items-start m-1 mb-1"
                   key={question.question}
@@ -278,7 +296,7 @@ export const ChatbotComponent: React.FC = () => {
                     onClick={() =>
                       answerPreDeterminedQuestion(
                         question.question,
-                        question.answer
+                        question.answer,
                       )
                     }
                     className="transition max-w-[300px] border-2 border-blue-900 text-blue-900 px-3 py-2 rounded-xl mr-2 hover:text-white hover:bg-blue-900 bg-transparent cursor-pointer"
@@ -293,14 +311,14 @@ export const ChatbotComponent: React.FC = () => {
               <Spin
                 style={{
                   display: "block",
-                  marginBottom: "10px"
+                  marginBottom: "10px",
                 }}
               />
             )}
           </div>
           <Input
             value={input}
-            onChange={e => setInput(e.target.value)}
+            onChange={(e) => setInput(e.target.value)}
             placeholder="Ask something..."
             onPressEnter={handleAsk}
             suffix={
@@ -318,9 +336,10 @@ export const ChatbotComponent: React.FC = () => {
         <Button
           type="primary"
           icon={<RobotOutlined />}
+          size="large"
           onClick={() => setIsOpen(true)}
         >
-          Chat with us!
+          Chat now!
         </Button>
       )}
     </ChatbotContainer>
