@@ -16,78 +16,6 @@ const Container = styled.div`
 export default function Login(): ReactElement {
   const [pass, setPass] = useState("");
   const [uname, setUname] = useState("");
-  const [cOptions, setCOptions] = useState<option[]>(null);
-  const [selectedCourse, setSelectedCourse] = useState<number>(null);
-  useEffect(() => {
-    getCourses();
-    if (cOptions) {
-      setSelectedCourse(cOptions[0].value);
-    }
-  }, []);
-  const getCourses = async () => {
-    await API.course.getAllCourses().then(courses => {
-      if (!courses) {
-        message.warning("courses not found");
-        return;
-      }
-      const CourseOptions = courses.map(course => ({
-        value: course.id,
-        label: course.name
-      }));
-      setCOptions(CourseOptions);
-    });
-  };
-  function onChange(value: number) {
-    setSelectedCourse(value);
-  }
-  function submit() {
-    const courses = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: uname,
-        password: pass
-      })
-    };
-    fetch(`/api/v1/getAllcourses`, courses)
-      .then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-          // get error message from body or default to response statusText
-          const error = (data && data.message) || response.statusText;
-          if (data.message === "Invalid credential") {
-            message.error("Invalid password.");
-          } else if (data.message === "NotInCourse") {
-            message.error("Not registered in selected course");
-          } else {
-            message.error("User Not Found");
-          }
-          return Promise.reject(error);
-        } else {
-          if (data.length == 1) {
-            console.log("log in");
-            login(data[0].courseId);
-          } else if (data.length > 1) {
-            setIsModalOpen(true);
-            console.log("modal open");
-          } else {
-            message.error("Not registered in any course");
-          }
-        }
-      })
-      .catch(error => {
-        console.error("There was an error!", error);
-      });
-  }
-  const handleOk = () => {
-    setIsModalOpen(false);
-    login(selectedCourse);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-  function login(course: number) {
-    console.log(uname);
 
   function login() {
     const loginRequest = {
@@ -95,11 +23,9 @@ export default function Login(): ReactElement {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: uname,
-        password: pass
-      })
+        password: pass,
+      }),
     };
-    fetch(`/api/v1/ubc_login/${course}`, loginRequest)
-      .then(async response => {
     fetch(`/api/v1/ubc_login`, loginRequest)
       .then(async (response) => {
         const data = await response.json();
@@ -116,14 +42,16 @@ export default function Login(): ReactElement {
           Router.push(`/api/v1/login/entry?token=${data.token}`);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("There was an error!", error);
       });
   }
-  const onPassChange = e => {
+
+  const onPassChange = (e) => {
     setPass(e.target.value);
   };
-  const onUserNameChange = e => {
+
+  const onUserNameChange = (e) => {
     setUname(e.target.value);
   };
 
@@ -142,12 +70,7 @@ export default function Login(): ReactElement {
           <h1>HelpMe</h1>
           <Form.Item
             name="username"
-            rules={[
-              {
-                required: true,
-                message: "Please input your Username!"
-              }
-            ]}
+            rules={[{ required: true, message: "Please input your Username!" }]}
           >
             <Input
               prefix={<UserOutlined className="site-form-item-icon" />}
@@ -157,12 +80,7 @@ export default function Login(): ReactElement {
           </Form.Item>
           <Form.Item
             name="password"
-            rules={[
-              {
-                required: true,
-                message: "Please input your Password!"
-              }
-            ]}
+            rules={[{ required: true, message: "Please input your Password!" }]}
           >
             <Input
               prefix={<LockOutlined className="site-form-item-icon" />}
