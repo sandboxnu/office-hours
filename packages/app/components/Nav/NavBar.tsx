@@ -114,13 +114,13 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
   const { course } = useCourse(courseId);
   const role = useRoleInCourse(courseId);
 
-  const openQueues = course?.queues?.filter(queue => queue.isOpen);
+  const openQueues = course?.queues?.filter((queue) => queue.isOpen);
 
   const addMember = async () => {
     setUpdateModalVisible(false);
     await API.organizations.addMember(profile.id, 1);
 
-    const courseProfile = profile.courses.find(c => c.course.id === courseId);
+    const courseProfile = profile.courses.find((c) => c.course.id === courseId);
 
     if (courseProfile.role == "professor") {
       await API.organizations.addCourse(courseId, 1);
@@ -135,20 +135,6 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     setVisible(false);
   };
 
-  const courseSelector = (
-    <Menu>
-      {profile?.courses?.map(c => (
-        <CoursesMenuItem
-          key={c.course.id}
-          onClick={() => setDefaultCourse(c.course)}
-        >
-          <Link href="/course/[cid]/today" as={`/course/${c.course.id}/today`}>
-            <a>{c.course.name}</a>
-          </Link>
-        </CoursesMenuItem>
-      ))}
-    </Menu>
-  );
   const tabs: NavBarTabsItem[] = [
     {
       href: "/courses",
@@ -158,13 +144,13 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     {
       href: "/course/[cid]/today",
       as: `/course/${courseId}/today`,
-      text: "Today"
+      text: "Today",
     },
     {
       href: "/course/[cid]/schedule",
       as: `/course/${courseId}/schedule`,
-      text: "Schedule"
-    }
+      text: "Schedule",
+    },
   ];
 
   const globalTabs: NavBarTabsItem[] = [
@@ -208,7 +194,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     tabs.push({
       href: "/course/[cid]/course_admin_panel",
       as: `/course/${courseId}/course_admin_panel`,
-      text: "Admin Panel"
+      text: "Admin Panel",
     });
   }
 
@@ -216,7 +202,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     tabs.push({
       text: "Queue",
       queues: openQueues,
-      courseId: courseId
+      courseId: courseId,
     });
   }
 
@@ -224,7 +210,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     tabs.push({
       href: "/course/[cid]/insights",
       as: `/course/${courseId}/insights`,
-      text: "Insights"
+      text: "Insights",
     });
   }
 
@@ -233,7 +219,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
   const success = () => {
     messageApi.open({
       type: "success",
-      content: "Wow.. You found an easter egg.. Do you think there is more? 🤔"
+      content: "Wow.. You found an easter egg.. Do you think there is more? 🤔",
     });
   };
   return courseId ? (
@@ -243,28 +229,6 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
       <AlertsContainer courseId={courseId} />
       <Nav>
         <LogoContainer>
-          {profile?.courses.length > 1 ? (
-            <Dropdown
-              overlay={courseSelector}
-              trigger={["click"]}
-              placement="bottomLeft"
-            >
-              <a>
-                <Logo>
-                  <span>{course?.name}</span>
-                  <DownOutlined
-                    style={{
-                      fontSize: "16px",
-                      verticalAlign: "-0.125em",
-                      marginLeft: "5px"
-                    }}
-                  />
-                </Logo>
-              </a>
-            </Dropdown>
-          ) : (
-            <Logo>
-              {course?.organizationCourse && (
           <Logo>
             {course?.organizationCourse && (
               <a href={`/course/${course?.id}/today`}>
@@ -310,7 +274,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
           footer={[
             <Button key="ok" type="primary" onClick={addMember}>
               OK
-            </Button>
+            </Button>,
           ]}
         >
           <p>
