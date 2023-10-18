@@ -345,3 +345,5 @@ export const ChatbotComponent: React.FC<ChatbotComponentProps> = ({
     </ChatbotContainer>
   );
 };
+
+export default ChatbotComponent;
