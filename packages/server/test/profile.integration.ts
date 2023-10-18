@@ -5,20 +5,27 @@ import {
   ProfSectionGroupsFactory,
   CourseSectionFactory,
   LastRegistrationFactory,
+  OrganizationFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
 import { ProfileModule } from '../src/profile/profile.module';
 import { PhoneNotifModel } from 'notification/phone-notif.entity';
 import { DesktopNotifModel } from 'notification/desktop-notif.entity';
+import { OrganizationUserModel } from 'organization/organization-user.entity';
 
 describe('Profile Integration', () => {
   const supertest = setupIntegrationTest(ProfileModule);
 
   describe('GET /profile', () => {
     it('returns the logged-in user profile', async () => {
+      const organization = await OrganizationFactory.create();
       const user = await UserFactory.create();
       const fundies = await CourseFactory.create({ name: 'CS 2500' });
       await StudentCourseFactory.create({ course: fundies, user });
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+      }).save();
 
       const res = await supertest({ userId: user.id })
         .get('/profile')

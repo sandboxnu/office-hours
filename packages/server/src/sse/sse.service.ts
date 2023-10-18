@@ -178,8 +178,6 @@ export class SSEService<T> implements OnModuleDestroy {
     });
     if (room && roomInfo) {
       const clients: RedisClientInfo<T>[] = roomInfo.map((s) => JSON.parse(s));
-      console.log(`sending sse to ${clients.length} clients in ${room}`);
-      console.time(`sending sse time: `);
       await each(clients, async ({ clientId, metadata }) => {
         const toSend = serialize(
           await payload(metadata).catch((err) => {
@@ -196,7 +194,6 @@ export class SSEService<T> implements OnModuleDestroy {
             Sentry.captureException(err);
           });
       });
-      console.timeEnd(`sending sse time: `);
     }
   }
 }

@@ -1,10 +1,9 @@
 import Router from "next/router";
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useState } from "react";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { message, Button, Form, Input, Select, Spin, Modal } from "antd";
-//import Select from "react-select";
+import { message, Button, Form, Input } from "antd";
 import styled from "styled-components";
-import { API } from "@koh/api-client";
+import Head from "next/head";
 
 const Container = styled.div`
   margin-left: auto;
@@ -13,12 +12,8 @@ const Container = styled.div`
   width: 300px;
   padding-top: 100px;
 `;
-class option {
-  value: number;
-  label: string;
-}
+
 export default function Login(): ReactElement {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [pass, setPass] = useState("");
   const [uname, setUname] = useState("");
   const [cOptions, setCOptions] = useState<option[]>(null);
@@ -93,6 +88,8 @@ export default function Login(): ReactElement {
   };
   function login(course: number) {
     console.log(uname);
+
+  function login() {
     const loginRequest = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -103,20 +100,20 @@ export default function Login(): ReactElement {
     };
     fetch(`/api/v1/ubc_login/${course}`, loginRequest)
       .then(async response => {
+    fetch(`/api/v1/ubc_login`, loginRequest)
+      .then(async (response) => {
         const data = await response.json();
         if (!response.ok) {
           // get error message from body or default to response statusText
           const error = (data && data.message) || response.statusText;
           if (data.message === "Invalid credential") {
             message.error("Invalid password.");
-          } else if (data.message === "NotInCourse") {
-            message.error("Not registered in selected course");
           } else {
             message.error("User Not Found");
           }
           return Promise.reject(error);
         } else {
-          Router.push(`/api/v1/login/entry/${course}?token=${data.token}`);
+          Router.push(`/api/v1/login/entry?token=${data.token}`);
         }
       })
       .catch(error => {
@@ -129,19 +126,20 @@ export default function Login(): ReactElement {
   const onUserNameChange = e => {
     setUname(e.target.value);
   };
-  //put token inside login request
-  if (!cOptions) {
-    return <Spin tip="Loading..." size="large" />;
-  } else {
-    return (
+
+  return (
+    <>
+      <Head>
+        <title>Login | HelpMe</title>
+      </Head>
       <Container>
         <Form
           name="normal_login"
           className="login-form"
           initialValues={{ remember: true }}
-          onFinish={submit}
+          onFinish={login}
         >
-          <h1>UBC HelpMe</h1>
+          <h1>HelpMe</h1>
           <Form.Item
             name="username"
             rules={[
@@ -177,7 +175,7 @@ export default function Login(): ReactElement {
           <Form.Item>
             <a
               style={{ float: "right", marginTop: "-10px" }}
-              href="./forgetpassword/forget"
+              href="/forgetpassword/forget"
             >
               Forgot password
             </a>
@@ -192,23 +190,10 @@ export default function Login(): ReactElement {
             >
               Log in
             </Button>
-            Or <a href="./signup/signup">register now!</a>
+            Or <a href="/signup/signup">register now!</a>
           </Form.Item>
         </Form>
-        <Modal
-          title="Basic Modal"
-          open={isModalOpen}
-          onOk={handleOk}
-          onCancel={handleCancel}
-        >
-          <Select
-            placeholder="Select course"
-            onChange={onChange}
-            options={cOptions}
-            defaultValue={selectedCourse}
-          />
-        </Modal>
       </Container>
-    );
-  }
+    </>
+  );
 }

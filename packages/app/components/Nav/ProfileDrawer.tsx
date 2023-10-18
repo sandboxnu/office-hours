@@ -71,22 +71,22 @@ function shortcutInfoContent(role: Role): ReactNode {
 }
 
 export default function ProfileDrawer({
-  courseId,
+  courseId = null,
 }: ProfileDrawerProps): ReactElement {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const role = useRoleInCourse(courseId);
-
   return (
     <>
       <NoPaddingPopover
         content={
           <Menu mode="inline">
             <Menu.Item icon={<SettingOutlined />}>
-              <Link href={{ pathname: "/settings", query: { cid: courseId } }}>
+              <Link href={{ pathname: "/settings" }}>
                 <a>Settings</a>
               </Link>
             </Menu.Item>
             <Menu.Item
+              hidden={courseId === null}
               icon={<MacCommandOutlined />}
               onClick={() => {
                 Modal.info({
