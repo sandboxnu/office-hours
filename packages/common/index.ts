@@ -12,6 +12,7 @@ import {
   IsOptional,
   IsString,
   ValidateIf,
+  isBoolean,
 } from "class-validator";
 import "reflect-metadata";
 import { Cache } from "cache-manager";
@@ -76,6 +77,7 @@ export class User {
   userRole!: string;
   organizationRole!: string;
   organizationId!: number;
+  organization!: OrganizationUserPartial;
 }
 
 export class DesktopNotifPartial {
@@ -128,6 +130,23 @@ export enum Role {
   PROFESSOR = "professor",
 }
 
+// chatbot questions and interactions
+
+export class ChatbotQuestion {
+  id!: number;
+  interactionId!: number;
+  questionText!: string;
+  responseText?: string;
+  timestamp!: Date;
+}
+
+export class Interaction {
+  id!: number;
+  course?: GetCourseResponse;
+  user!: User;
+  timestamp!: Date;
+}
+
 /**
  * Represents one of two possible roles for the global account
  */
@@ -142,7 +161,7 @@ export enum UserRole {
 export enum OrganizationRole {
   MEMBER = "member",
   ADMIN = "admin",
-  professor = "professor",
+  PROFESSOR = "professor",
 }
 
 /**
@@ -659,6 +678,14 @@ export class OrganizationPartial {
   ssoUrl?: string;
 }
 
+export class OrganizationUserPartial {
+  id!: number;
+  organizationName!: string;
+  organizationDescription!: string;
+  organizationLogoUrl!: string;
+  organizationRole!: string;
+}
+
 export class GetCourseResponse {
   id!: number;
   name!: string;
@@ -713,6 +740,38 @@ export class UpdateCourseOverrideBody {
 
   @IsString()
   role!: Role;
+}
+
+export class InteractionParams {
+  @IsInt()
+  courseId!: number;
+
+  @IsInt()
+  userId!: number;
+}
+
+export class ChatBotQuestionParams {
+  @IsInt()
+  interactionId?: number;
+
+  @IsString()
+  questionText?: string;
+
+  @IsString()
+  responseText?: string;
+
+  @IsBoolean()
+  suggested?: boolean;
+
+  @IsInt()
+  userScore?: number;
+
+  @IsArray()
+  sourceDocuments?: {
+    name: string;
+    type: string;
+    parts: string[];
+  }[];
 }
 
 export class UpdateCourseOverrideResponse extends GetCourseOverridesRow {}

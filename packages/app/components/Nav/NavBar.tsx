@@ -1,12 +1,9 @@
-import { DownOutlined } from "@ant-design/icons";
-import { Role } from "@koh/common";
-import { Modal, Button, Drawer, Dropdown, Menu, Image, message } from "antd";
-import Link from "next/link";
+import { OrganizationRole, Role, UserRole } from "@koh/common";
+import { Modal, Button, Drawer, Image, message } from "antd";
 import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { useCourse } from "../../hooks/useCourse";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useProfile } from "../../hooks/useProfile";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import AlertsContainer from "./AlertsContainer";
@@ -104,25 +101,13 @@ const BarsButton = styled.span`
   }
 `;
 
-const CoursesMenuItem = styled(Menu.Item)`
-  z-index: 1;
-  background: #ffffff;
-`;
-
 interface NavBarProps {
   courseId: number;
 }
 
 export default function NavBar({ courseId }: NavBarProps): ReactElement {
   const profile = useProfile();
-  if (!courseId) {
-    courseId = profile?.courses[0]?.course?.id;
-  }
 
-  const [_defaultCourse, setDefaultCourse] = useLocalStorage(
-    "defaultCourse",
-    null
-  );
   const [visible, setVisible] = useState<boolean>(false);
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(true);
   const { pathname } = useRouter();
@@ -145,26 +130,17 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
   const showDrawer = () => {
     setVisible(true);
   };
+
   const onClose = () => {
     setVisible(false);
   };
 
-  const courseSelector = (
-    <Menu>
-      {profile?.courses?.map((c) => (
-        <CoursesMenuItem
-          key={c.course.id}
-          onClick={() => setDefaultCourse(c.course)}
-        >
-          <Link href="/course/[cid]/today" as={`/course/${c.course.id}/today`}>
-            <a>{c.course.name}</a>
-          </Link>
-        </CoursesMenuItem>
-      ))}
-    </Menu>
-  );
-
   const tabs: NavBarTabsItem[] = [
+    {
+      href: "/courses",
+      as: `/courses`,
+      text: "My Courses",
+    },
     {
       href: "/course/[cid]/today",
       as: `/course/${courseId}/today`,
@@ -176,6 +152,43 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
       text: "Schedule",
     },
   ];
+
+  const globalTabs: NavBarTabsItem[] = [
+    {
+      href: "/organization",
+      as: `/organization`,
+      text: "My Organization",
+    },
+  ];
+
+  if (profile?.organization) {
+    if (profile?.organization.organizationRole === OrganizationRole.ADMIN) {
+      globalTabs.push({
+        href: "/organization/settings",
+        as: `/organization/settings`,
+        text: "Organization Settings",
+      });
+    }
+
+    if (
+      profile?.organization.organizationRole === OrganizationRole.ADMIN ||
+      profile?.organization.organizationRole === OrganizationRole.PROFESSOR
+    ) {
+      globalTabs.push({
+        href: "/course/add",
+        as: "/course/add",
+        text: "Add Course",
+      });
+    }
+
+    if (profile?.userRole === UserRole.ADMIN) {
+      globalTabs.push({
+        href: "/admin",
+        as: `/admin`,
+        text: "Admin Panel",
+      });
+    }
+  }
 
   if (role === Role.PROFESSOR || role === Role.TA) {
     tabs.push({
@@ -216,37 +229,18 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
       <AlertsContainer courseId={courseId} />
       <Nav>
         <LogoContainer>
-          {profile?.courses.length > 1 ? (
-            <Dropdown
-              overlay={courseSelector}
-              trigger={["click"]}
-              placement="bottomLeft"
-            >
-              <a>
-                <Logo>
-                  <span>{course?.name}</span>
-                  <DownOutlined
-                    style={{
-                      fontSize: "16px",
-                      verticalAlign: "-0.125em",
-                      marginLeft: "5px",
-                    }}
-                  />
-                </Logo>
-              </a>
-            </Dropdown>
-          ) : (
-            <Logo>
-              {course?.organizationCourse && (
+          <Logo>
+            {course?.organizationCourse && (
+              <a href={`/course/${course?.id}/today`}>
                 <Image
                   width={40}
                   preview={false}
-                  src={course.organizationCourse.logoUrl}
+                  src={profile?.organization.organizationLogoUrl}
                 />
-              )}
-              <span>{course?.name}</span>
-            </Logo>
-          )}
+              </a>
+            )}
+            <span style={{ marginLeft: 15 }}>{course?.name}</span>
+          </Logo>
         </LogoContainer>
         <MenuCon>
           <LeftMenu>
@@ -272,7 +266,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
         </Drawer>
       </Nav>
 
-      {profile?.organizationRole === null && (
+      {Object.keys(profile?.organization).length === 0 && (
         <Modal
           title="[System Message] Exciting News: Introducing Organizations!"
           open={updateModalVisible}
@@ -309,5 +303,49 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
         </Modal>
       )}
     </>
-  ) : null;
+  ) : (
+    <>
+      <NavBG />
+      <Nav>
+        <LogoContainer>
+          <Logo>
+            {profile?.organization && (
+              <a href="/courses">
+                <Image
+                  width={40}
+                  preview={false}
+                  src={profile?.organization.organizationLogoUrl}
+                />
+              </a>
+            )}
+            <span style={{ marginLeft: 15 }}>
+              {profile?.organization.organizationName}
+            </span>
+          </Logo>
+        </LogoContainer>
+        <MenuCon>
+          <LeftMenu>
+            <NavBarTabs horizontal currentHref={pathname} tabs={globalTabs} />
+          </LeftMenu>
+          <RightMenu>
+            <ProfileDrawer />
+          </RightMenu>
+        </MenuCon>
+        <BarsMenu type="primary" onClick={showDrawer}>
+          <BarsButton />
+        </BarsMenu>
+        <Drawer
+          title="Course"
+          placement="right"
+          visible={visible}
+          closable={false}
+          onClose={onClose}
+          bodyStyle={{ padding: "12px" }}
+        >
+          <NavBarTabs currentHref={pathname} tabs={tabs} />
+          <ProfileDrawer courseId={null} />
+        </Drawer>
+      </Nav>
+    </>
+  );
 }

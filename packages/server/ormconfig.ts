@@ -16,6 +16,9 @@ import { LastRegistrationModel } from './src/login/last-registration-model.entit
 import { ProfSectionGroupsModel } from './src/login/prof-section-groups.entity';
 import { QuestionTypeModel } from './src/question/question-type.entity';
 import { AsyncQuestionModel } from './src/asyncQuestion/asyncQuestion.entity';
+import { ChatbotQuestionModel } from 'chatbot/question.entity';
+import { InteractionModel } from 'chatbot/interaction.entity';
+import { QuestionDocumentModel } from 'chatbot/questionDocument.entity';
 import { ImageModel } from './src/images/image.entity';
 import { CalendarModel } from './src/calendar/calendar.entity';
 import { OrganizationUserModel } from './src/organization/organization-user.entity';
@@ -44,6 +47,8 @@ const typeorm = {
     UserModel,
     UserCourseModel,
     QuestionModel,
+    ChatbotQuestionModel,
+    InteractionModel,
     AsyncQuestionModel,
     QuestionTypeModel,
     QueueModel,
@@ -57,6 +62,7 @@ const typeorm = {
     CalendarModel,
     LastRegistrationModel,
     ProfSectionGroupsModel,
+    QuestionDocumentModel,
     OrganizationUserModel,
     OrganizationModel,
     OrganizationCourseModel,

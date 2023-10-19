@@ -30,17 +30,24 @@ import { CourseModel } from '../course/course.entity';
 import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { SeedService } from './seed.service';
+import { OrganizationCourseModel } from 'organization/organization-course.entity';
+import { OrganizationUserModel } from 'organization/organization-user.entity';
 
 @Controller('seeds')
 //@UseGuards(NonProductionGuard)
 export class SeedController {
   constructor(
-    private connection: Connection,
+    private _connection: Connection,
     private seedService: SeedService,
   ) {}
 
   @Get('delete')
   async deleteAll(): Promise<string> {
+    // NOTE: order of deletion matters for tables with foreign keys.
+    // Children tables should be removed as early as possible.
+
+    await this.seedService.deleteAll(OrganizationCourseModel);
+    await this.seedService.deleteAll(OrganizationUserModel);
     await this.seedService.deleteAll(LastRegistrationModel);
     await this.seedService.deleteAll(ProfSectionGroupsModel);
     await this.seedService.deleteAll(QuestionModel);

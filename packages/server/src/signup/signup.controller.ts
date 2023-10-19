@@ -12,7 +12,6 @@ import { Request, Response } from 'express';
 import { UserModel } from 'profile/user.entity';
 import { SignupService } from './signup.service';
 import { CourseModel } from 'course/course.entity';
-import { UserCourseModel } from 'profile/user-course.entity';
 
 @Controller('signup')
 export class SignupController {
@@ -35,56 +34,37 @@ export class SignupController {
     @Body() body: UBCOuserParam,
   ): Promise<any> {
     const course = await CourseModel.findOne(body.selected_course);
-    console.log(body);
+
     if (!course) {
-      console.log('course');
       throw new NotFoundException();
     }
+
     let user = await UserModel.findOne({
       where: { email: body.email },
       relations: ['courses'],
     });
-    // if (user) {
-    //   res.status(300).send({ message: 'User already exists' });
-    //   console.log('user exists');
-    //   return 'exists';
-    // }
-    //create usercourse[] to be inserted into userModel.
-    // const courses: UserCourseModel[] = [];
-    // body.selected_course.forEach(async(cid) => {
-    //   courses.push(
-    //     await UserCourseModel.findOne({
-    //       where: { id:cid },
-    //     }),
-    //   );
-    // });
-    if (!user) {
-      const salt = await bcrypt.genSalt(10);
-      const password = await bcrypt.hash(body.password, salt);
-      user = await UserModel.create({
-        courses: [],
-        email: body.email,
-        firstName: body.first_name,
-        lastName: body.last_name,
-        sid: body.sid,
-        password: password,
-        hideInsights: [],
-      }).save();
-    }
 
-    let userCourse = await UserCourseModel.findOne({
-      where: { courseId: body.selected_course, userId: user.id },
-    });
-    if (userCourse) {
-      res
-        .status(300)
-        .send({ message: 'User already registered in the course' });
-      console.log('user exists');
+    if (user) {
+      res.status(409).send({ message: 'User already exists' });
       return 'exists';
     }
+
+    const salt = await bcrypt.genSalt(10);
+    const password = await bcrypt.hash(body.password, salt);
+
+    user = await UserModel.create({
+      courses: [],
+      email: body.email,
+      firstName: body.first_name,
+      lastName: body.last_name,
+      sid: body.sid,
+      password: password,
+      hideInsights: [],
+    }).save();
+
     // insertUserCourse loops through given courseIds and create usercourse
     // it also eventually add the list of usercourses into both user and course models.
-    userCourse = await this.signupService.insertUserCourse(course, user);
+    await this.signupService.insertUserCourse(course, user);
     res.status(200).send({ message: 'User has been signed up' });
     return 'success';
   }

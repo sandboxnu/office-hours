@@ -12,7 +12,7 @@ module.exports = {
     "prettier",
     "prettier/@typescript-eslint",
   ],
-  ignorePatterns: [".eslintrc.js"],
+  ignorePatterns: [".eslintrc.js", "./langchain-services/**/*"],
   root: true,
   env: {
     node: true,
@@ -24,7 +24,7 @@ module.exports = {
     "@typescript-eslint/no-explicit-any": "off",
     "no-only-tests/no-only-tests": "error",
     // if you have a variable that needs to exist but is unused, prepend it with an underscore
-    "@typescript-eslint/no-unused-vars": ["error", { varsIgnorePattern: "^_" }],
+    "@typescript-eslint/no-unused-vars": [1, { varsIgnorePattern: "^_" }],
   },
   overrides: [
     {

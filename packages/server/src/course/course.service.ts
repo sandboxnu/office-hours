@@ -126,7 +126,6 @@ export class CourseService {
     courseId: number,
     coursePatch: EditCourseInfoParams,
   ): Promise<void> {
-    console.log(coursePatch);
     const course = await CourseModel.findOne(courseId);
     if (course === null || course === undefined) {
       throw new HttpException(
@@ -136,7 +135,6 @@ export class CourseService {
     }
 
     if (Object.values(coursePatch).some((x) => x === null || x === '')) {
-      console.log('No values provded for update');
       throw new BadRequestException(
         ERROR_MESSAGES.courseController.updateCourse,
       );

@@ -46,4 +46,30 @@ describe('OrganizationService', () => {
       expect(role).toEqual(OrganizationRole.MEMBER);
     });
   });
+
+  describe('getOrganizationAndRoleByUserId', () => {
+    it('should return null if no organizationUser exists', async () => {
+      const role = await service.getOrganizationAndRoleByUserId(0);
+      expect(role).toBeNull();
+    });
+
+    it('should return the organization and role of the organizationUser', async () => {
+      const user = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+      }).save();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+      }).save();
+
+      const organizationUserModel =
+        await service.getOrganizationAndRoleByUserId(user.id);
+      expect(organizationUserModel).toMatchSnapshot();
+    });
+  });
 });

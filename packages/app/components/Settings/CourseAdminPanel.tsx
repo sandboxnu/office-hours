@@ -20,6 +20,8 @@ import EditCourse from "./EditCourse";
 
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import { Role } from "@koh/common";
+import ChatbotSettings from "./ChatbotSettings";
+import ChatbotQuestions from "./ChatbotQuestions";
 //import EditCourse from "./EditCourse";
 export enum CourseAdminOptions {
   CHECK_IN = "CHECK_IN",
@@ -28,6 +30,7 @@ export enum CourseAdminOptions {
   EXPORT = "EXPORT",
   EDIT = "EDIT",
   EDIT_COURSE = "EDIT_COURSE",
+  CHATBOT_SETTINGS = "CHATBOT_SETTINGS",
 }
 
 interface CourseAdminPageProps {
@@ -122,6 +125,12 @@ export default function CourseAdminPanel({
           <Menu.Item key={CourseAdminOptions.EDIT} icon={<EditOutlined />}>
             Edit questions
           </Menu.Item>
+          {/* <Menu.Item
+                        key={CourseAdminOptions.CHATBOT_SETTINGS}
+                        icon={<EditOutlined />}
+                    >
+                        Chatbot
+                    </Menu.Item> */}
         </Menu>
       </Col>
       <VerticalDivider />
@@ -145,6 +154,10 @@ export default function CourseAdminPanel({
           {currentSettings === CourseAdminOptions.EDIT && (
             <EditQuestions courseId={courseId} />
           )}
+          {/* {currentSettings ===
+                        CourseAdminOptions.CHATBOT_SETTINGS && (
+                        <ChatbotQuestions courseId={courseId} />
+                    )} */}
         </Col>
       </Space>
     </Row>
