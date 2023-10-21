@@ -78,7 +78,13 @@ function RenderTable({
       <>
         <TableBackground>
           <div style={{ backgroundColor: "#f0f0f0", height: "56px" }}>
-            <h3 style={{ position: "relative", left: "10px", top: "14px" }}>
+            <h3
+              style={{
+                position: "relative",
+                left: "10px",
+                top: "14px",
+              }}
+            >
               {listTitle}
             </h3>
           </div>

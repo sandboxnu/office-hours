@@ -55,9 +55,12 @@ export default function SchedulePanel({
     // it is now safe to render the client-side only component
     setIsClientSide(true);
   }, []);
-  useLayoutEffect(() => {
-    getEvent();
+  useEffect(() => {
+    if (courseId) {
+      getEvent();
+    }
   }, [courseId]);
+
   //format events-all repeated ones need to start time and endTime, the other ones are regular stuff
   const getEvent = async () => {
     await API.calendar.getEvents(Number(courseId)).then((result) => {
@@ -172,9 +175,6 @@ export default function SchedulePanel({
                 end: "today prev,next",
               }}
               loading={(loading) => {
-                // FullCal is stupid so if you setState in this cb you get into an infinite render loop
-                // https://stackoverflow.com/questions/66818770/fullcalendar-react-loading-function-problem
-                // So we're just floating a spinner on top of the calendar and setting its display property
                 if (spinnerRef.current)
                   spinnerRef.current.style.display = loading ? "flex" : "none";
               }}
@@ -216,9 +216,6 @@ export default function SchedulePanel({
                 end: "today prev,next",
               }}
               loading={(loading) => {
-                // FullCal is stupid so if you setState in this cb you get into an infinite render loop
-                // https://stackoverflow.com/questions/66818770/fullcalendar-react-loading-function-problem
-                // So we're just floating a spinner on top of the calendar and setting its display property
                 if (spinnerRef.current)
                   spinnerRef.current.style.display = loading ? "flex" : "none";
               }}

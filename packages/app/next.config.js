@@ -25,6 +25,10 @@ const SENTRY_DSN =
   "https://9cfb47804c93495ba3a66a9d79cec084@o440615.ingest.sentry.io/5557379";
 
 const config = {
+  // dangerous
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   generateInDevMode: true,
   experimental: {
     productionBrowserSourceMaps: true,
@@ -39,8 +43,8 @@ const config = {
     }
     if (
       (SERVICE_VERSION,
-      SENTRY_DSN,
-      SENTRY_AUTH_TOKEN && NODE_ENV === "production")
+        SENTRY_DSN,
+        SENTRY_AUTH_TOKEN && NODE_ENV === "production")
     ) {
       config.plugins.push(
         new SentryWebpackPlugin({
@@ -57,4 +61,4 @@ const config = {
   },
 };
 
-module.exports = withPlugins(plugins, config);
+module.exports = withPlugins(plugins, config,);

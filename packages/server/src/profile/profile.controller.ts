@@ -15,7 +15,6 @@ import {
   Get,
   HttpException,
   HttpStatus,
-  InternalServerErrorException,
   NotFoundException,
   Param,
   Patch,
@@ -324,6 +323,8 @@ export class ProfileController {
 
     const pendingCourses = await this.profileService.getPendingCourses(user.id);
 
+    const organizationRole =
+      await this.organizationService.getOrganizationRoleByUserId(user.id);
     const userOrganization =
       await this.organizationService.getOrganizationAndRoleByUserId(user.id);
 
@@ -353,13 +354,13 @@ export class ProfileController {
     user: UserModel,
   ): Promise<GetProfileResponse> {
     if (userPatch.email) {
-      const email = UserModel.findOne({
+      const email = await UserModel.findOne({
         where: {
           email: userPatch.email,
         },
       });
       if (email) {
-        throw new InternalServerErrorException('Email already in db');
+        throw new BadRequestException('Email already in db');
       }
     }
     user = Object.assign(user, userPatch);

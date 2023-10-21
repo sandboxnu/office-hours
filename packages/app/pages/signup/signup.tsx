@@ -66,14 +66,14 @@ export default function Signup(): ReactElement {
         // check for error response
         if (!response.ok) {
           // get error message from body or default to response statusText
-          alert("Email already exists");
-          console.log("email exists");
+          const data = await response.json();
+          message.error(data.message);
         } else {
           message.success("Registered successfully! ");
           Router.push("../login");
         }
       })
-      .catch((error) => {
+      .catch((_) => {
         message.error("There was an error.");
       });
   };

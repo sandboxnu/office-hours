@@ -25,7 +25,13 @@ export default function ProfileSettings(): ReactElement {
 
   const handleOk = async () => {
     const value = await form.validateFields();
-    const newProfile = await editProfile(value);
+    const newProfile = await editProfile(value).catch(() => {
+      message.error(
+        "Your profile settings could not be updated. Email is already in use."
+      );
+    });
+    if (!newProfile) return;
+
     form.setFieldsValue(newProfile);
     message.success("Your profile settings have been successfully updated");
   };

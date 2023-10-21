@@ -44,6 +44,9 @@ import {
   createCourse,
   UpdateOrganizationDetailsParams,
   UpdateOrganizationUserRole,
+  ChatbotQuestion,
+  ChatBotQuestionParams,
+  Interaction,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -115,6 +118,30 @@ class APIClient {
     deleteCourse: async (cid: number): Promise<GetCourseResponse> =>
       this.req("DELETE", `/api/v1/site_admin/${cid}/deleteCourse`),
   };
+  chatbot = {
+    createInteraction: async (body: {
+      courseId: number;
+      userId: number;
+    }): Promise<Interaction> =>
+      this.req("POST", `/api/v1/chatbot/interaction`, undefined, body),
+
+    createQuestion: async (
+      body: ChatBotQuestionParams
+    ): Promise<ChatbotQuestion> =>
+      this.req("POST", `/api/v1/chatbot/question`, undefined, body),
+
+    editQuestion: async (body: {
+      data: ChatBotQuestionParams;
+      questionId: number;
+    }): Promise<ChatbotQuestion> =>
+      this.req("PATCH", `/api/v1/chatbot/question`, undefined, body),
+
+    deleteQuestion: async (
+      body: ChatBotQuestionParams
+    ): Promise<ChatbotQuestion> =>
+      this.req("DELETE", `/api/v1/chatbot/question`, undefined, body),
+  };
+
   course = {
     getAsyncQuestions: async (cid: number) =>
       this.req(

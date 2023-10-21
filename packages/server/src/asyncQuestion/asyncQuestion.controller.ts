@@ -59,31 +59,6 @@ export class asyncQuestionController {
         ERROR_MESSAGES.questionController.createQuestion.invalidQueue,
       );
     }
-    //add functionality to check whether they have already asked questions
-
-    // const previousUserQuestions = await QuestionModel.find({
-    //   relations: ['queue'],
-    //   where: {
-    //     creatorId: user.id,
-    //     status: In(Object.values(OpenQuestionStatus)),
-    //   },
-    // });
-
-    // const previousCourseQuestion = previousUserQuestions.find(
-    //   question => question.queue.courseId === queue.courseId,
-    // );
-
-    // if (!!previousCourseQuestion) {
-    //   if (force) {
-    //     previousCourseQuestion.status = ClosedQuestionStatus.ConfirmedDeleted;
-    //     await previousCourseQuestion.save();
-    //   } else {
-    //     throw new BadRequestException(
-    //       ERROR_MESSAGES.questionController.createQuestion.oneQuestionAtATime,
-    //     );
-    //   }
-    // }
-
     //check whether there are images to be added
     try {
       const question = await AsyncQuestionModel.create({
@@ -98,12 +73,12 @@ export class asyncQuestionController {
         visible: body.visible || false,
         createdAt: new Date(),
       }).save();
-      const professors = await UserCourseModel.findOne({
-        where: {
-          role: Role.PROFESSOR,
-        },
-      });
-      console.log(professors);
+      // const professors = await UserCourseModel.findOne({
+      //   where: {
+      //     role: Role.PROFESSOR,
+      //   },
+      // });
+      // console.log(professors);
       // const post: sendEmailAsync = {
       //   receiver: professors.user.email,
       //   subject: 'UBC helpme Async question created',
@@ -119,11 +94,6 @@ export class asyncQuestionController {
       );
     }
   }
-  // @Post()
-  // @UseInterceptors(FileInterceptor('file'))
-  // async addImage( @UploadedFile() file: Express.Multer.File): Promise<ImageModel> {
-  //   return this.ImageService.uploadImage(file.buffer, file.originalname);
-  // }
 
   @Patch(':questionId')
   async updateQuestion(
@@ -137,32 +107,6 @@ export class asyncQuestionController {
     if (question === undefined) {
       throw new NotFoundException();
     }
-
-    // const isCreator = question.creator.id=== question.creatorId;
-
-    // if (isCreator) {
-    //   // Fail if student tries an invalid status change
-    //   if (body.status && !question.changeStatus(body.status, Role.STUDENT)) {
-    //     throw new UnauthorizedException(
-    //       ERROR_MESSAGES.questionController.updateQuestion.fsmViolation(
-    //         'Student',
-    //         question.status,
-    //         body.status,
-    //       ),
-    //     );
-    //   }
-    //   question = Object.assign(question, body);
-    //   try {
-    //     await question.save();
-    //   } catch (err) {
-    //     console.error(err);
-    //     throw new HttpException(
-    //       ERROR_MESSAGES.questionController.saveQError,
-    //       HttpStatus.INTERNAL_SERVER_ERROR,
-    //     );
-    //   }
-    //   return question;
-    // }
 
     //If not creator, check if user is TA/PROF of course of question
 

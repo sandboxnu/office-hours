@@ -12,6 +12,7 @@ import {
   IsOptional,
   IsString,
   ValidateIf,
+  isBoolean,
 } from "class-validator";
 import "reflect-metadata";
 import { Cache } from "cache-manager";
@@ -125,6 +126,23 @@ export enum Role {
   STUDENT = "student",
   TA = "ta",
   PROFESSOR = "professor",
+}
+
+// chatbot questions and interactions
+
+export class ChatbotQuestion {
+  id!: number;
+  interactionId!: number;
+  questionText!: string;
+  responseText?: string;
+  timestamp!: Date;
+}
+
+export class Interaction {
+  id!: number;
+  course?: GetCourseResponse;
+  user!: User;
+  timestamp!: Date;
 }
 
 /**
@@ -764,6 +782,38 @@ export class UpdateCourseOverrideBody {
 
   @IsString()
   role!: Role;
+}
+
+export class InteractionParams {
+  @IsInt()
+  courseId!: number;
+
+  @IsInt()
+  userId!: number;
+}
+
+export class ChatBotQuestionParams {
+  @IsInt()
+  interactionId?: number;
+
+  @IsString()
+  questionText?: string;
+
+  @IsString()
+  responseText?: string;
+
+  @IsBoolean()
+  suggested?: boolean;
+
+  @IsInt()
+  userScore?: number;
+
+  @IsArray()
+  sourceDocuments?: {
+    name: string;
+    type: string;
+    parts: string[];
+  }[];
 }
 
 export class UpdateCourseOverrideResponse extends GetCourseOverridesRow {}

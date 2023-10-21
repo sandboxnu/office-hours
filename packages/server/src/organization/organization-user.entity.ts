@@ -25,7 +25,6 @@ export class OrganizationUserModel extends BaseEntity {
 
   @Exclude()
   @OneToOne((type) => UserModel, (user) => user.organizationUser)
-  @JoinColumn({ name: 'userId' })
   organizationUser: UserModel;
 
   @Column({ nullable: true })

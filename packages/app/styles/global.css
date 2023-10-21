@@ -1,89 +1,128 @@
+@tailwind base;
+
+@layer base {
+    h1 {
+        @apply block text-[2em] font-bold mx-0 my-[0.67em];
+    }
+    h2 {
+        @apply block text-[1.5em] font-bold mx-0 my-[0.83em];
+    }
+    h3 {
+        @apply block text-[1.17em] font-bold mx-0 my-[1em];
+    }
+    h4 {
+        @apply block font-[bold] mx-0 my-[1.33em];
+    }
+    h5 {
+        @apply block text-[0.83em] font-bold mx-0 my-[1.67em];
+    }
+    h6 {
+        @apply block text-[0.67em] font-bold mx-0 my-[2.33em];
+    }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+            Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+            sans-serif;
+    }
+    a {
+        @apply text-blue-600;
+    }
+}
+
+@tailwind components;
+@tailwind utilities;
+
 body {
-  background: #f8f9fb;
+    background: #f8f9fb;
 }
 
 .ant-radio-checked .ant-radio-inner {
-  border-color: #3684c6 !important ;
+    border-color: #3684c6 !important ;
 }
 
 .ant-radio-checked .ant-radio-inner:after {
-  background-color: #3684c6;
+    background-color: #3684c6;
 }
 
 .ant-radio:hover .ant-radio-inner {
-  border-color: #3684c6;
+    border-color: #3684c6;
 }
 
 .ant-radio-button-checked {
-  border-color: #3684c6 !important ;
+    border-color: #3684c6 !important ;
 }
 
 .ant-radio-button-wrapper-checked {
-  background-color: #3684c6 !important;
+    background-color: #3684c6 !important;
 }
 
 .ant-radio-button:hover {
-  color: #3684c6;
+    color: #3684c6;
 }
 
 .ant-btn-primary {
-  border-color: #3684c6;
-  background-color: #3684c6;
+    border-color: #3684c6;
+    background-color: #3684c6;
 }
 
 .notion-image-inset {
-  width: 100%;
+    width: 100%;
 }
 
 .notion-asset-wrapper {
-  width: 100% !important;
+    width: 100% !important;
 }
 
 .notion-asset-wrapper > div {
-  padding-bottom: 0px !important;
+    padding-bottom: 0px !important;
 }
 
 .notion-list {
-  margin: 0px;
-  padding-inline-start: 20px;
+    margin: 0px;
+    padding-inline-start: 20px;
 }
 
 .notion-toggle {
-  padding-inline-start: 5px;
+    padding-inline-start: 5px;
 }
 
 .open-queue-card .ant-card-extra {
-  color: #FFFFFF;
+    color: #ffffff;
 }
 
 @media only percy {
-  .hide-in-percy {
-    visibility: hidden;
-  }
-  .open-queue-card .ant-card-extra {
-    visibility: hidden;
-  }
-  .rbc-toolbar-label {
-    visibility: hidden;
-  }
-  .rbc-event {
-    visibility: hidden;
-  }
-  .rbc-current-time-indicator {
-    visibility: hidden;
-  }
-  .rbc-toolbar {
-    visibility: hidden;
-  }
-  .fc-col-header-cell-cushion {
-    visibility: hidden;
-  }
+    .hide-in-percy {
+        visibility: hidden;
+    }
+    .open-queue-card .ant-card-extra {
+        visibility: hidden;
+    }
+    .rbc-toolbar-label {
+        visibility: hidden;
+    }
+    .rbc-event {
+        visibility: hidden;
+    }
+    .rbc-current-time-indicator {
+        visibility: hidden;
+    }
+    .rbc-toolbar {
+        visibility: hidden;
+    }
+    .fc-col-header-cell-cushion {
+        visibility: hidden;
+    }
 
-  .fc-toolbar-title {
-    visibility: hidden;
-  }
+    .fc-toolbar-title {
+        visibility: hidden;
+    }
 
-  .fc-event {
-    visibility: hidden;
-  }
+    .fc-event {
+        visibility: hidden;
+    }
 }
