@@ -42,6 +42,8 @@ import {
   CoursePartial,
   Calendar,
   createCourse,
+  UpdateOrganizationDetailsParams,
+  UpdateOrganizationUserRole,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -383,6 +385,26 @@ class APIClient {
       this.req(
         "POST",
         `/api/v1/organization/${organizationId}/add_member/${userId}`
+      ),
+    updateOrganizationUserRole: async (
+      organizationId: number,
+      body: UpdateOrganizationUserRole
+    ): Promise<void> =>
+      this.req(
+        "PATCH",
+        `/api/v1/organization/${organizationId}/update_user_role`,
+        undefined,
+        body
+      ),
+    patch: async (
+      organizationId: number,
+      body: UpdateOrganizationDetailsParams
+    ): Promise<void> =>
+      this.req(
+        "PATCH",
+        `/api/v1/organization/${organizationId}/update`,
+        undefined,
+        body
       ),
     getStats: async (organizationId: number): Promise<any> =>
       this.req("GET", `/api/v1/organization/${organizationId}/stats`),

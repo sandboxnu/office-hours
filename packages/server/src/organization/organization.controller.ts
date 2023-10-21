@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
+  Body,
   Controller,
   Get,
   HttpException,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
   Res,
@@ -12,7 +14,12 @@ import {
 } from '@nestjs/common';
 import { UserModel } from 'profile/user.entity';
 import { Response } from 'express';
-import { ERROR_MESSAGES, OrganizationRole } from '@koh/common';
+import {
+  ERROR_MESSAGES,
+  OrganizationRole,
+  UpdateOrganizationDetailsParams,
+  UpdateOrganizationUserRole,
+} from '@koh/common';
 import { OrganizationUserModel } from './organization-user.entity';
 import { JwtAuthGuard } from 'guards/jwt-auth.guard';
 import { OrganizationRolesGuard } from 'guards/organization-roles.guard';
@@ -97,6 +104,136 @@ export class OrganizationController {
         }
 
         res.status(HttpStatus.OK).send(organization);
+      })
+      .catch((err) => {
+        res.status(500).send({ message: err });
+      });
+  }
+
+  @Patch(':oid/update_user_role')
+  @UseGuards(JwtAuthGuard, OrganizationRolesGuard)
+  @Roles(OrganizationRole.ADMIN)
+  async updateUserOrganizationRole(
+    @Res() res: Response,
+    @Param('oid') oid: string,
+    @Body() organizationUserRolePatch: UpdateOrganizationUserRole,
+  ): Promise<void> {
+    OrganizationModel.findOne({
+      where: { id: oid },
+    })
+      .then((organization) => {
+        if (!organization) {
+          return res.status(HttpStatus.NOT_FOUND).send({
+            message: ERROR_MESSAGES.organizationController.organizationNotFound,
+          });
+        }
+
+        OrganizationUserModel.findOne({
+          where: {
+            userId: organizationUserRolePatch.userId,
+            organizationId: oid,
+          },
+        })
+          .then((organizationUser) => {
+            if (!organizationUser) {
+              return res.status(HttpStatus.NOT_FOUND).send({
+                message:
+                  ERROR_MESSAGES.organizationController
+                    .userNotFoundInOrganization,
+              });
+            }
+
+            if (
+              organizationUser.role === OrganizationRole.ADMIN &&
+              organizationUserRolePatch.organizationRole !==
+                OrganizationRole.ADMIN
+            ) {
+              return res.status(HttpStatus.BAD_REQUEST).send({
+                message:
+                  ERROR_MESSAGES.organizationController.cannotRemoveAdminRole,
+              });
+            }
+
+            organizationUser.role = organizationUserRolePatch.organizationRole;
+
+            organizationUser
+              .save()
+              .then((_) => {
+                res.status(HttpStatus.OK).send({
+                  message: 'Organization user role updated',
+                });
+              })
+              .catch((err) => {
+                res.status(500).send({ message: err });
+              });
+          })
+          .catch((err) => {
+            res.status(500).send({ message: err });
+          });
+      })
+      .catch((err) => {
+        res.status(500).send({ message: err });
+      });
+  }
+
+  @Patch(':oid/update')
+  @UseGuards(JwtAuthGuard, OrganizationRolesGuard)
+  @Roles(OrganizationRole.ADMIN)
+  async update(
+    @Res() res: Response,
+    @Param('oid') oid: string,
+    @Body() organizationPatch: UpdateOrganizationDetailsParams,
+  ): Promise<void> {
+    OrganizationModel.findOne({
+      where: { id: oid },
+    })
+      .then((organization) => {
+        if (!organization) {
+          return res.status(HttpStatus.NOT_FOUND).send({
+            message: ERROR_MESSAGES.organizationController.organizationNotFound,
+          });
+        }
+
+        if (organizationPatch.name.trim().length < 4) {
+          return res.status(HttpStatus.BAD_REQUEST).send({
+            message:
+              ERROR_MESSAGES.organizationController.organizationNameTooShort,
+          });
+        }
+
+        if (organizationPatch.description.trim().length < 10) {
+          return res.status(HttpStatus.BAD_REQUEST).send({
+            message:
+              ERROR_MESSAGES.organizationController
+                .organizationDescriptionTooShort,
+          });
+        }
+
+        if (
+          organizationPatch.websiteUrl.trim().length < 10 ||
+          !this.isValidUrl(organizationPatch.websiteUrl)
+        ) {
+          return res.status(HttpStatus.BAD_REQUEST).send({
+            message:
+              ERROR_MESSAGES.organizationController
+                .organizationUrlTooShortOrInValid,
+          });
+        }
+
+        organization.name = organizationPatch.name;
+        organization.description = organizationPatch.description;
+        organization.websiteUrl = organizationPatch.websiteUrl;
+
+        organization
+          .save()
+          .then((_) => {
+            res.status(HttpStatus.OK).send({
+              message: 'Organization updated',
+            });
+          })
+          .catch((err) => {
+            res.status(500).send({ message: err });
+          });
       })
       .catch((err) => {
         res.status(500).send({ message: err });
@@ -236,4 +373,13 @@ export class OrganizationController {
         res.status(500).send({ message: err });
       });
   }
+
+  private isValidUrl = (url: string): boolean => {
+    try {
+      new URL(url);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  };
 }

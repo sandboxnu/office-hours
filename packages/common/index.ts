@@ -609,6 +609,30 @@ export interface KhouryRedirectResponse {
   redirect: string;
 }
 
+export class UpdateOrganizationUserRole {
+  @IsNumber()
+  @IsNotEmpty()
+  userId!: number;
+
+  @IsString()
+  @IsNotEmpty()
+  organizationRole!: OrganizationRole;
+}
+
+export class UpdateOrganizationDetailsParams {
+  @IsString()
+  @IsOptional()
+  name?: string;
+
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @IsString()
+  @IsOptional()
+  websiteUrl?: string;
+}
+
 export class UpdateProfileParams {
   @IsBoolean()
   @IsOptional()
@@ -1155,6 +1179,13 @@ export const ERROR_MESSAGES = {
     userAlreadyInOrganization: "User is already in organization",
     courseAlreadyInOrganization: "Course is already in organization",
     organizationNotFound: "Organization not found",
+    organizationNameTooShort: "Organization name must be at least 4 characters",
+    organizationDescriptionTooShort:
+      "Organization description must be at least 10 characters",
+    organizationUrlTooShortOrInValid:
+      "Organization URL must be at least 4 characters and be a valid URL",
+    userNotFoundInOrganization: "User not found in organization",
+    cannotRemoveAdminRole: "Cannot remove admin role from user",
   },
   courseController: {
     checkIn: {

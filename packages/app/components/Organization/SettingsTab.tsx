@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { InboxOutlined } from "@ant-design/icons";
+import { API } from "@koh/api-client";
 import { GetOrganizationResponse } from "@koh/common";
 import {
   Button,
@@ -12,8 +13,10 @@ import {
   Switch,
   Upload,
   Image,
+  message,
 } from "antd";
 import TextArea from "antd/lib/input/TextArea";
+import { useRouter } from "next/router";
 import { ReactElement, useState } from "react";
 
 type OrganizationSettingsProps = {
@@ -24,7 +27,8 @@ export default function SettingsTab({
   organization,
 }: OrganizationSettingsProps): ReactElement {
   const [formGeneral] = Form.useForm();
-  // TODO: make use of these states
+  const router = useRouter();
+
   const [organizationName, setOrganizationName] = useState(organization.name);
   const [organizationDescription, setOrganizationDescription] = useState(
     organization.description
@@ -47,15 +51,87 @@ export default function SettingsTab({
     return e?.fileList;
   };
 
+  const isValidUrl = (url: string): boolean => {
+    try {
+      new URL(url);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  };
+
   const updateGeneral = async () => {
-    const values = await formGeneral.validateFields();
-    console.log(values);
+    const formValues = await formGeneral.validateFields();
+    const organizationNameField = formValues.organizationName;
+    const organizationDescriptionField = formValues.organizationDescription;
+    const organizationWebsiteUrlField = formValues.organizationWebsiteUrl;
+
+    if (
+      organizationNameField === organizationName &&
+      organizationDescriptionField === organizationDescription &&
+      organizationWebsiteUrlField === organizationWebsiteUrl
+    ) {
+      message.info(
+        "Organization was not updated as information has not been changed"
+      );
+      return;
+    }
+
+    if (organizationNameField.length < 4) {
+      message.error("Organization name must be at least 4 characters");
+      return;
+    }
+
+    if (organizationDescriptionField.length < 10) {
+      message.error("Organization description must be at least 10 characters");
+      return;
+    }
+
+    if (
+      organizationWebsiteUrlField &&
+      !isValidUrl(organizationWebsiteUrlField)
+    ) {
+      message.error(
+        "Organization URL must be at least 4 characters and be a valid URL"
+      );
+      return;
+    }
+
+    await API.organizations
+      .patch(organization.id, {
+        name: organizationNameField,
+        description: organizationDescriptionField,
+        websiteUrl: organizationWebsiteUrlField,
+      })
+      .then((_) => {
+        setOrganizationName(organizationNameField);
+        setOrganizationDescription(organizationDescriptionField);
+        setOrganizationWebsiteUrl(organizationWebsiteUrlField);
+        message.success("Organization information was updated");
+        setTimeout(() => {
+          router.reload();
+        }, 1750);
+      })
+      .catch((error) => {
+        const errorMessage = error.response.data.message;
+
+        message.error(errorMessage);
+      });
   };
 
   return (
     <>
       <Card title="General" bordered={true} style={{ marginTop: 10 }}>
-        <Form form={formGeneral} onFinish={updateGeneral} layout="vertical">
+        <Form
+          form={formGeneral}
+          onFinish={updateGeneral}
+          layout="vertical"
+          initialValues={{
+            organizationName: organizationName,
+            organizationDescription: organizationDescription,
+            organizationWebsiteUrl: organizationWebsiteUrl,
+          }}
+        >
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             <Col xs={{ span: 24 }} sm={{ span: 12 }}>
               <Form.Item
@@ -115,7 +191,11 @@ export default function SettingsTab({
                 style={{ alignItems: "center" }}
               >
                 <Col xs={{ span: 24 }} sm={{ span: 12 }}>
-                  <Upload.Dragger name="organizationLogoFile" maxCount={1}>
+                  <Upload.Dragger
+                    disabled={true}
+                    name="organizationLogoFile"
+                    maxCount={1}
+                  >
                     <p className="ant-upload-drag-icon">
                       <InboxOutlined />
                     </p>
@@ -146,7 +226,11 @@ export default function SettingsTab({
                 style={{ alignItems: "center" }}
               >
                 <Col xs={{ span: 24 }} sm={{ span: 12 }}>
-                  <Upload.Dragger name="organizationBannerFile" maxCount={1}>
+                  <Upload.Dragger
+                    disabled={true}
+                    name="organizationBannerFile"
+                    maxCount={1}
+                  >
                     <p className="ant-upload-drag-icon">
                       <InboxOutlined />
                     </p>

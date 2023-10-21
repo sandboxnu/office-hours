@@ -10,6 +10,8 @@ import {
   Pagination,
   Button,
   Select,
+  Modal,
+  message,
 } from "antd";
 import { ReactElement, useEffect, useState } from "react";
 import styled from "styled-components";
@@ -36,6 +38,51 @@ export default function UsersTab({
   organizationId: number;
 }): ReactElement {
   const profile = useProfile();
+
+  const [isRoleChangeModalVisible, setRoleChangeModalVisible] = useState(false);
+  const [selectedUserData, setSelectedUserData] = useState<UserData | null>(
+    null
+  );
+  const [updatedRole, setUpdatedRole] = useState<OrganizationRole>(
+    OrganizationRole.MEMBER
+  );
+  const [shouldRenderTable, setShouldRenderTable] = useState(true);
+
+  // Function to open and close the modal
+  const toggleRoleChangeModal = (userData: UserData) => {
+    setSelectedUserData(userData);
+    setRoleChangeModalVisible(!isRoleChangeModalVisible);
+  };
+
+  const prepareAndShowConfirmationModal =
+    (user: UserData) => async (newRole: string) => {
+      setUpdatedRole(newRole as OrganizationRole);
+
+      toggleRoleChangeModal(user);
+    };
+
+  const updateRole = async () => {
+    const { userId } = selectedUserData;
+
+    await API.organizations
+      .updateOrganizationUserRole(organizationId, {
+        userId,
+        organizationRole: updatedRole,
+      })
+      .then(() => {
+        setShouldRenderTable(!shouldRenderTable);
+        message.success({
+          content: "Successfully updated user role.",
+          onClose: () => {
+            toggleRoleChangeModal(selectedUserData);
+          },
+        });
+      })
+      .catch((error) => {
+        const errorMessage = error.response.data.message;
+        message.error(errorMessage);
+      });
+  };
 
   function RenderTable(): ReactElement {
     const [page, setPage] = useState(1);
@@ -98,6 +145,7 @@ export default function UsersTab({
                         key={item.userId}
                         defaultValue={item.organizationRole}
                         style={{ width: 100 }}
+                        onChange={prepareAndShowConfirmationModal(item)}
                         disabled={
                           item.userId === profile.id ||
                           item.organizationRole.toLowerCase() ===
@@ -158,8 +206,29 @@ export default function UsersTab({
   return (
     <>
       <Card title="Users">
-        <RenderTable />
+        <RenderTable shouldRenderTable={shouldRenderTable} />
       </Card>
+
+      {isRoleChangeModalVisible && (
+        <Modal
+          title="Confirm Role Change"
+          open={isRoleChangeModalVisible}
+          onCancel={toggleRoleChangeModal}
+          onOk={updateRole}
+        >
+          {selectedUserData && (
+            <>
+              You are about to change the role of{" "}
+              <strong>
+                {selectedUserData.firstName} {selectedUserData.lastName}
+              </strong>{" "}
+              to <strong>{updatedRole}</strong>. <br />
+              <br />
+              Are you sure?
+            </>
+          )}
+        </Modal>
+      )}
     </>
   );
 }
