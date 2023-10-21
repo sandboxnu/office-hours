@@ -1,6 +1,6 @@
 import { API } from "@koh/api-client";
 import { Button, Form, Input, message } from "antd";
-import { ReactElement, useState } from "react";
+import { ReactElement, useState, useEffect } from "react";
 import styled from "styled-components";
 type CourseRosterPageProps = { courseId: number };
 import { useCourse } from "../../hooks/useCourse";
@@ -23,10 +23,15 @@ export default function EditCourse({
     typeof window !== "undefined"
       ? `${window.location.protocol}//${window.location.host}`
       : "";
-  const inviteURL = `${baseURL}/course/${id}/invite?code=${inviteCode}`;
 
   const [form] = Form.useForm();
   const [copied, setCopied] = useState(false);
+  const [courseCode, setCourseCode] = useState(course.course?.courseInviteCode);
+  const [inviteURL, setInviteURL] = useState<string>("");
+
+  useEffect(() => {
+    setInviteURL(`${baseURL}/course/${id}/invite?code=${courseCode}`);
+  }, [courseCode, id, baseURL]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(inviteURL).then(() => {
@@ -34,7 +39,7 @@ export default function EditCourse({
     });
   };
 
-  const submit = async () => {
+  const submit = async (values) => {
     const value = await form.validateFields();
     await API.course
       .editCourseInfo(cid, {
@@ -42,40 +47,19 @@ export default function EditCourse({
         courseInviteCode: value.inviteCode,
       })
       .then(() => message.success("Edited Course info"));
+
+    setCopied(false);
+    setCourseCode(values.inviteCode);
   };
 
-  //   return (
-  //   <div>
-  //     <CourseRosterPageComponent>
-  //       <div style={{ textAlign: "center" }}>
-  //       <Form
-  //         form={form}
-  //         initialValues={course}
-  //         onFinish={submit}>
-  //           <h3> Current Timer: {course.course?.questionTimer} minutes</h3>
-  //       <Form.Item style={{ width:"500px" }}label="Question Timer" name="questionTimer">
-  //         <Input allowClear={true} placeholder={"Minutes before a question times out"}/>
-  //       </Form.Item>
-  //       <Form.Item >
-  //     <Button type="primary" htmlType="submit">
-  //       Submit
-  //     </Button>
-  //   </Form.Item>
-  //     </Form>
-  //       </div>
-  //     </CourseRosterPageComponent>
-  //   </div>
-  // );
   return (
     <div>
       <CourseRosterPageComponent>
         <div style={{ textAlign: "center" }}>
           <Form form={form} initialValues={course} onFinish={submit}>
             <h3>
-              Current Invite Code:
-              {course.course?.courseInviteCode
-                ? course.course.courseInviteCode
-                : "No invite code set"}
+              Current Invite Code is:&nbsp;
+              {courseCode ? courseCode : "No invite code set"}
             </h3>
             <Form.Item
               style={{ width: "500px" }}
@@ -84,9 +68,7 @@ export default function EditCourse({
             >
               <Input
                 allowClear={true}
-                placeholder={
-                  course.course?.courseInviteCode || "No invite code set"
-                }
+                placeholder={courseCode || "No invite code set"}
               />
             </Form.Item>
             <Form.Item>
@@ -95,12 +77,12 @@ export default function EditCourse({
               </Button>
             </Form.Item>
           </Form>
-          {inviteCode && (
+          {courseCode && (
             <div>
               <p>Invite URL: {inviteURL}</p>
-              <button onClick={handleCopy}>
+              <Button onClick={handleCopy} type="primary">
                 {copied ? "Copied!" : "Copy to Clipboard"}
-              </button>
+              </Button>
             </div>
           )}
         </div>

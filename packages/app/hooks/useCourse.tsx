@@ -15,7 +15,7 @@ export function useCourse(cid: number): UseCourseReturn {
     data: course,
     error: courseError,
     mutate: mutateCourse,
-  } = useSWR(cid && `/api/v1/courses/${cid}`, async () => API.course.get(cid));
+  } = useSWR(`/api/v1/courses/${cid}`, async () => API.course.get(cid));
   return {
     course,
     courseError,

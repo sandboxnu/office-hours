@@ -45,6 +45,7 @@ import {
   ChatbotQuestion,
   ChatBotQuestionParams,
   Interaction,
+  GetLimitedCourseResponse,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -225,6 +226,14 @@ class APIClient {
       this.req("GET", "/api/v1/self_enroll_courses"),
     createSelfEnrollOverride: async (courseId: number): Promise<void> =>
       this.req("POST", `/api/v1/create_self_enroll_override/${courseId}`),
+    getLimitedCourseResponse: async (
+      courseId: number
+    ): Promise<GetLimitedCourseResponse> =>
+      this.req(
+        "GET",
+        `/api/v1/courses/limited/${courseId}`,
+        GetLimitedCourseResponse
+      ),
   };
   taStatus = {
     checkIn: async (

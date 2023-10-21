@@ -714,6 +714,15 @@ export class GetCourseResponse {
   courseInviteCode!: string;
 }
 
+export class GetLimitedCourseResponse {
+  id!: number;
+  name!: string;
+
+  @Type(() => OrganizationPartial)
+  organizationCourse?: OrganizationPartial;
+  courseInviteCode!: string;
+}
+
 export class GetCourseUserInfoResponse {
   users!: UserPartial[];
   total!: number;

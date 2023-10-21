@@ -7,6 +7,7 @@ import {
   GetCourseOverridesResponse,
   GetCourseResponse,
   GetCourseUserInfoResponse,
+  GetLimitedCourseResponse,
   QueuePartial,
   RegisterCourseParams,
   Role,
@@ -118,6 +119,31 @@ export class CourseController {
         question.status !== asyncQuestionStatus.TADeleted,
     );
     return questions;
+  }
+
+  @Get('limited/:id')
+  async getLimitedCourseResponse(
+    @Param('id') id: number,
+  ): Promise<GetLimitedCourseResponse> {
+    const course = await CourseModel.findOne(id);
+
+    const organizationCourse = await OrganizationCourseModel.findOne({
+      where: {
+        courseId: course.id,
+      },
+      relations: ['organization'],
+    });
+
+    const organization =
+      organizationCourse === undefined ? null : organizationCourse.organization;
+
+    const course_response = {
+      id: course.id,
+      name: course.name,
+      organizationCourse: organization,
+      courseInviteCode: course.courseInviteCode,
+    };
+    return course_response;
   }
 
   @Get(':id')

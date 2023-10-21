@@ -12,6 +12,7 @@ import { Request, Response } from 'express';
 import { UserModel } from 'profile/user.entity';
 import { SignupService } from './signup.service';
 import { CourseModel } from 'course/course.entity';
+import { UserCourseModel } from 'profile/user-course.entity';
 
 @Controller('signup')
 export class SignupController {
@@ -44,26 +45,34 @@ export class SignupController {
       relations: ['courses'],
     });
 
-    if (user) {
-      res.status(409).send({ message: 'User already exists' });
-      return 'exists';
+    if (!user) {
+      const salt = await bcrypt.genSalt(10);
+      const password = await bcrypt.hash(body.password, salt);
+      user = await UserModel.create({
+        courses: [],
+        email: body.email,
+        firstName: body.first_name,
+        lastName: body.last_name,
+        sid: body.sid,
+        password: password,
+        hideInsights: [],
+      }).save();
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const password = await bcrypt.hash(body.password, salt);
+    const usercourse = await UserCourseModel.findOne({
+      where: {
+        userId: user.id,
+        courseId: course.id,
+      },
+    });
 
-    user = await UserModel.create({
-      courses: [],
-      email: body.email,
-      firstName: body.first_name,
-      lastName: body.last_name,
-      sid: body.sid,
-      password: password,
-      hideInsights: [],
-    }).save();
+    if (usercourse) {
+      res
+        .status(409)
+        .send({ message: 'User is already signed up for this course' });
+      return;
+    }
 
-    // insertUserCourse loops through given courseIds and create usercourse
-    // it also eventually add the list of usercourses into both user and course models.
     await this.signupService.insertUserCourse(course, user);
     res.status(200).send({ message: 'User has been signed up' });
     return 'success';
