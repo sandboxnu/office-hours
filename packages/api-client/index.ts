@@ -13,7 +13,6 @@ import {
   GetProfileResponse,
   GetQuestionResponse,
   GetQueueResponse,
-  GetReleaseNotesResponse,
   GroupQuestionsParams,
   GetSelfEnrollResponse,
   ListInsightsResponse,
@@ -367,10 +366,6 @@ class APIClient {
   semesters = {
     get: async (): Promise<SemesterPartial[]> =>
       this.req("GET", `/api/v1/semesters`),
-  };
-  releaseNotes = {
-    get: async (): Promise<GetReleaseNotesResponse> =>
-      this.req("GET", `/api/v1/release_notes`),
   };
   insights = {
     get: async (

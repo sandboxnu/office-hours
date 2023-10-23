@@ -1167,11 +1167,6 @@ export interface TwilioBody {
   ApiVersion: string;
 }
 
-export interface GetReleaseNotesResponse {
-  releaseNotes: unknown;
-  lastUpdatedUnixTime: number;
-}
-
 export type GetInsightOutputResponse = PossibleOutputTypes;
 
 export type ListInsightsResponse = Record<string, InsightDisplayInfo>;
@@ -1351,11 +1346,6 @@ export const ERROR_MESSAGES = {
   },
   queueRoleGuard: {
     queueNotFound: "Queue not found",
-  },
-  releaseNotesController: {
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    releaseNotesTime: (e: any): string =>
-      "Error Parsing release notes time: " + e,
   },
   insightsController: {
     insightUnathorized: "User is not authorized to view this insight",
