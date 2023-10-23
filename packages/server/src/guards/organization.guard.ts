@@ -32,7 +32,7 @@ export class OrganizationGuard implements CanActivate {
   ): Promise<{ user: OrganizationUserModel }> {
     const user = await OrganizationUserModel.findOne({
       where: {
-        userId: request.params.uid,
+        userId: request.params.uid || request.body.userId,
         organizationId: request.params.oid,
       },
     });

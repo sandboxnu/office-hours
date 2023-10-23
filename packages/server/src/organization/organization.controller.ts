@@ -113,7 +113,7 @@ export class OrganizationController {
   }
 
   @Patch(':oid/update_user_role')
-  @UseGuards(JwtAuthGuard, OrganizationRolesGuard)
+  @UseGuards(JwtAuthGuard, OrganizationRolesGuard, OrganizationGuard)
   @Roles(OrganizationRole.ADMIN)
   async updateUserOrganizationRole(
     @Res() res: Response,
