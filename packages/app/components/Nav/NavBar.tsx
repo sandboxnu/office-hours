@@ -42,6 +42,9 @@ const Logo = styled.div`
   font-weight: 500;
   color: #262626;
   text-transform: capitalize;
+  display: flex;
+  align-items: center;
+  vertical-align: middle;
 `;
 
 const MenuCon = styled.div`

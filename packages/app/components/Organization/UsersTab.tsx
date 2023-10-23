@@ -1,6 +1,10 @@
 import { SearchOutlined } from "@ant-design/icons";
 import { API } from "@koh/api-client";
-import { OrganizationRole, UserRole } from "@koh/common";
+import {
+  GetOrganizationResponse,
+  OrganizationRole,
+  UserRole,
+} from "@koh/common";
 import {
   Card,
   Spin,
@@ -12,6 +16,7 @@ import {
   Select,
   Modal,
   message,
+  Alert,
 } from "antd";
 import { ReactElement, useEffect, useState } from "react";
 import styled from "styled-components";
@@ -33,9 +38,9 @@ interface UserData {
 }
 
 export default function UsersTab({
-  organizationId,
+  organization,
 }: {
-  organizationId: number;
+  organization: GetOrganizationResponse;
 }): ReactElement {
   const profile = useProfile();
 
@@ -65,7 +70,7 @@ export default function UsersTab({
     const { userId } = selectedUserData;
 
     await API.organizations
-      .updateOrganizationUserRole(organizationId, {
+      .updateOrganizationUserRole(organization?.id, {
         userId,
         organizationRole: updatedRole,
       })
@@ -109,7 +114,8 @@ export default function UsersTab({
 
     const { data: users } = useSWR(
       `users/${page}/${search}`,
-      async () => await API.organizations.getUsers(organizationId, page, search)
+      async () =>
+        await API.organizations.getUsers(organization.id, page, search)
     );
 
     if (!users) {
@@ -151,7 +157,8 @@ export default function UsersTab({
                           item.organizationRole.toLowerCase() ===
                             OrganizationRole.ADMIN.toLowerCase() ||
                           item.userRole.toLowerCase() ===
-                            UserRole.ADMIN.toLowerCase()
+                            UserRole.ADMIN.toLowerCase() ||
+                          organization.ssoEnabled
                         }
                         options={Object.keys(OrganizationRole).map((role) => ({
                           label: role.toLowerCase(),
@@ -161,9 +168,11 @@ export default function UsersTab({
                             item.userRole.toLowerCase() ===
                               UserRole.ADMIN.toLowerCase() ||
                             role.toLowerCase() ===
-                              item.organizationRole.toLowerCase(),
+                              item.organizationRole.toLowerCase() ||
+                            organization.ssoEnabled,
                         }))}
                       />,
+
                       <Button
                         key=""
                         type="primary"
@@ -173,6 +182,7 @@ export default function UsersTab({
                             UserRole.ADMIN.toLowerCase() ||
                           item.organizationRole === OrganizationRole.ADMIN
                         }
+                        href={`/organization/user/${item.userId}/edit`}
                       >
                         Edit
                       </Button>,
@@ -206,6 +216,14 @@ export default function UsersTab({
   return (
     <>
       <Card title="Users">
+        {organization.ssoEnabled && (
+          <Alert
+            message="System Notice"
+            description="Organizations with SSO authentication enabled have a limited editing permissions for users. Changes must be made in the SSO provider."
+            type="error"
+            style={{ marginBottom: 20 }}
+          />
+        )}
         <RenderTable shouldRenderTable={shouldRenderTable} />
       </Card>
 

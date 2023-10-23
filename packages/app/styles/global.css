@@ -2,16 +2,16 @@
 
 @layer base {
     h1 {
-        @apply block text-[2em] font-bold mx-0 my-[0.67em];
+        @apply block text-[2em] font-bold mx-0 my-[inherit];
     }
     h2 {
-        @apply block text-[1.5em] font-bold mx-0 my-[0.83em];
+        @apply block text-[1.5em] font-bold mx-0 my-[inherit];
     }
     h3 {
         @apply block text-[1.17em] font-bold mx-0 my-[1em];
     }
     h4 {
-        @apply block font-[bold] mx-0 my-[1.33em];
+        @apply block font-[bold] mx-0 my-[inherit];
     }
     h5 {
         @apply block text-[0.83em] font-bold mx-0 my-[1.67em];

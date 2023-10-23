@@ -4,6 +4,7 @@ import { UserModel } from 'profile/user.entity';
 import { Brackets, getRepository } from 'typeorm';
 import { OrganizationCourseModel } from './organization-course.entity';
 import { CourseModel } from 'course/course.entity';
+import { GetOrganizationUserResponse, UserRole } from '@koh/common';
 
 export interface UserResponse {
   userId: number;
@@ -127,7 +128,7 @@ export class OrganizationService {
     ]);
 
     const usersSubset = await users
-      .orderBy('UserModel.firstName')
+      .orderBy('UserModel.lastName')
       .skip((page - 1) * pageSize)
       .take(pageSize)
       // .getMany() wouldn't work here because relations are not working well with getMany()
@@ -146,6 +147,51 @@ export class OrganizationService {
     });
 
     return usersResponse;
+  }
+
+  public async getOrganizationUserByUserId(
+    userId: number,
+  ): Promise<GetOrganizationUserResponse> {
+    const { organizationId, role, organizationUser } =
+      await OrganizationUserModel.findOne({
+        where: {
+          userId,
+        },
+        relations: [
+          'organizationUser',
+          'organizationUser.courses',
+          'organizationUser.courses.course',
+        ],
+      });
+
+    const globalRole: string =
+      organizationUser.userRole == UserRole.ADMIN ? 'unknown' : 'user';
+
+    const flattenedUser = {
+      organizationId: organizationId,
+      organizationRole: role,
+      user: {
+        id: organizationUser.id,
+        firstName: organizationUser.firstName,
+        lastName: organizationUser.lastName,
+        email: organizationUser.email,
+        photoUrl: organizationUser.photoURL,
+        fullName: organizationUser.name,
+        globalRole: globalRole,
+        sid: organizationUser.sid,
+      },
+      courses: organizationUser.courses.map((courseInfo) => {
+        const { role, course } = courseInfo;
+
+        return {
+          id: course.id,
+          name: course.name,
+          role: role,
+        };
+      }),
+    };
+
+    return flattenedUser;
   }
 
   public async getOrganizationAndRoleByUserId(userId: number): Promise<any> {

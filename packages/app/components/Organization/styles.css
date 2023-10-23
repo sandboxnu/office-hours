@@ -37,12 +37,11 @@ background: linear-gradient(to right, #4CA1AF, #2C3E50); /* W3C, IE 10+/ Edge, F
 .titleCardStatistics {
   color: #fff;
   font-weight: 600;
-  line-height: 0.5;
+  line-height: 1;
   font-size: 30px;
 }
 
 .cardDescription {
   color: #fff;
   font-weight: 500;
-  line-height: 0.5;
 }

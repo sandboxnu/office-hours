@@ -91,7 +91,7 @@ export default function Settings(): React.ReactElement {
             )}
 
             {selectedMenuItem === "users" && (
-              <UsersTab organizationId={organization?.id} profile={profile} />
+              <UsersTab organization={organization} profile={profile} />
             )}
 
             {selectedMenuItem === "courses" && (

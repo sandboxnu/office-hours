@@ -16,6 +16,7 @@ import { UserModel } from 'profile/user.entity';
 import { Response } from 'express';
 import {
   ERROR_MESSAGES,
+  GetOrganizationUserResponse,
   OrganizationRole,
   UpdateOrganizationDetailsParams,
   UpdateOrganizationUserRole,
@@ -32,6 +33,7 @@ import {
   UserResponse,
   CourseResponse,
 } from './organization.service';
+import { OrganizationGuard } from 'guards/organization.guard';
 
 @Controller('organization')
 export class OrganizationController {
@@ -210,8 +212,9 @@ export class OrganizationController {
         }
 
         if (
-          organizationPatch.websiteUrl.trim().length < 10 ||
-          !this.isValidUrl(organizationPatch.websiteUrl)
+          organizationPatch.websiteUrl &&
+          (organizationPatch.websiteUrl.trim().length < 10 ||
+            !this.isValidUrl(organizationPatch.websiteUrl))
         ) {
           return res.status(HttpStatus.BAD_REQUEST).send({
             message:
@@ -236,6 +239,7 @@ export class OrganizationController {
           });
       })
       .catch((err) => {
+        console.log(err);
         res.status(500).send({ message: err });
       });
   }
@@ -272,6 +276,20 @@ export class OrganizationController {
       courses,
       membersProfessors,
     };
+  }
+
+  @Get(':oid/get_user/:uid')
+  @UseGuards(JwtAuthGuard, OrganizationRolesGuard, OrganizationGuard)
+  @Roles(OrganizationRole.ADMIN)
+  async getUser(
+    @Res() res: Response,
+    @Param('uid') uid: number,
+  ): Promise<Response<GetOrganizationUserResponse>> {
+    const userInfo = await this.organizationService.getOrganizationUserByUserId(
+      uid,
+    );
+
+    return res.status(HttpStatus.OK).send(userInfo);
   }
 
   @Get(':oid/get_users/:page?')

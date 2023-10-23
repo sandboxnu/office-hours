@@ -7,6 +7,7 @@ import {
   BeforeInsert,
   Column,
   Entity,
+  JoinColumn,
   ManyToMany,
   OneToMany,
   OneToOne,
@@ -89,8 +90,7 @@ export class UserModel extends BaseEntity {
 
   insights: string[];
 
-  @Exclude()
-  @OneToOne((type) => OrganizationUserModel, (ou) => ou.userId)
+  @OneToOne((type) => OrganizationUserModel, (ou) => ou.organizationUser)
   organizationUser: OrganizationUserModel;
 
   @AfterLoad()

@@ -22,7 +22,7 @@ export default function MainTab({
     <>
       <div>
         <span style={{ fontWeight: 400, color: "#64657c" }}>Welcome Back,</span>
-        <h1 style={{ lineHeight: 1 }}>
+        <h1 style={{ lineHeight: 1, fontWeight: 500 }}>
           <strong>{userName}</strong>
         </h1>
       </div>

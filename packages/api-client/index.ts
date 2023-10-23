@@ -47,6 +47,7 @@ import {
   ChatbotQuestion,
   ChatBotQuestionParams,
   Interaction,
+  GetOrganizationUserResponse,
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -437,6 +438,14 @@ class APIClient {
       this.req("GET", `/api/v1/organization/${organizationId}/stats`),
     get: async (organizationId: number): Promise<any> =>
       this.req("GET", `/api/v1/organization/${organizationId}`),
+    getUser: async (
+      organizationId: number,
+      userId: number
+    ): Promise<GetOrganizationUserResponse> =>
+      this.req(
+        "GET",
+        `/api/v1/organization/${organizationId}/get_user/${userId}`
+      ),
     getUsers: async (
       organizationId: number,
       page: number,

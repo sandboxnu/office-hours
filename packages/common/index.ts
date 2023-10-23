@@ -760,6 +760,30 @@ export class GetOrganizationUsersResponse {
   userOrganizationRole!: string;
 }
 
+export class OrganizationUser {
+  id!: number;
+  firstName!: string;
+  lastName!: string;
+  email!: string;
+  photoUrl!: string;
+  fullName!: string;
+  globalRole!: string;
+  sid!: number;
+}
+
+export class OrganizationCourse {
+  id!: number;
+  name!: string;
+  role!: string;
+}
+
+export class GetOrganizationUserResponse {
+  organizationId!: number;
+  organizationRole!: string;
+  user!: OrganizationUser;
+  courses!: OrganizationCourse[];
+}
+
 export class GetSelfEnrollResponse {
   courses!: CoursePartial[];
 }
@@ -1342,6 +1366,7 @@ export const ERROR_MESSAGES = {
     notLoggedIn: "Must be logged in",
     noCourseIdFound: "No courseid found",
     notInCourse: "Not In This Course",
+    userNotInOrganization: "User not in organization",
     mustBeRoleToAccess: (roles: string[]): string =>
       `You must have one of roles [${roles.join(
         ", "

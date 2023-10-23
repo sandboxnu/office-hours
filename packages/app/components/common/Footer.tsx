@@ -7,9 +7,6 @@ const FullWidth = styled.footer`
 
   flex-shrink: 0;
   padding: 12px 64px;
-
-  display: flex;
-  justify-content: space-between;
 `;
 
 export function Footer(): ReactElement {
