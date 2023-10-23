@@ -323,8 +323,6 @@ export class ProfileController {
 
     const pendingCourses = await this.profileService.getPendingCourses(user.id);
 
-    const organizationRole =
-      await this.organizationService.getOrganizationRoleByUserId(user.id);
     const userOrganization =
       await this.organizationService.getOrganizationAndRoleByUserId(user.id);
 

@@ -189,7 +189,11 @@ export default function UsersTab({
                     ]}
                   >
                     <List.Item.Meta
-                      avatar={<Avatar src={item.photoUrl} />}
+                      avatar={
+                        <Avatar
+                          src={"/api/v1/profile/get_picture/" + item.photoUrl}
+                        />
+                      }
                       title={item.firstName + " " + item.lastName}
                       description={item.email}
                     />

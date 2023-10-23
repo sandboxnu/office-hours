@@ -12,7 +12,7 @@ const FullWidth = styled.footer`
 export function Footer(): ReactElement {
   return (
     <FullWidth>
-      <div>Developed for UBC Okanagan Courses</div>
+      <div>Maintained by UBC Okanagan students with ❤️</div>
     </FullWidth>
   );
 }

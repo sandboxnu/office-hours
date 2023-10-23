@@ -4,6 +4,7 @@ import { useProfile } from "../../../../hooks/useProfile";
 import { OrganizationRole } from "@koh/common";
 import DefaultErrorPage from "next/error";
 import {
+  Avatar,
   Breadcrumb,
   Button,
   Card,

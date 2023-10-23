@@ -12,7 +12,6 @@ import {
   IsOptional,
   IsString,
   ValidateIf,
-  isBoolean,
 } from "class-validator";
 import "reflect-metadata";
 import { Cache } from "cache-manager";
@@ -1260,6 +1259,7 @@ export const ERROR_MESSAGES = {
       "Organization URL must be at least 4 characters and be a valid URL",
     userNotFoundInOrganization: "User not found in organization",
     cannotRemoveAdminRole: "Cannot remove admin role from user",
+    cannotGetAdminUser: "Information about this user account is restricted",
   },
   courseController: {
     checkIn: {

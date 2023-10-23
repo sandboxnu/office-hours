@@ -289,6 +289,14 @@ export class OrganizationController {
       uid,
     );
 
+    if (userInfo.organizationRole === OrganizationRole.ADMIN) {
+      return res.status(HttpStatus.UNAUTHORIZED).send({
+        message: ERROR_MESSAGES.roleGuard.mustBeRoleToAccess([
+          OrganizationRole.ADMIN,
+        ]),
+      });
+    }
+
     return res.status(HttpStatus.OK).send(userInfo);
   }
 
