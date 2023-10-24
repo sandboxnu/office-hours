@@ -1,6 +1,6 @@
-import React, { ReactElement, useEffect, useRef, useState } from "react";
-import { API } from "@koh/api-client";
-import { SearchOutlined } from "@ant-design/icons";
+import React, { ReactElement, useEffect, useRef, useState } from 'react'
+import { API } from '@koh/api-client'
+import { SearchOutlined } from '@ant-design/icons'
 import {
   Button,
   Form,
@@ -10,34 +10,34 @@ import {
   Space,
   Table,
   Typography,
-} from "antd";
-import type { ColumnType } from "antd/es/table";
-import type { FilterConfirmProps } from "antd/es/table/interface";
-import Highlighter from "react-highlight-words";
-import { GetCourseResponse, questions } from "@koh/common";
-import { pick } from "lodash";
-import styled from "styled-components";
-import { AddCourseModal } from "./addCourseModal";
+} from 'antd'
+import type { ColumnType } from 'antd/es/table'
+import type { FilterConfirmProps } from 'antd/es/table/interface'
+import Highlighter from 'react-highlight-words'
+import { GetCourseResponse, questions } from '@koh/common'
+import { pick } from 'lodash'
+import styled from 'styled-components'
+import { AddCourseModal } from './addCourseModal'
 
 const CourseRosterPageComponent = styled.div`
   width: 90%;
   margin-left: auto;
   margin-right: auto;
   padding-top: 50px;
-`;
+`
 
 const possibleStatus = [
-  { value: "CantFind" },
-  { value: "TADeleted" },
-  { value: "Resolved" },
-  { value: "ConfirmedDeleted" },
-  { value: "Stale" },
-];
+  { value: 'CantFind' },
+  { value: 'TADeleted' },
+  { value: 'Resolved' },
+  { value: 'ConfirmedDeleted' },
+  { value: 'Stale' },
+]
 interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
-  editing: boolean;
-  dataIndex: string;
-  title: any;
-  children: React.ReactNode;
+  editing: boolean
+  dataIndex: string
+  title: any
+  children: React.ReactNode
 }
 
 const EditableCell: React.FC<EditableCellProps> = ({
@@ -60,92 +60,92 @@ const EditableCell: React.FC<EditableCellProps> = ({
             },
           ]}
         >
-          {title === "Status" ? <Select options={possibleStatus} /> : <Input />}
+          {title === 'Status' ? <Select options={possibleStatus} /> : <Input />}
         </Form.Item>
       ) : (
         children
       )}
     </td>
-  );
-};
+  )
+}
 
 export default function Courses(): ReactElement {
-  const [addCourseModal, setAddCourseModal] = useState(false);
-  const [editingKey, setEditingKey] = useState(-1);
-  const [data, setData] = useState<GetCourseResponse[]>();
-  const [form] = Form.useForm();
-  const [searchText, setSearchText] = useState("");
-  const [searchedColumn, setSearchedColumn] = useState("");
-  const searchInput = useRef(null);
+  const [addCourseModal, setAddCourseModal] = useState(false)
+  const [editingKey, setEditingKey] = useState(-1)
+  const [data, setData] = useState<GetCourseResponse[]>()
+  const [form] = Form.useForm()
+  const [searchText, setSearchText] = useState('')
+  const [searchedColumn, setSearchedColumn] = useState('')
+  const searchInput = useRef(null)
 
   const getData = async () => {
-    return await API.site_admin.getCourses();
-  };
+    return await API.site_admin.getCourses()
+  }
   useEffect(() => {
     getData().then((d) => {
-      setData(d);
-      console.log(data);
-    });
-  }, [addCourseModal]);
+      setData(d)
+      console.log(data)
+    })
+  }, [addCourseModal])
 
   const handleSearch = (
     selectedKeys: string[],
     confirm: (param?: FilterConfirmProps) => void,
-    dataIndex: string
+    dataIndex: string,
   ) => {
-    confirm();
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
-  };
+    confirm()
+    setSearchText(selectedKeys[0])
+    setSearchedColumn(dataIndex)
+  }
 
   const handleReset = (clearFilters: () => void) => {
-    clearFilters();
-    setSearchText("");
-  };
+    clearFilters()
+    setSearchText('')
+  }
 
   const del = async (id: number) => {
-    await API.site_admin.deleteCourse(id);
-  };
+    await API.site_admin.deleteCourse(id)
+  }
   const save = async (id: number) => {
     try {
-      const row = await form.validateFields();
-      console.log(row);
-      console.log(id);
+      const row = await form.validateFields()
+      console.log(row)
+      console.log(id)
       await API.course.editCourseInfo(id, {
         courseId: id,
         timezone: row.timezone,
-      });
-      const newData = [...data];
-      const index = newData.findIndex((item) => id === item.id);
-      console.log(pick(newData[index], []));
+      })
+      const newData = [...data]
+      const index = newData.findIndex((item) => id === item.id)
+      console.log(pick(newData[index], []))
       if (index > -1) {
-        const item = newData[index];
+        const item = newData[index]
         newData.splice(index, 1, {
           ...item,
           ...row,
-        });
-        setData(newData);
-        setEditingKey(-1);
+        })
+        setData(newData)
+        setEditingKey(-1)
       } else {
-        newData.push(row);
-        setData(newData);
-        setEditingKey(-1);
+        newData.push(row)
+        setData(newData)
+        setEditingKey(-1)
       }
     } catch (errInfo) {
-      console.log("Validate Failed:", errInfo);
+      console.log('Validate Failed:', errInfo)
     }
-  };
+  }
 
   const edit = (record: any) => {
-    form.setFieldsValue({ timezone: "", ...record });
-    setEditingKey(record.id);
-  };
+    form.setFieldsValue({ timezone: '', ...record })
+    setEditingKey(record.id)
+  }
 
   const cancel = () => {
-    setEditingKey(-1);
-  };
+    setEditingKey(-1)
+  }
 
-  const isEditing = (record: GetCourseResponse) => record.id === editingKey;
+  const isEditing = (record: GetCourseResponse) => record.id === editingKey
   //for search bars
   const getColumnSearchProps = (dataIndex: string): ColumnType<questions> => ({
     filterDropdown: ({
@@ -165,7 +165,7 @@ export default function Courses(): ReactElement {
           onPressEnter={() =>
             handleSearch(selectedKeys as string[], confirm, dataIndex)
           }
-          style={{ marginBottom: 8, display: "block" }}
+          style={{ marginBottom: 8, display: 'block' }}
         />
         <Space>
           <Button
@@ -190,9 +190,9 @@ export default function Courses(): ReactElement {
             type="link"
             size="small"
             onClick={() => {
-              confirm({ closeDropdown: false });
-              setSearchText((selectedKeys as string[])[0]);
-              setSearchedColumn(dataIndex);
+              confirm({ closeDropdown: false })
+              setSearchText((selectedKeys as string[])[0])
+              setSearchedColumn(dataIndex)
             }}
           >
             Filter
@@ -201,7 +201,7 @@ export default function Courses(): ReactElement {
             type="link"
             size="small"
             onClick={() => {
-              close();
+              close()
             }}
           >
             close
@@ -210,7 +210,7 @@ export default function Courses(): ReactElement {
       </div>
     ),
     filterIcon: (filtered: boolean) => (
-      <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+      <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
     ),
     onFilter: (value, record) =>
       record[dataIndex]
@@ -219,73 +219,73 @@ export default function Courses(): ReactElement {
         .includes((value as string).toLowerCase()),
     onFilterDropdownVisibleChange: (visible: any) => {
       if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
+        setTimeout(() => searchInput.current?.select(), 100)
       }
     },
     render: (text) =>
       searchedColumn === dataIndex ? (
         <Highlighter
-          highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
+          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
           searchWords={[searchText]}
           autoEscape
-          textToHighlight={text ? text.toString() : ""}
+          textToHighlight={text ? text.toString() : ''}
         />
       ) : (
         text
       ),
-  });
+  })
 
   const columns = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
       sorter: (a, b) => a.creatorName.length - b.creatorName.length,
-      width: "15%",
+      width: '15%',
       editable: false,
-      ...getColumnSearchProps("name"),
+      ...getColumnSearchProps('name'),
     },
     {
-      title: "Section",
-      dataIndex: "sectionGroupName",
-      key: "sectionGroupName",
+      title: 'Section',
+      dataIndex: 'sectionGroupName',
+      key: 'sectionGroupName',
       width: 150,
       editable: false,
-      ...getColumnSearchProps("sectionGroupName"),
+      ...getColumnSearchProps('sectionGroupName'),
     },
     {
-      title: "Semester Id",
-      dataIndex: "semesterId",
-      key: "semesterId",
+      title: 'Semester Id',
+      dataIndex: 'semesterId',
+      key: 'semesterId',
       width: 150,
       editable: false,
-      ...getColumnSearchProps("semesterId"),
+      ...getColumnSearchProps('semesterId'),
     },
     {
-      title: "Timezone",
-      dataIndex: "timezone",
-      key: "timezone",
+      title: 'Timezone',
+      dataIndex: 'timezone',
+      key: 'timezone',
       width: 150,
       editable: true,
-      ...getColumnSearchProps("timezone"),
+      ...getColumnSearchProps('timezone'),
     },
     {
-      title: "Enabled",
-      dataIndex: "enabled",
-      key: "enabled",
+      title: 'Enabled',
+      dataIndex: 'enabled',
+      key: 'enabled',
       render: (text) => String(text),
       width: 150,
       editable: false,
     },
     {
-      title: "Edit",
-      dataIndex: "edit",
+      title: 'Edit',
+      dataIndex: 'edit',
       width: 100,
       editable: false,
       // render: (_: any, record) =>
       //   <a onClick={() => editQuestion(record.id)}>Edit</a>
       render: (_: any, record: GetCourseResponse) => {
-        const editable = isEditing(record);
+        const editable = isEditing(record)
         return editable ? (
           <span>
             <Typography.Link
@@ -305,13 +305,13 @@ export default function Courses(): ReactElement {
           >
             Edit
           </Typography.Link>
-        );
+        )
       },
     },
     {
-      title: "Action",
-      dataIndex: "",
-      key: "x",
+      title: 'Action',
+      dataIndex: '',
+      key: 'x',
       width: 100,
       render: (text, record) => (
         <span>
@@ -324,25 +324,25 @@ export default function Courses(): ReactElement {
         </span>
       ),
     },
-  ];
+  ]
 
   const mergedColumns = columns.map((col) => {
     if (!col.editable) {
-      return col;
+      return col
     }
     return {
       ...col,
       onCell: (record: GetCourseResponse) => ({
         record,
-        inputType: col.dataIndex === "enabled" ? "boolean" : "text",
+        inputType: col.dataIndex === 'enabled' ? 'boolean' : 'text',
         dataIndex: col.dataIndex,
         title: String(col.title),
         editing: isEditing(record),
       }),
-    };
-  });
+    }
+  })
   function showModal(): void {
-    setAddCourseModal(true);
+    setAddCourseModal(true)
   }
 
   return (
@@ -370,5 +370,5 @@ export default function Courses(): ReactElement {
         onClose={() => setAddCourseModal(false)}
       />
     </CourseRosterPageComponent>
-  );
+  )
 }

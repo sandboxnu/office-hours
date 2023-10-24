@@ -16,9 +16,14 @@ const ChatbotContainer = styled.div`
   zindex: 9999;
 `
 
+interface Part {
+  pageNumber: number
+  source: string
+}
+
 interface SourceDocument {
   name: string
-  parts: string[]
+  parts: Part[]
 }
 
 interface PreDeterminedQuestion {
@@ -83,7 +88,7 @@ export const ChatbotComponent: React.FC = () => {
       console.log(json)
       return json
     } catch (error) {
-      console.error('Error fetching from Flowise API:', error)
+      console.error('Error fetching from API:', error)
       return null
     }
   }
@@ -114,7 +119,7 @@ export const ChatbotComponent: React.FC = () => {
     setIsLoading(true)
 
     const result = await query()
-    console.log(query)
+    console.log(result)
     const answer = result.answer || "Sorry, I couldn't find the answer"
     const sourceDocuments = result.sourceDocuments || []
 
@@ -134,9 +139,9 @@ export const ChatbotComponent: React.FC = () => {
       currentInteractionId = interaction.id // Update the current value if a new interaction was created
     }
 
-    const formattedSourceDocument = sourceDocuments.map((sourceDocument) => ({
+    const sourceDocumentPages = sourceDocuments.map((sourceDocument) => ({
       ...sourceDocument,
-      parts: sourceDocument.parts.map((part) => part.toString()),
+      parts: sourceDocument.parts.map((part) => part.pageNumber),
     }))
 
     // Use currentInteractionId for the createQuestion call
@@ -144,7 +149,7 @@ export const ChatbotComponent: React.FC = () => {
       interactionId: currentInteractionId,
       questionText: input,
       responseText: answer,
-      sourceDocuments: formattedSourceDocument,
+      sourceDocuments: sourceDocumentPages,
     })
 
     await addQuestionVector(question.id, input)
@@ -242,10 +247,11 @@ export const ChatbotComponent: React.FC = () => {
                                     sourceDocument.parts.map((part) => (
                                       <div
                                         className="flex flex-grow cursor-pointer items-center justify-center rounded-lg bg-blue-100 px-3 py-2 font-semibold transition hover:bg-blue-800 hover:text-white"
-                                        key={`${sourceDocument.name}-${part}`}
+                                        key={`${sourceDocument.name}-${part.pageNumber}`}
+                                        onClick={() => window.open(part.source)}
                                       >
                                         <p className="h-fit w-fit text-xs leading-4">
-                                          {`p. ${part}`}
+                                          {`p. ${part.pageNumber}`}
                                         </p>
                                       </div>
                                     ))}

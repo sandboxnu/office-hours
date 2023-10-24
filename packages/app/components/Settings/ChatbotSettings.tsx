@@ -23,6 +23,7 @@ export default function ChatbotSettings(): ReactElement {
   const router = useRouter()
   const { cid } = router.query
 
+  const [url, setUrl] = useState('')
   const [files, setFiles] = useState([])
   const [search, setSearch] = useState('')
   const debouncedValue = useDebounce<string>(search, 500)
@@ -100,6 +101,41 @@ export default function ChatbotSettings(): ReactElement {
     }
   }
 
+  const addUrl = async () => {
+    try {
+      const data = {
+        url: url,
+      }
+
+      const uploadedDocument = await fetch(`/chat/${cid}/document/url/github`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+
+      const documentJSON = await uploadedDocument.json()
+
+      const response = await API.chatbot.addDocument({
+        data: {
+          name: documentJSON.name,
+          type: documentJSON.type,
+          subDocumentIds: documentJSON.ids,
+        },
+        courseId: Number(cid),
+      })
+
+      console.log('Uploaded')
+      toast.success('File uploaded.')
+    } catch (e) {
+      toast.error('Failed to upload file.')
+    }
+
+    setUrl('')
+    getDocuments()
+  }
+
   const uploadFiles = async () => {
     for (const file of files) {
       try {
@@ -117,7 +153,7 @@ export default function ChatbotSettings(): ReactElement {
           data: {
             name: documentJSON.name,
             type: documentJSON.type,
-            subDocumentIds: documentJSON.subDocumentIds,
+            subDocumentIds: documentJSON.ids,
           },
           courseId: Number(cid),
         })
@@ -133,7 +169,6 @@ export default function ChatbotSettings(): ReactElement {
   const handleFileUpload = async () => {
     await uploadFiles()
 
-    console.log('Done')
     const fileInput = document.getElementById('files')
     if (fileInput) {
       fileInput.value = ''
@@ -172,14 +207,21 @@ export default function ChatbotSettings(): ReactElement {
         <Button>Add Document</Button>
       </div>
       <hr className="my-5 w-full"></hr>
-      <input
-        type="file"
-        name="file"
-        id="files"
-        multiple
-        onChange={handleFileSelected}
-      />
+      <input type="file" name="file" multiple onChange={handleFileSelected} />
       <Button onClick={handleFileUpload}>Upload</Button>
+
+      <Input
+        placeholder="Enter URL"
+        type="text"
+        name="url"
+        value={url}
+        onChange={(e) => setUrl(e.target.value)}
+        onPressEnter={addUrl}
+      />
+
+      <br />
+      <br />
+      <br />
 
       <Input
         placeholder={'Search document name...'}
