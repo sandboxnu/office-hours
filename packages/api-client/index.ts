@@ -227,11 +227,12 @@ class APIClient {
     createSelfEnrollOverride: async (courseId: number): Promise<void> =>
       this.req("POST", `/api/v1/create_self_enroll_override/${courseId}`),
     getLimitedCourseResponse: async (
-      courseId: number
+      courseId: number,
+      code: string
     ): Promise<GetLimitedCourseResponse> =>
       this.req(
         "GET",
-        `/api/v1/courses/limited/${courseId}`,
+        `/api/v1/courses/limited/${courseId}/${code}`,
         GetLimitedCourseResponse
       ),
   };

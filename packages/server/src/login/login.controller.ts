@@ -122,11 +122,7 @@ export class LoginController {
 
     res.cookie('auth_token', authToken, { httpOnly: true, secure: isSecure });
 
-    if (redirect) {
-      res.redirect(302, redirect);
-    } else {
-      res.redirect(302, `/courses`);
-    }
+    res.redirect(302, redirect ? redirect : '/courses');
   }
 
   @Get('/logout')

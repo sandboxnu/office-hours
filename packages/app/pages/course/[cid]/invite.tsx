@@ -1,5 +1,5 @@
 import { Card, Spin, Button, Space } from "antd";
-import { ReactElement, useEffect } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import { useCourse } from "../../../hooks/useCourse";
 import { useRouter } from "next/router";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
@@ -8,13 +8,13 @@ import Meta from "antd/lib/card/Meta";
 import { API } from "@koh/api-client";
 import { useProfile } from "../../../hooks/useProfile";
 import { UBCOuserParam } from "@koh/common";
-import { useLimitedCourse } from "../../../hooks/useLimitedCourse";
 
 export default function Invite(): ReactElement {
   const router = useRouter();
   const { cid, code } = router.query;
   const profile = useProfile();
-  const { course } = useLimitedCourse(Number(cid));
+  const [course, setCourse] = useState(null);
+  const [courseError, setCourseError] = useState(null);
 
   const isLoading = !profile || !course;
 
@@ -25,13 +25,28 @@ export default function Invite(): ReactElement {
     if (!profile) {
       localStorage.setItem("lastVisited", window.location.href);
     }
-  }, [profile]);
+
+    const fetchData = async () => {
+      try {
+        const response = await API.course.getLimitedCourseResponse(
+          Number(cid),
+          String(code)
+        );
+        setCourse(response);
+      } catch (error) {
+        setCourseError(error);
+      }
+    };
+    if (cid) {
+      fetchData();
+    }
+  }, [cid, profile]);
 
   // Register student and redirect to course
   const addStudent = async (userData: UBCOuserParam) => {
     await API.signup.registerStudent(userData);
     localStorage.removeItem("lastVisited");
-    window.location.href = "/courses";
+    router.push("/courses");
   };
 
   // If the user is already in the course, redirect to courses page
@@ -40,7 +55,7 @@ export default function Invite(): ReactElement {
     profile.courses.some((userCourse) => userCourse.course.id === Number(cid))
   ) {
     localStorage.removeItem("lastVisited");
-    window.location.href = "/courses";
+    router.push("/courses");
   }
 
   const renderCard = (
@@ -103,13 +118,13 @@ export default function Invite(): ReactElement {
               "Back to my courses",
               () => {
                 localStorage.removeItem("lastVisited");
-                window.location.href = "/courses";
+                router.push("/courses");
               }
             )
           : code !== course?.courseInviteCode
           ? renderCard("Invalid Course Code", {}, "Back to my courses", () => {
               localStorage.removeItem("lastVisited");
-              window.location.href = "/courses";
+              router.push("/courses");
             })
           : renderCard(
               `Invitation to join ‘${course?.name}‘`,

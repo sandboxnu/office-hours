@@ -17,7 +17,6 @@ import AddStudentsToCourse from "./AddStudentsToCourse";
 import ExportQuestions from "./ExportQuestions";
 import EditQuestions from "./EditQuestions";
 import EditCourse from "./EditCourse";
-
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import { Role } from "@koh/common";
 import ChatbotSettings from "./ChatbotSettings";

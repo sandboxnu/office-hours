@@ -121,11 +121,27 @@ export class CourseController {
     return questions;
   }
 
-  @Get('limited/:id')
+  @Get('limited/:id/:code')
   async getLimitedCourseResponse(
     @Param('id') id: number,
+    @Param('code') code: string,
   ): Promise<GetLimitedCourseResponse> {
-    const course = await CourseModel.findOne(id);
+    const course = await CourseModel.findOne({
+      where: {
+        id: id,
+        courseInviteCode: code,
+      },
+    });
+
+    if (!course) {
+      console.error(
+        ERROR_MESSAGES.courseController.courseNotFound + 'Course ID: ' + id,
+      );
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.courseNotFound,
+        HttpStatus.NOT_FOUND,
+      );
+    }
 
     const organizationCourse = await OrganizationCourseModel.findOne({
       where: {
@@ -133,6 +149,16 @@ export class CourseController {
       },
       relations: ['organization'],
     });
+
+    if (!organizationCourse) {
+      console.error(
+        ERROR_MESSAGES.courseController.courseNotFound + 'Course ID: ' + id,
+      );
+      throw new HttpException(
+        ERROR_MESSAGES.courseController.courseNotFound,
+        HttpStatus.NOT_FOUND,
+      );
+    }
 
     const organization =
       organizationCourse === undefined ? null : organizationCourse.organization;
