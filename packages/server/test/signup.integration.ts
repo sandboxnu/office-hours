@@ -2,7 +2,12 @@ import { SignupModule } from 'signup/signup.module';
 import { TestingModuleBuilder } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { setupIntegrationTest } from './util/testUtils';
-import { CourseFactory, UserFactory } from './util/factories';
+import {
+  CourseFactory,
+  UserCourseFactory,
+  UserFactory,
+} from './util/factories';
+import { Role } from '@koh/common';
 
 const mockJWT = {
   signAsync: async (payload) => JSON.stringify(payload),
@@ -24,9 +29,27 @@ describe('SignUp Integration', () => {
       expect(res.status).toBe(400);
     });
 
-    it('returns 409 when user exists', async () => {
+    it('just register user if user exists', async () => {
       const course = await CourseFactory.create({ name: 'CS 304' });
       const user = await UserFactory.create();
+
+      const res = await supertest().post('/signup/ubc_signup').send({
+        email: user.email,
+        first_name: user.firstName,
+        last_name: user.lastName,
+        password: 'random_password',
+        selected_course: course.id,
+      });
+      expect(res.status).toBe(200);
+    });
+
+    it('returns 409 when user is already in the course', async () => {
+      const course = await CourseFactory.create({ name: 'CS 304' });
+      const user = await UserFactory.create();
+      await UserCourseFactory.create({
+        user: user,
+        course: course,
+      });
 
       const res = await supertest().post('/signup/ubc_signup').send({
         email: user.email,

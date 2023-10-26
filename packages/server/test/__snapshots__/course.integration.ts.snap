@@ -92,6 +92,7 @@ exports[`Course Integration GET /courses/:id gets office hours no queues, since 
 Object {
   "asyncQuestionDisplayTypes": Array [],
   "coordinator_email": null,
+  "courseInviteCode": null,
   "crns": Array [],
   "deletedAt": null,
   "enabled": true,

@@ -134,9 +134,6 @@ export class CourseController {
     });
 
     if (!course) {
-      console.error(
-        ERROR_MESSAGES.courseController.courseNotFound + 'Course ID: ' + id,
-      );
       throw new HttpException(
         ERROR_MESSAGES.courseController.courseNotFound,
         HttpStatus.NOT_FOUND,
@@ -151,9 +148,6 @@ export class CourseController {
     });
 
     if (!organizationCourse) {
-      console.error(
-        ERROR_MESSAGES.courseController.courseNotFound + 'Course ID: ' + id,
-      );
       throw new HttpException(
         ERROR_MESSAGES.courseController.courseNotFound,
         HttpStatus.NOT_FOUND,
