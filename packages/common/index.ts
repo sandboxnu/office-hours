@@ -1356,6 +1356,7 @@ export const ERROR_MESSAGES = {
     notLoggedIn: "Must be logged in",
     noCourseIdFound: "No courseid found",
     notInCourse: "Not In This Course",
+    notAuthorized: "You don't have permissions to perform this action",
     userNotInOrganization: "User not in organization",
     mustBeRoleToAccess: (roles: string[]): string =>
       `You must have one of roles [${roles.join(
@@ -1370,6 +1371,13 @@ export const ERROR_MESSAGES = {
   profileController: {
     accountNotAvailable: "The user account is undefined",
     userResponseNotFound: "The user response was not found",
+    firstNameTooShort: "First name must be at least 1 characters",
+    lastNameTooShort: "Last name must be at least 1 characters",
+    emailTooShort: "Email must be at least 1 characters",
+    sidInvalid: "Student ID must be a number and greater than 0",
+    noProfilePicture: "User doesn't have a profile picture",
+    noCoursesToDelete: "User doesn't have any courses to delete",
+    emailInUse: "Email is already in use",
     noDiskSpace:
       "There is no disk space left to store an image. Please immediately contact your course staff and let them know. They will contact the Khoury Office Hours team as soon as possible.",
   },

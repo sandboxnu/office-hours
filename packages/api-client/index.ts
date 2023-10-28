@@ -404,6 +404,36 @@ class APIClient {
   };
 
   organizations = {
+    dropUserCourses: async (
+      organizationId: number,
+      userId: number,
+      body: number[]
+    ): Promise<void> =>
+      this.req(
+        "DELETE",
+        `/api/v1/organization/${organizationId}/drop_user_courses/${userId}`,
+        undefined,
+        body
+      ),
+    deleteProfilePicture: async (
+      organizationId: number,
+      userId: number
+    ): Promise<void> =>
+      this.req(
+        "DELETE",
+        `/api/v1/organization/${organizationId}/delete_profile_picture/${userId}`
+      ),
+    patchUserInfo: async (
+      organizatonId: number,
+      userId: number,
+      body: UpdateProfileParams
+    ): Promise<void> =>
+      this.req(
+        "PATCH",
+        `/api/v1/organization/${organizatonId}/edit_user/${userId}`,
+        undefined,
+        body
+      ),
     addMember: async (userId: number, organizationId: number): Promise<void> =>
       this.req(
         "POST",

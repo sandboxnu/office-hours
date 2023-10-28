@@ -345,7 +345,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
           onClose={onClose}
           bodyStyle={{ padding: "12px" }}
         >
-          <NavBarTabs currentHref={pathname} tabs={tabs} />
+          <NavBarTabs currentHref={pathname} tabs={globalTabs} />
           <ProfileDrawer courseId={null} />
         </Drawer>
       </Nav>

@@ -2,6 +2,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
@@ -20,7 +21,10 @@ import {
   OrganizationRole,
   UpdateOrganizationDetailsParams,
   UpdateOrganizationUserRole,
+  UpdateProfileParams,
+  UserRole,
 } from '@koh/common';
+import * as fs from 'fs';
 import { OrganizationUserModel } from './organization-user.entity';
 import { JwtAuthGuard } from 'guards/jwt-auth.guard';
 import { OrganizationRolesGuard } from 'guards/organization-roles.guard';
@@ -28,11 +32,7 @@ import { CourseModel } from 'course/course.entity';
 import { OrganizationCourseModel } from './organization-course.entity';
 import { OrganizationModel } from './organization.entity';
 import { Roles } from 'decorators/roles.decorator';
-import {
-  OrganizationService,
-  UserResponse,
-  CourseResponse,
-} from './organization.service';
+import { OrganizationService } from './organization.service';
 import { OrganizationGuard } from 'guards/organization.guard';
 
 @Controller('organization')
@@ -276,6 +276,184 @@ export class OrganizationController {
       courses,
       membersProfessors,
     };
+  }
+
+  @Delete(':oid/drop_user_courses/:uid')
+  @UseGuards(JwtAuthGuard, OrganizationRolesGuard, OrganizationGuard)
+  @Roles(OrganizationRole.ADMIN)
+  async deleteUserCourses(
+    @Res() res: Response,
+    @Param('uid') uid: number,
+    @Body() userCourses: number[],
+  ): Promise<Response<void>> {
+    if (userCourses.length === 0) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: ERROR_MESSAGES.profileController.noCoursesToDelete,
+      });
+    }
+
+    const userInfo = await OrganizationUserModel.findOne({
+      where: {
+        userId: uid,
+      },
+      relations: ['organizationUser'],
+    });
+
+    if (
+      userInfo.role === OrganizationRole.ADMIN ||
+      userInfo.organizationUser.userRole === UserRole.ADMIN
+    ) {
+      return res.status(HttpStatus.UNAUTHORIZED).send({
+        message: ERROR_MESSAGES.roleGuard.notAuthorized,
+      });
+    }
+
+    await this.organizationService
+      .deleteUserCourses(uid, userCourses)
+      .then(() => {
+        return res.status(HttpStatus.OK).send({
+          message: 'User courses deleted',
+        });
+      })
+      .catch((err) => {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: err,
+        });
+      });
+  }
+
+  @Delete(':oid/delete_profile_picture/:uid')
+  @UseGuards(JwtAuthGuard, OrganizationRolesGuard, OrganizationGuard)
+  @Roles(OrganizationRole.ADMIN)
+  async deleteUserProfilePicture(
+    @Res() res: Response,
+    @Param('uid') oid: number,
+  ): Promise<Response<void>> {
+    const userInfo = await OrganizationUserModel.findOne({
+      where: {
+        userId: oid,
+      },
+      relations: ['organizationUser'],
+    });
+
+    if (
+      userInfo.role === OrganizationRole.ADMIN ||
+      userInfo.organizationUser.userRole === UserRole.ADMIN
+    ) {
+      return res.status(HttpStatus.UNAUTHORIZED).send({
+        message: ERROR_MESSAGES.roleGuard.notAuthorized,
+      });
+    }
+
+    if (!userInfo.organizationUser.photoURL) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: ERROR_MESSAGES.profileController.noProfilePicture,
+      });
+    }
+
+    fs.unlink(
+      process.env.UPLOAD_LOCATION + '/' + userInfo.organizationUser.photoURL,
+      async (err) => {
+        if (err) {
+          const errMessage =
+            'Error deleting previous picture at : ' +
+            userInfo.organizationUser.photoURL +
+            'the previous image was at an invalid location?';
+          return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+            message: errMessage,
+          });
+        } else {
+          userInfo.organizationUser.photoURL = null;
+          await userInfo.organizationUser.save();
+          return res.status(HttpStatus.OK).send({
+            message: 'Profile picture deleted',
+          });
+        }
+      },
+    );
+  }
+
+  @Patch(':oid/edit_user/:uid')
+  @UseGuards(JwtAuthGuard, OrganizationRolesGuard, OrganizationGuard)
+  @Roles(OrganizationRole.ADMIN)
+  async patchUserInfo(
+    @Res() res: Response,
+    @Param('uid') uid: number,
+    @Body() userDetailsBody: UpdateProfileParams,
+  ): Promise<Response<void>> {
+    const userInfo = await OrganizationUserModel.findOne({
+      where: {
+        userId: uid,
+      },
+      relations: ['organizationUser'],
+    });
+
+    if (
+      userInfo.role === OrganizationRole.ADMIN ||
+      userInfo.organizationUser.userRole === UserRole.ADMIN
+    ) {
+      return res.status(HttpStatus.UNAUTHORIZED).send({
+        message: ERROR_MESSAGES.roleGuard.notAuthorized,
+      });
+    }
+
+    const { firstName, lastName, email, sid } = userDetailsBody;
+
+    if (firstName.trim().length < 1) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: ERROR_MESSAGES.profileController.firstNameTooShort,
+      });
+    }
+
+    if (lastName.trim().length < 1) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: ERROR_MESSAGES.profileController.lastNameTooShort,
+      });
+    }
+
+    if (email.trim().length < 1) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: ERROR_MESSAGES.profileController.emailTooShort,
+      });
+    }
+
+    if (userInfo.organizationUser.sid && sid < 1) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: ERROR_MESSAGES.profileController.sidInvalid,
+      });
+    }
+
+    if (userInfo.organizationUser.email !== email) {
+      const emailInUse = await UserModel.findOne({
+        where: {
+          email,
+        },
+      });
+
+      if (emailInUse) {
+        return res.status(HttpStatus.BAD_REQUEST).send({
+          message: ERROR_MESSAGES.profileController.emailInUse,
+        });
+      }
+    }
+
+    userInfo.organizationUser.firstName = firstName;
+    userInfo.organizationUser.lastName = lastName;
+    userInfo.organizationUser.email = email;
+    userInfo.organizationUser.sid = sid;
+
+    await userInfo.organizationUser
+      .save()
+      .then(() => {
+        return res.status(HttpStatus.OK).send({
+          message: 'User info updated',
+        });
+      })
+      .catch((err) => {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: err,
+        });
+      });
   }
 
   @Get(':oid/get_user/:uid')

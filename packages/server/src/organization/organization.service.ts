@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { OrganizationUserModel } from './organization-user.entity';
 import { UserModel } from 'profile/user.entity';
 import { Brackets, getRepository } from 'typeorm';
 import { OrganizationCourseModel } from './organization-course.entity';
 import { CourseModel } from 'course/course.entity';
 import { GetOrganizationUserResponse, UserRole } from '@koh/common';
+import { UserCourseModel } from 'profile/user-course.entity';
 
 export interface UserResponse {
   userId: number;
@@ -34,6 +35,38 @@ export class OrganizationService {
       return null;
     }
     return organizationUser.role;
+  }
+
+  public async deleteUserCourses(
+    userId: number,
+    userCourses: number[],
+  ): Promise<void> {
+    const user = await UserModel.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    userCourses.forEach(async (courseId) => {
+      const course = await CourseModel.findOne({
+        where: {
+          id: courseId,
+        },
+      });
+
+      if (!course) {
+        throw new NotFoundException(`Course with id ${courseId} not found`);
+      }
+
+      const userCourse = await UserCourseModel.findOne({
+        where: {
+          user,
+          course,
+        },
+      });
+
+      await UserCourseModel.delete(userCourse);
+    });
   }
 
   public async getCourses(

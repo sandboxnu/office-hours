@@ -4,7 +4,7 @@ import { useProfile } from "../../../../hooks/useProfile";
 import { OrganizationRole } from "@koh/common";
 import DefaultErrorPage from "next/error";
 import {
-  Avatar,
+  Alert,
   Breadcrumb,
   Button,
   Card,
@@ -14,6 +14,7 @@ import {
   Row,
   Spin,
   Table,
+  message,
 } from "antd";
 import { StandardPageContainer } from "../../../../components/common/PageContainer";
 import Head from "next/head";
@@ -43,6 +44,7 @@ export default function Edit(): ReactElement {
   }
 
   function RenderUserInfo(): ReactElement {
+    const [formGeneral] = Form.useForm();
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
     const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
@@ -72,7 +74,19 @@ export default function Edit(): ReactElement {
 
     const { data: userData, error } = useSWR(
       `api/v1/organization/[oid]/get_user/[uid]`,
-      async () => API.organizations.getUser(organization?.id, Number(uid))
+      async () =>
+        API.organizations
+          .getUser(organization?.id, Number(uid))
+          .then((userInfo) => {
+            userInfo.courses = userInfo?.courses.map((course) => {
+              return {
+                ...course,
+                // Needed for antd table to fill the keys with course id
+                key: course.id,
+              };
+            });
+            return userInfo;
+          })
     );
 
     if (error) {
@@ -81,32 +95,138 @@ export default function Edit(): ReactElement {
 
     const hasSelected = selectedRowKeys.length > 0;
 
+    const deleteProfilePicture = async () => {
+      await API.organizations
+        .deleteProfilePicture(organization?.id, Number(uid))
+        .then(() => {
+          message.success("Profile picture was deleted");
+        })
+        .catch((error) => {
+          const errorMessage = error.response.data.message;
+
+          message.error(errorMessage);
+        });
+    };
+
+    const dropCourses = async () => {
+      if (!hasSelected) {
+        message.error("No courses were selected");
+        return;
+      }
+
+      await API.organizations
+        .dropUserCourses(
+          organization?.id,
+          Number(uid),
+          selectedRowKeys as number[]
+        )
+        .then(() => {
+          message.success("User courses were dropped");
+          // setTimeout(() => {
+          //   router.reload();
+          // }, 1750);
+        })
+        .catch((error) => {
+          const errorMessage = error.response.data.message;
+
+          message.error(errorMessage);
+        });
+    };
+
+    const updateGeneral = async () => {
+      const formValues = await formGeneral.validateFields();
+
+      const firstNameField = formValues.firstName;
+      const lastNameField = formValues.lastName;
+      const emailField = formValues.email;
+      const sidField = formValues.sid;
+
+      if (
+        firstNameField === userData.user.firstName &&
+        lastNameField === userData.user.lastName &&
+        emailField === userData.user.email &&
+        sidField === userData.user.sid
+      ) {
+        message.info(
+          "User was not updated as information has not been changed"
+        );
+        return;
+      }
+
+      if (firstNameField.length < 1) {
+        message.error("First name must be at least 1 character");
+        return;
+      }
+
+      if (lastNameField.length < 1) {
+        message.error("Last name must be at least 1 character");
+        return;
+      }
+
+      if (emailField.length < 4) {
+        message.error("Email must be at least 4 characters");
+        return;
+      }
+
+      if (userData.user.sid && sidField.length < 1) {
+        message.error("Student number must be at least 1 character");
+        return;
+      }
+
+      await API.organizations
+        .patchUserInfo(organization?.id, Number(uid), {
+          firstName: firstNameField,
+          lastName: lastNameField,
+          email: emailField,
+          sid: sidField,
+        })
+        .then(() => {
+          message.success("User information was updated");
+          setTimeout(() => {
+            router.reload();
+          }, 1750);
+        })
+        .catch((error) => {
+          const errorMessage = error.response.data.message;
+
+          message.error(errorMessage);
+        });
+    };
+
     return userData ? (
       <>
+        {organization?.ssoEnabled && (
+          <Alert
+            message="System Notice"
+            description="Organizations with SSO authentication enabled have a limited editing permissions for users. Changes must be made in the SSO provider."
+            type="error"
+            style={{ marginBottom: 20 }}
+          />
+        )}
         <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-          <Col xs={{ span: 24 }} sm={{ span: 9 }} />
-
-          <Col xs={{ span: 24 }} sm={{ span: 15 }}>
+          <Col xs={{ span: 24 }} sm={{ span: 24 }}>
             <Card bordered={true} title="General">
               <Form
+                form={formGeneral}
                 layout="vertical"
                 initialValues={{
                   firstName: userData.user.firstName,
                   lastName: userData.user.lastName,
                   email: userData.user.email,
+                  sid: userData.user.sid,
                 }}
+                onFinish={updateGeneral}
               >
                 <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
                   <Col xs={{ span: 24 }} sm={{ span: 12 }}>
                     <Form.Item
                       label="First Name"
                       name="firstName"
-                      initialValue={userData.user.firstName}
                       tooltip="First name of the user"
                     >
                       <Input
                         allowClear={true}
-                        defaultValue={userData.user.firstName}
+                        disabled={organization?.ssoEnabled}
                       />
                     </Form.Item>
                   </Col>
@@ -115,12 +235,11 @@ export default function Edit(): ReactElement {
                     <Form.Item
                       label="Last Name"
                       name="lastName"
-                      initialValue={userData.user.lastName}
                       tooltip="Last name of the user"
                     >
                       <Input
                         allowClear={true}
-                        defaultValue={userData.user.lastName}
+                        disabled={organization?.ssoEnabled}
                       />
                     </Form.Item>
                   </Col>
@@ -129,13 +248,12 @@ export default function Edit(): ReactElement {
                     <Form.Item
                       label="Email"
                       name="email"
-                      initialValue={userData.user.email}
                       tooltip="Email address of the user"
                     >
                       <Input
                         allowClear={true}
-                        defaultValue={userData.user.email}
                         type="email"
+                        disabled={organization?.ssoEnabled}
                       />
                     </Form.Item>
                   </Col>
@@ -144,12 +262,11 @@ export default function Edit(): ReactElement {
                     <Form.Item
                       label="Student Number"
                       name="sid"
-                      initialValue={userData.user.sid}
                       tooltip="Student number of the user"
                     >
                       <Input
                         allowClear={true}
-                        defaultValue={userData.user.sid}
+                        disabled={organization?.ssoEnabled}
                       />
                     </Form.Item>
                   </Col>
@@ -160,6 +277,7 @@ export default function Edit(): ReactElement {
                     type="primary"
                     htmlType="submit"
                     className="w-full h-auto p-3"
+                    disabled={organization?.ssoEnabled}
                   >
                     Update
                   </Button>
@@ -168,15 +286,14 @@ export default function Edit(): ReactElement {
             </Card>
           </Col>
 
-          <Col xs={{ span: 24 }} sm={{ span: 9 }} />
-
-          <Col xs={{ span: 24 }} sm={{ span: 15 }} style={{ marginTop: 20 }}>
+          <Col xs={{ span: 24 }} sm={{ span: 24 }} style={{ marginTop: 20 }}>
             <Card bordered={true} title="Courses Information">
               <Button
                 type="primary"
                 danger
                 disabled={!hasSelected}
                 style={{ marginBottom: 10 }}
+                onClick={dropCourses}
                 className="w-full h-auto p-3"
               >
                 Drop Courses
@@ -190,11 +307,9 @@ export default function Edit(): ReactElement {
             </Card>
           </Col>
 
-          <Col xs={{ span: 24 }} sm={{ span: 9 }} />
-
           <Col
             xs={{ span: 24 }}
-            sm={{ span: 15 }}
+            sm={{ span: 24 }}
             style={{ marginTop: 20, marginBottom: 20 }}
           >
             <Card
@@ -212,6 +327,22 @@ export default function Edit(): ReactElement {
                 </div>
                 <Button danger className="w-full md:w-auto">
                   Deactivate this account
+                </Button>
+              </div>
+              <div className="flex flex-col md:flex-row items-center mt-2">
+                <div className="w-full md:w-5/6 md:mr-4 mb-2 md:text-left">
+                  <strong>Delete profile picture</strong>
+                  <div className="mb-0">
+                    This will delete the user&lsquo;s profile picture.
+                  </div>
+                </div>
+                <Button
+                  danger
+                  className="w-full md:w-auto"
+                  disabled={!userData.user.photoUrl}
+                  onClick={deleteProfilePicture}
+                >
+                  Delete profile picture
                 </Button>
               </div>
             </Card>
