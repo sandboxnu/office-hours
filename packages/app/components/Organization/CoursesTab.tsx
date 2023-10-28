@@ -77,7 +77,11 @@ export default function CoursesTab({
                     style={{ borderBottom: "1px solid #f0f0f0", padding: 10 }}
                     key={item.courseId}
                     actions={[
-                      <Button key="" type="primary">
+                      <Button
+                        key=""
+                        type="primary"
+                        href={`/organization/course/${item.courseId}/edit`}
+                      >
                         Edit
                       </Button>,
                     ]}
