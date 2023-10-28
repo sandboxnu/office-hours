@@ -212,6 +212,7 @@ export class OrganizationService {
         fullName: organizationUser.name,
         globalRole: globalRole,
         sid: organizationUser.sid,
+        accountDeactivated: organizationUser.accountDeactivated,
       },
       courses: organizationUser.courses.map((courseInfo) => {
         const { role, course } = courseInfo;

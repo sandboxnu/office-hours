@@ -50,6 +50,9 @@ export class UserModel extends BaseEntity {
   @Column({ type: 'boolean', default: true })
   includeDefaultMessage: boolean;
 
+  @Column({ type: 'boolean', default: false })
+  accountDeactivated: boolean;
+
   @OneToMany((type) => UserCourseModel, (ucm) => ucm.user)
   @Exclude()
   courses: UserCourseModel[];

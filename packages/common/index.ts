@@ -768,6 +768,7 @@ export class OrganizationUser {
   fullName!: string;
   globalRole!: string;
   sid!: number;
+  accountDeactivated!: boolean;
 }
 
 export class OrganizationCourse {
@@ -1370,6 +1371,7 @@ export const ERROR_MESSAGES = {
   },
   profileController: {
     accountNotAvailable: "The user account is undefined",
+    accountDeactivated: "The user account is deactivated",
     userResponseNotFound: "The user response was not found",
     firstNameTooShort: "First name must be at least 1 characters",
     lastNameTooShort: "Last name must be at least 1 characters",

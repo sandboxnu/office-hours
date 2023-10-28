@@ -14,6 +14,8 @@ export const useProfile: Hook = () => {
 
   if (error?.response?.status === 401 && pathname !== "/login") {
     Router.push("/login");
+  } else if (error?.response?.status === 403 && pathname !== "/login") {
+    Router.push("/api/v1/logout");
   } else if (data) {
     return data;
   }

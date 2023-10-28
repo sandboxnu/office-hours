@@ -404,6 +404,14 @@ class APIClient {
   };
 
   organizations = {
+    updateAccess: async (
+      organizationId: number,
+      userId: number
+    ): Promise<void> =>
+      this.req(
+        "PATCH",
+        `/api/v1/organization/${organizationId}/update_account_access/${userId}`
+      ),
     dropUserCourses: async (
       organizationId: number,
       userId: number,

@@ -32,12 +32,56 @@ import { CourseModel } from 'course/course.entity';
 import { OrganizationCourseModel } from './organization-course.entity';
 import { OrganizationModel } from './organization.entity';
 import { Roles } from 'decorators/roles.decorator';
-import { OrganizationService } from './organization.service';
+import {
+  CourseResponse,
+  OrganizationService,
+  UserResponse,
+} from './organization.service';
 import { OrganizationGuard } from 'guards/organization.guard';
 
 @Controller('organization')
 export class OrganizationController {
   constructor(private organizationService: OrganizationService) {}
+
+  @Patch(':oid/update_account_access/:uid')
+  @UseGuards(JwtAuthGuard, OrganizationRolesGuard, OrganizationGuard)
+  @Roles(OrganizationRole.ADMIN)
+  async updaetUserAccountAccess(
+    @Res() res: Response,
+    @Param('uid') uid: number,
+  ): Promise<Response<void>> {
+    const userInfo = await OrganizationUserModel.findOne({
+      where: {
+        userId: uid,
+      },
+      relations: ['organizationUser'],
+    });
+
+    if (
+      userInfo.role === OrganizationRole.ADMIN ||
+      userInfo.organizationUser.userRole === UserRole.ADMIN
+    ) {
+      return res.status(HttpStatus.UNAUTHORIZED).send({
+        message: ERROR_MESSAGES.roleGuard.notAuthorized,
+      });
+    }
+
+    userInfo.organizationUser.accountDeactivated =
+      !userInfo.organizationUser.accountDeactivated;
+
+    await userInfo.organizationUser
+      .save()
+      .then(() => {
+        return res.status(HttpStatus.OK).send({
+          message: 'User account access updated',
+        });
+      })
+      .catch((err) => {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: err,
+        });
+      });
+  }
 
   @Post(':oid/add_course/:cid')
   @UseGuards(JwtAuthGuard)
@@ -385,12 +429,13 @@ export class OrganizationController {
       where: {
         userId: uid,
       },
-      relations: ['organizationUser'],
+      relations: ['organizationUser', 'organization'],
     });
 
     if (
       userInfo.role === OrganizationRole.ADMIN ||
-      userInfo.organizationUser.userRole === UserRole.ADMIN
+      userInfo.organizationUser.userRole === UserRole.ADMIN ||
+      userInfo.organization.ssoEnabled
     ) {
       return res.status(HttpStatus.UNAUTHORIZED).send({
         message: ERROR_MESSAGES.roleGuard.notAuthorized,

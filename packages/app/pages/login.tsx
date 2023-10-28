@@ -1,7 +1,7 @@
 import Router from "next/router";
 import { ReactElement, useState } from "react";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { message, Button, Form, Input } from "antd";
+import { message, Button, Form, Input, Alert } from "antd";
 import styled from "styled-components";
 import Head from "next/head";
 
@@ -9,13 +9,14 @@ const Container = styled.div`
   margin-left: auto;
   margin-right: auto;
   text-align: center;
-  width: 300px;
+  width: 350px;
   padding-top: 100px;
 `;
 
 export default function Login(): ReactElement {
   const [pass, setPass] = useState("");
   const [uname, setUname] = useState("");
+  const [accountActiveResponse, setAccountActiveResponse] = useState(true);
 
   function login() {
     const loginRequest = {
@@ -32,10 +33,20 @@ export default function Login(): ReactElement {
         if (!response.ok) {
           // get error message from body or default to response statusText
           const error = (data && data.message) || response.statusText;
-          if (data.message === "Invalid credential") {
-            message.error("Invalid password.");
-          } else {
-            message.error("User Not Found");
+
+          switch (response.status) {
+            case 401:
+              message.error("Invalid password.");
+              break;
+            case 403:
+              setAccountActiveResponse(false);
+              break;
+            case 404:
+              message.error("User Not Found");
+              break;
+            default:
+              message.error(error);
+              break;
           }
           return Promise.reject(error);
         } else {
@@ -68,9 +79,18 @@ export default function Login(): ReactElement {
           onFinish={login}
         >
           <h1>HelpMe</h1>
+          {!accountActiveResponse && (
+            <Alert
+              message="System Notice"
+              description="Your account has been deactivated. Please contact your organization admin for more information."
+              type="error"
+              style={{ marginBottom: 20, textAlign: "left" }}
+            />
+          )}
           <Form.Item
             name="username"
             rules={[{ required: true, message: "Please input your Username!" }]}
+            style={{ marginTop: 20 }}
           >
             <Input
               prefix={<UserOutlined className="site-form-item-icon" />}

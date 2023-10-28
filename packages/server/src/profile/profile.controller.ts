@@ -274,6 +274,14 @@ export class ProfileController {
         HttpStatus.NOT_FOUND,
       );
     }
+
+    if (user.accountDeactivated) {
+      throw new HttpException(
+        ERROR_MESSAGES.profileController.accountDeactivated,
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     const courses = user.courses
       ? user.courses
           .filter((userCourse) => userCourse?.course?.enabled)

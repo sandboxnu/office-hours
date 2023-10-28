@@ -122,9 +122,25 @@ export default function Edit(): ReactElement {
         )
         .then(() => {
           message.success("User courses were dropped");
-          // setTimeout(() => {
-          //   router.reload();
-          // }, 1750);
+          setTimeout(() => {
+            router.reload();
+          }, 1750);
+        })
+        .catch((error) => {
+          const errorMessage = error.response.data.message;
+
+          message.error(errorMessage);
+        });
+    };
+
+    const updateAccess = async () => {
+      await API.organizations
+        .updateAccess(organization?.id, Number(uid))
+        .then(() => {
+          message.success("User access was updated");
+          setTimeout(() => {
+            router.reload();
+          }, 1750);
         })
         .catch((error) => {
           const errorMessage = error.response.data.message;
@@ -319,16 +335,28 @@ export default function Edit(): ReactElement {
             >
               <div className="flex flex-col md:flex-row items-center">
                 <div className="w-full md:w-5/6 md:mr-4 mb-2 md:text-left">
-                  <strong>Deactivate this account</strong>
+                  <strong>
+                    {userData.user.accountDeactivated
+                      ? "Reactivate this account"
+                      : "Deactivate this account"}
+                  </strong>
                   <div className="mb-0">
-                    Once you deactivate an account, the user will not be able to
-                    access organization resources.
+                    {userData.user.accountDeactivated
+                      ? "Once you reactivate an account, the user will be able to access organization resources."
+                      : "Once you deactivate an account, the user will not be able to access organization resources."}
                   </div>
                 </div>
-                <Button danger className="w-full md:w-auto">
-                  Deactivate this account
+                <Button
+                  danger
+                  className="w-full md:w-auto"
+                  onClick={updateAccess}
+                >
+                  {userData.user.accountDeactivated
+                    ? "Reactivate this account"
+                    : "Deactivate this account"}
                 </Button>
               </div>
+
               <div className="flex flex-col md:flex-row items-center mt-2">
                 <div className="w-full md:w-5/6 md:mr-4 mb-2 md:text-left">
                   <strong>Delete profile picture</strong>
