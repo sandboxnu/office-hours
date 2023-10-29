@@ -704,6 +704,7 @@ export class OrganizationUserPartial {
   organizationName!: string;
   organizationDescription!: string;
   organizationLogoUrl!: string;
+  organizationBannerUrl!: string;
   organizationRole!: string;
 }
 

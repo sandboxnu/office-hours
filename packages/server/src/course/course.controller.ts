@@ -15,6 +15,7 @@ import {
   UpdateCourseOverrideBody,
   UpdateCourseOverrideResponse,
 } from '@koh/common';
+import { Response } from 'express';
 import {
   BadRequestException,
   Body,
@@ -29,6 +30,7 @@ import {
   Patch,
   Post,
   Query,
+  Res,
   UnauthorizedException,
   UseGuards,
   UseInterceptors,
@@ -72,6 +74,36 @@ export class CourseController {
     }
     return courses.map((course) => ({ id: course.id, name: course.name }));
   }
+
+  @Get(':oid/organization_courses')
+  @UseGuards(JwtAuthGuard)
+  async getOrganizationCourses(
+    @Res() res: Response,
+    @Param('oid') oid: number,
+  ): Promise<Response<[]>> {
+    const courses = await OrganizationCourseModel.find({
+      where: {
+        organizationId: oid,
+      },
+      relations: ['course'],
+    });
+
+    if (!courses) {
+      return res.status(HttpStatus.NOT_FOUND).send({
+        message: ERROR_MESSAGES.courseController.courseNotFound,
+      });
+    }
+
+    const coursesPartial = courses.map((course) => ({
+      id: course.course.id,
+      name: course.course.name,
+    }));
+
+    res.status(HttpStatus.OK).send({
+      coursesPartial,
+    });
+  }
+
   @Get(':cid/questions')
   @UseGuards(JwtAuthGuard)
   async getAsyncQuestions(

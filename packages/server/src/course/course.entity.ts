@@ -10,6 +10,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { AlertModel } from '../alerts/alerts.entity';
@@ -97,11 +98,10 @@ export class CourseModel extends BaseEntity {
   @DeleteDateColumn()
   deletedAt?: Date;
 
-  @ManyToOne(
+  @OneToOne(
     (type) => OrganizationCourseModel,
     (organizationCourse) => organizationCourse.course,
   )
-  @Exclude()
   organizationCourse: OrganizationCourseModel;
 
   @Exclude()

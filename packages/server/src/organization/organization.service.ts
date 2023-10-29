@@ -245,6 +245,7 @@ export class OrganizationService {
       organizationName: organizationUser.organization.name,
       organizationDescription: organizationUser.organization.description,
       organizationLogoUrl: organizationUser.organization.logoUrl,
+      organizationBannerUrl: organizationUser.organization.bannerUrl,
       organizationRole: organizationUser.role,
     };
 

@@ -143,6 +143,8 @@ class APIClient {
   };
 
   course = {
+    getOrganizationCourses: async (organizationId: number) =>
+      this.req("GET", `/api/v1/courses/${organizationId}/organization_courses`),
     getAsyncQuestions: async (cid: number) =>
       this.req(
         "GET",

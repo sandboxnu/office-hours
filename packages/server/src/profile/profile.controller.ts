@@ -339,6 +339,7 @@ export class ProfileController {
       'organizationName',
       'organizationDescription',
       'organizationLogoUrl',
+      'organizationBannerUrl',
       'organizationRole',
     ]);
 

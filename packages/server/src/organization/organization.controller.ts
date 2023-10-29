@@ -167,7 +167,7 @@ export class OrganizationController {
       Math.random().toString(36).substring(2, 15);
 
     await sharp(file.buffer)
-      .resize(256)
+      .resize(1920, 1080)
       .toFile(path.join(process.env.UPLOAD_LOCATION, fileName));
 
     organization.bannerUrl = fileName;
