@@ -101,6 +101,7 @@ export class LoginController {
     await this.enter(res, payload.userId, redirect);
   }
 
+  // Set cookie and redirect to proper page
   private async enter(res: Response, userId: number, redirect?: string) {
     // Expires in 30 days
     const authToken = await this.jwtService.signAsync({
@@ -120,9 +121,9 @@ export class LoginController {
       .get<string>('DOMAIN')
       .startsWith('https://');
 
-    res.cookie('auth_token', authToken, { httpOnly: true, secure: isSecure });
-
-    res.redirect(302, redirect ? redirect : '/courses');
+    res
+      .cookie('auth_token', authToken, { httpOnly: true, secure: isSecure })
+      .redirect(302, redirect ? redirect : '/courses');
   }
 
   @Get('/logout')

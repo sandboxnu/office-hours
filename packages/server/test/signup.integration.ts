@@ -29,7 +29,7 @@ describe('SignUp Integration', () => {
       expect(res.status).toBe(400);
     });
 
-    it('just register user if user exists', async () => {
+    it('register user in course if user exists', async () => {
       const course = await CourseFactory.create({ name: 'CS 304' });
       const user = await UserFactory.create();
 

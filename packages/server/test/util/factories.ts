@@ -45,6 +45,7 @@ export const CourseFactory = new Factory(CourseModel)
   )
   .attr('sectionGroupName', 'CS 304')
   .attr('enabled', true)
+  .attr('courseInviteCode', 'invite-code')
   .assocOne('semester', SemesterFactory);
 
 export const CourseSectionFactory = new Factory(CourseSectionMappingModel)
@@ -113,7 +114,7 @@ export const InteractionFactory = new Factory(InteractionModel)
   .attr('timestamp', new Date());
 
 export const OrganizationCourseFactory = new Factory(OrganizationCourseModel)
-  .attr('organizationId', 1)
-  .attr('courseId', 1)
+  .sequence('organizationId', (i) => i)
+  .sequence('courseId', (i) => i)
   .assocOne('organization', OrganizationFactory)
   .assocMany('course', CourseFactory);

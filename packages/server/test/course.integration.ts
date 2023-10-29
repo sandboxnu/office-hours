@@ -259,11 +259,7 @@ describe('Course Integration', () => {
 
   describe('GET /courses/limited/:id/:code', () => {
     it('should return course details for valid id and code', async () => {
-      const course = await CourseFactory.create({
-        id: 1,
-        name: 'Test Course',
-        courseInviteCode: 'testcode',
-      });
+      const course = await CourseFactory.create();
 
       const organization = await OrganizationFactory.create();
 
@@ -273,7 +269,7 @@ describe('Course Integration', () => {
       });
 
       const response = await supertest()
-        .get(`/courses/limited/${course.id}/testcode`)
+        .get(`/courses/limited/${course.id}/${course.courseInviteCode}`)
         .expect(200);
 
       expect(response.body.id).toBe(course.id);
