@@ -36,20 +36,6 @@ export default function SettingsTab({
   const [organizationWebsiteUrl, setOrganizationWebsiteUrl] = useState(
     organization.websiteUrl
   );
-  const [organizationLogoUrl, setOrganizationLogoUrl] = useState(
-    organization.logoUrl
-  );
-  const [organizationBannerUrl, setOrganizationBannerUrl] = useState(
-    organization.bannerUrl
-  );
-
-  const normFile = (e: any) => {
-    console.log("Upload event:", e);
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e?.fileList;
-  };
 
   const isValidUrl = (url: string): boolean => {
     try {
@@ -58,6 +44,80 @@ export default function SettingsTab({
     } catch (_) {
       return false;
     }
+  };
+
+  const handleBannerUpload = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await fetch(
+        `/api/v1/organization/${organization?.id}/upload_banner`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        message.success(`${file.name} file uploaded successfully`).then(() => {
+          setTimeout(() => {
+            router.reload();
+          }, 1750);
+        });
+      } else {
+        message.error(`${file.name} file upload failed: ${data.message}`);
+      }
+    } catch (error) {
+      message.error(`Error uploading ${file.name}. Please try again.`);
+    }
+  };
+
+  const handleLogoUpload = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await fetch(
+        `/api/v1/organization/${organization?.id}/upload_logo`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        message.success(`${file.name} file uploaded successfully`).then(() => {
+          setTimeout(() => {
+            router.reload();
+          }, 1750);
+        });
+      } else {
+        message.error(`${file.name} file upload failed: ${data.message}`);
+      }
+    } catch (error) {
+      message.error(`Error uploading ${file.name}. Please try again.`);
+    }
+  };
+
+  const beforeUpload = (file) => {
+    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+
+    if (!isJpgOrPng) {
+      message.error("You can only upload JPG/PNG file!");
+      return;
+    }
+
+    const isLT2MB = file.size / 1024 / 1024 < 2;
+
+    if (!isLT2MB) {
+      message.error("Image must be smaller than 2MB!");
+      return;
+    }
+
+    return isJpgOrPng && isLT2MB;
   };
 
   const updateGeneral = async () => {
@@ -180,19 +240,16 @@ export default function SettingsTab({
       <Card title="Logo & Banner" bordered={true} style={{ marginTop: 10 }}>
         <Form layout="vertical">
           <Form.Item label="Logo">
-            <Form.Item
-              name="organizationLogo"
-              valuePropName="organizationFileLogo"
-              getValueFromEvent={normFile}
-              noStyle
-            >
+            <Form.Item name="organizationLogo" noStyle>
               <Row
                 gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
                 style={{ alignItems: "center" }}
               >
                 <Col xs={{ span: 24 }} sm={{ span: 12 }}>
                   <Upload.Dragger
-                    disabled={true}
+                    beforeUpload={beforeUpload}
+                    customRequest={({ file }) => handleLogoUpload(file)}
+                    showUploadList={true}
                     name="organizationLogoFile"
                     maxCount={1}
                   >
@@ -208,26 +265,26 @@ export default function SettingsTab({
                   </Upload.Dragger>
                 </Col>
                 <Col xs={{ span: 24 }} sm={{ span: 12 }}>
-                  <Image width={100} src={organizationLogoUrl} />
+                  <Image
+                    width={100}
+                    src={`/api/v1/organization/${organization?.id}/get_logo/${organization?.logoUrl}`}
+                  />
                 </Col>
               </Row>
             </Form.Item>
           </Form.Item>
 
           <Form.Item label="Banner">
-            <Form.Item
-              name="organizationBanner"
-              valuePropName="organizationFileBanner"
-              getValueFromEvent={normFile}
-              noStyle
-            >
+            <Form.Item name="organizationBanner" noStyle>
               <Row
                 gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
                 style={{ alignItems: "center" }}
               >
                 <Col xs={{ span: 24 }} sm={{ span: 12 }}>
                   <Upload.Dragger
-                    disabled={true}
+                    beforeUpload={beforeUpload}
+                    customRequest={({ file }) => handleBannerUpload(file)}
+                    showUploadList={true}
                     name="organizationBannerFile"
                     maxCount={1}
                   >
@@ -243,7 +300,10 @@ export default function SettingsTab({
                   </Upload.Dragger>
                 </Col>
                 <Col xs={{ span: 24 }} sm={{ span: 12 }}>
-                  <Image width={250} src={organizationBannerUrl} />
+                  <Image
+                    width={100}
+                    src={`/api/v1/organization/${organization?.id}/get_banner/${organization?.bannerUrl}`}
+                  />
                 </Col>
               </Row>
             </Form.Item>

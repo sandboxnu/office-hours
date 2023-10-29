@@ -11,7 +11,9 @@ import {
   Post,
   Query,
   Res,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserModel } from 'profile/user.entity';
 import { Response } from 'express';
@@ -38,15 +40,230 @@ import {
   UserResponse,
 } from './organization.service';
 import { OrganizationGuard } from 'guards/organization.guard';
+import * as checkDiskSpace from 'check-disk-space';
+import * as path from 'path';
+import * as sharp from 'sharp';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 
 @Controller('organization')
 export class OrganizationController {
   constructor(private organizationService: OrganizationService) {}
 
+  @Get(':oid/get_banner/:photoUrl')
+  @UseGuards(JwtAuthGuard)
+  async getBannerImage(
+    @Param('photoUrl') photoUrl: string,
+    @Param('oid') oid: number,
+    @Res() res: Response,
+  ): Promise<void> {
+    fs.stat(
+      path.join(process.env.UPLOAD_LOCATION, photoUrl),
+      async (err, stats) => {
+        if (stats) {
+          res.sendFile(photoUrl, {
+            root: process.env.UPLOAD_LOCATION,
+          });
+        } else {
+          const organization = await OrganizationModel.findOne({
+            where: {
+              id: oid,
+            },
+          });
+
+          organization.bannerUrl = null;
+          await organization.save();
+          return res.status(HttpStatus.NOT_FOUND).send({
+            message: `Banner image for ${organization.name} not found`,
+          });
+        }
+      },
+    );
+  }
+
+  @Get(':oid/get_logo/:photoUrl')
+  @UseGuards(JwtAuthGuard)
+  async getLogoImage(
+    @Param('photoUrl') photoUrl: string,
+    @Param('oid') oid: number,
+    @Res() res: Response,
+  ): Promise<void> {
+    fs.stat(
+      path.join(process.env.UPLOAD_LOCATION, photoUrl),
+      async (err, stats) => {
+        if (stats) {
+          res.sendFile(photoUrl, {
+            root: process.env.UPLOAD_LOCATION,
+          });
+        } else {
+          const organization = await OrganizationModel.findOne({
+            where: {
+              id: oid,
+            },
+          });
+
+          organization.logoUrl = null;
+          await organization.save();
+          return res.status(HttpStatus.NOT_FOUND).send({
+            message: `Logo image for ${organization.name} not found`,
+          });
+        }
+      },
+    );
+  }
+
+  @Post(':oid/upload_banner')
+  @UseGuards(JwtAuthGuard, OrganizationRolesGuard, OrganizationGuard)
+  @Roles(OrganizationRole.ADMIN)
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+    }),
+  )
+  async uploadBanner(
+    @UploadedFile() file: Express.Multer.File,
+    @Res() res: Response,
+    @Param('oid') oid: number,
+  ): Promise<Response<void>> {
+    const organization = await OrganizationModel.findOne({
+      where: {
+        id: oid,
+      },
+    });
+
+    if (!organization) {
+      return res.status(HttpStatus.NOT_FOUND).send({
+        message: ERROR_MESSAGES.organizationController.organizationNotFound,
+      });
+    }
+
+    if (organization.bannerUrl) {
+      fs.unlink(
+        process.env.UPLOAD_LOCATION + '/' + organization.bannerUrl,
+        (err) => {
+          if (err) {
+            const errMessage =
+              'Error deleting previous picture at : ' +
+              organization.logoUrl +
+              'the previous image was at an invalid location?';
+            console.error(errMessage);
+          }
+        },
+      );
+    }
+
+    const spaceLeft = await checkDiskSpace(path.parse(process.cwd()).root);
+
+    if (spaceLeft.free < 100_000_000) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        message: ERROR_MESSAGES.organizationController.notEnoughDiskSpace,
+      });
+    }
+
+    const fileName =
+      organization.id +
+      '-' +
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15);
+
+    await sharp(file.buffer)
+      .resize(256)
+      .toFile(path.join(process.env.UPLOAD_LOCATION, fileName));
+
+    organization.bannerUrl = fileName;
+
+    await organization
+      .save()
+      .then(() => {
+        return res.status(HttpStatus.OK).send({
+          message: 'Banner uploaded',
+        });
+      })
+      .catch((err) => {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: err,
+        });
+      });
+  }
+
+  @Post(':oid/upload_logo')
+  @UseGuards(JwtAuthGuard, OrganizationRolesGuard, OrganizationGuard)
+  @Roles(OrganizationRole.ADMIN)
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+    }),
+  )
+  async uploadLogo(
+    @UploadedFile() file: Express.Multer.File,
+    @Res() res: Response,
+    @Param('oid') oid: number,
+  ): Promise<Response<void>> {
+    const organization = await OrganizationModel.findOne({
+      where: {
+        id: oid,
+      },
+    });
+
+    if (!organization) {
+      return res.status(HttpStatus.NOT_FOUND).send({
+        message: ERROR_MESSAGES.organizationController.organizationNotFound,
+      });
+    }
+
+    if (organization.logoUrl) {
+      fs.unlink(
+        process.env.UPLOAD_LOCATION + '/' + organization.logoUrl,
+        (err) => {
+          if (err) {
+            const errMessage =
+              'Error deleting previous picture at : ' +
+              organization.logoUrl +
+              'the previous image was at an invalid location?';
+            console.error(errMessage);
+          }
+        },
+      );
+    }
+
+    const spaceLeft = await checkDiskSpace(path.parse(process.cwd()).root);
+
+    if (spaceLeft.free < 100_000_000) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        message: ERROR_MESSAGES.organizationController.notEnoughDiskSpace,
+      });
+    }
+
+    const fileName =
+      organization.id +
+      '-' +
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15);
+
+    await sharp(file.buffer)
+      .resize(256)
+      .toFile(path.join(process.env.UPLOAD_LOCATION, fileName));
+
+    organization.logoUrl = fileName;
+
+    await organization
+      .save()
+      .then(() => {
+        return res.status(HttpStatus.OK).send({
+          message: 'Logo uploaded',
+        });
+      })
+      .catch((err) => {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: err,
+        });
+      });
+  }
+
   @Patch(':oid/update_account_access/:uid')
   @UseGuards(JwtAuthGuard, OrganizationRolesGuard, OrganizationGuard)
   @Roles(OrganizationRole.ADMIN)
-  async updaetUserAccountAccess(
+  async updateUserAccountAccess(
     @Res() res: Response,
     @Param('uid') uid: number,
   ): Promise<Response<void>> {

@@ -1245,10 +1245,12 @@ export const ERROR_MESSAGES = {
     pageOutOfBounds: "Can't retrieve out of bounds page.",
   },
   organizationController: {
+    notEnoughDiskSpace: "Not enough disk space to upload file",
     userAlreadyInOrganization: "User is already in organization",
     courseAlreadyInOrganization: "Course is already in organization",
     organizationNotFound: "Organization not found",
     organizationNameTooShort: "Organization name must be at least 4 characters",
+    noFileUploaded: "No file uploaded",
     organizationDescriptionTooShort:
       "Organization description must be at least 10 characters",
     organizationUrlTooShortOrInValid:

@@ -101,11 +101,7 @@ export const AlertFactory = new Factory(AlertModel)
 
 export const OrganizationFactory = new Factory(OrganizationModel)
   .attr('name', 'UBCO')
-  .attr('description', 'UBC Okanagan')
-  .attr(
-    'logoUrl',
-    'https://etug.ca/wp-content/uploads/2014/03/ubc-e1523034593970.png',
-  );
+  .attr('description', 'UBC Okanagan');
 export const InteractionFactory = new Factory(InteractionModel)
   .assocOne('course', CourseFactory)
   .assocOne('user', UserFactory)
