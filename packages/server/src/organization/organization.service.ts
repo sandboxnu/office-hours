@@ -47,7 +47,11 @@ export class OrganizationService {
       },
     });
 
-    userCourses.forEach(async (courseId) => {
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+
+    for (const courseId of userCourses) {
       const course = await CourseModel.findOne({
         where: {
           id: courseId,
@@ -58,15 +62,11 @@ export class OrganizationService {
         throw new NotFoundException(`Course with id ${courseId} not found`);
       }
 
-      const userCourse = await UserCourseModel.findOne({
-        where: {
-          user,
-          course,
-        },
+      await UserCourseModel.delete({
+        userId: user.id,
+        courseId: course.id,
       });
-
-      await UserCourseModel.delete(userCourse);
-    });
+    }
   }
 
   public async getCourses(

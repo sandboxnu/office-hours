@@ -10,6 +10,7 @@ import {
 } from '../../test/util/factories';
 import { OrganizationRole } from '@koh/common';
 import { OrganizationCourseModel } from './organization-course.entity';
+import { UserCourseModel } from 'profile/user-course.entity';
 
 describe('OrganizationService', () => {
   let service: OrganizationService;
@@ -70,6 +71,56 @@ describe('OrganizationService', () => {
       const organizationUserModel =
         await service.getOrganizationAndRoleByUserId(user.id);
       expect(organizationUserModel).toMatchSnapshot();
+    });
+  });
+
+  describe('deleteUserCourses', () => {
+    it('should throw not found exception if user does not exist', async () => {
+      await expect(
+        service.deleteUserCourses(0, [1]),
+      ).rejects.toThrowErrorMatchingSnapshot();
+    });
+
+    it('should delete user courses', async () => {
+      const user = await UserFactory.create();
+      const courseOne = await CourseFactory.create();
+      const courseTwo = await CourseFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await UserCourseModel.create({
+        userId: user.id,
+        courseId: courseOne.id,
+      }).save();
+
+      await UserCourseModel.create({
+        userId: user.id,
+        courseId: courseTwo.id,
+      }).save();
+
+      await OrganizationCourseModel.create({
+        organizationId: organization.id,
+        courseId: courseOne.id,
+      }).save();
+
+      await OrganizationCourseModel.create({
+        organizationId: organization.id,
+        courseId: courseTwo.id,
+      }).save();
+
+      await OrganizationUserModel.create({
+        organizationId: organization.id,
+        userId: user.id,
+      }).save();
+
+      await service.deleteUserCourses(user.id, [courseOne.id, courseTwo.id]);
+
+      const userCourses = await UserCourseModel.find({
+        where: {
+          userId: user.id,
+        },
+      });
+
+      expect(userCourses).toHaveLength(0);
     });
   });
 

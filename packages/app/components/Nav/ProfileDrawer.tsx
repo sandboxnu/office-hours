@@ -117,8 +117,8 @@ export default function ProfileDrawer({
         }
         placement="bottomRight"
         trigger="click"
-        visible={isPopoverOpen}
-        onVisibleChange={setIsPopoverOpen}
+        open={isPopoverOpen}
+        onOpenChange={setIsPopoverOpen}
       >
         <AvatarButton>
           <SelfAvatar size={40} />
