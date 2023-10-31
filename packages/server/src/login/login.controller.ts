@@ -110,7 +110,6 @@ export class LoginController {
     });
 
     if (authToken === null || authToken === undefined) {
-      console.error('Authorization JWT is invalid');
       throw new HttpException(
         ERROR_MESSAGES.loginController.invalidTempJWTToken,
         HttpStatus.INTERNAL_SERVER_ERROR,
