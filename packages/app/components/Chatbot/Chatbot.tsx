@@ -246,9 +246,16 @@ export const ChatbotComponent: React.FC = () => {
                                   {sourceDocument.parts &&
                                     sourceDocument.parts.map((part) => (
                                       <div
-                                        className="flex flex-grow cursor-pointer items-center justify-center rounded-lg bg-blue-100 px-3 py-2 font-semibold transition hover:bg-blue-800 hover:text-white"
+                                        className={`flex flex-grow items-center justify-center rounded-lg bg-blue-100 px-3 py-2 font-semibold transition ${
+                                          part.source &&
+                                          'cursor-pointer hover:bg-blue-800 hover:text-white'
+                                        }`}
                                         key={`${sourceDocument.name}-${part.pageNumber}`}
-                                        onClick={() => window.open(part.source)}
+                                        onClick={() => {
+                                          if (part.source) {
+                                            window.open(part.source)
+                                          }
+                                        }}
                                       >
                                         <p className="h-fit w-fit text-xs leading-4">
                                           {`p. ${part.pageNumber}`}

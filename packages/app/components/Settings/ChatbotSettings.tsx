@@ -1,4 +1,16 @@
-import { Button, Checkbox, Form, Input, Pagination, Table, Tooltip } from 'antd'
+import {
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  Modal,
+  Pagination,
+  Table,
+  Tooltip,
+  Upload,
+  UploadProps,
+  message,
+} from 'antd'
 import { FormInstance } from 'antd/es/form'
 import { ColumnType, ColumnsType } from 'antd/es/table'
 import React, { ReactElement, useEffect, useRef, useState } from 'react'
@@ -6,6 +18,14 @@ import { API } from '@koh/api-client'
 import { useDebounce } from '../../hooks/useDebounce'
 import { useRouter } from 'next/router'
 import toast from 'react-hot-toast'
+import {
+  FileAddOutlined,
+  InboxOutlined,
+  LinkOutlined,
+  UploadOutlined,
+} from '@ant-design/icons'
+import { RcFile } from 'antd/lib/upload'
+import Dragger from 'antd/lib/upload/Dragger'
 
 export interface ChatbotDocument {
   id: number
@@ -20,11 +40,12 @@ export interface ChatbotDocumentResponse {
 }
 
 export default function ChatbotSettings(): ReactElement {
+  const [form] = Form.useForm()
   const router = useRouter()
   const { cid } = router.query
 
-  const [url, setUrl] = useState('')
-  const [files, setFiles] = useState([])
+  const [addDocumentModalOpen, setAddDocumentModalOpen] = useState(false)
+  const [documentType, setDocumentType] = useState('FILE')
   const [search, setSearch] = useState('')
   const debouncedValue = useDebounce<string>(search, 500)
 
@@ -66,7 +87,9 @@ export default function ChatbotSettings(): ReactElement {
     {
       title: '',
       render: (text, record, index) => (
-        <Button onClick={() => handleDeleteDocument(record)}>Delete</Button>
+        <Button disabled={loading} onClick={() => handleDeleteDocument(record)}>
+          Delete
+        </Button>
       ),
     },
   ]
@@ -93,15 +116,8 @@ export default function ChatbotSettings(): ReactElement {
     setLoading(false)
   }
 
-  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      //convert `FileList` to `File[]`
-      const _files = Array.from(e.target.files)
-      setFiles(_files)
-    }
-  }
-
-  const addUrl = async () => {
+  const addUrl = async (url: string) => {
+    setLoading(true)
     try {
       const data = {
         url: url,
@@ -126,17 +142,17 @@ export default function ChatbotSettings(): ReactElement {
         courseId: Number(cid),
       })
 
-      console.log('Uploaded')
       toast.success('File uploaded.')
     } catch (e) {
       toast.error('Failed to upload file.')
+    } finally {
+      setLoading(false)
     }
 
-    setUrl('')
     getDocuments()
   }
 
-  const uploadFiles = async () => {
+  const uploadFiles = async (files: RcFile[], source: string) => {
     for (const file of files) {
       try {
         const formData = new FormData()
@@ -158,7 +174,6 @@ export default function ChatbotSettings(): ReactElement {
           courseId: Number(cid),
         })
 
-        console.log('Uploaded')
         toast.success('File uploaded.')
       } catch (e) {
         toast.error('Failed to upload file.')
@@ -166,17 +181,8 @@ export default function ChatbotSettings(): ReactElement {
     }
   }
 
-  const handleFileUpload = async () => {
-    await uploadFiles()
-
-    const fileInput = document.getElementById('files')
-    if (fileInput) {
-      fileInput.value = ''
-    }
-    getDocuments()
-  }
-
   const handleDeleteDocument = async (document: ChatbotDocument) => {
+    setLoading(true)
     try {
       const res1 = await fetch(`/chat/${cid}/document`, {
         method: 'DELETE',
@@ -190,11 +196,130 @@ export default function ChatbotSettings(): ReactElement {
       getDocuments()
     } catch (e) {
       toast.error('Failed to delete document.')
+    } finally {
+      setLoading(false)
     }
+  }
+
+  const addDocument = async () => {
+    setLoading(true)
+    const formData = await form.validateFields()
+
+    if (documentType === 'URL') {
+      await addUrl(formData.url)
+    }
+
+    if (documentType === 'FILE') {
+      const files = formData.files.fileList.map((file) => file.originFileObj)
+      await uploadFiles(files, formData.source)
+    }
+
+    setAddDocumentModalOpen(false)
+    setLoading(false)
+    form.resetFields()
+    getDocuments()
+  }
+
+  const props: UploadProps = {
+    name: 'file',
+    multiple: true,
   }
 
   return (
     <div className="m-auto my-5 max-w-[800px]">
+      <Modal
+        title="Add a new document for your chatbot to use."
+        open={addDocumentModalOpen}
+        onCancel={() => setAddDocumentModalOpen(false)}
+        footer={[
+          <Button
+            key="ok"
+            type="ghost"
+            onClick={() => setAddDocumentModalOpen(false)}
+          >
+            Cancel
+          </Button>,
+          <Button key="ok" type="primary" onClick={addDocument}>
+            Submit
+          </Button>,
+        ]}
+      >
+        <>
+          <div className="mb-2 flex h-fit w-full items-center justify-center gap-2">
+            <div
+              className={`${
+                documentType == 'FILE'
+                  ? 'border-blue-300 text-black'
+                  : 'border-blue-100 text-gray-600'
+              } flex flex-grow cursor-pointer items-center justify-center gap-2 rounded-lg  border-2 p-5 hover:bg-blue-50`}
+              onClick={() => setDocumentType('FILE')}
+            >
+              <FileAddOutlined />
+              <p className="text-md font-semibold">Files</p>
+            </div>
+            <div
+              className={`${
+                documentType == 'URL'
+                  ? 'border-blue-300 text-black'
+                  : 'border-blue-100 text-gray-600'
+              } flex flex-grow cursor-pointer items-center  justify-center gap-2 rounded-lg border-2  p-5 hover:bg-blue-50`}
+              onClick={() => setDocumentType('URL')}
+            >
+              <LinkOutlined />
+              <p className="text-md font-semibold">URL</p>
+            </div>
+          </div>
+          <Form form={form}>
+            {documentType === 'URL' && (
+              <Form.Item
+                name="url"
+                rules={[
+                  { required: true, message: 'Please provide a document URL.' },
+                ]}
+              >
+                <Input placeholder="Enter URL..." />
+              </Form.Item>
+            )}
+            {documentType === 'FILE' && (
+              <>
+                <Form.Item
+                  name="files"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please provide document files.',
+                    },
+                  ]}
+                >
+                  <Dragger {...props}>
+                    <p className="ant-upload-drag-icon">
+                      <InboxOutlined />
+                    </p>
+                    <p className="ant-upload-text">
+                      Click or drag file to this area to upload
+                    </p>
+                    <p className="ant-upload-hint">
+                      Support for a single or bulk upload. Strictly prohibited
+                      from uploading company data or other banned files.
+                    </p>
+                  </Dragger>
+                </Form.Item>
+                <Form.Item
+                  name="source"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please provide a document preview URL.',
+                    },
+                  ]}
+                >
+                  <Input placeholder="Enter document preview URL..." />
+                </Form.Item>
+              </>
+            )}
+          </Form>
+        </>
+      </Modal>
       <div className="flex w-full items-center justify-between">
         <div className="">
           <h3 className="m-0 p-0 text-4xl font-bold text-gray-900">
@@ -204,24 +329,11 @@ export default function ChatbotSettings(): ReactElement {
             Configure the documents that your chatbot will have access to
           </p>
         </div>
-        <Button>Add Document</Button>
+        <Button onClick={() => setAddDocumentModalOpen(true)}>
+          Add Document
+        </Button>
       </div>
       <hr className="my-5 w-full"></hr>
-      <input type="file" name="file" multiple onChange={handleFileSelected} />
-      <Button onClick={handleFileUpload}>Upload</Button>
-
-      <Input
-        placeholder="Enter URL"
-        type="text"
-        name="url"
-        value={url}
-        onChange={(e) => setUrl(e.target.value)}
-        onPressEnter={addUrl}
-      />
-
-      <br />
-      <br />
-      <br />
 
       <Input
         placeholder={'Search document name...'}

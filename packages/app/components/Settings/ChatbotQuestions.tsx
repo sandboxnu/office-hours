@@ -184,6 +184,7 @@ export default function ChatbotQuestions(): ReactElement {
       <Modal
         title="Create a new question for your students!"
         open={addModelOpen}
+        onCancel={() => setAddModelOpen(false)}
         footer={[
           <Button key="ok" type="ghost" onClick={() => setAddModelOpen(false)}>
             Cancel
