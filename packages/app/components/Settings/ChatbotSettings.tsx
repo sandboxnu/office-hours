@@ -20,12 +20,14 @@ import { useRouter } from 'next/router'
 import toast from 'react-hot-toast'
 import {
   FileAddOutlined,
+  GithubOutlined,
   InboxOutlined,
   LinkOutlined,
   UploadOutlined,
 } from '@ant-design/icons'
 import { RcFile } from 'antd/lib/upload'
 import Dragger from 'antd/lib/upload/Dragger'
+import { Github } from 'lucide-react'
 
 export interface ChatbotDocument {
   id: number
@@ -261,7 +263,7 @@ export default function ChatbotSettings(): ReactElement {
               onClick={() => setDocumentType('FILE')}
             >
               <FileAddOutlined />
-              <p className="text-md font-semibold">Files</p>
+              <p className="text-md font-semibold">Upload Files</p>
             </div>
             <div
               className={`${
@@ -271,8 +273,8 @@ export default function ChatbotSettings(): ReactElement {
               } flex flex-grow cursor-pointer items-center  justify-center gap-2 rounded-lg border-2  p-5 hover:bg-blue-50`}
               onClick={() => setDocumentType('URL')}
             >
-              <LinkOutlined />
-              <p className="text-md font-semibold">URL</p>
+              <GithubOutlined />
+              <p className="text-md font-semibold">GitHub File</p>
             </div>
           </div>
           <Form form={form}>
