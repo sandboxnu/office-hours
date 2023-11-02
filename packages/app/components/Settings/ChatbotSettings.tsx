@@ -53,20 +53,7 @@ export default function ChatbotSettings(): ReactElement {
   const [pageSize, setPageSize] = useState(10)
   const [loading, setLoading] = useState(false)
   const [totalDocuments, setTotalDocuments] = useState(0)
-  const [chatbotDocuments, setChatbotDocuments] = useState([
-    {
-      id: 1,
-      name: 'COSC 304 - Lecture 1',
-      type: 'PDF',
-      subDocumentIds: ['1', '2', '3'],
-    },
-    {
-      id: 1,
-      name: 'COSC 304 - Lecture 2',
-      type: 'PDF',
-      subDocumentIds: ['4', '5', '6'],
-    },
-  ])
+  const [chatbotDocuments, setChatbotDocuments] = useState()
 
   const columns: ColumnsType<ChatbotDocument> = [
     {
@@ -87,7 +74,11 @@ export default function ChatbotSettings(): ReactElement {
     {
       title: '',
       render: (text, record, index) => (
-        <Button disabled={loading} onClick={() => handleDeleteDocument(record)}>
+        <Button
+          disabled={loading}
+          onClick={() => handleDeleteDocument(record)}
+          danger
+        >
           Delete
         </Button>
       ),
@@ -157,6 +148,16 @@ export default function ChatbotSettings(): ReactElement {
       try {
         const formData = new FormData()
         formData.append('file', file)
+        // Create a JSON object and convert it to a string
+        const jsonData = {
+          source: source,
+        }
+        formData.append(
+          'source',
+          new Blob([JSON.stringify(jsonData)], { type: 'application/json' }),
+        )
+
+        console.log(formData)
 
         const uploadedDocument = await fetch(`/chat/${cid}/document`, {
           method: 'POST',
@@ -239,7 +240,12 @@ export default function ChatbotSettings(): ReactElement {
           >
             Cancel
           </Button>,
-          <Button key="ok" type="primary" onClick={addDocument}>
+          <Button
+            key="ok"
+            type="primary"
+            onClick={addDocument}
+            disabled={loading}
+          >
             Submit
           </Button>,
         ]}
