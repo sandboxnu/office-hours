@@ -1,6 +1,5 @@
 import { Card, Spin, Button, Space } from "antd";
 import { ReactElement, useEffect, useState } from "react";
-import { useCourse } from "../../../hooks/useCourse";
 import { useRouter } from "next/router";
 import { StandardPageContainer } from "../../../components/common/PageContainer";
 import Head from "next/head";
@@ -42,14 +41,12 @@ export default function Invite(): ReactElement {
     }
   }, [cid, profile]);
 
-  // Register student and redirect to course
   const addStudent = async (userData: UBCOuserParam) => {
     await API.signup.registerStudent(userData);
     localStorage.removeItem("lastVisited");
     router.push("/courses");
   };
 
-  // If the user is already in the course, redirect to courses page
   if (
     profile &&
     profile.courses.some((userCourse) => userCourse.course.id === Number(cid))
@@ -90,8 +87,57 @@ export default function Invite(): ReactElement {
           height: "100vh",
         }}
       >
-        <Spin size="large" />
+        <Spin tip="Loading..." size="large" />
       </div>
+    );
+  }
+
+  let cardElement;
+
+  if (profile?.organization.id !== course?.organizationCourse.id) {
+    cardElement = renderCard(
+      "You cannot join a course that is not in your organization",
+      {},
+      "Back to my courses",
+      () => {
+        localStorage.removeItem("lastVisited");
+        router.push("/courses");
+      }
+    );
+  } else if (code !== course?.courseInviteCode) {
+    cardElement = renderCard(
+      "Invalid Course Code",
+      {},
+      "Back to my courses",
+      () => {
+        localStorage.removeItem("lastVisited");
+        router.push("/courses");
+      }
+    );
+  } else {
+    cardElement = renderCard(
+      `Invitation to join ‘${course?.name}‘`,
+      { title: cardMetaTitle, text: cardMetaDescription },
+      "Accept Invitation",
+      async () => {
+        const userData: UBCOuserParam = {
+          email: profile.email,
+          first_name: profile.firstName ?? "",
+          password: "",
+          last_name: profile.lastName ?? "",
+          selected_course: course.id,
+          sid: profile.sid,
+          photo_url: profile.photoURL,
+          courses: [],
+        };
+        await addStudent(userData);
+      },
+      <img
+        alt="example"
+        height="200"
+        style={{ objectFit: "cover" }}
+        src="https://open-2021.sites.olt.ubc.ca/files/2020/10/OSIP-2020-Slider.jpg"
+      />
     );
   }
 
@@ -111,45 +157,7 @@ export default function Invite(): ReactElement {
           marginTop: 200,
         }}
       >
-        {profile?.organizationId !== course?.organizationCourse.id
-          ? renderCard(
-              "You cannot join a course that is not in your organization",
-              {},
-              "Back to my courses",
-              () => {
-                localStorage.removeItem("lastVisited");
-                router.push("/courses");
-              }
-            )
-          : code !== course?.courseInviteCode
-          ? renderCard("Invalid Course Code", {}, "Back to my courses", () => {
-              localStorage.removeItem("lastVisited");
-              router.push("/courses");
-            })
-          : renderCard(
-              `Invitation to join ‘${course?.name}‘`,
-              { title: cardMetaTitle, text: cardMetaDescription },
-              "Accept Invitation",
-              async () => {
-                const userData: UBCOuserParam = {
-                  email: profile.email,
-                  first_name: profile.firstName ?? "",
-                  password: "",
-                  last_name: profile.lastName ?? "",
-                  selected_course: course.id,
-                  sid: profile.sid,
-                  photo_url: profile.photoURL,
-                  courses: [],
-                };
-                await addStudent(userData);
-              },
-              <img
-                alt="example"
-                height="200"
-                style={{ objectFit: "cover" }}
-                src="https://open-2021.sites.olt.ubc.ca/files/2020/10/OSIP-2020-Slider.jpg"
-              />
-            )}
+        {cardElement}
       </div>
     </StandardPageContainer>
   );

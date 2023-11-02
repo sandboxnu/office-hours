@@ -323,8 +323,6 @@ export class ProfileController {
 
     const pendingCourses = await this.profileService.getPendingCourses(user.id);
 
-    const organizationRole =
-      await this.organizationService.getOrganizationRoleByUserId(user.id);
     const userOrganization =
       await this.organizationService.getOrganizationAndRoleByUserId(user.id);
 
@@ -336,17 +334,12 @@ export class ProfileController {
       'organizationRole',
     ]);
 
-    const organizationId =
-      await this.organizationService.getOrganizationIdForUser(user.id);
-
     return {
       ...userResponse,
       courses,
       phoneNumber: user.phoneNotif?.phoneNumber,
       desktopNotifs,
       pendingCourses,
-      organizationRole,
-      organizationId,
       organization,
     };
   }

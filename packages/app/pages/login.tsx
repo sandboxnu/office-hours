@@ -40,12 +40,12 @@ export default function Login(): ReactElement {
           return Promise.reject(error);
         } else {
           const lastVisited = localStorage.getItem("lastVisited");
-          localStorage.removeItem("lastVisited");
 
           let redirectURL = `/api/v1/login/entry?token=${data.token}`;
 
           if (lastVisited) {
             redirectURL += `&redirect=${encodeURIComponent(lastVisited)}`;
+            localStorage.removeItem("lastVisited");
           }
 
           Router.push(redirectURL);

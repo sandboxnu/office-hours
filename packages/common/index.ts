@@ -75,8 +75,6 @@ export class User {
   phoneNumber!: string;
   insights!: string[];
   userRole!: string;
-  organizationRole!: string;
-  organizationId!: number;
   organization!: OrganizationUserPartial;
 }
 
