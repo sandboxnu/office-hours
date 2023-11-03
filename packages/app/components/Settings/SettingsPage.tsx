@@ -81,6 +81,28 @@ export default function SettingsPage({
 
     return isJpgOrPng && isLt1M;
   };
+  const handleUpload = async (file) => {
+    try {
+      setUploading(true); // Start the upload state
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await fetch("api/v1/profile/upload_picture", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      if (response.ok) {
+        message.success(`${file.name} file uploaded successfully`);
+        mutate(); // Refresh profile data
+      } else {
+        message.error(`${file.name} file upload failed: ${data.message}`);
+      }
+    } catch (error) {
+      message.error(`Error uploading ${file.name}. Please try again.`);
+    } finally {
+      setUploading(false); // Reset the upload state regardless of success or error
+    }
+  };
 
   if (error) {
     message.error(error);
@@ -117,7 +139,7 @@ export default function SettingsPage({
               </h2>
             )}
             <Upload
-              action={"/api/v1/profile/upload_picture"}
+              customRequest={({ file }) => handleUpload(file)} // Use customRequest to handle the upload logic ourselves
               beforeUpload={beforeUpload}
               showUploadList={false}
               onChange={(info) => {
@@ -142,13 +164,13 @@ export default function SettingsPage({
                     mutate();
                   } catch (e) {
                     message.error(
-                      "There was an error with deleting your profile picture, please contact the Khoury Office Hours team for assistance"
+                      "There was an error with deleting your profile picture, please contact HelpMe Office Hours team for assistance"
                     );
                     throw e;
                   }
                 }}
               >
-                Delete my Profile Picture
+                Delete Profile Picture
               </ProfilePicButton>
             )}
           </Col>

@@ -390,39 +390,42 @@ export class ProfileController {
   async uploadImage(
     @UploadedFile() file: Express.Multer.File,
     @User() user: UserModel,
+    @Res() response: Response,
   ): Promise<void> {
-    if (user.photoURL) {
-      fs.unlink(process.env.UPLOAD_LOCATION + '/' + user.photoURL, (err) => {
-        console.error(
-          'Error deleting previous picture at: ',
-          user.photoURL,
-          err,
-          'the previous image was at an invalid location?',
+    try {
+      if (user.photoURL) {
+        fs.unlinkSync(path.join(process.env.UPLOAD_LOCATION, user.photoURL));
+      }
+
+      const spaceLeft = await checkDiskSpace(path.parse(process.cwd()).root);
+
+      if (spaceLeft.free < 1000000000) {
+        // if less than a gigabyte left
+        throw new ServiceUnavailableException(
+          ERROR_MESSAGES.profileController.noDiskSpace,
         );
-      });
+      }
+      const fileName =
+        user.id +
+        '-' +
+        Math.random().toString(36).substring(2, 15) +
+        Math.random().toString(36).substring(2, 15);
+      if (!fs.existsSync(process.env.UPLOAD_LOCATION)) {
+        fs.mkdirSync(process.env.UPLOAD_LOCATION, { recursive: true });
+      }
+
+      const targetPath = path.join(process.env.UPLOAD_LOCATION, fileName);
+
+      await sharp(file.buffer).resize(256).toFile(targetPath);
+      user.photoURL = fileName;
+      await user.save();
+      response.status(200).send({ message: 'Image uploaded successfully' });
+    } catch (error) {
+      console.error('Error during image upload:', error);
+      response
+        .status(500)
+        .send({ message: 'Image upload failed', error: error.message });
     }
-
-    const spaceLeft = await checkDiskSpace(path.parse(process.cwd()).root);
-
-    if (spaceLeft.free < 1000000000) {
-      // if less than a gigabyte left
-      throw new ServiceUnavailableException(
-        ERROR_MESSAGES.profileController.noDiskSpace,
-      );
-    }
-
-    const fileName =
-      user.id +
-      '-' +
-      Math.random().toString(36).substring(2, 15) +
-      Math.random().toString(36).substring(2, 15);
-
-    await sharp(file.buffer)
-      .resize(256)
-      .toFile(path.join(process.env.UPLOAD_LOCATION, fileName));
-
-    user.photoURL = fileName;
-    await user.save();
   }
 
   @Get('/get_picture/:photoURL')
