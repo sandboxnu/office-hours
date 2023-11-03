@@ -33,6 +33,7 @@ import {
   UnauthorizedException,
   UseGuards,
   UseInterceptors,
+  Res,
 } from '@nestjs/common';
 import async from 'async';
 import { EventModel, EventType } from 'profile/event-model.entity';
@@ -52,6 +53,7 @@ import { HeatmapService } from './heatmap.service';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { AsyncQuestionModel } from 'asyncQuestion/asyncQuestion.entity';
 import { OrganizationCourseModel } from 'organization/organization-course.entity';
+import { Response } from 'express';
 
 @Controller('courses')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -125,7 +127,8 @@ export class CourseController {
   async getLimitedCourseResponse(
     @Param('id') id: number,
     @Param('code') code: string,
-  ): Promise<GetLimitedCourseResponse> {
+    @Res() res: Response,
+  ): Promise<Response<GetLimitedCourseResponse>> {
     const course = await CourseModel.findOne({
       where: {
         id: id,
@@ -134,10 +137,9 @@ export class CourseController {
     });
 
     if (!course) {
-      throw new HttpException(
-        ERROR_MESSAGES.courseController.courseNotFound,
-        HttpStatus.NOT_FOUND,
-      );
+      return res.status(HttpStatus.NOT_FOUND).send({
+        message: ERROR_MESSAGES.courseController.courseNotFound,
+      });
     }
 
     const organizationCourse = await OrganizationCourseModel.findOne({
@@ -148,10 +150,9 @@ export class CourseController {
     });
 
     if (!organizationCourse) {
-      throw new HttpException(
-        ERROR_MESSAGES.courseController.courseNotFound,
-        HttpStatus.NOT_FOUND,
-      );
+      return res.status(HttpStatus.NOT_FOUND).send({
+        message: ERROR_MESSAGES.courseController.courseNotFound,
+      });
     }
 
     const organization =
@@ -163,7 +164,10 @@ export class CourseController {
       organizationCourse: organization,
       courseInviteCode: course.courseInviteCode,
     };
-    return course_response;
+
+    res.status(HttpStatus.OK).send({
+      course_response,
+    });
   }
 
   @Get(':id')
