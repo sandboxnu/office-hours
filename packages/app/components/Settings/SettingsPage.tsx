@@ -3,7 +3,7 @@ import {
   BookOutlined,
   DeleteOutlined,
   UploadOutlined,
-  UserOutlined
+  UserOutlined,
 } from "@ant-design/icons";
 import { Collapse } from "antd";
 import { API } from "@koh/api-client";
@@ -23,7 +23,7 @@ export enum SettingsOptions {
   PROFILE = "PROFILE",
   NOTIFICATIONS = "NOTIFICATIONS",
   TEAMS_SETTINGS = "TEAMS_SETTINGS",
-  PREFERENCES = "PREFERENCES"
+  PREFERENCES = "PREFERENCES",
 }
 
 interface SettingsPageProps {
@@ -46,14 +46,16 @@ const ProfilePicButton = styled(Button)`
 const { Panel } = Collapse;
 
 export default function SettingsPage({
-  defaultPage
+  defaultPage,
 }: SettingsPageProps): ReactElement {
-  const { data: profile, error, mutate } = useSWR(`api/v1/profile`, async () =>
-    API.profile.index()
-  );
+  const {
+    data: profile,
+    error,
+    mutate,
+  } = useSWR(`api/v1/profile`, async () => API.profile.index());
 
   const [currentSettings, setCurrentSettings] = useState(
-    defaultPage || SettingsOptions.PROFILE
+    defaultPage || SettingsOptions.PROFILE,
   );
   const [uploading, setUploading] = useState(false);
   const isMobile = useIsMobile();
@@ -65,7 +67,7 @@ export default function SettingsPage({
     setAvatarSize(windowWidth / widthDivider);
   });
 
-  const beforeUpload = file => {
+  const beforeUpload = (file) => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
 
     if (!isJpgOrPng) {
@@ -79,6 +81,28 @@ export default function SettingsPage({
 
     return isJpgOrPng && isLt1M;
   };
+  const handleUpload = async (file) => {
+    try {
+      setUploading(true); // Start the upload state
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await fetch("api/v1/profile/upload_picture", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      if (response.ok) {
+        message.success(`${file.name} file uploaded successfully`);
+        mutate(); // Refresh profile data
+      } else {
+        message.error(`${file.name} file upload failed: ${data.message}`);
+      }
+    } catch (error) {
+      message.error(`Error uploading ${file.name}. Please try again.`);
+    } finally {
+      setUploading(false); // Reset the upload state regardless of success or error
+    }
+  };
 
   if (error) {
     message.error(error);
@@ -90,7 +114,7 @@ export default function SettingsPage({
         <Row
           style={{
             marginTop: avatarSize / 6,
-            justifyContent: `${isMobile ? "left" : "center"}`
+            justifyContent: `${isMobile ? "left" : "center"}`,
           }}
         >
           {uploading ? (
@@ -102,7 +126,7 @@ export default function SettingsPage({
                 marginTop: avatarSize / 6,
                 marginBottom: avatarSize / 12,
                 marginLeft: avatarSize / 6,
-                marginRight: avatarSize / 6
+                marginRight: avatarSize / 6,
               }}
             />
           ) : (
@@ -115,13 +139,9 @@ export default function SettingsPage({
               </h2>
             )}
             <Upload
-              action={"/api/v1/profile/upload_picture"}
+              customRequest={({ file }) => handleUpload(file)} // Use customRequest to handle the upload logic ourselves
               beforeUpload={beforeUpload}
-              showUploadList={false}
-              onChange={info => {
-                setUploading(info.file.status === "uploading");
-                mutate();
-              }}
+              showUploadList={true}
             >
               <ProfilePicButton icon={<UploadOutlined />}>
                 Edit photo
@@ -135,18 +155,18 @@ export default function SettingsPage({
                   try {
                     await API.profile.deleteProfilePicture();
                     message.success(
-                      "You've successfully deleted your profile picture"
+                      "You've successfully deleted your profile picture",
                     );
                     mutate();
                   } catch (e) {
                     message.error(
-                      "There was an error with deleting your profile picture, please contact the Khoury Office Hours team for assistance"
+                      "There was an error with deleting your profile picture, please contact HelpMe Office Hours team for assistance",
                     );
                     throw e;
                   }
                 }}
               >
-                Delete my Profile Picture
+                Delete Profile Picture
               </ProfilePicButton>
             )}
           </Col>
@@ -178,7 +198,7 @@ export default function SettingsPage({
         <Menu
           style={{ background: "none", marginTop: "10px" }}
           defaultSelectedKeys={[currentSettings]}
-          onClick={e => setCurrentSettings(e.key as SettingsOptions)}
+          onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}
         >
           <Menu.Item key={SettingsOptions.PROFILE} icon={<UserOutlined />}>
             Personal Information
