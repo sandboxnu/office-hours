@@ -104,7 +104,7 @@ export class CourseModel extends BaseEntity {
   )
   organizationCourse: OrganizationCourseModel;
 
-  @Exclude()
   @Column({ nullable: true })
+  @Exclude()
   organizationCourseId: number;
 }

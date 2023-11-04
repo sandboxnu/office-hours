@@ -45,6 +45,7 @@ import {
   UpdateOrganizationUserRole,
   ChatbotQuestion,
   ChatBotQuestionParams,
+  UpdateOrganizationCourseDetailsParams,
   Interaction,
   GetOrganizationUserResponse,
 } from "@koh/common";
@@ -406,6 +407,30 @@ class APIClient {
   };
 
   organizations = {
+    updateCourse: async (
+      organizationId: number,
+      courseId: number,
+      body: UpdateOrganizationCourseDetailsParams
+    ): Promise<void> =>
+      this.req(
+        "PATCH",
+        `/api/v1/organization/${organizationId}/update_course/${courseId}`,
+        undefined,
+        body
+      ),
+    getCourse: async (organizationId: number, courseId: number): Promise<any> =>
+      this.req(
+        "GET",
+        `/api/v1/organization/${organizationId}/get_course/${courseId}`
+      ),
+    updateCourseAccess: async (
+      organizationId: number,
+      courseId: number
+    ): Promise<void> =>
+      this.req(
+        "PATCH",
+        `/api/v1/organization/${organizationId}/update_course_access/${courseId}`
+      ),
     updateAccess: async (
       organizationId: number,
       userId: number

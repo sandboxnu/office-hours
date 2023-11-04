@@ -7,12 +7,12 @@ import {
 } from './util/factories';
 import { OrganizationUserModel } from 'organization/organization-user.entity';
 import { OrganizationCourseModel } from 'organization/organization-course.entity';
-import { OrganizationRole } from '@koh/common';
+import { OrganizationRole, UserRole } from '@koh/common';
 
 describe('Organization Integration', () => {
   const supertest = setupIntegrationTest(OrganizationModule);
 
-  describe('POST /organization/:oid/add_user/:uid', () => {
+  describe('POST /organization/:oid/add_member/:uid', () => {
     it('should return 403 when user is not logged in', async () => {
       const response = await supertest().post('/organization/1/add_member/1');
 
@@ -198,7 +198,7 @@ describe('Organization Integration', () => {
     });
   });
 
-  describe('GET /organization/:oid/get_stats', () => {
+  describe('GET /organization/:oid/stats', () => {
     it('should return 403 when user is not logged in', async () => {
       const organization = await OrganizationFactory.create();
       const response = await supertest().get(
@@ -253,6 +253,648 @@ describe('Organization Integration', () => {
 
       expect(res.status).toBe(200);
       expect(res.body).toMatchSnapshot();
+    });
+  });
+
+  describe('GET /organization/:oid/get_user/:uid', () => {
+    it('should return 403 when user is not logged in', async () => {
+      const organization = await OrganizationFactory.create();
+      const response = await supertest().get(
+        `/organization/${organization.id}/get_user/1`,
+      );
+
+      expect(response.status).toBe(401);
+    });
+
+    it('should return 401 when user is not an admin', async () => {
+      const user = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id }).get(
+        `/organization/${organization.id}/get_user/1`,
+      );
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return 401 when searching for user not in the same organization', async () => {
+      const user = await UserFactory.create();
+      const userTwo = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+      const organizationTwo = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationUserModel.create({
+        userId: userTwo.id,
+        organizationId: organizationTwo.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id }).get(
+        `/organization/${organizationTwo.id}/get_user/${userTwo.id}`,
+      );
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return 401 when user to get info is not in the same organization', async () => {
+      const user = await UserFactory.create();
+      const userTwo = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+      const organizationTwo = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationUserModel.create({
+        userId: userTwo.id,
+        organizationId: organizationTwo.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id }).get(
+        `/organization/${organization.id}/get_user/${userTwo.id}`,
+      );
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return 401 when user to get info is admin', async () => {
+      const user = await UserFactory.create();
+      const userTwo = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationUserModel.create({
+        userId: userTwo.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      const res = await supertest({ userId: user.id }).get(
+        `/organization/${organization.id}/get_user/${userTwo.id}`,
+      );
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return 200 when user is found', async () => {
+      const user = await UserFactory.create();
+      const userTwo = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationUserModel.create({
+        userId: userTwo.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id }).get(
+        `/organization/${organization.id}/get_user/${userTwo.id}`,
+      );
+
+      expect(res.status).toBe(200);
+      expect(res.body).toMatchSnapshot();
+    });
+  });
+
+  describe('GET /organization/:oid', () => {
+    it('should return 403 when user is not logged in', async () => {
+      const organization = await OrganizationFactory.create();
+      const response = await supertest().get(
+        `/organization/${organization.id}`,
+      );
+
+      expect(response.status).toBe(401);
+    });
+
+    it('should return 200 and response when user is logged in', async () => {
+      const user = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id }).get(
+        `/organization/${organization.id}`,
+      );
+
+      expect(res.status).toBe(200);
+      expect(res.body).toMatchSnapshot();
+    });
+  });
+
+  describe('PATCH /organization/:oid/update_account_access/:iud', () => {
+    it('should return 401 when user is not logged in', async () => {
+      const organization = await OrganizationFactory.create();
+      const response = await supertest().patch(
+        `/organization/${organization.id}/update_account_access/1`,
+      );
+
+      expect(response.status).toBe(401);
+    });
+
+    it('should return 401 when user is not an admin', async () => {
+      const user = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id }).patch(
+        `/organization/${organization.id}/update_account_access/1`,
+      );
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return 401 when user to update is organization admin', async () => {
+      const user = await UserFactory.create();
+      const userTwo = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationUserModel.create({
+        userId: userTwo.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      const res = await supertest({ userId: user.id }).patch(
+        `/organization/${organization.id}/update_account_access/${userTwo.id}`,
+      );
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return 401 when user to update is global admin', async () => {
+      const user = await UserFactory.create();
+      const userTwo = await UserFactory.create({
+        userRole: UserRole.ADMIN,
+      });
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationUserModel.create({
+        userId: userTwo.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id }).patch(
+        `/organization/${userTwo.id}/update_account_access/${userTwo.id}`,
+      );
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return 200 when user access is updated', async () => {
+      const user = await UserFactory.create();
+      const userTwo = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationUserModel.create({
+        userId: userTwo.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id }).patch(
+        `/organization/${organization.id}/update_account_access/${userTwo.id}`,
+      );
+
+      expect(res.status).toBe(200);
+    });
+  });
+
+  describe('PATCH /organization/:oid/update_user_role', () => {
+    it('should return 401 when user is not logged in', async () => {
+      const organization = await OrganizationFactory.create();
+      const response = await supertest().patch(
+        `/organization/${organization.id}/update_user_role`,
+      );
+
+      expect(response.status).toBe(401);
+    });
+
+    it('should return 401 when user is not an admin', async () => {
+      const user = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+      const userTwo = await UserFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+      }).save();
+
+      await OrganizationUserModel.create({
+        userId: userTwo.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id }).patch(
+        `/organization/${organization.id}/update_user_role`,
+      );
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return 400 when request missing body', async () => {
+      const user = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+      const userTwo = await UserFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationUserModel.create({
+        userId: userTwo.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id }).patch(
+        `/organization/${organization.id}/update_user_role`,
+      );
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 when user to update is organization admin', async () => {
+      const user = await UserFactory.create();
+      const userTwo = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationUserModel.create({
+        userId: userTwo.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      const res = await supertest({ userId: user.id })
+        .patch(`/organization/${organization.id}/update_user_role`)
+        .send({
+          userId: userTwo.id,
+          organizationRole: OrganizationRole.PROFESSOR,
+        });
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 404 when user to update is not found', async () => {
+      const user = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      const res = await supertest({ userId: user.id })
+        .patch(`/organization/${organization.id}/update_user_role`)
+        .send({
+          userId: 0,
+          organizationRole: OrganizationRole.PROFESSOR,
+        });
+
+      expect(res.status).toBe(404);
+    });
+
+    it('should return 200 when user role is updated', async () => {
+      const user = await UserFactory.create();
+      const userTwo = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationUserModel.create({
+        userId: userTwo.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id })
+        .patch(`/organization/${organization.id}/update_user_role`)
+        .send({
+          userId: userTwo.id,
+          organizationRole: OrganizationRole.PROFESSOR,
+        });
+
+      expect(res.status).toBe(200);
+    });
+  });
+
+  describe('PATCH /organization/:oid/edit_user/:uid', () => {
+    it('should return 401 when user is not logged in', async () => {
+      const organization = await OrganizationFactory.create();
+      const response = await supertest().patch(
+        `/organization/${organization.id}/edit_user/1`,
+      );
+
+      expect(response.status).toBe(401);
+    });
+
+    it('should return 401 when user is not an admin', async () => {
+      const user = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+      const userTwo = await UserFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+      }).save();
+
+      await OrganizationUserModel.create({
+        userId: userTwo.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id }).patch(
+        `/organization/${organization.id}/edit_user/1`,
+      );
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return 401 when user to update is global admin', async () => {
+      const user = await UserFactory.create();
+      const userTwo = await UserFactory.create({
+        userRole: UserRole.ADMIN,
+      });
+      const organization = await OrganizationFactory.create();
+      const userThree = await UserFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationUserModel.create({
+        userId: userThree.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id }).patch(
+        `/organization/${organization.id}/edit_user/${userTwo.id}`,
+      );
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return 401 when user to update is organization admin', async () => {
+      const user = await UserFactory.create();
+      const userTwo = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationUserModel.create({
+        userId: userTwo.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      const res = await supertest({ userId: user.id })
+        .patch(`/organization/${organization.id}/edit_user/${userTwo.id}`)
+        .send({
+          firstName: 'test',
+          lastName: 'test',
+          email: 'test@email.com',
+          sid: 1234567,
+        });
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return 400 when firstName is too short', async () => {
+      const user = await UserFactory.create();
+      const userTwo = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationUserModel.create({
+        userId: userTwo.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id })
+        .patch(`/organization/${organization.id}/edit_user/${userTwo.id}`)
+        .send({
+          firstName: '',
+          lastName: 'test',
+          email: 'test@email.com',
+          sid: 123456,
+        });
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 when lastName is too short', async () => {
+      const user = await UserFactory.create();
+      const userTwo = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationUserModel.create({
+        userId: userTwo.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id })
+        .patch(`/organization/${organization.id}/edit_user/${userTwo.id}`)
+        .send({
+          firstName: 'test',
+          lastName: '              ',
+          email: 'test@email.com',
+          sid: 123459,
+        });
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 when email is too short', async () => {
+      const user = await UserFactory.create();
+      const userTwo = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationUserModel.create({
+        userId: userTwo.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id })
+        .patch(`/organization/${organization.id}/edit_user/${userTwo.id}`)
+        .send({
+          firstName: 'test',
+          lastName: 'test',
+          email: '          ',
+          sid: 123459,
+        });
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 when student id is smaller than one', async () => {
+      const user = await UserFactory.create();
+      const userTwo = await UserFactory.create({
+        sid: 200,
+      });
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationUserModel.create({
+        userId: userTwo.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id })
+        .patch(`/organization/${organization.id}/edit_user/${userTwo.id}`)
+        .send({
+          firstName: 'test',
+          lastName: 'test',
+          email: 'test@mail.com',
+          sid: -1,
+        });
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 when user email to update is already in use', async () => {
+      const user = await UserFactory.create();
+      const userTwo = await UserFactory.create();
+      await UserFactory.create({
+        email: 'test@mail.com',
+      });
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationUserModel.create({
+        userId: userTwo.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id })
+        .patch(`/organization/${organization.id}/edit_user/${userTwo.id}`)
+        .send({
+          firstName: 'test',
+          lastName: 'test',
+          email: 'test@mail.com',
+          sid: 23,
+        });
+
+      expect(res.body.message).toBe('Email is already in use');
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 200 when user is updated', async () => {
+      const user = await UserFactory.create();
+      const userTwo = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationUserModel.create({
+        userId: userTwo.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id })
+        .patch(`/organization/${organization.id}/edit_user/${userTwo.id}`)
+        .send({
+          firstName: 'test',
+          lastName: 'test',
+          email: 'test@mail.com',
+          sid: 23,
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.body.message).toBe('User info updated');
     });
   });
 });

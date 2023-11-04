@@ -194,7 +194,7 @@ export default function Edit(): ReactElement {
           firstName: firstNameField,
           lastName: lastNameField,
           email: emailField,
-          sid: sidField,
+          sid: Number(sidField),
         })
         .then(() => {
           message.success("User information was updated");

@@ -17,6 +17,22 @@ export interface UserResponse {
   organizationRole: string;
 }
 
+export interface FlattenedOrganizationResponse {
+  id: number;
+  organizationName: string;
+  organizationDescription: string;
+  organizationLogoUrl: string;
+  organizationBannerUrl: string;
+  organizationRole: string;
+}
+
+export interface OrganizationCourseResponse {
+  id: number;
+  organizationId: number;
+  courseId: number;
+  course: CourseModel;
+}
+
 export interface CourseResponse {
   courseId: number;
   courseName: string;
@@ -185,17 +201,24 @@ export class OrganizationService {
   public async getOrganizationUserByUserId(
     userId: number,
   ): Promise<GetOrganizationUserResponse> {
-    const { organizationId, role, organizationUser } =
-      await OrganizationUserModel.findOne({
-        where: {
-          userId,
-        },
-        relations: [
-          'organizationUser',
-          'organizationUser.courses',
-          'organizationUser.courses.course',
-        ],
-      });
+    const organizationUserResponse = await OrganizationUserModel.findOne({
+      where: {
+        userId,
+      },
+      relations: [
+        'organizationUser',
+        'organizationUser.courses',
+        'organizationUser.courses.course',
+      ],
+    });
+
+    if (!organizationUserResponse) {
+      throw new NotFoundException(
+        `OrganizationUser with userId ${userId} not found`,
+      );
+    }
+
+    const { organizationId, role, organizationUser } = organizationUserResponse;
 
     const globalRole: string =
       organizationUser.userRole == UserRole.ADMIN ? 'unknown' : 'user';
@@ -228,7 +251,30 @@ export class OrganizationService {
     return flattenedUser;
   }
 
-  public async getOrganizationAndRoleByUserId(userId: number): Promise<any> {
+  public async getOrganizationCourse(
+    organizationId: number,
+    courseId: number,
+  ): Promise<OrganizationCourseResponse> {
+    const organizationCourse = await OrganizationCourseModel.findOne({
+      where: {
+        courseId,
+        organizationId,
+      },
+      relations: ['course'],
+    });
+
+    if (!organizationCourse) {
+      throw new NotFoundException(
+        `OrganizationCourse with organizationId ${organizationId} and courseId ${courseId} not found`,
+      );
+    }
+
+    return organizationCourse;
+  }
+
+  public async getOrganizationAndRoleByUserId(
+    userId: number,
+  ): Promise<FlattenedOrganizationResponse> {
     const organizationUser = await OrganizationUserModel.createQueryBuilder(
       'organizationUser',
     )

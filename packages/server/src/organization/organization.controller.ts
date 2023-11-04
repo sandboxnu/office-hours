@@ -21,6 +21,7 @@ import {
   ERROR_MESSAGES,
   GetOrganizationUserResponse,
   OrganizationRole,
+  UpdateOrganizationCourseDetailsParams,
   UpdateOrganizationDetailsParams,
   UpdateOrganizationUserRole,
   UpdateProfileParams,
@@ -36,6 +37,7 @@ import { OrganizationModel } from './organization.entity';
 import { Roles } from 'decorators/roles.decorator';
 import {
   CourseResponse,
+  OrganizationCourseResponse,
   OrganizationService,
   UserResponse,
 } from './organization.service';
@@ -45,10 +47,186 @@ import * as path from 'path';
 import * as sharp from 'sharp';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
+import { SemesterModel } from 'semester/semester.entity';
 
 @Controller('organization')
 export class OrganizationController {
   constructor(private organizationService: OrganizationService) {}
+  private COURSE_TIMEZONES = [
+    'America/New_York',
+    'America/Los_Angeles',
+    'America/Chicago',
+    'America/Denver',
+    'America/Phoenix',
+    'America/Anchorage',
+    'America/Honolulu',
+    'Europe/London',
+    'Europe/Paris',
+    'Asia/Tokyo',
+    'Asia/Shanghai',
+    'Australia/Sydney',
+  ];
+
+  @Patch(':oid/update_course/:cid')
+  @UseGuards(JwtAuthGuard, OrganizationRolesGuard, OrganizationGuard)
+  @Roles(OrganizationRole.ADMIN)
+  async updateCourse(
+    @Res() res: Response,
+    @Param('oid') oid: number,
+    @Param('cid') cid: number,
+    @Body() courseDetails: UpdateOrganizationCourseDetailsParams,
+  ): Promise<Response<void>> {
+    const courseInfo = await OrganizationCourseModel.findOne({
+      where: {
+        organizationId: oid,
+        courseId: cid,
+      },
+      relations: ['course'],
+    });
+
+    if (!courseInfo) {
+      return res.status(HttpStatus.NOT_FOUND).send({
+        message: ERROR_MESSAGES.courseController.courseNotFound,
+      });
+    }
+
+    if (courseDetails.name.trim().length < 1) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: ERROR_MESSAGES.courseController.courseNameTooShort,
+      });
+    }
+
+    if (
+      courseInfo.course.coordinator_email &&
+      courseDetails.coordinatorEmail.trim().length < 1
+    ) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: ERROR_MESSAGES.courseController.coordinatorEmailTooShort,
+      });
+    }
+
+    if (
+      courseInfo.course.sectionGroupName &&
+      courseDetails.sectionGroupName.trim().length < 1
+    ) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: ERROR_MESSAGES.courseController.sectionGroupNameTooShort,
+      });
+    }
+
+    if (
+      courseInfo.course.zoomLink &&
+      courseDetails.zoomLink.trim().length < 1
+    ) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: ERROR_MESSAGES.courseController.zoomLinkTooShort,
+      });
+    }
+
+    if (
+      !this.COURSE_TIMEZONES.find(
+        (timezone) => timezone === courseDetails.timezone,
+      )
+    ) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: `Timezone field is invalid, must be one of ${this.COURSE_TIMEZONES.join(
+          ', ',
+        )}`,
+      });
+    }
+
+    const semesterInfo = await SemesterModel.findOne({
+      where: {
+        id: courseDetails.semesterId,
+      },
+    });
+
+    if (!semesterInfo) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: ERROR_MESSAGES.courseController.semesterNotFound,
+      });
+    }
+
+    courseInfo.course.name = courseDetails.name;
+    courseInfo.course.coordinator_email = courseDetails.coordinatorEmail;
+    courseInfo.course.sectionGroupName = courseDetails.sectionGroupName;
+    courseInfo.course.zoomLink = courseDetails.zoomLink;
+    courseInfo.course.timezone = courseDetails.timezone;
+    courseInfo.course.semesterId = courseDetails.semesterId;
+
+    await courseInfo.course
+      .save()
+      .then(() => {
+        return res.status(HttpStatus.OK).send({
+          message: 'Course updated',
+        });
+      })
+      .catch((err) => {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: err,
+        });
+      });
+  }
+
+  @Patch(':oid/update_course_access/:cid')
+  @UseGuards(JwtAuthGuard, OrganizationRolesGuard, OrganizationGuard)
+  @Roles(OrganizationRole.ADMIN)
+  async updateCourseAccess(
+    @Res() res: Response,
+    @Param('oid') oid: number,
+    @Param('cid') cid: number,
+  ): Promise<Response<void>> {
+    const courseInfo = await OrganizationCourseModel.findOne({
+      where: {
+        organizationId: oid,
+        courseId: cid,
+      },
+      relations: ['course'],
+    });
+
+    if (!courseInfo) {
+      return res.status(HttpStatus.NOT_FOUND).send({
+        message: ERROR_MESSAGES.courseController.courseNotFound,
+      });
+    }
+
+    courseInfo.course.enabled = !courseInfo.course.enabled;
+
+    await courseInfo.course
+      .save()
+      .then(() => {
+        return res.status(HttpStatus.OK).send({
+          message: 'Course access updated',
+        });
+      })
+      .catch((err) => {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: err,
+        });
+      });
+  }
+
+  @Get(':oid/get_course/:cid')
+  @UseGuards(JwtAuthGuard, OrganizationRolesGuard)
+  @Roles(OrganizationRole.ADMIN)
+  async getOrganizationCourse(
+    @Res() res: Response,
+    @Param('oid') oid: number,
+    @Param('cid') cid: number,
+  ): Promise<Response<OrganizationCourseResponse>> {
+    const course = await this.organizationService.getOrganizationCourse(
+      oid,
+      cid,
+    );
+
+    if (!course) {
+      return res.status(HttpStatus.NOT_FOUND).send({
+        message: ERROR_MESSAGES.courseController.courseNotFound,
+      });
+    }
+
+    return res.status(HttpStatus.OK).send(course);
+  }
 
   @Get(':oid/get_banner/:photoUrl')
   @UseGuards(JwtAuthGuard)

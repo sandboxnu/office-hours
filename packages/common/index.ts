@@ -668,7 +668,7 @@ export class UpdateProfileParams {
   @IsOptional()
   firstName?: string;
 
-  @IsString()
+  @IsInt()
   @IsOptional()
   sid?: number;
 
@@ -815,6 +815,32 @@ export class InteractionParams {
 
   @IsInt()
   userId!: number;
+}
+
+export class UpdateOrganizationCourseDetailsParams {
+  @IsString()
+  @IsOptional()
+  name?: string;
+
+  @IsString()
+  @IsOptional()
+  coordinatorEmail?: string;
+
+  @IsString()
+  @IsOptional()
+  sectionGroupName?: string;
+
+  @IsString()
+  @IsOptional()
+  zoomLink?: string;
+
+  @IsString()
+  @IsOptional()
+  timezone?: string;
+
+  @IsInt()
+  @IsOptional()
+  semesterId?: number;
 }
 
 export class ChatBotQuestionParams {
@@ -1265,6 +1291,11 @@ export const ERROR_MESSAGES = {
       cannotCheckIntoMultipleQueues:
         "Cannot check into multiple queues at the same time",
     },
+    semesterNotFound: "Semester not found",
+    courseNameTooShort: "Course name must be at least 1 character",
+    coordinatorEmailTooShort: "Coordinator email must be at least 1 character",
+    sectionGroupNameTooShort: "Section group name must be at least 1 character",
+    zoomLinkTooShort: "Zoom link must be at least 1 character",
     courseAlreadyRegistered: "One or more of the courses is already registered",
     courseNotFound: "The course was not found",
     sectionGroupNotFound: "One or more of the section groups was not found",

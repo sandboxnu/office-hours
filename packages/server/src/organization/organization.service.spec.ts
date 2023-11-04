@@ -8,7 +8,7 @@ import {
   OrganizationFactory,
   UserFactory,
 } from '../../test/util/factories';
-import { OrganizationRole } from '@koh/common';
+import { OrganizationRole, UserRole } from '@koh/common';
 import { OrganizationCourseModel } from './organization-course.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 
@@ -137,9 +137,110 @@ describe('OrganizationService', () => {
       const courses = await service.getCourses(organization.id, 1, 50);
       expect(courses).toMatchSnapshot();
     });
+
+    it('should not return organization courses if no courses match search query', async () => {
+      const organization = await OrganizationFactory.create();
+      const course = await CourseFactory.create({
+        name: 'test',
+      });
+
+      await OrganizationCourseModel.create({
+        organizationId: organization.id,
+        courseId: course.id,
+      }).save();
+
+      const courses = await service.getCourses(
+        organization.id,
+        1,
+        50,
+        'notMatchingSearch',
+      );
+      expect(courses).toHaveLength(0);
+    });
+
+    it('should not return organization if no courses are available', async () => {
+      const organization = await OrganizationFactory.create();
+      const courses = await service.getCourses(organization.id, 1, 50);
+      expect(courses).toHaveLength(0);
+    });
+
+    it('should return organization courses with search', async () => {
+      const organization = await OrganizationFactory.create();
+      const course = await CourseFactory.create({
+        name: 'test',
+      });
+
+      const courseTwo = await CourseFactory.create({
+        name: 'courseNotMatchingSearch',
+      });
+
+      await OrganizationCourseModel.create({
+        organizationId: organization.id,
+        courseId: course.id,
+      }).save();
+
+      await OrganizationCourseModel.create({
+        organizationId: organization.id,
+        courseId: courseTwo.id,
+      }).save();
+
+      const courses = await service.getCourses(organization.id, 1, 50, 'test');
+      expect(courses).toMatchSnapshot();
+    });
   });
 
   describe('getUsers', () => {
+    it('should return empty organization users if no users are available', async () => {
+      const organization = await OrganizationFactory.create();
+      const users = await service.getUsers(organization.id, 1, 50);
+      expect(users).toHaveLength(0);
+    });
+
+    it('should return empty organization users if no users match search query', async () => {
+      const organization = await OrganizationFactory.create();
+      const user = await UserFactory.create({
+        firstName: 'test',
+      });
+
+      await OrganizationUserModel.create({
+        organizationId: organization.id,
+        userId: user.id,
+      }).save();
+
+      const users = await service.getUsers(
+        organization.id,
+        1,
+        50,
+        'notMatchingSearch',
+      );
+
+      expect(users).toHaveLength(0);
+    });
+
+    it('should return organization users with search', async () => {
+      const organization = await OrganizationFactory.create();
+      const user = await UserFactory.create({
+        firstName: 'test',
+      });
+
+      const userTwo = await UserFactory.create({
+        firstName: 'userNotMatchingSearch',
+      });
+
+      await OrganizationUserModel.create({
+        organizationId: organization.id,
+        userId: user.id,
+      }).save();
+
+      await OrganizationUserModel.create({
+        organizationId: organization.id,
+        userId: userTwo.id,
+      }).save();
+
+      const users = await service.getUsers(organization.id, 1, 50, 'test');
+      expect(users).toMatchSnapshot();
+    });
+
     it('should return organization users', async () => {
       const organization = await OrganizationFactory.create();
       const userOne = await UserFactory.create();
@@ -157,6 +258,74 @@ describe('OrganizationService', () => {
 
       const users = await service.getUsers(organization.id, 1, 50);
       expect(users).toMatchSnapshot();
+    });
+  });
+
+  describe('getOrganizationUserByUserId', () => {
+    it("should throw not found exception if user doesn' exist", async () => {
+      await expect(
+        service.getOrganizationUserByUserId(0),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"OrganizationUser with userId 0 not found"`,
+      );
+    });
+
+    it('should return organizationUser globalRole as unknown when user global role is admin', async () => {
+      const user = await UserFactory.create({
+        userRole: UserRole.ADMIN,
+      });
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+      }).save();
+
+      const organizationUser = await service.getOrganizationUserByUserId(
+        user.id,
+      );
+      expect(organizationUser).toMatchSnapshot();
+    });
+
+    it('should return the organizationUser', async () => {
+      const user = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+      }).save();
+
+      const organizationUser = await service.getOrganizationUserByUserId(
+        user.id,
+      );
+      expect(organizationUser).toMatchSnapshot();
+    });
+  });
+
+  describe('getOrganizationCourse', () => {
+    it('should throw not found exception if organization course does not exist', async () => {
+      await expect(
+        service.getOrganizationCourse(0, 0),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"OrganizationCourse with organizationId 0 and courseId 0 not found"`,
+      );
+    });
+
+    it('should return organization course', async () => {
+      const organization = await OrganizationFactory.create();
+      const course = await CourseFactory.create();
+
+      await OrganizationCourseModel.create({
+        organizationId: organization.id,
+        courseId: course.id,
+      }).save();
+
+      const organizationCourse = await service.getOrganizationCourse(
+        organization.id,
+        course.id,
+      );
+      expect(organizationCourse).toMatchSnapshot();
     });
   });
 });
