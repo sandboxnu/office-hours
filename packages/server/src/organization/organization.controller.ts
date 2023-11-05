@@ -90,7 +90,7 @@ export class OrganizationController {
       });
     }
 
-    if (courseDetails.name.trim().length < 1) {
+    if (!courseDetails.name || courseDetails.name.trim().length < 1) {
       return res.status(HttpStatus.BAD_REQUEST).send({
         message: ERROR_MESSAGES.courseController.courseNameTooShort,
       });
@@ -98,7 +98,8 @@ export class OrganizationController {
 
     if (
       courseInfo.course.coordinator_email &&
-      courseDetails.coordinatorEmail.trim().length < 1
+      (!courseDetails.coordinatorEmail ||
+        courseDetails.coordinatorEmail.trim().length < 1)
     ) {
       return res.status(HttpStatus.BAD_REQUEST).send({
         message: ERROR_MESSAGES.courseController.coordinatorEmailTooShort,
@@ -107,7 +108,8 @@ export class OrganizationController {
 
     if (
       courseInfo.course.sectionGroupName &&
-      courseDetails.sectionGroupName.trim().length < 1
+      (!courseDetails.sectionGroupName ||
+        courseDetails.sectionGroupName.trim().length < 1)
     ) {
       return res.status(HttpStatus.BAD_REQUEST).send({
         message: ERROR_MESSAGES.courseController.sectionGroupNameTooShort,
@@ -116,7 +118,7 @@ export class OrganizationController {
 
     if (
       courseInfo.course.zoomLink &&
-      courseDetails.zoomLink.trim().length < 1
+      (!courseDetails.zoomLink || courseDetails.zoomLink.trim().length < 1)
     ) {
       return res.status(HttpStatus.BAD_REQUEST).send({
         message: ERROR_MESSAGES.courseController.zoomLinkTooShort,
@@ -124,6 +126,7 @@ export class OrganizationController {
     }
 
     if (
+      !courseDetails.timezone ||
       !this.COURSE_TIMEZONES.find(
         (timezone) => timezone === courseDetails.timezone,
       )
@@ -135,24 +138,36 @@ export class OrganizationController {
       });
     }
 
-    const semesterInfo = await SemesterModel.findOne({
-      where: {
-        id: courseDetails.semesterId,
-      },
-    });
-
-    if (!semesterInfo) {
-      return res.status(HttpStatus.BAD_REQUEST).send({
-        message: ERROR_MESSAGES.courseController.semesterNotFound,
+    if (courseDetails.semesterId) {
+      const semesterInfo = await SemesterModel.findOne({
+        where: {
+          id: courseDetails.semesterId,
+        },
       });
+
+      if (!semesterInfo) {
+        return res.status(HttpStatus.BAD_REQUEST).send({
+          message: ERROR_MESSAGES.courseController.semesterNotFound,
+        });
+      }
+
+      courseInfo.course.semesterId = courseDetails.semesterId;
     }
 
     courseInfo.course.name = courseDetails.name;
-    courseInfo.course.coordinator_email = courseDetails.coordinatorEmail;
-    courseInfo.course.sectionGroupName = courseDetails.sectionGroupName;
-    courseInfo.course.zoomLink = courseDetails.zoomLink;
+
+    if (courseDetails.coordinatorEmail) {
+      courseInfo.course.coordinator_email = courseDetails.coordinatorEmail;
+    }
+
+    if (courseDetails.sectionGroupName) {
+      courseInfo.course.sectionGroupName = courseDetails.sectionGroupName;
+    }
+
+    if (courseDetails.zoomLink) {
+      courseInfo.course.zoomLink = courseDetails.zoomLink;
+    }
     courseInfo.course.timezone = courseDetails.timezone;
-    courseInfo.course.semesterId = courseDetails.semesterId;
 
     await courseInfo.course
       .save()
@@ -355,6 +370,7 @@ export class OrganizationController {
       .then(() => {
         return res.status(HttpStatus.OK).send({
           message: 'Banner uploaded',
+          fileName: fileName,
         });
       })
       .catch((err) => {
@@ -429,6 +445,7 @@ export class OrganizationController {
       .then(() => {
         return res.status(HttpStatus.OK).send({
           message: 'Logo uploaded',
+          fileName: fileName,
         });
       })
       .catch((err) => {
@@ -629,20 +646,20 @@ export class OrganizationController {
       where: { id: oid },
     })
       .then((organization) => {
-        if (!organization) {
-          return res.status(HttpStatus.NOT_FOUND).send({
-            message: ERROR_MESSAGES.organizationController.organizationNotFound,
-          });
-        }
-
-        if (organizationPatch.name.trim().length < 4) {
+        if (
+          !organizationPatch.name ||
+          organizationPatch.name.trim().length < 4
+        ) {
           return res.status(HttpStatus.BAD_REQUEST).send({
             message:
               ERROR_MESSAGES.organizationController.organizationNameTooShort,
           });
         }
 
-        if (organizationPatch.description.trim().length < 10) {
+        if (
+          !organizationPatch.description ||
+          organizationPatch.description.trim().length < 10
+        ) {
           return res.status(HttpStatus.BAD_REQUEST).send({
             message:
               ERROR_MESSAGES.organizationController
@@ -652,7 +669,8 @@ export class OrganizationController {
 
         if (
           organizationPatch.websiteUrl &&
-          (organizationPatch.websiteUrl.trim().length < 10 ||
+          (!organizationPatch.websiteUrl ||
+            organizationPatch.websiteUrl.trim().length < 10 ||
             !this.isValidUrl(organizationPatch.websiteUrl))
         ) {
           return res.status(HttpStatus.BAD_REQUEST).send({
@@ -664,7 +682,10 @@ export class OrganizationController {
 
         organization.name = organizationPatch.name;
         organization.description = organizationPatch.description;
-        organization.websiteUrl = organizationPatch.websiteUrl;
+
+        if (organizationPatch.websiteUrl) {
+          organization.websiteUrl = organizationPatch.websiteUrl;
+        }
 
         organization
           .save()
@@ -678,7 +699,6 @@ export class OrganizationController {
           });
       })
       .catch((err) => {
-        console.log(err);
         res.status(500).send({ message: err });
       });
   }
@@ -725,7 +745,7 @@ export class OrganizationController {
     @Param('uid') uid: number,
     @Body() userCourses: number[],
   ): Promise<Response<void>> {
-    if (userCourses.length === 0) {
+    if (userCourses.length < 1) {
       return res.status(HttpStatus.BAD_REQUEST).send({
         message: ERROR_MESSAGES.profileController.noCoursesToDelete,
       });
@@ -797,7 +817,7 @@ export class OrganizationController {
           const errMessage =
             'Error deleting previous picture at : ' +
             userInfo.organizationUser.photoURL +
-            'the previous image was at an invalid location?';
+            ' the previous image was at an invalid location?';
           return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
             message: errMessage,
           });

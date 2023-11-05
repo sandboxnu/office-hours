@@ -13,6 +13,30 @@ Object {
 }
 `;
 
+exports[`Organization Integration GET /organization/:oid/get_course/:cid should return course when course is found 1`] = `
+Object {
+  "course": Object {
+    "asyncQuestionDisplayTypes": Array [],
+    "coordinator_email": null,
+    "deletedAt": null,
+    "enabled": true,
+    "icalURL": "https://calendar.google.com/calendar/ical/t6lu2pic7u9otrbpkuk26sl34g%40group.calendar.google.com/public/basic.ics",
+    "id": 1,
+    "name": "CS 304",
+    "organizationCourseId": null,
+    "questionTimer": null,
+    "sectionGroupName": "CS 304",
+    "selfEnroll": false,
+    "semesterId": 1,
+    "timezone": null,
+    "zoomLink": null,
+  },
+  "courseId": 1,
+  "id": 1,
+  "organizationId": 1,
+}
+`;
+
 exports[`Organization Integration GET /organization/:oid/get_courses/:page? should return 200 when user is an admin 1`] = `
 Array [
   Object {
