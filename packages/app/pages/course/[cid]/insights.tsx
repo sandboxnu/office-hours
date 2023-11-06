@@ -14,6 +14,7 @@ import {
   Spin,
 } from "antd";
 import { CardSize } from "antd/lib/card";
+import DefaultErrorPage from "next/error";
 import { InfoCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { useProfile } from "../../../hooks/useProfile";
 import {
@@ -21,6 +22,7 @@ import {
   DateRangeType,
   InsightComponent,
   InsightDisplayInfo,
+  Role,
   SimpleDisplayOutputType,
   SimpleTableOutputType,
 } from "@koh/common";
@@ -35,6 +37,7 @@ import { useRouter } from "next/router";
 import styled from "styled-components";
 import { SetStateAction } from "react";
 import { Dispatch } from "react";
+import { useRoleInCourse } from "../../../hooks/useRoleInCourse";
 
 const InsightsRowContainer = styled.div`
   display: flex;
@@ -47,6 +50,7 @@ export default function Insights(): ReactElement {
   const profile = useProfile();
   const router = useRouter();
   const { cid } = router.query;
+  const role = useRoleInCourse(Number(cid));
 
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
   const [mostActiveStudentsPage, setMostActiveStudentsPage] = useState(1);
@@ -69,6 +73,10 @@ export default function Insights(): ReactElement {
   );
 
   const { RangePicker } = DatePicker;
+
+  if (role !== Role.PROFESSOR && role !== Role.TA) {
+    return <DefaultErrorPage statusCode={404} />;
+  }
 
   return (
     <>
