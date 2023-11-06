@@ -133,7 +133,7 @@ export default function Invite(): ReactElement {
         await addStudent(userData);
       },
       <img
-        alt="example"
+        alt="course-image"
         height="200"
         style={{ objectFit: "cover" }}
         src="https://open-2021.sites.olt.ubc.ca/files/2020/10/OSIP-2020-Slider.jpg"

@@ -141,7 +141,7 @@ export default function SettingsPage({
             <Upload
               customRequest={({ file }) => handleUpload(file)} // Use customRequest to handle the upload logic ourselves
               beforeUpload={beforeUpload}
-              showUploadList={false}
+              showUploadList={true}
               onChange={(info) => {
                 setUploading(info.file.status === "uploading");
                 mutate();

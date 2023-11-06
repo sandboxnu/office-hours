@@ -36,8 +36,6 @@ Object {
     "organizationName": "UBCO",
     "organizationRole": "member",
   },
-  "organizationId": 1,
-  "organizationRole": "member",
   "phoneNotifsEnabled": false,
   "photoURL": null,
   "sid": null,

@@ -129,45 +129,33 @@ export class CourseController {
     @Param('code') code: string,
     @Res() res: Response,
   ): Promise<Response<GetLimitedCourseResponse>> {
-    const course = await CourseModel.findOne({
+    const courseWithOrganization = await CourseModel.findOne({
       where: {
         id: id,
         courseInviteCode: code,
       },
+      relations: ['organizationCourse', 'organizationCourse.organization'],
     });
 
-    if (!course) {
-      return res.status(HttpStatus.NOT_FOUND).send({
+    if (!courseWithOrganization) {
+      res.status(HttpStatus.NOT_FOUND).send({
         message: ERROR_MESSAGES.courseController.courseNotFound,
       });
-    }
-
-    const organizationCourse = await OrganizationCourseModel.findOne({
-      where: {
-        courseId: course.id,
-      },
-      relations: ['organization'],
-    });
-
-    if (!organizationCourse) {
-      return res.status(HttpStatus.NOT_FOUND).send({
-        message: ERROR_MESSAGES.courseController.courseNotFound,
-      });
+      return;
     }
 
     const organization =
-      organizationCourse === undefined ? null : organizationCourse.organization;
+      courseWithOrganization.organizationCourse?.organization || null;
 
     const course_response = {
-      id: course.id,
-      name: course.name,
+      id: courseWithOrganization.id,
+      name: courseWithOrganization.name,
       organizationCourse: organization,
-      courseInviteCode: course.courseInviteCode,
+      courseInviteCode: courseWithOrganization.courseInviteCode,
     };
 
-    res.status(HttpStatus.OK).send({
-      course_response,
-    });
+    res.status(HttpStatus.OK).send(course_response);
+    return;
   }
 
   @Get(':id')
