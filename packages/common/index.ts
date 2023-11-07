@@ -678,6 +678,7 @@ export class OrganizationPartial {
 
 export class OrganizationUserPartial {
   id!: number;
+  orgId!: number;
   organizationName!: string;
   organizationDescription!: string;
   organizationLogoUrl!: string;

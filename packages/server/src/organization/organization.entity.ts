@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { OrganizationUserModel } from './organization-user.entity';
+import { OrganizationCourseModel } from './organization-course.entity';
 
 @Entity('organization_model')
 export class OrganizationModel extends BaseEntity {
@@ -43,8 +44,8 @@ export class OrganizationModel extends BaseEntity {
 
   @Exclude()
   @OneToMany(
-    (type) => OrganizationUserModel,
-    (organizationUser) => organizationUser.organization,
+    (type) => OrganizationCourseModel,
+    (organizationCourse) => organizationCourse.organization,
   )
-  organizationCourses: OrganizationUserModel[];
+  organizationCourses: OrganizationCourseModel[];
 }

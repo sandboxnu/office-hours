@@ -17,6 +17,7 @@ export class OrganizationService {
 
     const flattenedOrganization = {
       id: organizationUser.id,
+      orgId: organizationUser.organization.id,
       organizationName: organizationUser.organization.name,
       organizationDescription: organizationUser.organization.description,
       organizationLogoUrl: organizationUser.organization.logoUrl,

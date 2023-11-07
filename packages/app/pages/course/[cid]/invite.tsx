@@ -94,7 +94,7 @@ export default function Invite(): ReactElement {
 
   let cardElement;
 
-  if (profile?.organization.id !== course?.organizationCourse.id) {
+  if (profile?.organization.orgId !== course?.organizationCourse.id) {
     cardElement = renderCard(
       "You cannot join a course that is not in your organization",
       {},
@@ -128,7 +128,6 @@ export default function Invite(): ReactElement {
           selected_course: course.id,
           sid: profile.sid,
           photo_url: profile.photoURL,
-          courses: [],
         };
         await addStudent(userData);
       },

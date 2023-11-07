@@ -101,7 +101,6 @@ Object {
   "id": 1,
   "name": "CS 304",
   "organizationCourse": null,
-  "organizationCourseId": null,
   "questionTimer": null,
   "queues": Array [],
   "sectionGroupName": "CS 304",

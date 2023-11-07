@@ -114,7 +114,5 @@ export const InteractionFactory = new Factory(InteractionModel)
   .attr('timestamp', new Date());
 
 export const OrganizationCourseFactory = new Factory(OrganizationCourseModel)
-  .sequence('organizationId', (i) => i)
-  .sequence('courseId', (i) => i)
   .assocOne('organization', OrganizationFactory)
-  .assocMany('course', CourseFactory);
+  .assocOne('course', CourseFactory);

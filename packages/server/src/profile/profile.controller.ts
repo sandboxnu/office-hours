@@ -328,6 +328,7 @@ export class ProfileController {
 
     const organization = pick(userOrganization, [
       'id',
+      'orgId',
       'organizationName',
       'organizationDescription',
       'organizationLogoUrl',

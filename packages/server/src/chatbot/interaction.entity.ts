@@ -6,8 +6,8 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { CourseModel } from 'course/course.entity';
-import { UserModel } from 'profile/user.entity';
+import { CourseModel } from '../course/course.entity';
+import { UserModel } from '../profile/user.entity';
 
 @Entity('chatbot_interactions_model')
 export class InteractionModel extends BaseEntity {
