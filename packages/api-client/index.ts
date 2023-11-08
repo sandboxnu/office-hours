@@ -41,7 +41,6 @@ import {
   AsyncQuestion,
   CoursePartial,
   Calendar,
-  createCourse,
   ChatbotQuestion,
   ChatBotQuestionParams,
   Interaction,
