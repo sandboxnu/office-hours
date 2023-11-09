@@ -41,10 +41,9 @@ export default function Add(): ReactElement {
     const [formGeneral] = Form.useForm();
     const semesters = useSemester();
 
-    const { data: professors, error } = useSWR(
+    const { data: professors } = useSWR(
       isAdmin ? `/api/v1/organization/[oid]/get_professors` : null,
-      async () => await API.organizations.getProfessors(organization.id),
-      { shouldRetryOnError: false, revalidateOnFocus: false }
+      async () => await API.organizations.getProfessors(organization.id)
     );
 
     const addCourse = async () => {
