@@ -128,7 +128,7 @@ export class OrganizationController {
     if (
       !courseDetails.timezone ||
       !this.COURSE_TIMEZONES.find(
-        (timezone) => timezone === courseDetails.timezone,
+        timezone => timezone === courseDetails.timezone,
       )
     ) {
       return res.status(HttpStatus.BAD_REQUEST).send({
@@ -176,7 +176,7 @@ export class OrganizationController {
           message: 'Course updated',
         });
       })
-      .catch((err) => {
+      .catch(err => {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
           message: err,
         });
@@ -191,13 +191,10 @@ export class OrganizationController {
     @Param('oid') oid: number,
     @Param('cid') cid: number,
   ): Promise<Response<void>> {
-    const courseInfo = await OrganizationCourseModel.findOne({
-      where: {
-        organizationId: oid,
-        courseId: cid,
-      },
-      relations: ['course'],
-    });
+    const courseInfo: OrganizationCourseResponse = await this.organizationService.getOrganizationCourse(
+      oid,
+      cid,
+    );
 
     if (!courseInfo) {
       return res.status(HttpStatus.NOT_FOUND).send({
@@ -214,7 +211,7 @@ export class OrganizationController {
           message: 'Course access updated',
         });
       })
-      .catch((err) => {
+      .catch(err => {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
           message: err,
         });
@@ -333,7 +330,7 @@ export class OrganizationController {
     if (organization.bannerUrl) {
       fs.unlink(
         process.env.UPLOAD_LOCATION + '/' + organization.bannerUrl,
-        (err) => {
+        err => {
           if (err) {
             const errMessage =
               'Error deleting previous picture at : ' +
@@ -356,8 +353,12 @@ export class OrganizationController {
     const fileName =
       organization.id +
       '-' +
-      Math.random().toString(36).substring(2, 15) +
-      Math.random().toString(36).substring(2, 15);
+      Math.random()
+        .toString(36)
+        .substring(2, 15) +
+      Math.random()
+        .toString(36)
+        .substring(2, 15);
 
     await sharp(file.buffer)
       .resize(1920, 1080)
@@ -373,7 +374,7 @@ export class OrganizationController {
           fileName: fileName,
         });
       })
-      .catch((err) => {
+      .catch(err => {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
           message: err,
         });
@@ -408,7 +409,7 @@ export class OrganizationController {
     if (organization.logoUrl) {
       fs.unlink(
         process.env.UPLOAD_LOCATION + '/' + organization.logoUrl,
-        (err) => {
+        err => {
           if (err) {
             const errMessage =
               'Error deleting previous picture at : ' +
@@ -431,8 +432,12 @@ export class OrganizationController {
     const fileName =
       organization.id +
       '-' +
-      Math.random().toString(36).substring(2, 15) +
-      Math.random().toString(36).substring(2, 15);
+      Math.random()
+        .toString(36)
+        .substring(2, 15) +
+      Math.random()
+        .toString(36)
+        .substring(2, 15);
 
     await sharp(file.buffer)
       .resize(256)
@@ -448,7 +453,7 @@ export class OrganizationController {
           fileName: fileName,
         });
       })
-      .catch((err) => {
+      .catch(err => {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
           message: err,
         });
@@ -478,8 +483,8 @@ export class OrganizationController {
       });
     }
 
-    userInfo.organizationUser.accountDeactivated =
-      !userInfo.organizationUser.accountDeactivated;
+    userInfo.organizationUser.accountDeactivated = !userInfo.organizationUser
+      .accountDeactivated;
 
     await userInfo.organizationUser
       .save()
@@ -488,7 +493,7 @@ export class OrganizationController {
           message: 'User account access updated',
         });
       })
-      .catch((err) => {
+      .catch(err => {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
           message: err,
         });
@@ -505,7 +510,7 @@ export class OrganizationController {
     CourseModel.findOne({
       where: { id: cid },
     })
-      .then((course) => {
+      .then(course => {
         if (!course) {
           throw new HttpException(
             ERROR_MESSAGES.courseController.courseNotFound,
@@ -516,7 +521,7 @@ export class OrganizationController {
         OrganizationCourseModel.findOne({
           where: { courseId: cid, organizationId: oid },
         })
-          .then((organizationCourse) => {
+          .then(organizationCourse => {
             if (organizationCourse) {
               throw new HttpException(
                 ERROR_MESSAGES.organizationController.courseAlreadyInOrganization,
@@ -530,20 +535,20 @@ export class OrganizationController {
 
             organizationCourseModel
               .save()
-              .then((_) => {
+              .then(_ => {
                 res
                   .status(200)
                   .send({ message: 'Course added to organization' });
               })
-              .catch((err) => {
+              .catch(err => {
                 res.status(500).send({ message: err });
               });
           })
-          .catch((err) => {
+          .catch(err => {
             res.status(500).send({ message: err });
           });
       })
-      .catch((err) => {
+      .catch(err => {
         res.status(500).send({ message: err });
       });
   }
@@ -554,7 +559,7 @@ export class OrganizationController {
     OrganizationModel.findOne({
       where: { id: oid },
     })
-      .then((organization) => {
+      .then(organization => {
         if (!organization) {
           return res.status(HttpStatus.NOT_FOUND).send({
             message: ERROR_MESSAGES.organizationController.organizationNotFound,
@@ -563,7 +568,7 @@ export class OrganizationController {
 
         res.status(HttpStatus.OK).send(organization);
       })
-      .catch((err) => {
+      .catch(err => {
         res.status(500).send({ message: err });
       });
   }
@@ -579,7 +584,7 @@ export class OrganizationController {
     OrganizationModel.findOne({
       where: { id: oid },
     })
-      .then((organization) => {
+      .then(organization => {
         if (!organization) {
           return res.status(HttpStatus.NOT_FOUND).send({
             message: ERROR_MESSAGES.organizationController.organizationNotFound,
@@ -592,7 +597,7 @@ export class OrganizationController {
             organizationId: oid,
           },
         })
-          .then((organizationUser) => {
+          .then(organizationUser => {
             if (!organizationUser) {
               return res.status(HttpStatus.NOT_FOUND).send({
                 message:
@@ -616,20 +621,20 @@ export class OrganizationController {
 
             organizationUser
               .save()
-              .then((_) => {
+              .then(_ => {
                 res.status(HttpStatus.OK).send({
                   message: 'Organization user role updated',
                 });
               })
-              .catch((err) => {
+              .catch(err => {
                 res.status(500).send({ message: err });
               });
           })
-          .catch((err) => {
+          .catch(err => {
             res.status(500).send({ message: err });
           });
       })
-      .catch((err) => {
+      .catch(err => {
         res.status(500).send({ message: err });
       });
   }
@@ -645,7 +650,7 @@ export class OrganizationController {
     OrganizationModel.findOne({
       where: { id: oid },
     })
-      .then((organization) => {
+      .then(organization => {
         if (
           !organizationPatch.name ||
           organizationPatch.name.trim().length < 4
@@ -689,16 +694,16 @@ export class OrganizationController {
 
         organization
           .save()
-          .then((_) => {
+          .then(_ => {
             res.status(HttpStatus.OK).send({
               message: 'Organization updated',
             });
           })
-          .catch((err) => {
+          .catch(err => {
             res.status(500).send({ message: err });
           });
       })
-      .catch((err) => {
+      .catch(err => {
         res.status(500).send({ message: err });
       });
   }
@@ -706,7 +711,9 @@ export class OrganizationController {
   @Get(':oid/stats')
   @UseGuards(JwtAuthGuard, OrganizationRolesGuard)
   @Roles(OrganizationRole.ADMIN)
-  async getStats(@Param('oid') oid: number): Promise<{
+  async getStats(
+    @Param('oid') oid: number,
+  ): Promise<{
     members: number;
     courses: number;
     membersProfessors: number;
@@ -774,7 +781,7 @@ export class OrganizationController {
           message: 'User courses deleted',
         });
       })
-      .catch((err) => {
+      .catch(err => {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
           message: err,
         });
@@ -812,7 +819,7 @@ export class OrganizationController {
 
     fs.unlink(
       process.env.UPLOAD_LOCATION + '/' + userInfo.organizationUser.photoURL,
-      async (err) => {
+      async err => {
         if (err) {
           const errMessage =
             'Error deleting previous picture at : ' +
@@ -909,7 +916,7 @@ export class OrganizationController {
           message: 'User info updated',
         });
       })
-      .catch((err) => {
+      .catch(err => {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
           message: err,
         });
@@ -996,7 +1003,7 @@ export class OrganizationController {
     UserModel.findOne({
       where: { id: uid },
     })
-      .then((user) => {
+      .then(user => {
         if (!user) {
           throw new HttpException(
             ERROR_MESSAGES.profileController.accountNotAvailable,
@@ -1007,7 +1014,7 @@ export class OrganizationController {
         OrganizationUserModel.findOne({
           where: { userId: uid, organizationId: oid },
         })
-          .then((organizationUser) => {
+          .then(organizationUser => {
             if (organizationUser) {
               throw new HttpException(
                 ERROR_MESSAGES.organizationController.userAlreadyInOrganization,
@@ -1022,18 +1029,18 @@ export class OrganizationController {
 
             organizationUserModel
               .save()
-              .then((_) => {
+              .then(_ => {
                 res.status(200).send({ message: 'User added to organization' });
               })
-              .catch((err) => {
+              .catch(err => {
                 res.status(500).send({ message: err });
               });
           })
-          .catch((err) => {
+          .catch(err => {
             res.status(500).send({ message: err });
           });
       })
-      .catch((err) => {
+      .catch(err => {
         res.status(500).send({ message: err });
       });
   }

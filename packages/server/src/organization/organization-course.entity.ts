@@ -5,7 +5,6 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -19,18 +18,23 @@ export class OrganizationCourseModel extends BaseEntity {
 
   @Exclude()
   @ManyToOne(
-    (type) => OrganizationModel,
-    (organization) => organization.organizationCourses,
+    type => OrganizationModel,
+    organization => organization.organizationCourses,
   )
+  @JoinColumn({ name: 'organizationId' })
   organization: OrganizationModel;
 
   @Column({ nullable: true })
   organizationId: number;
 
   @Exclude()
-  @OneToOne((type) => CourseModel, (course) => course.organizationCourse, {
-    cascade: true,
-  })
+  @OneToOne(
+    type => CourseModel,
+    course => course.organizationCourse,
+    {
+      cascade: true,
+    },
+  )
   @JoinColumn({ name: 'courseId' })
   course: CourseModel;
 

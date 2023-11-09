@@ -3,6 +3,7 @@ import {
   BaseEntity,
   Column,
   Entity,
+  JoinColumn,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -36,16 +37,18 @@ export class OrganizationModel extends BaseEntity {
   ssoUrl: string;
 
   @Exclude()
+  @JoinColumn({ name: 'organizationId' })
   @OneToMany(
-    (type) => OrganizationUserModel,
-    (organizationUser) => organizationUser.organization,
+    type => OrganizationUserModel,
+    organizationUser => organizationUser.organization,
   )
   organizationUsers: OrganizationUserModel[];
 
   @Exclude()
+  @JoinColumn({ name: 'organizationId' })
   @OneToMany(
-    (type) => OrganizationUserModel,
-    (organizationUser) => organizationUser.organization,
+    type => OrganizationCourseModel,
+    organizationCourse => organizationCourse.organization,
   )
   organizationCourses: OrganizationCourseModel[];
 }

@@ -169,22 +169,22 @@ export default function Edit(): ReactElement {
         return;
       }
 
-      if (firstNameField.length < 1) {
+      if (firstNameField.trim().length < 1) {
         message.error("First name must be at least 1 character");
         return;
       }
 
-      if (lastNameField.length < 1) {
+      if (lastNameField.trim().length < 1) {
         message.error("Last name must be at least 1 character");
         return;
       }
 
-      if (emailField.length < 4) {
+      if (emailField.trim().length < 4) {
         message.error("Email must be at least 4 characters");
         return;
       }
 
-      if (userData.user.sid && sidField.length < 1) {
+      if (userData.user.sid && sidField.trim().length < 1) {
         message.error("Student number must be at least 1 character");
         return;
       }

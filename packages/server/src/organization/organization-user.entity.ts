@@ -8,7 +8,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { OrganizationModel } from './organization.entity';
-import { Exclude } from 'class-transformer';
 import { UserModel } from '../profile/user.entity';
 import { OrganizationRole } from '@koh/common';
 
@@ -18,12 +17,16 @@ export class OrganizationUserModel extends BaseEntity {
   id: number;
 
   @ManyToOne(
-    (type) => OrganizationModel,
-    (organization) => organization.organizationUsers,
+    type => OrganizationModel,
+    organization => organization.organizationUsers,
   )
+  @JoinColumn({ name: 'organizationId' })
   organization: OrganizationModel;
 
-  @OneToOne((type) => UserModel, (user) => user.organizationUser)
+  @OneToOne(
+    type => UserModel,
+    user => user.organizationUser,
+  )
   @JoinColumn({ name: 'userId' })
   organizationUser: UserModel;
 
