@@ -51,6 +51,7 @@
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
     "express-session": "^1.17.1",
+    "google-auth-library": "^9.2.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.2",
     "moment-timezone": "^0.5.31",

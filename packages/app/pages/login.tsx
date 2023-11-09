@@ -23,11 +23,11 @@ export default function Login(): ReactElement {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: uname,
-        password: pass,
-      }),
+        password: pass
+      })
     };
     fetch(`/api/v1/ubc_login`, loginRequest)
-      .then(async (response) => {
+      .then(async response => {
         const data = await response.json();
         if (!response.ok) {
           // get error message from body or default to response statusText
@@ -42,16 +42,16 @@ export default function Login(): ReactElement {
           Router.push(`/api/v1/login/entry?token=${data.token}`);
         }
       })
-      .catch((error) => {
+      .catch(error => {
         console.error("There was an error!", error);
       });
   }
 
-  const onPassChange = (e) => {
+  const onPassChange = e => {
     setPass(e.target.value);
   };
 
-  const onUserNameChange = (e) => {
+  const onUserNameChange = e => {
     setUname(e.target.value);
   };
 
@@ -108,9 +108,33 @@ export default function Login(): ReactElement {
             >
               Log in
             </Button>
-            Or <a href="/signup/signup">register now!</a>
           </Form.Item>
         </Form>
+
+        {/* <GoogleOAuthProvider
+          clientId="26295337620-ni0ffs0k9g41ra330c7obj4nd6vq6o8j"
+          redirectUri='http://localhost:3000'
+          scopes={['openid', 'profile', 'email']}
+          onRedirect={(url) => {
+            window.location.href = url;
+          }}
+        >
+          <GoogleLogin
+            width={300}
+            onSuccess={credentialResponse => {
+              const idToken = credentialResponse.credential;
+
+              // Decode the ID token
+              const decodedToken = jwt.decode(idToken);
+
+              // You can access user information in the decoded token
+              console.log(decodedToken);
+            }}
+            onError={() => {
+              console.log('Login Failed');
+            }}
+          />
+        </GoogleOAuthProvider> */}
       </Container>
     </>
   );

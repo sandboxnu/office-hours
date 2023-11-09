@@ -22,7 +22,6 @@ import { QueueModule } from './queue/queue.module';
 import { SeedModule } from './seed/seed.module';
 import { SSEModule } from './sse/sse.module';
 import { SemesterModule } from 'semester/semester.module';
-import { SignupModule } from 'signup/signup.module';
 import { asyncQuestionModule } from 'asyncQuestion/asyncQuestion.module';
 import { ImageModule } from 'images/image.module';
 import { MailModule } from 'mail/mail.module';
@@ -33,7 +32,6 @@ import { OrganizationModule } from 'organization/organization.module';
     TypeOrmModule.forRoot(typeormConfig),
     ScheduleModule.forRoot(),
     LoginModule,
-    SignupModule,
     ProfileModule,
     CourseModule,
     QueueModule,
