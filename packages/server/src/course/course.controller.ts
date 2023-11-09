@@ -14,6 +14,8 @@ import {
   TACheckoutResponse,
   UpdateCourseOverrideBody,
   UpdateCourseOverrideResponse,
+  OrganizationRole,
+  UpdateOrganizationCourseDetailsParams,
 } from '@koh/common';
 import { Response } from 'express';
 import {
@@ -53,6 +55,8 @@ import { HeatmapService } from './heatmap.service';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { AsyncQuestionModel } from 'asyncQuestion/asyncQuestion.entity';
 import { OrganizationCourseModel } from 'organization/organization-course.entity';
+import { OrganizationRolesGuard } from 'guards/organization-roles.guard';
+import { OrganizationGuard } from 'guards/organization.guard';
 
 @Controller('courses')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -727,5 +731,40 @@ export class CourseController {
     const course = await CourseModel.findOne(courseId);
     course.selfEnroll = !course.selfEnroll;
     await course.save();
+  }
+
+  @Post(':oid/:uid/create_course')
+  @UseGuards(JwtAuthGuard, OrganizationRolesGuard, OrganizationGuard)
+  @Roles(OrganizationRole.ADMIN, OrganizationRole.PROFESSOR)
+  async createCourse(
+    @Param('oid') oid: number,
+    @Param('uid') uid: number,
+    @Body() courseDetails: UpdateOrganizationCourseDetailsParams,
+  ): Promise<void> {
+    console.log('HELLO');
+    const course = {
+      name: courseDetails.name,
+      coordinator_email: courseDetails.coordinatorEmail,
+      sectionGroupName: courseDetails.sectionGroupName,
+      zoomLink: courseDetails.zoomLink,
+      timezone: courseDetails.timezone,
+      semesterId: courseDetails.semesterId,
+      enabled: true,
+    };
+
+    const newCourse = await CourseModel.create(course).save();
+
+    await UserCourseModel.create({
+      userId: uid,
+      course: newCourse,
+      role: Role.PROFESSOR,
+      override: false,
+      expires: false,
+    }).save();
+
+    await OrganizationCourseModel.create({
+      organizationId: oid,
+      course: newCourse,
+    }).save();
   }
 }

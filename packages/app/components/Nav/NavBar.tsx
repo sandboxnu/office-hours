@@ -173,17 +173,6 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
       });
     }
 
-    if (
-      profile?.organization.organizationRole === OrganizationRole.ADMIN ||
-      profile?.organization.organizationRole === OrganizationRole.PROFESSOR
-    ) {
-      globalTabs.push({
-        href: "/course/add",
-        as: "/course/add",
-        text: "Add Course",
-      });
-    }
-
     if (profile?.userRole === UserRole.ADMIN) {
       globalTabs.push({
         href: "/admin",
