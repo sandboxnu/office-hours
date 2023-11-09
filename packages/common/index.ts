@@ -353,34 +353,6 @@ export class QuestionGroup {
 }
 
 /**
- * Course is created when there is a new course
- */
-
-export class createCourse {
-  @IsString()
-  name!: string;
-
-  @IsString()
-  section!: string;
-
-  @IsOptional()
-  @IsString()
-  zoomLink?: string;
-
-  @IsOptional()
-  @IsString()
-  coordinatorEmail?: string;
-
-  @IsInt()
-  semester!: number;
-
-  @IsBoolean()
-  enabled!: boolean;
-
-  @IsString()
-  timezone!: string;
-}
-/**
  * An async question is created when a student wants help from a TA.
  */
 export class AsyncQuestion {
