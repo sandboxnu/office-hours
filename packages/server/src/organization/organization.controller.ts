@@ -21,6 +21,7 @@ import {
   ERROR_MESSAGES,
   GetOrganizationUserResponse,
   OrganizationRole,
+  Role,
   UpdateOrganizationCourseDetailsParams,
   UpdateOrganizationDetailsParams,
   UpdateOrganizationUserRole,
@@ -48,6 +49,8 @@ import * as sharp from 'sharp';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { SemesterModel } from 'semester/semester.entity';
+import { In } from 'typeorm';
+import { UserCourseModel } from 'profile/user-course.entity';
 
 @Controller('organization')
 export class OrganizationController {
@@ -67,9 +70,114 @@ export class OrganizationController {
     'Australia/Sydney',
   ];
 
+  @Post(':oid/create_course')
+  @UseGuards(JwtAuthGuard, OrganizationRolesGuard, OrganizationGuard)
+  @Roles(OrganizationRole.ADMIN, OrganizationRole.PROFESSOR)
+  async createCourse(
+    @Param('oid') oid: number,
+    @Body() courseDetails: UpdateOrganizationCourseDetailsParams,
+    @Res() res: Response,
+  ): Promise<Response<void>> {
+    const chosenProfessor = await UserModel.findOne({
+      where: { id: courseDetails.profId },
+    });
+
+    if (!chosenProfessor) {
+      return res.status(HttpStatus.NOT_FOUND).send({
+        message: ERROR_MESSAGES.profileController.userResponseNotFound,
+      });
+    }
+
+    if (!courseDetails.name || courseDetails.name.trim().length < 1) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: ERROR_MESSAGES.courseController.courseNameTooShort,
+      });
+    }
+
+    if (
+      courseDetails.coordinatorEmail &&
+      courseDetails.coordinatorEmail.trim().length < 1
+    ) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: ERROR_MESSAGES.courseController.coordinatorEmailTooShort,
+      });
+    }
+
+    if (
+      courseDetails.sectionGroupName &&
+      courseDetails.sectionGroupName.trim().length < 1
+    ) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: ERROR_MESSAGES.courseController.sectionGroupNameTooShort,
+      });
+    }
+
+    if (courseDetails.zoomLink && courseDetails.zoomLink.trim().length < 1) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: ERROR_MESSAGES.courseController.zoomLinkTooShort,
+      });
+    }
+
+    if (
+      !courseDetails.timezone ||
+      !this.COURSE_TIMEZONES.find(
+        (timezone) => timezone === courseDetails.timezone,
+      )
+    ) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: `Timezone field is invalid, must be one of ${this.COURSE_TIMEZONES.join(
+          ', ',
+        )}`,
+      });
+    }
+
+    if (courseDetails.semesterId) {
+      const semesterInfo = await SemesterModel.findOne({
+        where: { id: courseDetails.semesterId },
+      });
+      if (!semesterInfo) {
+        return res.status(HttpStatus.BAD_REQUEST).send({
+          message: ERROR_MESSAGES.courseController.semesterNotFound,
+        });
+      }
+    }
+    const course = {
+      name: courseDetails.name,
+      coordinator_email: courseDetails.coordinatorEmail,
+      sectionGroupName: courseDetails.sectionGroupName,
+      zoomLink: courseDetails.zoomLink,
+      timezone: courseDetails.timezone,
+      semesterId: courseDetails.semesterId,
+      enabled: true,
+    };
+    try {
+      const newCourse = await CourseModel.create(course).save();
+      await UserCourseModel.create({
+        userId: courseDetails.profId,
+        course: newCourse,
+        role: Role.PROFESSOR,
+        override: false,
+        expires: false,
+      }).save();
+
+      await OrganizationCourseModel.create({
+        organizationId: oid,
+        course: newCourse,
+      }).save();
+
+      return res.status(HttpStatus.OK).send({
+        message: 'Course created successfully',
+      });
+    } catch (err) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        message: err,
+      });
+    }
+  }
+
   @Patch(':oid/update_course/:cid')
   @UseGuards(JwtAuthGuard, OrganizationRolesGuard, OrganizationGuard)
-  @Roles(OrganizationRole.ADMIN)
+  @Roles(OrganizationRole.ADMIN, OrganizationRole.PROFESSOR)
   async updateCourse(
     @Res() res: Response,
     @Param('oid') oid: number,
@@ -84,6 +192,15 @@ export class OrganizationController {
       relations: ['course'],
     });
 
+    const chosenProfessor = await UserModel.findOne({
+      where: { id: courseDetails.profId },
+    });
+
+    if (!chosenProfessor) {
+      return res.status(HttpStatus.NOT_FOUND).send({
+        message: ERROR_MESSAGES.profileController.userResponseNotFound,
+      });
+    }
     if (!courseInfo) {
       return res.status(HttpStatus.NOT_FOUND).send({
         message: ERROR_MESSAGES.courseController.courseNotFound,
@@ -169,18 +286,54 @@ export class OrganizationController {
     }
     courseInfo.course.timezone = courseDetails.timezone;
 
-    await courseInfo.course
-      .save()
-      .then(() => {
-        return res.status(HttpStatus.OK).send({
-          message: 'Course updated',
-        });
-      })
-      .catch((err) => {
+    try {
+      await courseInfo.course.save();
+    } catch (err) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        message: err,
+      });
+    }
+
+    const userCourse = await UserCourseModel.findOne({
+      where: {
+        userId: courseDetails.profId,
+        courseId: cid,
+      },
+    });
+
+    //Remove current prof
+    await UserCourseModel.delete({
+      courseId: cid,
+      role: Role.PROFESSOR,
+    });
+
+    // user is already in the course
+    if (userCourse) {
+      userCourse.role = Role.PROFESSOR;
+      try {
+        userCourse.save();
+      } catch (err) {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
           message: err,
         });
-      });
+      }
+    } else {
+      try {
+        await UserCourseModel.create({
+          userId: courseDetails.profId,
+          courseId: cid,
+          role: Role.PROFESSOR,
+        }).save();
+      } catch (err) {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+          message: err,
+        });
+      }
+    }
+
+    return res.status(HttpStatus.OK).send({
+      message: 'Course updated successfully',
+    });
   }
 
   @Patch(':oid/update_course_access/:cid')
@@ -218,7 +371,7 @@ export class OrganizationController {
 
   @Get(':oid/get_course/:cid')
   @UseGuards(JwtAuthGuard, OrganizationRolesGuard)
-  @Roles(OrganizationRole.ADMIN)
+  @Roles(OrganizationRole.ADMIN, OrganizationRole.PROFESSOR)
   async getOrganizationCourse(
     @Res() res: Response,
     @Param('oid') oid: number,
@@ -988,7 +1141,7 @@ export class OrganizationController {
     const orgProfs = OrganizationUserModel.find({
       where: {
         organizationId: oid,
-        role: OrganizationRole.PROFESSOR,
+        role: In([OrganizationRole.PROFESSOR, OrganizationRole.ADMIN]),
       },
       relations: ['organizationUser'],
     });

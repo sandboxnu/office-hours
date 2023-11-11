@@ -1,4 +1,5 @@
 import {
+  Breadcrumb,
   Button,
   Card,
   Col,
@@ -28,12 +29,10 @@ export default function Add(): ReactElement {
   const { organization } = useOrganization(profile?.organization.id);
   const isAdmin =
     profile?.organization.organizationRole === OrganizationRole.ADMIN;
+  const isProfessor =
+    profile?.organization.organizationRole === OrganizationRole.PROFESSOR;
 
-  if (
-    profile &&
-    profile.organization.organizationRole !== OrganizationRole.ADMIN &&
-    profile.organization.organizationRole !== OrganizationRole.PROFESSOR
-  ) {
+  if (profile && !isAdmin && !isProfessor) {
     return <DefaultErrorPage statusCode={401} />;
   }
 
@@ -54,10 +53,7 @@ export default function Add(): ReactElement {
       const zoomLinkField = formValues.zoomLink;
       const courseTimezoneField = formValues.courseTimezone;
       const semesterIdField = formValues.semesterId;
-      const profId =
-        profile.organization.organizationRole === OrganizationRole.ADMIN
-          ? formValues.professorUserId
-          : profile.id;
+      const profId = isAdmin ? formValues.professorUserId : profile.id;
 
       // if semesterIdField is not a number or not in semesters
       if (
@@ -67,24 +63,23 @@ export default function Add(): ReactElement {
         message.error("Semester is invalid");
         return;
       }
-      await API.course
-        .createCourse(organization.id, profId, {
+      await API.organizations
+        .createCourse(organization.id, {
           name: courseNameField,
           coordinatorEmail: coordinatorEmailField ?? "",
           sectionGroupName: sectionGroupNameField,
           zoomLink: zoomLinkField ?? "",
           timezone: courseTimezoneField,
           semesterId: semesterIdField,
+          profId: profId,
         })
         .then(() => {
-          message.success("Course was updated");
-          setTimeout(() => {
-            router.reload();
-          }, 1750);
+          message.success("Course was created");
+          router.reload();
+          router.back();
         })
         .catch((error) => {
           const errorMessage = error.response.data.message;
-
           message.error(errorMessage);
         });
     };
@@ -248,23 +243,33 @@ export default function Add(): ReactElement {
       />
     );
   }
-  return (
+  return profile && (isAdmin || isProfessor) && organization ? (
     <>
       <Head>
-        <title>{organization?.name} | Admin Panel</title>
+        <title>{organization?.name} | Edit Course</title>
       </Head>
 
       <StandardPageContainer>
         <NavBar />
-        {/* <Breadcrumb separator=">" style={{ marginTop: 10, marginBottom: 20 }}>
-                    <Breadcrumb.Item href="/organization/settings">
-                    Organization Settings
-                    </Breadcrumb.Item>
-                    <Breadcrumb.Item href="">Course</Breadcrumb.Item>
-                </Breadcrumb> */}
-
+        {isAdmin && (
+          <Breadcrumb separator=">" style={{ marginTop: 10, marginBottom: 20 }}>
+            <Breadcrumb.Item href="/organization/settings">
+              Organization Settings
+            </Breadcrumb.Item>
+            <Breadcrumb.Item href="">Course</Breadcrumb.Item>
+          </Breadcrumb>
+        )}
         <RenderAddCourse />
       </StandardPageContainer>
     </>
+  ) : (
+    <Spin
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+      }}
+    />
   );
 }

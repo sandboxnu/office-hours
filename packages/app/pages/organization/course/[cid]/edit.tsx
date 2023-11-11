@@ -30,12 +30,15 @@ export default function Edit(): ReactElement {
   const { cid } = router.query;
 
   const { organization } = useOrganization(profile?.organization.id);
+  const isAdmin =
+    profile && profile.organization.organizationRole === OrganizationRole.ADMIN;
 
-  if (
-    profile &&
-    profile.organization.organizationRole !== OrganizationRole.ADMIN
-  ) {
-    return <DefaultErrorPage statusCode={404} />;
+  const isProfessorInCourse = profile?.courses.some(
+    (course) => course.role === "professor" && course.course.id === Number(cid)
+  );
+
+  if (!isAdmin && !isProfessorInCourse) {
+    return <DefaultErrorPage statusCode={401} />;
   }
 
   function RenderCourseInfo(): ReactElement {
@@ -47,19 +50,21 @@ export default function Edit(): ReactElement {
       async () =>
         await API.organizations.getCourse(organization.id, Number(cid))
     );
+    const { data: professors } = useSWR(
+      isAdmin ? `/api/v1/organization/[oid]/get_professors` : null,
+      async () => await API.organizations.getProfessors(organization.id)
+    );
 
-    if (error) {
-      router.push("/organization/settings");
-    }
+    // if (error) {
+    //   router.push("/organization/settings");
+    // }
 
     const updateCourseAccess = async () => {
       await API.organizations
         .updateCourseAccess(organization.id, Number(cid))
         .then(() => {
           message.success("Course access was updated");
-          setTimeout(() => {
-            router.reload();
-          }, 1750);
+          router.back();
         })
         .catch((error) => {
           const errorMessage = error.response.data.message;
@@ -77,6 +82,7 @@ export default function Edit(): ReactElement {
       const zoomLinkField = formValues.zoomLink;
       const courseTimezoneField = formValues.courseTimezone;
       const semesterIdField = formValues.semesterId;
+      const profIdField = formValues.professorUserId;
 
       if (
         courseNameField === courseData.course.name &&
@@ -84,7 +90,8 @@ export default function Edit(): ReactElement {
         sectionGroupNameField === courseData.course.sectionGroupName &&
         zoomLinkField === courseData.course.zoomLink &&
         courseTimezoneField === courseData.course.timezone &&
-        semesterIdField === courseData.course.semesterId
+        semesterIdField === courseData.course.semesterId &&
+        profIdField === courseData.profId
       ) {
         message.info(
           "Course was not updated as information has not been changed"
@@ -132,6 +139,14 @@ export default function Edit(): ReactElement {
         return;
       }
 
+      if (
+        isNaN(profIdField) ||
+        !professors.find((prof) => prof.userId === profIdField)
+      ) {
+        message.error("Professor is invalid");
+        return;
+      }
+
       await API.organizations
         .updateCourse(organization.id, Number(cid), {
           name: courseNameField,
@@ -140,16 +155,15 @@ export default function Edit(): ReactElement {
           zoomLink: zoomLinkField ?? "",
           timezone: courseTimezoneField,
           semesterId: semesterIdField,
+          profId: profIdField,
         })
         .then(() => {
           message.success("Course was updated");
-          setTimeout(() => {
-            router.reload();
-          }, 1750);
+          router.reload();
+          router.back();
         })
         .catch((error) => {
           const errorMessage = error.response.data.message;
-
           message.error(errorMessage);
         });
     };
@@ -169,6 +183,7 @@ export default function Edit(): ReactElement {
                   zoomLink: courseData.course.zoomLink,
                   courseTimezone: courseData.course.timezone,
                   semesterId: courseData.course.semesterId,
+                  professorUserId: courseData.profId,
                 }}
                 onFinish={updateGeneral}
               >
@@ -276,6 +291,28 @@ export default function Edit(): ReactElement {
                   </Col>
 
                   <Col xs={{ span: 24 }} sm={{ span: 12 }}>
+                    {isAdmin && (
+                      <Form.Item
+                        label="Professor"
+                        name="professorUserId"
+                        tooltip="Professor teaching the course"
+                      >
+                        <Select>
+                          {professors.map((prof) => (
+                            <Select.Option
+                              value={prof.organizationUser.id}
+                              key={prof.organizationUser.id}
+                            >
+                              {prof.organizationUser.name}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    )}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={{ span: 24 }} sm={{ span: 12 }}>
                     <Form.Item>
                       <Button type="primary" htmlType="submit">
                         Update
@@ -324,13 +361,18 @@ export default function Edit(): ReactElement {
         </Row>
       </>
     ) : (
-      <Spin />
+      <Spin
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      />
     );
   }
 
-  return profile &&
-    profile.organization.organizationRole == OrganizationRole.ADMIN &&
-    organization ? (
+  return profile && (isAdmin || isProfessorInCourse) && organization ? (
     <>
       <Head>
         <title>{organization?.name} | Admin Panel</title>
@@ -338,17 +380,26 @@ export default function Edit(): ReactElement {
 
       <StandardPageContainer>
         <NavBar />
-        <Breadcrumb separator=">" style={{ marginTop: 10, marginBottom: 20 }}>
-          <Breadcrumb.Item href="/organization/settings">
-            Organization Settings
-          </Breadcrumb.Item>
-          <Breadcrumb.Item href="">Course</Breadcrumb.Item>
-        </Breadcrumb>
+        {isAdmin && (
+          <Breadcrumb separator=">" style={{ marginTop: 10, marginBottom: 20 }}>
+            <Breadcrumb.Item href="/organization/settings">
+              Organization Settings
+            </Breadcrumb.Item>
+            <Breadcrumb.Item href="">Course</Breadcrumb.Item>
+          </Breadcrumb>
+        )}
 
         <RenderCourseInfo />
       </StandardPageContainer>
     </>
   ) : (
-    <Spin />
+    <Spin
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+      }}
+    />
   );
 }

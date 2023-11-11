@@ -732,39 +732,4 @@ export class CourseController {
     course.selfEnroll = !course.selfEnroll;
     await course.save();
   }
-
-  @Post(':oid/:uid/create_course')
-  @UseGuards(JwtAuthGuard, OrganizationRolesGuard, OrganizationGuard)
-  @Roles(OrganizationRole.ADMIN, OrganizationRole.PROFESSOR)
-  async createCourse(
-    @Param('oid') oid: number,
-    @Param('uid') uid: number,
-    @Body() courseDetails: UpdateOrganizationCourseDetailsParams,
-  ): Promise<void> {
-    console.log('HELLO');
-    const course = {
-      name: courseDetails.name,
-      coordinator_email: courseDetails.coordinatorEmail,
-      sectionGroupName: courseDetails.sectionGroupName,
-      zoomLink: courseDetails.zoomLink,
-      timezone: courseDetails.timezone,
-      semesterId: courseDetails.semesterId,
-      enabled: true,
-    };
-
-    const newCourse = await CourseModel.create(course).save();
-
-    await UserCourseModel.create({
-      userId: uid,
-      course: newCourse,
-      role: Role.PROFESSOR,
-      override: false,
-      expires: false,
-    }).save();
-
-    await OrganizationCourseModel.create({
-      organizationId: oid,
-      course: newCourse,
-    }).save();
-  }
 }

@@ -84,7 +84,7 @@ export default function CoursesTab({
                 <Space></Space>
               </Col>
               <Col>
-                <Button type="primary" href="/course/add">
+                <Button type="primary" href={`/organization/course/add`}>
                   Add New Course
                 </Button>
               </Col>

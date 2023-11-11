@@ -223,17 +223,6 @@ class APIClient {
       this.req("GET", "/api/v1/self_enroll_courses"),
     createSelfEnrollOverride: async (courseId: number): Promise<void> =>
       this.req("POST", `/api/v1/create_self_enroll_override/${courseId}`),
-    createCourse: async (
-      oid: number,
-      uid: number,
-      body: UpdateOrganizationCourseDetailsParams
-    ): Promise<void> =>
-      this.req(
-        "POST",
-        `/api/v1/courses/${oid}/${uid}/create_course`,
-        undefined,
-        body
-      ),
   };
   taStatus = {
     checkIn: async (
@@ -419,6 +408,16 @@ class APIClient {
       this.req(
         "PATCH",
         `/api/v1/organization/${organizationId}/update_course/${courseId}`,
+        undefined,
+        body
+      ),
+    createCourse: async (
+      oid: number,
+      body: UpdateOrganizationCourseDetailsParams
+    ): Promise<void> =>
+      this.req(
+        "POST",
+        `/api/v1/organization/${oid}/create_course`,
         undefined,
         body
       ),
