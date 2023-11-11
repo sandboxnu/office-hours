@@ -68,6 +68,12 @@ export class LoginController {
       );
     }
 
+    if (user.password === null || user.password === undefined) {
+      return res.status(HttpStatus.UNAUTHORIZED).send({
+        message: 'User did not sign up with legacy account system',
+      });
+    }
+
     bcrypt.compare(body.password, user.password, (err, data) => {
       //if error than throw error
       if (err) throw err;

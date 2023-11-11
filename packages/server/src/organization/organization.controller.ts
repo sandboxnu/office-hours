@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Controller,
+  Get,
   HttpException,
   HttpStatus,
   Param,
@@ -10,11 +11,16 @@ import {
 } from '@nestjs/common';
 import { UserModel } from 'profile/user.entity';
 import { Response } from 'express';
-import { ERROR_MESSAGES, OrganizationRole } from '@koh/common';
+import {
+  ERROR_MESSAGES,
+  OrganizationResponse,
+  OrganizationRole,
+} from '@koh/common';
 import { OrganizationUserModel } from './organization-user.entity';
 import { JwtAuthGuard } from 'guards/jwt-auth.guard';
 import { CourseModel } from 'course/course.entity';
 import { OrganizationCourseModel } from './organization-course.entity';
+import { OrganizationModel } from './organization.entity';
 
 @Controller('organization')
 export class OrganizationController {
@@ -28,7 +34,7 @@ export class OrganizationController {
     CourseModel.findOne({
       where: { id: cid },
     })
-      .then(course => {
+      .then((course) => {
         if (!course) {
           throw new HttpException(
             ERROR_MESSAGES.courseController.courseNotFound,
@@ -39,7 +45,7 @@ export class OrganizationController {
         OrganizationCourseModel.findOne({
           where: { courseId: cid, organizationId: oid },
         })
-          .then(organizationCourse => {
+          .then((organizationCourse) => {
             if (organizationCourse) {
               throw new HttpException(
                 ERROR_MESSAGES.organizationController.courseAlreadyInOrganization,
@@ -53,22 +59,31 @@ export class OrganizationController {
 
             organizationCourseModel
               .save()
-              .then(_ => {
+              .then((_) => {
                 res
                   .status(200)
                   .send({ message: 'Course added to organization' });
               })
-              .catch(err => {
+              .catch((err) => {
                 res.status(500).send({ message: err });
               });
           })
-          .catch(err => {
+          .catch((err) => {
             res.status(500).send({ message: err });
           });
       })
-      .catch(err => {
+      .catch((err) => {
         res.status(500).send({ message: err });
       });
+  }
+
+  @Get()
+  async getAllOrganizations(
+    @Res() res: Response,
+  ): Promise<Response<OrganizationResponse[]>> {
+    const organizations = await OrganizationModel.find();
+
+    return res.status(200).send(organizations);
   }
 
   @Post(':oid/add_member/:uid')
@@ -81,7 +96,7 @@ export class OrganizationController {
     UserModel.findOne({
       where: { id: uid },
     })
-      .then(user => {
+      .then((user) => {
         if (!user) {
           throw new HttpException(
             ERROR_MESSAGES.profileController.accountNotAvailable,
@@ -92,7 +107,7 @@ export class OrganizationController {
         OrganizationUserModel.findOne({
           where: { userId: uid, organizationId: oid },
         })
-          .then(organizationUser => {
+          .then((organizationUser) => {
             if (organizationUser) {
               throw new HttpException(
                 ERROR_MESSAGES.organizationController.userAlreadyInOrganization,
@@ -107,18 +122,18 @@ export class OrganizationController {
 
             organizationUserModel
               .save()
-              .then(_ => {
+              .then((_) => {
                 res.status(200).send({ message: 'User added to organization' });
               })
-              .catch(err => {
+              .catch((err) => {
                 res.status(500).send({ message: err });
               });
           })
-          .catch(err => {
+          .catch((err) => {
             res.status(500).send({ message: err });
           });
       })
-      .catch(err => {
+      .catch((err) => {
         res.status(500).send({ message: err });
       });
   }

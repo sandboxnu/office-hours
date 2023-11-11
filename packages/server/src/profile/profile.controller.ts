@@ -459,23 +459,29 @@ export class ProfileController {
   @UseGuards(JwtAuthGuard)
   async deleteProfilePicture(@User() user: UserModel): Promise<void> {
     if (user.photoURL) {
-      fs.unlink(
-        process.env.UPLOAD_LOCATION + '/' + user.photoURL,
-        async (err) => {
-          if (err) {
-            const errMessage =
-              'Error deleting previous picture at : ' +
-              user.photoURL +
-              'the previous image was at an invalid location?';
-            console.error(errMessage, err);
-            throw new BadRequestException(errMessage);
-          } else {
-            user.photoURL = null;
-            await user.save();
-            return;
-          }
-        },
-      );
+      if (user.photoURL.startsWith('http')) {
+        user.photoURL = null;
+        await user.save();
+        return;
+      } else {
+        fs.unlink(
+          process.env.UPLOAD_LOCATION + '/' + user.photoURL,
+          async (err) => {
+            if (err) {
+              const errMessage =
+                'Error deleting previous picture at : ' +
+                user.photoURL +
+                'the previous image was at an invalid location?';
+              console.error(errMessage, err);
+              throw new BadRequestException(errMessage);
+            } else {
+              user.photoURL = null;
+              await user.save();
+              return;
+            }
+          },
+        );
+      }
     }
   }
 }

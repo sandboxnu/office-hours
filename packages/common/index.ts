@@ -78,6 +78,16 @@ export class User {
   organization!: OrganizationUserPartial;
 }
 
+export class OrganizationResponse {
+  id!: number;
+  name!: string;
+  logoUrl?: string;
+  bannerUrl?: string;
+  websiteUrl?: string;
+  ssoEnabled?: boolean;
+  ssoUrl?: string;
+}
+
 export class DesktopNotifPartial {
   id!: number;
   endpoint!: string;

@@ -15,6 +15,7 @@ import { CourseModule } from './course/course.module';
 import { CalendarModule } from './calendar/calendar.module';
 import { HealthcheckModule } from './healthcheck/healthcheck.module';
 import { LoginModule } from './login/login.module';
+import { AuthModule } from 'auth/auth.module';
 import { NotificationModule } from './notification/notification.module';
 import { ProfileModule } from './profile/profile.module';
 import { QuestionModule } from './question/question.module';
@@ -66,6 +67,7 @@ import { OrganizationModule } from 'organization/organization.module';
     SemesterModule,
     ChatbotModule,
     OrganizationModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
