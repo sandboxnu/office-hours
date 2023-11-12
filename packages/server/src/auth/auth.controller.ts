@@ -23,14 +23,15 @@ export class AuthController {
     private authService: AuthService,
   ) {}
 
-  @Get(':method')
+  @Get('link/:method/:oid')
   auth(
     @Res() res: Response,
     @Param('method') auth_method: string,
+    @Param('oid') organizationId: number,
   ): Response<{ redirectUri: string }> {
     switch (auth_method) {
       case 'google':
-        res.cookie('organization.id', 1, {
+        res.cookie('organization.id', organizationId, {
           httpOnly: true,
           secure: this.isSecure(),
         });
@@ -77,7 +78,7 @@ export class AuthController {
 
         this.enter(res, payload);
       } catch (err) {
-        res.redirect(HttpStatus.BAD_REQUEST, `/auth/failed/40001`);
+        res.redirect(`/auth/failed/40001`);
       }
     }
   }

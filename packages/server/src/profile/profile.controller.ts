@@ -6,6 +6,7 @@ import {
   QuestionStatusKeys,
   UpdateProfileParams,
   PROD_URL,
+  AccountType,
 } from '@koh/common';
 import {
   BadRequestException,
@@ -311,6 +312,7 @@ export class ProfileController {
       'phoneNotifsEnabled',
       'insights',
       'userRole',
+      'accountType',
     ]);
 
     if (userResponse === null || userResponse === undefined) {
@@ -349,20 +351,31 @@ export class ProfileController {
   @Patch()
   @UseGuards(JwtAuthGuard)
   async patch(
+    @Res() res: Response,
     @Body() userPatch: UpdateProfileParams,
     @User()
     user: UserModel,
-  ): Promise<GetProfileResponse> {
+  ): Promise<Response<GetProfileResponse>> {
+    if (user.accountType !== AccountType.LEGACY && userPatch.email) {
+      return res
+        .status(HttpStatus.BAD_REQUEST)
+        .send(ERROR_MESSAGES.profileController.cannotUpdateEmail);
+    }
+
     if (userPatch.email) {
       const email = await UserModel.findOne({
         where: {
           email: userPatch.email,
         },
       });
+
       if (email) {
-        throw new BadRequestException('Email already in db');
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .send(ERROR_MESSAGES.profileController.emailAlreadyInDb);
       }
     }
+
     user = Object.assign(user, userPatch);
     // check that the user is trying to update the phone notifs
     if (userPatch.phoneNotifsEnabled && userPatch.phoneNumber) {
@@ -375,11 +388,16 @@ export class ProfileController {
       }
     }
 
-    await user.save().catch((e) => {
-      console.log(e);
-    });
+    await user
+      .save()
+      .then(() => {
+        return this.get(user);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
 
-    return this.get(user);
+    return res.status(200).send({ message: 'Profile updated successfully' });
   }
 
   @Post('/upload_picture')

@@ -1,3 +1,4 @@
+import { AccountType } from '@koh/common';
 import {
   BadRequestException,
   Injectable,
@@ -55,6 +56,7 @@ export class AuthService {
           firstName: payload.given_name,
           lastName: payload.family_name,
           photoURL: payload.picture,
+          accountType: AccountType.GOOGLE,
         }).save();
 
         const userId = newUser.id;

@@ -71,11 +71,12 @@ export class User {
   desktopNotifsEnabled!: boolean;
   @Type(() => DesktopNotifPartial)
   desktopNotifs!: DesktopNotifPartial[];
-  phoneNotifsEnabled!: boolean;
-  phoneNumber!: string;
+  phoneNotifsEnabled?: boolean;
+  phoneNumber?: string;
   insights!: string[];
   userRole!: string;
-  organization!: OrganizationUserPartial;
+  organization?: OrganizationUserPartial;
+  accountType!: AccountType;
 }
 
 export class OrganizationResponse {
@@ -85,6 +86,8 @@ export class OrganizationResponse {
   bannerUrl?: string;
   websiteUrl?: string;
   ssoEnabled?: boolean;
+  legacyAuthEnabled?: boolean;
+  googleAuthEnabled?: boolean;
   ssoUrl?: string;
 }
 
@@ -136,6 +139,16 @@ export enum Role {
   STUDENT = "student",
   TA = "ta",
   PROFESSOR = "professor",
+}
+
+/**
+ * Represents a method of authentication for a user.
+ * Legacy account is an account that has been registered with user and password via sign up page.
+ */
+export enum AccountType {
+  LEGACY = "legacy",
+  GOOGLE = "google",
+  SHIBBOLETH = "shibboleth",
 }
 
 // chatbot questions and interactions
@@ -1278,6 +1291,8 @@ export const ERROR_MESSAGES = {
     mailFailed: "Mail was not sent to user",
   },
   profileController: {
+    emailAlreadyInDb: "Email already in database",
+    cannotUpdateEmail: "Email cannot be updated",
     accountNotAvailable: "The user account is undefined",
     userResponseNotFound: "The user response was not found",
     noDiskSpace:

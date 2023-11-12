@@ -42,6 +42,7 @@ export default function Login(): ReactElement {
   const [uname, setUname] = useState("");
   const [accountActiveResponse, setAccountActiveResponse] = useState(true);
   const [loginMenu, setLoginMenu] = useState(false);
+  const [organization, setOrganization] = useState(null);
 
   const { data: organizations } = useSWR(`api/v1/organization`, async () =>
     API.organizations.getOrganizations()
@@ -49,7 +50,7 @@ export default function Login(): ReactElement {
 
   const loginWithGoogle = async () => {
     await API.auth
-      .loginWithGoogle()
+      .loginWithGoogle(Number(organization.id))
       .then((res) => {
         Router.push(res.redirectUri);
       })
@@ -59,6 +60,11 @@ export default function Login(): ReactElement {
   };
 
   function login() {
+    if (organization && !organization.legacyAuthEnabled) {
+      message.error("Organization does not support legacy authentication");
+      return;
+    }
+
     const loginRequest = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -113,6 +119,7 @@ export default function Login(): ReactElement {
       return;
     }
 
+    setOrganization(organization);
     setLoginMenu(true);
   };
 
@@ -159,22 +166,26 @@ export default function Login(): ReactElement {
                     <span className="font-semibold"> Go Back</span>
                   </Button>
 
-                  <Button
-                    className="px-5 py-5 w-full border flex gap-2 rounded-lg items-center justify-center text-left mt-5"
-                    onClick={() => loginWithGoogle()}
-                  >
-                    <img
-                      className="w-6 h-6"
-                      src="https://www.svgrepo.com/show/475656/google-color.svg"
-                      loading="lazy"
-                      alt="google logo"
-                    />
-                    <span className="font-semibold">Log in with Google</span>
-                  </Button>
+                  {organization && organization.googleAuthEnabled && (
+                    <Button
+                      className="px-5 py-5 w-full border flex gap-2 rounded-lg items-center justify-center text-left mt-5"
+                      onClick={() => loginWithGoogle()}
+                    >
+                      <img
+                        className="w-6 h-6"
+                        src="https://www.svgrepo.com/show/475656/google-color.svg"
+                        loading="lazy"
+                        alt="google logo"
+                      />
+                      <span className="font-semibold">Log in with Google</span>
+                    </Button>
+                  )}
 
-                  <p className="uppercase text-stone-400 my-5 font-medium">
-                    Or login with email
-                  </p>
+                  {organization && organization.legacyAuthEnabled && (
+                    <p className="uppercase text-stone-400 my-5 font-medium">
+                      Or login with email
+                    </p>
+                  )}
 
                   {!accountActiveResponse && (
                     <Alert
@@ -184,71 +195,72 @@ export default function Login(): ReactElement {
                       style={{ marginBottom: 20, textAlign: "left" }}
                     />
                   )}
-
-                  <Form
-                    name="normal_login"
-                    className="login-form"
-                    initialValues={{ remember: true }}
-                    onFinish={login}
-                  >
-                    <Form.Item
-                      name="username"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please enter a valid username.",
-                        },
-                      ]}
+                  {organization && organization.legacyAuthEnabled && (
+                    <Form
+                      name="normal_login"
+                      className="login-form"
+                      initialValues={{ remember: true }}
+                      onFinish={login}
                     >
-                      <Input
-                        prefix={
-                          <UserOutlined className="site-form-item-icon" />
-                        }
-                        onChange={onUserNameChange}
-                        className="px-2 py-2 border rounded-lg"
-                        placeholder="Username"
-                      />
-                    </Form.Item>
-
-                    <Form.Item
-                      name="password"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please enter a valid password.",
-                        },
-                      ]}
-                    >
-                      <Input
-                        prefix={
-                          <LockOutlined className="site-form-item-icon" />
-                        }
-                        onChange={onPassChange}
-                        type="password"
-                        className="px-2 py-2 border rounded-lg"
-                        placeholder="Password"
-                      />
-                    </Form.Item>
-
-                    <Form.Item>
-                      <Button
-                        type="primary"
-                        htmlType="submit"
-                        className="w-full px-2 py-2 h-auto border rounded-lg items-center justify-center "
+                      <Form.Item
+                        name="username"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please enter a valid username.",
+                          },
+                        ]}
                       >
-                        <span className="font-semibold">Log in</span>
-                      </Button>
-                    </Form.Item>
+                        <Input
+                          prefix={
+                            <UserOutlined className="site-form-item-icon" />
+                          }
+                          onChange={onUserNameChange}
+                          className="px-2 py-2 border rounded-lg"
+                          placeholder="Username"
+                        />
+                      </Form.Item>
 
-                    <Form.Item>
-                      <a
-                        style={{ marginTop: "-10px" }}
-                        href="/forgetpassword/forget"
+                      <Form.Item
+                        name="password"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please enter a valid password.",
+                          },
+                        ]}
                       >
-                        Forgot password
-                      </a>
-                    </Form.Item>
-                  </Form>
+                        <Input
+                          prefix={
+                            <LockOutlined className="site-form-item-icon" />
+                          }
+                          onChange={onPassChange}
+                          type="password"
+                          className="px-2 py-2 border rounded-lg"
+                          placeholder="Password"
+                        />
+                      </Form.Item>
+
+                      <Form.Item>
+                        <Button
+                          type="primary"
+                          htmlType="submit"
+                          className="w-full px-2 py-2 h-auto border rounded-lg items-center justify-center "
+                        >
+                          <span className="font-semibold">Log in</span>
+                        </Button>
+                      </Form.Item>
+
+                      <Form.Item>
+                        <a
+                          style={{ marginTop: "-10px" }}
+                          href="/forgetpassword/forget"
+                        >
+                          Forgot password
+                        </a>
+                      </Form.Item>
+                    </Form>
+                  )}
                 </>
               )}
             </Col>

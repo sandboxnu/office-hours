@@ -49,10 +49,24 @@ export class LoginController {
   ): Promise<any> {
     const user = await UserModel.findOne({
       where: { email: body.email },
+      relations: ['organizationUser', 'organizationUser.organization'],
     });
 
+    console.log(user);
+
     if (!user) {
-      return res.status(404).send({ message: 'User Not found' });
+      return res
+        .status(HttpStatus.BAD_REQUEST)
+        .send({ message: 'User Not found' });
+    }
+
+    if (
+      user.organizationUser &&
+      user.organizationUser.organization.legacyAuthEnabled === false
+    ) {
+      return res.status(HttpStatus.UNAUTHORIZED).send({
+        message: 'Organization does not allow legacy auth',
+      });
     }
 
     const token = await this.jwtService.signAsync(

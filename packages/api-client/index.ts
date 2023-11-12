@@ -83,13 +83,15 @@ class APIClient {
   }
 
   auth = {
-    loginWithGoogle: async (): Promise<{ redirectUri: string }> =>
-      this.req("GET", "/api/v1/auth/google", undefined),
+    loginWithGoogle: async (
+      organizationId: number
+    ): Promise<{ redirectUri: string }> =>
+      this.req("GET", `/api/v1/auth/link/google/${organizationId}`, undefined),
   };
   profile = {
     index: async (): Promise<GetProfileResponse> =>
       this.req("GET", `/api/v1/profile`, GetProfileResponse),
-    patch: async (body: UpdateProfileParams): Promise<GetProfileResponse> =>
+    patch: async (body?: UpdateProfileParams): Promise<GetProfileResponse> =>
       this.req("PATCH", `/api/v1/profile`, undefined, body),
     deleteProfilePicture: async (): Promise<void> =>
       this.req("DELETE", `/api/v1/profile/delete_profile_picture`),
