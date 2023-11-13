@@ -708,13 +708,13 @@ export class CourseController {
     @Req() req: Request,
     @Param('id') courseId: number,
     @Param('sid') studentId: number,
-  ): Promise<void> {
+  ): Promise<Response<void>> {
     const user = await UserModel.findOne({
       where: { sid: studentId },
-      relations: ['organizationUser'],
+      relations: ['organizationUser', 'courses'],
     });
 
-    const professorId: number = await (req.user as { userId: number }).userId;
+    const professorId: number = (req.user as { userId: number }).userId;
     const { organizationUser } = await UserModel.findOne({
       where: { id: professorId },
       relations: ['organizationUser'],
@@ -747,11 +747,20 @@ export class CourseController {
 
     await this.courseService
       .addStudentToCourse(course, user)
-      .then(() => {
-        res.status(200).send({ message: 'User is added to this course' });
+      .then((resp) => {
+        if (resp) {
+          res
+            .status(HttpStatus.OK)
+            .send({ message: 'User is added to this course' });
+        } else {
+          res.status(HttpStatus.BAD_REQUEST).send({
+            message:
+              'User cannot be added to course. Please check if the user is already in the course',
+          });
+        }
       })
       .catch((err) => {
-        res.status(400).send({ message: err.message });
+        res.status(HttpStatus.BAD_REQUEST).send({ message: err.message });
       });
     return;
   }

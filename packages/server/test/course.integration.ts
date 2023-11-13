@@ -25,7 +25,6 @@ import {
   UserFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
-import { User } from 'decorators/user.decorator';
 import { OrganizationUserModel } from 'organization/organization-user.entity';
 
 describe('Course Integration', () => {
@@ -1363,7 +1362,7 @@ describe('Course Integration', () => {
     it('should return 200 when user is added successfully', async () => {
       const course = await CourseFactory.create();
       const professor = await UserFactory.create();
-      const student = await UserFactory.create({ sid: 1 });
+      const student = await UserFactory.create({ sid: 1, courses: [] });
       const organization = await OrganizationFactory.create();
 
       await OrganizationUserModel.create({

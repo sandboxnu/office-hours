@@ -257,10 +257,11 @@ describe('Profile Integration', () => {
 
     it('fails to change user email when email is used by another user', async () => {
       const user = await UserFactory.create();
+      await UserFactory.create({ email: 'test@ubc.ca' });
 
       await supertest({ userId: user.id })
         .patch('/profile')
-        .send({ email: user.email })
+        .send({ email: 'test@ubc.ca' })
         .expect(400);
     });
   });

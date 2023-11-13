@@ -362,7 +362,7 @@ export class ProfileController {
         .send({ message: ERROR_MESSAGES.profileController.cannotUpdateEmail });
     }
 
-    if (userPatch.email) {
+    if (userPatch.email && userPatch.email !== user.email) {
       const email = await UserModel.findOne({
         where: {
           email: userPatch.email,
@@ -373,6 +373,20 @@ export class ProfileController {
         return res
           .status(HttpStatus.BAD_REQUEST)
           .send({ message: ERROR_MESSAGES.profileController.emailAlreadyInDb });
+      }
+    }
+
+    if (userPatch.sid && userPatch.sid !== user.sid) {
+      const sid = await UserModel.findOne({
+        where: {
+          sid: userPatch.sid,
+        },
+      });
+
+      if (sid) {
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .send({ message: ERROR_MESSAGES.profileController.sidAlreadyInDb });
       }
     }
 

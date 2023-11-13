@@ -110,6 +110,7 @@ export class UserPartial {
   email?: string;
   name?: string;
   photoURL?: string;
+  sid?: number;
 }
 
 /**
@@ -640,7 +641,7 @@ export class UpdateProfileParams {
   @IsOptional()
   firstName?: string;
 
-  @IsString()
+  @IsInt()
   @IsOptional()
   sid?: number;
 
@@ -1292,6 +1293,7 @@ export const ERROR_MESSAGES = {
   },
   profileController: {
     emailAlreadyInDb: "Email already in database",
+    sidAlreadyInDb: "Student ID already in database",
     cannotUpdateEmail: "Email cannot be updated",
     accountNotAvailable: "The user account is undefined",
     userResponseNotFound: "The user response was not found",

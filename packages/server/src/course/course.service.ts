@@ -380,6 +380,7 @@ export class CourseService {
       'UserModel.lastName',
       'UserModel.photoURL',
       'UserModel.email',
+      'UserModel.sid',
     ]);
 
     const total = await users.getCount();
@@ -402,7 +403,7 @@ export class CourseService {
       });
 
       if (userInCourse) {
-        throw new BadRequestException('Student already in course');
+        return false;
       }
 
       const userCourse = await UserCourseModel.create({

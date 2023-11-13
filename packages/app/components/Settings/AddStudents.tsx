@@ -28,7 +28,7 @@ const TableBackground = styled.div`
 `;
 
 export default function AddStudents({
-  courseId
+  courseId,
 }: CourseRosterProps): ReactElement {
   return (
     <div>
@@ -53,16 +53,16 @@ function RenderTable({
   role,
   listTitle,
   displaySearchBar,
-  searchPlaceholder
+  searchPlaceholder,
 }: RenderTableProps): ReactElement {
   const [page, setPage] = useState(1);
   const [input, setInput] = useState("");
   const [search, setSearch] = useState("");
-  const handleInput = event => {
+  const handleInput = (event) => {
     event.preventDefault();
     setInput(event.target.value);
   };
-  const handleSearch = event => {
+  const handleSearch = (event) => {
     event.preventDefault();
     setSearch(event.target.value);
     setPage(1);
@@ -82,7 +82,7 @@ function RenderTable({
               style={{
                 position: "relative",
                 left: "10px",
-                top: "14px"
+                top: "14px",
               }}
             >
               {listTitle}
@@ -99,11 +99,12 @@ function RenderTable({
           )}
           <List
             dataSource={data.users}
-            renderItem={item => (
+            renderItem={(item) => (
               <List.Item key={item.id}>
                 <List.Item.Meta
                   avatar={<Avatar src={item.photoURL} />}
                   title={item.name}
+                  description={`${item.sid ? "#" + item.sid : "N/A"}`}
                 />
                 <div>{item.email}</div>
               </List.Item>
@@ -118,7 +119,7 @@ function RenderTable({
             current={page}
             pageSize={50}
             total={data.total}
-            onChange={page => setPage(page)}
+            onChange={(page) => setPage(page)}
             showSizeChanger={false}
           />
         )}

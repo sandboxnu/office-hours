@@ -16,15 +16,23 @@ export default function ProfileSettings(): ReactElement {
 
     if (profile && profile.accountType === AccountType.LEGACY) {
       newProfile = { ...profile, ...updateProfile };
+      newProfile.sid = parseInt(newProfile.sid, 10);
       mutate(newProfile, false);
       if (profile.email === updateProfile.email) {
-        await API.profile.patch(
-          pick(newProfile, ["firstName", "lastName", "sid"])
-        );
+        console.log(pick(newProfile, ["firstName", "lastName", "sid"]));
+        await API.profile
+          .patch(pick(newProfile, ["firstName", "lastName", "sid"]))
+          .catch(async (error) => {
+            const errorMessage = await error.response.data.message;
+            throw new Error(errorMessage);
+          });
       } else {
-        await API.profile.patch(
-          pick(newProfile, ["firstName", "lastName", "email", "sid"])
-        );
+        await API.profile
+          .patch(pick(newProfile, ["firstName", "lastName", "email", "sid"]))
+          .catch(async (error) => {
+            const errorMessage = await error.response.data.message;
+            throw new Error(errorMessage);
+          });
       }
     } else {
       newProfile = {
@@ -35,11 +43,15 @@ export default function ProfileSettings(): ReactElement {
           sid: updateProfile.sid,
         },
       };
+      newProfile.sid = parseInt(newProfile.sid, 10);
       await mutate(newProfile, false);
 
-      await API.profile.patch(
-        pick(newProfile, ["firstName", "lastName", "sid"])
-      );
+      await API.profile
+        .patch(pick(newProfile, ["firstName", "lastName", "sid"]))
+        .catch(async (error) => {
+          const errorMessage = await error.response.data.message;
+          throw new Error(errorMessage);
+        });
     }
 
     await mutate();
@@ -48,10 +60,9 @@ export default function ProfileSettings(): ReactElement {
 
   const handleOk = async () => {
     const value = await form.validateFields();
-    const newProfile = await editProfile(value).catch(() => {
-      message.error(
-        "Your profile settings could not be updated. Email is already in use."
-      );
+    const newProfile = await editProfile(value).catch(async (error) => {
+      const errorMessage = await error.message;
+      await message.error(errorMessage);
     });
     if (!newProfile) return;
 
