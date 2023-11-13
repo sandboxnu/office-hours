@@ -135,6 +135,12 @@ class APIClient {
   };
 
   course = {
+    addStudent: async (courseId: number, sid: number): Promise<void> =>
+      this.req(
+        "POST",
+        `/api/v1/courses/${courseId}/add_student/${sid}`,
+        undefined
+      ),
     getAsyncQuestions: async (cid: number) =>
       this.req(
         "GET",

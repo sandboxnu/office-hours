@@ -15,6 +15,7 @@ import {
   CourseFactory,
   CourseSectionFactory,
   EventFactory,
+  OrganizationFactory,
   ProfSectionGroupsFactory,
   QueueFactory,
   SemesterFactory,
@@ -24,6 +25,8 @@ import {
   UserFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
+import { User } from 'decorators/user.decorator';
+import { OrganizationUserModel } from 'organization/organization-user.entity';
 
 describe('Course Integration', () => {
   const supertest = setupIntegrationTest(CourseModule);
@@ -123,9 +126,9 @@ describe('Course Integration', () => {
         .expect(200);
       // date agnostic snapshots
       expect(response.body.queues.length).toBe(3);
-      response.body.queues.map(q => expect(q).toMatchSnapshot({}));
+      response.body.queues.map((q) => expect(q).toMatchSnapshot({}));
 
-      response.body.queues.map(q => expect(q.isDisabled).toBeFalsy());
+      response.body.queues.map((q) => expect(q.isDisabled).toBeFalsy());
     });
 
     it('gets all queues that are not disabled (prof)', async () => {
@@ -181,9 +184,9 @@ describe('Course Integration', () => {
         .expect(200);
 
       // date agnostic snapshots
-      response.body.queues.map(q => expect(q).toMatchSnapshot({}));
+      response.body.queues.map((q) => expect(q).toMatchSnapshot({}));
 
-      response.body.queues.map(q => expect(q.isDisabled).toBeFalsy());
+      response.body.queues.map((q) => expect(q.isDisabled).toBeFalsy());
     });
 
     it('cant get office hours if not a member of the course', async () => {
@@ -194,9 +197,7 @@ describe('Course Integration', () => {
         course: course,
       });
 
-      await supertest({ userId: 1 })
-        .get(`/courses/${course.id}`)
-        .expect(401);
+      await supertest({ userId: 1 }).get(`/courses/${course.id}`).expect(401);
     });
 
     it('ensures isOpen is defined for all queues(dynamic gen)', async () => {
@@ -250,7 +251,7 @@ describe('Course Integration', () => {
       const response = await supertest({ userId: proff.userId })
         .get(`/courses/${course.id}`)
         .expect(200);
-      response.body.queues.map(q => {
+      response.body.queues.map((q) => {
         expect(q.isOpen).toBeDefined();
       });
     });
@@ -719,7 +720,7 @@ describe('Course Integration', () => {
         })
         .expect(200);
 
-      const checkinTimes = ((data.body as unknown) as TACheckinTimesResponse)
+      const checkinTimes = (data.body as unknown as TACheckinTimesResponse)
         .taCheckinTimes;
 
       const taName = ta.firstName + ' ' + ta.lastName;
@@ -1254,6 +1255,137 @@ describe('Course Integration', () => {
       });
       expect(ubw2).toBeDefined();
       expect(life).toBeDefined();
+    });
+  });
+
+  describe('POST /courses/:id/add_student/:sid', () => {
+    it('should return 401 if user is not a professor', async () => {
+      const course = await CourseFactory.create();
+      const student = await UserFactory.create();
+
+      await UserCourseFactory.create({
+        course: course,
+        user: student,
+        role: Role.STUDENT,
+      });
+
+      await supertest({ userId: student.id })
+        .post(`/courses/${course.id}/add_student/${student.id}`)
+        .expect(401);
+    });
+
+    it('should return 401 if user not authorized', async () => {
+      await supertest().post(`/courses/1/add_student/1`).expect(401);
+    });
+
+    it('should return 404 when user is not found', async () => {
+      const course = await CourseFactory.create();
+      const professor = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        organizationId: organization.id,
+        userId: professor.id,
+      }).save();
+
+      await UserCourseFactory.create({
+        course: course,
+        user: professor,
+        role: Role.PROFESSOR,
+      });
+
+      const resp = await supertest({ userId: professor.id }).post(
+        `/courses/${course.id}/add_student/1`,
+      );
+
+      expect(resp.body.message).toEqual(
+        'User with this student id is not found',
+      );
+      expect(resp.status).toBe(404);
+    });
+
+    it('should return 400 when user adds themselves', async () => {
+      const course = await CourseFactory.create();
+      const professor = await UserFactory.create({ sid: 1 });
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        organizationId: organization.id,
+        userId: professor.id,
+      }).save();
+
+      await UserCourseFactory.create({
+        course: course,
+        user: professor,
+        role: Role.PROFESSOR,
+      });
+
+      const resp = await supertest({ userId: professor.id }).post(
+        `/courses/${course.id}/add_student/${professor.sid}`,
+      );
+
+      expect(resp.body.message).toEqual(
+        'You cannot add yourself to this course',
+      );
+      expect(resp.status).toBe(400);
+    });
+
+    it('should return 400 when user to add is in different organization', async () => {
+      const course = await CourseFactory.create();
+      const professor = await UserFactory.create();
+      const student = await UserFactory.create({ sid: 1 });
+      const organization = await OrganizationFactory.create();
+      const organizationTwo = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        organizationId: organization.id,
+        userId: student.id,
+      }).save();
+
+      await OrganizationUserModel.create({
+        organizationId: organizationTwo.id,
+        userId: professor.id,
+      }).save();
+
+      await UserCourseFactory.create({
+        course: course,
+        user: professor,
+        role: Role.PROFESSOR,
+      });
+
+      const resp = await supertest({ userId: professor.id }).post(
+        `/courses/${course.id}/add_student/${student.sid}`,
+      );
+      expect(resp.body.message).toEqual('User is not in the same organization');
+      expect(resp.status).toBe(400);
+    });
+
+    it('should return 200 when user is added successfully', async () => {
+      const course = await CourseFactory.create();
+      const professor = await UserFactory.create();
+      const student = await UserFactory.create({ sid: 1 });
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        organizationId: organization.id,
+        userId: student.id,
+      }).save();
+
+      await OrganizationUserModel.create({
+        organizationId: organization.id,
+        userId: professor.id,
+      }).save();
+
+      await UserCourseFactory.create({
+        course: course,
+        user: professor,
+        role: Role.PROFESSOR,
+      });
+
+      const resp = await supertest({ userId: professor.id }).post(
+        `/courses/${course.id}/add_student/${student.sid}`,
+      );
+      expect(resp.status).toBe(200);
     });
   });
 });

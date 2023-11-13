@@ -29,11 +29,14 @@ import {
   Patch,
   Post,
   Query,
+  Res,
+  Req,
   UnauthorizedException,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import async from 'async';
+import { Response, Request } from 'express';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { Connection } from 'typeorm';
@@ -70,7 +73,7 @@ export class CourseController {
     if (!courses) {
       throw new NotFoundException();
     }
-    return courses.map(course => ({ id: course.id, name: course.name }));
+    return courses.map((course) => ({ id: course.id, name: course.name }));
   }
   @Get(':cid/questions')
   @UseGuards(JwtAuthGuard)
@@ -102,18 +105,18 @@ export class CourseController {
     // }
     const questions = new AsyncQuestionResponse();
     questions.helpedQuestions = all.filter(
-      question => question.status === asyncQuestionStatus.Resolved,
+      (question) => question.status === asyncQuestionStatus.Resolved,
     );
     questions.waitingQuestions = all.filter(
-      question => question.status === asyncQuestionStatus.Waiting,
+      (question) => question.status === asyncQuestionStatus.Waiting,
     );
     questions.otherQuestions = all.filter(
-      question =>
+      (question) =>
         question.status === asyncQuestionStatus.StudentDeleted ||
         question.status === asyncQuestionStatus.TADeleted,
     );
     questions.visibleQuestions = all.filter(
-      question =>
+      (question) =>
         question.visible === true &&
         question.status !== asyncQuestionStatus.TADeleted,
     );
@@ -178,12 +181,12 @@ export class CourseController {
     ) {
       course.queues = await async.filter(
         course.queues,
-        async q => !q.isDisabled,
+        async (q) => !q.isDisabled,
       );
     } else if (userCourseModel.role === Role.STUDENT) {
       course.queues = await async.filter(
         course.queues,
-        async q => !q.isDisabled && (await q.checkIsOpen()),
+        async (q) => !q.isDisabled && (await q.checkIsOpen()),
       );
     }
 
@@ -193,7 +196,7 @@ export class CourseController {
     }
 
     try {
-      await async.each(course.queues, async q => {
+      await async.each(course.queues, async (q) => {
         await q.addQueueSize();
       });
     } catch (err) {
@@ -270,7 +273,7 @@ export class CourseController {
 
     if (
       queues &&
-      queues.some(q => q.staffList.some(staff => staff.id === user.id))
+      queues.some((q) => q.staffList.some((staff) => staff.id === user.id))
     ) {
       throw new UnauthorizedException(
         ERROR_MESSAGES.courseController.checkIn.cannotCheckIntoMultipleQueues,
@@ -461,9 +464,9 @@ export class CourseController {
     }
 
     // Do nothing if user not already in stafflist
-    if (!queue.staffList.find(e => e.id === user.id)) return;
+    if (!queue.staffList.find((e) => e.id === user.id)) return;
 
-    queue.staffList = queue.staffList.filter(e => e.id !== user.id);
+    queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
     if (queue.staffList.length === 0) {
       queue.allowQuestions = false;
     }
@@ -536,7 +539,7 @@ export class CourseController {
     }
 
     return {
-      data: resp.map(row => ({
+      data: resp.map((row) => ({
         id: row.id,
         role: row.role,
         name: row.user.name,
@@ -695,5 +698,61 @@ export class CourseController {
     const course = await CourseModel.findOne(courseId);
     course.selfEnroll = !course.selfEnroll;
     await course.save();
+  }
+
+  @Post(':id/add_student/:sid')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
+  @Roles(Role.PROFESSOR)
+  async addStudent(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('id') courseId: number,
+    @Param('sid') studentId: number,
+  ): Promise<void> {
+    const user = await UserModel.findOne({
+      where: { sid: studentId },
+      relations: ['organizationUser'],
+    });
+
+    const professorId: number = await (req.user as { userId: number }).userId;
+    const { organizationUser } = await UserModel.findOne({
+      where: { id: professorId },
+      relations: ['organizationUser'],
+    });
+
+    const organizationId = organizationUser.organizationId;
+
+    if (!user) {
+      res
+        .status(HttpStatus.NOT_FOUND)
+        .send({ message: 'User with this student id is not found' });
+      return;
+    }
+
+    if (user.id === professorId) {
+      res
+        .status(HttpStatus.BAD_REQUEST)
+        .send({ message: 'You cannot add yourself to this course' });
+      return;
+    }
+
+    if (user.organizationUser.organizationId !== organizationId) {
+      res
+        .status(HttpStatus.BAD_REQUEST)
+        .send({ message: 'User is not in the same organization' });
+      return;
+    }
+
+    const course = await CourseModel.findOne({ id: courseId });
+
+    await this.courseService
+      .addStudentToCourse(course, user)
+      .then(() => {
+        res.status(200).send({ message: 'User is added to this course' });
+      })
+      .catch((err) => {
+        res.status(400).send({ message: err.message });
+      });
+    return;
   }
 }
