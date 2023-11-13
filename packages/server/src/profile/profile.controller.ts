@@ -359,7 +359,7 @@ export class ProfileController {
     if (user.accountType !== AccountType.LEGACY && userPatch.email) {
       return res
         .status(HttpStatus.BAD_REQUEST)
-        .send(ERROR_MESSAGES.profileController.cannotUpdateEmail);
+        .send({ message: ERROR_MESSAGES.profileController.cannotUpdateEmail });
     }
 
     if (userPatch.email) {
@@ -372,7 +372,7 @@ export class ProfileController {
       if (email) {
         return res
           .status(HttpStatus.BAD_REQUEST)
-          .send(ERROR_MESSAGES.profileController.emailAlreadyInDb);
+          .send({ message: ERROR_MESSAGES.profileController.emailAlreadyInDb });
       }
     }
 

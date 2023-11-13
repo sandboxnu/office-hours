@@ -52,11 +52,9 @@ export class LoginController {
       relations: ['organizationUser', 'organizationUser.organization'],
     });
 
-    console.log(user);
-
     if (!user) {
       return res
-        .status(HttpStatus.BAD_REQUEST)
+        .status(HttpStatus.NOT_FOUND)
         .send({ message: 'User Not found' });
     }
 

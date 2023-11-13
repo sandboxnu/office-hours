@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Organization Integration GET /organization should return 200 and list of organizations 1`] = `
+Array [
+  Object {
+    "bannerUrl": null,
+    "description": "UBC Okanagan",
+    "googleAuthEnabled": true,
+    "id": 1,
+    "legacyAuthEnabled": false,
+    "logoUrl": "https://etug.ca/wp-content/uploads/2014/03/ubc-e1523034593970.png",
+    "name": "UBCO",
+    "ssoEnabled": false,
+    "ssoUrl": null,
+    "websiteUrl": null,
+  },
+  Object {
+    "bannerUrl": null,
+    "description": "UBC Okanagan",
+    "googleAuthEnabled": true,
+    "id": 2,
+    "legacyAuthEnabled": false,
+    "logoUrl": "https://etug.ca/wp-content/uploads/2014/03/ubc-e1523034593970.png",
+    "name": "UBCO",
+    "ssoEnabled": false,
+    "ssoUrl": null,
+    "websiteUrl": null,
+  },
+]
+`;

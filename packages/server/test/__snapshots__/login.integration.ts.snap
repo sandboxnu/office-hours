@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Login Integration POST /ubc_login returns 200 if password is correct 1`] = `
+Object {
+  "email": "user@ubc.ca",
+  "password": "realpassword",
+  "token": "{\\"userId\\":1}",
+}
+`;

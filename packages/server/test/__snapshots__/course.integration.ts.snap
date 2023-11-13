@@ -26,6 +26,7 @@ Object {
   "room": "room 3",
   "staffList": Array [
     Object {
+      "accountType": "legacy",
       "defaultMessage": null,
       "email": "user@ubc.ca",
       "firstName": "User",
@@ -63,6 +64,7 @@ Object {
   "room": "room 4",
   "staffList": Array [
     Object {
+      "accountType": "legacy",
       "defaultMessage": null,
       "email": "user@ubc.ca",
       "firstName": "User",
@@ -137,6 +139,7 @@ Object {
   "room": "room 3",
   "staffList": Array [
     Object {
+      "accountType": "legacy",
       "defaultMessage": null,
       "email": "user@ubc.ca",
       "firstName": "User",
@@ -174,6 +177,7 @@ Object {
   "room": "room 4",
   "staffList": Array [
     Object {
+      "accountType": "legacy",
       "defaultMessage": null,
       "email": "user@ubc.ca",
       "firstName": "User",
@@ -245,6 +249,7 @@ Object {
   "room": "Online",
   "staffList": Array [
     Object {
+      "accountType": "legacy",
       "defaultMessage": null,
       "email": "user@ubc.ca",
       "firstName": "User",
