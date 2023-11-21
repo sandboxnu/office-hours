@@ -15,6 +15,7 @@ import {
   UpdateCourseOverrideBody,
   UpdateCourseOverrideResponse,
 } from '@koh/common';
+import { Response } from 'express';
 import {
   BadRequestException,
   Body,
@@ -29,6 +30,7 @@ import {
   Patch,
   Post,
   Query,
+  Res,
   UnauthorizedException,
   UseGuards,
   UseInterceptors,
@@ -70,8 +72,38 @@ export class CourseController {
     if (!courses) {
       throw new NotFoundException();
     }
-    return courses.map(course => ({ id: course.id, name: course.name }));
+    return courses.map((course) => ({ id: course.id, name: course.name }));
   }
+
+  @Get(':oid/organization_courses')
+  @UseGuards(JwtAuthGuard)
+  async getOrganizationCourses(
+    @Res() res: Response,
+    @Param('oid') oid: number,
+  ): Promise<Response<[]>> {
+    const courses = await OrganizationCourseModel.find({
+      where: {
+        organizationId: oid,
+      },
+      relations: ['course'],
+    });
+
+    if (!courses) {
+      return res.status(HttpStatus.NOT_FOUND).send({
+        message: ERROR_MESSAGES.courseController.courseNotFound,
+      });
+    }
+
+    const coursesPartial = courses.map((course) => ({
+      id: course.course.id,
+      name: course.course.name,
+    }));
+
+    res.status(HttpStatus.OK).send({
+      coursesPartial,
+    });
+  }
+
   @Get(':cid/questions')
   @UseGuards(JwtAuthGuard)
   async getAsyncQuestions(
@@ -102,18 +134,18 @@ export class CourseController {
     // }
     const questions = new AsyncQuestionResponse();
     questions.helpedQuestions = all.filter(
-      question => question.status === asyncQuestionStatus.Resolved,
+      (question) => question.status === asyncQuestionStatus.Resolved,
     );
     questions.waitingQuestions = all.filter(
-      question => question.status === asyncQuestionStatus.Waiting,
+      (question) => question.status === asyncQuestionStatus.Waiting,
     );
     questions.otherQuestions = all.filter(
-      question =>
+      (question) =>
         question.status === asyncQuestionStatus.StudentDeleted ||
         question.status === asyncQuestionStatus.TADeleted,
     );
     questions.visibleQuestions = all.filter(
-      question =>
+      (question) =>
         question.visible === true &&
         question.status !== asyncQuestionStatus.TADeleted,
     );
@@ -178,12 +210,12 @@ export class CourseController {
     ) {
       course.queues = await async.filter(
         course.queues,
-        async q => !q.isDisabled,
+        async (q) => !q.isDisabled,
       );
     } else if (userCourseModel.role === Role.STUDENT) {
       course.queues = await async.filter(
         course.queues,
-        async q => !q.isDisabled && (await q.checkIsOpen()),
+        async (q) => !q.isDisabled && (await q.checkIsOpen()),
       );
     }
 
@@ -193,7 +225,7 @@ export class CourseController {
     }
 
     try {
-      await async.each(course.queues, async q => {
+      await async.each(course.queues, async (q) => {
         await q.addQueueSize();
       });
     } catch (err) {
@@ -270,7 +302,7 @@ export class CourseController {
 
     if (
       queues &&
-      queues.some(q => q.staffList.some(staff => staff.id === user.id))
+      queues.some((q) => q.staffList.some((staff) => staff.id === user.id))
     ) {
       throw new UnauthorizedException(
         ERROR_MESSAGES.courseController.checkIn.cannotCheckIntoMultipleQueues,
@@ -461,9 +493,9 @@ export class CourseController {
     }
 
     // Do nothing if user not already in stafflist
-    if (!queue.staffList.find(e => e.id === user.id)) return;
+    if (!queue.staffList.find((e) => e.id === user.id)) return;
 
-    queue.staffList = queue.staffList.filter(e => e.id !== user.id);
+    queue.staffList = queue.staffList.filter((e) => e.id !== user.id);
     if (queue.staffList.length === 0) {
       queue.allowQuestions = false;
     }
@@ -536,7 +568,7 @@ export class CourseController {
     }
 
     return {
-      data: resp.map(row => ({
+      data: resp.map((row) => ({
         id: row.id,
         role: row.role,
         name: row.user.name,

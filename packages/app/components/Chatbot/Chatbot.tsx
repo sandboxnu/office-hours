@@ -296,7 +296,7 @@ export const ChatbotComponent: React.FC<ChatbotComponentProps> = ({
                     onClick={() =>
                       answerPreDeterminedQuestion(
                         question.question,
-                        question.answer,
+                        question.answer
                       )
                     }
                     className="transition max-w-[300px] border-2 border-blue-900 text-blue-900 px-3 py-2 rounded-xl mr-2 hover:text-white hover:bg-blue-900 bg-transparent cursor-pointer"

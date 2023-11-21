@@ -89,12 +89,12 @@ export default function Today(): ReactElement {
     orderBy(
       course?.queues,
       ["isOpen", "isProfessorQueue"],
-      ["desc", sortByProfOrder],
+      ["desc", sortByProfOrder]
     );
 
   const updateQueueNotes = async (
     queue: QueuePartial,
-    notes: string,
+    notes: string
   ): Promise<void> => {
     const newQueues =
       course &&
@@ -160,8 +160,8 @@ export default function Today(): ReactElement {
                     heatmap={collapseHeatmap(
                       arrayRotate(
                         course.heatmap,
-                        -Math.floor(moment().utcOffset() / 15),
-                      ),
+                        -Math.floor(moment().utcOffset() / 15)
+                      )
                     )}
                   />
                 )

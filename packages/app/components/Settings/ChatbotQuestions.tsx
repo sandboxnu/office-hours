@@ -28,10 +28,10 @@ export default function ChatbotQuestions(): ReactElement {
         {
           title: "Slide 3",
           type: "PDF",
-          parts: ["1", "12", "19", "42"]
-        }
+          parts: ["1", "12", "19", "42"],
+        },
       ],
-      suggested: true
+      suggested: true,
     },
     {
       id: "2",
@@ -42,33 +42,33 @@ export default function ChatbotQuestions(): ReactElement {
         {
           title: "Slide 8",
           type: "PDF",
-          parts: ["1", "11", "39", "44"]
-        }
+          parts: ["1", "11", "39", "44"],
+        },
       ],
-      suggested: false
-    }
+      suggested: false,
+    },
   ]);
 
   const columns: ColumnsType<ChatQuestion> = [
     {
       title: "Question ID",
       dataIndex: "id",
-      key: "id"
+      key: "id",
     },
     {
       title: "Question",
       dataIndex: "question",
-      key: "question"
+      key: "question",
     },
     {
       title: "Answer",
       dataIndex: "answer",
-      key: "answer"
+      key: "answer",
     },
     {
       title: "Asked By",
       dataIndex: "user",
-      key: "user"
+      key: "user",
     },
     {
       title: "Source Documents",
@@ -76,12 +76,12 @@ export default function ChatbotQuestions(): ReactElement {
       key: "sourceDocuments",
       render: (_, { sourceDocuments }) => (
         <>
-          {sourceDocuments.map(sourceDocument => (
+          {sourceDocuments.map((sourceDocument) => (
             // TODO: Create component and refactor into this one
             <p key={sourceDocument.title}>{sourceDocument.title}</p>
           ))}
         </>
-      )
+      ),
     },
     {
       title: "Suggested",
@@ -91,13 +91,13 @@ export default function ChatbotQuestions(): ReactElement {
         return (
           <Checkbox
             checked={record.suggested}
-            onChange={e => {
+            onChange={(e) => {
               toggleSuggested(e.target.checked, index, record.id);
             }}
           />
         );
-      }
-    }
+      },
+    },
   ];
 
   const toggleSuggested = async (newValue, index, questionId) => {
@@ -105,16 +105,16 @@ export default function ChatbotQuestions(): ReactElement {
     try {
       await API.chatbot.editQuestion({
         data: {
-          suggested: newValue
+          suggested: newValue,
         },
-        questionId
+        questionId,
       });
 
-      setChatQuestions(prev => {
+      setChatQuestions((prev) => {
         const newChatQuestions = [...prev];
         newChatQuestions[index] = {
           ...newChatQuestions[index],
-          suggested: newValue
+          suggested: newValue,
         };
         return newChatQuestions;
       });

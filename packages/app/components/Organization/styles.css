@@ -1,0 +1,47 @@
+/* styles.css */
+
+.firstCard,
+.secondCard,
+.thirdCard {
+  border-radius: 10px;
+}
+
+.firstCard {
+  background: #c02425; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #f0cb35,
+    #c02425
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #f0cb35,
+    #c02425
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.secondCard {
+ background: #2C3E50;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #FD746C, #2C3E50);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #FD746C, #2C3E50); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
+
+.thirdCard {
+ background: #2C3E50;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #4CA1AF, #2C3E50);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #4CA1AF, #2C3E50); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
+
+.titleCardStatistics {
+  color: #fff;
+  font-weight: 600;
+  line-height: 1;
+  font-size: 30px;
+}
+
+.cardDescription {
+  color: #fff;
+  font-weight: 500;
+}

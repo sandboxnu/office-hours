@@ -113,13 +113,9 @@ export class CourseModel extends BaseEntity {
   @DeleteDateColumn()
   deletedAt?: Date;
 
-  @ManyToOne(
+  @OneToOne(
     type => OrganizationCourseModel,
     organizationCourse => organizationCourse.course,
   )
-  @Exclude()
   organizationCourse: OrganizationCourseModel;
-
-  @Column({ nullable: true })
-  organizationCourseId: number;
 }

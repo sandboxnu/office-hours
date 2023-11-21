@@ -3,7 +3,7 @@ import {
   EditOutlined,
   QuestionCircleOutlined,
   UploadOutlined,
-  DownloadOutlined
+  DownloadOutlined,
 } from "@ant-design/icons";
 import { Col, Menu, Row, Space, Tooltip } from "antd";
 import { useRouter } from "next/router";
@@ -28,7 +28,7 @@ export enum CourseAdminOptions {
   EXPORT = "EXPORT",
   EDIT = "EDIT",
   EDIT_COURSE = "EDIT_COURSE",
-  CHATBOT_SETTINGS = "CHATBOT_SETTINGS"
+  CHATBOT_SETTINGS = "CHATBOT_SETTINGS",
 }
 
 interface CourseAdminPageProps {
@@ -49,7 +49,7 @@ const CenteredText = styled.p`
 
 export default function CourseAdminPanel({
   defaultPage,
-  courseId
+  courseId,
 }: CourseAdminPageProps): ReactElement {
   const role = useRoleInCourse(Number(courseId));
   const profile = useProfile();
@@ -86,7 +86,7 @@ export default function CourseAdminPanel({
         </CenteredText>
         <Menu
           defaultSelectedKeys={[currentSettings]}
-          onClick={e => setCurrentSettings(e.key as CourseAdminOptions)}
+          onClick={(e) => setCurrentSettings(e.key as CourseAdminOptions)}
           style={{ background: "#f8f9fb", paddingTop: "20px" }}
         >
           {role === Role.PROFESSOR && (

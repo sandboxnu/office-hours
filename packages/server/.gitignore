@@ -33,5 +33,7 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# Uploaded photos
-/uploads
+# Keep folder for testing purposes in the GitHub Actions Workflow,
+# but don't keep the files inside it except .gitkeep
+uploads/*
+!/uploads/.gitkeep

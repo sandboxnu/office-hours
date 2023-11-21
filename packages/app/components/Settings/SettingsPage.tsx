@@ -55,7 +55,7 @@ export default function SettingsPage({
   } = useSWR(`api/v1/profile`, async () => API.profile.index());
 
   const [currentSettings, setCurrentSettings] = useState(
-    defaultPage || SettingsOptions.PROFILE,
+    defaultPage || SettingsOptions.PROFILE
   );
   const [uploading, setUploading] = useState(false);
   const isMobile = useIsMobile();
@@ -155,12 +155,12 @@ export default function SettingsPage({
                   try {
                     await API.profile.deleteProfilePicture();
                     message.success(
-                      "You've successfully deleted your profile picture",
+                      "You've successfully deleted your profile picture"
                     );
                     mutate();
                   } catch (e) {
                     message.error(
-                      "There was an error with deleting your profile picture, please contact HelpMe Office Hours team for assistance",
+                      "There was an error with deleting your profile picture, please contact HelpMe Office Hours team for assistance"
                     );
                     throw e;
                   }

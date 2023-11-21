@@ -8,7 +8,7 @@ interface FeedbackProps {
 
 export const Feedback: React.FC<FeedbackProps> = ({
   questionId,
-  handleFeedback
+  handleFeedback,
 }) => {
   const [userScore, setUserScore] = useState(0);
 

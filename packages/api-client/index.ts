@@ -13,7 +13,6 @@ import {
   GetProfileResponse,
   GetQuestionResponse,
   GetQueueResponse,
-  GetReleaseNotesResponse,
   GroupQuestionsParams,
   GetSelfEnrollResponse,
   ListInsightsResponse,
@@ -41,9 +40,15 @@ import {
   AsyncQuestion,
   CoursePartial,
   Calendar,
+  UpdateOrganizationDetailsParams,
+  UpdateOrganizationUserRole,
   ChatbotQuestion,
   ChatBotQuestionParams,
+  UpdateOrganizationCourseDetailsParams,
   Interaction,
+  GetOrganizationUserResponse,
+  OrganizationCourseResponse,
+  OrganizationStatsResponse
 } from "@koh/common";
 import Axios, { AxiosInstance, Method } from "axios";
 import { plainToClass } from "class-transformer";
@@ -83,7 +88,7 @@ class APIClient {
 
   signup = {
     registerStudent: async (student: UBCOuserParam) =>
-      this.req("POST", `/api/v1/signup/ubc_signup`, undefined, student),
+      this.req("POST", `/api/v1/signup/ubc_signup`, undefined, student)
   };
   profile = {
     index: async (): Promise<GetProfileResponse> =>
@@ -105,7 +110,7 @@ class APIClient {
         undefined
       ),
     verifyResetPassword: async (token: string): Promise<boolean> =>
-      this.req("GET", `/api/v1/profile/verify_token?token=${token}`, undefined),
+      this.req("GET", `/api/v1/profile/verify_token?token=${token}`, undefined)
   };
   chatbot = {
     createInteraction: async (body: {
@@ -128,10 +133,12 @@ class APIClient {
     deleteQuestion: async (
       body: ChatBotQuestionParams
     ): Promise<ChatbotQuestion> =>
-      this.req("DELETE", `/api/v1/chatbot/question`, undefined, body),
+      this.req("DELETE", `/api/v1/chatbot/question`, undefined, body)
   };
 
   course = {
+    getOrganizationCourses: async (organizationId: number) =>
+      this.req("GET", `/api/v1/courses/${organizationId}/organization_courses`),
     getAsyncQuestions: async (cid: number) =>
       this.req(
         "GET",
@@ -215,7 +222,7 @@ class APIClient {
     selfEnrollCourses: async (): Promise<GetSelfEnrollResponse> =>
       this.req("GET", "/api/v1/self_enroll_courses"),
     createSelfEnrollOverride: async (courseId: number): Promise<void> =>
-      this.req("POST", `/api/v1/create_self_enroll_override/${courseId}`),
+      this.req("POST", `/api/v1/create_self_enroll_override/${courseId}`)
   };
   taStatus = {
     checkIn: async (
@@ -239,13 +246,13 @@ class APIClient {
         `/api/v1/courses/${courseId}/generate_queue/${room}`,
         QueuePartial,
         { notes, isProfessorQueue }
-      ),
+      )
   };
   asyncQuestions = {
     create: async (body: CreateAsyncQuestions, cid: number) =>
       this.req("POST", `/api/v1/asyncQuestions/${cid}`, AsyncQuestion, body),
     update: async (qid: number, body: UpdateAsyncQuestions) =>
-      this.req("PATCH", `/api/v1/asyncQuestions/${qid}`, AsyncQuestion, body),
+      this.req("PATCH", `/api/v1/asyncQuestions/${qid}`, AsyncQuestion, body)
   };
   questions = {
     index: async (queueId: number) =>
@@ -300,7 +307,7 @@ class APIClient {
       courseId: number,
       questionType: string
     ): Promise<void> =>
-      this.req("DELETE", `/api/v1/questions/${courseId}/${questionType}`),
+      this.req("DELETE", `/api/v1/questions/${courseId}/${questionType}`)
   };
 
   calendar = {
@@ -309,7 +316,7 @@ class APIClient {
     getEvents: async (cid: number): Promise<Calendar[]> =>
       this.req("GET", `/api/v1/calendar/${cid}`),
     deleteEvent: async (eventId: number): Promise<Calendar> =>
-      this.req("DELETE", `/api/v1/calendar/${eventId}/delete`),
+      this.req("DELETE", `/api/v1/calendar/${eventId}/delete`)
   };
   queues = {
     get: async (queueId: number): Promise<GetQueueResponse> =>
@@ -324,7 +331,7 @@ class APIClient {
     clean: async (queueId: number): Promise<void> =>
       this.req("POST", `/api/v1/queues/${queueId}/clean`),
     disable: async (queueId: number): Promise<void> =>
-      this.req("DELETE", `/api/v1/queues/${queueId}/get`),
+      this.req("DELETE", `/api/v1/queues/${queueId}/get`)
   };
   notif = {
     desktop: {
@@ -344,21 +351,17 @@ class APIClient {
           "DELETE",
           `/api/v1/notifications/desktop/device/${deviceId}`,
           undefined
-        ),
-    },
+        )
+    }
   };
   seeds = {
     delete: async () => this.req("GET", `/api/v1/seeds/delete`),
     create: async () => this.req("GET", `/api/v1/seeds/create`),
-    fillQueue: async () => this.req("GET", `/api/v1/seeds/fill_queue`),
+    fillQueue: async () => this.req("GET", `/api/v1/seeds/fill_queue`)
   };
   semesters = {
     get: async (): Promise<SemesterPartial[]> =>
-      this.req("GET", `/api/v1/semesters`),
-  };
-  releaseNotes = {
-    get: async (): Promise<GetReleaseNotesResponse> =>
-      this.req("GET", `/api/v1/release_notes`),
+      this.req("GET", `/api/v1/semesters`)
   };
   insights = {
     get: async (
@@ -379,13 +382,13 @@ class APIClient {
     toggleOn: async (insightName: string): Promise<void> =>
       this.req("PATCH", `/api/v1/insights`, undefined, { insightName }),
     toggleOff: async (insightName: string): Promise<void> =>
-      this.req("DELETE", `/api/v1/insights`, undefined, { insightName }),
+      this.req("DELETE", `/api/v1/insights`, undefined, { insightName })
   };
   image = {
     get: async (imageId: number): Promise<any> =>
       this.req("GET", `/api/v1/image/${imageId}`, undefined, undefined),
     getAllImageIds: async (qid: number): Promise<number[]> =>
-      this.req("GET", `/api/v1/image/${qid}/getImageIdsByQuestion`),
+      this.req("GET", `/api/v1/image/${qid}/getImageIdsByQuestion`)
   };
   alerts = {
     get: async (courseId: number): Promise<GetAlertsResponse> =>
@@ -393,14 +396,135 @@ class APIClient {
     create: async (params: CreateAlertParams): Promise<CreateAlertResponse> =>
       this.req("POST", `/api/v1/alerts`, CreateAlertResponse, params),
     close: async (alertId: number): Promise<void> =>
-      this.req("PATCH", `/api/v1/alerts/${alertId}`),
+      this.req("PATCH", `/api/v1/alerts/${alertId}`)
   };
 
   organizations = {
+    updateCourse: async (
+      organizationId: number,
+      courseId: number,
+      body: UpdateOrganizationCourseDetailsParams
+    ): Promise<void> =>
+      this.req(
+        "PATCH",
+        `/api/v1/organization/${organizationId}/update_course/${courseId}`,
+        undefined,
+        body
+      ),
+    getCourse: async (
+      organizationId: number,
+      courseId: number
+    ): Promise<OrganizationCourseResponse> =>
+      this.req(
+        "GET",
+        `/api/v1/organization/${organizationId}/get_course/${courseId}`
+      ),
+    updateCourseAccess: async (
+      organizationId: number,
+      courseId: number
+    ): Promise<void> =>
+      this.req(
+        "PATCH",
+        `/api/v1/organization/${organizationId}/update_course_access/${courseId}`
+      ),
+    updateAccess: async (
+      organizationId: number,
+      userId: number
+    ): Promise<void> =>
+      this.req(
+        "PATCH",
+        `/api/v1/organization/${organizationId}/update_account_access/${userId}`
+      ),
+    dropUserCourses: async (
+      organizationId: number,
+      userId: number,
+      body: number[]
+    ): Promise<void> =>
+      this.req(
+        "DELETE",
+        `/api/v1/organization/${organizationId}/drop_user_courses/${userId}`,
+        undefined,
+        body
+      ),
+    deleteProfilePicture: async (
+      organizationId: number,
+      userId: number
+    ): Promise<void> =>
+      this.req(
+        "DELETE",
+        `/api/v1/organization/${organizationId}/delete_profile_picture/${userId}`
+      ),
+    patchUserInfo: async (
+      organizatonId: number,
+      userId: number,
+      body: UpdateProfileParams
+    ): Promise<void> =>
+      this.req(
+        "PATCH",
+        `/api/v1/organization/${organizatonId}/edit_user/${userId}`,
+        undefined,
+        body
+      ),
     addMember: async (userId: number, organizationId: number): Promise<void> =>
       this.req(
         "POST",
         `/api/v1/organization/${organizationId}/add_member/${userId}`
+      ),
+    updateOrganizationUserRole: async (
+      organizationId: number,
+      body: UpdateOrganizationUserRole
+    ): Promise<void> =>
+      this.req(
+        "PATCH",
+        `/api/v1/organization/${organizationId}/update_user_role`,
+        undefined,
+        body
+      ),
+    patch: async (
+      organizationId: number,
+      body: UpdateOrganizationDetailsParams
+    ): Promise<void> =>
+      this.req(
+        "PATCH",
+        `/api/v1/organization/${organizationId}/update`,
+        undefined,
+        body
+      ),
+    getStats: async (
+      organizationId: number
+    ): Promise<OrganizationStatsResponse> =>
+      this.req("GET", `/api/v1/organization/${organizationId}/stats`),
+    get: async (organizationId: number): Promise<any> =>
+      this.req("GET", `/api/v1/organization/${organizationId}`),
+    getUser: async (
+      organizationId: number,
+      userId: number
+    ): Promise<GetOrganizationUserResponse> =>
+      this.req(
+        "GET",
+        `/api/v1/organization/${organizationId}/get_user/${userId}`
+      ),
+    getUsers: async (
+      organizationId: number,
+      page: number,
+      search?: string
+    ): Promise<any> =>
+      this.req(
+        "GET",
+        `/api/v1/organization/${organizationId}/get_users/${page}${
+          search ? `?search=${search}` : ""
+        }`
+      ),
+    getCourses: async (
+      organizationId: number,
+      page: number,
+      search?: string
+    ): Promise<any> =>
+      this.req(
+        "GET",
+        `/api/v1/organization/${organizationId}/get_courses/${page}${
+          search ? `?search=${search}` : ""
+        }`
       ),
     addCourse: async (
       courseId: number,
@@ -409,7 +533,7 @@ class APIClient {
       this.req(
         "POST",
         `/api/v1/organization/${organizationId}/add_course/${courseId}`
-      ),
+      )
   };
 
   constructor(baseURL = "") {

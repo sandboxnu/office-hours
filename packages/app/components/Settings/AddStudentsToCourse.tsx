@@ -13,18 +13,18 @@ const CourseRosterPageComponent = styled.div`
 `;
 
 export default function AddStudentsToCourse({
-  courseId
+  courseId,
 }: CourseRosterPageProps): ReactElement {
   const [file, setFile] = useState();
   const fileReader = new FileReader();
   const { course } = useCourse(courseId);
-  const handleOnChange = e => {
+  const handleOnChange = (e) => {
     setFile(e.target.files[0]);
   };
-  const handleOnSubmit = e => {
+  const handleOnSubmit = (e) => {
     e.preventDefault();
     if (file) {
-      fileReader.onload = function(event) {
+      fileReader.onload = function (event) {
         const csvOutput: string = event.target.result.toString();
         addStudents(csvOutput);
       };
@@ -45,11 +45,11 @@ export default function AddStudentsToCourse({
           first_name: temp[0],
           last_name: temp[1],
           sid: Number(temp[2]),
-          selected_course: course.id
+          selected_course: course.id,
         };
         await API.signup
           .registerStudent(tempStudent)
-          .then(response => {
+          .then((response) => {
             console.log(response);
             if (response === "exists") {
               message.warning(
@@ -57,7 +57,7 @@ export default function AddStudentsToCourse({
               );
             }
           })
-          .catch(e => {
+          .catch((e) => {
             console.log(e);
             message.warning(
               temp[0] + " was not registered (already registered)"
@@ -79,7 +79,7 @@ export default function AddStudentsToCourse({
               onChange={handleOnChange}
             />
             <button
-              onClick={e => {
+              onClick={(e) => {
                 handleOnSubmit(e);
               }}
             >

@@ -3,7 +3,7 @@ import {
   useState,
   useEffect,
   useRef,
-  useLayoutEffect
+  useLayoutEffect,
 } from "react";
 import FullCalendar, { EventContentArg } from "@fullcalendar/react"; // must go before plugins
 import timeGridPlugin, { DayTimeColsView } from "@fullcalendar/timegrid";
@@ -41,7 +41,7 @@ type ScheduleProps = {
 };
 export default function SchedulePanel({
   courseId,
-  defaultView = "timeGridWeek"
+  defaultView = "timeGridWeek",
 }: ScheduleProps): ReactElement {
   const [form] = Form.useForm();
   const [isClientSide, setIsClientSide] = useState(false);
@@ -63,12 +63,12 @@ export default function SchedulePanel({
 
   //format events-all repeated ones need to start time and endTime, the other ones are regular stuff
   const getEvent = async () => {
-    await API.calendar.getEvents(Number(courseId)).then(result => {
-      const modifiedEvents = result.map(event => parseEvent(event));
+    await API.calendar.getEvents(Number(courseId)).then((result) => {
+      const modifiedEvents = result.map((event) => parseEvent(event));
       setEvents(modifiedEvents);
     });
   };
-  const parseEvent = event => {
+  const parseEvent = (event) => {
     if (event.daysOfWeek) {
       const startDate = new Date(event.start);
       const endDate = new Date(event.end);
@@ -77,14 +77,14 @@ export default function SchedulePanel({
         title: event.title,
         daysOfWeek: event.daysOfWeek,
         startTime: format(startDate, "HH:mm"),
-        endTime: format(endDate, "HH:mm")
+        endTime: format(endDate, "HH:mm"),
       };
     } else {
       return {
         id: event.id,
         title: event.title,
         start: event.start,
-        end: event.end
+        end: event.end,
       };
     }
   };
@@ -115,36 +115,36 @@ export default function SchedulePanel({
         title: values.eventName,
         start: info.startStr,
         end: info.endStr,
-        daysOfWeek: [selectedDay]
+        daysOfWeek: [selectedDay],
       };
     } else {
       e = {
         cid: courseId,
         title: values.eventName,
         start: info.startStr,
-        end: info.endStr
+        end: info.endStr,
       };
     }
-    API.calendar.addCalendar(e).then(event => {
+    API.calendar.addCalendar(e).then((event) => {
       setEvents([...events, parseEvent(event)]);
     });
   };
   const onCancel = () => {
     setEventVisible(false);
   };
-  const handleDateSelect = selectInfo => {
+  const handleDateSelect = (selectInfo) => {
     setInfo(selectInfo);
     setEventVisible(true);
   };
-  const handleEventClick = clickInfo => {
+  const handleEventClick = (clickInfo) => {
     if (
       confirm(
         `Are you sure you want to delete the event '${clickInfo.event.title}'`
       )
     ) {
-      API.calendar.deleteEvent(clickInfo.event.id).then(result => {
+      API.calendar.deleteEvent(clickInfo.event.id).then((result) => {
         if (result) {
-          setEvents(events.filter(event => event.id != clickInfo.event.id));
+          setEvents(events.filter((event) => event.id != clickInfo.event.id));
         } else {
           message.error("Deletion failed");
         }
@@ -172,9 +172,9 @@ export default function SchedulePanel({
               headerToolbar={{
                 start: "title",
                 center: "dayGridMonth timeGridWeek timeGridDay listWeek",
-                end: "today prev,next"
+                end: "today prev,next",
               }}
-              loading={loading => {
+              loading={(loading) => {
                 if (spinnerRef.current)
                   spinnerRef.current.style.display = loading ? "flex" : "none";
               }}
@@ -202,7 +202,7 @@ export default function SchedulePanel({
                 iCalendarPlugin,
                 dayGridPlugin,
                 listPlugin,
-                interactionPlugin
+                interactionPlugin,
               ]}
               eventClick={handleEventClick}
               select={handleDateSelect}
@@ -213,9 +213,9 @@ export default function SchedulePanel({
               headerToolbar={{
                 start: "title",
                 center: "dayGridMonth timeGridWeek timeGridDay listWeek",
-                end: "today prev,next"
+                end: "today prev,next",
               }}
-              loading={loading => {
+              loading={(loading) => {
                 if (spinnerRef.current)
                   spinnerRef.current.style.display = loading ? "flex" : "none";
               }}
@@ -224,7 +224,7 @@ export default function SchedulePanel({
             <Modal
               visible={eventVisible}
               onOk={async () => {
-                await form.validateFields().then(value => onOk(value));
+                await form.validateFields().then((value) => onOk(value));
                 onCancel();
               }}
               onCancel={onCancel}
@@ -239,7 +239,7 @@ export default function SchedulePanel({
                   label="Event Name"
                   name="eventName"
                   rules={[
-                    { required: true, message: "Please input event name!" }
+                    { required: true, message: "Please input event name!" },
                   ]}
                 >
                   <Input />

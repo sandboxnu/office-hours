@@ -89,7 +89,7 @@ export default function ChatbotSettings(): ReactElement {
         Number(cid),
         search,
         pageSize,
-        currentPage,
+        currentPage
       );
 
       setChatbotDocuments(data.chatDocuments);

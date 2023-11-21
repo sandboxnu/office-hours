@@ -5,9 +5,9 @@ export const sendMessage = async (messages: ChatCompletionRequestMessage[]) => {
     const response = await fetch("/chatbot/chatbot", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ messages })
+      body: JSON.stringify({ messages }),
     });
 
     return await response.json();

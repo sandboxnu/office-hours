@@ -10,6 +10,7 @@ import TAQueue from "../../../../components/Queue/TA/TAQueue";
 import { useQueue } from "../../../../hooks/useQueue";
 import { useRoleInCourse } from "../../../../hooks/useRoleInCourse";
 import { useChatbotContext } from "../../../../providers/chatbotProvider";
+import { Spin } from "antd";
 
 const Container = styled.div`
   flex: 1;
@@ -30,6 +31,19 @@ export default function Queue(): ReactElement {
   useEffect(() => {
     setCid(cid);
   }, [cid]);
+
+  function RenderQueuePage(): ReactElement {
+    if (role && queue) {
+      return Role.STUDENT === role ? (
+        <StudentQueue qid={Number(qid)} cid={Number(cid)} />
+      ) : (
+        <TAQueue qid={Number(qid)} courseId={Number(cid)} />
+      );
+    } else {
+      return <Spin />;
+    }
+  }
+
   return (
     <StandardPageContainer>
       <Container>
@@ -37,11 +51,7 @@ export default function Queue(): ReactElement {
           <title>{queue?.room} Queue | UBC Office Hours</title>
         </Head>
         <NavBar courseId={Number(cid)} />
-        {Role.STUDENT === role ? (
-          <StudentQueue qid={Number(qid)} cid={Number(cid)} />
-        ) : (
-          <TAQueue qid={Number(qid)} courseId={Number(cid)} />
-        )}
+        <RenderQueuePage />
       </Container>
     </StandardPageContainer>
   );

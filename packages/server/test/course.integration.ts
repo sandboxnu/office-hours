@@ -123,9 +123,9 @@ describe('Course Integration', () => {
         .expect(200);
       // date agnostic snapshots
       expect(response.body.queues.length).toBe(3);
-      response.body.queues.map(q => expect(q).toMatchSnapshot({}));
+      response.body.queues.map((q) => expect(q).toMatchSnapshot({}));
 
-      response.body.queues.map(q => expect(q.isDisabled).toBeFalsy());
+      response.body.queues.map((q) => expect(q.isDisabled).toBeFalsy());
     });
 
     it('gets all queues that are not disabled (prof)', async () => {
@@ -181,9 +181,9 @@ describe('Course Integration', () => {
         .expect(200);
 
       // date agnostic snapshots
-      response.body.queues.map(q => expect(q).toMatchSnapshot({}));
+      response.body.queues.map((q) => expect(q).toMatchSnapshot({}));
 
-      response.body.queues.map(q => expect(q.isDisabled).toBeFalsy());
+      response.body.queues.map((q) => expect(q.isDisabled).toBeFalsy());
     });
 
     it('cant get office hours if not a member of the course', async () => {
@@ -194,9 +194,7 @@ describe('Course Integration', () => {
         course: course,
       });
 
-      await supertest({ userId: 1 })
-        .get(`/courses/${course.id}`)
-        .expect(401);
+      await supertest({ userId: 1 }).get(`/courses/${course.id}`).expect(401);
     });
 
     it('ensures isOpen is defined for all queues(dynamic gen)', async () => {
@@ -250,7 +248,7 @@ describe('Course Integration', () => {
       const response = await supertest({ userId: proff.userId })
         .get(`/courses/${course.id}`)
         .expect(200);
-      response.body.queues.map(q => {
+      response.body.queues.map((q) => {
         expect(q.isOpen).toBeDefined();
       });
     });
@@ -719,7 +717,7 @@ describe('Course Integration', () => {
         })
         .expect(200);
 
-      const checkinTimes = ((data.body as unknown) as TACheckinTimesResponse)
+      const checkinTimes = (data.body as unknown as TACheckinTimesResponse)
         .taCheckinTimes;
 
       const taName = ta.firstName + ' ' + ta.lastName;
