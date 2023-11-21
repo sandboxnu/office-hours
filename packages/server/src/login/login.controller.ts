@@ -74,9 +74,14 @@ export class LoginController {
 
       //if both match than you can do anything
       if (data) {
+        if (user.accountDeactivated) {
+          return res.status(HttpStatus.FORBIDDEN).send({
+            message: 'Account deactivated',
+          });
+        }
         return res.status(200).send({ token, ...body });
       } else {
-        return res.status(401).json({ message: 'Invalid credential' });
+        return res.status(401).json({ message: 'Invalid credentials' });
       }
     });
   }

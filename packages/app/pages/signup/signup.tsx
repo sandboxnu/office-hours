@@ -167,7 +167,7 @@ export default function Signup(): ReactElement {
           </button>
         </div>
         <div>
-          <a href="../login">log in</a>
+          <a href="/login">log in</a>
         </div>
         <div className="app"></div>
       </form>

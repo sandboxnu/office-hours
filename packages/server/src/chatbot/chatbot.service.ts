@@ -106,6 +106,13 @@ export class ChatbotService {
   async deleteQuestion(questionId: number) {
     const chatQuestion = await ChatbotQuestionModel.findOne(questionId);
 
+    if (!chatQuestion) {
+      throw new HttpException(
+        'Question not found based on the provided ID.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     return await chatQuestion.remove();
   }
 }

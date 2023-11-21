@@ -42,6 +42,9 @@ const Logo = styled.div`
   font-weight: 500;
   color: #262626;
   text-transform: capitalize;
+  display: flex;
+  align-items: center;
+  vertical-align: middle;
 `;
 
 const MenuCon = styled.div`
@@ -235,7 +238,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
                 <Image
                   width={40}
                   preview={false}
-                  src={profile?.organization.organizationLogoUrl}
+                  src={`/api/v1/organization/${profile?.organization.id}/get_logo/${profile?.organization.organizationLogoUrl}`}
                 />
               </a>
             )}
@@ -266,42 +269,44 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
         </Drawer>
       </Nav>
 
-      {Object.keys(profile?.organization).length === 0 && (
-        <Modal
-          title="[System Message] Exciting News: Introducing Organizations!"
-          open={updateModalVisible}
-          closable={false}
-          footer={[
-            <Button key="ok" type="primary" onClick={addMember}>
-              OK
-            </Button>,
-          ]}
-        >
-          <p>
-            🎉 We&lsquo;re thrilled to announce a new feature that we are
-            working on: Organizations 🏢
-            <br />
-            <br />
-            As part of this work, we need to add your account to one of the
-            existing organizations. <br />
-            <br />
-            Before adding you to your organization, we just wanted to share this
-            update with you before we automatically migrate your account when
-            you click the button below.
-            <br />
-            <br />
-            Once you click the button below, this message will no longer appear.
-            <br />
-            <br />
-            <small
-              style={{ fontSize: "3px", cursor: "none" }}
-              onClick={success}
-            >
-              No easter eggs here 🥚🥚🥚
-            </small>
-          </p>
-        </Modal>
-      )}
+      {profile?.organization &&
+        Object.keys(profile?.organization).length === 0 && (
+          <Modal
+            title="[System Message] Exciting News: Introducing Organizations!"
+            open={updateModalVisible}
+            closable={false}
+            footer={[
+              <Button key="ok" type="primary" onClick={addMember}>
+                OK
+              </Button>,
+            ]}
+          >
+            <p>
+              🎉 We&lsquo;re thrilled to announce a new feature that we are
+              working on: Organizations 🏢
+              <br />
+              <br />
+              As part of this work, we need to add your account to one of the
+              existing organizations. <br />
+              <br />
+              Before adding you to your organization, we just wanted to share
+              this update with you before we automatically migrate your account
+              when you click the button below.
+              <br />
+              <br />
+              Once you click the button below, this message will no longer
+              appear.
+              <br />
+              <br />
+              <small
+                style={{ fontSize: "3px", cursor: "none" }}
+                onClick={success}
+              >
+                No easter eggs here 🥚🥚🥚
+              </small>
+            </p>
+          </Modal>
+        )}
     </>
   ) : (
     <>
@@ -314,7 +319,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
                 <Image
                   width={40}
                   preview={false}
-                  src={profile?.organization.organizationLogoUrl}
+                  src={`/api/v1/organization/${profile?.organization.id}/get_logo/${profile?.organization.organizationLogoUrl}`}
                 />
               </a>
             )}
@@ -337,12 +342,12 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
         <Drawer
           title="Course"
           placement="right"
-          visible={visible}
+          open={visible}
           closable={false}
           onClose={onClose}
           bodyStyle={{ padding: "12px" }}
         >
-          <NavBarTabs currentHref={pathname} tabs={tabs} />
+          <NavBarTabs currentHref={pathname} tabs={globalTabs} />
           <ProfileDrawer courseId={null} />
         </Drawer>
       </Nav>

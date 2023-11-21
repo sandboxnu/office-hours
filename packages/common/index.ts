@@ -12,7 +12,6 @@ import {
   IsOptional,
   IsString,
   ValidateIf,
-  isBoolean,
 } from "class-validator";
 import "reflect-metadata";
 import { Cache } from "cache-manager";
@@ -354,34 +353,6 @@ export class QuestionGroup {
 }
 
 /**
- * Course is created when there is a new course
- */
-
-export class createCourse {
-  @IsString()
-  name!: string;
-
-  @IsString()
-  section!: string;
-
-  @IsOptional()
-  @IsString()
-  zoomLink?: string;
-
-  @IsOptional()
-  @IsString()
-  coordinatorEmail?: string;
-
-  @IsInt()
-  semester!: number;
-
-  @IsBoolean()
-  enabled!: boolean;
-
-  @IsString()
-  timezone!: string;
-}
-/**
  * An async question is created when a student wants help from a TA.
  */
 export class AsyncQuestion {
@@ -627,6 +598,30 @@ export interface KhouryRedirectResponse {
   redirect: string;
 }
 
+export class UpdateOrganizationUserRole {
+  @IsNumber()
+  @IsNotEmpty()
+  userId!: number;
+
+  @IsString()
+  @IsNotEmpty()
+  organizationRole!: OrganizationRole;
+}
+
+export class UpdateOrganizationDetailsParams {
+  @IsString()
+  @IsOptional()
+  name?: string;
+
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @IsString()
+  @IsOptional()
+  websiteUrl?: string;
+}
+
 export class UpdateProfileParams {
   @IsBoolean()
   @IsOptional()
@@ -645,7 +640,7 @@ export class UpdateProfileParams {
   @IsOptional()
   firstName?: string;
 
-  @IsString()
+  @IsInt()
   @IsOptional()
   sid?: number;
 
@@ -682,7 +677,19 @@ export class OrganizationUserPartial {
   organizationName!: string;
   organizationDescription!: string;
   organizationLogoUrl!: string;
+  organizationBannerUrl!: string;
   organizationRole!: string;
+}
+
+export class GetOrganizationResponse {
+  id!: number;
+  name!: string;
+  description?: string;
+  logoUrl?: string;
+  bannerUrl?: string;
+  websiteUrl?: string;
+  ssoEnabled?: boolean;
+  ssoUrl?: string;
 }
 
 export class GetCourseResponse {
@@ -726,6 +733,41 @@ export class GetCourseUserInfoResponse {
   users!: UserPartial[];
   total!: number;
 }
+
+export class GetOrganizationUsersResponse {
+  userId!: number;
+  userFirstName!: string;
+  userLastName!: string;
+  userEmail!: string;
+  userPhotoUrl!: string;
+  userOrganizationRole!: string;
+}
+
+export class OrganizationUser {
+  id!: number;
+  firstName!: string;
+  lastName!: string;
+  email!: string;
+  photoUrl!: string;
+  fullName!: string;
+  globalRole!: string;
+  sid!: number;
+  accountDeactivated!: boolean;
+}
+
+export class OrganizationCourse {
+  id!: number;
+  name!: string;
+  role!: string;
+}
+
+export class GetOrganizationUserResponse {
+  organizationId!: number;
+  organizationRole!: string;
+  user!: OrganizationUser;
+  courses!: OrganizationCourse[];
+}
+
 export class GetSelfEnrollResponse {
   courses!: CoursePartial[];
 }
@@ -756,6 +798,32 @@ export class InteractionParams {
 
   @IsInt()
   userId!: number;
+}
+
+export class UpdateOrganizationCourseDetailsParams {
+  @IsString()
+  @IsOptional()
+  name?: string;
+
+  @IsString()
+  @IsOptional()
+  coordinatorEmail?: string;
+
+  @IsString()
+  @IsOptional()
+  sectionGroupName?: string;
+
+  @IsString()
+  @IsOptional()
+  zoomLink?: string;
+
+  @IsString()
+  @IsOptional()
+  timezone?: string;
+
+  @IsInt()
+  @IsOptional()
+  semesterId?: number;
 }
 
 export class ChatBotQuestionParams {
@@ -973,6 +1041,30 @@ export class RephraseQuestionPayload extends AlertPayload {
   courseId!: number;
 }
 
+export class OrganizationCourseResponse {
+  @IsInt()
+  id?: number;
+
+  @IsInt()
+  organizationId?: number;
+
+  @IsInt()
+  courseId?: number;
+
+  course?: GetCourseResponse;
+}
+
+export class OrganizationStatsResponse {
+  @IsInt()
+  members?: number;
+
+  @IsInt()
+  courses?: number;
+
+  @IsInt()
+  membersProfessors?: number;
+}
+
 export class CreateAlertParams {
   @IsEnum(AlertType)
   alertType!: AlertType;
@@ -1114,11 +1206,6 @@ export interface TwilioBody {
   ApiVersion: string;
 }
 
-export interface GetReleaseNotesResponse {
-  releaseNotes: unknown;
-  lastUpdatedUnixTime: number;
-}
-
 export type GetInsightOutputResponse = PossibleOutputTypes;
 
 export type ListInsightsResponse = Record<string, InsightDisplayInfo>;
@@ -1196,14 +1283,30 @@ export const ERROR_MESSAGES = {
     pageOutOfBounds: "Can't retrieve out of bounds page.",
   },
   organizationController: {
+    notEnoughDiskSpace: "Not enough disk space to upload file",
     userAlreadyInOrganization: "User is already in organization",
     courseAlreadyInOrganization: "Course is already in organization",
+    organizationNotFound: "Organization not found",
+    organizationNameTooShort: "Organization name must be at least 4 characters",
+    noFileUploaded: "No file uploaded",
+    organizationDescriptionTooShort:
+      "Organization description must be at least 10 characters",
+    organizationUrlTooShortOrInValid:
+      "Organization URL must be at least 4 characters and be a valid URL",
+    userNotFoundInOrganization: "User not found in organization",
+    cannotRemoveAdminRole: "Cannot remove admin role from user",
+    cannotGetAdminUser: "Information about this user account is restricted",
   },
   courseController: {
     checkIn: {
       cannotCheckIntoMultipleQueues:
         "Cannot check into multiple queues at the same time",
     },
+    semesterNotFound: "Semester not found",
+    courseNameTooShort: "Course name must be at least 1 character",
+    coordinatorEmailTooShort: "Coordinator email must be at least 1 character",
+    sectionGroupNameTooShort: "Section group name must be at least 1 character",
+    zoomLinkTooShort: "Zoom link must be at least 1 character",
     courseAlreadyRegistered: "One or more of the courses is already registered",
     courseNotFound: "The course was not found",
     sectionGroupNotFound: "One or more of the section groups was not found",
@@ -1290,11 +1393,6 @@ export const ERROR_MESSAGES = {
   queueRoleGuard: {
     queueNotFound: "Queue not found",
   },
-  releaseNotesController: {
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    releaseNotesTime: (e: any): string =>
-      "Error Parsing release notes time: " + e,
-  },
   insightsController: {
     insightUnathorized: "User is not authorized to view this insight",
     insightNameNotFound: "The insight requested was not found",
@@ -1304,6 +1402,12 @@ export const ERROR_MESSAGES = {
     notLoggedIn: "Must be logged in",
     noCourseIdFound: "No courseid found",
     notInCourse: "Not In This Course",
+    notAuthorized: "You don't have permissions to perform this action",
+    userNotInOrganization: "User not in organization",
+    mustBeRoleToAccess: (roles: string[]): string =>
+      `You must have one of roles [${roles.join(
+        ", "
+      )}] to access this information`,
     mustBeRoleToJoinCourse: (roles: string[]): string =>
       `You must have one of roles [${roles.join(", ")}] to access this course`,
   },
@@ -1312,7 +1416,15 @@ export const ERROR_MESSAGES = {
   },
   profileController: {
     accountNotAvailable: "The user account is undefined",
+    accountDeactivated: "The user account is deactivated",
     userResponseNotFound: "The user response was not found",
+    firstNameTooShort: "First name must be at least 1 characters",
+    lastNameTooShort: "Last name must be at least 1 characters",
+    emailTooShort: "Email must be at least 1 characters",
+    sidInvalid: "Student ID must be a number and greater than 0",
+    noProfilePicture: "User doesn't have a profile picture",
+    noCoursesToDelete: "User doesn't have any courses to delete",
+    emailInUse: "Email is already in use",
     noDiskSpace:
       "There is no disk space left to store an image. Please immediately contact your course staff and let them know. They will contact the Khoury Office Hours team as soon as possible.",
   },

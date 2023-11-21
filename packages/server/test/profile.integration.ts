@@ -33,6 +33,11 @@ describe('Profile Integration', () => {
       expect(res.body).toMatchSnapshot();
     });
 
+    it('returns account deactivated error', async () => {
+      const user = await UserFactory.create({ accountDeactivated: true });
+      await supertest({ userId: user.id }).get('/profile').expect(403);
+    });
+
     it('returns only userCourses where course is enabled', async () => {
       const user = await UserFactory.create();
       const fundies = await CourseFactory.create({ name: 'CS 2500' });

@@ -4,10 +4,10 @@ import { sendEmailAsync } from '@koh/common';
 
 @Controller('mail')
 export class MailController {
-  constructor(private MailService: MailService) {}
+  constructor(private mailService: MailService) {}
   // postAsyncStatus(message)
   @Post('sendEmail')
   async sendEmail(@Body() emailPost: sendEmailAsync): Promise<void> {
-    await this.MailService.sendEmail(emailPost);
+    await this.mailService.sendEmail(emailPost);
   }
 }

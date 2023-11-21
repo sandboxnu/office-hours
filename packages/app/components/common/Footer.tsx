@@ -7,15 +7,12 @@ const FullWidth = styled.footer`
 
   flex-shrink: 0;
   padding: 12px 64px;
-
-  display: flex;
-  justify-content: space-between;
 `;
 
 export function Footer(): ReactElement {
   return (
     <FullWidth>
-      <div>Developed for UBC Okanagan Courses</div>
+      <div>Maintained by UBC Okanagan students with ❤️</div>
     </FullWidth>
   );
 }

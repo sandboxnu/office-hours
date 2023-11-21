@@ -118,6 +118,6 @@ describe('ChatbotController Integration', () => {
     await supertest({ userId: 1 })
       .delete('/chatbot/question')
       .send({ questionId })
-      .expect(500);
+      .expect(404);
   });
 });

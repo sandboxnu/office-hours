@@ -12,7 +12,7 @@ export default function Chatbot(): ReactElement {
   return (
     <StandardPageContainer>
       <Head>
-        <title>Chatbot | Khoury Office Hours</title>
+        <title>Chatbot</title>
       </Head>
       <NavBar courseId={Number(courseId)} />
       <GPTChatbotPage />

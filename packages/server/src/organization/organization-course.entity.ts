@@ -5,7 +5,6 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -22,7 +21,6 @@ export class OrganizationCourseModel extends BaseEntity {
     (organization) => organization.organizationCourses,
   )
   @JoinColumn({ name: 'organizationId' })
-  @Exclude()
   organization: OrganizationModel;
 
   @Column({ nullable: true })

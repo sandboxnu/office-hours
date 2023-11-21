@@ -191,8 +191,6 @@ export class SeedController {
     await OrganizationFactory.create({
       name: 'UBCO',
       description: 'UBC Okanagan',
-      logoUrl:
-        'https://ires.ubc.ca/files/2020/11/cropped-UBC-Okanagan-1-logo.jpg',
     });
 
     await QuestionFactory.create({

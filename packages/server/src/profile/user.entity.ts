@@ -7,6 +7,7 @@ import {
   BeforeInsert,
   Column,
   Entity,
+  JoinColumn,
   ManyToMany,
   OneToMany,
   OneToOne,
@@ -49,6 +50,9 @@ export class UserModel extends BaseEntity {
   @Column({ type: 'boolean', default: true })
   includeDefaultMessage: boolean;
 
+  @Column({ type: 'boolean', default: false })
+  accountDeactivated: boolean;
+
   @OneToMany((type) => UserCourseModel, (ucm) => ucm.user)
   @Exclude()
   courses: UserCourseModel[];
@@ -89,8 +93,7 @@ export class UserModel extends BaseEntity {
 
   insights: string[];
 
-  @Exclude()
-  @OneToOne((type) => OrganizationUserModel, (ou) => ou.userId)
+  @OneToOne((type) => OrganizationUserModel, (ou) => ou.organizationUser)
   organizationUser: OrganizationUserModel;
 
   @AfterLoad()
