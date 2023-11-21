@@ -32,6 +32,7 @@ Object {
   "organization": Object {
     "id": 1,
     "orgId": 1,
+    "organizationBannerUrl": null,
     "organizationDescription": "UBC Okanagan",
     "organizationLogoUrl": null,
     "organizationName": "UBCO",

@@ -16,7 +16,6 @@ import {
   UpdateCourseOverrideBody,
   UpdateCourseOverrideResponse,
 } from '@koh/common';
-import { Response } from 'express';
 import {
   BadRequestException,
   Body,
@@ -31,7 +30,6 @@ import {
   Patch,
   Post,
   Query,
-  Res,
   UnauthorizedException,
   UseGuards,
   UseInterceptors,

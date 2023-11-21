@@ -19,6 +19,7 @@ export interface UserResponse {
 
 export interface FlattenedOrganizationResponse {
   id: number;
+  orgId: number;
   organizationName: string;
   organizationDescription: string;
   organizationLogoUrl: string;
