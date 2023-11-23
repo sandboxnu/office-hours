@@ -19,6 +19,7 @@ export interface UserResponse {
 
 export interface FlattenedOrganizationResponse {
   id: number;
+  orgId: number;
   organizationName: string;
   organizationDescription: string;
   organizationLogoUrl: string;
@@ -287,7 +288,8 @@ export class OrganizationService {
     }
 
     const flattenedOrganization = {
-      id: organizationUser.organizationId,
+      id: organizationUser.id,
+      orgId: organizationUser.organization.id,
       organizationName: organizationUser.organization.name,
       organizationDescription: organizationUser.organization.description,
       organizationLogoUrl: organizationUser.organization.logoUrl,

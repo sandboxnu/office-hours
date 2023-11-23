@@ -1,16 +1,9 @@
-import React, {
-  ReactComponentElement,
-  ReactElement,
-  useEffect,
-  useState,
-} from "react";
-import { Input, Button, Card, Avatar, List, Spin } from "antd";
+import React, { useEffect, useState } from "react";
+import { Input, Button, Card, Avatar, Spin } from "antd";
 import styled from "styled-components";
 import { API } from "@koh/api-client";
 import { UserOutlined, RobotOutlined } from "@ant-design/icons";
-import router from "next/router";
 import { useProfile } from "../../hooks/useProfile";
-import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { Feedback } from "./components/Feedback";
 
 const ChatbotContainer = styled.div`

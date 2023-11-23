@@ -15,6 +15,8 @@ import {
   CourseFactory,
   CourseSectionFactory,
   EventFactory,
+  OrganizationCourseFactory,
+  OrganizationFactory,
   ProfSectionGroupsFactory,
   QueueFactory,
   SemesterFactory,
@@ -24,6 +26,7 @@ import {
   UserFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
+import { OrganizationCourseModel } from 'organization/organization-course.entity';
 
 describe('Course Integration', () => {
   const supertest = setupIntegrationTest(CourseModule);
@@ -251,6 +254,37 @@ describe('Course Integration', () => {
       response.body.queues.map((q) => {
         expect(q.isOpen).toBeDefined();
       });
+    });
+  });
+
+  describe('GET /courses/limited/:id/:code', () => {
+    it('should return course details for valid id and code', async () => {
+      const course = await CourseFactory.create();
+
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationCourseFactory.create({
+        courseId: course.id,
+        organizationId: organization.id,
+      });
+
+      const response = await supertest()
+        .get(`/courses/limited/${course.id}/${course.courseInviteCode}`)
+        .expect(200);
+
+      expect(response.body.id).toBe(course.id);
+      expect(response.body.name).toBe(course.name);
+      expect(response.body.courseInviteCode).toBe(course.courseInviteCode);
+    });
+
+    it('should return 404 for invalid id or code', async () => {
+      const response = await supertest({ userId: 1 })
+        .get('/courses/limited/1/wrongcode')
+        .expect(404);
+
+      expect(response.body.message).toBe(
+        ERROR_MESSAGES.courseController.courseNotFound,
+      );
     });
   });
 

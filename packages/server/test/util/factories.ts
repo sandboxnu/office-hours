@@ -14,6 +14,7 @@ import { LastRegistrationModel } from 'login/last-registration-model.entity';
 import { ProfSectionGroupsModel } from 'login/prof-section-groups.entity';
 import { OrganizationModel } from '../../src/organization/organization.entity';
 import { InteractionModel } from 'chatbot/interaction.entity';
+import { OrganizationCourseModel } from 'organization/organization-course.entity';
 
 export const UserFactory = new Factory(UserModel)
   .attr('email', `user@ubc.ca`)
@@ -44,6 +45,7 @@ export const CourseFactory = new Factory(CourseModel)
   )
   .attr('sectionGroupName', 'CS 304')
   .attr('enabled', true)
+  .attr('courseInviteCode', 'invite-code')
   .assocOne('semester', SemesterFactory);
 
 export const CourseSectionFactory = new Factory(CourseSectionMappingModel)
@@ -106,3 +108,7 @@ export const InteractionFactory = new Factory(InteractionModel)
   .assocOne('course', CourseFactory)
   .assocOne('user', UserFactory)
   .attr('timestamp', new Date());
+
+export const OrganizationCourseFactory = new Factory(OrganizationCourseModel)
+  .assocOne('organization', OrganizationFactory)
+  .assocOne('course', CourseFactory);

@@ -142,6 +142,10 @@ export default function SettingsPage({
               customRequest={({ file }) => handleUpload(file)} // Use customRequest to handle the upload logic ourselves
               beforeUpload={beforeUpload}
               showUploadList={true}
+              onChange={(info) => {
+                setUploading(info.file.status === "uploading");
+                mutate();
+              }}
             >
               <ProfilePicButton icon={<UploadOutlined />}>
                 Edit photo

@@ -50,7 +50,16 @@ export default function Login(): ReactElement {
           }
           return Promise.reject(error);
         } else {
-          Router.push(`/api/v1/login/entry?token=${data.token}`);
+          const lastVisited = localStorage.getItem("lastVisited");
+
+          let redirectURL = `/api/v1/login/entry?token=${data.token}`;
+
+          if (lastVisited) {
+            redirectURL += `&redirect=${encodeURIComponent(lastVisited)}`;
+            localStorage.removeItem("lastVisited");
+          }
+
+          Router.push(redirectURL);
         }
       })
       .catch((error) => {

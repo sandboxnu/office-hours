@@ -16,6 +16,7 @@ import TACheckInCheckOutTimes from "./TACheckInCheckOutTimes";
 import AddStudentsToCourse from "./AddStudentsToCourse";
 import ExportQuestions from "./ExportQuestions";
 import EditQuestions from "./EditQuestions";
+import EditCourse from "./EditCourse";
 import { useRoleInCourse } from "../../hooks/useRoleInCourse";
 import { Role } from "@koh/common";
 import ChatbotSettings from "./ChatbotSettings";
@@ -97,9 +98,6 @@ export default function CourseAdminPanel({
               >
                 TA Check In/Out Times
               </Menu.Item>
-              {/* <Menu.Item key={CourseAdminOptions.EDIT_COURSE} icon={<EditOutlined />}>
-              Edit course details
-            </Menu.Item> */}
               <Menu.Item
                 key={CourseAdminOptions.ROSTER}
                 icon={<BellOutlined />}
@@ -108,6 +106,12 @@ export default function CourseAdminPanel({
               </Menu.Item>
               <Menu.Item key={CourseAdminOptions.ADD} icon={<UploadOutlined />}>
                 Add students to course
+              </Menu.Item>
+              <Menu.Item
+                key={CourseAdminOptions.EDIT_COURSE}
+                icon={<EditOutlined />}
+              >
+                Update Course Invite Code
               </Menu.Item>
             </>
           )}
@@ -131,9 +135,9 @@ export default function CourseAdminPanel({
       <VerticalDivider />
       <Space direction="vertical" size={40} style={{ flexGrow: 1 }}>
         <Col span={20}>
-          {/* {currentSettings === CourseAdminOptions.EDIT_COURSE && (
+          {currentSettings === CourseAdminOptions.EDIT_COURSE && (
             <EditCourse courseId={courseId} />
-          )} */}
+          )}
           {currentSettings === CourseAdminOptions.CHECK_IN && (
             <TACheckInCheckOutTimes courseId={courseId} />
           )}
