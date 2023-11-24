@@ -1,9 +1,9 @@
-import { ReactElement } from "react";
-import { useProfile } from "../../../../hooks/useProfile";
+import { ReactElement } from 'react'
+import { useProfile } from '../../../../hooks/useProfile'
 // import { useRouter } from "next/router";
-import { useOrganization } from "../../../../hooks/useOrganization";
-import { OrganizationRole } from "@koh/common";
-import DefaultErrorPage from "next/error";
+import { useOrganization } from '../../../../hooks/useOrganization'
+import { OrganizationRole } from '@koh/common'
+import DefaultErrorPage from 'next/error'
 import {
   Breadcrumb,
   Button,
@@ -15,68 +15,68 @@ import {
   Select,
   Spin,
   message,
-} from "antd";
-import Head from "next/head";
-import { StandardPageContainer } from "../../../../components/common/PageContainer";
-import NavBar from "../../../../components/Nav/NavBar";
-import { API } from "@koh/api-client";
-import useSWR from "swr";
-import { useRouter } from "next/router";
-import { useSemester } from "../../../../hooks/useSemester";
+} from 'antd'
+import Head from 'next/head'
+import { StandardPageContainer } from '../../../../components/common/PageContainer'
+import NavBar from '../../../../components/Nav/NavBar'
+import { API } from '@koh/api-client'
+import useSWR from 'swr'
+import { useRouter } from 'next/router'
+import { useSemester } from '../../../../hooks/useSemester'
 
 export default function Edit(): ReactElement {
-  const profile = useProfile();
-  const router = useRouter();
-  const { cid } = router.query;
+  const profile = useProfile()
+  const router = useRouter()
+  const { cid } = router.query
 
-  const { organization } = useOrganization(profile?.organization.id);
+  const { organization } = useOrganization(profile?.organization.id)
 
   if (
     profile &&
     profile.organization.organizationRole !== OrganizationRole.ADMIN
   ) {
-    return <DefaultErrorPage statusCode={404} />;
+    return <DefaultErrorPage statusCode={404} />
   }
 
   function RenderCourseInfo(): ReactElement {
-    const [formGeneral] = Form.useForm();
-    const semesters = useSemester();
+    const [formGeneral] = Form.useForm()
+    const semesters = useSemester()
 
     const { data: courseData, error } = useSWR(
       `api/v1/organization/[oid]/course/[cid]`,
       async () =>
-        await API.organizations.getCourse(organization.id, Number(cid))
-    );
+        await API.organizations.getCourse(organization.id, Number(cid)),
+    )
 
     if (error) {
-      router.push("/organization/settings");
+      router.push('/organization/settings')
     }
 
     const updateCourseAccess = async () => {
       await API.organizations
         .updateCourseAccess(organization.id, Number(cid))
         .then(() => {
-          message.success("Course access was updated");
+          message.success('Course access was updated')
           setTimeout(() => {
-            router.reload();
-          }, 1750);
+            router.reload()
+          }, 1750)
         })
         .catch((error) => {
-          const errorMessage = error.response.data.message;
+          const errorMessage = error.response.data.message
 
-          message.error(errorMessage);
-        });
-    };
+          message.error(errorMessage)
+        })
+    }
 
     const updateGeneral = async () => {
-      const formValues = formGeneral.getFieldsValue();
+      const formValues = formGeneral.getFieldsValue()
 
-      const courseNameField = formValues.courseName;
-      const coordinatorEmailField = formValues.coordinatorEmail;
-      const sectionGroupNameField = formValues.sectionGroupName;
-      const zoomLinkField = formValues.zoomLink;
-      const courseTimezoneField = formValues.courseTimezone;
-      const semesterIdField = formValues.semesterId;
+      const courseNameField = formValues.courseName
+      const coordinatorEmailField = formValues.coordinatorEmail
+      const sectionGroupNameField = formValues.sectionGroupName
+      const zoomLinkField = formValues.zoomLink
+      const courseTimezoneField = formValues.courseTimezone
+      const semesterIdField = formValues.semesterId
 
       if (
         courseNameField === courseData.course.name &&
@@ -87,40 +87,40 @@ export default function Edit(): ReactElement {
         semesterIdField === courseData.course.semesterId
       ) {
         message.info(
-          "Course was not updated as information has not been changed"
-        );
-        return;
+          'Course was not updated as information has not been changed',
+        )
+        return
       }
 
       if (courseNameField.length < 1) {
-        message.error("Course name cannot be empty");
-        return;
+        message.error('Course name cannot be empty')
+        return
       }
 
       if (
         courseData.course.coordinatorEmail &&
         coordinatorEmailField.length < 1
       ) {
-        message.error("Coordinator email cannot be empty");
-        return;
+        message.error('Coordinator email cannot be empty')
+        return
       }
 
       if (
         courseData.course.sectionGroupName &&
         sectionGroupNameField.length < 1
       ) {
-        message.error("Section group name cannot be empty");
-        return;
+        message.error('Section group name cannot be empty')
+        return
       }
 
       if (courseData.course.zoomLink && zoomLinkField.length < 1) {
-        message.error("Zoom link cannot be empty");
-        return;
+        message.error('Zoom link cannot be empty')
+        return
       }
 
       if (courseData.course.timezone && courseTimezoneField.length < 1) {
-        message.error("Course timezone cannot be empty");
-        return;
+        message.error('Course timezone cannot be empty')
+        return
       }
 
       // if semesterIdField is not a number or not in semesters
@@ -128,31 +128,31 @@ export default function Edit(): ReactElement {
         isNaN(semesterIdField) ||
         !semesters.find((semester) => semester.id === semesterIdField)
       ) {
-        message.error("Semester is invalid");
-        return;
+        message.error('Semester is invalid')
+        return
       }
 
       await API.organizations
         .updateCourse(organization.id, Number(cid), {
           name: courseNameField,
-          coordinatorEmail: coordinatorEmailField ?? "",
+          coordinatorEmail: coordinatorEmailField ?? '',
           sectionGroupName: sectionGroupNameField,
-          zoomLink: zoomLinkField ?? "",
+          zoomLink: zoomLinkField ?? '',
           timezone: courseTimezoneField,
           semesterId: semesterIdField,
         })
         .then(() => {
-          message.success("Course was updated");
+          message.success('Course was updated')
           setTimeout(() => {
-            router.reload();
-          }, 1750);
+            router.reload()
+          }, 1750)
         })
         .catch((error) => {
-          const errorMessage = error.response.data.message;
+          const errorMessage = error.response.data.message
 
-          message.error(errorMessage);
-        });
-    };
+          message.error(errorMessage)
+        })
+    }
 
     return semesters && courseData ? (
       <>
@@ -296,17 +296,17 @@ export default function Edit(): ReactElement {
               title="Danger Zone"
               className="border-2 border-rose-500/[.35]"
             >
-              <div className="flex flex-col md:flex-row items-center">
-                <div className="w-full md:w-5/6 md:mr-4 mb-2 md:text-left">
+              <div className="flex flex-col items-center md:flex-row">
+                <div className="mb-2 w-full md:mr-4 md:w-5/6 md:text-left">
                   <strong>
                     {courseData.course.enabled
-                      ? "Archive Course"
-                      : "Re-archive Course"}
+                      ? 'Archive Course'
+                      : 'Re-archive Course'}
                   </strong>
                   <div className="mb-0">
                     {courseData.course.enabled
-                      ? "Once you archive a course, the course will only be visible to course professor and TA, and admin."
-                      : "Once you re-archive a course, the course will be visible to all members of the organization."}
+                      ? 'Once you archive a course, the course will only be visible to course professor and TA, and admin.'
+                      : 'Once you re-archive a course, the course will be visible to all members of the organization.'}
                   </div>
                 </div>
                 <Button
@@ -315,8 +315,8 @@ export default function Edit(): ReactElement {
                   onClick={updateCourseAccess}
                 >
                   {courseData.course.enabled
-                    ? "Archive Course"
-                    : "Re-archive Course"}
+                    ? 'Archive Course'
+                    : 'Re-archive Course'}
                 </Button>
               </div>
             </Card>
@@ -325,7 +325,7 @@ export default function Edit(): ReactElement {
       </>
     ) : (
       <Spin />
-    );
+    )
   }
 
   return profile &&
@@ -350,5 +350,5 @@ export default function Edit(): ReactElement {
     </>
   ) : (
     <Spin />
-  );
+  )
 }

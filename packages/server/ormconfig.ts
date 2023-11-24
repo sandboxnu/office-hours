@@ -24,6 +24,7 @@ import { CalendarModel } from './src/calendar/calendar.entity';
 import { OrganizationUserModel } from './src/organization/organization-user.entity';
 import { OrganizationModel } from './src/organization/organization.entity';
 import { OrganizationCourseModel } from './src/organization/organization-course.entity';
+import { ChatbotDocumentModel } from 'chatbot/chatbotDocument.entity';
 config();
 
 // Options only used whe run via CLI
@@ -66,6 +67,7 @@ const typeorm = {
     OrganizationUserModel,
     OrganizationModel,
     OrganizationCourseModel,
+    ChatbotDocumentModel,
   ],
   keepConnectionAlive: true,
   logging:

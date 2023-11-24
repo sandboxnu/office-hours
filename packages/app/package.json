@@ -52,6 +52,7 @@
     "react-chat-widget": "^3.1.4",
     "react-dom": "^17.0.2",
     "react-highlight-words": "^0.20.0",
+    "react-hot-toast": "^2.4.1",
     "react-hotkeys-hook": "^3.4.4",
     "react-linkify": "^1.0.0-alpha",
     "react-notion": "^0.8.1",

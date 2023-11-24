@@ -1,8 +1,8 @@
-import { ReactElement, useState } from "react";
-import { useOrganization } from "../../../../hooks/useOrganization";
-import { useProfile } from "../../../../hooks/useProfile";
-import { OrganizationRole } from "@koh/common";
-import DefaultErrorPage from "next/error";
+import { ReactElement, useState } from 'react'
+import { useOrganization } from '../../../../hooks/useOrganization'
+import { useProfile } from '../../../../hooks/useProfile'
+import { OrganizationRole } from '@koh/common'
+import DefaultErrorPage from 'next/error'
 import {
   Alert,
   Breadcrumb,
@@ -15,62 +15,62 @@ import {
   Spin,
   Table,
   message,
-} from "antd";
-import { StandardPageContainer } from "../../../../components/common/PageContainer";
-import Head from "next/head";
-import NavBar from "../../../../components/Nav/NavBar";
-import { useRouter } from "next/router";
-import { API } from "@koh/api-client";
-import useSWR from "swr";
-import { ColumnsType } from "antd/es/table";
+} from 'antd'
+import { StandardPageContainer } from '../../../../components/common/PageContainer'
+import Head from 'next/head'
+import NavBar from '../../../../components/Nav/NavBar'
+import { useRouter } from 'next/router'
+import { API } from '@koh/api-client'
+import useSWR from 'swr'
+import { ColumnsType } from 'antd/es/table'
 
 interface CourseType {
-  id: string;
-  name: string;
-  role: string;
+  id: string
+  name: string
+  role: string
 }
 
 export default function Edit(): ReactElement {
-  const profile = useProfile();
-  const router = useRouter();
-  const uid = router.query["uid"];
-  const { organization } = useOrganization(profile?.organization.id);
+  const profile = useProfile()
+  const router = useRouter()
+  const uid = router.query['uid']
+  const { organization } = useOrganization(profile?.organization.id)
 
   if (
     profile &&
     profile.organization.organizationRole !== OrganizationRole.ADMIN
   ) {
-    return <DefaultErrorPage statusCode={404} />;
+    return <DefaultErrorPage statusCode={404} />
   }
 
   function RenderUserInfo(): ReactElement {
-    const [formGeneral] = Form.useForm();
-    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+    const [formGeneral] = Form.useForm()
+    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
 
     const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-      console.log("selectedRowKeys changed: ", newSelectedRowKeys);
-      setSelectedRowKeys(newSelectedRowKeys);
-    };
+      console.log('selectedRowKeys changed: ', newSelectedRowKeys)
+      setSelectedRowKeys(newSelectedRowKeys)
+    }
 
     const rowSelection = {
       selectedRowKeys,
       onChange: onSelectChange,
-    };
+    }
 
     const courseColumns: ColumnsType<CourseType> = [
       {
-        title: "Course Code",
-        dataIndex: "id",
+        title: 'Course Code',
+        dataIndex: 'id',
       },
       {
-        title: "Course Name",
-        dataIndex: "name",
+        title: 'Course Name',
+        dataIndex: 'name',
       },
       {
-        title: "Course Role",
-        dataIndex: "role",
+        title: 'Course Role',
+        dataIndex: 'role',
       },
-    ];
+    ]
 
     const { data: userData, error } = useSWR(
       `api/v1/organization/[oid]/get_user/[uid]`,
@@ -83,79 +83,79 @@ export default function Edit(): ReactElement {
                 ...course,
                 // Needed for antd table to fill the keys with course id
                 key: course.id,
-              };
-            });
-            return userInfo;
-          })
-    );
+              }
+            })
+            return userInfo
+          }),
+    )
 
     if (error) {
-      router.push("/organization/settings");
+      router.push('/organization/settings')
     }
 
-    const hasSelected = selectedRowKeys.length > 0;
+    const hasSelected = selectedRowKeys.length > 0
 
     const deleteProfilePicture = async () => {
       await API.organizations
         .deleteProfilePicture(organization?.id, Number(uid))
         .then(() => {
-          message.success("Profile picture was deleted");
+          message.success('Profile picture was deleted')
         })
         .catch((error) => {
-          const errorMessage = error.response.data.message;
+          const errorMessage = error.response.data.message
 
-          message.error(errorMessage);
-        });
-    };
+          message.error(errorMessage)
+        })
+    }
 
     const dropCourses = async () => {
       if (!hasSelected) {
-        message.error("No courses were selected");
-        return;
+        message.error('No courses were selected')
+        return
       }
 
       await API.organizations
         .dropUserCourses(
           organization?.id,
           Number(uid),
-          selectedRowKeys as number[]
+          selectedRowKeys as number[],
         )
         .then(() => {
-          message.success("User courses were dropped");
+          message.success('User courses were dropped')
           setTimeout(() => {
-            router.reload();
-          }, 1750);
+            router.reload()
+          }, 1750)
         })
         .catch((error) => {
-          const errorMessage = error.response.data.message;
+          const errorMessage = error.response.data.message
 
-          message.error(errorMessage);
-        });
-    };
+          message.error(errorMessage)
+        })
+    }
 
     const updateAccess = async () => {
       await API.organizations
         .updateAccess(organization?.id, Number(uid))
         .then(() => {
-          message.success("User access was updated");
+          message.success('User access was updated')
           setTimeout(() => {
-            router.reload();
-          }, 1750);
+            router.reload()
+          }, 1750)
         })
         .catch((error) => {
-          const errorMessage = error.response.data.message;
+          const errorMessage = error.response.data.message
 
-          message.error(errorMessage);
-        });
-    };
+          message.error(errorMessage)
+        })
+    }
 
     const updateGeneral = async () => {
-      const formValues = await formGeneral.validateFields();
+      const formValues = await formGeneral.validateFields()
 
-      const firstNameField = formValues.firstName;
-      const lastNameField = formValues.lastName;
-      const emailField = formValues.email;
-      const sidField = formValues.sid;
+      const firstNameField = formValues.firstName
+      const lastNameField = formValues.lastName
+      const emailField = formValues.email
+      const sidField = formValues.sid
 
       if (
         firstNameField === userData.user.firstName &&
@@ -163,30 +163,28 @@ export default function Edit(): ReactElement {
         emailField === userData.user.email &&
         sidField === userData.user.sid
       ) {
-        message.info(
-          "User was not updated as information has not been changed"
-        );
-        return;
+        message.info('User was not updated as information has not been changed')
+        return
       }
 
       if (firstNameField.trim().length < 1) {
-        message.error("First name must be at least 1 character");
-        return;
+        message.error('First name must be at least 1 character')
+        return
       }
 
       if (lastNameField.trim().length < 1) {
-        message.error("Last name must be at least 1 character");
-        return;
+        message.error('Last name must be at least 1 character')
+        return
       }
 
       if (emailField.trim().length < 4) {
-        message.error("Email must be at least 4 characters");
-        return;
+        message.error('Email must be at least 4 characters')
+        return
       }
 
       if (userData.user.sid && sidField.trim().length < 1) {
-        message.error("Student number must be at least 1 character");
-        return;
+        message.error('Student number must be at least 1 character')
+        return
       }
 
       await API.organizations
@@ -197,17 +195,17 @@ export default function Edit(): ReactElement {
           sid: Number(sidField),
         })
         .then(() => {
-          message.success("User information was updated");
+          message.success('User information was updated')
           setTimeout(() => {
-            router.reload();
-          }, 1750);
+            router.reload()
+          }, 1750)
         })
         .catch((error) => {
-          const errorMessage = error.response.data.message;
+          const errorMessage = error.response.data.message
 
-          message.error(errorMessage);
-        });
-    };
+          message.error(errorMessage)
+        })
+    }
 
     return userData ? (
       <>
@@ -292,7 +290,7 @@ export default function Edit(): ReactElement {
                   <Button
                     type="primary"
                     htmlType="submit"
-                    className="w-full h-auto p-3"
+                    className="h-auto w-full p-3"
                     disabled={organization?.ssoEnabled}
                   >
                     Update
@@ -310,7 +308,7 @@ export default function Edit(): ReactElement {
                 disabled={!hasSelected}
                 style={{ marginBottom: 10 }}
                 onClick={dropCourses}
-                className="w-full h-auto p-3"
+                className="h-auto w-full p-3"
               >
                 Drop Courses
               </Button>
@@ -333,17 +331,17 @@ export default function Edit(): ReactElement {
               title="Danger Zone"
               className="border-2 border-rose-500/[.35]"
             >
-              <div className="flex flex-col md:flex-row items-center">
-                <div className="w-full md:w-5/6 md:mr-4 mb-2 md:text-left">
+              <div className="flex flex-col items-center md:flex-row">
+                <div className="mb-2 w-full md:mr-4 md:w-5/6 md:text-left">
                   <strong>
                     {userData.user.accountDeactivated
-                      ? "Reactivate this account"
-                      : "Deactivate this account"}
+                      ? 'Reactivate this account'
+                      : 'Deactivate this account'}
                   </strong>
                   <div className="mb-0">
                     {userData.user.accountDeactivated
-                      ? "Once you reactivate an account, the user will be able to access organization resources."
-                      : "Once you deactivate an account, the user will not be able to access organization resources."}
+                      ? 'Once you reactivate an account, the user will be able to access organization resources.'
+                      : 'Once you deactivate an account, the user will not be able to access organization resources.'}
                   </div>
                 </div>
                 <Button
@@ -352,13 +350,13 @@ export default function Edit(): ReactElement {
                   onClick={updateAccess}
                 >
                   {userData.user.accountDeactivated
-                    ? "Reactivate this account"
-                    : "Deactivate this account"}
+                    ? 'Reactivate this account'
+                    : 'Deactivate this account'}
                 </Button>
               </div>
 
-              <div className="flex flex-col md:flex-row items-center mt-2">
-                <div className="w-full md:w-5/6 md:mr-4 mb-2 md:text-left">
+              <div className="mt-2 flex flex-col items-center md:flex-row">
+                <div className="mb-2 w-full md:mr-4 md:w-5/6 md:text-left">
                   <strong>Delete profile picture</strong>
                   <div className="mb-0">
                     This will delete the user&lsquo;s profile picture.
@@ -379,7 +377,7 @@ export default function Edit(): ReactElement {
       </>
     ) : (
       <Spin />
-    );
+    )
   }
 
   return profile &&
@@ -403,5 +401,5 @@ export default function Edit(): ReactElement {
     </>
   ) : (
     <Spin />
-  );
+  )
 }

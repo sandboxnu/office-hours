@@ -1,9 +1,9 @@
-import Router from "next/router";
-import { ReactElement, useState } from "react";
-import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { message, Button, Form, Input, Alert } from "antd";
-import styled from "styled-components";
-import Head from "next/head";
+import Router from 'next/router'
+import { ReactElement, useState } from 'react'
+import { LockOutlined, UserOutlined } from '@ant-design/icons'
+import { message, Button, Form, Input, Alert } from 'antd'
+import styled from 'styled-components'
+import Head from 'next/head'
 
 const Container = styled.div`
   margin-left: auto;
@@ -11,69 +11,69 @@ const Container = styled.div`
   text-align: center;
   width: 350px;
   padding-top: 100px;
-`;
+`
 
 export default function Login(): ReactElement {
-  const [pass, setPass] = useState("");
-  const [uname, setUname] = useState("");
-  const [accountActiveResponse, setAccountActiveResponse] = useState(true);
+  const [pass, setPass] = useState('')
+  const [uname, setUname] = useState('')
+  const [accountActiveResponse, setAccountActiveResponse] = useState(true)
 
   function login() {
     const loginRequest = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email: uname,
         password: pass,
       }),
-    };
+    }
     fetch(`/api/v1/ubc_login`, loginRequest)
       .then(async (response) => {
-        const data = await response.json();
+        const data = await response.json()
         if (!response.ok) {
           // get error message from body or default to response statusText
-          const error = (data && data.message) || response.statusText;
+          const error = (data && data.message) || response.statusText
 
           switch (response.status) {
             case 401:
-              message.error("Invalid password.");
-              break;
+              message.error('Invalid password.')
+              break
             case 403:
-              setAccountActiveResponse(false);
-              break;
+              setAccountActiveResponse(false)
+              break
             case 404:
-              message.error("User Not Found");
-              break;
+              message.error('User Not Found')
+              break
             default:
-              message.error(error);
-              break;
+              message.error(error)
+              break
           }
-          return Promise.reject(error);
+          return Promise.reject(error)
         } else {
-          const lastVisited = localStorage.getItem("lastVisited");
+          const lastVisited = localStorage.getItem('lastVisited')
 
-          let redirectURL = `/api/v1/login/entry?token=${data.token}`;
+          let redirectURL = `/api/v1/login/entry?token=${data.token}`
 
           if (lastVisited) {
-            redirectURL += `&redirect=${encodeURIComponent(lastVisited)}`;
-            localStorage.removeItem("lastVisited");
+            redirectURL += `&redirect=${encodeURIComponent(lastVisited)}`
+            localStorage.removeItem('lastVisited')
           }
 
-          Router.push(redirectURL);
+          Router.push(redirectURL)
         }
       })
       .catch((error) => {
-        console.error("There was an error!", error);
-      });
+        console.error('There was an error!', error)
+      })
   }
 
   const onPassChange = (e) => {
-    setPass(e.target.value);
-  };
+    setPass(e.target.value)
+  }
 
   const onUserNameChange = (e) => {
-    setUname(e.target.value);
-  };
+    setUname(e.target.value)
+  }
 
   return (
     <>
@@ -93,12 +93,12 @@ export default function Login(): ReactElement {
               message="System Notice"
               description="Your account has been deactivated. Please contact your organization admin for more information."
               type="error"
-              style={{ marginBottom: 20, textAlign: "left" }}
+              style={{ marginBottom: 20, textAlign: 'left' }}
             />
           )}
           <Form.Item
             name="username"
-            rules={[{ required: true, message: "Please input your Username!" }]}
+            rules={[{ required: true, message: 'Please input your Username!' }]}
             style={{ marginTop: 20 }}
           >
             <Input
@@ -109,7 +109,7 @@ export default function Login(): ReactElement {
           </Form.Item>
           <Form.Item
             name="password"
-            rules={[{ required: true, message: "Please input your Password!" }]}
+            rules={[{ required: true, message: 'Please input your Password!' }]}
           >
             <Input
               prefix={<LockOutlined className="site-form-item-icon" />}
@@ -121,16 +121,16 @@ export default function Login(): ReactElement {
 
           <Form.Item>
             <a
-              style={{ float: "right", marginTop: "-10px" }}
+              style={{ float: 'right', marginTop: '-10px' }}
               href="/forgetpassword/forget"
             >
               Forgot password
             </a>
           </Form.Item>
 
-          <Form.Item style={{ marginTop: "-15px" }}>
+          <Form.Item style={{ marginTop: '-15px' }}>
             <Button
-              style={{ width: "100%", marginTop: "-15px" }}
+              style={{ width: '100%', marginTop: '-15px' }}
               type="primary"
               htmlType="submit"
               className="login-form-button"
@@ -142,5 +142,5 @@ export default function Login(): ReactElement {
         </Form>
       </Container>
     </>
-  );
+  )
 }

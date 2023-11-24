@@ -7,21 +7,16 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ChatbotQuestionModel } from './question.entity';
+import { CourseModel } from 'course/course.entity';
 
-@Entity('question_document_model')
-export class QuestionDocumentModel extends BaseEntity {
+@Entity('chatbot_document_model')
+export class ChatbotDocumentModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   public id: number;
 
-  @ManyToOne(
-    type => ChatbotQuestionModel,
-    question => question.sourceDocuments,
-  )
-  @JoinColumn({ name: 'question' })
-  question: ChatbotQuestionModel;
-
-  @Column()
-  questionId: number;
+  @ManyToOne((type) => CourseModel, (course) => course.chatbotDocuments)
+  @JoinColumn({ name: 'course' })
+  course: CourseModel;
 
   @Column()
   name: string;
@@ -30,5 +25,5 @@ export class QuestionDocumentModel extends BaseEntity {
   type: string;
 
   @Column('text', { array: true })
-  parts: string[];
+  subDocumentIds: string[];
 }

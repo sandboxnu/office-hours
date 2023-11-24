@@ -51,7 +51,7 @@
     "http-proxy-cli": "^2.1.0",
     "http-proxy-middleware": "^1.0.3",
     "husky": "^7.0.4",
-    "prettier": "^2.1.2",
+    "prettier": "^3.0.3",
     "pretty-quick": "^3.1.0",
     "typescript": "^5.2.2"
   },
@@ -69,6 +69,7 @@
   "dependencies": {
     "lint-staged": "^11.2.6",
     "pm2": "^4.4.0",
+    "prettier-plugin-tailwindcss": "^0.5.6",
     "rimraf": "^3.0.2"
   },
   "percy": {

@@ -92,9 +92,8 @@ describe('ChatbotController Integration', () => {
         },
       ],
     };
-    const createdQuestion = await ChatbotQuestionModel.create(
-      questionData,
-    ).save();
+    const createdQuestion =
+      await ChatbotQuestionModel.create(questionData).save();
     const editRequestData = {
       data: { userScore: 0, suggested: true },
       questionId: createdQuestion.id,

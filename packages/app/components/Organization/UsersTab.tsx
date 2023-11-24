@@ -1,10 +1,10 @@
-import { SearchOutlined } from "@ant-design/icons";
-import { API } from "@koh/api-client";
+import { SearchOutlined } from '@ant-design/icons'
+import { API } from '@koh/api-client'
 import {
   GetOrganizationResponse,
   OrganizationRole,
   UserRole,
-} from "@koh/common";
+} from '@koh/common'
 import {
   Card,
   Spin,
@@ -17,57 +17,57 @@ import {
   Modal,
   message,
   Alert,
-} from "antd";
-import { ReactElement, useEffect, useState } from "react";
-import styled from "styled-components";
-import useSWR, { mutate } from "swr";
-import { useProfile } from "../../hooks/useProfile";
+} from 'antd'
+import { ReactElement, useEffect, useState } from 'react'
+import styled from 'styled-components'
+import useSWR, { mutate } from 'swr'
+import { useProfile } from '../../hooks/useProfile'
 
 const TableBackground = styled.div`
   background-color: white;
-`;
+`
 
 interface UserData {
-  userId: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  photoUrl: string;
-  userRole: string;
-  organizationRole: string;
+  userId: number
+  firstName: string
+  lastName: string
+  email: string
+  photoUrl: string
+  userRole: string
+  organizationRole: string
 }
 
 export default function UsersTab({
   organization,
 }: {
-  organization: GetOrganizationResponse;
+  organization: GetOrganizationResponse
 }): ReactElement {
-  const profile = useProfile();
+  const profile = useProfile()
 
-  const [isRoleChangeModalVisible, setRoleChangeModalVisible] = useState(false);
+  const [isRoleChangeModalVisible, setRoleChangeModalVisible] = useState(false)
   const [selectedUserData, setSelectedUserData] = useState<UserData | null>(
-    null
-  );
+    null,
+  )
   const [updatedRole, setUpdatedRole] = useState<OrganizationRole>(
-    OrganizationRole.MEMBER
-  );
-  const [shouldRenderTable, setShouldRenderTable] = useState(true);
+    OrganizationRole.MEMBER,
+  )
+  const [shouldRenderTable, setShouldRenderTable] = useState(true)
 
   // Function to open and close the modal
   const toggleRoleChangeModal = (userData: UserData) => {
-    setSelectedUserData(userData);
-    setRoleChangeModalVisible(!isRoleChangeModalVisible);
-  };
+    setSelectedUserData(userData)
+    setRoleChangeModalVisible(!isRoleChangeModalVisible)
+  }
 
   const prepareAndShowConfirmationModal =
     (user: UserData) => async (newRole: string) => {
-      setUpdatedRole(newRole as OrganizationRole);
+      setUpdatedRole(newRole as OrganizationRole)
 
-      toggleRoleChangeModal(user);
-    };
+      toggleRoleChangeModal(user)
+    }
 
   const updateRole = async () => {
-    const { userId } = selectedUserData;
+    const { userId } = selectedUserData
 
     await API.organizations
       .updateOrganizationUserRole(organization?.id, {
@@ -75,57 +75,57 @@ export default function UsersTab({
         organizationRole: updatedRole,
       })
       .then(() => {
-        setShouldRenderTable(!shouldRenderTable);
+        setShouldRenderTable(!shouldRenderTable)
         message.success({
-          content: "Successfully updated user role.",
+          content: 'Successfully updated user role.',
           onClose: () => {
-            toggleRoleChangeModal(selectedUserData);
+            toggleRoleChangeModal(selectedUserData)
           },
-        });
+        })
       })
       .catch((error) => {
-        const errorMessage = error.response.data.message;
-        message.error(errorMessage);
-      });
-  };
+        const errorMessage = error.response.data.message
+        message.error(errorMessage)
+      })
+  }
 
   function RenderTable(): ReactElement {
-    const [page, setPage] = useState(1);
-    const [input, setInput] = useState("");
-    const [search, setSearch] = useState("");
+    const [page, setPage] = useState(1)
+    const [input, setInput] = useState('')
+    const [search, setSearch] = useState('')
 
     const handleInput = (event) => {
-      event.preventDefault();
-      setInput(event.target.value);
-    };
+      event.preventDefault()
+      setInput(event.target.value)
+    }
 
     const handleSearch = (event) => {
-      event.preventDefault();
-      setSearch(event.target.value);
-      setPage(1);
-    };
+      event.preventDefault()
+      setSearch(event.target.value)
+      setPage(1)
+    }
 
     useEffect(() => {
       return () => {
         // Clear the cache for the "UsersTab" component
-        mutate(`users/${page}/${search}`);
-      };
-    }, [page, search]);
+        mutate(`users/${page}/${search}`)
+      }
+    }, [page, search])
 
     const { data: users } = useSWR(
       `users/${page}/${search}`,
       async () =>
-        await API.organizations.getUsers(organization.id, page, search)
-    );
+        await API.organizations.getUsers(organization.id, page, search),
+    )
 
     if (!users) {
       return (
         <Spin
           tip="Loading..."
-          style={{ margin: "0 auto", width: "100%", textAlign: "center" }}
+          style={{ margin: '0 auto', width: '100%', textAlign: 'center' }}
           size="large"
         />
-      );
+      )
     } else {
       return (
         <>
@@ -144,7 +144,7 @@ export default function UsersTab({
               renderItem={(item: UserData) => (
                 <>
                   <List.Item
-                    style={{ borderBottom: "1px solid #f0f0f0", padding: 10 }}
+                    style={{ borderBottom: '1px solid #f0f0f0', padding: 10 }}
                     key={item.userId}
                     actions={[
                       <Select
@@ -192,11 +192,11 @@ export default function UsersTab({
                       avatar={
                         item.photoUrl && (
                           <Avatar
-                            src={"/api/v1/profile/get_picture/" + item.photoUrl}
+                            src={'/api/v1/profile/get_picture/' + item.photoUrl}
                           />
                         )
                       }
-                      title={item.firstName + " " + item.lastName}
+                      title={item.firstName + ' ' + item.lastName}
                       description={item.email}
                     />
                   </List.Item>
@@ -206,7 +206,7 @@ export default function UsersTab({
           </TableBackground>
           {users.total > 50 && (
             <Pagination
-              style={{ float: "right" }}
+              style={{ float: 'right' }}
               current={page}
               pageSize={50}
               total={data.total}
@@ -215,7 +215,7 @@ export default function UsersTab({
             />
           )}
         </>
-      );
+      )
     }
   }
 
@@ -242,10 +242,10 @@ export default function UsersTab({
         >
           {selectedUserData && (
             <>
-              You are about to change the role of{" "}
+              You are about to change the role of{' '}
               <strong>
                 {selectedUserData.firstName} {selectedUserData.lastName}
-              </strong>{" "}
+              </strong>{' '}
               to <strong>{updatedRole}</strong>. <br />
               <br />
               Are you sure?
@@ -254,5 +254,5 @@ export default function UsersTab({
         </Modal>
       )}
     </>
-  );
+  )
 }

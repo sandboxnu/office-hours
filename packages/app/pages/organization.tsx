@@ -1,13 +1,13 @@
-import { Card, Col, Image, Row, Spin } from "antd";
-import { ReactElement } from "react";
-import { useProfile } from "../hooks/useProfile";
-import Head from "next/head";
-import NavBar from "../components/Nav/NavBar";
-import { StandardPageContainer } from "../components/common/PageContainer";
-import styled from "styled-components";
-import useSWR from "swr";
-import { API } from "@koh/api-client";
-import Meta from "antd/lib/card/Meta";
+import { Card, Col, Image, Row, Spin } from 'antd'
+import { ReactElement } from 'react'
+import { useProfile } from '../hooks/useProfile'
+import Head from 'next/head'
+import NavBar from '../components/Nav/NavBar'
+import { StandardPageContainer } from '../components/common/PageContainer'
+import styled from 'styled-components'
+import useSWR from 'swr'
+import { API } from '@koh/api-client'
+import Meta from 'antd/lib/card/Meta'
 
 const OrganizationCard = styled.div`
   margin-top: -100px;
@@ -30,7 +30,7 @@ const OrganizationCard = styled.div`
     max-width: 1500px;
     padding: 24px 100px;
   }
-`;
+`
 
 const CoursesSection = styled.div`
   display: flex;
@@ -39,15 +39,15 @@ const CoursesSection = styled.div`
   margin-top: 10px;
   margin-bottom: 30px;
   gap: 15px;
-`;
+`
 
 export default function Organization(): ReactElement {
-  const profile = useProfile();
+  const profile = useProfile()
 
   function RenderCourses(): ReactElement {
     const { data } = useSWR(`/api/v1/courses`, async () =>
-      API.course.getOrganizationCourses(profile?.organization.id)
-    );
+      API.course.getOrganizationCourses(profile?.organization.id),
+    )
 
     return data ? (
       <>
@@ -56,22 +56,22 @@ export default function Organization(): ReactElement {
             <Card
               key={course.id}
               style={{
-                boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
+                boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)',
               }}
               cover={
                 <img
                   alt="example"
-                  style={{ objectFit: "cover", height: "15vh" }}
+                  style={{ objectFit: 'cover', height: '15vh' }}
                   src="https://open-2021.sites.olt.ubc.ca/files/2020/10/OSIP-2020-Slider.jpg"
                 />
               }
             >
               <div
                 style={{
-                  display: "flex",
-                  verticalAlign: "middle",
-                  alignItems: "center",
-                  justifyContent: "space-between",
+                  display: 'flex',
+                  verticalAlign: 'middle',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
                 }}
               >
                 <Meta title={course.name} />
@@ -82,7 +82,7 @@ export default function Organization(): ReactElement {
       </>
     ) : (
       <></>
-    );
+    )
   }
 
   return profile ? (
@@ -90,17 +90,17 @@ export default function Organization(): ReactElement {
       <Head>
         <title>{profile?.organization.organizationName}</title>
       </Head>
-      <StandardPageContainer style={{ flex: "none" }}>
+      <StandardPageContainer style={{ flex: 'none' }}>
         <NavBar />
       </StandardPageContainer>
       <Image
         preview={false}
         src={`/api/v1/organization/${profile?.organization.id}/get_banner/${profile?.organization.organizationBannerUrl}`}
         style={{
-          width: "100%",
-          height: "40vh",
-          objectFit: "cover",
-          objectPosition: "center",
+          width: '100%',
+          height: '40vh',
+          objectFit: 'cover',
+          objectPosition: 'center',
         }}
       />
 
@@ -108,17 +108,17 @@ export default function Organization(): ReactElement {
         <OrganizationCard>
           <Row
             gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
-            style={{ alignItems: "center" }}
+            style={{ alignItems: 'center' }}
           >
             <Col xs={{ span: 24 }} sm={{ span: 3 }}>
               <Image
                 preview={false}
                 src={`/api/v1/organization/${profile?.organization.id}/get_logo/${profile?.organization.organizationLogoUrl}`}
                 style={{
-                  width: "100%",
-                  height: "10vh",
-                  objectFit: "contain",
-                  objectPosition: "center",
+                  width: '100%',
+                  height: '10vh',
+                  objectFit: 'contain',
+                  objectPosition: 'center',
                 }}
               />
             </Col>
@@ -137,5 +137,5 @@ export default function Organization(): ReactElement {
     </>
   ) : (
     <Spin />
-  );
+  )
 }
