@@ -84,7 +84,7 @@ export class ChatbotController {
   async addDocument(
     @Body() body: any, //ChatbotQuestionParams
   ): Promise<ChatbotDocumentModel> {
-    return await this.ChatbotService.addDocument(body.data, body.documentId);
+    return await this.ChatbotService.addDocument(body.data, body.courseId);
   }
 
   @Delete('document')

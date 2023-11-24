@@ -13,7 +13,7 @@ const proxy = createProxyMiddleware({
         "/admin-static": "http://localhost:3002",
         "/admin": "http://localhost:3002/api/v1",
         "/socket.io": "http://localhost:3002",
-        "/chat": "http://localhost:3003/chat",
+        "/chat": "http://localhost:3003",
     },
     ws: true,
     logLevel: "debug",

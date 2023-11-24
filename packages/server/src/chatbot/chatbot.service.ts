@@ -206,11 +206,12 @@ export class ChatbotService {
   }> {
     const skip = pageSize * (currentPage - 1);
     const limit = pageSize;
-
+    console.log(courseId);
     const documents = await createQueryBuilder('chatbot_document_model', 'd')
       .leftJoinAndSelect('d.course', 'c')
-      .where('d.name like :searchText', {
+      .where('d.name like :searchText AND d.course=:courseId', {
         searchText: `%${searchText}%`,
+        courseId: courseId,
       })
       .skip(skip)
       .take(limit)
@@ -227,8 +228,9 @@ export class ChatbotService {
     );
 
     const total = await createQueryBuilder('chatbot_document_model', 'd')
-      .where('d.name like :searchText', {
+      .where('d.name like :searchText AND d.course=:courseId', {
         searchText: `%${searchText}%`,
+        courseId: courseId,
       })
       .getCount();
 
