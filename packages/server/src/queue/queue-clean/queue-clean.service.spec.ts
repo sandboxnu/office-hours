@@ -166,8 +166,8 @@ describe('QueueService', () => {
         relations: ['staffList'],
       });
       const checkoutEvents = await EventModel.createQueryBuilder().getMany();
-      const checkoutEventTypes = checkoutEvents.map(em => em.eventType);
-      const checkoutQueueIds = checkoutEvents.map(event => event.queueId);
+      const checkoutEventTypes = checkoutEvents.map((em) => em.eventType);
+      const checkoutQueueIds = checkoutEvents.map((event) => event.queueId);
 
       expect(updatedQueue1.staffList.length).toEqual(0);
       expect(updatedQueue2.staffList.length).toEqual(0);

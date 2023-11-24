@@ -23,6 +23,7 @@ import {
   GithubOutlined,
   InboxOutlined,
   LinkOutlined,
+  QuestionCircleOutlined,
   UploadOutlined,
 } from '@ant-design/icons'
 import { RcFile } from 'antd/lib/upload'
@@ -206,26 +207,31 @@ export default function ChatbotSettings(): ReactElement {
 
   const addDocument = async () => {
     setLoading(true)
-    const formData = await form.validateFields()
+    try {
+      const formData = await form.validateFields()
 
-    if (documentType === 'URL') {
-      await addUrl(formData.url)
+      if (documentType === 'URL') {
+        await addUrl(formData.url)
+      }
+
+      if (documentType === 'FILE') {
+        const files = formData.files.fileList.map((file) => file.originFileObj)
+        await uploadFiles(files, formData.source)
+      }
+
+      setAddDocumentModalOpen(false)
+      setLoading(false)
+      form.resetFields()
+      getDocuments()
+    } finally {
+      setLoading(false)
     }
-
-    if (documentType === 'FILE') {
-      const files = formData.files.fileList.map((file) => file.originFileObj)
-      await uploadFiles(files, formData.source)
-    }
-
-    setAddDocumentModalOpen(false)
-    setLoading(false)
-    form.resetFields()
-    getDocuments()
   }
 
   const props: UploadProps = {
     name: 'file',
     multiple: true,
+    accept: '.pdf',
   }
 
   return (
@@ -312,6 +318,18 @@ export default function ChatbotSettings(): ReactElement {
                     </p>
                   </Dragger>
                 </Form.Item>
+                <Tooltip
+                  title={
+                    'This preview URL will be used to redirect your students to view this file.'
+                  }
+                >
+                  <p>
+                    Preview URL{' '}
+                    <span>
+                      <QuestionCircleOutlined style={{ marginLeft: '5px' }} />
+                    </span>{' '}
+                  </p>
+                </Tooltip>
                 <Form.Item
                   name="source"
                   rules={[

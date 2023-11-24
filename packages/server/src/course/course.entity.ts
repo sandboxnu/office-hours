@@ -55,7 +55,7 @@ export class CourseModel extends BaseEntity {
 
   @OneToMany((type) => UserCourseModel, (ucm) => ucm.course)
   @Exclude()
-  userCourses: UserCourseModel;
+  userCourses: UserCourseModel[];
 
   @ManyToOne((type) => SemesterModel, (semester) => semester.courses)
   @JoinColumn({ name: 'semesterId' })
@@ -103,13 +103,12 @@ export class CourseModel extends BaseEntity {
   @DeleteDateColumn()
   deletedAt?: Date;
 
-  @ManyToOne(
+  @OneToOne(
     (type) => OrganizationCourseModel,
     (organizationCourse) => organizationCourse.course,
   )
-  @Exclude()
   organizationCourse: OrganizationCourseModel;
 
-  @Column({ nullable: true })
-  organizationCourseId: number;
+  @Column('text', { nullable: true })
+  courseInviteCode: string;
 }

@@ -30,7 +30,6 @@ import * as bcrypt from 'bcrypt';
 import { UserModel } from 'profile/user.entity';
 // import { questionEMail } from 'readline-sync';
 import { Connection } from 'typeorm';
-import { NonProductionGuard } from '../guards/non-production.guard';
 import { LoginCourseService } from './login-course.service';
 
 @Controller()
@@ -41,32 +40,26 @@ export class LoginController {
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
+
   //front post to this
-  @Post('/ubc_login/:cid')
+  @Post('/ubc_login')
   async receiveDataFromLogin(
     @Res() res: Response,
     @Body() body: UBCOloginParam,
-    @Param('cid') cid: number,
   ): Promise<any> {
     const user = await UserModel.findOne({
       where: { email: body.email },
     });
+
     if (!user) {
       return res.status(404).send({ message: 'User Not found' });
     }
-    const userCourse = await UserCourseModel.findOne({
-      where: {
-        userId: user.id,
-        courseId: cid,
-      },
-    });
-    if (!userCourse) {
-      return res.status(400).json({ message: 'NotInCourse' });
-    }
+
     const token = await this.jwtService.signAsync(
       { userId: user.id },
       { expiresIn: 60 },
     );
+
     if (token === null || token === undefined) {
       console.error('Temporary JWT is invalid');
       throw new HttpException(
@@ -74,65 +67,34 @@ export class LoginController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+
     bcrypt.compare(body.password, user.password, (err, data) => {
       //if error than throw error
       if (err) throw err;
 
       //if both match than you can do anything
       if (data) {
+        if (user.accountDeactivated) {
+          return res.status(HttpStatus.FORBIDDEN).send({
+            message: 'Account deactivated',
+          });
+        }
         return res.status(200).send({ token, ...body });
       } else {
-        return res.status(401).json({ message: 'Invalid credential' });
+        return res.status(401).json({ message: 'Invalid credentials' });
       }
     });
   }
-
-  // @Post('/khoury_login')
-  // async receiveDataFromKhoury(
-  //   @Req() req: Request,
-  //   @Body() body: KhouryDataParams,
-  // ): Promise<KhouryRedirectResponse> {
-  //   let user;
-  //   try {
-  //     user = await this.loginCourseService.addUserFromKhoury(body);
-  //   } catch (e) {
-  //     Sentry.captureException(e);
-  //     console.error('login threw an exception, the body was ', body);
-  //     console.error(e);
-  //     throw new HttpException(
-  //       ERROR_MESSAGES.loginController.addUserFromKhoury,
-  //       HttpStatus.INTERNAL_SERVER_ERROR,
-  //     );
-  //   }
-  //   // Create temporary login token to send user to.
-  //   const token = await this.jwtService.signAsync(
-  //     { userId: user.id },
-  //     { expiresIn: 60 },
-  //   );
-
-  //   if (token === null || token === undefined) {
-  //     console.error('Temporary JWT is invalid');
-  //     throw new HttpException(
-  //       ERROR_MESSAGES.loginController.invalidTempJWTToken,
-  //       HttpStatus.INTERNAL_SERVER_ERROR,
-  //     );
-  //   }
-
-  //   return {
-  //     redirect:
-  //       this.configService.get('DOMAIN') + `/api/v1/login/entry?token=${token}`,
-  //   };
-  // }
 
   // NOTE: Although the two routes below are on the backend,
   // they are meant to be visited by the browser so a cookie can be set
 
   // This is the real admin entry point, Kevin changed to also just take a user id, change to that sign in only
-  @Get('/login/entry/:cid')
+  @Get('/login/entry')
   async enterUBCOH(
     @Res() res: Response,
-    @Param('cid') cid: number,
     @Query('token') token: string,
+    @Query('redirect') redirect?: string,
   ): Promise<void> {
     const isVerified = await this.jwtService.verifyAsync(token);
 
@@ -141,22 +103,11 @@ export class LoginController {
     }
 
     const payload = this.jwtService.decode(token) as { userId: number };
-    this.enter(res, payload.userId, cid);
-  }
-
-  // This is for login on development only
-  @Get('/login/dev/:cid')
-  @UseGuards(NonProductionGuard)
-  async enterFromDev(
-    @Res() res: Response,
-    @Param('cid') cid: number,
-    @Query('userId') userId: number,
-  ): Promise<void> {
-    this.enter(res, userId, cid);
+    await this.enter(res, payload.userId, redirect);
   }
 
   // Set cookie and redirect to proper page
-  private async enter(res: Response, userId: number, cid: number) {
+  private async enter(res: Response, userId: number, redirect?: string) {
     // Expires in 30 days
     const authToken = await this.jwtService.signAsync({
       userId,
@@ -164,7 +115,6 @@ export class LoginController {
     });
 
     if (authToken === null || authToken === undefined) {
-      console.error('Authroziation JWT is invalid');
       throw new HttpException(
         ERROR_MESSAGES.loginController.invalidTempJWTToken,
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -174,9 +124,10 @@ export class LoginController {
     const isSecure = this.configService
       .get<string>('DOMAIN')
       .startsWith('https://');
+
     res
       .cookie('auth_token', authToken, { httpOnly: true, secure: isSecure })
-      .redirect(302, `/course/${cid}/today`);
+      .redirect(302, redirect ? redirect : '/courses');
   }
 
   @Get('/logout')
@@ -230,6 +181,7 @@ export class LoginController {
       expires: true,
     }).save();
   }
+
   // get all courses related to user to log in.
   @Post('getAllcourses')
   async getCourses(

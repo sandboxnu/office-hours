@@ -7,17 +7,17 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 const app = express();
 
 const proxy = createProxyMiddleware({
-  target: "http://localhost:3001",
-  router: {
-    "/api": "http://localhost:3002",
-    "/admin-static": "http://localhost:3002",
-    "/admin": "http://localhost:3002/api/v1",
-    "/socket.io": "http://localhost:3002",
-    "/chat": "http://localhost:3003"
-  },
-  pathRewrite: { '^/chat': '' },  // remove the /flowise path when forwarding
-  ws: true,
-  logLevel: "debug",
+    target: "http://localhost:3001",
+    router: {
+        "/api": "http://localhost:3002",
+        "/admin-static": "http://localhost:3002",
+        "/admin": "http://localhost:3002/api/v1",
+        "/socket.io": "http://localhost:3002",
+        "/chat": "http://localhost:3003/chat",
+    },
+    ws: true,
+    logLevel: "debug",
+    changeOrigin: true,
 });
 
 app.use("/", proxy);

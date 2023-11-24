@@ -5,25 +5,37 @@ import {
   ProfSectionGroupsFactory,
   CourseSectionFactory,
   LastRegistrationFactory,
+  OrganizationFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
 import { ProfileModule } from '../src/profile/profile.module';
 import { PhoneNotifModel } from 'notification/phone-notif.entity';
 import { DesktopNotifModel } from 'notification/desktop-notif.entity';
+import { OrganizationUserModel } from 'organization/organization-user.entity';
 
 describe('Profile Integration', () => {
   const supertest = setupIntegrationTest(ProfileModule);
 
   describe('GET /profile', () => {
     it('returns the logged-in user profile', async () => {
+      const organization = await OrganizationFactory.create();
       const user = await UserFactory.create();
       const fundies = await CourseFactory.create({ name: 'CS 2500' });
       await StudentCourseFactory.create({ course: fundies, user });
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+      }).save();
 
       const res = await supertest({ userId: user.id })
         .get('/profile')
         .expect(200);
       expect(res.body).toMatchSnapshot();
+    });
+
+    it('returns account deactivated error', async () => {
+      const user = await UserFactory.create({ accountDeactivated: true });
+      await supertest({ userId: user.id }).get('/profile').expect(403);
     });
 
     it('returns only userCourses where course is enabled', async () => {
@@ -76,9 +88,7 @@ describe('Profile Integration', () => {
 
     it('returns 401 when not logged in', async () => {
       await UserFactory.create();
-      await supertest()
-        .get('/profile')
-        .expect(401);
+      await supertest().get('/profile').expect(401);
     });
 
     it('returns pending courses when they exist', async () => {
@@ -203,6 +213,30 @@ describe('Profile Integration', () => {
         .expect(200);
       profile = await supertest({ userId: user.id }).get('/profile');
       expect(profile.body?.includeDefaultMessage).toEqual(false);
+    });
+
+    it('lets user change email', async () => {
+      const user = await UserFactory.create();
+      let profile = await supertest({ userId: user.id }).get('/profile');
+      const newEmail = 'new_test_email@ubc.ca';
+
+      expect(profile.body?.email).toEqual(user.email);
+      await supertest({ userId: user.id })
+        .patch('/profile')
+        .send({ email: newEmail })
+        .expect(200);
+
+      profile = await supertest({ userId: user.id }).get('/profile');
+      expect(profile.body?.email).toEqual(newEmail);
+    });
+
+    it('fails to change user email when email is used by another user', async () => {
+      const user = await UserFactory.create();
+
+      await supertest({ userId: user.id })
+        .patch('/profile')
+        .send({ email: user.email })
+        .expect(400);
     });
   });
 });

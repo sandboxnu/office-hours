@@ -1,18 +1,15 @@
-import { DownOutlined } from "@ant-design/icons";
-import { Role } from "@koh/common";
-import { Modal, Button, Drawer, Dropdown, Menu, Image, message } from "antd";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import React, { ReactElement, useState } from "react";
-import styled from "styled-components";
-import { useCourse } from "../../hooks/useCourse";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { useProfile } from "../../hooks/useProfile";
-import { useRoleInCourse } from "../../hooks/useRoleInCourse";
-import AlertsContainer from "./AlertsContainer";
-import NavBarTabs, { NavBarTabsItem } from "./NavBarTabs";
-import ProfileDrawer from "./ProfileDrawer";
-import { API } from "@koh/api-client";
+import { OrganizationRole, Role, UserRole } from '@koh/common'
+import { Modal, Button, Drawer, Image, message } from 'antd'
+import { useRouter } from 'next/router'
+import React, { ReactElement, useState } from 'react'
+import styled from 'styled-components'
+import { useCourse } from '../../hooks/useCourse'
+import { useProfile } from '../../hooks/useProfile'
+import { useRoleInCourse } from '../../hooks/useRoleInCourse'
+import AlertsContainer from './AlertsContainer'
+import NavBarTabs, { NavBarTabsItem } from './NavBarTabs'
+import ProfileDrawer from './ProfileDrawer'
+import { API } from '@koh/api-client'
 
 const Nav = styled.nav`
   padding: 0px 0px;
@@ -20,7 +17,7 @@ const Nav = styled.nav`
   align-items: center;
   height: 67px;
   z-index: 1;
-`;
+`
 
 // A hack to get the white stripe edge to edge, even when Nav is narrower.
 const NavBG = styled.nav`
@@ -31,21 +28,24 @@ const NavBG = styled.nav`
   height: 67px;
   background: #fff;
   border-bottom: solid 1px #e8e8e8;
-`;
+`
 
 const LogoContainer = styled.div`
   z-index: 1;
   display: flex;
   align-items: center;
   margin-right: 20px;
-`;
+`
 
 const Logo = styled.div`
   font-size: 20px;
   font-weight: 500;
   color: #262626;
   text-transform: capitalize;
-`;
+  display: flex;
+  align-items: center;
+  vertical-align: middle;
+`
 
 const MenuCon = styled.div`
   flex-grow: 1;
@@ -53,20 +53,20 @@ const MenuCon = styled.div`
   align-items: center;
   justify-content: space-between;
   padding-left: 0px;
-`;
+`
 
 const LeftMenu = styled.div`
   @media (max-width: 650px) {
     display: none;
   }
   flex-grow: 1;
-`;
+`
 
 const RightMenu = styled.div`
   @media (max-width: 650px) {
     display: none;
   }
-`;
+`
 
 const BarsMenu = styled(Button)`
   height: 32px;
@@ -78,7 +78,7 @@ const BarsMenu = styled(Button)`
   @media (max-width: 650px) {
     display: inline-block;
   }
-`;
+`
 
 const BarsButton = styled.span`
   display: block;
@@ -102,113 +102,129 @@ const BarsButton = styled.span`
     top: auto;
     bottom: -6px;
   }
-`;
-
-const CoursesMenuItem = styled(Menu.Item)`
-  z-index: 1;
-  background: #ffffff;
-`;
+`
 
 interface NavBarProps {
-  courseId: number;
+  courseId: number
 }
 
 export default function NavBar({ courseId }: NavBarProps): ReactElement {
-  const profile = useProfile();
-  if (!courseId) {
-    courseId = profile?.courses[0]?.course?.id;
-  }
+  const profile = useProfile()
 
-  const [_defaultCourse, setDefaultCourse] = useLocalStorage(
-    "defaultCourse",
-    null
-  );
-  const [visible, setVisible] = useState<boolean>(false);
-  const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(true);
-  const { pathname } = useRouter();
-  const { course } = useCourse(courseId);
-  const role = useRoleInCourse(courseId);
+  const [visible, setVisible] = useState<boolean>(false)
+  const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(true)
+  const { pathname } = useRouter()
+  const { course } = useCourse(courseId)
+  const role = useRoleInCourse(courseId)
 
-  const openQueues = course?.queues?.filter(queue => queue.isOpen);
+  const openQueues = course?.queues?.filter((queue) => queue.isOpen)
 
   const addMember = async () => {
-    setUpdateModalVisible(false);
-    await API.organizations.addMember(profile.id, 1);
+    setUpdateModalVisible(false)
+    await API.organizations.addMember(profile.id, 1)
 
-    const courseProfile = profile.courses.find(c => c.course.id === courseId);
+    const courseProfile = profile.courses.find((c) => c.course.id === courseId)
 
-    if (courseProfile.role == "professor") {
-      await API.organizations.addCourse(courseId, 1);
+    if (courseProfile.role == 'professor') {
+      await API.organizations.addCourse(courseId, 1)
     }
-  };
+  }
 
   const showDrawer = () => {
-    setVisible(true);
-  };
-  const onClose = () => {
-    setVisible(false);
-  };
+    setVisible(true)
+  }
 
-  const courseSelector = (
-    <Menu>
-      {profile?.courses?.map(c => (
-        <CoursesMenuItem
-          key={c.course.id}
-          onClick={() => setDefaultCourse(c.course)}
-        >
-          <Link href="/course/[cid]/today" as={`/course/${c.course.id}/today`}>
-            <a>{c.course.name}</a>
-          </Link>
-        </CoursesMenuItem>
-      ))}
-    </Menu>
-  );
+  const onClose = () => {
+    setVisible(false)
+  }
 
   const tabs: NavBarTabsItem[] = [
     {
-      href: "/course/[cid]/today",
-      as: `/course/${courseId}/today`,
-      text: "Today"
+      href: '/courses',
+      as: `/courses`,
+      text: 'My Courses',
     },
     {
-      href: "/course/[cid]/schedule",
+      href: '/course/[cid]/today',
+      as: `/course/${courseId}/today`,
+      text: 'Today',
+    },
+    {
+      href: '/course/[cid]/schedule',
       as: `/course/${courseId}/schedule`,
-      text: "Schedule"
+      text: 'Schedule',
+    },
+  ]
+
+  const globalTabs: NavBarTabsItem[] = [
+    {
+      href: '/organization',
+      as: `/organization`,
+      text: 'My Organization',
+    },
+  ]
+
+  if (profile?.organization) {
+    if (profile?.organization.organizationRole === OrganizationRole.ADMIN) {
+      globalTabs.push({
+        href: '/organization/settings',
+        as: `/organization/settings`,
+        text: 'Organization Settings',
+      })
     }
-  ];
+
+    if (
+      profile?.organization.organizationRole === OrganizationRole.ADMIN ||
+      profile?.organization.organizationRole === OrganizationRole.PROFESSOR
+    ) {
+      globalTabs.push({
+        href: '/course/add',
+        as: '/course/add',
+        text: 'Add Course',
+      })
+    }
+
+    if (profile?.userRole === UserRole.ADMIN) {
+      globalTabs.push({
+        href: '/admin',
+        as: `/admin`,
+        text: 'Admin Panel',
+      })
+    }
+  }
 
   if (role === Role.PROFESSOR || role === Role.TA) {
     tabs.push({
-      href: "/course/[cid]/course_admin_panel",
+      href: '/course/[cid]/course_admin_panel',
       as: `/course/${courseId}/course_admin_panel`,
-      text: "Admin Panel"
-    });
+      text: 'Admin Panel',
+    })
   }
 
   if (openQueues?.length > 0) {
     tabs.push({
-      text: "Queue",
+      text: 'Queue',
       queues: openQueues,
-      courseId: courseId
-    });
+      courseId: courseId,
+    })
   }
 
   if (role === Role.PROFESSOR) {
     tabs.push({
-      href: "/course/[cid]/insights",
+      href: '/course/[cid]/insights',
       as: `/course/${courseId}/insights`,
-      text: "Insights"
-    });
+      text: 'Insights',
+    })
   }
 
-  const [messageApi, easterEggHolder] = message.useMessage();
+  const [messageApi, easterEggHolder] = message.useMessage()
 
   const success = () => {
     messageApi.open({
-      type: "success",
-      content: "Wow.. You found an easter egg.. Do you think there is more? 🤔"
-    });
-  };
+      type: 'success',
+      content: 'Wow.. You found an easter egg.. Do you think there is more? 🤔',
+    })
+  }
   return courseId ? (
     <>
       {easterEggHolder}
@@ -216,37 +232,18 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
       <AlertsContainer courseId={courseId} />
       <Nav>
         <LogoContainer>
-          {profile?.courses.length > 1 ? (
-            <Dropdown
-              overlay={courseSelector}
-              trigger={["click"]}
-              placement="bottomLeft"
-            >
-              <a>
-                <Logo>
-                  <span>{course?.name}</span>
-                  <DownOutlined
-                    style={{
-                      fontSize: "16px",
-                      verticalAlign: "-0.125em",
-                      marginLeft: "5px"
-                    }}
-                  />
-                </Logo>
-              </a>
-            </Dropdown>
-          ) : (
-            <Logo>
-              {course?.organizationCourse && (
+          <Logo>
+            {course?.organizationCourse && (
+              <a href={`/course/${course?.id}/today`}>
                 <Image
                   width={40}
                   preview={false}
-                  src={course.organizationCourse.logoUrl}
+                  src={`/api/v1/organization/${profile?.organization.id}/get_logo/${profile?.organization.organizationLogoUrl}`}
                 />
-              )}
-              <span>{course?.name}</span>
-            </Logo>
-          )}
+              </a>
+            )}
+            <span style={{ marginLeft: 15 }}>{course?.name}</span>
+          </Logo>
         </LogoContainer>
         <MenuCon>
           <LeftMenu>
@@ -265,49 +262,95 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
           visible={visible}
           closable={false}
           onClose={onClose}
-          bodyStyle={{ padding: "12px" }}
+          bodyStyle={{ padding: '12px' }}
         >
           <NavBarTabs currentHref={pathname} tabs={tabs} />
           <ProfileDrawer courseId={courseId} />
         </Drawer>
       </Nav>
 
-      {profile?.organizationRole === null && (
-        <Modal
-          title="[System Message] Exciting News: Introducing Organizations!"
-          open={updateModalVisible}
-          closable={false}
-          footer={[
-            <Button key="ok" type="primary" onClick={addMember}>
-              OK
-            </Button>
-          ]}
-        >
-          <p>
-            🎉 We&lsquo;re thrilled to announce a new feature that we are
-            working on: Organizations 🏢
-            <br />
-            <br />
-            As part of this work, we need to add your account to one of the
-            existing organizations. <br />
-            <br />
-            Before adding you to your organization, we just wanted to share this
-            update with you before we automatically migrate your account when
-            you click the button below.
-            <br />
-            <br />
-            Once you click the button below, this message will no longer appear.
-            <br />
-            <br />
-            <small
-              style={{ fontSize: "3px", cursor: "none" }}
-              onClick={success}
-            >
-              No easter eggs here 🥚🥚🥚
-            </small>
-          </p>
-        </Modal>
-      )}
+      {profile?.organization &&
+        Object.keys(profile?.organization).length === 0 && (
+          <Modal
+            title="[System Message] Exciting News: Introducing Organizations!"
+            open={updateModalVisible}
+            closable={false}
+            footer={[
+              <Button key="ok" type="primary" onClick={addMember}>
+                OK
+              </Button>,
+            ]}
+          >
+            <p>
+              🎉 We&lsquo;re thrilled to announce a new feature that we are
+              working on: Organizations 🏢
+              <br />
+              <br />
+              As part of this work, we need to add your account to one of the
+              existing organizations. <br />
+              <br />
+              Before adding you to your organization, we just wanted to share
+              this update with you before we automatically migrate your account
+              when you click the button below.
+              <br />
+              <br />
+              Once you click the button below, this message will no longer
+              appear.
+              <br />
+              <br />
+              <small
+                style={{ fontSize: '3px', cursor: 'none' }}
+                onClick={success}
+              >
+                No easter eggs here 🥚🥚🥚
+              </small>
+            </p>
+          </Modal>
+        )}
     </>
-  ) : null;
+  ) : (
+    <>
+      <NavBG />
+      <Nav>
+        <LogoContainer>
+          <Logo>
+            {profile?.organization && (
+              <a href="/courses">
+                <Image
+                  width={40}
+                  preview={false}
+                  src={`/api/v1/organization/${profile?.organization.id}/get_logo/${profile?.organization.organizationLogoUrl}`}
+                />
+              </a>
+            )}
+            <span style={{ marginLeft: 15 }}>
+              {profile?.organization.organizationName}
+            </span>
+          </Logo>
+        </LogoContainer>
+        <MenuCon>
+          <LeftMenu>
+            <NavBarTabs horizontal currentHref={pathname} tabs={globalTabs} />
+          </LeftMenu>
+          <RightMenu>
+            <ProfileDrawer />
+          </RightMenu>
+        </MenuCon>
+        <BarsMenu type="primary" onClick={showDrawer}>
+          <BarsButton />
+        </BarsMenu>
+        <Drawer
+          title="Course"
+          placement="right"
+          open={visible}
+          closable={false}
+          onClose={onClose}
+          bodyStyle={{ padding: '12px' }}
+        >
+          <NavBarTabs currentHref={pathname} tabs={globalTabs} />
+          <ProfileDrawer courseId={null} />
+        </Drawer>
+      </Nav>
+    </>
+  )
 }

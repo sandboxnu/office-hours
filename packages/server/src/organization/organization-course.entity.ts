@@ -3,8 +3,9 @@ import {
   BaseEntity,
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
-  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { OrganizationModel } from './organization.entity';
@@ -15,24 +16,21 @@ export class OrganizationCourseModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Exclude()
   @ManyToOne(
-    type => OrganizationModel,
-    organization => organization.organizationCourses,
+    (type) => OrganizationModel,
+    (organization) => organization.organizationCourses,
   )
+  @JoinColumn({ name: 'organizationId' })
   organization: OrganizationModel;
 
   @Column({ nullable: true })
   organizationId: number;
 
+  @OneToOne((type) => CourseModel, (course) => course.organizationCourse, {
+    cascade: true,
+  })
+  @JoinColumn({ name: 'courseId' })
   @Exclude()
-  @OneToMany(
-    type => CourseModel,
-    course => course.organizationCourse,
-    {
-      cascade: true,
-    },
-  )
   course: CourseModel;
 
   @Column({ nullable: true })

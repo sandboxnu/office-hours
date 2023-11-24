@@ -1,0 +1,88 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Organization Integration GET /organization/:oid should return 200 and response when user is logged in 1`] = `
+Object {
+  "bannerUrl": null,
+  "description": "UBC Okanagan",
+  "id": 1,
+  "logoUrl": null,
+  "name": "UBCO",
+  "ssoEnabled": false,
+  "ssoUrl": null,
+  "websiteUrl": null,
+}
+`;
+
+exports[`Organization Integration GET /organization/:oid/get_course/:cid should return course when course is found 1`] = `
+Object {
+  "course": Object {
+    "asyncQuestionDisplayTypes": Array [],
+    "coordinator_email": null,
+    "courseInviteCode": "invite-code",
+    "deletedAt": null,
+    "enabled": true,
+    "icalURL": "https://calendar.google.com/calendar/ical/t6lu2pic7u9otrbpkuk26sl34g%40group.calendar.google.com/public/basic.ics",
+    "id": 1,
+    "name": "CS 304",
+    "questionTimer": null,
+    "sectionGroupName": "CS 304",
+    "selfEnroll": false,
+    "semesterId": 1,
+    "timezone": null,
+    "zoomLink": null,
+  },
+  "courseId": 1,
+  "id": 1,
+  "organizationId": 1,
+}
+`;
+
+exports[`Organization Integration GET /organization/:oid/get_courses/:page? should return 200 when user is an admin 1`] = `
+Array [
+  Object {
+    "courseId": 1,
+    "courseName": "CS 304",
+  },
+]
+`;
+
+exports[`Organization Integration GET /organization/:oid/get_user/:uid should return 200 when user is found 1`] = `
+Object {
+  "courses": Array [],
+  "organizationId": 1,
+  "organizationRole": "member",
+  "user": Object {
+    "accountDeactivated": false,
+    "email": "user@ubc.ca",
+    "firstName": "User",
+    "fullName": "User Person",
+    "globalRole": "user",
+    "id": 2,
+    "lastName": "Person",
+    "photoUrl": null,
+    "sid": null,
+  },
+}
+`;
+
+exports[`Organization Integration GET /organization/:oid/get_users/:page? should return 200 when user is an admin 1`] = `
+Array [
+  Object {
+    "email": "user@ubc.ca",
+    "firstName": "User",
+    "lastName": "Person",
+    "organizationRole": "admin",
+    "photoUrl": null,
+    "userId": 1,
+    "userRole": "user",
+  },
+]
+`;
+
+exports[`Organization Integration GET /organization/:oid/stats should return 200 when user is an admin 1`] = `
+Object {
+  "courses": 1,
+  "members": 2,
+  "membersProfessors": 1,
+}
+`;

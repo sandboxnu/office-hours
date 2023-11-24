@@ -48,12 +48,17 @@ export const ChatbotComponent: React.FC = () => {
     PreDeterminedQuestion[]
   >([
     {
-      question: 'When is the midterm?',
-      answer: 'October 11, 2023',
+      question: 'Can each table have have multiple foreigns keys?',
+      answer: 'Yes, each table can have multiple foreign keys.',
     },
     {
-      question: 'When is the final?',
-      answer: 'December 16, 2023',
+      question: 'What is cardinality, explain related information too',
+      answer:
+        'Cardinality refers to the maximum number of relationship instances that an entity can have in a relationship. It can be one-to-one (1:1), one-to-many (1:* or 1:N), or many-to-many (*:* or N:M) depending on the relationship type.',
+    },
+    {
+      question: 'When and where is the final?',
+      answer: 'December 16, 2023 8:30AM	in COM 201',
     },
   ])
 
@@ -193,6 +198,9 @@ export const ChatbotComponent: React.FC = () => {
     }
   }
 
+  if (!cid) {
+    return <></>
+  }
   return (
     <ChatbotContainer style={{ zIndex: 1000 }}>
       {isOpen ? (
@@ -324,9 +332,10 @@ export const ChatbotComponent: React.FC = () => {
         <Button
           type="primary"
           icon={<RobotOutlined />}
+          size="large"
           onClick={() => setIsOpen(true)}
         >
-          Chat with us!
+          Chat now!
         </Button>
       )}
     </ChatbotContainer>

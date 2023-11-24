@@ -15,6 +15,8 @@ import {
   CourseFactory,
   CourseSectionFactory,
   EventFactory,
+  OrganizationCourseFactory,
+  OrganizationFactory,
   ProfSectionGroupsFactory,
   QueueFactory,
   SemesterFactory,
@@ -24,6 +26,7 @@ import {
   UserFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
+import { OrganizationCourseModel } from 'organization/organization-course.entity';
 
 describe('Course Integration', () => {
   const supertest = setupIntegrationTest(CourseModule);
@@ -123,9 +126,9 @@ describe('Course Integration', () => {
         .expect(200);
       // date agnostic snapshots
       expect(response.body.queues.length).toBe(3);
-      response.body.queues.map(q => expect(q).toMatchSnapshot({}));
+      response.body.queues.map((q) => expect(q).toMatchSnapshot({}));
 
-      response.body.queues.map(q => expect(q.isDisabled).toBeFalsy());
+      response.body.queues.map((q) => expect(q.isDisabled).toBeFalsy());
     });
 
     it('gets all queues that are not disabled (prof)', async () => {
@@ -181,9 +184,9 @@ describe('Course Integration', () => {
         .expect(200);
 
       // date agnostic snapshots
-      response.body.queues.map(q => expect(q).toMatchSnapshot({}));
+      response.body.queues.map((q) => expect(q).toMatchSnapshot({}));
 
-      response.body.queues.map(q => expect(q.isDisabled).toBeFalsy());
+      response.body.queues.map((q) => expect(q.isDisabled).toBeFalsy());
     });
 
     it('cant get office hours if not a member of the course', async () => {
@@ -194,9 +197,7 @@ describe('Course Integration', () => {
         course: course,
       });
 
-      await supertest({ userId: 1 })
-        .get(`/courses/${course.id}`)
-        .expect(401);
+      await supertest({ userId: 1 }).get(`/courses/${course.id}`).expect(401);
     });
 
     it('ensures isOpen is defined for all queues(dynamic gen)', async () => {
@@ -250,9 +251,40 @@ describe('Course Integration', () => {
       const response = await supertest({ userId: proff.userId })
         .get(`/courses/${course.id}`)
         .expect(200);
-      response.body.queues.map(q => {
+      response.body.queues.map((q) => {
         expect(q.isOpen).toBeDefined();
       });
+    });
+  });
+
+  describe('GET /courses/limited/:id/:code', () => {
+    it('should return course details for valid id and code', async () => {
+      const course = await CourseFactory.create();
+
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationCourseFactory.create({
+        courseId: course.id,
+        organizationId: organization.id,
+      });
+
+      const response = await supertest()
+        .get(`/courses/limited/${course.id}/${course.courseInviteCode}`)
+        .expect(200);
+
+      expect(response.body.id).toBe(course.id);
+      expect(response.body.name).toBe(course.name);
+      expect(response.body.courseInviteCode).toBe(course.courseInviteCode);
+    });
+
+    it('should return 404 for invalid id or code', async () => {
+      const response = await supertest({ userId: 1 })
+        .get('/courses/limited/1/wrongcode')
+        .expect(404);
+
+      expect(response.body.message).toBe(
+        ERROR_MESSAGES.courseController.courseNotFound,
+      );
     });
   });
 
@@ -719,7 +751,7 @@ describe('Course Integration', () => {
         })
         .expect(200);
 
-      const checkinTimes = ((data.body as unknown) as TACheckinTimesResponse)
+      const checkinTimes = (data.body as unknown as TACheckinTimesResponse)
         .taCheckinTimes;
 
       const taName = ta.firstName + ' ' + ta.lastName;

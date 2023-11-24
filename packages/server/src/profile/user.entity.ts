@@ -51,10 +51,10 @@ export class UserModel extends BaseEntity {
   @Column({ type: 'boolean', default: true })
   includeDefaultMessage: boolean;
 
-  @OneToMany(
-    type => UserCourseModel,
-    ucm => ucm.user,
-  )
+  @Column({ type: 'boolean', default: false })
+  accountDeactivated: boolean;
+
+  @OneToMany((type) => UserCourseModel, (ucm) => ucm.user)
   @Exclude()
   courses: UserCourseModel[];
 
@@ -69,38 +69,23 @@ export class UserModel extends BaseEntity {
   @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
   userRole: UserRole;
 
-  @OneToMany(
-    type => DesktopNotifModel,
-    notif => notif.user,
-  )
+  @OneToMany((type) => DesktopNotifModel, (notif) => notif.user)
   @Exclude()
   desktopNotifs: DesktopNotifModel[];
 
-  @OneToOne(
-    type => PhoneNotifModel,
-    notif => notif.user,
-  )
+  @OneToOne((type) => PhoneNotifModel, (notif) => notif.user)
   @Exclude()
   phoneNotif: PhoneNotifModel;
 
   @Exclude()
-  @ManyToMany(
-    type => QueueModel,
-    queue => queue.staffList,
-  )
+  @ManyToMany((type) => QueueModel, (queue) => queue.staffList)
   queues: QueueModel[];
 
   @Exclude()
-  @OneToMany(
-    type => EventModel,
-    event => event.user,
-  )
+  @OneToMany((type) => EventModel, (event) => event.user)
   events: EventModel[];
 
-  @OneToMany(
-    type => AlertModel,
-    alert => alert.user,
-  )
+  @OneToMany((type) => AlertModel, (alert) => alert.user)
   alerts: AlertModel[];
 
   @Exclude()
@@ -109,17 +94,10 @@ export class UserModel extends BaseEntity {
 
   insights: string[];
 
-  @Exclude()
-  @OneToOne(
-    type => OrganizationUserModel,
-    ou => ou.userId,
-  )
+  @OneToOne((type) => OrganizationUserModel, (ou) => ou.organizationUser)
   organizationUser: OrganizationUserModel;
 
-  @OneToMany(
-    type => InteractionModel,
-    interaction => interaction.user,
-  )
+  @OneToMany((type) => InteractionModel, (interaction) => interaction.user)
   @JoinColumn({ name: 'user' })
   interactions: InteractionModel[];
 
@@ -130,7 +108,7 @@ export class UserModel extends BaseEntity {
       hideInsights = [];
     }
     const insightNames = Object.keys(INSIGHTS_MAP);
-    this.insights = insightNames.filter(name => !hideInsights.includes(name));
+    this.insights = insightNames.filter((name) => !hideInsights.includes(name));
   }
 
   name: string;

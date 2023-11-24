@@ -61,9 +61,7 @@ describe('Question Integration', () => {
       expect(response.body).toMatchSnapshot();
     });
     it('fails to get a non-existent question', async () => {
-      await supertest({ userId: 99 })
-        .get(`/questions/999`)
-        .expect(404);
+      await supertest({ userId: 99 }).get(`/questions/999`).expect(404);
     });
   });
 
@@ -73,15 +71,13 @@ describe('Question Integration', () => {
       queue: QueueModel,
       force = false,
     ): supertest.Test =>
-      supertest({ userId: user.id })
-        .post('/questions')
-        .send({
-          text: "Don't know recursion",
-          questionType: QuestionType.Concept,
-          queueId: queue.id,
-          force,
-          groupable: true,
-        });
+      supertest({ userId: user.id }).post('/questions').send({
+        text: "Don't know recursion",
+        questionType: QuestionType.Concept,
+        queueId: queue.id,
+        force,
+        groupable: true,
+      });
 
     it('posts a new question', async () => {
       const course = await CourseFactory.create();
@@ -696,8 +692,8 @@ describe('Question Integration', () => {
       });
       expect(newGroup).toBeDefined();
       expect(newGroup.questions.length).toEqual(2);
-      expect(newGroup.questions.find(q => q.id === q1.id)).toBeTruthy();
-      expect(newGroup.questions.find(q => q.id === q2.id)).toBeTruthy();
+      expect(newGroup.questions.find((q) => q.id === q1.id)).toBeTruthy();
+      expect(newGroup.questions.find((q) => q.id === q2.id)).toBeTruthy();
       expect(await QuestionModel.findOne({ id: q3.id })).toMatchObject({
         groupId: null,
         status: QuestionStatusKeys.Queued,

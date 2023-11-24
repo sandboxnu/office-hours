@@ -1,38 +1,44 @@
-import { API } from "@koh/api-client";
-import { UpdateProfileParams } from "@koh/common";
-import { Button, Form, Input, message, Row } from "antd";
-import { pick } from "lodash";
-import { useIsMobile } from "../../hooks/useIsMobile";
-import { HeaderTitle } from "./Styled";
-import styled from "styled-components";
-import React, { ReactElement } from "react";
-import useSWR from "swr";
+import { API } from '@koh/api-client'
+import { UpdateProfileParams } from '@koh/common'
+import { Button, Form, Input, message, Row } from 'antd'
+import { pick } from 'lodash'
+import { useIsMobile } from '../../hooks/useIsMobile'
+import { HeaderTitle } from './Styled'
+import styled from 'styled-components'
+import React, { ReactElement } from 'react'
+import useSWR from 'swr'
 
 export default function ProfileSettings(): ReactElement {
   const { data: profile, mutate } = useSWR(`api/v1/profile`, async () =>
-    API.profile.index()
-  );
-  const isMobile = useIsMobile();
-  const [form] = Form.useForm();
+    API.profile.index(),
+  )
+  const isMobile = useIsMobile()
+  const [form] = Form.useForm()
 
   const editProfile = async (updateProfile: UpdateProfileParams) => {
-    const newProfile = { ...profile, ...updateProfile };
-    mutate(newProfile, false);
-    await API.profile.patch(pick(newProfile, ["email"]));
-    mutate();
-    return newProfile;
-  };
+    const newProfile = { ...profile, ...updateProfile }
+    mutate(newProfile, false)
+    await API.profile.patch(pick(newProfile, ['email']))
+    mutate()
+    return newProfile
+  }
 
   const handleOk = async () => {
-    const value = await form.validateFields();
-    const newProfile = await editProfile(value);
-    form.setFieldsValue(newProfile);
-    message.success("Your profile settings have been successfully updated");
-  };
+    const value = await form.validateFields()
+    const newProfile = await editProfile(value).catch(() => {
+      message.error(
+        'Your profile settings could not be updated. Email is already in use.',
+      )
+    })
+    if (!newProfile) return
+
+    form.setFieldsValue(newProfile)
+    message.success('Your profile settings have been successfully updated')
+  }
 
   const ResponsiveFormRow = styled(Row)`
-    flexdirection: ${isMobile ? "column" : "row"};
-  `;
+    flexdirection: ${isMobile ? 'column' : 'row'};
+  `
   return profile ? (
     <div>
       <HeaderTitle>
@@ -68,7 +74,7 @@ export default function ProfileSettings(): ReactElement {
             <Input />
           </Form.Item> */}
           <Form.Item
-            style={{ marginLeft: isMobile ? "0" : "10px" }}
+            style={{ marginLeft: isMobile ? '0' : '10px' }}
             label="Email"
             name="email"
             data-cy="emailInput"
@@ -79,7 +85,7 @@ export default function ProfileSettings(): ReactElement {
               },
             ]}
           >
-            <Input style={{ width: "300px" }} />
+            <Input style={{ width: '300px' }} />
           </Form.Item>
         </ResponsiveFormRow>
       </Form>
@@ -88,10 +94,10 @@ export default function ProfileSettings(): ReactElement {
         type="primary"
         data-cy="saveButton"
         onClick={handleOk}
-        style={{ marginBottom: "15px" }}
+        style={{ marginBottom: '15px' }}
       >
         Save
       </Button>
     </div>
-  ) : null;
+  ) : null
 }

@@ -5,6 +5,7 @@ Object {
   "closedAt": null,
   "createdAt": "2020-03-01T05:00:00.000Z",
   "creator": Object {
+    "accountDeactivated": false,
     "defaultMessage": null,
     "email": "user@ubc.ca",
     "firstName": "User",

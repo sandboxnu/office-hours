@@ -15,7 +15,6 @@ import {
   Get,
   HttpException,
   HttpStatus,
-  InternalServerErrorException,
   NotFoundException,
   Param,
   Patch,
@@ -62,6 +61,7 @@ export class ProfileController {
     private mailService: MailService,
     private organizationService: OrganizationService,
   ) {}
+
   //forgetpassword route used for creating links to be sent to the email
   @Post('/forgetpassword/:e')
   async forgetpassword(
@@ -71,7 +71,7 @@ export class ProfileController {
     UserModel.findOne({
       where: { email: e },
     })
-      .then(async user => {
+      .then(async (user) => {
         if (!user) {
           throw new HttpException(
             ERROR_MESSAGES.profileController.accountNotAvailable,
@@ -91,10 +91,11 @@ export class ProfileController {
         }
         return res.status(200).send({ token, e });
       })
-      .catch(err => {
+      .catch((err) => {
         res.status(500).send({ message: err });
       });
   }
+
   // enter reset page
   @Get('/enter_resetpassword')
   async enterReset(
@@ -146,6 +147,7 @@ export class ProfileController {
       user.email,
     );
   }
+
   //two functions, one is verify user through authToken, another is to update password using userId and new password
   @Get('verify_token')
   async verifyToken(@Query('token') token: string): Promise<boolean> {
@@ -157,6 +159,7 @@ export class ProfileController {
     }
     return true;
   }
+
   @Patch(':password/update_password')
   async updatePassword(
     @Param('password') p: string,
@@ -165,7 +168,7 @@ export class ProfileController {
     const payload = this.jwtService.decode(token) as { userId: number };
     UserModel.findOne({
       where: { id: payload.userId },
-    }).then(async user => {
+    }).then(async (user) => {
       if (!user) {
         throw new NotFoundException();
       } else {
@@ -177,6 +180,7 @@ export class ProfileController {
       }
     });
   }
+
   //potential problem-should fix later. Currently checking whether question in database, but student can be in different queues(so find with both queues and user id)
   //get all student in course
   @Get(':c/id')
@@ -193,7 +197,7 @@ export class ProfileController {
       },
     });
     if (students) {
-      const temp = students.map(student => {
+      const temp = students.map((student) => {
         return { value: student.user.name, id: student.user.id };
       });
       res.status(200).send(temp);
@@ -230,6 +234,7 @@ export class ProfileController {
     //     });
     // });
   }
+
   @Get(':id/inQueue')
   @UseGuards(JwtAuthGuard)
   async inQueue(
@@ -269,10 +274,18 @@ export class ProfileController {
         HttpStatus.NOT_FOUND,
       );
     }
+
+    if (user.accountDeactivated) {
+      throw new HttpException(
+        ERROR_MESSAGES.profileController.accountDeactivated,
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     const courses = user.courses
       ? user.courses
-          .filter(userCourse => userCourse?.course?.enabled)
-          .map(userCourse => {
+          .filter((userCourse) => userCourse?.course?.enabled)
+          .map((userCourse) => {
             return {
               course: {
                 id: userCourse.courseId,
@@ -284,7 +297,7 @@ export class ProfileController {
       : [];
 
     const desktopNotifs: DesktopNotifPartial[] = user.desktopNotifs
-      ? user.desktopNotifs.map(d => ({
+      ? user.desktopNotifs.map((d) => ({
           endpoint: d.endpoint,
           id: d.id,
           createdAt: d.createdAt,
@@ -317,10 +330,18 @@ export class ProfileController {
     }
 
     const pendingCourses = await this.profileService.getPendingCourses(user.id);
+    const userOrganization =
+      await this.organizationService.getOrganizationAndRoleByUserId(user.id);
 
-    const organizationRole = await this.organizationService.getOrganizationRoleByUserId(
-      user.id,
-    );
+    const organization = pick(userOrganization, [
+      'id',
+      'orgId',
+      'organizationName',
+      'organizationDescription',
+      'organizationLogoUrl',
+      'organizationBannerUrl',
+      'organizationRole',
+    ]);
 
     return {
       ...userResponse,
@@ -328,7 +349,7 @@ export class ProfileController {
       phoneNumber: user.phoneNotif?.phoneNumber,
       desktopNotifs,
       pendingCourses,
-      organizationRole,
+      organization,
     };
   }
 
@@ -340,13 +361,13 @@ export class ProfileController {
     user: UserModel,
   ): Promise<GetProfileResponse> {
     if (userPatch.email) {
-      const email = UserModel.findOne({
+      const email = await UserModel.findOne({
         where: {
           email: userPatch.email,
         },
       });
       if (email) {
-        throw new InternalServerErrorException('Email already in db');
+        throw new BadRequestException('Email already in db');
       }
     }
     user = Object.assign(user, userPatch);
@@ -361,7 +382,7 @@ export class ProfileController {
       }
     }
 
-    await user.save().catch(e => {
+    await user.save().catch((e) => {
       console.log(e);
     });
 
@@ -378,43 +399,41 @@ export class ProfileController {
   async uploadImage(
     @UploadedFile() file: Express.Multer.File,
     @User() user: UserModel,
+    @Res() response: Response,
   ): Promise<void> {
-    if (user.photoURL) {
-      fs.unlink(process.env.UPLOAD_LOCATION + '/' + user.photoURL, err => {
-        console.error(
-          'Error deleting previous picture at: ',
-          user.photoURL,
-          err,
-          'the previous image was at an invalid location?',
+    try {
+      if (user.photoURL) {
+        fs.unlinkSync(path.join(process.env.UPLOAD_LOCATION, user.photoURL));
+      }
+
+      const spaceLeft = await checkDiskSpace(path.parse(process.cwd()).root);
+
+      if (spaceLeft.free < 1000000000) {
+        // if less than a gigabyte left
+        throw new ServiceUnavailableException(
+          ERROR_MESSAGES.profileController.noDiskSpace,
         );
-      });
+      }
+      const fileName =
+        user.id +
+        '-' +
+        Math.random().toString(36).substring(2, 15) +
+        Math.random().toString(36).substring(2, 15);
+      if (!fs.existsSync(process.env.UPLOAD_LOCATION)) {
+        fs.mkdirSync(process.env.UPLOAD_LOCATION, { recursive: true });
+      }
+
+      const targetPath = path.join(process.env.UPLOAD_LOCATION, fileName);
+
+      await sharp(file.buffer).resize(256).toFile(targetPath);
+      user.photoURL = fileName;
+      await user.save();
+      response.status(200).send({ message: 'Image uploaded successfully' });
+    } catch (error) {
+      response
+        .status(500)
+        .send({ message: 'Image upload failed', error: error.message });
     }
-
-    const spaceLeft = await checkDiskSpace(path.parse(process.cwd()).root);
-
-    if (spaceLeft.free < 1000000000) {
-      // if less than a gigabyte left
-      throw new ServiceUnavailableException(
-        ERROR_MESSAGES.profileController.noDiskSpace,
-      );
-    }
-
-    const fileName =
-      user.id +
-      '-' +
-      Math.random()
-        .toString(36)
-        .substring(2, 15) +
-      Math.random()
-        .toString(36)
-        .substring(2, 15);
-
-    await sharp(file.buffer)
-      .resize(256)
-      .toFile(path.join(process.env.UPLOAD_LOCATION, fileName));
-
-    user.photoURL = fileName;
-    await user.save();
   }
 
   @Get('/get_picture/:photoURL')
@@ -448,7 +467,7 @@ export class ProfileController {
     if (user.photoURL) {
       fs.unlink(
         process.env.UPLOAD_LOCATION + '/' + user.photoURL,
-        async err => {
+        async (err) => {
           if (err) {
             const errMessage =
               'Error deleting previous picture at : ' +

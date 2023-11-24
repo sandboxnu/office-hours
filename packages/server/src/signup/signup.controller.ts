@@ -35,29 +35,16 @@ export class SignupController {
     @Body() body: UBCOuserParam,
   ): Promise<any> {
     const course = await CourseModel.findOne(body.selected_course);
-    console.log(body);
+
     if (!course) {
-      console.log('course');
       throw new NotFoundException();
     }
+
     let user = await UserModel.findOne({
       where: { email: body.email },
       relations: ['courses'],
     });
-    // if (user) {
-    //   res.status(300).send({ message: 'User already exists' });
-    //   console.log('user exists');
-    //   return 'exists';
-    // }
-    //create usercourse[] to be inserted into userModel.
-    // const courses: UserCourseModel[] = [];
-    // body.selected_course.forEach(async(cid) => {
-    //   courses.push(
-    //     await UserCourseModel.findOne({
-    //       where: { id:cid },
-    //     }),
-    //   );
-    // });
+
     if (!user) {
       const salt = await bcrypt.genSalt(10);
       const password = await bcrypt.hash(body.password, salt);
@@ -72,19 +59,21 @@ export class SignupController {
       }).save();
     }
 
-    let userCourse = await UserCourseModel.findOne({
-      where: { courseId: body.selected_course, user: UserModel },
+    const usercourse = await UserCourseModel.findOne({
+      where: {
+        userId: user.id,
+        courseId: course.id,
+      },
     });
-    if (userCourse) {
+
+    if (usercourse) {
       res
-        .status(300)
-        .send({ message: 'User already registered in the course' });
-      console.log('user exists');
-      return 'exists';
+        .status(409)
+        .send({ message: 'User is already signed up for this course' });
+      return;
     }
-    // insertUserCourse loops through given courseIds and create usercourse
-    // it also eventually add the list of usercourses into both user and course models.
-    userCourse = await this.signupService.insertUserCourse(course, user);
+
+    await this.signupService.insertUserCourse(course, user);
     res.status(200).send({ message: 'User has been signed up' });
     return 'success';
   }
