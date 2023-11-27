@@ -3,37 +3,37 @@ import {
   MacCommandOutlined,
   QuestionCircleOutlined,
   SettingOutlined,
-} from "@ant-design/icons";
-import { Menu, Modal, Popover, Typography, Space } from "antd";
-import Link from "next/link";
-import React, { ReactElement, ReactNode, useState } from "react";
-import styled from "styled-components";
-import SelfAvatar from "../common/SelfAvatar";
-import { useRoleInCourse } from "../../hooks/useRoleInCourse";
-import { Role } from "@koh/common";
-const { Text } = Typography;
+} from '@ant-design/icons'
+import { Menu, Modal, Popover, Typography, Space } from 'antd'
+import Link from 'next/link'
+import React, { ReactElement, ReactNode, useState } from 'react'
+import styled from 'styled-components'
+import SelfAvatar from '../common/SelfAvatar'
+import { useRoleInCourse } from '../../hooks/useRoleInCourse'
+import { Role } from '@koh/common'
+const { Text } = Typography
 
 const StyleablePopover = ({ className, ...props }: { className: string }) => (
   <Popover {...props} overlayClassName={className} />
-);
+)
 const NoPaddingPopover: typeof Popover = styled(StyleablePopover)`
   & .ant-popover-inner-content {
     padding: 0px;
   }
-`;
+`
 
 const AvatarButton = styled.div`
   cursor: pointer;
-`;
+`
 
 interface ProfileDrawerProps {
-  courseId: number;
+  courseId: number
 }
 
 function shortcutInfoContent(role: Role): ReactNode {
   if (role === Role.STUDENT) {
     return (
-      <Space direction="vertical" style={{ display: "flex" }}>
+      <Space direction="vertical" style={{ display: 'flex' }}>
         <Space>
           <Text keyboard>shift</Text>
           <Text keyboard>n</Text>Create a new question
@@ -46,10 +46,10 @@ function shortcutInfoContent(role: Role): ReactNode {
           <Text keyboard>enter</Text>Finish writing question
         </Space>
       </Space>
-    );
+    )
   } else {
     return (
-      <Space direction="vertical" style={{ display: "flex" }}>
+      <Space direction="vertical" style={{ display: 'flex' }}>
         <Space>
           <Text keyboard>shift</Text>
           <Text keyboard>h</Text>Help the next student
@@ -66,22 +66,22 @@ function shortcutInfoContent(role: Role): ReactNode {
           Navigate through students
         </Space>
       </Space>
-    );
+    )
   }
 }
 
 export default function ProfileDrawer({
   courseId = null,
 }: ProfileDrawerProps): ReactElement {
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const role = useRoleInCourse(courseId);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false)
+  const role = useRoleInCourse(courseId)
   return (
     <>
       <NoPaddingPopover
         content={
           <Menu mode="inline">
             <Menu.Item icon={<SettingOutlined />}>
-              <Link href={{ pathname: "/settings" }}>
+              <Link href={{ pathname: '/settings' }}>
                 <a>Settings</a>
               </Link>
             </Menu.Item>
@@ -90,10 +90,10 @@ export default function ProfileDrawer({
               icon={<MacCommandOutlined />}
               onClick={() => {
                 Modal.info({
-                  title: "Queue Page Keyboard Shortcuts",
+                  title: 'Queue Page Keyboard Shortcuts',
                   content: shortcutInfoContent(role),
-                });
-                setIsPopoverOpen(false);
+                })
+                setIsPopoverOpen(false)
               }}
             >
               Keyboard Shortcuts
@@ -102,14 +102,14 @@ export default function ProfileDrawer({
               key="1"
               icon={<QuestionCircleOutlined />}
               onClick={() => {
-                window.open("http://example.com");
-                setIsPopoverOpen(false);
+                window.open('http://example.com')
+                setIsPopoverOpen(false)
               }}
             >
               Help Guide
             </Menu.Item>
             <Menu.Item key="2" icon={<LogoutOutlined />}>
-              <Link href={"/api/v1/logout"}>
+              <Link href={'/api/v1/logout'}>
                 <a data-cy="logout-button">Logout</a>
               </Link>
             </Menu.Item>
@@ -125,5 +125,5 @@ export default function ProfileDrawer({
         </AvatarButton>
       </NoPaddingPopover>
     </>
-  );
+  )
 }

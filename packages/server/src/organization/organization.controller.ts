@@ -1076,9 +1076,8 @@ export class OrganizationController {
     @Res() res: Response,
     @Param('uid') uid: number,
   ): Promise<Response<GetOrganizationUserResponse>> {
-    const userInfo = await this.organizationService.getOrganizationUserByUserId(
-      uid,
-    );
+    const userInfo =
+      await this.organizationService.getOrganizationUserByUserId(uid);
 
     if (userInfo.organizationRole === OrganizationRole.ADMIN) {
       return res.status(HttpStatus.UNAUTHORIZED).send({

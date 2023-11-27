@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Type } from 'class-transformer'
 import {
   IsArray,
   IsBoolean,
@@ -12,32 +12,32 @@ import {
   IsOptional,
   IsString,
   ValidateIf,
-} from "class-validator";
-import "reflect-metadata";
-import { Cache } from "cache-manager";
+} from 'class-validator'
+import 'reflect-metadata'
+import { Cache } from 'cache-manager'
 
-export const PROD_URL = "https://help.cosc304.ok.ubc.ca";
-export const STAGING_URL = "https://staging.khouryofficehours.com";
+export const PROD_URL = 'https://help.cosc304.ok.ubc.ca'
+export const STAGING_URL = 'https://staging.khouryofficehours.com'
 // Get domain. works on node and browser
 const domain = (): string | false =>
   process.env.DOMAIN ||
-  (typeof window !== "undefined" && window?.location?.origin);
-export const getEnv = (): "production" | "staging" | "dev" => {
+  (typeof window !== 'undefined' && window?.location?.origin)
+export const getEnv = (): 'production' | 'staging' | 'dev' => {
   switch (domain()) {
     case PROD_URL:
-      return "production";
+      return 'production'
     case STAGING_URL:
-      return "staging";
+      return 'staging'
     default:
-      return "dev";
+      return 'dev'
   }
-};
-export const isProd = (): boolean => domain() === PROD_URL;
+}
+export const isProd = (): boolean => domain() === PROD_URL
 
 // TODO: Clean this up, move it somwhere else, use moment???
 // a - b, in minutes
 export function timeDiffInMins(a: Date, b: Date): number {
-  return (a.getTime() - b.getTime()) / (1000 * 60);
+  return (a.getTime() - b.getTime()) / (1000 * 60)
 }
 
 /////////////////////////
@@ -56,33 +56,33 @@ export function timeDiffInMins(a: Date, b: Date): number {
  * @param desktopNotifs - list of endpoints so that frontend can figure out if device is enabled
  */
 export class User {
-  id!: number;
-  email!: string;
-  firstName?: string;
-  lastName?: string;
-  name!: string;
-  photoURL!: string;
-  defaultMessage?: string;
-  sid?: number;
-  includeDefaultMessage!: boolean;
-  courses!: UserCourse[];
-  pendingCourses?: KhouryProfCourse[];
-  desktopNotifsEnabled!: boolean;
+  id!: number
+  email!: string
+  firstName?: string
+  lastName?: string
+  name!: string
+  photoURL!: string
+  defaultMessage?: string
+  sid?: number
+  includeDefaultMessage!: boolean
+  courses!: UserCourse[]
+  pendingCourses?: KhouryProfCourse[]
+  desktopNotifsEnabled!: boolean
   @Type(() => DesktopNotifPartial)
-  desktopNotifs!: DesktopNotifPartial[];
-  phoneNotifsEnabled!: boolean;
-  phoneNumber!: string;
-  insights!: string[];
-  userRole!: string;
-  organization!: OrganizationUserPartial;
+  desktopNotifs!: DesktopNotifPartial[]
+  phoneNotifsEnabled!: boolean
+  phoneNumber!: string
+  insights!: string[]
+  userRole!: string
+  organization!: OrganizationUserPartial
 }
 
 export class DesktopNotifPartial {
-  id!: number;
-  endpoint!: string;
-  name?: string;
+  id!: number
+  endpoint!: string
+  name?: string
   @Type(() => Date)
-  createdAt!: Date;
+  createdAt!: Date
 }
 
 /**
@@ -92,10 +92,10 @@ export class DesktopNotifPartial {
  * @param photoURL - The URL string of this user photo. This is pulled from the admin site.
  */
 export class UserPartial {
-  id!: number;
-  email?: string;
-  name?: string;
-  photoURL?: string;
+  id!: number
+  email?: string
+  name?: string
+  photoURL?: string
 }
 
 /**
@@ -104,9 +104,9 @@ export class UserPartial {
  * @param name - The subject and course number of this course. Ex: "CS 2500"
  */
 export type CoursePartial = {
-  id: number;
-  name: string;
-};
+  id: number
+  name: string
+}
 
 /**
  * Represents a course that a user is accociated with and their role in that course
@@ -114,51 +114,58 @@ export type CoursePartial = {
  * @param role - The user's role in the course.
  */
 export type UserCourse = {
-  course: CoursePartial;
-  role: Role;
-};
+  course: CoursePartial
+  role: Role
+}
 
 /**
  * Represents one of three possible user roles in a course.
  */
 export enum Role {
-  STUDENT = "student",
-  TA = "ta",
-  PROFESSOR = "professor",
+  STUDENT = 'student',
+  TA = 'ta',
+  PROFESSOR = 'professor',
 }
 
 // chatbot questions and interactions
 
 export class ChatbotQuestion {
-  id!: number;
-  interactionId!: number;
-  questionText!: string;
-  responseText?: string;
-  timestamp!: Date;
+  id!: number
+  interactionId!: number
+  questionText!: string
+  responseText?: string
+  timestamp!: Date
 }
 
 export class Interaction {
-  id!: number;
-  course?: GetCourseResponse;
-  user!: User;
-  timestamp!: Date;
+  id!: number
+  course?: GetCourseResponse
+  user!: User
+  timestamp!: Date
+}
+
+export class ChatbotDocument {
+  id!: number
+  name!: number
+  type!: string
+  subDocumentIds!: string[]
 }
 
 /**
  * Represents one of two possible roles for the global account
  */
 export enum UserRole {
-  USER = "user",
-  ADMIN = "admin",
+  USER = 'user',
+  ADMIN = 'admin',
 }
 
 /**
  * Represents a user's role in an organization.
  */
 export enum OrganizationRole {
-  MEMBER = "member",
-  ADMIN = "admin",
-  PROFESSOR = "professor",
+  MEMBER = 'member',
+  ADMIN = 'admin',
+  PROFESSOR = 'professor',
 }
 
 /**
@@ -172,14 +179,14 @@ export enum OrganizationRole {
  * @param endTime - The scheduled end time of this queue.
  */
 export interface Queue {
-  id: number;
-  course: CoursePartial;
-  room: string;
-  staffList: UserPartial[];
-  questions: Question[];
-  startTime?: Date;
-  endTime?: Date;
-  allowQuestions: boolean;
+  id: number
+  course: CoursePartial
+  room: string
+  staffList: UserPartial[]
+  questions: Question[]
+  startTime?: Date
+  endTime?: Date
+  allowQuestions: boolean
 }
 
 /**
@@ -191,27 +198,27 @@ export interface Queue {
  * @param endTime - The scheduled end time of this queue.
  */
 export class QueuePartial {
-  id!: number;
-  room!: string;
+  id!: number
+  room!: string
 
   @Type(() => UserPartial)
-  staffList!: UserPartial[];
+  staffList!: UserPartial[]
 
-  queueSize!: number;
-  notes?: string;
-  isOpen!: boolean;
+  queueSize!: number
+  notes?: string
+  isOpen!: boolean
 
-  isDisabled!: boolean;
-
-  @Type(() => Date)
-  startTime?: Date;
+  isDisabled!: boolean
 
   @Type(() => Date)
-  endTime?: Date;
+  startTime?: Date
 
-  allowQuestions!: boolean;
+  @Type(() => Date)
+  endTime?: Date
 
-  isProfessorQueue!: boolean;
+  allowQuestions!: boolean
+
+  isProfessorQueue!: boolean
 }
 
 // Represents a list of office hours wait times of each hour of the week.
@@ -220,7 +227,7 @@ export class QueuePartial {
 // INVARIANT: Must have 24*7 elements
 //
 // Wait time = -1 represents no office hours data at that time.
-export type Heatmap = Array<number>;
+export type Heatmap = Array<number>
 
 /**
  * A Question is created when a student wants help from a TA.
@@ -237,89 +244,89 @@ export type Heatmap = Array<number>;
  * @param location - The location of the particular student, to help TA's find them.
  */
 export class Question {
-  id!: number;
+  id!: number
 
   @Type(() => UserPartial)
-  creator!: UserPartial;
+  creator!: UserPartial
 
-  text?: string;
+  text?: string
 
-  creatorId?: number;
+  creatorId?: number
 
   @Type(() => UserPartial)
-  taHelped?: UserPartial;
+  taHelped?: UserPartial
 
   @Type(() => Date)
-  createdAt!: Date;
+  createdAt!: Date
 
   @Type(() => Date)
-  helpedAt?: Date;
+  helpedAt?: Date
 
   @Type(() => Date)
-  closedAt?: Date;
+  closedAt?: Date
 
-  questionType?: string;
+  questionType?: string
 
-  groupable!: boolean;
+  groupable!: boolean
 
-  status!: QuestionStatus;
+  status!: QuestionStatus
 
-  location?: string;
+  location?: string
 }
 
 // Question Types
 export enum QuestionType {
-  Concept = "Concept",
-  Clarification = "Clarification",
-  Testing = "Testing",
-  Bug = "Bug",
-  Setup = "Setup",
-  Other = "Other",
+  Concept = 'Concept',
+  Clarification = 'Clarification',
+  Testing = 'Testing',
+  Bug = 'Bug',
+  Setup = 'Setup',
+  Other = 'Other',
 }
 
 // Type of async question events
 export enum asyncQuestionEventType {
-  answered = "answered",
-  deleted = "deleted",
-  madeVisible = "madeVisible",
-  created = "created",
+  answered = 'answered',
+  deleted = 'deleted',
+  madeVisible = 'madeVisible',
+  created = 'created',
 }
 
 export enum OpenQuestionStatus {
-  Drafting = "Drafting",
-  Queued = "Queued",
-  Helping = "Helping",
-  PriorityQueued = "PriorityQueued",
+  Drafting = 'Drafting',
+  Queued = 'Queued',
+  Helping = 'Helping',
+  PriorityQueued = 'PriorityQueued',
 }
 
 /**
  * Limbo statuses are awaiting some confirmation from the student.
  */
 export enum LimboQuestionStatus {
-  CantFind = "CantFind", // represents when a student can't be found by a TA
-  ReQueueing = "ReQueueing", // represents when a TA wants to get back to a student later and give them the option to be put into the priority queue
-  TADeleted = "TADeleted", // When a TA deletes a question for a multitude of reasons
+  CantFind = 'CantFind', // represents when a student can't be found by a TA
+  ReQueueing = 'ReQueueing', // represents when a TA wants to get back to a student later and give them the option to be put into the priority queue
+  TADeleted = 'TADeleted', // When a TA deletes a question for a multitude of reasons
 }
 
 export enum ClosedQuestionStatus {
-  Resolved = "Resolved",
-  DeletedDraft = "DeletedDraft",
-  ConfirmedDeleted = "ConfirmedDeleted",
-  Stale = "Stale",
+  Resolved = 'Resolved',
+  DeletedDraft = 'DeletedDraft',
+  ConfirmedDeleted = 'ConfirmedDeleted',
+  Stale = 'Stale',
 }
 
 export enum asyncQuestionStatus {
-  Resolved = "Resolved",
-  TADeleted = "TADeleted",
-  StudentDeleted = "StudentDeleted",
-  Waiting = "Waiting",
+  Resolved = 'Resolved',
+  TADeleted = 'TADeleted',
+  StudentDeleted = 'StudentDeleted',
+  Waiting = 'Waiting',
 }
 export const StatusInQueue = [
   OpenQuestionStatus.Drafting,
   OpenQuestionStatus.Queued,
-];
+]
 
-export const StatusInPriorityQueue = [OpenQuestionStatus.PriorityQueued];
+export const StatusInPriorityQueue = [OpenQuestionStatus.PriorityQueued]
 
 export const StatusSentToCreator = [
   ...StatusInPriorityQueue,
@@ -328,26 +335,26 @@ export const StatusSentToCreator = [
   LimboQuestionStatus.ReQueueing,
   LimboQuestionStatus.CantFind,
   LimboQuestionStatus.TADeleted,
-];
+]
 
 // Ticket Status - Represents a given status of as student's ticket
-export type QuestionStatus = keyof typeof QuestionStatusKeys;
+export type QuestionStatus = keyof typeof QuestionStatusKeys
 // an Enum-like constant that contains all the statuses for convenience.
 export const QuestionStatusKeys = {
   ...OpenQuestionStatus,
   ...ClosedQuestionStatus,
   ...LimboQuestionStatus,
-};
+}
 
 export class QuestionGroup {
   @IsInt()
-  id!: number;
+  id!: number
 
   @Type(() => Question)
-  questions!: Array<Question>;
+  questions!: Array<Question>
 
   @Type(() => UserPartial)
-  creator!: UserPartial;
+  creator!: UserPartial
 
   //Might want to add a list of students in group so they can be added without a question
 }
@@ -358,56 +365,56 @@ export class QuestionGroup {
 export class AsyncQuestion {
   @IsOptional()
   @IsInt()
-  id?: number;
+  id?: number
 
   @Type(() => UserPartial)
-  creator?: UserPartial;
+  creator?: UserPartial
 
   @IsOptional()
-  images?: Image[];
-
-  @IsOptional()
-  @IsString()
-  questionAbstract?: string;
+  images?: Image[]
 
   @IsOptional()
   @IsString()
-  questionText?: string;
+  questionAbstract?: string
 
   @IsOptional()
   @IsString()
-  answerText?: string;
+  questionText?: string
+
+  @IsOptional()
+  @IsString()
+  answerText?: string
 
   @IsOptional()
   @IsInt()
-  creatorId?: number;
+  creatorId?: number
 
   @Type(() => UserPartial)
-  taHelped?: UserPartial;
+  taHelped?: UserPartial
 
   @Type(() => Date)
-  createdAt?: Date;
+  createdAt?: Date
 
   @Type(() => Date)
-  closedAt?: Date;
+  closedAt?: Date
 
   @IsOptional()
   @IsString()
-  questionType?: string;
+  questionType?: string
 
   @IsOptional()
   @IsString()
-  status?: asyncQuestionStatus;
+  status?: asyncQuestionStatus
 
   @IsOptional()
   @IsBoolean()
-  visible?: boolean;
+  visible?: boolean
 }
 
 export class Image {
   @IsOptional()
   @IsInt()
-  id?: number;
+  id?: number
 }
 // /**
 //  * A Semester object, representing a schedule semester term for the purposes of a course.
@@ -422,26 +429,21 @@ export class Image {
 /**
  * Represents one of the seasons in which a course can take place.
  */
-export type Season =
-  | "Fall"
-  | "Spring"
-  | "Summer_1"
-  | "Summer_2"
-  | "Summer_Full";
+export type Season = 'Fall' | 'Spring' | 'Summer_1' | 'Summer_2' | 'Summer_Full'
 
 export type DesktopNotifBody = {
-  endpoint: string;
-  expirationTime?: number;
+  endpoint: string
+  expirationTime?: number
   keys: {
-    p256dh: string;
-    auth: string;
-  };
-  name?: string;
-};
+    p256dh: string
+    auth: string
+  }
+  name?: string
+}
 
 export type PhoneNotifBody = {
-  phoneNumber: string;
-};
+  phoneNumber: string
+}
 
 // =================== API Route Types ===========================
 // On backend, validated with https://docs.nestjs.com/techniques/validation
@@ -452,395 +454,417 @@ export class GetProfileResponse extends User {}
 
 export class UBCOloginParam {
   @IsString()
-  email!: string;
+  email!: string
   @IsString()
-  password!: string;
+  password!: string
 }
 export class UBCOuserParam {
   @IsString()
-  email!: string;
+  email!: string
 
   @IsString()
-  first_name!: string;
+  first_name!: string
 
   @IsString()
-  password!: string;
+  password!: string
 
   @IsString()
-  last_name!: string;
+  last_name!: string
 
   @IsInt()
-  selected_course!: number;
+  selected_course!: number
 
   @IsOptional()
   @IsInt()
-  sid?: number;
+  sid?: number
 
   @IsOptional()
   @IsString()
-  photo_url?: string;
+  photo_url?: string
 
   @IsOptional()
   @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
-  courses?: KhouryCourse[] | KhouryProfCourse[];
+  courses?: KhouryCourse[] | KhouryProfCourse[]
 }
 export class KhouryDataParams {
   @IsString()
-  email!: string;
+  email!: string
 
   @IsString()
-  password!: string;
+  password!: string
 
   @IsString()
-  first_name!: string;
+  first_name!: string
 
   @IsString()
-  last_name!: string;
+  last_name!: string
 
   @IsInt()
-  campus!: number;
+  campus!: number
 
   @IsOptional()
   @IsString()
-  photo_url!: string;
+  photo_url!: string
 
   @IsOptional()
   @IsDefined() // TODO: use ValidateNested instead, for some reason it's crunked
-  courses!: KhouryCourse[] | KhouryProfCourse[];
+  courses!: KhouryCourse[] | KhouryProfCourse[]
 }
 
 export class KhouryCourse {
   @IsInt()
-  crn!: number;
+  crn!: number
 
   @IsString()
-  semester!: string;
+  semester!: string
 
   @IsEnum(String)
-  role!: "TA" | "Student";
+  role!: 'TA' | 'Student'
 }
 
 export class KhouryProfCourse {
   // List of CRN's in the section group
   @IsArray()
-  crns!: number[];
+  crns!: number[]
 
   @IsString()
-  semester!: string;
+  semester!: string
 
   // Section group name
   @IsString()
-  name!: string;
+  name!: string
 }
 
 export function isKhouryCourse(
-  c: KhouryCourse | KhouryProfCourse
+  c: KhouryCourse | KhouryProfCourse,
 ): c is KhouryCourse {
   return (
     (c as KhouryCourse).role !== undefined &&
     (c as KhouryCourse).crn !== undefined
-  );
+  )
 }
 
 export class Calendar {
   @IsString()
-  title!: string;
+  title!: string
 
   @IsDate()
   @Type(() => Date)
-  start!: Date;
+  start!: Date
 
   @IsDate()
   @Type(() => Date)
-  end!: Date;
+  end!: Date
 
   @IsNumber()
-  cid!: number;
+  cid!: number
 
   @IsArray()
   @IsOptional()
-  daysOfWeek?: string[];
+  daysOfWeek?: string[]
 
   @IsBoolean()
   @IsOptional()
-  allDay?: boolean;
+  allDay?: boolean
 }
 export class questions {
   @IsInt()
-  id!: number;
+  id!: number
 
   @IsInt()
-  queueId?: number;
+  queueId?: number
 
   @IsString()
-  text?: string;
+  text?: string
 
   @IsString()
-  questionType?: string;
+  questionType?: string
 
   @IsDate()
   @Type(() => Date)
-  createdAt!: Date;
+  createdAt!: Date
 
   @IsString()
-  status?: string;
+  status?: string
 
   @IsString()
-  location?: string;
+  location?: string
 
   @IsString()
-  creatorName?: string;
+  creatorName?: string
 
   @IsString()
-  helpName?: string;
+  helpName?: string
 }
 export interface KhouryRedirectResponse {
-  redirect: string;
+  redirect: string
 }
 
 export class UpdateOrganizationUserRole {
   @IsNumber()
   @IsNotEmpty()
-  userId!: number;
+  userId!: number
 
   @IsString()
   @IsNotEmpty()
-  organizationRole!: OrganizationRole;
+  organizationRole!: OrganizationRole
 }
 
 export class UpdateOrganizationDetailsParams {
   @IsString()
   @IsOptional()
-  name?: string;
+  name?: string
 
   @IsString()
   @IsOptional()
-  description?: string;
+  description?: string
 
   @IsString()
   @IsOptional()
-  websiteUrl?: string;
+  websiteUrl?: string
 }
 
 export class UpdateProfileParams {
   @IsBoolean()
   @IsOptional()
-  desktopNotifsEnabled?: boolean;
+  desktopNotifsEnabled?: boolean
 
   @IsBoolean()
   @IsOptional()
-  phoneNotifsEnabled?: boolean;
+  phoneNotifsEnabled?: boolean
 
   @ValidateIf((o) => o.phoneNotifsEnabled)
   @IsString()
   @IsNotEmpty()
-  phoneNumber?: string;
+  phoneNumber?: string
 
   @IsString()
   @IsOptional()
-  firstName?: string;
+  firstName?: string
 
   @IsInt()
   @IsOptional()
-  sid?: number;
+  sid?: number
 
   @IsString()
   @IsOptional()
-  lastName?: string;
+  lastName?: string
 
   @IsString()
   @IsOptional()
-  email?: string;
+  email?: string
 
   @IsString()
   @IsOptional()
-  defaultMessage?: string;
+  defaultMessage?: string
 
   @IsBoolean()
   @IsOptional()
-  includeDefaultMessage?: boolean;
+  includeDefaultMessage?: boolean
 }
 
 export class OrganizationPartial {
-  id!: number;
-  name!: string;
-  logoUrl?: string;
-  bannerUrl?: string;
-  websiteUrl?: string;
-  ssoEnabled?: boolean;
-  ssoUrl?: string;
+  id!: number
+  name!: string
+  logoUrl?: string
+  bannerUrl?: string
+  websiteUrl?: string
+  ssoEnabled?: boolean
+  ssoUrl?: string
 }
 
 export class OrganizationUserPartial {
-  id!: number;
-  organizationName!: string;
-  organizationDescription!: string;
-  organizationLogoUrl!: string;
-  organizationBannerUrl!: string;
-  organizationRole!: string;
+  id!: number
+  orgId!: number
+  organizationName!: string
+  organizationDescription!: string
+  organizationLogoUrl!: string
+  organizationBannerUrl!: string
+  organizationRole!: string
 }
 
 export class GetOrganizationResponse {
-  id!: number;
-  name!: string;
-  description?: string;
-  logoUrl?: string;
-  bannerUrl?: string;
-  websiteUrl?: string;
-  ssoEnabled?: boolean;
-  ssoUrl?: string;
+  id!: number
+  name!: string
+  description?: string
+  logoUrl?: string
+  bannerUrl?: string
+  websiteUrl?: string
+  ssoEnabled?: boolean
+  ssoUrl?: string
 }
 
 export class GetCourseResponse {
-  id!: number;
-  name!: string;
+  id!: number
+  name!: string
 
   @Type(() => QueuePartial)
-  queues?: QueuePartial[];
+  queues?: QueuePartial[]
 
-  heatmap!: Heatmap | false;
-  coordinator_email!: string;
+  heatmap!: Heatmap | false
+  coordinator_email!: string
 
   @Type(() => Number)
-  crns!: number[];
+  crns!: number[]
 
-  icalURL?: string;
+  icalURL?: string
 
-  zoomLink!: string;
+  zoomLink!: string
 
-  questionTimer?: number;
+  questionTimer?: number
 
-  selfEnroll!: boolean;
+  selfEnroll!: boolean
 
-  asyncQuestionDisplayTypes?: string[];
+  asyncQuestionDisplayTypes?: string[]
 
   @Type(() => OrganizationPartial)
-  organizationCourse?: OrganizationPartial;
+  organizationCourse?: OrganizationPartial
+  courseInviteCode!: string
+}
+
+export class GetLimitedCourseResponse {
+  id!: number
+  name!: string
+
+  @Type(() => OrganizationPartial)
+  organizationCourse?: OrganizationPartial
+  courseInviteCode!: string
 }
 
 export class GetCourseUserInfoResponse {
-  users!: UserPartial[];
-  total!: number;
+  users!: UserPartial[]
+  total!: number
 }
 
 export class GetOrganizationUsersResponse {
-  userId!: number;
-  userFirstName!: string;
-  userLastName!: string;
-  userEmail!: string;
-  userPhotoUrl!: string;
-  userOrganizationRole!: string;
+  userId!: number
+  userFirstName!: string
+  userLastName!: string
+  userEmail!: string
+  userPhotoUrl!: string
+  userOrganizationRole!: string
 }
 
 export class OrganizationUser {
-  id!: number;
-  firstName!: string;
-  lastName!: string;
-  email!: string;
-  photoUrl!: string;
-  fullName!: string;
-  globalRole!: string;
-  sid!: number;
-  accountDeactivated!: boolean;
+  id!: number
+  firstName!: string
+  lastName!: string
+  email!: string
+  photoUrl!: string
+  fullName!: string
+  globalRole!: string
+  sid!: number
+  accountDeactivated!: boolean
 }
 
 export class OrganizationCourse {
-  id!: number;
-  name!: string;
-  role!: string;
+  id!: number
+  name!: string
+  role!: string
 }
 
 export class GetOrganizationUserResponse {
-  organizationId!: number;
-  organizationRole!: string;
-  user!: OrganizationUser;
-  courses!: OrganizationCourse[];
+  organizationId!: number
+  organizationRole!: string
+  user!: OrganizationUser
+  courses!: OrganizationCourse[]
 }
 
 export class GetSelfEnrollResponse {
-  courses!: CoursePartial[];
+  courses!: CoursePartial[]
 }
 
 export class GetCourseOverridesRow {
-  id!: number;
-  role!: string;
-  name!: string;
-  email!: string;
+  id!: number
+  role!: string
+  name!: string
+  email!: string
 }
 
 export class GetCourseOverridesResponse {
   @Type(() => GetCourseOverridesRow)
-  data!: GetCourseOverridesRow[];
+  data!: GetCourseOverridesRow[]
 }
 
 export class UpdateCourseOverrideBody {
   @IsString()
-  email!: string;
+  email!: string
 
   @IsString()
-  role!: Role;
+  role!: Role
 }
 
 export class InteractionParams {
   @IsInt()
-  courseId!: number;
+  courseId!: number
 
   @IsInt()
-  userId!: number;
+  userId!: number
 }
 
 export class UpdateOrganizationCourseDetailsParams {
   @IsString()
   @IsOptional()
-  name?: string;
+  name?: string
 
   @IsString()
   @IsOptional()
-  coordinatorEmail?: string;
+  coordinatorEmail?: string
 
   @IsString()
   @IsOptional()
-  sectionGroupName?: string;
+  sectionGroupName?: string
 
   @IsString()
   @IsOptional()
-  zoomLink?: string;
+  zoomLink?: string
 
   @IsString()
   @IsOptional()
-  timezone?: string;
+  timezone?: string
 
   @IsInt()
   @IsOptional()
-  semesterId?: number;
+  semesterId?: number
 
   @IsArray()
   @IsOptional()
-  profIds?: Array<number>;
+  profIds?: Array<number>
 }
 
 export class ChatBotQuestionParams {
   @IsInt()
-  interactionId?: number;
+  interactionId?: number
 
   @IsString()
-  questionText?: string;
+  questionText?: string
 
   @IsString()
-  responseText?: string;
+  responseText?: string
 
   @IsBoolean()
-  suggested?: boolean;
+  suggested?: boolean
 
   @IsInt()
-  userScore?: number;
+  userScore?: number
 
   @IsArray()
   sourceDocuments?: {
-    name: string;
-    type: string;
-    parts: string[];
-  }[];
+    name: string
+    type: string
+    parts: string[]
+  }[]
+}
+
+export class DocumentParams {
+  @IsString()
+  name?: string
+
+  @IsString()
+  type?: string
+
+  @IsArray()
+  subDocumentIds?: string[]
 }
 
 export class UpdateCourseOverrideResponse extends GetCourseOverridesRow {}
@@ -851,249 +875,249 @@ export class GetCourseQueuesResponse extends Array<QueuePartial> {}
 
 export class ListQuestionsResponse {
   @Type(() => Question)
-  yourQuestion?: Question;
+  yourQuestion?: Question
 
   @Type(() => Question)
-  questionsGettingHelp!: Array<Question>;
+  questionsGettingHelp!: Array<Question>
 
   @Type(() => Question)
-  queue!: Array<Question>;
+  queue!: Array<Question>
 
   @Type(() => Question)
-  priorityQueue!: Array<Question>;
+  priorityQueue!: Array<Question>
 
   @Type(() => QuestionGroup)
-  groups!: Array<QuestionGroup>;
+  groups!: Array<QuestionGroup>
 
   @Type(() => AlertPayload)
-  unresolvedAlerts?: Array<AlertPayload>;
+  unresolvedAlerts?: Array<AlertPayload>
 }
 
 export class AsyncQuestionResponse {
   @Type(() => Question)
-  waitingQuestions!: Array<AsyncQuestion>;
+  waitingQuestions!: Array<AsyncQuestion>
 
   @Type(() => Question)
-  helpedQuestions!: Array<AsyncQuestion>;
+  helpedQuestions!: Array<AsyncQuestion>
 
   @Type(() => Question)
-  otherQuestions!: Array<AsyncQuestion>;
+  otherQuestions!: Array<AsyncQuestion>
 
   @Type(() => Question)
-  visibleQuestions!: Array<AsyncQuestion>;
+  visibleQuestions!: Array<AsyncQuestion>
 }
 export class GetQuestionResponse extends Question {}
 
 export class GetStudentQuestionResponse extends Question {
   @IsInt()
-  queueId!: number;
+  queueId!: number
 }
 
 export class CreateQuestionParams {
   @IsString()
-  text!: string;
+  text!: string
 
   @IsString()
   @IsOptional()
-  questionType?: string;
+  questionType?: string
 
   @IsBoolean()
-  groupable!: boolean;
+  groupable!: boolean
 
   @IsInt()
-  queueId!: number;
+  queueId!: number
 
   @IsString()
   @IsOptional()
-  location?: string;
+  location?: string
 
   @IsBoolean()
-  force!: boolean;
+  force!: boolean
 }
 export class CreateQuestionResponse extends Question {}
 
 export class UpdateQuestionParams {
   @IsString()
   @IsOptional()
-  text?: string;
+  text?: string
 
   @IsString()
   @IsOptional()
-  questionType?: string;
+  questionType?: string
 
   @IsBoolean()
   @IsOptional()
-  groupable?: boolean;
+  groupable?: boolean
 
   @IsInt()
   @IsOptional()
-  queueId?: number;
+  queueId?: number
 
   @IsEnum(QuestionStatusKeys)
   @IsOptional()
-  status?: QuestionStatus;
+  status?: QuestionStatus
 
   @IsString()
   @IsOptional()
-  location?: string;
+  location?: string
 }
 export class UpdateQuestionResponse extends Question {}
 
 export class GroupQuestionsParams {
   @IsArray()
   @Type(() => Number)
-  questionIds!: number[];
+  questionIds!: number[]
 
   @IsInt()
-  queueId!: number;
+  queueId!: number
 }
 
 export class ResolveGroupParams {
   @IsInt()
-  queueId!: number;
+  queueId!: number
 }
 
 export class CreateAsyncQuestions extends AsyncQuestion {}
 
 export class UpdateAsyncQuestions extends AsyncQuestion {}
 
-export type TAUpdateStatusResponse = QueuePartial;
+export type TAUpdateStatusResponse = QueuePartial
 export type QueueNotePayloadType = {
-  notes: string;
-};
+  notes: string
+}
 
 export class TACheckoutResponse {
   // The ID of the queue we checked out of
-  queueId!: number;
+  queueId!: number
 }
 
 export class UpdateQueueParams {
   @IsString()
   @IsOptional()
-  notes?: string;
+  notes?: string
 
   @IsBoolean()
-  allowQuestions?: boolean;
+  allowQuestions?: boolean
 }
 
 export class TACheckinTimesResponse {
   @Type(() => TACheckinPair)
-  taCheckinTimes!: TACheckinPair[];
+  taCheckinTimes!: TACheckinPair[]
 }
 
 export class TACheckinPair {
   @IsString()
-  name!: string;
+  name!: string
 
   @IsDate()
   @Type(() => Date)
-  checkinTime!: Date;
+  checkinTime!: Date
 
   @IsDate()
   @Type(() => Date)
-  checkoutTime?: Date;
+  checkoutTime?: Date
 
   @IsBoolean()
-  forced!: boolean;
+  forced!: boolean
 
   @IsBoolean()
-  inProgress!: boolean;
+  inProgress!: boolean
 
   @IsNumber()
-  numHelped!: number;
+  numHelped!: number
 }
 
 export enum AlertType {
-  REPHRASE_QUESTION = "rephraseQuestion",
+  REPHRASE_QUESTION = 'rephraseQuestion',
 }
 
 export class AlertPayload {}
 
 export class Alert {
   @IsEnum(AlertType)
-  alertType!: AlertType;
+  alertType!: AlertType
 
   @IsDate()
-  sent!: Date;
+  sent!: Date
 
   @Type(() => AlertPayload)
-  payload!: AlertPayload;
+  payload!: AlertPayload
 
   @IsInt()
-  id!: number;
+  id!: number
 }
 
 export class RephraseQuestionPayload extends AlertPayload {
   @IsInt()
-  questionId!: number;
+  questionId!: number
 
   @IsInt()
-  queueId!: number;
+  queueId!: number
 
   @IsInt()
-  courseId!: number;
+  courseId!: number
 }
 
 export class OrganizationCourseResponse {
   @IsInt()
-  id?: number;
+  id?: number
 
   @IsInt()
-  organizationId?: number;
+  organizationId?: number
 
   @IsInt()
-  courseId?: number;
+  courseId?: number
 
-  course?: GetCourseResponse;
+  course?: GetCourseResponse
 }
 
 export class OrganizationStatsResponse {
   @IsInt()
-  members?: number;
+  members?: number
 
   @IsInt()
-  courses?: number;
+  courses?: number
 
   @IsInt()
-  membersProfessors?: number;
+  membersProfessors?: number
 }
 
 export class CreateAlertParams {
   @IsEnum(AlertType)
-  alertType!: AlertType;
+  alertType!: AlertType
 
   @IsInt()
-  courseId!: number;
+  courseId!: number
 
   @IsObject()
-  payload!: AlertPayload;
+  payload!: AlertPayload
 
   @IsInt()
-  targetUserId!: number;
+  targetUserId!: number
 }
 
 export class CreateAlertResponse extends Alert {}
 
 export class GetAlertsResponse {
   @Type(() => Alert)
-  alerts!: Alert[];
+  alerts!: Alert[]
 }
 
 export class questionTypeParam {
   @IsInt()
-  cid!: number;
+  cid!: number
 
   @IsString()
   @IsOptional()
-  name!: string;
+  name!: string
 
   @IsInt()
   @IsOptional()
-  queueId?: number;
+  queueId?: number
 }
 export class questionTypeResponse {
   @Type(() => questionTypeParam)
-  questions!: questionTypeParam[];
+  questions!: questionTypeParam[]
 }
 /**
  * Represents the parameters for a course being registered for register_courses endpoint.
@@ -1106,341 +1130,345 @@ export class questionTypeResponse {
  */
 export class RegisterCourseParams {
   @IsString()
-  sectionGroupName!: string;
+  sectionGroupName!: string
 
   @IsString()
-  name!: string;
+  name!: string
 
   @IsString()
-  iCalURL?: string;
+  iCalURL?: string
 
   @IsString()
-  coordinator_email!: string;
+  coordinator_email!: string
 
   @IsString()
-  timezone!: string;
+  timezone!: string
 }
 
 export class EditCourseInfoParams {
   @IsNumber()
-  courseId?: number;
+  courseId?: number
 
   @IsString()
   @IsOptional()
-  name?: string;
+  name?: string
 
   @IsString()
   @IsOptional()
-  coordinator_email?: string;
+  coordinator_email?: string
 
   @IsString()
   @IsOptional()
-  icalURL?: string;
+  icalURL?: string
 
   @IsString()
   @IsOptional()
-  zoomLink?: string;
+  zoomLink?: string
 
   @IsString()
   @IsOptional()
-  timezone?: string;
+  timezone?: string
 
   @IsOptional()
-  enabled?: boolean;
+  enabled?: boolean
 
   @IsString()
   @IsOptional()
-  questionTimer?: number;
+  questionTimer?: number
 
   @IsArray()
   @IsOptional()
-  asyncQuestionDisplayTypes?: string[];
+  asyncQuestionDisplayTypes?: string[]
 
   @IsArray()
   @IsOptional()
   @Type(() => Number)
-  crns?: number[];
+  crns?: number[]
+
+  @IsString()
+  @IsOptional()
+  courseInviteCode?: string
 }
 
 export class SemesterPartial {
-  id!: number;
-  season!: string;
-  year!: number;
+  id!: number
+  season!: string
+  year!: number
 }
 
 export class SSEQueueResponse {
-  queue?: GetQueueResponse;
-  questions?: ListQuestionsResponse;
+  queue?: GetQueueResponse
+  questions?: ListQuestionsResponse
 }
 
 export interface TwilioBody {
-  ToCountry: string;
-  ToState: string;
-  SmsMessageSid: string;
-  NumMedia: string;
-  ToCity: string;
-  FromZip: string;
-  SmsSid: string;
-  FromState: string;
-  SmsStatus: string;
-  FromCity: string;
-  Body: string;
-  FromCountry: string;
-  To: string;
-  ToZip: string;
-  NumSegments: string;
-  MessageSid: string;
-  AccountSid: string;
-  From: string;
-  ApiVersion: string;
+  ToCountry: string
+  ToState: string
+  SmsMessageSid: string
+  NumMedia: string
+  ToCity: string
+  FromZip: string
+  SmsSid: string
+  FromState: string
+  SmsStatus: string
+  FromCity: string
+  Body: string
+  FromCountry: string
+  To: string
+  ToZip: string
+  NumSegments: string
+  MessageSid: string
+  AccountSid: string
+  From: string
+  ApiVersion: string
 }
 
-export type GetInsightOutputResponse = PossibleOutputTypes;
+export type GetInsightOutputResponse = PossibleOutputTypes
 
-export type ListInsightsResponse = Record<string, InsightDisplayInfo>;
+export type ListInsightsResponse = Record<string, InsightDisplayInfo>
 
 export type InsightDisplayInfo = {
-  displayName: string;
-  description: string;
-  component: InsightComponent;
-  size: "small" | "default";
-};
+  displayName: string
+  description: string
+  component: InsightComponent
+  size: 'small' | 'default'
+}
 
 export interface InsightObject {
-  displayName: string;
-  description: string;
-  roles: Role[];
-  component: InsightComponent;
-  size: "default" | "small";
+  displayName: string
+  description: string
+  roles: Role[]
+  component: InsightComponent
+  size: 'default' | 'small'
   compute: (
     insightFilters: any,
-    cacheManager?: Cache
-  ) => Promise<PossibleOutputTypes>;
+    cacheManager?: Cache,
+  ) => Promise<PossibleOutputTypes>
 }
 
 export enum InsightComponent {
-  SimpleDisplay = "SimpleDisplay",
-  BarChart = "BarChart",
-  SimpleTable = "SimpleTable",
+  SimpleDisplay = 'SimpleDisplay',
+  BarChart = 'BarChart',
+  SimpleTable = 'SimpleTable',
 }
 
 export type PossibleOutputTypes =
   | SimpleDisplayOutputType
   | BarChartOutputType
-  | SimpleTableOutputType;
+  | SimpleTableOutputType
 
-export type SimpleDisplayOutputType = number | string;
+export type SimpleDisplayOutputType = number | string
 
 export type BarChartOutputType = {
-  data: StringMap<number>[];
-  xField: string;
-  yField: string;
-  seriesField: string;
-  xAxisName?: string;
-  yAxisName?: string;
-};
+  data: StringMap<number>[]
+  xField: string
+  yField: string
+  seriesField: string
+  xAxisName?: string
+  yAxisName?: string
+}
 
 export type SimpleTableOutputType = {
-  dataSource: StringMap<string>[];
-  columns: StringMap<string>[];
-  totalStudents: number;
-};
+  dataSource: StringMap<string>[]
+  columns: StringMap<string>[]
+  totalStudents: number
+}
 
 export type StringMap<T> = {
-  [key: string]: T;
-};
+  [key: string]: T
+}
 
 export type DateRangeType = {
-  start: string;
-  end: string;
-};
+  start: string
+  end: string
+}
 
 export type InsightParamsType = {
-  start: string;
-  end: string;
-  limit: number;
-  offset: number;
-};
+  start: string
+  end: string
+  limit: number
+  offset: number
+}
 
 export type sendEmailAsync = {
-  receiver: string;
-  subject: string;
-  type: asyncQuestionEventType;
-};
+  receiver: string
+  subject: string
+  type: asyncQuestionEventType
+}
 export const ERROR_MESSAGES = {
   common: {
     pageOutOfBounds: "Can't retrieve out of bounds page.",
   },
   organizationController: {
-    notEnoughDiskSpace: "Not enough disk space to upload file",
-    userAlreadyInOrganization: "User is already in organization",
-    courseAlreadyInOrganization: "Course is already in organization",
-    organizationNotFound: "Organization not found",
-    organizationNameTooShort: "Organization name must be at least 4 characters",
-    noFileUploaded: "No file uploaded",
+    notEnoughDiskSpace: 'Not enough disk space to upload file',
+    userAlreadyInOrganization: 'User is already in organization',
+    courseAlreadyInOrganization: 'Course is already in organization',
+    organizationNotFound: 'Organization not found',
+    organizationNameTooShort: 'Organization name must be at least 4 characters',
+    noFileUploaded: 'No file uploaded',
     organizationDescriptionTooShort:
-      "Organization description must be at least 10 characters",
+      'Organization description must be at least 10 characters',
     organizationUrlTooShortOrInValid:
-      "Organization URL must be at least 4 characters and be a valid URL",
-    userNotFoundInOrganization: "User not found in organization",
-    cannotRemoveAdminRole: "Cannot remove admin role from user",
-    cannotGetAdminUser: "Information about this user account is restricted",
+      'Organization URL must be at least 4 characters and be a valid URL',
+    userNotFoundInOrganization: 'User not found in organization',
+    cannotRemoveAdminRole: 'Cannot remove admin role from user',
+    cannotGetAdminUser: 'Information about this user account is restricted',
   },
   courseController: {
     checkIn: {
       cannotCheckIntoMultipleQueues:
-        "Cannot check into multiple queues at the same time",
+        'Cannot check into multiple queues at the same time',
     },
-    semesterNotFound: "Semester not found",
-    courseNameTooShort: "Course name must be at least 1 character",
-    coordinatorEmailTooShort: "Coordinator email must be at least 1 character",
-    sectionGroupNameTooShort: "Section group name must be at least 1 character",
-    zoomLinkTooShort: "Zoom link must be at least 1 character",
-    courseAlreadyRegistered: "One or more of the courses is already registered",
-    courseNotFound: "The course was not found",
-    sectionGroupNotFound: "One or more of the section groups was not found",
+    semesterNotFound: 'Semester not found',
+    courseNameTooShort: 'Course name must be at least 1 character',
+    coordinatorEmailTooShort: 'Coordinator email must be at least 1 character',
+    sectionGroupNameTooShort: 'Section group name must be at least 1 character',
+    zoomLinkTooShort: 'Zoom link must be at least 1 character',
+    courseAlreadyRegistered: 'One or more of the courses is already registered',
+    courseNotFound: 'The course was not found',
+    sectionGroupNotFound: 'One or more of the section groups was not found',
     courseOfficeHourError: "Unable to find a course's office hours",
     courseHeatMapError: "Unable to get course's cached heatmap",
     courseCrnsError: "Unable to get course's crn numbers",
-    courseModelError: "Course Model not found",
-    noUserFound: "No user found with given email",
-    noSemesterFound: "No semester exists for the submitted course",
-    updatedQueueError: "Error updating a course queue",
-    queuesNotFound: "Queues not found",
-    queueNotFound: "Queue not found",
-    queueAlreadyExists: "Queue already exists.",
-    queueNotAuthorized: "Unable to join this professor queue as a TA",
-    saveQueueError: "Unable to save queue",
-    clearQueueError: "Unable to determine if queue can be cleared",
-    createEventError: "An error occurred while creating an event",
-    icalCalendarUpdate: "Unable to update calendar",
-    checkInTime: "Unable to get TA check in times",
-    removeCourse: "Error occurred while trying to remove a course",
-    createCourse: "Error occurred while trying to create a course",
-    updateCourse: "Error occurred while trying to update a course",
-    createCourseMappings: "Unable to create a course mappings",
+    courseModelError: 'Course Model not found',
+    noUserFound: 'No user found with given email',
+    noSemesterFound: 'No semester exists for the submitted course',
+    updatedQueueError: 'Error updating a course queue',
+    queuesNotFound: 'Queues not found',
+    queueNotFound: 'Queue not found',
+    queueAlreadyExists: 'Queue already exists.',
+    queueNotAuthorized: 'Unable to join this professor queue as a TA',
+    saveQueueError: 'Unable to save queue',
+    clearQueueError: 'Unable to determine if queue can be cleared',
+    createEventError: 'An error occurred while creating an event',
+    icalCalendarUpdate: 'Unable to update calendar',
+    checkInTime: 'Unable to get TA check in times',
+    removeCourse: 'Error occurred while trying to remove a course',
+    createCourse: 'Error occurred while trying to create a course',
+    updateCourse: 'Error occurred while trying to update a course',
+    createCourseMappings: 'Unable to create a course mappings',
     updateProfLastRegistered:
       "Unable to update professor's last registered semester",
     invalidApplyURL:
-      "You are unauthorized to submit an application. Please email help@khouryofficehours.com for the correct URL.",
+      'You are unauthorized to submit an application. Please email help@khouryofficehours.com for the correct URL.',
     crnAlreadyRegistered: (crn: number, courseId: number): string =>
       `The CRN ${crn} already exists for another course with course id ${courseId}`,
   },
   questionController: {
     createQuestion: {
-      invalidQueue: "Posted to an invalid queue",
-      noNewQuestions: "Queue not allowing new questions",
-      closedQueue: "Queue is closed",
+      invalidQueue: 'Posted to an invalid queue',
+      noNewQuestions: 'Queue not allowing new questions',
+      closedQueue: 'Queue is closed',
       oneQuestionAtATime: "You can't create more than one question at a time.",
     },
     updateQuestion: {
       fsmViolation: (
         role: string,
         questionStatus: string,
-        bodyStatus: string
+        bodyStatus: string,
       ): string =>
         `${role} cannot change status from ${questionStatus} to ${bodyStatus}`,
-      taOnlyEditQuestionStatus: "TA/Professors can only edit question status",
-      otherTAHelping: "Another TA is currently helping with this question",
-      otherTAResolved: "Another TA has already resolved this question",
-      taHelpingOther: "TA is already helping someone else",
-      loginUserCantEdit: "Logged-in user does not have edit access",
+      taOnlyEditQuestionStatus: 'TA/Professors can only edit question status',
+      otherTAHelping: 'Another TA is currently helping with this question',
+      otherTAResolved: 'Another TA has already resolved this question',
+      taHelpingOther: 'TA is already helping someone else',
+      loginUserCantEdit: 'Logged-in user does not have edit access',
     },
     groupQuestions: {
-      notGroupable: "One or more of the questions is not groupable",
+      notGroupable: 'One or more of the questions is not groupable',
     },
-    saveQError: "Unable to save a question",
-    notFound: "Question not found",
-    unableToNotifyUser: "Unable to notify user",
+    saveQError: 'Unable to save a question',
+    notFound: 'Question not found',
+    unableToNotifyUser: 'Unable to notify user',
   },
   loginController: {
-    receiveDataFromKhoury: "Invalid request signature",
-    invalidPayload: "The decoded JWT payload is invalid",
-    invalidTempJWTToken: "Error occurred while signing a JWT token",
+    receiveDataFromKhoury: 'Invalid request signature',
+    invalidPayload: 'The decoded JWT payload is invalid',
+    invalidTempJWTToken: 'Error occurred while signing a JWT token',
     addUserFromKhoury:
-      "Error occurred while translating account from Khoury to Office Hours",
+      'Error occurred while translating account from Khoury to Office Hours',
   },
   notificationController: {
-    messageNotFromTwilio: "Message not from Twilio",
+    messageNotFromTwilio: 'Message not from Twilio',
   },
   notificationService: {
-    registerPhone: "phone number invalid",
+    registerPhone: 'phone number invalid',
   },
   questionRoleGuard: {
-    questionNotFound: "Question not found",
-    queueOfQuestionNotFound: "Cannot find queue of question",
-    queueDoesNotExist: "This queue does not exist!",
+    questionNotFound: 'Question not found',
+    queueOfQuestionNotFound: 'Cannot find queue of question',
+    queueDoesNotExist: 'This queue does not exist!',
   },
   queueController: {
-    getQueue: "An error occurred while trying to retrieve a Queue",
-    getQuestions: "Unable to get questions from queue",
-    saveQueue: "Unable to save queue",
-    cleanQueue: "Unable to clean queue",
-    cannotCloseQueue: "Unable to close professor queue as a TA",
-    missingStaffList: "Stafflist relation not present on Queue",
+    getQueue: 'An error occurred while trying to retrieve a Queue',
+    getQuestions: 'Unable to get questions from queue',
+    saveQueue: 'Unable to save queue',
+    cleanQueue: 'Unable to clean queue',
+    cannotCloseQueue: 'Unable to close professor queue as a TA',
+    missingStaffList: 'Stafflist relation not present on Queue',
   },
   queueRoleGuard: {
-    queueNotFound: "Queue not found",
+    queueNotFound: 'Queue not found',
   },
   insightsController: {
-    insightUnathorized: "User is not authorized to view this insight",
-    insightNameNotFound: "The insight requested was not found",
-    insightsDisabled: "Insights are currently unavailable, sorry :(",
+    insightUnathorized: 'User is not authorized to view this insight',
+    insightNameNotFound: 'The insight requested was not found',
+    insightsDisabled: 'Insights are currently unavailable, sorry :(',
   },
   roleGuard: {
-    notLoggedIn: "Must be logged in",
-    noCourseIdFound: "No courseid found",
-    notInCourse: "Not In This Course",
+    notLoggedIn: 'Must be logged in',
+    noCourseIdFound: 'No courseid found',
+    notInCourse: 'Not In This Course',
     notAuthorized: "You don't have permissions to perform this action",
-    userNotInOrganization: "User not in organization",
+    userNotInOrganization: 'User not in organization',
     mustBeRoleToAccess: (roles: string[]): string =>
       `You must have one of roles [${roles.join(
-        ", "
+        ', ',
       )}] to access this information`,
     mustBeRoleToJoinCourse: (roles: string[]): string =>
-      `You must have one of roles [${roles.join(", ")}] to access this course`,
+      `You must have one of roles [${roles.join(', ')}] to access this course`,
   },
   mailService: {
-    mailFailed: "Mail was not sent to user",
+    mailFailed: 'Mail was not sent to user',
   },
   profileController: {
-    accountNotAvailable: "The user account is undefined",
-    accountDeactivated: "The user account is deactivated",
-    userResponseNotFound: "The user response was not found",
-    firstNameTooShort: "First name must be at least 1 characters",
-    lastNameTooShort: "Last name must be at least 1 characters",
-    emailTooShort: "Email must be at least 1 characters",
-    sidInvalid: "Student ID must be a number and greater than 0",
+    accountNotAvailable: 'The user account is undefined',
+    accountDeactivated: 'The user account is deactivated',
+    userResponseNotFound: 'The user response was not found',
+    firstNameTooShort: 'First name must be at least 1 characters',
+    lastNameTooShort: 'Last name must be at least 1 characters',
+    emailTooShort: 'Email must be at least 1 characters',
+    sidInvalid: 'Student ID must be a number and greater than 0',
     noProfilePicture: "User doesn't have a profile picture",
     noCoursesToDelete: "User doesn't have any courses to delete",
-    emailInUse: "Email is already in use",
+    emailInUse: 'Email is already in use',
     noDiskSpace:
-      "There is no disk space left to store an image. Please immediately contact your course staff and let them know. They will contact the Khoury Office Hours team as soon as possible.",
+      'There is no disk space left to store an image. Please immediately contact your course staff and let them know. They will contact the Khoury Office Hours team as soon as possible.',
   },
   alertController: {
-    duplicateAlert: "This alert has already been sent",
+    duplicateAlert: 'This alert has already been sent',
     notActiveAlert: "This is not an alert that's open for the current user",
-    incorrectPayload: "The payload provided was not of the correct type",
+    incorrectPayload: 'The payload provided was not of the correct type',
   },
   sseService: {
-    getSubClient: "Unable to get the redis subscriber client",
-    getDBClient: "Unable to get the redis database client",
-    getPubClient: "Unable to get publisher client",
-    moduleDestroy: "Unable to destroy the redis module",
-    cleanupConnection: "Unable to cleanup the connection",
-    clientIdSubscribe: "Client ID not found during subscribing to client",
-    subscribe: "Unable to subscribe to the client",
-    unsubscribe: "Unable to unsubscribe from the client",
-    removeFromRoom: "Error removing from redis room",
-    directConnections: "Unable to cleanup direct connections",
-    roomMembers: "Unable to get room members",
-    serialize: "Unable to serialize payload",
-    publish: "Publisher client is unable to publish",
-    clientIdNotFound: "Client ID not found during subscribing to client",
+    getSubClient: 'Unable to get the redis subscriber client',
+    getDBClient: 'Unable to get the redis database client',
+    getPubClient: 'Unable to get publisher client',
+    moduleDestroy: 'Unable to destroy the redis module',
+    cleanupConnection: 'Unable to cleanup the connection',
+    clientIdSubscribe: 'Client ID not found during subscribing to client',
+    subscribe: 'Unable to subscribe to the client',
+    unsubscribe: 'Unable to unsubscribe from the client',
+    removeFromRoom: 'Error removing from redis room',
+    directConnections: 'Unable to cleanup direct connections',
+    roomMembers: 'Unable to get room members',
+    serialize: 'Unable to serialize payload',
+    publish: 'Publisher client is unable to publish',
+    clientIdNotFound: 'Client ID not found during subscribing to client',
   },
   resourcesService: {
     noDiskSpace:
-      "There is no disk space left to store a iCal file. Please immediately contact your course staff and let them know. They will contact the Khoury Office Hours team as soon as possible.",
-    saveCalError: "There was an error saving an iCal to disk",
+      'There is no disk space left to store a iCal file. Please immediately contact your course staff and let them know. They will contact the Khoury Office Hours team as soon as possible.',
+    saveCalError: 'There was an error saving an iCal to disk',
   },
-};
+}

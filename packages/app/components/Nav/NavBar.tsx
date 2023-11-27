@@ -1,15 +1,15 @@
-import { OrganizationRole, Role, UserRole } from "@koh/common";
-import { Modal, Button, Drawer, Image, message } from "antd";
-import { useRouter } from "next/router";
-import React, { ReactElement, useState } from "react";
-import styled from "styled-components";
-import { useCourse } from "../../hooks/useCourse";
-import { useProfile } from "../../hooks/useProfile";
-import { useRoleInCourse } from "../../hooks/useRoleInCourse";
-import AlertsContainer from "./AlertsContainer";
-import NavBarTabs, { NavBarTabsItem } from "./NavBarTabs";
-import ProfileDrawer from "./ProfileDrawer";
-import { API } from "@koh/api-client";
+import { OrganizationRole, Role, UserRole } from '@koh/common'
+import { Modal, Button, Drawer, Image, message } from 'antd'
+import { useRouter } from 'next/router'
+import React, { ReactElement, useState } from 'react'
+import styled from 'styled-components'
+import { useCourse } from '../../hooks/useCourse'
+import { useProfile } from '../../hooks/useProfile'
+import { useRoleInCourse } from '../../hooks/useRoleInCourse'
+import AlertsContainer from './AlertsContainer'
+import NavBarTabs, { NavBarTabsItem } from './NavBarTabs'
+import ProfileDrawer from './ProfileDrawer'
+import { API } from '@koh/api-client'
 
 const Nav = styled.nav`
   padding: 0px 0px;
@@ -17,7 +17,7 @@ const Nav = styled.nav`
   align-items: center;
   height: 67px;
   z-index: 1;
-`;
+`
 
 // A hack to get the white stripe edge to edge, even when Nav is narrower.
 const NavBG = styled.nav`
@@ -28,14 +28,14 @@ const NavBG = styled.nav`
   height: 67px;
   background: #fff;
   border-bottom: solid 1px #e8e8e8;
-`;
+`
 
 const LogoContainer = styled.div`
   z-index: 1;
   display: flex;
   align-items: center;
   margin-right: 20px;
-`;
+`
 
 const Logo = styled.div`
   font-size: 20px;
@@ -45,7 +45,7 @@ const Logo = styled.div`
   display: flex;
   align-items: center;
   vertical-align: middle;
-`;
+`
 
 const MenuCon = styled.div`
   flex-grow: 1;
@@ -53,20 +53,20 @@ const MenuCon = styled.div`
   align-items: center;
   justify-content: space-between;
   padding-left: 0px;
-`;
+`
 
 const LeftMenu = styled.div`
   @media (max-width: 650px) {
     display: none;
   }
   flex-grow: 1;
-`;
+`
 
 const RightMenu = styled.div`
   @media (max-width: 650px) {
     display: none;
   }
-`;
+`
 
 const BarsMenu = styled(Button)`
   height: 32px;
@@ -78,7 +78,7 @@ const BarsMenu = styled(Button)`
   @media (max-width: 650px) {
     display: inline-block;
   }
-`;
+`
 
 const BarsButton = styled.span`
   display: block;
@@ -102,118 +102,118 @@ const BarsButton = styled.span`
     top: auto;
     bottom: -6px;
   }
-`;
+`
 
 interface NavBarProps {
-  courseId: number;
+  courseId: number
 }
 
 export default function NavBar({ courseId }: NavBarProps): ReactElement {
-  const profile = useProfile();
+  const profile = useProfile()
 
-  const [visible, setVisible] = useState<boolean>(false);
-  const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(true);
-  const { pathname } = useRouter();
-  const { course } = useCourse(courseId);
-  const role = useRoleInCourse(courseId);
+  const [visible, setVisible] = useState<boolean>(false)
+  const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(true)
+  const { pathname } = useRouter()
+  const { course } = useCourse(courseId)
+  const role = useRoleInCourse(courseId)
 
-  const openQueues = course?.queues?.filter((queue) => queue.isOpen);
+  const openQueues = course?.queues?.filter((queue) => queue.isOpen)
 
   const addMember = async () => {
-    setUpdateModalVisible(false);
-    await API.organizations.addMember(profile.id, 1);
+    setUpdateModalVisible(false)
+    await API.organizations.addMember(profile.id, 1)
 
-    const courseProfile = profile.courses.find((c) => c.course.id === courseId);
+    const courseProfile = profile.courses.find((c) => c.course.id === courseId)
 
-    if (courseProfile.role == "professor") {
-      await API.organizations.addCourse(courseId, 1);
+    if (courseProfile.role == 'professor') {
+      await API.organizations.addCourse(courseId, 1)
     }
-  };
+  }
 
   const showDrawer = () => {
-    setVisible(true);
-  };
+    setVisible(true)
+  }
 
   const onClose = () => {
-    setVisible(false);
-  };
+    setVisible(false)
+  }
 
   const tabs: NavBarTabsItem[] = [
     {
-      href: "/courses",
+      href: '/courses',
       as: `/courses`,
-      text: "My Courses",
+      text: 'My Courses',
     },
     {
-      href: "/course/[cid]/today",
+      href: '/course/[cid]/today',
       as: `/course/${courseId}/today`,
-      text: "Today",
+      text: 'Today',
     },
     {
-      href: "/course/[cid]/schedule",
+      href: '/course/[cid]/schedule',
       as: `/course/${courseId}/schedule`,
-      text: "Schedule",
+      text: 'Schedule',
     },
-  ];
+  ]
 
   const globalTabs: NavBarTabsItem[] = [
     {
-      href: "/organization",
+      href: '/organization',
       as: `/organization`,
-      text: "My Organization",
+      text: 'My Organization',
     },
-  ];
+  ]
 
   if (profile?.organization) {
     if (profile?.organization.organizationRole === OrganizationRole.ADMIN) {
       globalTabs.push({
-        href: "/organization/settings",
+        href: '/organization/settings',
         as: `/organization/settings`,
-        text: "Organization Settings",
-      });
+        text: 'Organization Settings',
+      })
     }
 
     if (profile?.userRole === UserRole.ADMIN) {
       globalTabs.push({
-        href: "/admin",
+        href: '/admin',
         as: `/admin`,
-        text: "Admin Panel",
-      });
+        text: 'Admin Panel',
+      })
     }
   }
 
   if (role === Role.PROFESSOR || role === Role.TA) {
     tabs.push({
-      href: "/course/[cid]/course_admin_panel",
+      href: '/course/[cid]/course_admin_panel',
       as: `/course/${courseId}/course_admin_panel`,
-      text: "Admin Panel",
-    });
+      text: 'Admin Panel',
+    })
   }
 
   if (openQueues?.length > 0) {
     tabs.push({
-      text: "Queue",
+      text: 'Queue',
       queues: openQueues,
       courseId: courseId,
-    });
+    })
   }
 
   if (role === Role.PROFESSOR) {
     tabs.push({
-      href: "/course/[cid]/insights",
+      href: '/course/[cid]/insights',
       as: `/course/${courseId}/insights`,
-      text: "Insights",
-    });
+      text: 'Insights',
+    })
   }
 
-  const [messageApi, easterEggHolder] = message.useMessage();
+  const [messageApi, easterEggHolder] = message.useMessage()
 
   const success = () => {
     messageApi.open({
-      type: "success",
-      content: "Wow.. You found an easter egg.. Do you think there is more? 🤔",
-    });
-  };
+      type: 'success',
+      content: 'Wow.. You found an easter egg.. Do you think there is more? 🤔',
+    })
+  }
   return courseId ? (
     <>
       {easterEggHolder}
@@ -251,7 +251,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
           visible={visible}
           closable={false}
           onClose={onClose}
-          bodyStyle={{ padding: "12px" }}
+          bodyStyle={{ padding: '12px' }}
         >
           <NavBarTabs currentHref={pathname} tabs={tabs} />
           <ProfileDrawer courseId={courseId} />
@@ -288,7 +288,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
               <br />
               <br />
               <small
-                style={{ fontSize: "3px", cursor: "none" }}
+                style={{ fontSize: '3px', cursor: 'none' }}
                 onClick={success}
               >
                 No easter eggs here 🥚🥚🥚
@@ -334,12 +334,12 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
           open={visible}
           closable={false}
           onClose={onClose}
-          bodyStyle={{ padding: "12px" }}
+          bodyStyle={{ padding: '12px' }}
         >
           <NavBarTabs currentHref={pathname} tabs={globalTabs} />
           <ProfileDrawer courseId={null} />
         </Drawer>
       </Nav>
     </>
-  );
+  )
 }

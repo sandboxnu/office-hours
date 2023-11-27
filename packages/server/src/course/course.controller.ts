@@ -7,6 +7,7 @@ import {
   GetCourseOverridesResponse,
   GetCourseResponse,
   GetCourseUserInfoResponse,
+  GetLimitedCourseResponse,
   QueuePartial,
   RegisterCourseParams,
   Role,
@@ -17,7 +18,6 @@ import {
   OrganizationRole,
   UpdateOrganizationCourseDetailsParams,
 } from '@koh/common';
-import { Response } from 'express';
 import {
   BadRequestException,
   Body,
@@ -32,10 +32,10 @@ import {
   Patch,
   Post,
   Query,
-  Res,
   UnauthorizedException,
   UseGuards,
   UseInterceptors,
+  Res,
 } from '@nestjs/common';
 import async from 'async';
 import { EventModel, EventType } from 'profile/event-model.entity';
@@ -55,8 +55,7 @@ import { HeatmapService } from './heatmap.service';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { AsyncQuestionModel } from 'asyncQuestion/asyncQuestion.entity';
 import { OrganizationCourseModel } from 'organization/organization-course.entity';
-import { OrganizationRolesGuard } from 'guards/organization-roles.guard';
-import { OrganizationGuard } from 'guards/organization.guard';
+import { Response } from 'express';
 
 @Controller('courses')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -154,6 +153,41 @@ export class CourseController {
         question.status !== asyncQuestionStatus.TADeleted,
     );
     return questions;
+  }
+
+  @Get('limited/:id/:code')
+  async getLimitedCourseResponse(
+    @Param('id') id: number,
+    @Param('code') code: string,
+    @Res() res: Response,
+  ): Promise<Response<GetLimitedCourseResponse>> {
+    const courseWithOrganization = await CourseModel.findOne({
+      where: {
+        id: id,
+        courseInviteCode: code,
+      },
+      relations: ['organizationCourse', 'organizationCourse.organization'],
+    });
+
+    if (!courseWithOrganization) {
+      res.status(HttpStatus.NOT_FOUND).send({
+        message: ERROR_MESSAGES.courseController.courseNotFound,
+      });
+      return;
+    }
+
+    const organization =
+      courseWithOrganization.organizationCourse?.organization || null;
+
+    const course_response = {
+      id: courseWithOrganization.id,
+      name: courseWithOrganization.name,
+      organizationCourse: organization,
+      courseInviteCode: courseWithOrganization.courseInviteCode,
+    };
+
+    res.status(HttpStatus.OK).send(course_response);
+    return;
   }
 
   @Get(':id')

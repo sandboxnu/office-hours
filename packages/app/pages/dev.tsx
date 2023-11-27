@@ -1,9 +1,9 @@
-import { API } from "@koh/api-client";
-import { isProd } from "@koh/common";
-import { Button, Divider } from "antd";
-import DefaultErrorPage from "next/error";
-import React, { ReactElement } from "react";
-import styled from "styled-components";
+import { API } from '@koh/api-client'
+import { isProd } from '@koh/common'
+import { Button, Divider } from 'antd'
+import DefaultErrorPage from 'next/error'
+import React, { ReactElement } from 'react'
+import styled from 'styled-components'
 
 const Container = styled.div`
   width: auto;
@@ -11,7 +11,7 @@ const Container = styled.div`
   @media (max-width: 768px) {
     margin: 32px 24px;
   }
-`;
+`
 
 const SeedingContainer = styled.div`
   margin-left: auto;
@@ -19,17 +19,17 @@ const SeedingContainer = styled.div`
   text-align: center;
 
   padding-top: 20px;
-`;
+`
 
 const PageHeader = styled.div`
   display: flex;
   justify-content: center;
   margin-top: 40px;
-`;
+`
 
 export default function DevPanel(): ReactElement {
   if (isProd()) {
-    return <DefaultErrorPage statusCode={404} />;
+    return <DefaultErrorPage statusCode={404} />
   }
   return (
     <Container>
@@ -41,21 +41,21 @@ export default function DevPanel(): ReactElement {
           <h3>Seed</h3>
         </Divider>
         <Button
-          style={{ marginRight: "15px" }}
+          style={{ marginRight: '15px' }}
           type="default"
           onClick={() => API.seeds.delete()}
         >
           Delete Data
         </Button>
         <Button
-          style={{ marginRight: "15px" }}
+          style={{ marginRight: '15px' }}
           type="default"
           onClick={() => API.seeds.create()}
         >
           Seed Data
         </Button>
         <Button
-          style={{ marginRight: "15px" }}
+          style={{ marginRight: '15px' }}
           type="default"
           onClick={() => API.seeds.fillQueue()}
         >
@@ -63,5 +63,5 @@ export default function DevPanel(): ReactElement {
         </Button>
       </SeedingContainer>
     </Container>
-  );
+  )
 }

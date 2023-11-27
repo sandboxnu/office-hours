@@ -39,16 +39,16 @@ export class OrganizationModel extends BaseEntity {
   @Exclude()
   @JoinColumn({ name: 'organizationId' })
   @OneToMany(
-    type => OrganizationUserModel,
-    organizationUser => organizationUser.organization,
+    (type) => OrganizationUserModel,
+    (organizationUser) => organizationUser.organization,
   )
   organizationUsers: OrganizationUserModel[];
 
   @Exclude()
   @JoinColumn({ name: 'organizationId' })
   @OneToMany(
-    type => OrganizationCourseModel,
-    organizationCourse => organizationCourse.organization,
+    (type) => OrganizationCourseModel,
+    (organizationCourse) => organizationCourse.organization,
   )
   organizationCourses: OrganizationCourseModel[];
 }

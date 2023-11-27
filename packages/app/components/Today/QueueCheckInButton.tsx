@@ -1,15 +1,15 @@
-import { API } from "@koh/api-client";
-import { QueuePartial, Role } from "@koh/common";
-import { Button, message } from "antd";
-import { useRouter } from "next/router";
-import React, { ReactElement, useState } from "react";
-import styled from "styled-components";
-import { useCourse } from "../../hooks/useCourse";
-import { useProfile } from "../../hooks/useProfile";
-import { useRoleInCourse } from "../../hooks/useRoleInCourse";
-import QueueCheckInModal from "./QueueCheckInModal";
-import QueueCreateModal from "./QueueCreateModal";
-import TACheckinButton, { CheckinButton } from "./TACheckinButton";
+import { API } from '@koh/api-client'
+import { QueuePartial, Role } from '@koh/common'
+import { Button, message } from 'antd'
+import { useRouter } from 'next/router'
+import React, { ReactElement, useState } from 'react'
+import styled from 'styled-components'
+import { useCourse } from '../../hooks/useCourse'
+import { useProfile } from '../../hooks/useProfile'
+import { useRoleInCourse } from '../../hooks/useRoleInCourse'
+import QueueCheckInModal from './QueueCheckInModal'
+import QueueCreateModal from './QueueCreateModal'
+import TACheckinButton, { CheckinButton } from './TACheckinButton'
 
 const CreateQueueButton = styled(Button)`
   color: white;
@@ -19,71 +19,74 @@ const CreateQueueButton = styled(Button)`
     color: white;
     background: #39aca1;
   }
-`;
+`
 
 export default function TodayPageCheckinButton(): ReactElement {
   // state for check in modal
-  const [checkInModalVisible, setCheckInModalVisible] = useState(false);
-  const [createQueueModalVisible, setCreateQueueModalVisible] = useState(false);
+  const [checkInModalVisible, setCheckInModalVisible] = useState(false)
+  const [createQueueModalVisible, setCreateQueueModalVisible] = useState(false)
 
-  const profile = useProfile();
-  const router = useRouter();
-  const { cid } = router.query;
-  const { course, mutateCourse } = useCourse(Number(cid));
-  const role = useRoleInCourse(Number(cid));
+  const profile = useProfile()
+  const router = useRouter()
+  const { cid } = router.query
+  const { course, mutateCourse } = useCourse(Number(cid))
+  const role = useRoleInCourse(Number(cid))
   const availableQueues = course?.queues.filter((q) =>
-    role === Role.TA ? !q.isProfessorQueue : true
-  );
+    role === Role.TA ? !q.isProfessorQueue : true,
+  )
   const queueCheckedIn = course?.queues.find((queue) =>
-    queue.staffList.find((staff) => staff.id === profile?.id)
-  );
+    queue.staffList.find((staff) => staff.id === profile?.id),
+  )
 
-  const numQueues = course?.queues.length;
+  const numQueues = course?.queues.length
 
   const renderProperModal = () => {
     numQueues !== 0
       ? setCheckInModalVisible(true)
-      : setCreateQueueModalVisible(true);
-  };
+      : setCreateQueueModalVisible(true)
+  }
 
   const submitMakeQueue = async (submittedForm) => {
-    const queueRequest = await submittedForm.validateFields();
+    const queueRequest = await submittedForm.validateFields()
     try {
       await API.taStatus.makeQueue(
         Number(cid),
         queueRequest.officeHourName,
         !queueRequest.allowTA,
-        queueRequest.notes
-      );
+        queueRequest.notes,
+      )
       message.success(
-        `Created a new queue ${queueRequest.officeHourName}. Checking you in...`
-      );
+        `Created a new queue ${queueRequest.officeHourName}. Checking you in...`,
+      )
       const redirectID = await API.taStatus.checkIn(
         Number(cid),
-        queueRequest.officeHourName
-      );
+        queueRequest.officeHourName,
+      )
 
-      mutateCourse();
+      mutateCourse()
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const checkoutTimer = setTimeout(async () => {
-        message.warning("You are checked out automatically after 3 hours");
-        await API.taStatus.checkOut(Number(cid), queueRequest.officeHourName);
-        mutateCourse();
-      }, 1000 * 60 * 60 * 3);
+      const checkoutTimer = setTimeout(
+        async () => {
+          message.warning('You are checked out automatically after 3 hours')
+          await API.taStatus.checkOut(Number(cid), queueRequest.officeHourName)
+          mutateCourse()
+        },
+        1000 * 60 * 60 * 3,
+      )
       router.push(
-        "/course/[cid]/queue/[qid]",
-        `/course/${Number(cid)}/queue/${redirectID.id}`
-      );
-      setCreateQueueModalVisible(false);
+        '/course/[cid]/queue/[qid]',
+        `/course/${Number(cid)}/queue/${redirectID.id}`,
+      )
+      setCreateQueueModalVisible(false)
     } catch (err) {
-      message.error(err.response?.data?.message);
+      message.error(err.response?.data?.message)
     }
-  };
+  }
 
   const onCreateQueueButtonClick = () => {
-    setCheckInModalVisible(false);
-    setCreateQueueModalVisible(true);
-  };
+    setCheckInModalVisible(false)
+    setCreateQueueModalVisible(true)
+  }
 
   return (
     <>
@@ -91,30 +94,33 @@ export default function TodayPageCheckinButton(): ReactElement {
         <QueueCheckInModal
           visible={checkInModalVisible}
           onSubmit={async (queueId: number) => {
-            let redirectID: QueuePartial;
+            let redirectID: QueuePartial
             try {
               redirectID = await API.taStatus.checkIn(
                 Number(cid),
-                availableQueues[queueId].room
-              );
+                availableQueues[queueId].room,
+              )
               // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              const checkoutTimer = setTimeout(async () => {
-                message.warning(
-                  "You are checked out automatically after 3 hours"
-                );
-                await API.taStatus.checkOut(
-                  Number(cid),
-                  availableQueues[queueId].room
-                );
-                mutateCourse();
-              }, 1000 * 60 * 60 * 3);
-              mutateCourse();
+              const checkoutTimer = setTimeout(
+                async () => {
+                  message.warning(
+                    'You are checked out automatically after 3 hours',
+                  )
+                  await API.taStatus.checkOut(
+                    Number(cid),
+                    availableQueues[queueId].room,
+                  )
+                  mutateCourse()
+                },
+                1000 * 60 * 60 * 3,
+              )
+              mutateCourse()
               router.push(
-                "/course/[cid]/queue/[qid]",
-                `/course/${Number(cid)}/queue/${redirectID.id}`
-              );
+                '/course/[cid]/queue/[qid]',
+                `/course/${Number(cid)}/queue/${redirectID.id}`,
+              )
             } catch (err) {
-              message.error(err.response?.data?.message);
+              message.error(err.response?.data?.message)
             }
           }}
           onCancel={() => setCheckInModalVisible(false)}
@@ -153,5 +159,5 @@ export default function TodayPageCheckinButton(): ReactElement {
         />
       )}
     </>
-  );
+  )
 }

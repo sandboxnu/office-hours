@@ -16,10 +16,9 @@ export class OrganizationCourseModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Exclude()
   @ManyToOne(
-    type => OrganizationModel,
-    organization => organization.organizationCourses,
+    (type) => OrganizationModel,
+    (organization) => organization.organizationCourses,
   )
   @JoinColumn({ name: 'organizationId' })
   organization: OrganizationModel;
@@ -27,15 +26,11 @@ export class OrganizationCourseModel extends BaseEntity {
   @Column({ nullable: true })
   organizationId: number;
 
-  @Exclude()
-  @OneToOne(
-    type => CourseModel,
-    course => course.organizationCourse,
-    {
-      cascade: true,
-    },
-  )
+  @OneToOne((type) => CourseModel, (course) => course.organizationCourse, {
+    cascade: true,
+  })
   @JoinColumn({ name: 'courseId' })
+  @Exclude()
   course: CourseModel;
 
   @Column({ nullable: true })

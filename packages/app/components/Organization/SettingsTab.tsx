@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { InboxOutlined } from "@ant-design/icons";
-import { API } from "@koh/api-client";
-import { GetOrganizationResponse } from "@koh/common";
+import { InboxOutlined } from '@ant-design/icons'
+import { API } from '@koh/api-client'
+import { GetOrganizationResponse } from '@koh/common'
 import {
   Button,
   Card,
@@ -14,117 +14,117 @@ import {
   Upload,
   Image,
   message,
-} from "antd";
-import TextArea from "antd/lib/input/TextArea";
-import { useRouter } from "next/router";
-import { ReactElement, useState } from "react";
+} from 'antd'
+import TextArea from 'antd/lib/input/TextArea'
+import { useRouter } from 'next/router'
+import { ReactElement, useState } from 'react'
 
 type OrganizationSettingsProps = {
-  organization: GetOrganizationResponse;
-};
+  organization: GetOrganizationResponse
+}
 
 export default function SettingsTab({
   organization,
 }: OrganizationSettingsProps): ReactElement {
-  const [formGeneral] = Form.useForm();
-  const router = useRouter();
+  const [formGeneral] = Form.useForm()
+  const router = useRouter()
 
-  const [organizationName, setOrganizationName] = useState(organization.name);
+  const [organizationName, setOrganizationName] = useState(organization.name)
   const [organizationDescription, setOrganizationDescription] = useState(
-    organization.description
-  );
+    organization.description,
+  )
   const [organizationWebsiteUrl, setOrganizationWebsiteUrl] = useState(
-    organization.websiteUrl
-  );
+    organization.websiteUrl,
+  )
 
   const isValidUrl = (url: string): boolean => {
     try {
-      new URL(url);
-      return true;
+      new URL(url)
+      return true
     } catch (_) {
-      return false;
+      return false
     }
-  };
+  }
 
   const handleBannerUpload = async (file) => {
     try {
-      const formData = new FormData();
-      formData.append("file", file);
+      const formData = new FormData()
+      formData.append('file', file)
       const response = await fetch(
         `/api/v1/organization/${organization?.id}/upload_banner`,
         {
-          method: "POST",
+          method: 'POST',
           body: formData,
-        }
-      );
+        },
+      )
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (response.ok) {
         message.success(`${file.name} file uploaded successfully`).then(() => {
           setTimeout(() => {
-            router.reload();
-          }, 1750);
-        });
+            router.reload()
+          }, 1750)
+        })
       } else {
-        message.error(`${file.name} file upload failed: ${data.message}`);
+        message.error(`${file.name} file upload failed: ${data.message}`)
       }
     } catch (error) {
-      message.error(`Error uploading ${file.name}. Please try again.`);
+      message.error(`Error uploading ${file.name}. Please try again.`)
     }
-  };
+  }
 
   const handleLogoUpload = async (file) => {
     try {
-      const formData = new FormData();
-      formData.append("file", file);
+      const formData = new FormData()
+      formData.append('file', file)
       const response = await fetch(
         `/api/v1/organization/${organization?.id}/upload_logo`,
         {
-          method: "POST",
+          method: 'POST',
           body: formData,
-        }
-      );
+        },
+      )
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (response.ok) {
         message.success(`${file.name} file uploaded successfully`).then(() => {
           setTimeout(() => {
-            router.reload();
-          }, 1750);
-        });
+            router.reload()
+          }, 1750)
+        })
       } else {
-        message.error(`${file.name} file upload failed: ${data.message}`);
+        message.error(`${file.name} file upload failed: ${data.message}`)
       }
     } catch (error) {
-      message.error(`Error uploading ${file.name}. Please try again.`);
+      message.error(`Error uploading ${file.name}. Please try again.`)
     }
-  };
+  }
 
   const beforeUpload = (file) => {
-    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
 
     if (!isJpgOrPng) {
-      message.error("You can only upload JPG/PNG file!");
-      return;
+      message.error('You can only upload JPG/PNG file!')
+      return
     }
 
-    const isLT2MB = file.size / 1024 / 1024 < 2;
+    const isLT2MB = file.size / 1024 / 1024 < 2
 
     if (!isLT2MB) {
-      message.error("Image must be smaller than 2MB!");
-      return;
+      message.error('Image must be smaller than 2MB!')
+      return
     }
 
-    return isJpgOrPng && isLT2MB;
-  };
+    return isJpgOrPng && isLT2MB
+  }
 
   const updateGeneral = async () => {
-    const formValues = await formGeneral.validateFields();
-    const organizationNameField = formValues.organizationName;
-    const organizationDescriptionField = formValues.organizationDescription;
-    const organizationWebsiteUrlField = formValues.organizationWebsiteUrl;
+    const formValues = await formGeneral.validateFields()
+    const organizationNameField = formValues.organizationName
+    const organizationDescriptionField = formValues.organizationDescription
+    const organizationWebsiteUrlField = formValues.organizationWebsiteUrl
 
     if (
       organizationNameField === organizationName &&
@@ -132,19 +132,19 @@ export default function SettingsTab({
       organizationWebsiteUrlField === organizationWebsiteUrl
     ) {
       message.info(
-        "Organization was not updated as information has not been changed"
-      );
-      return;
+        'Organization was not updated as information has not been changed',
+      )
+      return
     }
 
     if (organizationNameField.length < 4) {
-      message.error("Organization name must be at least 4 characters");
-      return;
+      message.error('Organization name must be at least 4 characters')
+      return
     }
 
     if (organizationDescriptionField.length < 10) {
-      message.error("Organization description must be at least 10 characters");
-      return;
+      message.error('Organization description must be at least 10 characters')
+      return
     }
 
     if (
@@ -152,9 +152,9 @@ export default function SettingsTab({
       !isValidUrl(organizationWebsiteUrlField)
     ) {
       message.error(
-        "Organization URL must be at least 4 characters and be a valid URL"
-      );
-      return;
+        'Organization URL must be at least 4 characters and be a valid URL',
+      )
+      return
     }
 
     await API.organizations
@@ -164,20 +164,20 @@ export default function SettingsTab({
         websiteUrl: organizationWebsiteUrlField,
       })
       .then((_) => {
-        setOrganizationName(organizationNameField);
-        setOrganizationDescription(organizationDescriptionField);
-        setOrganizationWebsiteUrl(organizationWebsiteUrlField);
-        message.success("Organization information was updated");
+        setOrganizationName(organizationNameField)
+        setOrganizationDescription(organizationDescriptionField)
+        setOrganizationWebsiteUrl(organizationWebsiteUrlField)
+        message.success('Organization information was updated')
         setTimeout(() => {
-          router.reload();
-        }, 1750);
+          router.reload()
+        }, 1750)
       })
       .catch((error) => {
-        const errorMessage = error.response.data.message;
+        const errorMessage = error.response.data.message
 
-        message.error(errorMessage);
-      });
-  };
+        message.error(errorMessage)
+      })
+  }
 
   return (
     <>
@@ -225,7 +225,7 @@ export default function SettingsTab({
             <TextArea
               defaultValue={organizationDescription}
               rows={4}
-              style={{ resize: "none" }}
+              style={{ resize: 'none' }}
             />
           </Form.Item>
 
@@ -243,7 +243,7 @@ export default function SettingsTab({
             <Form.Item name="organizationLogo" noStyle>
               <Row
                 gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
-                style={{ alignItems: "center" }}
+                style={{ alignItems: 'center' }}
               >
                 <Col xs={{ span: 24 }} sm={{ span: 12 }}>
                   <Upload.Dragger
@@ -278,7 +278,7 @@ export default function SettingsTab({
             <Form.Item name="organizationBanner" noStyle>
               <Row
                 gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
-                style={{ alignItems: "center" }}
+                style={{ alignItems: 'center' }}
               >
                 <Col xs={{ span: 24 }} sm={{ span: 12 }}>
                   <Upload.Dragger
@@ -347,5 +347,5 @@ export default function SettingsTab({
         </Form>
       </Card>
     </>
-  );
+  )
 }

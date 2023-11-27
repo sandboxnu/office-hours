@@ -207,6 +207,10 @@ export class CourseService {
       course.enabled = coursePatch.enabled;
     }
 
+    if (coursePatch.courseInviteCode) {
+      course.courseInviteCode = coursePatch.courseInviteCode;
+    }
+
     if (coursePatch.asyncQuestionDisplayTypes) {
       course.asyncQuestionDisplayTypes = coursePatch.asyncQuestionDisplayTypes;
     }
