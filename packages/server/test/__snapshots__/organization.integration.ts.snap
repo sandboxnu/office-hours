@@ -34,6 +34,7 @@ Object {
   "courseId": 1,
   "id": 1,
   "organizationId": 1,
+  "profIds": Array [],
 }
 `;
 
