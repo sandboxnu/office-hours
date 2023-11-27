@@ -78,16 +78,6 @@ export class OrganizationController {
     @Body() courseDetails: UpdateOrganizationCourseDetailsParams,
     @Res() res: Response,
   ): Promise<Response<void>> {
-    const chosenProfessor = await UserModel.findOne({
-      where: { id: courseDetails.profId },
-    });
-
-    if (!chosenProfessor) {
-      return res.status(HttpStatus.NOT_FOUND).send({
-        message: ERROR_MESSAGES.profileController.userResponseNotFound,
-      });
-    }
-
     if (!courseDetails.name || courseDetails.name.trim().length < 1) {
       return res.status(HttpStatus.BAD_REQUEST).send({
         message: ERROR_MESSAGES.courseController.courseNameTooShort,
@@ -152,13 +142,26 @@ export class OrganizationController {
     };
     try {
       const newCourse = await CourseModel.create(course).save();
-      await UserCourseModel.create({
-        userId: courseDetails.profId,
-        course: newCourse,
-        role: Role.PROFESSOR,
-        override: false,
-        expires: false,
-      }).save();
+
+      for (const profId of courseDetails.profIds) {
+        const chosenProfessor = await UserModel.findOne({
+          where: { id: profId },
+        });
+
+        if (!chosenProfessor) {
+          return res.status(HttpStatus.NOT_FOUND).send({
+            message: `Professor with ID ${profId} not found`,
+          });
+        }
+
+        await UserCourseModel.create({
+          userId: profId,
+          course: newCourse,
+          role: Role.PROFESSOR,
+          override: false,
+          expires: false,
+        }).save();
+      }
 
       await OrganizationCourseModel.create({
         organizationId: oid,
@@ -192,15 +195,6 @@ export class OrganizationController {
       relations: ['course'],
     });
 
-    const chosenProfessor = await UserModel.findOne({
-      where: { id: courseDetails.profId },
-    });
-
-    if (!chosenProfessor) {
-      return res.status(HttpStatus.NOT_FOUND).send({
-        message: ERROR_MESSAGES.profileController.userResponseNotFound,
-      });
-    }
     if (!courseInfo) {
       return res.status(HttpStatus.NOT_FOUND).send({
         message: ERROR_MESSAGES.courseController.courseNotFound,
@@ -288,47 +282,58 @@ export class OrganizationController {
 
     try {
       await courseInfo.course.save();
+      //Remove current profs
+      await UserCourseModel.delete({
+        courseId: cid,
+        role: Role.PROFESSOR,
+      });
+
+      for (const profId of courseDetails.profIds) {
+        const chosenProfessor = await UserModel.findOne({
+          where: { id: profId },
+        });
+
+        if (!chosenProfessor) {
+          return res.status(HttpStatus.NOT_FOUND).send({
+            message: ERROR_MESSAGES.profileController.userResponseNotFound,
+          });
+        }
+
+        const userCourse = await UserCourseModel.findOne({
+          where: {
+            userId: profId,
+            courseId: cid,
+          },
+        });
+
+        // user is already in the course
+        if (userCourse) {
+          userCourse.role = Role.PROFESSOR;
+          try {
+            userCourse.save();
+          } catch (err) {
+            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+              message: err,
+            });
+          }
+        } else {
+          try {
+            await UserCourseModel.create({
+              userId: profId,
+              courseId: cid,
+              role: Role.PROFESSOR,
+            }).save();
+          } catch (err) {
+            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+              message: err,
+            });
+          }
+        }
+      }
     } catch (err) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
         message: err,
       });
-    }
-
-    const userCourse = await UserCourseModel.findOne({
-      where: {
-        userId: courseDetails.profId,
-        courseId: cid,
-      },
-    });
-
-    //Remove current prof
-    await UserCourseModel.delete({
-      courseId: cid,
-      role: Role.PROFESSOR,
-    });
-
-    // user is already in the course
-    if (userCourse) {
-      userCourse.role = Role.PROFESSOR;
-      try {
-        userCourse.save();
-      } catch (err) {
-        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
-          message: err,
-        });
-      }
-    } else {
-      try {
-        await UserCourseModel.create({
-          userId: courseDetails.profId,
-          courseId: cid,
-          role: Role.PROFESSOR,
-        }).save();
-      } catch (err) {
-        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
-          message: err,
-        });
-      }
     }
 
     return res.status(HttpStatus.OK).send({

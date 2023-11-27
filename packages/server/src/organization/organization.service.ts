@@ -31,7 +31,7 @@ export interface OrganizationCourseResponse {
   organizationId: number;
   courseId: number;
   course: CourseModel;
-  profId: number;
+  profIds: Array<number>;
 }
 
 export interface CourseResponse {
@@ -270,22 +270,22 @@ export class OrganizationService {
       );
     }
 
-    const professor = await UserCourseModel.findOne({
+    const professors = await UserCourseModel.find({
       where: {
         courseId,
         role: Role.PROFESSOR,
       },
     });
 
-    if (!professor) {
-      throw new NotFoundException(
-        `Professor for courseId ${courseId} not found`,
-      );
+    let profIds = [];
+
+    if (professors) {
+      profIds = professors.map((professor) => professor.userId);
     }
 
     return {
       ...organizationCourse,
-      profId: professor.userId,
+      profIds,
     };
   }
 

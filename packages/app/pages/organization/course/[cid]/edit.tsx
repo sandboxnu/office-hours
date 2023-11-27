@@ -82,7 +82,7 @@ export default function Edit(): ReactElement {
       const zoomLinkField = formValues.zoomLink;
       const courseTimezoneField = formValues.courseTimezone;
       const semesterIdField = formValues.semesterId;
-      const profIdField = formValues.professorUserId;
+      const profIdsField = isAdmin ? formValues.professorsUserId : [profile.id];
 
       if (
         courseNameField === courseData.course.name &&
@@ -91,7 +91,7 @@ export default function Edit(): ReactElement {
         zoomLinkField === courseData.course.zoomLink &&
         courseTimezoneField === courseData.course.timezone &&
         semesterIdField === courseData.course.semesterId &&
-        profIdField === courseData.profId
+        profIdsField === courseData.profIds
       ) {
         message.info(
           "Course was not updated as information has not been changed"
@@ -140,10 +140,14 @@ export default function Edit(): ReactElement {
       }
 
       if (
-        isNaN(profIdField) ||
-        !professors.find((prof) => prof.userId === profIdField)
+        !Array.isArray(profIdsField) ||
+        !profIdsField.every(
+          (profId) =>
+            typeof profId === "number" &&
+            professors.find((prof) => prof.userId === profId)
+        )
       ) {
-        message.error("Professor is invalid");
+        message.error("One or more selected professors are invalid");
         return;
       }
 
@@ -155,7 +159,7 @@ export default function Edit(): ReactElement {
           zoomLink: zoomLinkField ?? "",
           timezone: courseTimezoneField,
           semesterId: semesterIdField,
-          profId: profIdField,
+          profIds: profIdsField,
         })
         .then(() => {
           message.success("Course was updated");
@@ -183,7 +187,7 @@ export default function Edit(): ReactElement {
                   zoomLink: courseData.course.zoomLink,
                   courseTimezone: courseData.course.timezone,
                   semesterId: courseData.course.semesterId,
-                  professorUserId: courseData.profId,
+                  professorsUserId: courseData.profIds,
                 }}
                 onFinish={updateGeneral}
               >
@@ -289,15 +293,15 @@ export default function Edit(): ReactElement {
                       </Select>
                     </Form.Item>
                   </Col>
-
                   <Col xs={{ span: 24 }} sm={{ span: 12 }}>
-                    {isAdmin && (
+                    {profile.organization.organizationRole ===
+                      OrganizationRole.ADMIN && (
                       <Form.Item
-                        label="Professor"
-                        name="professorUserId"
-                        tooltip="Professor teaching the course"
+                        label="Professors"
+                        name="professorsUserId"
+                        tooltip="Professors teaching the course"
                       >
-                        <Select>
+                        <Select mode="multiple" placeholder="Select professors">
                           {professors.map((prof) => (
                             <Select.Option
                               value={prof.organizationUser.id}

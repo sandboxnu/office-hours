@@ -53,7 +53,7 @@ export default function Add(): ReactElement {
       const zoomLinkField = formValues.zoomLink;
       const courseTimezoneField = formValues.courseTimezone;
       const semesterIdField = formValues.semesterId;
-      const profId = isAdmin ? formValues.professorUserId : profile.id;
+      const profIds = isAdmin ? formValues.professorsUserId : [profile.id];
 
       // if semesterIdField is not a number or not in semesters
       if (
@@ -71,7 +71,7 @@ export default function Add(): ReactElement {
           zoomLink: zoomLinkField ?? "",
           timezone: courseTimezoneField,
           semesterId: semesterIdField,
-          profId: profId,
+          profIds: profIds,
         })
         .then(() => {
           message.success("Course was created");
@@ -200,11 +200,11 @@ export default function Add(): ReactElement {
                     {profile.organization.organizationRole ===
                       OrganizationRole.ADMIN && (
                       <Form.Item
-                        label="Professor"
-                        name="professorUserId"
-                        tooltip="Professor teaching the course"
+                        label="Professors"
+                        name="professorsUserId"
+                        tooltip="Professors teaching the course"
                       >
-                        <Select>
+                        <Select mode="multiple" placeholder="Select professors">
                           {professors.map((prof) => (
                             <Select.Option
                               value={prof.organizationUser.id}

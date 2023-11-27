@@ -814,9 +814,9 @@ export class UpdateOrganizationCourseDetailsParams {
   @IsOptional()
   semesterId?: number;
 
-  @IsInt()
+  @IsArray()
   @IsOptional()
-  profId?: number;
+  profIds?: Array<number>;
 }
 
 export class ChatBotQuestionParams {

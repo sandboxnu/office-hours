@@ -18,6 +18,7 @@ const CoursesSection = styled.div`
 
 export default function Courses(): ReactElement {
   const profile: User = useProfile();
+  console.log(profile);
 
   return profile ? (
     <>
@@ -29,9 +30,11 @@ export default function Courses(): ReactElement {
         <NavBar />
         <div style={{ marginTop: 20 }}>
           <h1>My Courses</h1>
-          <Button type="primary" href={`organization/course/add`}>
-            Add New Course
-          </Button>
+          {profile.organization.organizationRole == "professor" && (
+            <Button type="primary" href={`organization/course/add`}>
+              Add New Course
+            </Button>
+          )}
 
           {profile?.courses.length === 0 ? (
             <Empty description="You are not enrolled in any course" />
