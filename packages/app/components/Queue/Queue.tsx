@@ -473,11 +473,9 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
         ) : (
           <>
             <QueueHeader>Queue</QueueHeader>
-            <StudentHeaderCard bordered={false}>
+            <br></br>
+            {/* <StudentHeaderCard bordered={false}>
               <CenterRow>
-                <Col flex="0 0 64px">
-                  <HeaderText>#</HeaderText>
-                </Col>
                 <Col flex="1 1">
                   <HeaderText>question</HeaderText>
                 </Col>
@@ -485,7 +483,7 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
                   <HeaderText>wait</HeaderText>
                 </Col>
               </CenterRow>
-            </StudentHeaderCard>
+            </StudentHeaderCard> */}
           </>
         )}
         {questions?.map((question: Question, index: number) => {

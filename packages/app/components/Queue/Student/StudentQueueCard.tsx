@@ -15,6 +15,9 @@ const HorizontalStudentCard = styled(Card)`
   padding-left: 8px;
   padding-right: 8px;
   color: #595959;
+  .ant-card-body {
+    padding: 10px;
+  }
 `
 
 interface StudentQueueCardProps {
@@ -42,13 +45,14 @@ export default function StudentQueueCard({
           <div
             style={{
               backgroundColor: 'lightblue',
-              borderRadius: '10px',
-              padding: '5px 10px',
-              marginTop: '5px',
+              borderRadius: '15px',
+              padding: '0px 7px',
+              marginTop: '2px',
               display: 'inline-block',
             }}
           >
-            <Text>{question.questionType}</Text>
+            <Text style={{ fontSize: 'smaller' }}>{question.questionType}</Text>{' '}
+            {/* Decreased text size */}
           </div>
         </Col>
         <Col flex="0 0 80px">
