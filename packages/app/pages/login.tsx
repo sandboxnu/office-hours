@@ -12,7 +12,7 @@ import {
   Select,
   Avatar,
   Spin,
-  Alert,
+  Alert
 } from "antd";
 import styled from "styled-components";
 import Head from "next/head";
@@ -51,12 +51,16 @@ export default function Login(): ReactElement {
   const loginWithGoogle = async () => {
     await API.auth
       .loginWithGoogle(Number(organization.id))
-      .then((res) => {
+      .then(res => {
         Router.push(res.redirectUri);
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(err);
       });
+  };
+
+  const loginWithInstitution = async () => {
+    await API.auth.loginWithInstitution(Number(organization.id));
   };
 
   function login() {
@@ -70,11 +74,11 @@ export default function Login(): ReactElement {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: uname,
-        password: pass,
-      }),
+        password: pass
+      })
     };
     fetch(`/api/v1/ubc_login`, loginRequest)
-      .then(async (response) => {
+      .then(async response => {
         const data = await response.json();
         if (!response.ok) {
           // get error message from body or default to response statusText
@@ -98,21 +102,21 @@ export default function Login(): ReactElement {
           Router.push(`/api/v1/login/entry?token=${data.token}`);
         }
       })
-      .catch((error) => {
+      .catch(error => {
         console.error("There was an error!", error);
       });
   }
 
-  const onPassChange = (e) => {
+  const onPassChange = e => {
     setPass(e.target.value);
   };
 
-  const onUserNameChange = (e) => {
+  const onUserNameChange = e => {
     setUname(e.target.value);
   };
 
-  const showLoginMenu = (value) => {
-    const organization = organizations.find((org) => org.id === value);
+  const showLoginMenu = value => {
+    const organization = organizations.find(org => org.id === value);
 
     if (!organization) {
       message.error("Organization not found");
@@ -143,13 +147,13 @@ export default function Login(): ReactElement {
                   <Select
                     className="w-full text-left mt-2"
                     placeholder="Available Organizations"
-                    options={organizations.map((organization) => {
+                    options={organizations.map(organization => {
                       return {
                         label: organization.name,
-                        value: organization.id,
+                        value: organization.id
                       };
                     })}
-                    onChange={(value) => {
+                    onChange={value => {
                       showLoginMenu(value);
                     }}
                   />
@@ -181,6 +185,17 @@ export default function Login(): ReactElement {
                     </Button>
                   )}
 
+                  {organization && organization.ssoEnabled && (
+                    <Button
+                      className="px-5 py-5 w-full border flex gap-2 rounded-lg items-center justify-center text-left mt-5"
+                      onClick={() => loginWithInstitution()}
+                    >
+                      <span className="font-semibold">
+                        Log in with Institution
+                      </span>
+                    </Button>
+                  )}
+
                   {organization && organization.legacyAuthEnabled && (
                     <p className="uppercase text-stone-400 my-5 font-medium">
                       Or login with email
@@ -207,8 +222,8 @@ export default function Login(): ReactElement {
                         rules={[
                           {
                             required: true,
-                            message: "Please enter a valid username.",
-                          },
+                            message: "Please enter a valid username."
+                          }
                         ]}
                       >
                         <Input
@@ -226,8 +241,8 @@ export default function Login(): ReactElement {
                         rules={[
                           {
                             required: true,
-                            message: "Please enter a valid password.",
-                          },
+                            message: "Please enter a valid password."
+                          }
                         ]}
                       >
                         <Input

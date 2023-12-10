@@ -2,16 +2,23 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Next,
   Param,
+  Post,
   Query,
   Req,
   Res,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { ERROR_MESSAGES } from '@koh/common';
 import { JwtService } from '@nestjs/jwt';
+import * as passport from 'passport';
+import { MultiSamlStrategy } from 'passport-saml';
+import { OrganizationModel } from 'organization/organization.entity';
+import * as path from 'path';
+import * as fs from 'fs';
 
 @Controller('auth')
 export class AuthController {
@@ -25,21 +32,62 @@ export class AuthController {
 
   @Get('link/:method/:oid')
   auth(
+    @Req() req: Request,
     @Res() res: Response,
+    @Next() next: NextFunction,
     @Param('method') auth_method: string,
     @Param('oid') organizationId: number,
-  ): Response<{ redirectUri: string }> {
+  ): Response<any> {
+    res.cookie('organization.id', organizationId, {
+      httpOnly: true,
+      secure: this.isSecure(),
+    });
+
     switch (auth_method) {
       case 'google':
-        res.cookie('organization.id', organizationId, {
-          httpOnly: true,
-          secure: this.isSecure(),
-        });
         return res.status(200).send({
           redirectUri:
             `${this.GOOGLE_AUTH_URL}?client_id=${process.env.GOOGLE_CLIENT_ID}.apps.googleusercontent.com` +
             `&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&response_type=code&scope=openid%20profile%20email`,
         });
+      case 'saml':
+        res.header('Access-Control-Allow-Origin', '*');
+        res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+        res.header('Access-Control-Allow-Credentials', 'true');
+        passport.use(this.strategy);
+        passport.authenticate('saml', {
+          failureRedirect: '/auth/failed/40001',
+          session: false,
+        })(req, res, next);
+        break;
+      default:
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .send({ message: 'Invalid auth method' });
+    }
+  }
+
+  @Post('callback/saml')
+  async callbackPost(
+    @Res() res: Response,
+    @Req() req: Request,
+  ): Promise<Response<void>> {
+    const organizationId = this.getCookie(req, 'organization.id');
+
+    if (!organizationId) {
+      res.redirect(`/auth/failed/40000`);
+    } else {
+      try {
+        const user = await this.samlAuthenticate(req, res);
+        console.log(user);
+        res.clearCookie('organization.id', {
+          httpOnly: true,
+          secure: this.isSecure(),
+        });
+        return;
+      } catch (err) {
+        res.redirect(`/auth/failed/40001`);
+      }
     }
   }
 
@@ -123,4 +171,75 @@ export class AuthController {
   private isSecure(): boolean {
     return this.configService.get<string>('DOMAIN').startsWith('https://');
   }
+
+  private samlAuthenticate(req: Request, res: Response): Promise<any> {
+    return new Promise((resolve, reject) => {
+      passport.authenticate(
+        'saml',
+        {
+          failureRedirect: '/auth/failed/40001',
+          session: false,
+        },
+        (err, user) => {
+          if (err) {
+            reject(err);
+          } else if (!user) {
+            reject(new Error('No user'));
+          } else {
+            resolve(user);
+          }
+        },
+      )(req, res);
+    });
+  }
+
+  private strategy = new MultiSamlStrategy(
+    {
+      passReqToCallback: true,
+      getSamlOptions: (req, done) => {
+        OrganizationModel.findOne({
+          where: { id: Number(req.params.oid) },
+        })
+          .then(organization => {
+            if (!organization) {
+              return done(new Error('Invalid organization'));
+            }
+
+            if (!organization.ssoEnabled) {
+              return done(new Error('SSO is not enabled'));
+            }
+            const host = req.headers.host;
+            const protocol = req.protocol;
+            const issuer = `https://help.cosc304.ok.ubc.ca/shibboleth`;
+
+            done(null, {
+              host,
+              protocol,
+              path: '/api/v1/auth/callback/saml',
+              entryPoint: 'https://authentication.ubc.ca',
+              issuer,
+              idpIssuer: organization.ssoUrl,
+              signatureAlgorithm: 'sha256',
+              digestAlgorithm: 'sha256',
+              cert: fs.readFileSync(
+                path.join(path.resolve(__dirname, '../..'), 'cert.pem'),
+                'utf-8',
+              ),
+              privateKey: fs.readFileSync(
+                path.join(path.resolve(__dirname, '../..'), 'prvk.pem'),
+                'utf-8',
+              ),
+              decryptionPvk: fs.readFileSync(
+                path.join(path.resolve(__dirname, '../..'), 'prvk.pem'),
+                'utf-8',
+              ),
+            });
+          })
+          .catch(err => done(err));
+      },
+    },
+    (req, profile, done) => {
+      done(null, profile ?? undefined);
+    },
+  );
 }
