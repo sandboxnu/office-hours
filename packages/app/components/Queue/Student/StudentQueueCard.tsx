@@ -7,6 +7,7 @@ import { CenterRow, Text } from '../QueueCardSharedComponents'
 import { truncate } from '../QueueUtils'
 import TAQueueDetailButtons from '../TA/TAQueueDetailButtons'
 import { KOHAvatar } from '../../common/SelfAvatar'
+import HotnessBar from './HotnessBar'
 
 const HorizontalStudentCard = styled(Card)`
   margin-bottom: 8px;
@@ -17,7 +18,7 @@ const HorizontalStudentCard = styled(Card)`
   padding-right: 8px;
   color: #595959;
   .ant-card-body {
-    padding: 10px;
+    padding: 10px 8px;
   }
 `
 
@@ -41,6 +42,9 @@ export default function StudentQueueCard({
   return (
     <HorizontalStudentCard>
       <CenterRow>
+        <Col flex="0 1 auto" style={{ margin: '0 6px 0 0' }}>
+          <HotnessBar hotness={Math.floor(Math.random() * 101)} />
+        </Col>
         <Col flex="0 1 auto" style={{ margin: '0 12px 0 0' }}>
           <KOHAvatar
             size={46}
