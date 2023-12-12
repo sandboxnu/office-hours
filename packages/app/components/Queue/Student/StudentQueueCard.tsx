@@ -87,7 +87,7 @@ export default function StudentQueueCard({
               } as React.CSSProperties
             }
           >
-            {truncate(question.creator.name, 25)}
+            {question.creator.name ? truncate(question.creator.name, 25) : ''}
           </Text>
           <div //tag for question type
             style={{
