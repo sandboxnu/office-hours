@@ -6,6 +6,7 @@ import { getWaitTime } from '../../../utils/TimeUtil'
 import { CenterRow, Text } from '../QueueCardSharedComponents'
 import { truncate } from '../QueueUtils'
 import TAQueueDetailButtons from '../TA/TAQueueDetailButtons'
+import { KOHAvatar } from '../../common/SelfAvatar'
 
 const HorizontalStudentCard = styled(Card)`
   margin-bottom: 8px;
@@ -40,14 +41,22 @@ export default function StudentQueueCard({
   return (
     <HorizontalStudentCard>
       <CenterRow>
+        <Col flex="0 1 auto" style={{ margin: '0 12px 0 0' }}>
+          <KOHAvatar
+            size={46}
+            name={question.creator.name}
+            photoURL={question.creator.photoURL}
+          />
+        </Col>
         <Col flex="1 1">
-          <Tooltip
+          <Tooltip // only show tooltip if text is too long
             title={question.text.length > 110 ? question.text : ''}
             overlayStyle={{ maxWidth: '60em' }}
           >
             <Text
               style={
                 {
+                  // shorten question text dynamically
                   display: '-webkit-box',
                   WebkitLineClamp: 1,
                   WebkitBoxOrient: 'vertical',
@@ -60,7 +69,23 @@ export default function StudentQueueCard({
               {question.text}
             </Text>
           </Tooltip>
-          <div
+          <Text
+            style={
+              // question creator name
+              {
+                fontSize: 'smaller',
+                color: '#595959',
+                display: 'inline-block',
+                marginTop: '2px',
+                marginRight: '5px',
+                fontStyle: 'italic',
+                minWidth: '120px',
+              } as React.CSSProperties
+            }
+          >
+            {truncate(question.creator.name, 25)}
+          </Text>
+          <div //tag for question type
             style={{
               backgroundColor: 'lightblue',
               borderRadius: '15px',
