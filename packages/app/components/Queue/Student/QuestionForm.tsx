@@ -1,5 +1,9 @@
-import { OpenQuestionStatus, Question } from '@koh/common'
-import { Alert, Button, Input, Modal, Radio } from 'antd'
+import {
+  AddQuestionTypeParams,
+  OpenQuestionStatus,
+  Question,
+} from '@koh/common'
+import { Alert, Button, Input, Modal, Radio, Select } from 'antd'
 import { RadioChangeEvent } from 'antd/lib/radio'
 import { NextRouter, useRouter } from 'next/router'
 import {
@@ -50,7 +54,7 @@ interface QuestionFormProps {
   leaveQueue: () => void
   finishQuestion: (
     text: string,
-    questionType: string,
+    questionType: AddQuestionTypeParams[],
     groupable: boolean,
     router: NextRouter,
     courseId: number,
@@ -77,10 +81,12 @@ export default function QuestionForm({
 
   const drafting = question?.status === OpenQuestionStatus.Drafting
   const helping = question?.status === OpenQuestionStatus.Helping
-  const [questionsTypeState, setQuestionsTypeState] = useState<string[]>([])
-  const [questionTypeInput, setQuestionTypeInput] = useState<string>(
-    question?.questionType || null,
-  )
+  const [questionsTypeState, setQuestionsTypeState] = useState<
+    AddQuestionTypeParams[]
+  >([])
+  const [questionTypeInput, setQuestionTypeInput] = useState<
+    AddQuestionTypeParams[]
+  >(question?.questionTypes || null)
   const [questionText, setQuestionText] = useState<string>(question?.text || '')
   const [questionGroupable, setQuestionGroupable] = useState<boolean>(
     question?.groupable !== undefined && question?.groupable,
@@ -90,23 +96,27 @@ export default function QuestionForm({
   useEffect(() => {
     if (question && !visible) {
       setQuestionText(question.text)
-      setQuestionTypeInput(question.questionType)
+      setQuestionTypeInput(question.questionTypes)
     }
   }, [question, visible])
   useEffect(() => {
     getQuestions()
   }, [])
 
-  // on question type change, update the question type state
-  const onCategoryChange = (e: RadioChangeEvent) => {
-    setQuestionTypeInput(e.target.value)
+  const onTypeChange = (selectedIds: number[]) => {
+    const newQuestionTypeInput: AddQuestionTypeParams[] =
+      questionsTypeState.filter((questionType) =>
+        selectedIds.includes(questionType.id),
+      )
+
+    setQuestionTypeInput(newQuestionTypeInput)
 
     const questionFromStorage = storageQuestion ?? {}
 
     setStoredQuestion({
       id: question?.id,
       ...questionFromStorage,
-      questionType: e.target.value,
+      questionType: newQuestionTypeInput,
     })
   }
 
@@ -219,28 +229,27 @@ export default function QuestionForm({
             showIcon
           />
         )}
-
-        <QuestionText>
-          What category does your question fall under?
-        </QuestionText>
-        <Radio.Group
-          value={questionTypeInput}
-          onChange={onCategoryChange}
-          buttonStyle="solid"
-          style={{ marginBottom: 48 }}
-        >
-          {questionsTypeState.length > 0 ? (
-            questionsTypeState.map((q) => (
-              <Radio.Button key={q} value={q}>
-                {' '}
-                {q}
-              </Radio.Button>
-            ))
-          ) : (
-            <p>Loading...</p>
-          )}
-        </Radio.Group>
-
+        {questionsTypeState.length > 0 ? (
+          <>
+            <QuestionText>
+              What category(s) does your question fall under?
+            </QuestionText>
+            <Select
+              mode="multiple"
+              placeholder="Select question types"
+              onChange={onTypeChange}
+              style={{ width: '100%' }}
+            >
+              {questionsTypeState.map((type) => (
+                <Select.Option value={type.id} key={type.id}>
+                  {type.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </>
+        ) : (
+          <></>
+        )}
         <QuestionText>What do you need help with?</QuestionText>
         <Input.TextArea
           data-cy="questionText"

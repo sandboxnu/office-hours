@@ -3,12 +3,14 @@ import { useQueue } from '../../hooks/useQueue'
 import { useQuestions } from '../../hooks/useQuestions'
 import { useProfile } from '../../hooks/useProfile'
 import {
+  AddQuestionTypeParams,
   ClosedQuestionStatus,
   ERROR_MESSAGES,
   LimboQuestionStatus,
   OpenQuestionStatus,
   Question,
   QuestionStatusKeys,
+  QuestionType,
   Role,
 } from '@koh/common'
 import { useTAInQueueInfo } from '../../hooks/useTAInQueueInfo'
@@ -137,7 +139,6 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
   const helpingQuestions = questions?.questionsGettingHelp?.filter(
     (q) => q.taHelped.id === profile.id,
   )
-
   // const hasUnresolvedRephraseAlert = questions?.unresolvedAlerts
   //     ?.map((payload) => (payload as RephraseQuestionPayload).questionId)
   //     .includes(selectedQuestionId);
@@ -190,7 +191,7 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
     await mutateQuestions()
     const newQuestion = await API.questions.create({
       text: studentQuestion.text,
-      questionType: studentQuestion?.questionType,
+      questionTypes: studentQuestion?.questionTypes ?? [],
       queueId: qid,
       location: studentQuestion?.location,
       force: true,
@@ -235,7 +236,7 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
           queueId: Number(qid),
           text: '',
           force: force,
-          questionType: null,
+          questionTypes: null,
           groupable: false,
         })
         const newQuestionsInQueue = [...questions?.queue, createdQuestion]
@@ -283,13 +284,13 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
   const finishQuestion = useCallback(
     async (
       text: string,
-      questionType: QuestionType,
+      questionTypes: AddQuestionTypeParams[],
       groupable: boolean,
       location: string,
     ) => {
       const updateStudent = {
         text,
-        questionType,
+        questionTypes,
         groupable,
         status:
           studentQuestionStatus === OpenQuestionStatus.Drafting
@@ -322,7 +323,7 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
   const finishQuestionAndClose = useCallback(
     (
       text: string,
-      qt: QuestionType,
+      qt: AddQuestionTypeParams[],
       groupable: true,
       router: Router,
       cid: number,

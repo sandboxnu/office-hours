@@ -19,7 +19,7 @@ import { UserCourseModel } from '../profile/user-course.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { SemesterModel } from '../semester/semester.entity';
 import { OrganizationCourseModel } from '../organization/organization-course.entity';
-import { ChatbotDocumentModel } from 'chatbot/chatbotDocument.entity';
+import { ChatbotDocumentModel } from '../chatbot/chatbotDocument.entity';
 @Entity('course_model')
 export class CourseModel extends BaseEntity {
   @PrimaryGeneratedColumn()

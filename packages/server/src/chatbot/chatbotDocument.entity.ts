@@ -6,8 +6,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { ChatbotQuestionModel } from './question.entity';
-import { CourseModel } from 'course/course.entity';
+import { CourseModel } from '../course/course.entity';
 
 @Entity('chatbot_document_model')
 export class ChatbotDocumentModel extends BaseEntity {

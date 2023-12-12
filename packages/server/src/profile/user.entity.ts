@@ -21,7 +21,7 @@ import { UserCourseModel } from './user-course.entity';
 import { AlertModel } from '../alerts/alerts.entity';
 import { UserRole } from '@koh/common';
 import { OrganizationUserModel } from '../organization/organization-user.entity';
-import { InteractionModel } from 'chatbot/interaction.entity';
+import { InteractionModel } from '../chatbot/interaction.entity';
 
 @Entity('user_model')
 export class UserModel extends BaseEntity {
