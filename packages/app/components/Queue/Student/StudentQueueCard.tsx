@@ -45,7 +45,20 @@ export default function StudentQueueCard({
             title={question.text.length > 110 ? question.text : ''}
             overlayStyle={{ maxWidth: '60em' }}
           >
-            <Text>{truncate(question.text, 110)}</Text>
+            <Text
+              style={
+                {
+                  display: '-webkit-box',
+                  WebkitLineClamp: 1,
+                  WebkitBoxOrient: 'vertical',
+                  textOverflow: 'ellipsis',
+                  overflow: 'hidden',
+                  maxWidth: '55em',
+                } as React.CSSProperties
+              }
+            >
+              {question.text}
+            </Text>
           </Tooltip>
           <div
             style={{
