@@ -1,5 +1,5 @@
 import { Question } from '@koh/common'
-import { Card, Col } from 'antd'
+import { Card, Col, Tooltip } from 'antd'
 import { ReactElement } from 'react'
 import styled from 'styled-components'
 import { getWaitTime } from '../../../utils/TimeUtil'
@@ -41,7 +41,12 @@ export default function StudentQueueCard({
     <HorizontalStudentCard>
       <CenterRow>
         <Col flex="1 1">
-          <Text>{truncate(question.text, 150)}</Text>
+          <Tooltip
+            title={question.text.length > 110 ? question.text : ''}
+            overlayStyle={{ maxWidth: '60em' }}
+          >
+            <Text>{truncate(question.text, 110)}</Text>
+          </Tooltip>
           <div
             style={{
               backgroundColor: 'lightblue',
