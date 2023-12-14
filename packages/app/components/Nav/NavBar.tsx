@@ -259,7 +259,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
         <Drawer
           title="Course"
           placement="right"
-          visible={visible}
+          open={visible}
           closable={false}
           onClose={onClose}
           bodyStyle={{ padding: '12px' }}

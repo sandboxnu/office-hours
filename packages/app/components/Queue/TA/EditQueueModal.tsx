@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import Modal from 'antd/lib/modal/Modal'
-import { Switch, Input, Form, Button, Radio, message } from 'antd'
+import { Switch, Input, Form, Button, message } from 'antd'
 import styled from 'styled-components'
 import { API } from '@koh/api-client'
 import { useQueue } from '../../../hooks/useQueue'
@@ -41,6 +41,7 @@ export function EditQueueModal({
     course.course?.zoomLink,
   )
   const [color, setColor] = useState('#fff')
+  const [isInputEmpty, setIsInputEmpty] = useState(true)
 
   const handleColorChange = (color) => {
     setColor(color.hex)
@@ -48,7 +49,7 @@ export function EditQueueModal({
   const [zoomLink, setZoomLink] = useState('')
   useEffect(() => {
     getQuestions()
-  }, [])
+  }, [getQuestions])
 
   const editQueue = async (updateQueue: UpdateQueueParams) => {
     const newQueue = { ...queue, ...updateQueue }
@@ -75,6 +76,8 @@ export function EditQueueModal({
   )
 
   const onAddChange = (e) => {
+    const inputValue = e.target.value
+    setIsInputEmpty(!inputValue)
     setQuestionTypeAddState(e.target.value)
   }
 
@@ -83,6 +86,10 @@ export function EditQueueModal({
   }
 
   const addQuestionType = useCallback(async () => {
+    if (isInputEmpty) {
+      message.error('Please enter a question type name')
+      return
+    }
     await API.questions.addQuestionType(courseNumber, {
       name: questionTypeAddState,
       color: color,
@@ -106,7 +113,7 @@ export function EditQueueModal({
   return (
     <Modal
       title="Edit Queue Details"
-      visible={visible}
+      open={visible}
       onCancel={onClose}
       onOk={async () => {
         const value = await form.validateFields()

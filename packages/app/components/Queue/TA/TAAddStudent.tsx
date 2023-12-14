@@ -164,7 +164,7 @@ export function AddStudentsModal({
   return (
     <Modal
       title="Add Students to queue"
-      visible={visible}
+      open={visible}
       onCancel={onClose}
       onOk={async () => {
         handleSubmit()

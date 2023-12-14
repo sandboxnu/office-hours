@@ -18,7 +18,8 @@ import { useLocalStorage } from '../../../hooks/useLocalStorage'
 import { toOrdinal } from '../../../utils/ordinal'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { API } from '@koh/api-client'
-//import { createReadStream } from "fs";
+import { QuestionType } from '../QueueListSharedComponents'
+import PropTypes from 'prop-types'
 
 const Container = styled.div`
   max-width: 960px;
@@ -55,7 +56,6 @@ interface QuestionFormProps {
   finishQuestion: (
     text: string,
     questionType: AddQuestionTypeParams[],
-    groupable: boolean,
     router: NextRouter,
     courseId: number,
     location: string,
@@ -86,22 +86,17 @@ export default function QuestionForm({
   >([])
   const [questionTypeInput, setQuestionTypeInput] = useState<
     AddQuestionTypeParams[]
-  >(question?.questionTypes || null)
+  >(question?.questionTypes || [])
   const [questionText, setQuestionText] = useState<string>(question?.text || '')
-  const [questionGroupable, setQuestionGroupable] = useState<boolean>(
-    question?.groupable !== undefined && question?.groupable,
-  )
 
   const [inperson, setInperson] = useState<boolean>(false)
+
   useEffect(() => {
     if (question && !visible) {
       setQuestionText(question.text)
       setQuestionTypeInput(question.questionTypes)
     }
   }, [question, visible])
-  useEffect(() => {
-    getQuestions()
-  }, [])
 
   const onTypeChange = (selectedIds: number[]) => {
     const newQuestionTypeInput: AddQuestionTypeParams[] =
@@ -116,7 +111,7 @@ export default function QuestionForm({
     setStoredQuestion({
       id: question?.id,
       ...questionFromStorage,
-      questionType: newQuestionTypeInput,
+      questionTypes: newQuestionTypeInput,
     })
   }
 
@@ -134,17 +129,6 @@ export default function QuestionForm({
     })
   }
 
-  // on question groupable change, update the question groupable state
-  const onGroupableChange = (e: RadioChangeEvent) => {
-    setQuestionGroupable(e.target.value)
-    const questionFromStorage = storageQuestion ?? {}
-
-    setStoredQuestion({
-      id: question?.id,
-      ...questionFromStorage,
-      groupable: e.target.value,
-    })
-  }
   const onLocationChange = (e: RadioChangeEvent) => {
     setInperson(e.target.value)
     const questionFromStorage = storageQuestion ?? {}
@@ -160,7 +144,6 @@ export default function QuestionForm({
       finishQuestion(
         questionText,
         questionTypeInput,
-        questionGroupable,
         router,
         Number(courseId),
         inperson ? 'In Person' : 'Online',
@@ -171,19 +154,38 @@ export default function QuestionForm({
   useHotkeys('enter', () => onClickSubmit(), { enableOnTags: ['TEXTAREA'] }, [
     questionTypeInput,
     questionText,
-    questionGroupable,
     router,
     courseId,
   ])
   // all possible questions, use courseId
   const courseNumber = Number(courseId)
-  const getQuestions = useCallback(async () => {
-    setQuestionsTypeState(await API.questions.questionTypes(courseNumber))
-  }, [])
+  const getQuestions = useCallback(() => {
+    let isCancelled = false
 
+    const fetchQuestions = async () => {
+      const questions = await API.questions.questionTypes(courseNumber)
+      if (!isCancelled) {
+        setQuestionsTypeState(questions)
+      }
+    }
+
+    fetchQuestions()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [courseNumber])
+
+  useEffect(() => {
+    const cleanup = getQuestions()
+
+    return () => {
+      cleanup()
+    }
+  }, [getQuestions])
   return (
     <Modal
-      visible={visible}
+      open={visible}
       closable={true}
       onCancel={() => {
         setStoredQuestion(question)
@@ -239,6 +241,19 @@ export default function QuestionForm({
               placeholder="Select question types"
               onChange={onTypeChange}
               style={{ width: '100%' }}
+              value={questionTypeInput.map((type) => type.id)}
+              tagRender={(props) => {
+                const type = questionsTypeState.find(
+                  (type) => type.id === props.value,
+                )
+                return (
+                  <QuestionType
+                    typeName={type.name}
+                    typeColor={type.color}
+                    onClick={props.onClose}
+                  />
+                )
+              }}
             >
               {questionsTypeState.map((type) => (
                 <Select.Option value={type.id} key={type.id}>
@@ -291,4 +306,9 @@ export default function QuestionForm({
       </Container>
     </Modal>
   )
+}
+
+QuestionForm.propTypes = {
+  value: PropTypes.any.isRequired,
+  onClose: PropTypes.func.isRequired,
 }
