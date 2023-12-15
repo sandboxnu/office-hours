@@ -32,12 +32,10 @@ export class AuthController {
 
   @Get('link/:method/:oid')
   auth(
-    @Req() req: Request,
     @Res() res: Response,
-    @Next() next: NextFunction,
     @Param('method') auth_method: string,
     @Param('oid') organizationId: number,
-  ): Response<any> {
+  ): Response<{ redirectUri: string }> {
     res.cookie('organization.id', organizationId, {
       httpOnly: true,
       secure: this.isSecure(),
@@ -50,21 +48,44 @@ export class AuthController {
             `${this.GOOGLE_AUTH_URL}?client_id=${process.env.GOOGLE_CLIENT_ID}.apps.googleusercontent.com` +
             `&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&response_type=code&scope=openid%20profile%20email`,
         });
-      case 'saml':
-        res.header('Access-Control-Allow-Origin', '*');
-        res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-        res.header('Access-Control-Allow-Credentials', 'true');
-        passport.use(this.strategy);
-        passport.authenticate('saml', {
-          failureRedirect: '/auth/failed/40001',
-          session: false,
-        })(req, res, next);
-        break;
       default:
         return res
           .status(HttpStatus.BAD_REQUEST)
           .send({ message: 'Invalid auth method' });
     }
+  }
+
+  @Get('saml/:oid')
+  authSaml(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Next() next: NextFunction,
+    @Param('oid') organizationId: number,
+  ): Response<any> {
+    res.cookie('organization.id', organizationId, {
+      httpOnly: true,
+      secure: this.isSecure(),
+    });
+
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    passport.use(this.strategy);
+    // @ts-expect-error Missing `additionalParams` on the type.
+    passport.authenticate('saml', {
+      failureRedirect: '/auth/failed/40001',
+      session: false,
+      additionalParams: req.query.RelayState
+        ? {
+            // This is used be the SAML configuration page to test SAML. It includes
+            // `?RelayState=test` in the login request. When the callback page receives
+            // that value, it displays the received attributes instead of creating a
+            // new session for the user.
+            RelayState: req.query.RelayState,
+          }
+        : undefined,
+    })(req, res, next);
+
+    return;
   }
 
   @Post('callback/saml')
@@ -200,7 +221,7 @@ export class AuthController {
         OrganizationModel.findOne({
           where: { id: Number(req.params.oid) },
         })
-          .then(organization => {
+          .then((organization) => {
             if (!organization) {
               return done(new Error('Invalid organization'));
             }
@@ -208,15 +229,23 @@ export class AuthController {
             if (!organization.ssoEnabled) {
               return done(new Error('SSO is not enabled'));
             }
+
             const host = req.headers.host;
             const protocol = req.protocol;
             const issuer = `https://help.cosc304.ok.ubc.ca/shibboleth`;
 
+            console.log(
+              fs.readFileSync(
+                path.join(path.resolve(__dirname, '../..'), 'prvk.pem'),
+                'utf-8',
+              ),
+            );
             done(null, {
               host,
               protocol,
               path: '/api/v1/auth/callback/saml',
-              entryPoint: 'https://authentication.ubc.ca',
+              entryPoint:
+                'https://authentication.ubc.ca/idp/profile/SAML2/Redirect/SSO',
               issuer,
               idpIssuer: organization.ssoUrl,
               signatureAlgorithm: 'sha256',
@@ -235,7 +264,7 @@ export class AuthController {
               ),
             });
           })
-          .catch(err => done(err));
+          .catch((err) => done(err));
       },
     },
     (req, profile, done) => {

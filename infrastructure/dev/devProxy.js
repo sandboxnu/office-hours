@@ -2,10 +2,8 @@
 // On prod, this is handled by NGINX.
 
 const express = require("express");
-const cors = require("cors");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const app = express();
-app.use(cors());
 
 const proxy = createProxyMiddleware({
     target: "http://localhost:3001",
@@ -19,9 +17,6 @@ const proxy = createProxyMiddleware({
     ws: true,
     logLevel: "debug",
     changeOrigin: true,
-    onProxyRes: function (proxyRes, req, res) {
-       proxyRes.headers['Access-Control-Allow-Origin'] = '*';
-    }
 });
 
 app.use("/", proxy);

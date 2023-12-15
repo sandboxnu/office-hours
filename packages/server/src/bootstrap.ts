@@ -52,7 +52,6 @@ export async function bootstrap(hot: any): Promise<void> {
 
   app.enableCors({
     origin: '*',
-    methods: 'GET,PUT,POST,DELETE',
     allowedHeaders: 'Content-Type, Accept',
   });
 
