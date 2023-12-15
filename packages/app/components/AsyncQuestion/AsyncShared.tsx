@@ -1,15 +1,15 @@
-import { Role } from "@koh/common";
-import React, { ReactElement, useState } from "react";
-import styled from "styled-components";
-import { useRoleInCourse } from "../../hooks/useRoleInCourse";
-import { AsyncQuestionForm } from "./Student/AsyncQuestionForm";
-import { EditAsyncQuestionModal } from "./TA/EditAsyncQuestionModal";
-import { QueueInfoColumnButton } from "../Queue/QueueListSharedComponents";
+import { Role } from '@koh/common'
+import React, { ReactElement, useState } from 'react'
+import styled from 'styled-components'
+import { useRoleInCourse } from '../../hooks/useRoleInCourse'
+import { AsyncQuestionForm } from './Student/AsyncQuestionForm'
+import { EditAsyncQuestionModal } from './TA/EditAsyncQuestionModal'
+import { QueueInfoColumnButton } from '../Queue/QueueListSharedComponents'
 // import { useTeams } from "../../../hooks/useTeams";
-import { SettingsLeftPanel } from "./SettingsLeftPanel";
-import QuestionListDetail from "./QuestionListDetail";
-import { API } from "@koh/api-client";
-import { message } from "antd";
+import { SettingsLeftPanel } from './SettingsLeftPanel'
+import QuestionListDetail from './QuestionListDetail'
+import { API } from '@koh/api-client'
+import { message } from 'antd'
 /**
  * Method to help student and
  * pop open notification if another TA helped at same time (race condition)
@@ -21,33 +21,33 @@ const Container = styled.div`
   @media (min-width: 650px) {
     flex-direction: row;
   }
-`;
+`
 
 const EditQueueButton = styled(QueueInfoColumnButton)`
   color: #212934;
-`;
+`
 
 const MiddleSpacer = styled.div`
   margin-left: 20px;
-`;
+`
 
 export default function AsyncShared({
   courseId,
 }: {
-  courseId: number;
+  courseId: number
 }): ReactElement {
-  const role = useRoleInCourse(courseId);
+  const role = useRoleInCourse(courseId)
 
-  const [studentQuestionModal, setStudentQuestionModal] = useState(false);
+  const [studentQuestionModal, setStudentQuestionModal] = useState(false)
 
-  const [TAeditDetails, setTAeditDetails] = useState(false);
+  const [TAeditDetails, setTAeditDetails] = useState(false)
   const changeDisplayTypes = async () => {
     await API.course.editCourseInfo(Number(courseId), {
       courseId: Number(courseId),
-      asyncQuestionDisplayTypes: ["all"],
-    });
-    message.success("Display types updated");
-  };
+      asyncQuestionDisplayTypes: ['all'],
+    })
+    message.success('Display types updated')
+  }
   return (
     <>
       <Container>
@@ -56,12 +56,10 @@ export default function AsyncShared({
             isStaff={false}
             buttons={
               <>
-                <EditQueueButton
-                  onClick={() => setStudentQuestionModal(true)}
-                >
+                <EditQueueButton onClick={() => setStudentQuestionModal(true)}>
                   Post your Question
                 </EditQueueButton>
-                <div style={{ marginBottom: "12px" }}></div>
+                <div style={{ marginBottom: '12px' }}></div>
               </>
             }
           />
@@ -70,18 +68,16 @@ export default function AsyncShared({
             isStaff={true}
             buttons={
               <>
-                <EditQueueButton
+                {/* <EditQueueButton
                   onClick={() => setTAeditDetails(true)}
                 >
                   Edit displayed question types
-                </EditQueueButton>
-                <EditQueueButton
-                  onClick={() => changeDisplayTypes()}
-                >
+                </EditQueueButton> */}
+                <EditQueueButton onClick={() => changeDisplayTypes()}>
                   Show all questions
                 </EditQueueButton>
 
-                <div style={{ marginBottom: "12px" }}></div>
+                <div style={{ marginBottom: '12px' }}></div>
               </>
             }
           />
@@ -99,5 +95,5 @@ export default function AsyncShared({
         <QuestionListDetail courseId={courseId} />
       </Container>
     </>
-  );
+  )
 }

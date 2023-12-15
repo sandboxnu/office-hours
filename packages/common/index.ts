@@ -401,7 +401,7 @@ export class AsyncQuestion {
 
   @IsOptional()
   @IsString()
-  questionTypes?: AddQuestionTypeParams[]
+  questionType?: string
 
   @IsOptional()
   @IsString()
