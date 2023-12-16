@@ -1,12 +1,12 @@
-import Head from "next/head";
-import React, { ReactElement } from "react";
-import { StandardPageContainer } from "../components/common/PageContainer";
-import { Button, Card, Empty, Spin, Tag } from "antd";
-import Meta from "antd/lib/card/Meta";
-import { useProfile } from "../hooks/useProfile";
-import { User } from "@koh/common";
-import styled from "styled-components";
-import NavBar from "../components/Nav/NavBar";
+import Head from 'next/head'
+import React, { ReactElement } from 'react'
+import { StandardPageContainer } from '../components/common/PageContainer'
+import { Button, Card, Empty, Spin, Tag } from 'antd'
+import Meta from 'antd/lib/card/Meta'
+import { useProfile } from '../hooks/useProfile'
+import { User } from '@koh/common'
+import styled from 'styled-components'
+import NavBar from '../components/Nav/NavBar'
 
 const CoursesSection = styled.div`
   display: flex;
@@ -14,10 +14,10 @@ const CoursesSection = styled.div`
   max-width: 100%;
   margin-bottom: 30px;
   gap: 15px;
-`;
+`
 
 export default function Courses(): ReactElement {
-  const profile: User = useProfile();
+  const profile: User = useProfile()
 
   return profile ? (
     <>
@@ -38,30 +38,30 @@ export default function Courses(): ReactElement {
                 <Card
                   key={course.course.id}
                   style={{
-                    boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
-                    margin: "7px",
-                    width: "350px",
+                    boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)',
+                    margin: '7px',
+                    width: '350px',
                   }}
                   cover={
                     <img
                       alt="example"
-                      style={{ objectFit: "cover", height: "20vh" }}
+                      style={{ objectFit: 'cover', height: '20vh' }}
                       src="https://open-2021.sites.olt.ubc.ca/files/2020/10/OSIP-2020-Slider.jpg"
                     />
                   }
                 >
                   <div
                     style={{
-                      display: "flex",
-                      verticalAlign: "middle",
-                      alignItems: "center",
-                      justifyContent: "space-between",
+                      display: 'flex',
+                      verticalAlign: 'middle',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
                     }}
                   >
                     <Meta title={course.course.name} />
                     <Tag
                       color="success"
-                      style={{ textTransform: "capitalize" }}
+                      style={{ textTransform: 'capitalize' }}
                     >
                       {course.role}
                     </Tag>
@@ -83,5 +83,5 @@ export default function Courses(): ReactElement {
     </>
   ) : (
     <Spin />
-  );
+  )
 }

@@ -21,6 +21,7 @@ import { UserCourseModel } from './user-course.entity';
 import { AlertModel } from '../alerts/alerts.entity';
 import { AccountType, UserRole } from '@koh/common';
 import { OrganizationUserModel } from '../organization/organization-user.entity';
+import { InteractionModel } from 'chatbot/interaction.entity';
 
 @Entity('user_model')
 export class UserModel extends BaseEntity {
@@ -52,6 +53,9 @@ export class UserModel extends BaseEntity {
 
   @Column({ type: 'text', enum: AccountType, default: AccountType.LEGACY })
   accountType: AccountType;
+
+  @Column({ type: 'boolean', default: false })
+  accountDeactivated: boolean;
 
   @OneToMany((type) => UserCourseModel, (ucm) => ucm.user)
   @Exclude()
@@ -95,6 +99,10 @@ export class UserModel extends BaseEntity {
 
   @OneToOne((type) => OrganizationUserModel, (ou) => ou.organizationUser)
   organizationUser: OrganizationUserModel;
+
+  @OneToMany((type) => InteractionModel, (interaction) => interaction.user)
+  @JoinColumn({ name: 'user' })
+  interactions: InteractionModel[];
 
   @AfterLoad()
   computeInsights(): void {

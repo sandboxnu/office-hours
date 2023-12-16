@@ -10,6 +10,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { AlertModel } from '../alerts/alerts.entity';
@@ -18,6 +19,7 @@ import { UserCourseModel } from '../profile/user-course.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { SemesterModel } from '../semester/semester.entity';
 import { OrganizationCourseModel } from '../organization/organization-course.entity';
+import { ChatbotDocumentModel } from 'chatbot/chatbotDocument.entity';
 @Entity('course_model')
 export class CourseModel extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -47,9 +49,13 @@ export class CourseModel extends BaseEntity {
   @Exclude()
   questionTimer: number;
 
+  @OneToMany((type) => ChatbotDocumentModel, (document) => document.course)
+  @JoinColumn({ name: 'course' })
+  chatbotDocuments: ChatbotDocumentModel[];
+
   @OneToMany((type) => UserCourseModel, (ucm) => ucm.course)
   @Exclude()
-  userCourses: UserCourseModel;
+  userCourses: UserCourseModel[];
 
   @ManyToOne((type) => SemesterModel, (semester) => semester.courses)
   @JoinColumn({ name: 'semesterId' })
@@ -97,13 +103,12 @@ export class CourseModel extends BaseEntity {
   @DeleteDateColumn()
   deletedAt?: Date;
 
-  @ManyToOne(
+  @OneToOne(
     (type) => OrganizationCourseModel,
     (organizationCourse) => organizationCourse.course,
   )
-  @Exclude()
   organizationCourse: OrganizationCourseModel;
 
-  @Column({ nullable: true })
-  organizationCourseId: number;
+  @Column('text', { nullable: true })
+  courseInviteCode: string;
 }

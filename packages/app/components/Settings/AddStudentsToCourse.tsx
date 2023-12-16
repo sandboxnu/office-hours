@@ -1,71 +1,71 @@
-import { ReactElement, useState } from "react";
-import styled from "styled-components";
-import AddStudents from "./AddStudents";
-type CourseRosterPageProps = { courseId: number };
-import { API } from "@koh/api-client";
-import { message } from "antd";
+import { ReactElement, useState } from 'react'
+import styled from 'styled-components'
+import AddStudents from './AddStudents'
+type CourseRosterPageProps = { courseId: number }
+import { API } from '@koh/api-client'
+import { message } from 'antd'
 
 const CourseRosterPageComponent = styled.div`
   width: 90%;
   margin-left: auto;
   margin-right: auto;
   padding-top: 50px;
-`;
+`
 
 export default function AddStudentsToCourse({
   courseId,
 }: CourseRosterPageProps): ReactElement {
-  const [file, setFile] = useState();
-  const fileReader = new FileReader();
+  const [file, setFile] = useState()
+  const fileReader = new FileReader()
 
   const handleOnChange = (e) => {
-    setFile(e.target.files[0]);
-  };
+    setFile(e.target.files[0])
+  }
 
   const handleOnSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (file) {
       fileReader.onload = function (event) {
-        const csvOutput: string = event.target.result.toString();
-        addStudents(csvOutput);
-      };
-      fileReader.readAsText(file);
+        const csvOutput: string = event.target.result.toString()
+        addStudents(csvOutput)
+      }
+      fileReader.readAsText(file)
     }
-  };
+  }
   const addStudents = async (students: string) => {
-    const lines = students.split("\r\n");
+    const lines = students.split('\r\n')
     for (let i = 0; i < lines.length; i++) {
-      const student = lines[i];
+      const student = lines[i]
 
-      if (student.includes(",")) {
+      if (student.includes(',')) {
         message.error(
-          `Error on line ${i + 1}. File can only contain one column.`
-        );
-        return;
+          `Error on line ${i + 1}. File can only contain one column.`,
+        )
+        return
       }
 
       try {
-        await API.course.addStudent(courseId, Number(student));
+        await API.course.addStudent(courseId, Number(student))
       } catch (err) {
-        message.error(`Error on line ${i + 1}. ${err.response.data.message}`);
+        message.error(`Error on line ${i + 1}. ${err.response.data.message}`)
       }
     }
-  };
+  }
   return (
     <div>
       <CourseRosterPageComponent>
-        <div style={{ textAlign: "center" }}>
+        <div style={{ textAlign: 'center' }}>
           <h1>Import student file </h1>
           <form>
             <input
-              type={"file"}
-              id={"csvFileInput"}
-              accept={".csv"}
+              type={'file'}
+              id={'csvFileInput'}
+              accept={'.csv'}
               onChange={handleOnChange}
             />
             <button
               onClick={(e) => {
-                handleOnSubmit(e);
+                handleOnSubmit(e)
               }}
             >
               Add students
@@ -75,5 +75,5 @@ export default function AddStudentsToCourse({
         <AddStudents courseId={courseId} />
       </CourseRosterPageComponent>
     </div>
-  );
+  )
 }

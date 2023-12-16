@@ -2,6 +2,7 @@
 
 exports[`AuthService loginWithGoogle should create a new user when user does not exist 1`] = `
 UserModel {
+  "accountDeactivated": false,
   "accountType": "google",
   "defaultMessage": null,
   "desktopNotifsEnabled": false,

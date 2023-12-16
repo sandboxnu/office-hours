@@ -5,8 +5,10 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { InteractionModel } from './interaction.entity';
+import { QuestionDocumentModel } from './questionDocument.entity';
 // each chatbot_question links to one interaction
 @Entity('chatbot_questions_model')
 export class ChatbotQuestionModel extends BaseEntity {
@@ -34,4 +36,8 @@ export class ChatbotQuestionModel extends BaseEntity {
 
   @Column({ default: false })
   suggested: boolean;
+
+  @OneToMany((type) => QuestionDocumentModel, (document) => document.question)
+  @JoinColumn({ name: 'question' })
+  sourceDocuments: QuestionDocumentModel[];
 }

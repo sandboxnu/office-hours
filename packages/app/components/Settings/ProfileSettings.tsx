@@ -1,38 +1,38 @@
-import { API } from "@koh/api-client";
-import { AccountType, UpdateProfileParams } from "@koh/common";
-import { Button, Card, Col, Form, Input, Row, message } from "antd";
-import { pick } from "lodash";
-import React, { ReactElement } from "react";
-import useSWR from "swr";
+import { API } from '@koh/api-client'
+import { AccountType, UpdateProfileParams } from '@koh/common'
+import { Button, Card, Col, Form, Input, Row, message } from 'antd'
+import { pick } from 'lodash'
+import React, { ReactElement } from 'react'
+import useSWR from 'swr'
 
 export default function ProfileSettings(): ReactElement {
   const { data: profile, mutate } = useSWR(`api/v1/profile`, async () =>
-    API.profile.index()
-  );
-  const [form] = Form.useForm();
+    API.profile.index(),
+  )
+  const [form] = Form.useForm()
 
   const editProfile = async (updateProfile: UpdateProfileParams) => {
-    let newProfile = null;
+    let newProfile = null
 
     if (profile && profile.accountType === AccountType.LEGACY) {
-      newProfile = { ...profile, ...updateProfile };
-      newProfile.sid = parseInt(newProfile.sid, 10);
-      mutate(newProfile, false);
+      newProfile = { ...profile, ...updateProfile }
+      newProfile.sid = parseInt(newProfile.sid, 10)
+      mutate(newProfile, false)
       if (profile.email === updateProfile.email) {
-        console.log(pick(newProfile, ["firstName", "lastName", "sid"]));
+        console.log(pick(newProfile, ['firstName', 'lastName', 'sid']))
         await API.profile
-          .patch(pick(newProfile, ["firstName", "lastName", "sid"]))
+          .patch(pick(newProfile, ['firstName', 'lastName', 'sid']))
           .catch(async (error) => {
-            const errorMessage = await error.response.data.message;
-            throw new Error(errorMessage);
-          });
+            const errorMessage = await error.response.data.message
+            throw new Error(errorMessage)
+          })
       } else {
         await API.profile
-          .patch(pick(newProfile, ["firstName", "lastName", "email", "sid"]))
+          .patch(pick(newProfile, ['firstName', 'lastName', 'email', 'sid']))
           .catch(async (error) => {
-            const errorMessage = await error.response.data.message;
-            throw new Error(errorMessage);
-          });
+            const errorMessage = await error.response.data.message
+            throw new Error(errorMessage)
+          })
       }
     } else {
       newProfile = {
@@ -42,33 +42,33 @@ export default function ProfileSettings(): ReactElement {
           lastName: updateProfile.lastName,
           sid: updateProfile.sid,
         },
-      };
-      newProfile.sid = parseInt(newProfile.sid, 10);
-      await mutate(newProfile, false);
+      }
+      newProfile.sid = parseInt(newProfile.sid, 10)
+      await mutate(newProfile, false)
 
       await API.profile
-        .patch(pick(newProfile, ["firstName", "lastName", "sid"]))
+        .patch(pick(newProfile, ['firstName', 'lastName', 'sid']))
         .catch(async (error) => {
-          const errorMessage = await error.response.data.message;
-          throw new Error(errorMessage);
-        });
+          const errorMessage = await error.response.data.message
+          throw new Error(errorMessage)
+        })
     }
 
-    await mutate();
-    return newProfile;
-  };
+    await mutate()
+    return newProfile
+  }
 
   const handleOk = async () => {
-    const value = await form.validateFields();
+    const value = await form.validateFields()
     const newProfile = await editProfile(value).catch(async (error) => {
-      const errorMessage = await error.message;
-      await message.error(errorMessage);
-    });
-    if (!newProfile) return;
+      const errorMessage = await error.message
+      await message.error(errorMessage)
+    })
+    if (!newProfile) return
 
-    form.setFieldsValue(newProfile);
-    message.success("Your profile settings have been successfully updated");
-  };
+    form.setFieldsValue(newProfile)
+    message.success('Your profile settings have been successfully updated')
+  }
 
   return profile ? (
     <div>
@@ -152,11 +152,11 @@ export default function ProfileSettings(): ReactElement {
           type="primary"
           data-cy="saveButton"
           onClick={handleOk}
-          style={{ marginBottom: "15px" }}
+          style={{ marginBottom: '15px' }}
         >
           Save
         </Button>
       </Card>
     </div>
-  ) : null;
+  ) : null
 }

@@ -1,11 +1,132 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`OrganizationService deleteUserCourses should throw not found exception if user does not exist 1`] = `"User with id 0 not found"`;
+
+exports[`OrganizationService getCourses should return organization courses 1`] = `
+Array [
+  Object {
+    "courseId": 1,
+    "courseName": "CS 304",
+  },
+]
+`;
+
+exports[`OrganizationService getCourses should return organization courses with search 1`] = `
+Array [
+  Object {
+    "courseId": 1,
+    "courseName": "test",
+  },
+]
+`;
+
 exports[`OrganizationService getOrganizationAndRoleByUserId should return the organization and role of the organizationUser 1`] = `
 Object {
   "id": 1,
+  "orgId": 1,
+  "organizationBannerUrl": null,
   "organizationDescription": "UBC Okanagan",
-  "organizationLogoUrl": "https://etug.ca/wp-content/uploads/2014/03/ubc-e1523034593970.png",
+  "organizationLogoUrl": null,
   "organizationName": "UBCO",
   "organizationRole": "member",
 }
+`;
+
+exports[`OrganizationService getOrganizationCourse should return organization course 1`] = `
+OrganizationCourseModel {
+  "course": CourseModel {
+    "asyncQuestionDisplayTypes": Array [],
+    "coordinator_email": null,
+    "courseInviteCode": "invite-code",
+    "deletedAt": null,
+    "enabled": true,
+    "icalURL": "https://calendar.google.com/calendar/ical/t6lu2pic7u9otrbpkuk26sl34g%40group.calendar.google.com/public/basic.ics",
+    "id": 1,
+    "name": "CS 304",
+    "questionTimer": null,
+    "sectionGroupName": "CS 304",
+    "selfEnroll": false,
+    "semesterId": 1,
+    "timezone": null,
+    "zoomLink": null,
+  },
+  "courseId": 1,
+  "id": 1,
+  "organizationId": 1,
+}
+`;
+
+exports[`OrganizationService getOrganizationUserByUserId should return organizationUser globalRole as unknown when user global role is admin 1`] = `
+Object {
+  "courses": Array [],
+  "organizationId": 1,
+  "organizationRole": "member",
+  "user": Object {
+    "accountDeactivated": false,
+    "email": "user@ubc.ca",
+    "firstName": "User",
+    "fullName": "User Person",
+    "globalRole": "unknown",
+    "id": 1,
+    "lastName": "Person",
+    "photoUrl": null,
+    "sid": null,
+  },
+}
+`;
+
+exports[`OrganizationService getOrganizationUserByUserId should return the organizationUser 1`] = `
+Object {
+  "courses": Array [],
+  "organizationId": 1,
+  "organizationRole": "member",
+  "user": Object {
+    "accountDeactivated": false,
+    "email": "user@ubc.ca",
+    "firstName": "User",
+    "fullName": "User Person",
+    "globalRole": "user",
+    "id": 1,
+    "lastName": "Person",
+    "photoUrl": null,
+    "sid": null,
+  },
+}
+`;
+
+exports[`OrganizationService getUsers should return organization users 1`] = `
+Array [
+  Object {
+    "email": "user@ubc.ca",
+    "firstName": "User",
+    "lastName": "Person",
+    "organizationRole": "member",
+    "photoUrl": null,
+    "userId": 1,
+    "userRole": "user",
+  },
+  Object {
+    "email": "user@ubc.ca",
+    "firstName": "User",
+    "lastName": "Person",
+    "organizationRole": "member",
+    "photoUrl": null,
+    "userId": 2,
+    "userRole": "user",
+  },
+]
+`;
+
+exports[`OrganizationService getUsers should return organization users with search 1`] = `
+Array [
+  Object {
+    "email": "user@ubc.ca",
+    "firstName": "test",
+    "lastName": "Person",
+    "organizationRole": "member",
+    "photoUrl": null,
+    "userId": 1,
+    "userRole": "user",
+  },
+]
 `;

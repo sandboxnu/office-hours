@@ -26,6 +26,7 @@ Object {
   "room": "room 3",
   "staffList": Array [
     Object {
+      "accountDeactivated": false,
       "accountType": "legacy",
       "defaultMessage": null,
       "email": "user@ubc.ca",
@@ -64,6 +65,7 @@ Object {
   "room": "room 4",
   "staffList": Array [
     Object {
+      "accountDeactivated": false,
       "accountType": "legacy",
       "defaultMessage": null,
       "email": "user@ubc.ca",
@@ -94,6 +96,7 @@ exports[`Course Integration GET /courses/:id gets office hours no queues, since 
 Object {
   "asyncQuestionDisplayTypes": Array [],
   "coordinator_email": null,
+  "courseInviteCode": "invite-code",
   "crns": Array [],
   "deletedAt": null,
   "enabled": true,
@@ -102,7 +105,6 @@ Object {
   "id": 1,
   "name": "CS 304",
   "organizationCourse": null,
-  "organizationCourseId": null,
   "questionTimer": null,
   "queues": Array [],
   "sectionGroupName": "CS 304",
@@ -139,6 +141,7 @@ Object {
   "room": "room 3",
   "staffList": Array [
     Object {
+      "accountDeactivated": false,
       "accountType": "legacy",
       "defaultMessage": null,
       "email": "user@ubc.ca",
@@ -177,6 +180,7 @@ Object {
   "room": "room 4",
   "staffList": Array [
     Object {
+      "accountDeactivated": false,
       "accountType": "legacy",
       "defaultMessage": null,
       "email": "user@ubc.ca",
@@ -249,6 +253,7 @@ Object {
   "room": "Online",
   "staffList": Array [
     Object {
+      "accountDeactivated": false,
       "accountType": "legacy",
       "defaultMessage": null,
       "email": "user@ubc.ca",

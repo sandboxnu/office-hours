@@ -275,6 +275,14 @@ export class ProfileController {
         HttpStatus.NOT_FOUND,
       );
     }
+
+    if (user.accountDeactivated) {
+      throw new HttpException(
+        ERROR_MESSAGES.profileController.accountDeactivated,
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     const courses = user.courses
       ? user.courses
           .filter((userCourse) => userCourse?.course?.enabled)
@@ -324,17 +332,16 @@ export class ProfileController {
     }
 
     const pendingCourses = await this.profileService.getPendingCourses(user.id);
-
-    const organizationRole =
-      await this.organizationService.getOrganizationRoleByUserId(user.id);
     const userOrganization =
       await this.organizationService.getOrganizationAndRoleByUserId(user.id);
 
     const organization = pick(userOrganization, [
       'id',
+      'orgId',
       'organizationName',
       'organizationDescription',
       'organizationLogoUrl',
+      'organizationBannerUrl',
       'organizationRole',
     ]);
 
@@ -455,7 +462,6 @@ export class ProfileController {
       await user.save();
       response.status(200).send({ message: 'Image uploaded successfully' });
     } catch (error) {
-      console.error('Error during image upload:', error);
       response
         .status(500)
         .send({ message: 'Image upload failed', error: error.message });

@@ -10,6 +10,7 @@ ListQuestionsResponse {
       "closedAt": null,
       "createdAt": 2020-11-02T12:00:00.000Z,
       "creator": UserModel {
+        "accountDeactivated": false,
         "accountType": "legacy",
         "defaultMessage": null,
         "email": "user@ubc.ca",
@@ -52,6 +53,7 @@ ListQuestionsResponse {
     "closedAt": null,
     "createdAt": 2020-11-02T12:00:00.000Z,
     "creator": UserModel {
+      "accountDeactivated": false,
       "accountType": "legacy",
       "defaultMessage": null,
       "desktopNotifsEnabled": false,

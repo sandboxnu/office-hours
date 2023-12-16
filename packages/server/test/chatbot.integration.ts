@@ -92,9 +92,8 @@ describe('ChatbotController Integration', () => {
         },
       ],
     };
-    const createdQuestion = await ChatbotQuestionModel.create(
-      questionData,
-    ).save();
+    const createdQuestion =
+      await ChatbotQuestionModel.create(questionData).save();
     const editRequestData = {
       data: { userScore: 0, suggested: true },
       questionId: createdQuestion.id,
@@ -118,6 +117,6 @@ describe('ChatbotController Integration', () => {
     await supertest({ userId: 1 })
       .delete('/chatbot/question')
       .send({ questionId })
-      .expect(500);
+      .expect(404);
   });
 });

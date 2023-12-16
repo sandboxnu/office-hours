@@ -1,6 +1,6 @@
-import Router from "next/router";
-import { ReactElement, useState } from "react";
-import { LeftOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
+import Router from 'next/router'
+import { ReactElement, useState } from 'react'
+import { LeftOutlined, LockOutlined, UserOutlined } from '@ant-design/icons'
 import {
   message,
   Button,
@@ -12,11 +12,11 @@ import {
   Select,
   Spin,
   Alert,
-} from "antd";
-import styled from "styled-components";
-import Head from "next/head";
-import { API } from "@koh/api-client";
-import useSWR from "swr";
+} from 'antd'
+import styled from 'styled-components'
+import Head from 'next/head'
+import { API } from '@koh/api-client'
+import useSWR from 'swr'
 
 const Container = styled.div`
   margin-left: auto;
@@ -34,100 +34,109 @@ const Container = styled.div`
   @media (max-width: 992px) {
     width: 80%;
   }
-`;
+`
 
 export default function Login(): ReactElement {
-  const [pass, setPass] = useState("");
-  const [uname, setUname] = useState("");
-  const [accountActiveResponse, setAccountActiveResponse] = useState(true);
-  const [loginMenu, setLoginMenu] = useState(false);
-  const [organization, setOrganization] = useState(null);
+  const [pass, setPass] = useState('')
+  const [uname, setUname] = useState('')
+  const [accountActiveResponse, setAccountActiveResponse] = useState(true)
+  const [loginMenu, setLoginMenu] = useState(false)
+  const [organization, setOrganization] = useState(null)
 
   const { data: organizations } = useSWR(`api/v1/organization`, async () =>
-    API.organizations.getOrganizations()
-  );
+    API.organizations.getOrganizations(),
+  )
 
   const loginWithGoogle = async () => {
-    console.log(organization.id);
+    console.log(organization.id)
     await API.auth
       .loginWithGoogle(Number(organization.id))
       .then((res) => {
-        console.log(res);
-        Router.push(res.redirectUri);
+        console.log(res)
+        Router.push(res.redirectUri)
       })
       .catch((err) => {
-        console.log("debug");
-        console.log(err);
-      });
-  };
+        console.log('debug')
+        console.log(err)
+      })
+  }
 
   const loginWithInstitution = async () => {
-    window.location.href = `/api/v1/auth/saml/${organization.id}`;
-  };
+    window.location.href = `/api/v1/auth/saml/${organization.id}`
+  }
 
   function login() {
     if (organization && !organization.legacyAuthEnabled) {
-      message.error("Organization does not support legacy authentication");
-      return;
+      message.error('Organization does not support legacy authentication')
+      return
     }
 
     const loginRequest = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email: uname,
         password: pass,
       }),
-    };
+    }
     fetch(`/api/v1/ubc_login`, loginRequest)
       .then(async (response) => {
-        const data = await response.json();
+        const data = await response.json()
         if (!response.ok) {
           // get error message from body or default to response statusText
-          const error = (data && data.message) || response.statusText;
+          const error = (data && data.message) || response.statusText
           switch (response.status) {
             case 401:
-              message.error(data.message);
-              break;
+              message.error(data.message)
+              break
             case 403:
-              setAccountActiveResponse(false);
-              break;
+              setAccountActiveResponse(false)
+              break
             case 404:
-              message.error("User Not Found");
-              break;
+              message.error('User Not Found')
+              break
             default:
-              message.error(error);
-              break;
+              message.error(error)
+              break
           }
-          return Promise.reject(error);
+          return Promise.reject(error)
         } else {
-          Router.push(`/api/v1/login/entry?token=${data.token}`);
+          const lastVisited = localStorage.getItem('lastVisited')
+
+          let redirectURL = `/api/v1/login/entry?token=${data.token}`
+
+          if (lastVisited) {
+            redirectURL += `&redirect=${encodeURIComponent(lastVisited)}`
+            localStorage.removeItem('lastVisited')
+          }
+
+          Router.push(redirectURL)
         }
       })
       .catch((error) => {
-        console.error("There was an error!", error);
-      });
+        console.error('There was an error!', error)
+      })
   }
 
   const onPassChange = (e) => {
-    setPass(e.target.value);
-  };
+    setPass(e.target.value)
+  }
 
   const onUserNameChange = (e) => {
-    setUname(e.target.value);
-  };
+    setUname(e.target.value)
+  }
 
   const showLoginMenu = (value) => {
-    const organization = organizations.find((org) => org.id === value);
+    const organization = organizations.find((org) => org.id === value)
 
     if (!organization) {
-      message.error("Organization not found");
-      return;
+      message.error('Organization not found')
+      return
     }
 
-    setOrganization(organization);
-    setLoginMenu(true);
-  };
+    setOrganization(organization)
+    setLoginMenu(true)
+  }
 
   return organizations ? (
     <>
@@ -135,7 +144,7 @@ export default function Login(): ReactElement {
         <title>Login | HelpMe</title>
       </Head>
       <Container>
-        <Card className="md:px-6 sm:px-2">
+        <Card className="sm:px-2 md:px-6">
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             <Col xs={{ span: 24 }} sm={{ span: 11 }}>
               <h2 className="text-left">Hey, hello 👋</h2>
@@ -147,16 +156,16 @@ export default function Login(): ReactElement {
                   </p>
 
                   <Select
-                    className="w-full text-left mt-2"
+                    className="mt-2 w-full text-left"
                     placeholder="Available Organizations"
                     options={organizations.map((organization) => {
                       return {
                         label: organization.name,
                         value: organization.id,
-                      };
+                      }
                     })}
                     onChange={(value) => {
-                      showLoginMenu(value);
+                      showLoginMenu(value)
                     }}
                   />
                 </>
@@ -165,7 +174,7 @@ export default function Login(): ReactElement {
               {loginMenu && (
                 <>
                   <Button
-                    className="px-5 py-5 w-full border flex gap-2 rounded-lg items-center justify-center text-left"
+                    className="flex w-full items-center justify-center gap-2 rounded-lg border px-5 py-5 text-left"
                     onClick={() => setLoginMenu(false)}
                   >
                     <LeftOutlined />
@@ -174,11 +183,11 @@ export default function Login(): ReactElement {
 
                   {organization && organization.googleAuthEnabled && (
                     <Button
-                      className="px-5 py-5 w-full border flex gap-2 rounded-lg items-center justify-center text-left mt-5"
+                      className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg border px-5 py-5 text-left"
                       onClick={() => loginWithGoogle()}
                     >
                       <img
-                        className="w-6 h-6"
+                        className="h-6 w-6"
                         src="https://www.svgrepo.com/show/475656/google-color.svg"
                         loading="lazy"
                         alt="google logo"
@@ -189,7 +198,7 @@ export default function Login(): ReactElement {
 
                   {organization && organization.ssoEnabled && (
                     <Button
-                      className="px-5 py-5 w-full border flex gap-2 rounded-lg items-center justify-center text-left mt-5"
+                      className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg border px-5 py-5 text-left"
                       onClick={() => loginWithInstitution()}
                     >
                       <span className="font-semibold">
@@ -199,7 +208,7 @@ export default function Login(): ReactElement {
                   )}
 
                   {organization && organization.legacyAuthEnabled && (
-                    <p className="uppercase text-stone-400 my-5 font-medium">
+                    <p className="my-5 font-medium uppercase text-stone-400">
                       Or login with email
                     </p>
                   )}
@@ -209,7 +218,7 @@ export default function Login(): ReactElement {
                       message="System Notice"
                       description="Your account has been deactivated. Please contact your organization admin for more information."
                       type="error"
-                      style={{ marginBottom: 20, textAlign: "left" }}
+                      style={{ marginBottom: 20, textAlign: 'left' }}
                     />
                   )}
                   {organization && organization.legacyAuthEnabled && (
@@ -224,7 +233,7 @@ export default function Login(): ReactElement {
                         rules={[
                           {
                             required: true,
-                            message: "Please enter a valid username.",
+                            message: 'Please enter a valid username.',
                           },
                         ]}
                       >
@@ -233,7 +242,7 @@ export default function Login(): ReactElement {
                             <UserOutlined className="site-form-item-icon" />
                           }
                           onChange={onUserNameChange}
-                          className="px-2 py-2 border rounded-lg"
+                          className="rounded-lg border px-2 py-2"
                           placeholder="Username"
                         />
                       </Form.Item>
@@ -243,7 +252,7 @@ export default function Login(): ReactElement {
                         rules={[
                           {
                             required: true,
-                            message: "Please enter a valid password.",
+                            message: 'Please enter a valid password.',
                           },
                         ]}
                       >
@@ -253,7 +262,7 @@ export default function Login(): ReactElement {
                           }
                           onChange={onPassChange}
                           type="password"
-                          className="px-2 py-2 border rounded-lg"
+                          className="rounded-lg border px-2 py-2"
                           placeholder="Password"
                         />
                       </Form.Item>
@@ -262,7 +271,7 @@ export default function Login(): ReactElement {
                         <Button
                           type="primary"
                           htmlType="submit"
-                          className="w-full px-2 py-2 h-auto border rounded-lg items-center justify-center "
+                          className="h-auto w-full items-center justify-center rounded-lg border px-2 py-2 "
                         >
                           <span className="font-semibold">Log in</span>
                         </Button>
@@ -270,7 +279,7 @@ export default function Login(): ReactElement {
 
                       <Form.Item>
                         <a
-                          style={{ marginTop: "-10px" }}
+                          style={{ marginTop: '-10px' }}
                           href="/forgetpassword/forget"
                         >
                           Forgot password
@@ -282,7 +291,7 @@ export default function Login(): ReactElement {
               )}
             </Col>
             <Col xs={{ span: 0 }} sm={{ span: 13 }}>
-              <img src="images/community.svg" style={{ height: "100%" }} />
+              <img src="images/community.svg" style={{ height: '100%' }} />
             </Col>
           </Row>
         </Card>
@@ -290,5 +299,5 @@ export default function Login(): ReactElement {
     </>
   ) : (
     <Spin />
-  );
+  )
 }

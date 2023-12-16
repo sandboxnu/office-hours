@@ -7,6 +7,7 @@ import {
   GetCourseOverridesResponse,
   GetCourseResponse,
   GetCourseUserInfoResponse,
+  GetLimitedCourseResponse,
   QueuePartial,
   RegisterCourseParams,
   Role,
@@ -75,6 +76,36 @@ export class CourseController {
     }
     return courses.map((course) => ({ id: course.id, name: course.name }));
   }
+
+  @Get(':oid/organization_courses')
+  @UseGuards(JwtAuthGuard)
+  async getOrganizationCourses(
+    @Res() res: Response,
+    @Param('oid') oid: number,
+  ): Promise<Response<[]>> {
+    const courses = await OrganizationCourseModel.find({
+      where: {
+        organizationId: oid,
+      },
+      relations: ['course'],
+    });
+
+    if (!courses) {
+      return res.status(HttpStatus.NOT_FOUND).send({
+        message: ERROR_MESSAGES.courseController.courseNotFound,
+      });
+    }
+
+    const coursesPartial = courses.map((course) => ({
+      id: course.course.id,
+      name: course.course.name,
+    }));
+
+    res.status(HttpStatus.OK).send({
+      coursesPartial,
+    });
+  }
+
   @Get(':cid/questions')
   @UseGuards(JwtAuthGuard)
   async getAsyncQuestions(
@@ -121,6 +152,41 @@ export class CourseController {
         question.status !== asyncQuestionStatus.TADeleted,
     );
     return questions;
+  }
+
+  @Get('limited/:id/:code')
+  async getLimitedCourseResponse(
+    @Param('id') id: number,
+    @Param('code') code: string,
+    @Res() res: Response,
+  ): Promise<Response<GetLimitedCourseResponse>> {
+    const courseWithOrganization = await CourseModel.findOne({
+      where: {
+        id: id,
+        courseInviteCode: code,
+      },
+      relations: ['organizationCourse', 'organizationCourse.organization'],
+    });
+
+    if (!courseWithOrganization) {
+      res.status(HttpStatus.NOT_FOUND).send({
+        message: ERROR_MESSAGES.courseController.courseNotFound,
+      });
+      return;
+    }
+
+    const organization =
+      courseWithOrganization.organizationCourse?.organization || null;
+
+    const course_response = {
+      id: courseWithOrganization.id,
+      name: courseWithOrganization.name,
+      organizationCourse: organization,
+      courseInviteCode: courseWithOrganization.courseInviteCode,
+    };
+
+    res.status(HttpStatus.OK).send(course_response);
+    return;
   }
 
   @Get(':id')

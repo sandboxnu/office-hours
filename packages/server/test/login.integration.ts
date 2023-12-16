@@ -23,6 +23,63 @@ describe('Login Integration', () => {
       t.overrideProvider(JwtService).useValue(mockJWT),
   );
 
+  describe('POST /ubc_login', () => {
+    it('returns 400 if no email is provided', async () => {
+      await supertest()
+        .post('/ubc_login')
+        .send({ password: 'fake_password' })
+        .expect(400);
+    });
+
+    it('returns 404 if user not found', async () => {
+      await supertest()
+        .post('/ubc_login')
+        .send({ email: 'fake_email@ubc.ca', password: 'fake_password' })
+        .expect(404);
+    });
+
+    it('returns 401 if password is incorrect', async () => {
+      const user = await UserFactory.create({ password: 'real_password' });
+      await mockJWT.signAsync({ userId: user.id });
+
+      await supertest()
+        .post('/ubc_login')
+        .send({ email: user.email, password: 'invalid_password' })
+        .expect(401);
+    });
+
+    it('returns 403 if account is deactivated', async () => {
+      const salt = await bcrypt.genSalt(10);
+      const password = await bcrypt.hash('realpassword', salt);
+
+      const user = await UserFactory.create({
+        password: password,
+        accountDeactivated: true,
+      });
+      await mockJWT.signAsync({ userId: user.id });
+
+      await supertest()
+        .post('/ubc_login')
+        .send({ email: user.email, password: 'realpassword' })
+        .expect(403);
+    });
+
+    it('returns 200 if password is correct', async () => {
+      const salt = await bcrypt.genSalt(10);
+      const password = await bcrypt.hash('realpassword', salt);
+
+      const user = await UserFactory.create({ password: password });
+      await mockJWT.signAsync({ userId: user.id });
+
+      const res = await supertest()
+        .post('/ubc_login')
+        .send({ email: user.email, password: 'realpassword' });
+
+      expect(res.body).toMatchSnapshot();
+      expect(res.status).toBe(200);
+    });
+  });
+
   describe('POST /login/entry', () => {
     it('request to entry with correct jwt payload works', async () => {
       const token = await mockJWT.signAsync({ userId: 1 });

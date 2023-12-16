@@ -4,30 +4,30 @@ import {
   DeleteOutlined,
   UploadOutlined,
   UserOutlined,
-} from "@ant-design/icons";
-import { Collapse } from "antd";
-import { API } from "@koh/api-client";
-import { useWindowWidth } from "@react-hook/window-size";
-import { Button, Col, Menu, message, Row, Skeleton, Space, Upload } from "antd";
-import React, { ReactElement, useEffect, useState } from "react";
-import styled from "styled-components";
-import useSWR from "swr";
-import NotificationsSettings from "./NotificationsSettings";
-import ProfileSettings from "./ProfileSettings";
-import TeamsSettings from "./TeamsSettings";
-import CoursePreferenceSettings from "./CoursePreferenceSettings";
-import { useIsMobile } from "../../hooks/useIsMobile";
-import { SettingsPanelAvatar } from "./SettingsSharedComponents";
+} from '@ant-design/icons'
+import { Collapse } from 'antd'
+import { API } from '@koh/api-client'
+import { useWindowWidth } from '@react-hook/window-size'
+import { Button, Col, Menu, message, Row, Skeleton, Space, Upload } from 'antd'
+import React, { ReactElement, useEffect, useState } from 'react'
+import styled from 'styled-components'
+import useSWR from 'swr'
+import NotificationsSettings from './NotificationsSettings'
+import ProfileSettings from './ProfileSettings'
+import TeamsSettings from './TeamsSettings'
+import CoursePreferenceSettings from './CoursePreferenceSettings'
+import { useIsMobile } from '../../hooks/useIsMobile'
+import { SettingsPanelAvatar } from './SettingsSharedComponents'
 
 export enum SettingsOptions {
-  PROFILE = "PROFILE",
-  NOTIFICATIONS = "NOTIFICATIONS",
-  TEAMS_SETTINGS = "TEAMS_SETTINGS",
-  PREFERENCES = "PREFERENCES",
+  PROFILE = 'PROFILE',
+  NOTIFICATIONS = 'NOTIFICATIONS',
+  TEAMS_SETTINGS = 'TEAMS_SETTINGS',
+  PREFERENCES = 'PREFERENCES',
 }
 
 interface SettingsPageProps {
-  defaultPage: SettingsOptions;
+  defaultPage: SettingsOptions
 }
 
 export const VerticalDivider = styled.div`
@@ -35,15 +35,15 @@ export const VerticalDivider = styled.div`
     border-right: 1px solid #cfd6de;
     margin-right: 32px;
   }
-`;
+`
 
 const ProfilePicButton = styled(Button)`
   flex: wrap;
   width: calc(5vw);
   min-width: 180px;
-`;
+`
 
-const { Panel } = Collapse;
+const { Panel } = Collapse
 
 export default function SettingsPage({
   defaultPage,
@@ -52,60 +52,60 @@ export default function SettingsPage({
     data: profile,
     error,
     mutate,
-  } = useSWR(`api/v1/profile`, async () => API.profile.index());
+  } = useSWR(`api/v1/profile`, async () => API.profile.index())
 
   const [currentSettings, setCurrentSettings] = useState(
     defaultPage || SettingsOptions.PROFILE,
-  );
-  const [uploading, setUploading] = useState(false);
-  const isMobile = useIsMobile();
-  const windowWidth = useWindowWidth();
-  const [avatarSize, setAvatarSize] = useState(windowWidth / 2);
+  )
+  const [uploading, setUploading] = useState(false)
+  const isMobile = useIsMobile()
+  const windowWidth = useWindowWidth()
+  const [avatarSize, setAvatarSize] = useState(windowWidth / 2)
 
   useEffect(() => {
-    const widthDivider = isMobile ? 6 : 10;
-    setAvatarSize(windowWidth / widthDivider);
-  });
+    const widthDivider = isMobile ? 6 : 10
+    setAvatarSize(windowWidth / widthDivider)
+  })
 
   const beforeUpload = (file) => {
-    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
 
     if (!isJpgOrPng) {
-      message.error("You can only upload JPGs or PNGs!");
+      message.error('You can only upload JPGs or PNGs!')
     }
 
-    const isLt1M = file.size / 1024 / 1024 < 1;
+    const isLt1M = file.size / 1024 / 1024 < 1
     if (!isLt1M) {
-      message.error("Image must smaller than 1MB!");
+      message.error('Image must smaller than 1MB!')
     }
 
-    return isJpgOrPng && isLt1M;
-  };
+    return isJpgOrPng && isLt1M
+  }
   const handleUpload = async (file) => {
     try {
-      setUploading(true); // Start the upload state
-      const formData = new FormData();
-      formData.append("file", file);
-      const response = await fetch("api/v1/profile/upload_picture", {
-        method: "POST",
+      setUploading(true) // Start the upload state
+      const formData = new FormData()
+      formData.append('file', file)
+      const response = await fetch('api/v1/profile/upload_picture', {
+        method: 'POST',
         body: formData,
-      });
-      const data = await response.json();
+      })
+      const data = await response.json()
       if (response.ok) {
-        message.success(`${file.name} file uploaded successfully`);
-        mutate(); // Refresh profile data
+        message.success(`${file.name} file uploaded successfully`)
+        mutate() // Refresh profile data
       } else {
-        message.error(`${file.name} file upload failed: ${data.message}`);
+        message.error(`${file.name} file upload failed: ${data.message}`)
       }
     } catch (error) {
-      message.error(`Error uploading ${file.name}. Please try again.`);
+      message.error(`Error uploading ${file.name}. Please try again.`)
     } finally {
-      setUploading(false); // Reset the upload state regardless of success or error
+      setUploading(false) // Reset the upload state regardless of success or error
     }
-  };
+  }
 
   if (error) {
-    message.error(error);
+    message.error(error)
   }
 
   const AvatarSettings = () => (
@@ -114,7 +114,7 @@ export default function SettingsPage({
         <Row
           style={{
             marginTop: avatarSize / 6,
-            justifyContent: `${isMobile ? "left" : "center"}`,
+            justifyContent: `${isMobile ? 'left' : 'center'}`,
           }}
         >
           {uploading ? (
@@ -142,6 +142,10 @@ export default function SettingsPage({
               customRequest={({ file }) => handleUpload(file)} // Use customRequest to handle the upload logic ourselves
               beforeUpload={beforeUpload}
               showUploadList={true}
+              onChange={(info) => {
+                setUploading(info.file.status === 'uploading')
+                mutate()
+              }}
             >
               <ProfilePicButton icon={<UploadOutlined />}>
                 Edit photo
@@ -150,19 +154,19 @@ export default function SettingsPage({
             {profile?.photoURL && (
               <ProfilePicButton
                 icon={<DeleteOutlined />}
-                style={{ marginTop: "10px" }}
+                style={{ marginTop: '10px' }}
                 onClick={async () => {
                   try {
-                    await API.profile.deleteProfilePicture();
+                    await API.profile.deleteProfilePicture()
                     message.success(
                       "You've successfully deleted your profile picture",
-                    );
-                    mutate();
+                    )
+                    mutate()
                   } catch (e) {
                     message.error(
-                      "There was an error with deleting your profile picture, please contact HelpMe Office Hours team for assistance",
-                    );
-                    throw e;
+                      'There was an error with deleting your profile picture, please contact HelpMe Office Hours team for assistance',
+                    )
+                    throw e
                   }
                 }}
               >
@@ -173,12 +177,12 @@ export default function SettingsPage({
         </Row>
       ) : null}
     </Col>
-  );
+  )
 
   const SettingsMenu = () => (
     <>
       {isMobile ? (
-        <Collapse accordion style={{ marginTop: "10px" }}>
+        <Collapse accordion style={{ marginTop: '10px' }}>
           <Panel header="Personal Information" key="profile">
             <ProfileSettings />
           </Panel>
@@ -196,7 +200,7 @@ export default function SettingsPage({
         </Collapse>
       ) : (
         <Menu
-          style={{ background: "none", marginTop: "10px" }}
+          style={{ background: 'none', marginTop: '10px' }}
           defaultSelectedKeys={[currentSettings]}
           onClick={(e) => setCurrentSettings(e.key as SettingsOptions)}
         >
@@ -223,7 +227,7 @@ export default function SettingsPage({
         </Menu>
       )}
     </>
-  );
+  )
 
   const DesktopSettingsSubpage = () => (
     <Col>
@@ -236,7 +240,7 @@ export default function SettingsPage({
         <CoursePreferenceSettings />
       )}
     </Col>
-  );
+  )
 
   return (
     <div>
@@ -247,7 +251,7 @@ export default function SettingsPage({
         </Col>
       ) : (
         <Row>
-          <Col span={5} style={{ textAlign: "center" }}>
+          <Col span={5} style={{ textAlign: 'center' }}>
             <AvatarSettings />
             <SettingsMenu />
           </Col>
@@ -258,5 +262,5 @@ export default function SettingsPage({
         </Row>
       )}
     </div>
-  );
+  )
 }

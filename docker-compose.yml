@@ -1,10 +1,10 @@
-version: "2"
+version: '2'
 
 services:
   postgresql:
     image: postgres:11.5
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - ./infrastructure/dev/docker-postgresql-multiple-databases:/docker-entrypoint-initdb.d
       - pg:/var/lib/postgresql/data
@@ -17,14 +17,14 @@ services:
   redis:
     image: redis:alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
     networks:
       - api
   api:
     container_name: helpme_api
     command: yarn dev
     ports:
-      - "80:3000"
+      - '80:3000'
     depends_on:
       - postgresql
       - redis

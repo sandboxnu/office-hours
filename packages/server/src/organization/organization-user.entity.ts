@@ -8,7 +8,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { OrganizationModel } from './organization.entity';
-import { Exclude } from 'class-transformer';
 import { UserModel } from '../profile/user.entity';
 import { OrganizationRole } from '@koh/common';
 
@@ -17,7 +16,6 @@ export class OrganizationUserModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Exclude()
   @ManyToOne(
     (type) => OrganizationModel,
     (organization) => organization.organizationUsers,
