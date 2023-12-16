@@ -52,11 +52,9 @@ export default function Login(): ReactElement {
     await API.auth
       .loginWithGoogle(Number(organization.id))
       .then((res) => {
-        console.log(res)
         Router.push(res.redirectUri)
       })
       .catch((err) => {
-        console.log('debug')
         console.log(err)
       })
   }
