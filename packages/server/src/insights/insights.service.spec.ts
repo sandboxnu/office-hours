@@ -217,14 +217,37 @@ describe('InsightsService', () => {
 
     const output = res as BarChartOutputType;
 
-    expect(output.data).toEqual([
-      { questionType: 'Bug', totalQuestions: 8 },
-      { questionType: 'Clarification', totalQuestions: 20 },
-      { questionType: 'Concept', totalQuestions: 0 },
-      { questionType: 'Other', totalQuestions: 0 },
-      { questionType: 'Setup', totalQuestions: 0 },
-      { questionType: 'Testing', totalQuestions: 10 },
-    ]);
+    const expectedQuestionTypes = [
+      {
+        questionType: 'Bug',
+        questionTypeName: 'Bug',
+        totalQuestions: 8,
+      },
+      {
+        questionType: 'Clarification',
+        questionTypeName: 'Clarification',
+        totalQuestions: 20,
+      },
+      {
+        questionType: 'Concept',
+        totalQuestions: 0,
+      },
+      {
+        questionType: 'Other',
+        totalQuestions: 0,
+      },
+      {
+        questionType: 'Setup',
+        totalQuestions: 0,
+      },
+      {
+        questionType: 'Testing',
+        questionTypeName: 'Testing',
+        totalQuestions: 10,
+      },
+    ];
+
+    expect(output.data).toEqual(expectedQuestionTypes);
   });
 
   it('mostActiveStudents', async () => {

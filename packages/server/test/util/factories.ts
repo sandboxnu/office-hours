@@ -1,5 +1,5 @@
 import { QuestionGroupModel } from 'question/question-group.entity';
-import { AlertType, QuestionType, Role } from '@koh/common';
+import { AlertType, Role } from '@koh/common';
 import { AlertModel } from 'alerts/alerts.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { Factory } from 'typeorm-factory';
