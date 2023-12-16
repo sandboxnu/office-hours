@@ -104,9 +104,7 @@ function RenderTable({
                 <List.Item.Meta
                   avatar={<Avatar src={item.photoURL} />}
                   title={item.name}
-                  description={`${item.sid ? '#' + item.sid : 'N/A'}`}
                 />
-                <div>{item.email}</div>
               </List.Item>
             )}
             bordered

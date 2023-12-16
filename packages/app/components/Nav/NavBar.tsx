@@ -204,17 +204,8 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     })
   }
 
-  const [messageApi, easterEggHolder] = message.useMessage()
-
-  const success = () => {
-    messageApi.open({
-      type: 'success',
-      content: 'Wow.. You found an easter egg.. Do you think there is more? 🤔',
-    })
-  }
   return courseId ? (
     <>
-      {easterEggHolder}
       <NavBG />
       <AlertsContainer courseId={courseId} />
       <Nav>

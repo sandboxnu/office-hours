@@ -234,12 +234,6 @@ export class AuthController {
             const protocol = req.protocol;
             const issuer = `https://help.cosc304.ok.ubc.ca/shibboleth`;
 
-            console.log(
-              fs.readFileSync(
-                path.join(path.resolve(__dirname, '../..'), 'prvk.pem'),
-                'utf-8',
-              ),
-            );
             done(null, {
               host,
               protocol,
