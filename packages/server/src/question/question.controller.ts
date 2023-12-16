@@ -96,7 +96,7 @@ export class QuestionController {
         'id',
         'queueId',
         'text',
-        'questionType',
+        'questionTypes',
         'createdAt',
         'helpedAt',
         'closedAt',

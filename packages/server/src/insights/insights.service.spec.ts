@@ -9,14 +9,16 @@ import {
   CourseFactory,
   QueueFactory,
   UserFactory,
+  QuestionTypeFactory,
 } from '../../test/util/factories';
 import { INSIGHTS_MAP } from './insight-objects';
 import {
   BarChartOutputType,
-  QuestionType,
+  QuestionTypes,
   SimpleTableOutputType,
 } from '@koh/common';
 import { UserModel } from 'profile/user.entity';
+import { QuestionTypeModel } from 'question/question-type.entity';
 
 describe('InsightsService', () => {
   let service: InsightsService;
@@ -185,16 +187,22 @@ describe('InsightsService', () => {
   it('questionTypeBreakdown', async () => {
     const course = await CourseFactory.create();
     const queue = await QueueFactory.create({ course });
+    const bugType = await QuestionTypeFactory.create({ name: 'Bug' });
+    const clarificationType = await QuestionTypeFactory.create({
+      name: 'Clarification',
+    });
+    const testingType = await QuestionTypeFactory.create({ name: 'Testing' });
+
     await QuestionFactory.createList(8, {
-      questionType: QuestionType.Bug,
+      questionTypes: [bugType],
       queue,
     });
     await QuestionFactory.createList(20, {
-      questionType: QuestionType.Clarification,
+      questionTypes: [clarificationType],
       queue,
     });
     await QuestionFactory.createList(10, {
-      questionType: QuestionType.Testing,
+      questionTypes: [testingType],
       queue,
     });
     const res = await service.computeOutput({

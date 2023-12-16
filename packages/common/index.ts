@@ -275,15 +275,44 @@ export class Question {
   location?: string
 }
 
-// Question Types
-export enum QuestionType {
-  Concept = 'Concept',
-  Clarification = 'Clarification',
-  Testing = 'Testing',
-  Bug = 'Bug',
-  Setup = 'Setup',
-  Other = 'Other',
-}
+export const QuestionTypes: AddQuestionTypeParams[] = [
+  {
+    id: 1,
+    cid: 1,
+    name: 'Concept',
+    color: '#000000',
+  },
+  {
+    id: 2,
+    cid: 2,
+    name: 'Clarification',
+    color: '#000000',
+  },
+  {
+    id: 3,
+    cid: 3,
+    name: 'Testing',
+    color: '#000000',
+  },
+  {
+    id: 4,
+    cid: 4,
+    name: 'Bug',
+    color: '#000000',
+  },
+  {
+    id: 5,
+    cid: 5,
+    name: 'Setup',
+    color: '#000000',
+  },
+  {
+    id: 6,
+    cid: 6,
+    name: 'Other',
+    color: '#000000',
+  },
+]
 
 // Type of async question events
 export enum asyncQuestionEventType {

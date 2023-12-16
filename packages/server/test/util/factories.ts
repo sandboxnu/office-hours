@@ -15,6 +15,7 @@ import { ProfSectionGroupsModel } from 'login/prof-section-groups.entity';
 import { OrganizationModel } from '../../src/organization/organization.entity';
 import { InteractionModel } from 'chatbot/interaction.entity';
 import { OrganizationCourseModel } from 'organization/organization-course.entity';
+import { QuestionTypeModel } from 'question/question-type.entity';
 
 export const UserFactory = new Factory(UserModel)
   .attr('email', `user@ubc.ca`)
@@ -66,12 +67,18 @@ export const QueueFactory = new Factory(QueueModel)
   .attr('isProfessorQueue', false)
   .attr('isDisabled', false);
 
+export const QuestionTypeFactory = new Factory(QuestionTypeModel)
+  .attr('cid', 1)
+  .attr('name', 'Question Type')
+  .attr('color', '#000000')
+  .attr('questions', []);
+
 // WARNING: DO NOT USE CREATORID. AS YOU SEE HERE, WE ONLY ACCEPT CREATOR
 //TODO: make it accept creatorId as well
 export const QuestionFactory = new Factory(QuestionModel)
   .attr('text', 'question description')
   .attr('status', 'Queued')
-  .attr('questionType', QuestionType.Other)
+  .assocMany('questionTypes', QuestionTypeFactory, 1)
   .attr('groupable', true)
   .assocOne('queue', QueueFactory)
   .assocOne('creator', UserFactory)

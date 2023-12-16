@@ -268,7 +268,7 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
       const updateStudent = {
         text,
         questionTypes,
-        groupable,
+        groupable: false, //temporary
         status:
           studentQuestionStatus === OpenQuestionStatus.Drafting
             ? OpenQuestionStatus.Queued

@@ -26,7 +26,14 @@ ListQuestionsResponse {
       "helpedAt": null,
       "id": 1,
       "location": null,
-      "questionType": "Other",
+      "questionTypes": Array [
+        QuestionTypeModel {
+          "cid": 1,
+          "color": "#000000",
+          "id": 1,
+          "name": "Question Type",
+        },
+      ],
       "status": "Queued",
       "taHelped": null,
       "text": "help us",
@@ -41,7 +48,14 @@ ListQuestionsResponse {
       "helpedAt": null,
       "id": 2,
       "location": null,
-      "questionType": "Other",
+      "questionTypes": Array [
+        QuestionTypeModel {
+          "cid": 1,
+          "color": "#000000",
+          "id": 2,
+          "name": "Question Type",
+        },
+      ],
       "status": "Queued",
       "taHelped": null,
       "text": "help someone else",
@@ -84,7 +98,14 @@ ListQuestionsResponse {
     "helpedAt": null,
     "id": 1,
     "location": null,
-    "questionType": "Other",
+    "questionTypes": Array [
+      QuestionTypeModel {
+        "cid": 1,
+        "color": "#000000",
+        "id": 1,
+        "name": "Question Type",
+      },
+    ],
     "queueId": 1,
     "status": "Queued",
     "taHelped": null,

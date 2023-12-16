@@ -32,6 +32,7 @@ import { QueueModel } from '../queue/queue.entity';
 import { SeedService } from './seed.service';
 import { OrganizationCourseModel } from 'organization/organization-course.entity';
 import { OrganizationUserModel } from 'organization/organization-user.entity';
+import { QuestionTypeModel } from 'question/question-type.entity';
 
 @Controller('seeds')
 //@UseGuards(NonProductionGuard)
@@ -333,7 +334,17 @@ export class SeedController {
     }
     const question: QuestionModel = await QuestionFactory.create({
       ...options,
-      ...body.data,
+      queueId: body.queueId,
+      text: body.data.text,
+      creatorId: body.studentId,
+      groupable: body.data.groupable,
+      location: body.data.location,
+      questionTypes: body.data.questionTypes.map((questionType) => ({
+        cid: questionType.cid,
+        name: questionType.name,
+        color: questionType.color,
+      })) as QuestionTypeModel[],
+
       createdAt: new Date(),
     });
     return question;
