@@ -31,7 +31,14 @@ Object {
   "helpedAt": null,
   "id": 1,
   "location": null,
-  "questionType": "Other",
+  "questionTypes": Array [
+    Object {
+      "cid": 1,
+      "color": "#000000",
+      "id": 1,
+      "name": "Question Type",
+    },
+  ],
   "status": "Queued",
   "taHelped": null,
   "text": "Help pls",

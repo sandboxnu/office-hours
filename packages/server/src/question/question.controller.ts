@@ -252,7 +252,6 @@ export class QuestionController {
       }).save();
       return question;
     } catch (err) {
-      console.error(err);
       throw new HttpException(
         ERROR_MESSAGES.questionController.saveQError,
         HttpStatus.INTERNAL_SERVER_ERROR,

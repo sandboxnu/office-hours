@@ -1036,9 +1036,11 @@ export class AddQuestionTypeParams {
   cid?: number
 
   @IsString()
+  @IsOptional()
   name?: string
 
   @IsString()
+  @IsOptional()
   color?: string
 }
 

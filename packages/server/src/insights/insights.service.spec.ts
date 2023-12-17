@@ -218,33 +218,9 @@ describe('InsightsService', () => {
     const output = res as BarChartOutputType;
 
     const expectedQuestionTypes = [
-      {
-        questionType: 'Bug',
-        questionTypeName: 'Bug',
-        totalQuestions: 8,
-      },
-      {
-        questionType: 'Clarification',
-        questionTypeName: 'Clarification',
-        totalQuestions: 20,
-      },
-      {
-        questionType: 'Concept',
-        totalQuestions: 0,
-      },
-      {
-        questionType: 'Other',
-        totalQuestions: 0,
-      },
-      {
-        questionType: 'Setup',
-        totalQuestions: 0,
-      },
-      {
-        questionType: 'Testing',
-        questionTypeName: 'Testing',
-        totalQuestions: 10,
-      },
+      { questionTypeName: 'Bug', totalQuestions: 8 },
+      { questionTypeName: 'Clarification', totalQuestions: 20 },
+      { questionTypeName: 'Testing', totalQuestions: 10 },
     ];
 
     expect(output.data).toEqual(expectedQuestionTypes);

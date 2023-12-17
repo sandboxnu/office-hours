@@ -332,22 +332,26 @@ export class SeedController {
       const student = await UserModel.findOneOrFail(body.studentId);
       options['creator'] = student;
     }
-    const question: QuestionModel = await QuestionFactory.create({
-      ...options,
-      queueId: body.queueId,
-      text: body.data.text,
-      creatorId: body.studentId,
-      groupable: body.data.groupable,
-      location: body.data.location,
-      questionTypes: body.data.questionTypes.map((questionType) => ({
+    try {
+      const questionTypes = body.data.questionTypes.map((questionType) => ({
         cid: questionType.cid,
         name: questionType.name,
         color: questionType.color,
-      })) as QuestionTypeModel[],
-
-      createdAt: new Date(),
-    });
-    return question;
+      })) as QuestionTypeModel[];
+      const question: QuestionModel = await QuestionFactory.create({
+        ...options,
+        queueId: body.queueId,
+        text: body.data.text,
+        creatorId: body.studentId,
+        groupable: body.data.groupable,
+        location: body.data.location,
+        questionTypes: questionTypes,
+        createdAt: new Date(),
+      });
+      return question;
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   @Post('createQueueWithoutOfficeHour')

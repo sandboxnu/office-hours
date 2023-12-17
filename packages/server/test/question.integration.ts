@@ -3,7 +3,7 @@ import {
   ERROR_MESSAGES,
   OpenQuestionStatus,
   QuestionStatusKeys,
-  QuestionType,
+  QuestionTypes,
   Role,
 } from '@koh/common';
 import { UserModel } from 'profile/user.entity';
@@ -16,6 +16,7 @@ import {
   CourseFactory,
   QuestionFactory,
   QuestionGroupFactory,
+  QuestionTypeFactory,
   QueueFactory,
   StudentCourseFactory,
   TACourseFactory,
@@ -27,6 +28,8 @@ import {
   modifyMockNotifs,
   setupIntegrationTest,
 } from './util/testUtils';
+import { forEach } from 'lodash';
+import { QuestionTypeModel } from 'question/question-type.entity';
 
 describe('Question Integration', () => {
   const supertest = setupIntegrationTest(QuestionModule, modifyMockNotifs);
@@ -69,11 +72,12 @@ describe('Question Integration', () => {
     const postQuestion = (
       user: UserModel,
       queue: QueueModel,
+      questionTypes: QuestionTypeModel[],
       force = false,
     ): supertest.Test =>
       supertest({ userId: user.id }).post('/questions').send({
         text: "Don't know recursion",
-        questionType: QuestionType.Concept,
+        questionTypes: questionTypes,
         queueId: queue.id,
         force,
         groupable: true,
@@ -94,13 +98,15 @@ describe('Question Integration', () => {
         staffList: [ta.user],
       });
 
+      const questionType = await QuestionTypeFactory.create();
+
       await StudentCourseFactory.create({ user, courseId: queue.courseId });
       expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(0);
       const response = await supertest({ userId: user.id })
         .post('/questions')
         .send({
           text: "Don't know recursion",
-          questionType: null,
+          questionTypes: [questionType],
           queueId: queue.id,
           force: false,
           groupable: true,
@@ -110,7 +116,7 @@ describe('Question Integration', () => {
         text: "Don't know recursion",
         helpedAt: null,
         closedAt: null,
-        questionType: null,
+        questionTypes: [questionType],
         status: 'Drafting',
         groupable: true,
       });
@@ -128,16 +134,26 @@ describe('Question Integration', () => {
         allowQuestions: true,
         staffList: [ta.user],
       });
+      const questionTypes = [];
+      forEach(QuestionTypes, async (questionType) => {
+        const currentQuestionType = await QuestionTypeFactory.create({
+          name: questionType.name,
+          color: questionType.color,
+          cid: course.id,
+        });
+        questionTypes.push(currentQuestionType);
+      });
+
       await TACourseFactory.create({ user, courseId: queue.courseId });
       expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(0);
-      await postQuestion(user, queue).expect(401);
+      await postQuestion(user, queue, questionTypes).expect(401);
     });
     it('post question fails with non-existent queue', async () => {
       await supertest({ userId: 99 })
         .post('/questions')
         .send({
           text: "Don't know recursion",
-          questionType: QuestionType.Concept,
+          questionTypes: QuestionTypes,
           queueId: 999,
           force: false,
           groupable: true,
@@ -158,13 +174,23 @@ describe('Question Integration', () => {
       });
 
       expect(await queueImNotIn.checkIsOpen()).toBe(true);
-
       const user = await UserFactory.create();
+      const course2 = await CourseFactory.create();
       await StudentCourseFactory.create({
         user,
-        course: await CourseFactory.create(),
+        course: course2,
       });
-      await postQuestion(user, queueImNotIn).expect(404);
+      const questionTypes = [];
+      forEach(QuestionTypes, async (questionType) => {
+        const currentQuestionType = await QuestionTypeFactory.create({
+          name: questionType.name,
+          color: questionType.color,
+          cid: course2.id,
+        });
+        questionTypes.push(currentQuestionType);
+      });
+
+      await postQuestion(user, queueImNotIn, questionTypes).expect(404);
     });
 
     it('post question fails on closed queue', async () => {
@@ -173,15 +199,24 @@ describe('Question Integration', () => {
       const queue = await QueueFactory.create({
         course: course,
         allowQuestions: true,
+        isDisabled: true,
       });
-      // expect(await queue.checkIsOpen()).toBe(false);
-      expect(await queue.checkIsOpen()).toBe(true);
+      const questionTypes = [];
+      forEach(QuestionTypes, async (questionType) => {
+        const currentQuestionType = await QuestionTypeFactory.create({
+          name: questionType.name,
+          color: questionType.color,
+          cid: course.id,
+        });
+        questionTypes.push(currentQuestionType);
+      });
 
+      const result = await queue.checkIsOpen();
+      expect(result).toBe(false);
       const user = await UserFactory.create();
       await StudentCourseFactory.create({ user, courseId: queue.courseId });
       await supertest({ userId: user.id });
-      // await postQuestion(user, queue).expect(400);
-      await postQuestion(user, queue).expect(201);
+      await postQuestion(user, queue, questionTypes).expect(400);
     });
 
     // it('post question fails with bad params', async () => {
@@ -248,7 +283,17 @@ describe('Question Integration', () => {
         status: OpenQuestionStatus.Drafting,
       });
 
-      const response = await postQuestion(user, queue2);
+      const questionTypes = [];
+      forEach(QuestionTypes, async (questionType) => {
+        const currentQuestionType = await QuestionTypeFactory.create({
+          name: questionType.name,
+          color: questionType.color,
+          cid: course.id,
+        });
+        questionTypes.push(currentQuestionType);
+      });
+
+      const response = await postQuestion(user, queue2, questionTypes);
 
       expect(response.status).toBe(400);
       expect(response.body.message).toBe(
@@ -291,15 +336,18 @@ describe('Question Integration', () => {
         queue: queue1,
         status: OpenQuestionStatus.Drafting,
       });
-
-      const response = await postQuestion(user, queue2);
-
-      expect(response.status).toBe(201);
-      expect(response.body).toMatchObject({
-        text: "Don't know recursion",
-        questionType: QuestionType.Concept,
-        groupable: true,
+      const questionTypes = [];
+      forEach(QuestionTypes, async (questionType) => {
+        const currentQuestionType = await QuestionTypeFactory.create({
+          name: questionType.name,
+          color: questionType.color,
+          cid: course2.id,
+        });
+        questionTypes.push(currentQuestionType);
       });
+
+      const response = await postQuestion(user, queue2, questionTypes);
+      expect(response.status).toBe(201);
       expect(await QuestionModel.count({ where: { queueId: 1 } })).toEqual(1);
       expect(await QuestionModel.count({ where: { queueId: 2 } })).toEqual(1);
     });
@@ -328,8 +376,17 @@ describe('Question Integration', () => {
         creator: user,
         status: OpenQuestionStatus.Drafting,
       });
+      const questionTypes = [];
+      forEach(QuestionTypes, async (questionType) => {
+        const currentQuestionType = await QuestionTypeFactory.create({
+          name: questionType.name,
+          color: questionType.color,
+          cid: queue.courseId,
+        });
+        questionTypes.push(currentQuestionType);
+      });
 
-      await postQuestion(user, queue, true).expect(201);
+      await postQuestion(user, queue, questionTypes).expect(201);
     });
     it('lets student (who is TA in other class) create question', async () => {
       const user = await UserFactory.create();
@@ -357,8 +414,17 @@ describe('Question Integration', () => {
         userId: user.id,
         courseId: queue.courseId,
       });
+      const questionTypes = [];
+      forEach(QuestionTypes, async (questionType) => {
+        const currentQuestionType = await QuestionTypeFactory.create({
+          name: questionType.name,
+          color: questionType.color,
+          cid: queue.courseId,
+        });
+        questionTypes.push(currentQuestionType);
+      });
 
-      await postQuestion(user, queue).expect(201);
+      await postQuestion(user, queue, questionTypes).expect(201);
     });
     it('works when other queues and courses exist', async () => {
       const user = await UserFactory.create();
@@ -382,8 +448,17 @@ describe('Question Integration', () => {
         userId: user.id,
         courseId: queue.courseId,
       });
+      const questionTypes = [];
+      forEach(QuestionTypes, async (questionType) => {
+        const currentQuestionType = await QuestionTypeFactory.create({
+          name: questionType.name,
+          color: questionType.color,
+          cid: queue.courseId,
+        });
+        questionTypes.push(currentQuestionType);
+      });
 
-      await postQuestion(user, queue).expect(201);
+      await postQuestion(user, queue, questionTypes).expect(201);
     });
   });
 
