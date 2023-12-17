@@ -1,16 +1,17 @@
-import { Typography, Result, Spin, Button } from "antd";
-import Head from "next/head";
-import { CloseCircleOutlined } from "@ant-design/icons";
-import { useRouter } from "next/router";
-import { ReactElement, useEffect } from "react";
-import styled from "styled-components";
+import { Typography, Result, Spin, Button } from 'antd'
+import Head from 'next/head'
+import { CloseCircleOutlined } from '@ant-design/icons'
+import { useRouter } from 'next/router'
+import { ReactElement, useEffect } from 'react'
+import styled from 'styled-components'
 
-const { Paragraph, Text } = Typography;
+const { Paragraph, Text } = Typography
 
 const FAILED_CODES = {
-  40000: "Organization not found",
-  40001: "Malformed request",
-};
+  40000: 'Organization not found',
+  40001: 'Malformed request',
+  40002: "Organization doesn't support SSO",
+}
 
 const Container = styled.div`
   margin-left: auto;
@@ -28,17 +29,17 @@ const Container = styled.div`
   @media (max-width: 992px) {
     width: 80%;
   }
-`;
+`
 
 export default function AuthFailedCode(): ReactElement {
-  const router = useRouter();
-  const { code } = router.query;
+  const router = useRouter()
+  const { code } = router.query
 
   useEffect(() => {
     if (code && !FAILED_CODES[Number(code)]) {
-      router.push("/");
+      router.push('/')
     }
-  }, [code, router]);
+  }, [code, router])
 
   return code && FAILED_CODES[Number(code)] ? (
     <>
@@ -52,9 +53,9 @@ export default function AuthFailedCode(): ReactElement {
           extra={[
             <Button
               type="primary"
-              className="px-5 py-3 w-2/5 m-auto border h-auto rounded-lg items-center justify-center"
+              className="m-auto h-auto w-2/5 items-center justify-center rounded-lg border px-5 py-3"
               key="login"
-              onClick={() => router.push("/login")}
+              onClick={() => router.push('/login')}
             >
               Go to Login Page
             </Button>,
@@ -72,7 +73,7 @@ export default function AuthFailedCode(): ReactElement {
               </Text>
             </Paragraph>
             <Paragraph>
-              <CloseCircleOutlined className="site-result-demo-error-icon" />{" "}
+              <CloseCircleOutlined className="site-result-demo-error-icon" />{' '}
               {FAILED_CODES[Number(code)]}
             </Paragraph>
           </div>
@@ -81,5 +82,5 @@ export default function AuthFailedCode(): ReactElement {
     </>
   ) : (
     <Spin />
-  );
+  )
 }

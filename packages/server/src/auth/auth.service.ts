@@ -1,4 +1,4 @@
-import { AccountType } from '@koh/common';
+import { AccountType, OrganizationRole } from '@koh/common';
 import {
   BadRequestException,
   Injectable,
@@ -18,6 +18,57 @@ export class AuthService {
       process.env.GOOGLE_CLIENT_SECRET,
       process.env.GOOGLE_REDIRECT_URI,
     );
+  }
+
+  async loginWithShibboleth(
+    mail: string,
+    role: string,
+    givenName: string,
+    lastName: string,
+    organizationId: number,
+  ): Promise<number> {
+    try {
+      const user = await UserModel.findOne({ email: mail });
+
+      if (user && user.password) {
+        throw new BadRequestException(
+          'User collisions with legacy account are not allowed',
+        );
+      }
+
+      if (user && user.accountType !== AccountType.SHIBBOLETH) {
+        throw new BadRequestException(
+          'User collisions with other account types are not allowed',
+        );
+      }
+
+      if (user) {
+        return user.id;
+      }
+
+      if (!user) {
+        const newUser = await UserModel.create({
+          email: mail,
+          firstName: givenName,
+          lastName: lastName,
+          accountType: AccountType.SHIBBOLETH,
+        }).save();
+
+        const userId = newUser.id;
+
+        await OrganizationUserModel.create({
+          organizationId,
+          userId: userId,
+          role: this.getRole(role),
+        }).save();
+
+        return userId;
+      }
+
+      throw new InternalServerErrorException('Unexpected error');
+    } catch (err) {
+      throw new BadRequestException(err.message);
+    }
   }
 
   async loginWithGoogle(
@@ -43,6 +94,12 @@ export class AuthService {
       if (user && user.password) {
         throw new BadRequestException(
           'User collisions with legacy account are not allowed',
+        );
+      }
+
+      if (user && user.accountType !== AccountType.GOOGLE) {
+        throw new BadRequestException(
+          'User collisions with other account types are not allowed',
         );
       }
 
@@ -72,6 +129,16 @@ export class AuthService {
       throw new InternalServerErrorException('Unexpected error');
     } catch (err) {
       throw new BadRequestException(err.message);
+    }
+  }
+
+  private getRole(role: string): OrganizationRole {
+    const roles = role.split(';');
+
+    if (roles[0].split('@')[0] !== 'student') {
+      return OrganizationRole.PROFESSOR;
+    } else {
+      return OrganizationRole.MEMBER;
     }
   }
 }

@@ -60,7 +60,7 @@ export default function Login(): ReactElement {
   }
 
   const loginWithInstitution = async () => {
-    window.location.href = `/api/v1/auth/saml/${organization.id}`
+    window.location.href = `/api/v1/auth/shibboleth/${organization.id}`
   }
 
   function login() {
