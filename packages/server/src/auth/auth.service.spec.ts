@@ -4,6 +4,7 @@ import { TestConfigModule, TestTypeOrmModule } from '../../test/util/testUtils';
 import { UserModel } from 'profile/user.entity';
 import { Connection } from 'typeorm';
 import { OrganizationFactory } from '../../test/util/factories';
+import { AccountType } from '@koh/common';
 
 // Extend the OAuth2Client mock with additional methods
 jest.mock('google-auth-library', () => {
@@ -90,9 +91,23 @@ describe('AuthService', () => {
       );
     });
 
+    it('should throw an error when user already exists with other account type', async () => {
+      await UserModel.create({
+        email: 'mocked_email@example.com',
+        accountType: AccountType.SHIBBOLETH,
+      }).save();
+
+      await expect(
+        service.loginWithGoogle('valid_code', 1),
+      ).rejects.toThrowError(
+        'User collisions with other account types are not allowed',
+      );
+    });
+
     it('should return user id when user already exists without password', async () => {
       const user = await UserModel.create({
         email: 'mocked_email@example.com',
+        accountType: AccountType.GOOGLE,
       }).save();
 
       const userId = await service.loginWithGoogle('valid_code', 1);

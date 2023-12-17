@@ -37,7 +37,6 @@ export class AuthController {
     if (!organization) {
       return res.redirect(`/auth/failed/40000`);
     }
-
     if (!organization.ssoEnabled) {
       return res.redirect(`/auth/failed/40002`);
     }
@@ -53,13 +52,15 @@ export class AuthController {
     }
 
     try {
-      await this.authService.loginWithShibboleth(
+      const userId = await this.authService.loginWithShibboleth(
         String(mail),
         String(role),
         String(givenName),
         String(lastName),
         organizationId,
       );
+
+      this.enter(res, userId);
     } catch (err) {
       return res.redirect(`/auth/failed/40001`);
     }
