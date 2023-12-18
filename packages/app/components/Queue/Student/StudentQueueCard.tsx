@@ -42,9 +42,9 @@ export default function StudentQueueCard({
   return (
     <HorizontalStudentCard>
       <CenterRow>
-        <Col flex="0 1 auto" style={{ margin: '0 6px 0 0' }}>
+        {/* <Col flex="0 1 auto" style={{ margin: '0 6px 0 0' }}>
           <HotnessBar hotness={Math.floor(Math.random() * 101)} />
-        </Col>
+        </Col> */}
         <Col flex="0 1 auto" style={{ margin: '0 12px 0 0' }}>
           <KOHAvatar
             size={46}
