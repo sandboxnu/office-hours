@@ -71,6 +71,76 @@ describe('AuthService', () => {
     await conn.synchronize(true);
   });
 
+  describe('loginWithShibboleth', () => {
+    it('should throw an error when user already exists with password', async () => {
+      await UserModel.create({
+        email: 'mocked_email@example.com',
+        password: 'test_password',
+      }).save();
+
+      await expect(
+        service.loginWithShibboleth(
+          'mocked_email@example.com',
+          'student@ubc.ca',
+          'John',
+          'Doe',
+          1,
+        ),
+      ).rejects.toThrowError(
+        'User collisions with legacy account are not allowed',
+      );
+    });
+
+    it('should throw an error when user already exists with other account type', async () => {
+      await UserModel.create({
+        email: 'mocked_email@example.com',
+        accountType: AccountType.GOOGLE,
+      }).save();
+
+      await expect(
+        service.loginWithShibboleth(
+          'mocked_email@example.com',
+          'student@ubc.ca',
+          'John',
+          'Doe',
+          1,
+        ),
+      ).rejects.toThrowError(
+        'User collisions with other account types are not allowed',
+      );
+    });
+
+    it('should return user id when user already exists without password', async () => {
+      const user = await UserModel.create({
+        email: 'mocked_email@example.com',
+        accountType: AccountType.SHIBBOLETH,
+      }).save();
+
+      const userId = await service.loginWithShibboleth(
+        'mocked_email@example.com',
+        'student@ubc.ca',
+        'John',
+        'Doe',
+        1,
+      );
+      expect(userId).toEqual(user.id);
+    });
+
+    it('should create a new user when user does not exist', async () => {
+      const organization = await OrganizationFactory.create();
+
+      const userId = await service.loginWithShibboleth(
+        'mocked_email@example.com',
+        'student@ubc.ca',
+        'John',
+        'Doe',
+        organization.id,
+      );
+      const user = await UserModel.findOne(userId);
+      expect(user).toMatchSnapshot();
+    });
+  });
+
   describe('loginWithGoogle', () => {
     it('should throw an error when email is not verified', async () => {
       await expect(service.loginWithGoogle('invalid_token', 1)).rejects.toThrow(
