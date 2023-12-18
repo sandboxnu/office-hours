@@ -653,7 +653,7 @@ export class OrganizationController {
       .then((organization) => {
         if (
           !organizationPatch.name ||
-          organizationPatch.name.trim().length < 4
+          organizationPatch.name.trim().length < 3
         ) {
           return res.status(HttpStatus.BAD_REQUEST).send({
             message:

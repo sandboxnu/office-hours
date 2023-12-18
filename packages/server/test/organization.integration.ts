@@ -1594,7 +1594,7 @@ describe('Organization Integration', () => {
 
       expect(res.status).toBe(400);
       expect(res.body.message).toBe(
-        'Organization name must be at least 4 characters',
+        'Organization name must be at least 3 characters',
       );
     });
 

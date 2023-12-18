@@ -1325,7 +1325,7 @@ export const ERROR_MESSAGES = {
     userAlreadyInOrganization: 'User is already in organization',
     courseAlreadyInOrganization: 'Course is already in organization',
     organizationNotFound: 'Organization not found',
-    organizationNameTooShort: 'Organization name must be at least 4 characters',
+    organizationNameTooShort: 'Organization name must be at least 3 characters',
     noFileUploaded: 'No file uploaded',
     organizationDescriptionTooShort:
       'Organization description must be at least 10 characters',
