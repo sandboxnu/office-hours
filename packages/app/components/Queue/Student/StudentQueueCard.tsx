@@ -45,13 +45,15 @@ export default function StudentQueueCard({
         {/* <Col flex="0 1 auto" style={{ margin: '0 6px 0 0' }}>
           <HotnessBar hotness={Math.floor(Math.random() * 101)} />
         </Col> */}
-        <Col flex="0 1 auto" style={{ margin: '0 12px 0 0' }}>
-          <KOHAvatar
-            size={46}
-            name={question.creator.name}
-            photoURL={question.creator.photoURL}
-          />
-        </Col>
+        {isStaff && ( // only show avatar if staff for now. TODO: fix endpoint to allow queues to access student avatars and names if prof enabled it
+          <Col flex="0 1 auto" style={{ margin: '0 12px 0 0' }}>
+            <KOHAvatar
+              size={46}
+              name={question.creator.name}
+              photoURL={question.creator.photoURL}
+            />
+          </Col>
+        )}
         <Col flex="1 1">
           <Tooltip // only show tooltip if text is too long
             title={question.text.length > 110 ? question.text : ''}
@@ -73,22 +75,24 @@ export default function StudentQueueCard({
               {question.text}
             </Text>
           </Tooltip>
-          <Text
-            style={
-              // question creator name
-              {
-                fontSize: 'smaller',
-                color: '#595959',
-                display: 'inline-block',
-                marginTop: '2px',
-                marginRight: '5px',
-                fontStyle: 'italic',
-                minWidth: '120px',
-              } as React.CSSProperties
-            }
-          >
-            {question.creator.name ? truncate(question.creator.name, 25) : ''}
-          </Text>
+          {isStaff && (
+            <Text
+              style={
+                // question creator name
+                {
+                  fontSize: 'smaller',
+                  color: '#595959',
+                  display: 'inline-block',
+                  marginTop: '2px',
+                  marginRight: '5px',
+                  fontStyle: 'italic',
+                  minWidth: '120px',
+                } as React.CSSProperties
+              }
+            >
+              {question.creator.name}
+            </Text>
+          )}
           <div //tag for question type
             style={{
               backgroundColor: 'lightblue',
