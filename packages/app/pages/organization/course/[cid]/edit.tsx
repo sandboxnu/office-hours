@@ -179,7 +179,7 @@ export default function Edit(): ReactElement {
                 layout="vertical"
                 initialValues={{
                   courseName: courseData.course.name,
-                  coordinatorEmail: courseData.course.coordinator_email,
+                  coordinatorEmail: courseData.course.coordinatorEmail,
                   sectionGroupName: courseData.course.sectionGroupName,
                   zoomLink: courseData.course.zoomLink,
                   courseTimezone: courseData.course.timezone,

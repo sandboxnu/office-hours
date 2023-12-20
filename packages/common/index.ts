@@ -738,6 +738,8 @@ export class GetCourseResponse {
 
   sectionGroupName?: string
 
+  enabled?: boolean
+
   @Type(() => OrganizationPartial)
   organizationCourse?: OrganizationPartial
   courseInviteCode!: string

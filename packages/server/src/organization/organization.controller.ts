@@ -125,7 +125,7 @@ export class OrganizationController {
       enabled: true,
     };
     try {
-      const newCourse = await CourseModel.create(course);
+      const newCourse = await CourseModel.create(course).save();
 
       for (const profId of courseDetails.profIds) {
         const chosenProfessor = await UserModel.findOne({
@@ -151,8 +151,6 @@ export class OrganizationController {
         organizationId: oid,
         course: newCourse,
       }).save();
-
-      newCourse.save();
 
       return res.status(HttpStatus.OK).send({
         message: 'Course created successfully',
