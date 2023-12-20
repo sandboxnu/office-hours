@@ -15,8 +15,6 @@ import {
   TACheckoutResponse,
   UpdateCourseOverrideBody,
   UpdateCourseOverrideResponse,
-  OrganizationRole,
-  UpdateOrganizationCourseDetailsParams,
 } from '@koh/common';
 import {
   BadRequestException,

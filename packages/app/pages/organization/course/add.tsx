@@ -9,80 +9,80 @@ import {
   Select,
   Spin,
   message,
-} from "antd";
-import Head from "next/head";
-import { ReactElement } from "react";
-import NavBar from "../../../components/Nav/NavBar";
-import { StandardPageContainer } from "../../../components/common/PageContainer";
-import { useSemester } from "../../../hooks/useSemester";
-import { useRouter } from "next/router";
-import { useOrganization } from "../../../hooks/useOrganization";
-import { useProfile } from "../../../hooks/useProfile";
-import { OrganizationRole } from "@koh/common";
-import DefaultErrorPage from "next/error";
-import { API } from "@koh/api-client";
-import useSWR from "swr";
+} from 'antd'
+import Head from 'next/head'
+import { ReactElement } from 'react'
+import NavBar from '../../../components/Nav/NavBar'
+import { StandardPageContainer } from '../../../components/common/PageContainer'
+import { useSemester } from '../../../hooks/useSemester'
+import { useRouter } from 'next/router'
+import { useOrganization } from '../../../hooks/useOrganization'
+import { useProfile } from '../../../hooks/useProfile'
+import { COURSE_TIMEZONES, OrganizationRole } from '@koh/common'
+import DefaultErrorPage from 'next/error'
+import { API } from '@koh/api-client'
+import useSWR from 'swr'
 
 export default function Add(): ReactElement {
-  const profile = useProfile();
-  const router = useRouter();
-  const { organization } = useOrganization(profile?.organization.id);
+  const profile = useProfile()
+  const router = useRouter()
+  const { organization } = useOrganization(profile?.organization.orgId)
   const isAdmin =
-    profile?.organization.organizationRole === OrganizationRole.ADMIN;
+    profile?.organization.organizationRole === OrganizationRole.ADMIN
   const isProfessor =
-    profile?.organization.organizationRole === OrganizationRole.PROFESSOR;
+    profile?.organization.organizationRole === OrganizationRole.PROFESSOR
 
   if (profile && !isAdmin && !isProfessor) {
-    return <DefaultErrorPage statusCode={401} />;
+    return <DefaultErrorPage statusCode={401} />
   }
 
   function RenderAddCourse(): ReactElement {
-    const [formGeneral] = Form.useForm();
-    const semesters = useSemester();
+    const [formGeneral] = Form.useForm()
+    const semesters = useSemester()
 
     const { data: professors } = useSWR(
       isAdmin ? `/api/v1/organization/[oid]/get_professors` : null,
-      async () => await API.organizations.getProfessors(organization.id)
-    );
+      async () => await API.organizations.getProfessors(organization.id),
+    )
 
     const addCourse = async () => {
-      const formValues = formGeneral.getFieldsValue();
-      const courseNameField = formValues.courseName;
-      const coordinatorEmailField = formValues.coordinatorEmail;
-      const sectionGroupNameField = formValues.sectionGroupName;
-      const zoomLinkField = formValues.zoomLink;
-      const courseTimezoneField = formValues.courseTimezone;
-      const semesterIdField = formValues.semesterId;
-      const profIds = isAdmin ? formValues.professorsUserId : [profile.id];
+      const formValues = formGeneral.getFieldsValue()
+      const courseNameField = formValues.courseName
+      const coordinatorEmailField = formValues.coordinatorEmail
+      const sectionGroupNameField = formValues.sectionGroupName
+      const zoomLinkField = formValues.zoomLink
+      const courseTimezoneField = formValues.courseTimezone
+      const semesterIdField = formValues.semesterId
+      const profIds = isAdmin ? formValues.professorsUserId : [profile.id]
 
       // if semesterIdField is not a number or not in semesters
       if (
         isNaN(semesterIdField) ||
         !semesters.find((semester) => semester.id === semesterIdField)
       ) {
-        message.error("Semester is invalid");
-        return;
+        message.error('Semester is invalid')
+        return
       }
       await API.organizations
         .createCourse(organization.id, {
           name: courseNameField,
-          coordinatorEmail: coordinatorEmailField ?? "",
+          coordinatorEmail: coordinatorEmailField ?? '',
           sectionGroupName: sectionGroupNameField,
-          zoomLink: zoomLinkField ?? "",
+          zoomLink: zoomLinkField ?? '',
           timezone: courseTimezoneField,
           semesterId: semesterIdField,
           profIds: profIds,
         })
         .then(() => {
-          message.success("Course was created");
-          router.reload();
-          router.back();
+          message.success('Course was created')
+          router.reload()
+          router.back()
         })
         .catch((error) => {
-          const errorMessage = error.response.data.message;
-          message.error(errorMessage);
-        });
-    };
+          const errorMessage = error.response.data.message
+          message.error(errorMessage)
+        })
+    }
 
     return semesters &&
       profile &&
@@ -140,42 +140,11 @@ export default function Add(): ReactElement {
                       tooltip="Timezone of the course"
                     >
                       <Select>
-                        <Select.Option value="America/New_York">
-                          America/New York
-                        </Select.Option>
-                        <Select.Option value="America/Los_Angeles">
-                          America/Los Angeles
-                        </Select.Option>
-                        <Select.Option value="America/Chicago">
-                          America/Chicago
-                        </Select.Option>
-                        <Select.Option value="America/Denver">
-                          America/Denver
-                        </Select.Option>
-                        <Select.Option value="America/Phoenix">
-                          America/Phoenix
-                        </Select.Option>
-                        <Select.Option value="America/Anchorage">
-                          America/Anchorage
-                        </Select.Option>
-                        <Select.Option value="America/Honolulu">
-                          America/Honolulu
-                        </Select.Option>
-                        <Select.Option value="Europe/London">
-                          Europe/London
-                        </Select.Option>
-                        <Select.Option value="Europe/Paris">
-                          Europe/Paris
-                        </Select.Option>
-                        <Select.Option value="Asia/Tokyo">
-                          Asia/Tokyo
-                        </Select.Option>
-                        <Select.Option value="Asia/Shanghai">
-                          Asia/Shanghai
-                        </Select.Option>
-                        <Select.Option value="Australia/Sydney">
-                          Australia/Sydney
-                        </Select.Option>
+                        {COURSE_TIMEZONES.map((timezone) => (
+                          <Select.Option value={timezone} key={timezone}>
+                            {timezone}
+                          </Select.Option>
+                        ))}
                       </Select>
                     </Form.Item>
                   </Col>
@@ -235,13 +204,13 @@ export default function Add(): ReactElement {
     ) : (
       <Spin
         style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh',
         }}
       />
-    );
+    )
   }
   return profile && (isAdmin || isProfessor) && organization ? (
     <>
@@ -265,11 +234,11 @@ export default function Add(): ReactElement {
   ) : (
     <Spin
       style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100vh",
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
       }}
     />
-  );
+  )
 }

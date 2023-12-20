@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import { useProfile } from '../../../../hooks/useProfile'
 // import { useRouter } from "next/router";
 import { useOrganization } from '../../../../hooks/useOrganization'
-import { OrganizationRole } from '@koh/common'
+import { COURSE_TIMEZONES, OrganizationRole, Role } from '@koh/common'
 import DefaultErrorPage from 'next/error'
 import {
   Breadcrumb,
@@ -29,12 +29,13 @@ export default function Edit(): ReactElement {
   const router = useRouter()
   const { cid } = router.query
 
-  const { organization } = useOrganization(profile?.organization.id)
+  const { organization } = useOrganization(profile?.organization.orgId)
   const isAdmin =
     profile && profile.organization.organizationRole === OrganizationRole.ADMIN
 
   const isProfessorInCourse = profile?.courses.some(
-    (course) => course.role === 'professor' && course.course.id === Number(cid),
+    (course) =>
+      course.role === Role.PROFESSOR && course.course.id === Number(cid),
   )
 
   if (!isAdmin && !isProfessorInCourse) {
@@ -54,10 +55,6 @@ export default function Edit(): ReactElement {
       isAdmin ? `/api/v1/organization/[oid]/get_professors` : null,
       async () => await API.organizations.getProfessors(organization.id),
     )
-
-    // if (error) {
-    //   router.push("/organization/settings");
-    // }
 
     const updateCourseAccess = async () => {
       await API.organizations
@@ -141,11 +138,12 @@ export default function Edit(): ReactElement {
 
       if (
         !Array.isArray(profIdsField) ||
-        !profIdsField.every(
-          (profId) =>
-            typeof profId === 'number' &&
-            professors.find((prof) => prof.userId === profId),
-        )
+        (professors &&
+          !profIdsField.every(
+            (profId) =>
+              typeof profId === 'number' &&
+              professors.find((prof) => prof.userId === profId),
+          ))
       ) {
         message.error('One or more selected professors are invalid')
         return
@@ -164,7 +162,6 @@ export default function Edit(): ReactElement {
         .then(() => {
           message.success('Course was updated')
           router.reload()
-          router.back()
         })
         .catch((error) => {
           const errorMessage = error.response.data.message
@@ -238,42 +235,11 @@ export default function Edit(): ReactElement {
                       tooltip="Timezone of the course"
                     >
                       <Select>
-                        <Select.Option value="America/New_York">
-                          America/New York
-                        </Select.Option>
-                        <Select.Option value="America/Los_Angeles">
-                          America/Los Angeles
-                        </Select.Option>
-                        <Select.Option value="America/Chicago">
-                          America/Chicago
-                        </Select.Option>
-                        <Select.Option value="America/Denver">
-                          America/Denver
-                        </Select.Option>
-                        <Select.Option value="America/Phoenix">
-                          America/Phoenix
-                        </Select.Option>
-                        <Select.Option value="America/Anchorage">
-                          America/Anchorage
-                        </Select.Option>
-                        <Select.Option value="America/Honolulu">
-                          America/Honolulu
-                        </Select.Option>
-                        <Select.Option value="Europe/London">
-                          Europe/London
-                        </Select.Option>
-                        <Select.Option value="Europe/Paris">
-                          Europe/Paris
-                        </Select.Option>
-                        <Select.Option value="Asia/Tokyo">
-                          Asia/Tokyo
-                        </Select.Option>
-                        <Select.Option value="Asia/Shanghai">
-                          Asia/Shanghai
-                        </Select.Option>
-                        <Select.Option value="Australia/Sydney">
-                          Australia/Sydney
-                        </Select.Option>
+                        {COURSE_TIMEZONES.map((timezone) => (
+                          <Select.Option value={timezone} key={timezone}>
+                            {timezone}
+                          </Select.Option>
+                        ))}
                       </Select>
                     </Form.Item>
                   </Col>

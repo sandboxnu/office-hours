@@ -27,6 +27,7 @@ import {
   UpdateOrganizationUserRole,
   UpdateProfileParams,
   UserRole,
+  COURSE_TIMEZONES,
 } from '@koh/common';
 import * as fs from 'fs';
 import { OrganizationUserModel } from './organization-user.entity';
@@ -55,21 +56,6 @@ import { UserCourseModel } from 'profile/user-course.entity';
 @Controller('organization')
 export class OrganizationController {
   constructor(private organizationService: OrganizationService) {}
-  private COURSE_TIMEZONES = [
-    'America/New_York',
-    'America/Los_Angeles',
-    'America/Chicago',
-    'America/Denver',
-    'America/Phoenix',
-    'America/Anchorage',
-    'America/Honolulu',
-    'Europe/London',
-    'Europe/Paris',
-    'Asia/Tokyo',
-    'Asia/Shanghai',
-    'Australia/Sydney',
-  ];
-
   @Post(':oid/create_course')
   @UseGuards(JwtAuthGuard, OrganizationRolesGuard, OrganizationGuard)
   @Roles(OrganizationRole.ADMIN, OrganizationRole.PROFESSOR)
@@ -110,12 +96,10 @@ export class OrganizationController {
 
     if (
       !courseDetails.timezone ||
-      !this.COURSE_TIMEZONES.find(
-        (timezone) => timezone === courseDetails.timezone,
-      )
+      !COURSE_TIMEZONES.find((timezone) => timezone === courseDetails.timezone)
     ) {
       return res.status(HttpStatus.BAD_REQUEST).send({
-        message: `Timezone field is invalid, must be one of ${this.COURSE_TIMEZONES.join(
+        message: `Timezone field is invalid, must be one of ${COURSE_TIMEZONES.join(
           ', ',
         )}`,
       });
@@ -141,7 +125,7 @@ export class OrganizationController {
       enabled: true,
     };
     try {
-      const newCourse = await CourseModel.create(course).save();
+      const newCourse = await CourseModel.create(course);
 
       for (const profId of courseDetails.profIds) {
         const chosenProfessor = await UserModel.findOne({
@@ -167,6 +151,8 @@ export class OrganizationController {
         organizationId: oid,
         course: newCourse,
       }).save();
+
+      newCourse.save();
 
       return res.status(HttpStatus.OK).send({
         message: 'Course created successfully',
@@ -238,12 +224,10 @@ export class OrganizationController {
 
     if (
       !courseDetails.timezone ||
-      !this.COURSE_TIMEZONES.find(
-        (timezone) => timezone === courseDetails.timezone,
-      )
+      !COURSE_TIMEZONES.find((timezone) => timezone === courseDetails.timezone)
     ) {
       return res.status(HttpStatus.BAD_REQUEST).send({
-        message: `Timezone field is invalid, must be one of ${this.COURSE_TIMEZONES.join(
+        message: `Timezone field is invalid, must be one of ${COURSE_TIMEZONES.join(
           ', ',
         )}`,
       });

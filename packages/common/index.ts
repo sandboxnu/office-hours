@@ -118,6 +118,21 @@ export type UserCourse = {
   role: Role
 }
 
+export const COURSE_TIMEZONES = [
+  'America/New_York',
+  'America/Los_Angeles',
+  'America/Chicago',
+  'America/Denver',
+  'America/Phoenix',
+  'America/Anchorage',
+  'America/Honolulu',
+  'Europe/London',
+  'Europe/Paris',
+  'Asia/Tokyo',
+  'Asia/Shanghai',
+  'Australia/Sydney',
+]
+
 /**
  * Represents one of three possible user roles in a course.
  */
@@ -702,7 +717,7 @@ export class GetCourseResponse {
   queues?: QueuePartial[]
 
   heatmap!: Heatmap | false
-  coordinator_email!: string
+  coordinatorEmail!: string
 
   @Type(() => Number)
   crns!: number[]
@@ -716,6 +731,12 @@ export class GetCourseResponse {
   selfEnroll!: boolean
 
   asyncQuestionDisplayTypes?: string[]
+
+  timezone?: string
+
+  semesterId?: number
+
+  sectionGroupName?: string
 
   @Type(() => OrganizationPartial)
   organizationCourse?: OrganizationPartial
@@ -1069,6 +1090,8 @@ export class OrganizationCourseResponse {
   courseId?: number
 
   course?: GetCourseResponse
+
+  profIds?: number[]
 }
 
 export class OrganizationStatsResponse {
