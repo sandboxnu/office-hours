@@ -1,6 +1,6 @@
 import { ReactElement, useEffect, useState } from 'react'
 import Modal from 'antd/lib/modal/Modal'
-import { Input, Form, message, Radio } from 'antd'
+import { Input, Form, message } from 'antd'
 import styled from 'styled-components'
 import { API } from '@koh/api-client'
 
@@ -45,22 +45,10 @@ export function AsyncQuestionForm({
   const [selectedImage, setSelectedImage] = useState(null)
 
   const [preview, setPreview] = useState<string>()
-  const [questionTypeInput, setQuestionTypeInput] = useState<string>(
+  const [questionTypeInput] = useState<string>(
     question?.questionType || 'general question',
   )
-  const [questionTypes, setQuestionTypes] = useState(null)
-  const onCategoryChange = (e) => {
-    setQuestionTypeInput(e.target.value)
-  }
-  // const courseId=Number(cid);
-  useEffect(() => {
-    getQuestions()
-  }, [])
-  const getQuestions = async () => {
-    await API.questions.questionTypes(Number(cid)).then((result) => {
-      setQuestionTypes(result)
-    })
-  }
+
   //image stuff
   useEffect(() => {
     if (!selectedImage) {

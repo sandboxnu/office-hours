@@ -239,7 +239,7 @@ export type Heatmap = Array<number>
  * @param createdAt - The date string for the time that the Ticket was created. Ex: "2020-09-12T12:00:00-04:00"
  * @param helpedAt - The date string for the time that the TA began helping the Student.
  * @param closedAt - The date string for the time that the TA finished helping the Student.
- * @param questionTypes - The question type helps distinguish question for TA's and data insights.
+ * @param questionTypes - The question types help distinguish questions for TA's and data insights.
  * @param status - The current status of the question in the queue.
  * @param position - The current position of this question in the queue.
  * @param location - The location of the particular student, to help TA's find them.
