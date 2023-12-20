@@ -19,7 +19,6 @@ export default function ProfileSettings(): ReactElement {
       newProfile.sid = parseInt(newProfile.sid, 10)
       mutate(newProfile, false)
       if (profile.email === updateProfile.email) {
-        console.log(pick(newProfile, ['firstName', 'lastName', 'sid']))
         await API.profile
           .patch(pick(newProfile, ['firstName', 'lastName', 'sid']))
           .catch(async (error) => {

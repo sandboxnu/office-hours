@@ -48,7 +48,6 @@ export default function Login(): ReactElement {
   )
 
   const loginWithGoogle = async () => {
-    console.log(organization.id)
     await API.auth
       .loginWithGoogle(Number(organization.id))
       .then((res) => {
@@ -60,7 +59,7 @@ export default function Login(): ReactElement {
   }
 
   const loginWithInstitution = async () => {
-    window.location.href = `/api/v1/auth/shibboleth/${organization.id}`
+    Router.push(`/api/v1/auth/shibboleth/${organization.id}`)
   }
 
   function login() {
