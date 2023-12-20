@@ -46,7 +46,7 @@ export default function Organization(): ReactElement {
 
   function RenderCourses(): ReactElement {
     const { data } = useSWR(`/api/v1/courses`, async () =>
-      API.course.getOrganizationCourses(profile?.organization.id),
+      API.course.getOrganizationCourses(profile?.organization.orgId),
     )
 
     return data ? (
@@ -95,7 +95,7 @@ export default function Organization(): ReactElement {
       </StandardPageContainer>
       <Image
         preview={false}
-        src={`/api/v1/organization/${profile?.organization.id}/get_banner/${profile?.organization.organizationBannerUrl}`}
+        src={`/api/v1/organization/${profile?.organization.orgId}/get_banner/${profile?.organization.organizationBannerUrl}`}
         style={{
           width: '100%',
           height: '40vh',
@@ -113,7 +113,7 @@ export default function Organization(): ReactElement {
             <Col xs={{ span: 24 }} sm={{ span: 3 }}>
               <Image
                 preview={false}
-                src={`/api/v1/organization/${profile?.organization.id}/get_logo/${profile?.organization.organizationLogoUrl}`}
+                src={`/api/v1/organization/${profile?.organization.orgId}/get_logo/${profile?.organization.organizationLogoUrl}`}
                 style={{
                   width: '100%',
                   height: '10vh',

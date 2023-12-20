@@ -216,7 +216,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
                 <Image
                   width={40}
                   preview={false}
-                  src={`/api/v1/organization/${profile?.organization.id}/get_logo/${profile?.organization.organizationLogoUrl}`}
+                  src={`/api/v1/organization/${profile?.organization.orgId}/get_logo/${profile?.organization.organizationLogoUrl}`}
                 />
               </a>
             )}
@@ -258,7 +258,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
                 <Image
                   width={40}
                   preview={false}
-                  src={`/api/v1/organization/${profile?.organization.id}/get_logo/${profile?.organization.organizationLogoUrl}`}
+                  src={`/api/v1/organization/${profile?.organization.orgId}/get_logo/${profile?.organization.organizationLogoUrl}`}
                 />
               </a>
             )}

@@ -45,7 +45,7 @@ const items: MenuItem[] = [
 
 export default function Settings(): React.ReactElement {
   const profile = useProfile()
-  const { organization } = useOrganization(profile?.organization.id)
+  const { organization } = useOrganization(profile?.organization.orgId)
   const [selectedMenuItem, setSelectedMenuItem] = useState('main')
 
   const handleMenuItemSelect = (info: { key: string }) => {

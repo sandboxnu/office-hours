@@ -434,7 +434,7 @@ export class ProfileController {
     @Res() response: Response,
   ): Promise<void> {
     try {
-      if (user.photoURL) {
+      if (user.photoURL && !user.photoURL.startsWith('http')) {
         fs.unlinkSync(path.join(process.env.UPLOAD_LOCATION, user.photoURL));
       }
 
