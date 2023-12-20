@@ -17,7 +17,7 @@ import {
   QueueInfoColumn,
   QueueInfoColumnButton,
 } from './QueueListSharedComponents'
-import { Card, Col, Popconfirm, Row, Tooltip, notification } from 'antd'
+import { Card, Popconfirm, Row, Tooltip, message, notification } from 'antd'
 import TACheckinButton from '../Today/TACheckinButton'
 import styled from 'styled-components'
 import { useStudentQuestion } from '../../hooks/useStudentQuestion'
@@ -250,8 +250,8 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
         ) {
           return false
         }
+        message.error(e.response?.data?.message)
         return true
-        // TODO: how should we handle error that happens for another reason?
       }
     },
     [mutateQuestions, qid, questions],
@@ -260,7 +260,6 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
   const helpNext = async () => {
     await onHelpQuestion(nextQuestion.id)
     mutateQuestions()
-    // openTeams();
   }
 
   const openEditModal = useCallback(async () => {
