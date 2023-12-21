@@ -717,7 +717,7 @@ export class GetCourseResponse {
   queues?: QueuePartial[]
 
   heatmap!: Heatmap | false
-  coordinatorEmail!: string
+  coordinator_email!: string
 
   @Type(() => Number)
   crns!: number[]
@@ -832,7 +832,7 @@ export class UpdateOrganizationCourseDetailsParams {
 
   @IsString()
   @IsOptional()
-  coordinatorEmail?: string
+  coordinator_email?: string
 
   @IsString()
   @IsOptional()

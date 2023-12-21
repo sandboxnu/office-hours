@@ -1000,7 +1000,7 @@ describe('Organization Integration', () => {
         .patch(`/organization/${organization.id}/update_course/${course.id}`)
         .send({
           name: 'newName',
-          coordinatorEmail: '        ',
+          coordinator_email: '        ',
         });
 
       expect(res.body.message).toBe(
@@ -2215,7 +2215,7 @@ describe('Organization Integration', () => {
         .post(`/organization/${organization.id}/create_course`)
         .send({
           name: 'newName',
-          coordinatorEmail: '        ',
+          coordinator_email: '        ',
         });
 
       expect(res.body.message).toBe(

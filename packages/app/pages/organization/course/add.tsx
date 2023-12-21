@@ -66,7 +66,7 @@ export default function Add(): ReactElement {
       await API.organizations
         .createCourse(organization.id, {
           name: courseNameField,
-          coordinatorEmail: coordinatorEmailField ?? '',
+          coordinator_email: coordinatorEmailField ?? '',
           sectionGroupName: sectionGroupNameField,
           zoomLink: zoomLinkField ?? '',
           timezone: courseTimezoneField,

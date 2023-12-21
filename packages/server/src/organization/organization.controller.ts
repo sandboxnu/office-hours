@@ -71,8 +71,8 @@ export class OrganizationController {
     }
 
     if (
-      courseDetails.coordinatorEmail &&
-      courseDetails.coordinatorEmail.trim().length < 1
+      courseDetails.coordinator_email &&
+      courseDetails.coordinator_email.trim().length < 1
     ) {
       return res.status(HttpStatus.BAD_REQUEST).send({
         message: ERROR_MESSAGES.courseController.coordinatorEmailTooShort,
@@ -117,7 +117,7 @@ export class OrganizationController {
     }
     const course = {
       name: courseDetails.name,
-      coordinator_email: courseDetails.coordinatorEmail,
+      coordinator_email: courseDetails.coordinator_email,
       sectionGroupName: courseDetails.sectionGroupName,
       zoomLink: courseDetails.zoomLink,
       timezone: courseDetails.timezone,
@@ -193,8 +193,8 @@ export class OrganizationController {
 
     if (
       courseInfo.course.coordinator_email &&
-      (!courseDetails.coordinatorEmail ||
-        courseDetails.coordinatorEmail.trim().length < 1)
+      (!courseDetails.coordinator_email ||
+        courseDetails.coordinator_email.trim().length < 1)
     ) {
       return res.status(HttpStatus.BAD_REQUEST).send({
         message: ERROR_MESSAGES.courseController.coordinatorEmailTooShort,
@@ -249,8 +249,8 @@ export class OrganizationController {
 
     courseInfo.course.name = courseDetails.name;
 
-    if (courseDetails.coordinatorEmail) {
-      courseInfo.course.coordinator_email = courseDetails.coordinatorEmail;
+    if (courseDetails.coordinator_email) {
+      courseInfo.course.coordinator_email = courseDetails.coordinator_email;
     }
 
     if (courseDetails.sectionGroupName) {

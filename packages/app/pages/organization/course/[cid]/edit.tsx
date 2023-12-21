@@ -83,7 +83,7 @@ export default function Edit(): ReactElement {
 
       if (
         courseNameField === courseData.course.name &&
-        coordinatorEmailField === courseData.course.coordinatorEmail &&
+        coordinatorEmailField === courseData.course.coordinator_email &&
         sectionGroupNameField === courseData.course.sectionGroupName &&
         zoomLinkField === courseData.course.zoomLink &&
         courseTimezoneField === courseData.course.timezone &&
@@ -102,7 +102,7 @@ export default function Edit(): ReactElement {
       }
 
       if (
-        courseData.course.coordinatorEmail &&
+        courseData.course.coordinator_email &&
         coordinatorEmailField.length < 1
       ) {
         message.error('Coordinator email cannot be empty')
@@ -152,7 +152,7 @@ export default function Edit(): ReactElement {
       await API.organizations
         .updateCourse(organization.id, Number(cid), {
           name: courseNameField,
-          coordinatorEmail: coordinatorEmailField ?? '',
+          coordinator_email: coordinatorEmailField ?? '',
           sectionGroupName: sectionGroupNameField,
           zoomLink: zoomLinkField ?? '',
           timezone: courseTimezoneField,
