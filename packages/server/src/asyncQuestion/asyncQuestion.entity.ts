@@ -11,7 +11,6 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  SelectQueryBuilder,
 } from 'typeorm';
 import { UserModel } from '../profile/user.entity';
 

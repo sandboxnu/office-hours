@@ -13,7 +13,7 @@ export default function Invite(): ReactElement {
   const { cid, code } = router.query
   const profile = useProfile()
   const [course, setCourse] = useState(null)
-  const [courseError, setCourseError] = useState(null)
+  const [_courseError, setCourseError] = useState(null)
 
   const isLoading = !profile || !course
 
@@ -144,7 +144,7 @@ export default function Invite(): ReactElement {
     <StandardPageContainer>
       <Head>
         <title>
-          {course ? `Invitation to join ‘${course?.name}‘` : 'Invalid Invite'}
+          {course ? `Invitation to join '${course?.name}'` : 'Invalid Invite'}
         </title>
       </Head>
 
