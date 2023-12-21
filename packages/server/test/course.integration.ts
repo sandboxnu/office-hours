@@ -17,6 +17,7 @@ import {
   EventFactory,
   OrganizationCourseFactory,
   OrganizationFactory,
+  OrganizationUserFactory,
   ProfSectionGroupsFactory,
   QueueFactory,
   SemesterFactory,
@@ -1286,6 +1287,162 @@ describe('Course Integration', () => {
       });
       expect(ubw2).toBeDefined();
       expect(life).toBeDefined();
+    });
+  });
+
+  describe('POST /courses/enroll_by_invite_code/:code', () => {
+    it('should return 401 if user is not authorized', async () => {
+      await supertest().post(`/courses/enroll_by_invite_code/123`).expect(401);
+    });
+
+    it('should return 404 if user is not found', async () => {
+      const course = await CourseFactory.create();
+
+      const resp = await supertest({ userId: 1 })
+        .post(`/courses/enroll_by_invite_code/123`)
+        .send({
+          email: 'fake@ubc.ca',
+          first_name: 'user',
+          last_name: 'user',
+          password: 'random_password',
+          selected_course: course.id,
+        });
+
+      expect(resp.status).toBe(404);
+      expect(resp.body.message).toEqual('User not found');
+    });
+
+    it('should return 404 if course is not found', async () => {
+      const user = await UserFactory.create();
+
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserFactory.create({
+        organizationId: organization.id,
+        userId: user.id,
+        organization: organization,
+        organizationUser: user,
+      });
+
+      const resp = await supertest({ userId: user.id })
+        .post(`/courses/enroll_by_invite_code/123`)
+        .send({
+          email: user.email,
+          first_name: user.firstName,
+          last_name: user.lastName,
+          password: 'random_password',
+          selected_course: 1,
+        });
+
+      expect(resp.status).toBe(404);
+      expect(resp.body.message).toEqual('The course was not found');
+    });
+
+    it('should return 400 if course invite code is incorrect', async () => {
+      const user = await UserFactory.create();
+      const course = await CourseFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserFactory.create({
+        organizationId: organization.id,
+        userId: user.id,
+        organization: organization,
+        organizationUser: user,
+      });
+
+      await OrganizationCourseFactory.create({
+        organizationId: organization.id,
+        courseId: course.id,
+        organization: organization,
+        course: course,
+      });
+
+      const resp = await supertest({ userId: user.id })
+        .post(`/courses/enroll_by_invite_code/invalid_course_code`)
+        .send({
+          email: user.email,
+          first_name: user.firstName,
+          last_name: user.lastName,
+          password: 'random_password',
+          selected_course: course.id,
+        });
+
+      expect(resp.status).toBe(400);
+      expect(resp.body.message).toEqual('Invalid invite code');
+    });
+
+    it('should return 400 if user is already enrolled in the course', async () => {
+      const user = await UserFactory.create();
+      const course = await CourseFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserFactory.create({
+        organizationId: organization.id,
+        userId: user.id,
+        organization: organization,
+        organizationUser: user,
+      });
+
+      await OrganizationCourseFactory.create({
+        organizationId: organization.id,
+        courseId: course.id,
+        organization: organization,
+        course: course,
+      });
+
+      await UserCourseFactory.create({
+        user: user,
+        course: course,
+        role: Role.STUDENT,
+      });
+
+      const resp = await supertest({ userId: user.id })
+        .post(`/courses/enroll_by_invite_code/${course.courseInviteCode}`)
+        .send({
+          email: user.email,
+          first_name: user.firstName,
+          last_name: user.lastName,
+          password: 'random_password',
+          selected_course: course.id,
+        });
+
+      expect(resp.status).toBe(400);
+      expect(resp.body.message).toEqual(
+        'User cannot be added to course. Please check if the user is already in the course',
+      );
+    });
+
+    it('should return 200 if user is successfully enrolled in the course', async () => {
+      const user = await UserFactory.create();
+      const course = await CourseFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserFactory.create({
+        organizationId: organization.id,
+        userId: user.id,
+        organization: organization,
+        organizationUser: user,
+      });
+
+      await OrganizationCourseFactory.create({
+        organizationId: organization.id,
+        courseId: course.id,
+        organization: organization,
+        course: course,
+      });
+
+      const resp = await supertest({ userId: user.id })
+        .post(`/courses/enroll_by_invite_code/${course.courseInviteCode}`)
+        .send({
+          email: user.email,
+          first_name: user.firstName,
+          last_name: user.lastName,
+          password: 'random_password',
+          selected_course: course.id,
+        });
+
+      expect(resp.status).toBe(200);
+      expect(resp.body.message).toEqual('User is added to this course');
     });
   });
 

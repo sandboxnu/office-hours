@@ -52,6 +52,7 @@ import {
   GetOrganizationUserResponse,
   OrganizationCourseResponse,
   OrganizationStatsResponse,
+  UBCOuserParam,
 } from '@koh/common'
 import Axios, { AxiosInstance, Method } from 'axios'
 import { plainToClass } from 'class-transformer'
@@ -199,6 +200,13 @@ class APIClient {
         'POST',
         `/api/v1/courses/${courseId}/add_student/${sid}`,
         undefined,
+      ),
+    enrollByInviteCode: async (student: UBCOuserParam, courseCode: string) =>
+      this.req(
+        'POST',
+        `/api/v1/courses/enroll_by_invite_code/${courseCode}`,
+        undefined,
+        student,
       ),
     getOrganizationCourses: async (organizationId: number) =>
       this.req('GET', `/api/v1/courses/${organizationId}/organization_courses`),

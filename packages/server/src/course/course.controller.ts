@@ -13,6 +13,7 @@ import {
   Role,
   TACheckinTimesResponse,
   TACheckoutResponse,
+  UBCOuserParam,
   UpdateCourseOverrideBody,
   UpdateCourseOverrideResponse,
 } from '@koh/common';
@@ -764,6 +765,68 @@ export class CourseController {
     const course = await CourseModel.findOne(courseId);
     course.selfEnroll = !course.selfEnroll;
     await course.save();
+  }
+
+  @Post('enroll_by_invite_code/:code')
+  @UseGuards(JwtAuthGuard)
+  async enrollCourseByInviteCode(
+    @Param('code') code: string,
+    @Body() body: UBCOuserParam,
+    @Res() res: Response,
+  ): Promise<Response<void>> {
+    const user = await UserModel.findOne({
+      where: {
+        email: body.email,
+      },
+      relations: ['organizationUser', 'courses'],
+    });
+
+    if (!user) {
+      res.status(HttpStatus.NOT_FOUND).send({ message: 'User not found' });
+      return;
+    }
+
+    const course = await OrganizationCourseModel.findOne({
+      where: {
+        organizationId: user.organizationUser.organizationId,
+        courseId: body.selected_course,
+      },
+      relations: ['course'],
+    });
+
+    if (!course) {
+      res.status(HttpStatus.NOT_FOUND).send({
+        message: ERROR_MESSAGES.courseController.courseNotFound,
+      });
+      return;
+    }
+
+    if (course.course.courseInviteCode !== code) {
+      res.status(HttpStatus.BAD_REQUEST).send({
+        message: ERROR_MESSAGES.courseController.invalidInviteCode,
+      });
+      return;
+    }
+
+    await this.courseService
+      .addStudentToCourse(course.course, user)
+      .then((resp) => {
+        if (resp) {
+          res
+            .status(HttpStatus.OK)
+            .send({ message: 'User is added to this course' });
+        } else {
+          res.status(HttpStatus.BAD_REQUEST).send({
+            message:
+              'User cannot be added to course. Please check if the user is already in the course',
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(HttpStatus.BAD_REQUEST).send({ message: err.message });
+      });
+    return;
   }
 
   @Post(':id/add_student/:sid')

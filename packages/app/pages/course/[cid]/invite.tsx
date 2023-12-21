@@ -39,10 +39,10 @@ export default function Invite(): ReactElement {
     if (cid) {
       fetchData()
     }
-  }, [cid, profile])
+  }, [cid, code, profile])
 
   const addStudent = async (userData: UBCOuserParam) => {
-    await API.signup.registerStudent(userData)
+    await API.course.enrollByInviteCode(userData, String(code))
     localStorage.removeItem('lastVisited')
     router.push('/courses')
   }
@@ -116,7 +116,7 @@ export default function Invite(): ReactElement {
     )
   } else {
     cardElement = renderCard(
-      `Invitation to join ‘${course?.name}‘`,
+      `Invitation to join '${course?.name}'`,
       { title: cardMetaTitle, text: cardMetaDescription },
       'Accept Invitation',
       async () => {

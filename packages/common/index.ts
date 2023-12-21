@@ -12,23 +12,20 @@ import {
   IsOptional,
   IsString,
   ValidateIf,
-  isBoolean,
 } from 'class-validator'
 import 'reflect-metadata'
 import { Cache } from 'cache-manager'
 
 export const PROD_URL = 'https://help.cosc304.ok.ubc.ca'
-export const STAGING_URL = 'https://staging.khouryofficehours.com'
+
 // Get domain. works on node and browser
 const domain = (): string | false =>
   process.env.DOMAIN ||
   (typeof window !== 'undefined' && window?.location?.origin)
-export const getEnv = (): 'production' | 'staging' | 'dev' => {
+export const getEnv = (): 'production' | 'dev' => {
   switch (domain()) {
     case PROD_URL:
       return 'production'
-    case STAGING_URL:
-      return 'staging'
     default:
       return 'dev'
   }
@@ -1340,6 +1337,7 @@ export const ERROR_MESSAGES = {
       cannotCheckIntoMultipleQueues:
         'Cannot check into multiple queues at the same time',
     },
+    invalidInviteCode: 'Invalid invite code',
     semesterNotFound: 'Semester not found',
     courseNameTooShort: 'Course name must be at least 1 character',
     coordinatorEmailTooShort: 'Coordinator email must be at least 1 character',
