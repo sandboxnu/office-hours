@@ -43,7 +43,11 @@ export function KOHAvatar({
   return photoURL ? (
     <Avatar
       icon={<UserOutlined />}
-      src={"/api/v1/profile/get_picture/" + photoURL}
+      src={
+        photoURL && photoURL.startsWith("http")
+          ? photoURL
+          : "/api/v1/profile/get_picture/" + photoURL
+      }
       size={size}
       style={style}
       className={className}

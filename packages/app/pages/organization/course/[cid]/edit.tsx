@@ -29,7 +29,7 @@ export default function Edit(): ReactElement {
   const router = useRouter()
   const { cid } = router.query
 
-  const { organization } = useOrganization(profile?.organization.id)
+  const { organization } = useOrganization(profile?.organization.orgId)
 
   if (
     profile &&

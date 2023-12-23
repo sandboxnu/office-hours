@@ -27,6 +27,7 @@ Object {
   "staffList": Array [
     Object {
       "accountDeactivated": false,
+      "accountType": "legacy",
       "defaultMessage": null,
       "email": "user@ubc.ca",
       "firstName": "User",
@@ -65,6 +66,7 @@ Object {
   "staffList": Array [
     Object {
       "accountDeactivated": false,
+      "accountType": "legacy",
       "defaultMessage": null,
       "email": "user@ubc.ca",
       "firstName": "User",
@@ -140,6 +142,7 @@ Object {
   "staffList": Array [
     Object {
       "accountDeactivated": false,
+      "accountType": "legacy",
       "defaultMessage": null,
       "email": "user@ubc.ca",
       "firstName": "User",
@@ -178,6 +181,7 @@ Object {
   "staffList": Array [
     Object {
       "accountDeactivated": false,
+      "accountType": "legacy",
       "defaultMessage": null,
       "email": "user@ubc.ca",
       "firstName": "User",
@@ -250,6 +254,7 @@ Object {
   "staffList": Array [
     Object {
       "accountDeactivated": false,
+      "accountType": "legacy",
       "defaultMessage": null,
       "email": "user@ubc.ca",
       "firstName": "User",

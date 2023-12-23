@@ -1,5 +1,5 @@
 import { QuestionGroupModel } from 'question/question-group.entity';
-import { AlertType, QuestionType, Role } from '@koh/common';
+import { AlertType, OrganizationRole, QuestionType, Role } from '@koh/common';
 import { AlertModel } from 'alerts/alerts.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { Factory } from 'typeorm-factory';
@@ -15,6 +15,7 @@ import { ProfSectionGroupsModel } from 'login/prof-section-groups.entity';
 import { OrganizationModel } from '../../src/organization/organization.entity';
 import { InteractionModel } from 'chatbot/interaction.entity';
 import { OrganizationCourseModel } from 'organization/organization-course.entity';
+import { OrganizationUserModel } from 'organization/organization-user.entity';
 
 export const UserFactory = new Factory(UserModel)
   .attr('email', `user@ubc.ca`)
@@ -104,6 +105,7 @@ export const AlertFactory = new Factory(AlertModel)
 export const OrganizationFactory = new Factory(OrganizationModel)
   .attr('name', 'UBCO')
   .attr('description', 'UBC Okanagan');
+
 export const InteractionFactory = new Factory(InteractionModel)
   .assocOne('course', CourseFactory)
   .assocOne('user', UserFactory)
@@ -112,3 +114,8 @@ export const InteractionFactory = new Factory(InteractionModel)
 export const OrganizationCourseFactory = new Factory(OrganizationCourseModel)
   .assocOne('organization', OrganizationFactory)
   .assocOne('course', CourseFactory);
+
+export const OrganizationUserFactory = new Factory(OrganizationUserModel)
+  .assocOne('organization', OrganizationFactory)
+  .assocOne('organizationUser', UserFactory)
+  .attr('role', OrganizationRole.MEMBER);

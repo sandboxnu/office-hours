@@ -384,6 +384,7 @@ export class CourseService {
       'UserModel.lastName',
       'UserModel.photoURL',
       'UserModel.email',
+      'UserModel.sid',
     ]);
 
     const total = await users.getCount();
@@ -394,5 +395,35 @@ export class CourseService {
       .getMany();
 
     return { users: usersSubset, total };
+  }
+
+  async addStudentToCourse(
+    course: CourseModel,
+    user: UserModel,
+  ): Promise<boolean> {
+    try {
+      const userInCourse = await UserCourseModel.findOne({
+        where: { user: user, course: course },
+      });
+
+      if (userInCourse) {
+        return false;
+      }
+
+      const userCourse = await UserCourseModel.create({
+        user: user,
+        course: course,
+        role: Role.STUDENT,
+      }).save();
+
+      const updatedUserCourse = user.courses;
+      updatedUserCourse.push(userCourse);
+      user.courses = updatedUserCourse;
+      await user.save();
+
+      return true;
+    } catch {
+      return false;
+    }
   }
 }

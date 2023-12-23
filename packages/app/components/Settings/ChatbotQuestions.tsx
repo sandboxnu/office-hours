@@ -150,7 +150,6 @@ export default function ChatbotQuestions(): ReactElement {
         currentPage,
       )
 
-      console.log(data)
       setChatQuestions(data.chatQuestions)
       setTotalQuestions(data.total)
     } catch (e) {

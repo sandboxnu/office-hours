@@ -1,13 +1,13 @@
-import { Modal } from "antd";
-import { ReactElement } from "react";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { Modal } from 'antd'
+import { ReactElement } from 'react'
+import { useLocalStorage } from '../../hooks/useLocalStorage'
 
 export default function WelcomeStudents(): ReactElement {
-  const [firstTime, setFirstTime] = useLocalStorage("firstTime", true);
+  const [firstTime, setFirstTime] = useLocalStorage('firstTime', true)
 
   return (
     <Modal
-      visible={firstTime}
+      open={firstTime}
       footer={null}
       onCancel={() => setFirstTime(false)}
       width={625}
@@ -20,5 +20,5 @@ export default function WelcomeStudents(): ReactElement {
         <br />
       </div>
     </Modal>
-  );
+  )
 }

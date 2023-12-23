@@ -27,10 +27,7 @@ export class InteractionModel extends BaseEntity {
   @JoinColumn({ name: 'user' })
   user: UserModel;
 
-  @OneToMany(
-    type => ChatbotQuestionModel,
-    question => question.interaction,
-  )
+  @OneToMany((type) => ChatbotQuestionModel, (question) => question.interaction)
   @JoinColumn({ name: 'interaction' })
   questions: ChatbotQuestionModel[];
 }

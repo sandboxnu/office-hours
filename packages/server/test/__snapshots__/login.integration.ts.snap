@@ -7,3 +7,11 @@ Object {
   "token": "{\\"userId\\":1}",
 }
 `;
+
+exports[`Login Integration POST /ubc_login returns 200 if password is correct 2`] = `
+Object {
+  "email": "user@ubc.ca",
+  "password": "realpassword",
+  "token": "{\\"userId\\":1}",
+}
+`;

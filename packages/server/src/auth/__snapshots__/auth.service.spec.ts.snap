@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AuthService loginWithGoogle should create a new user when user does not exist 1`] = `
+UserModel {
+  "accountDeactivated": false,
+  "accountType": "google",
+  "defaultMessage": null,
+  "desktopNotifsEnabled": false,
+  "email": "mocked_email@example.com",
+  "firstName": "John",
+  "hideInsights": null,
+  "id": 1,
+  "includeDefaultMessage": true,
+  "insights": Array [
+    "TotalStudents",
+    "TotalQuestionsAsked",
+    "MedianWaitTime",
+    "QuestionTypeBreakdown",
+    "MostActiveStudents",
+    "QuestionToStudentRatio",
+    "MedianHelpingTime",
+  ],
+  "lastName": "Doe",
+  "name": "John Doe",
+  "password": null,
+  "phoneNotifsEnabled": false,
+  "photoURL": "mocked_picture_url",
+  "sid": null,
+  "userRole": "user",
+}
+`;
+
+exports[`AuthService loginWithShibboleth should create a new user when user does not exist 1`] = `
+UserModel {
+  "accountDeactivated": false,
+  "accountType": "shibboleth",
+  "defaultMessage": null,
+  "desktopNotifsEnabled": false,
+  "email": "mocked_email@example.com",
+  "firstName": "John",
+  "hideInsights": null,
+  "id": 1,
+  "includeDefaultMessage": true,
+  "insights": Array [
+    "TotalStudents",
+    "TotalQuestionsAsked",
+    "MedianWaitTime",
+    "QuestionTypeBreakdown",
+    "MostActiveStudents",
+    "QuestionToStudentRatio",
+    "MedianHelpingTime",
+  ],
+  "lastName": "Doe",
+  "name": "John Doe",
+  "password": null,
+  "phoneNotifsEnabled": false,
+  "photoURL": null,
+  "sid": null,
+  "userRole": "user",
+}
+`;

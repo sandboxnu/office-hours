@@ -139,7 +139,7 @@ export default function SettingsPage({
               </h2>
             )}
             <Upload
-              customRequest={({ file }) => handleUpload(file)} // Use customRequest to handle the upload logic ourselves
+              customRequest={async ({ file }) => await handleUpload(file)} // Use customRequest to handle the upload logic ourselves
               beforeUpload={beforeUpload}
               showUploadList={true}
               onChange={(info) => {
