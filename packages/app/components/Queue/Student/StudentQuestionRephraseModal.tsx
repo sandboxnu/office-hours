@@ -1,12 +1,12 @@
-import { RephraseQuestionPayload } from "@koh/common";
-import { Button } from "antd";
-import Modal from "antd/lib/modal/Modal";
-import React, { ReactElement } from "react";
+import { RephraseQuestionPayload } from '@koh/common'
+import { Button } from 'antd'
+import Modal from 'antd/lib/modal/Modal'
+import React, { ReactElement } from 'react'
 
 type StudentQuestionRephraseModalProps = {
-  payload: RephraseQuestionPayload;
-  handleClose: (courseId: number, queueId: number) => void;
-};
+  payload: RephraseQuestionPayload
+  handleClose: (courseId: number, queueId: number) => void
+}
 export default function StudentQuestionRephraseModal({
   payload,
   handleClose,
@@ -16,11 +16,11 @@ export default function StudentQuestionRephraseModal({
       visible={true}
       footer={[
         <Button
-          type={"primary"}
-          key={"continue"}
+          type={'primary'}
+          key={'continue'}
           onClick={() => handleClose(payload.courseId, payload.queueId)}
         >
-          Edit Question
+          Close
         </Button>,
       ]}
       closable={false}
@@ -29,5 +29,5 @@ export default function StudentQuestionRephraseModal({
       the course staff. While you elaborate on your question your place in line
       will be reserved.
     </Modal>
-  );
+  )
 }
