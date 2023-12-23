@@ -5,62 +5,62 @@ import {
   EditOutlined,
   TeamOutlined,
   UndoOutlined,
-} from "@ant-design/icons";
-import { API } from "@koh/api-client";
-import { OpenQuestionStatus, Question } from "@koh/common";
-import { Button, Col, Popconfirm, Tooltip } from "antd";
-import router from "next/router";
-import React, { ReactElement } from "react";
-import styled from "styled-components";
-import { useCourse } from "../../../hooks/useCourse";
-import { useQueue } from "../../../hooks/useQueue";
-import { useStudentQuestion } from "../../../hooks/useStudentQuestion";
-import { toOrdinal } from "../../../utils/ordinal";
-import Banner, { BannerButton, BannerDangerButton } from "../Banner";
+} from '@ant-design/icons'
+import { API } from '@koh/api-client'
+import { OpenQuestionStatus, Question } from '@koh/common'
+import { Button, Col, Popconfirm, Tooltip } from 'antd'
+import router from 'next/router'
+import React, { ReactElement } from 'react'
+import styled from 'styled-components'
+import { useCourse } from '../../../hooks/useCourse'
+import { useQueue } from '../../../hooks/useQueue'
+import { useStudentQuestion } from '../../../hooks/useStudentQuestion'
+import { toOrdinal } from '../../../utils/ordinal'
+import Banner, { BannerButton, BannerDangerButton } from '../Banner'
 
 const BoldNumber = styled.span`
   font-weight: bold;
-`;
+`
 
 const QuestionDetails = styled.div`
   display: flex;
-`;
+`
 const InfoHeader = styled.div`
   font-weight: bold;
   font-size: 14px;
   font-variant: small-caps;
-`;
+`
 
 const Bullets = styled.ul`
   color: #000;
-`;
+`
 
 const ColWithRightMargin = styled(Col)`
   margin-right: 32px;
-`;
+`
 
 const PriorityQueuedBanner = styled.span`
   display: flex;
   flex-direction: column;
   margin: 12px 0;
-`;
+`
 
 interface StudentBannerProps {
-  queueId: number;
-  editQuestion: () => void;
-  leaveQueue: () => void;
+  queueId: number
+  editQuestion: () => void
+  leaveQueue: () => void
 }
 export default function StudentBanner({
   queueId,
   editQuestion,
   leaveQueue,
 }: StudentBannerProps): ReactElement {
-  const { studentQuestion, studentQuestionIndex } = useStudentQuestion(queueId);
-  const isQueueOnline = useQueue(queueId).queue?.room.startsWith("Online");
-  const { cid } = router.query;
-  const { course } = useCourse(Number(cid));
+  const { studentQuestion, studentQuestionIndex } = useStudentQuestion(queueId)
+  const isQueueOnline = useQueue(queueId).queue?.room.startsWith('Online')
+  const { cid } = router.query
+  const { course } = useCourse(Number(cid))
   switch (studentQuestion?.status) {
-    case "Drafting":
+    case 'Drafting':
       return (
         <Banner
           titleColor="#faad14"
@@ -80,22 +80,22 @@ export default function StudentBanner({
                   data-cy="edit-question"
                   icon={<EditOutlined />}
                   onClick={async () => {
-                    editQuestion();
+                    editQuestion()
                   }}
                 />
               </Tooltip>
             </>
           }
         />
-      );
-    case "Queued":
+      )
+    case 'Queued':
       return (
         <Banner
           titleColor="#3684C6"
           contentColor="#ABD4F3"
           title={
             <span>
-              You are{" "}
+              You are{' '}
               <BoldNumber>{toOrdinal(studentQuestionIndex + 1)}</BoldNumber> in
               queue
             </span>
@@ -114,8 +114,8 @@ export default function StudentBanner({
           }
           content={<QuestionDetailRow studentQuestion={studentQuestion} />}
         />
-      );
-    case "Helping":
+      )
+    case 'Helping':
       return (
         <Banner
           titleColor="#66BB6A"
@@ -134,7 +134,7 @@ export default function StudentBanner({
                   <BannerButton
                     icon={<TeamOutlined />}
                     onClick={() => {
-                      window.open(course.zoomLink);
+                      window.open(course.zoomLink)
                     }}
                   />
                 </Tooltip>
@@ -148,8 +148,8 @@ export default function StudentBanner({
             </Bullets>
           }
         />
-      );
-    case "ReQueueing":
+      )
+    case 'ReQueueing':
       return (
         <Banner
           titleColor="#66BB6A"
@@ -162,14 +162,14 @@ export default function StudentBanner({
                 <Button
                   shape="circle"
                   style={{
-                    marginLeft: "16px",
+                    marginLeft: '16px',
                     border: 0,
                   }}
                   icon={<UndoOutlined />}
                   onClick={async () => {
                     await API.questions.update(studentQuestion.id, {
-                      status: OpenQuestionStatus.PriorityQueued,
-                    });
+                      status: OpenQuestionStatus.Queued,
+                    })
                   }}
                   type="primary"
                   data-cy="re-join-queue"
@@ -187,8 +187,8 @@ export default function StudentBanner({
             </Bullets>
           }
         />
-      );
-    case "PriorityQueued":
+      )
+    case 'PriorityQueued':
       return (
         <Banner
           titleColor="#3684C6"
@@ -197,8 +197,8 @@ export default function StudentBanner({
             <PriorityQueuedBanner>
               You are now in a priority queue, you will be helped soon. <br />
               <span style={{ fontSize: 16 }}>
-                You were last helped by{" "}
-                <span style={{ fontWeight: "bold" }}>
+                You were last helped by{' '}
+                <span style={{ fontWeight: 'bold' }}>
                   {studentQuestion.taHelped.name}
                 </span>
                 .
@@ -219,9 +219,9 @@ export default function StudentBanner({
           }
           content={<QuestionDetailRow studentQuestion={studentQuestion} />}
         />
-      );
+      )
     default:
-      return <div />;
+      return <div />
   }
 }
 
@@ -240,7 +240,7 @@ function LeaveQueueButton({ leaveQueue }: { leaveQueue: () => void }) {
         />
       </Tooltip>
     </Popconfirm>
-  );
+  )
 }
 
 function QuestionDetailRow({ studentQuestion }: { studentQuestion: Question }) {
@@ -254,12 +254,12 @@ function QuestionDetailRow({ studentQuestion }: { studentQuestion: Question }) {
         <InfoHeader>type</InfoHeader>
         <div>{studentQuestion.questionType}</div>
       </Col>
-      <Col flex="0 0 89px">
+      {/* <Col flex="0 0 89px">
         <InfoHeader>groupable</InfoHeader>
         <div>
           {studentQuestion.groupable ? <CheckOutlined /> : <CloseOutlined />}
         </div>
-      </Col>
+      </Col> */}
     </QuestionDetails>
-  );
+  )
 }
