@@ -7,8 +7,8 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
-import { CourseModel } from 'course/course.entity';
-import { UserModel } from 'profile/user.entity';
+import { CourseModel } from '../course/course.entity';
+import { UserModel } from '../profile/user.entity';
 import { ChatbotQuestionModel } from './question.entity';
 
 @Entity('chatbot_interactions_model')
