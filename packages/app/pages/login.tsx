@@ -1,5 +1,5 @@
 import Router from 'next/router'
-import { ReactElement, useState, useEffect } from 'react'
+import { ReactElement, useState } from 'react'
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { message, Button, Form, Input, Alert } from 'antd'
 import styled from 'styled-components'
