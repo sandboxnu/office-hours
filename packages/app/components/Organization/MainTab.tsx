@@ -29,7 +29,7 @@ export default function MainTab({
 
       <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} style={{ marginTop: 30 }}>
         <Col xs={{ span: 24 }} sm={{ span: 8 }}>
-          <Card className="firstCard" hoverable={true}>
+          <Card className="firstCard">
             <div style={{ textAlign: 'right' }}>
               <h2 className="titleCardStatistics">{data.members}</h2>
               <span className="cardDescription">Members</span>
@@ -37,7 +37,7 @@ export default function MainTab({
           </Card>
         </Col>
         <Col xs={{ span: 24 }} sm={{ span: 8 }}>
-          <Card className="secondCard" hoverable={true}>
+          <Card className="secondCard">
             <div style={{ textAlign: 'right' }}>
               <h2 className="titleCardStatistics">{data.courses}</h2>
               <span className="cardDescription">Courses</span>
@@ -45,7 +45,7 @@ export default function MainTab({
           </Card>
         </Col>
         <Col xs={{ span: 24 }} sm={{ span: 8 }}>
-          <Card className="thirdCard" hoverable={true}>
+          <Card className="thirdCard">
             <div style={{ textAlign: 'right' }}>
               <h2 className="titleCardStatistics">{data.membersProfessors}</h2>
               <span className="cardDescription">Professors</span>

@@ -9,12 +9,15 @@ import * as morgan from 'morgan';
 import * as bodyParser from 'body-parser';
 import { AppModule } from './app.module';
 import { StripUndefinedPipe } from './stripUndefined.pipe';
+import * as expressSession from 'express-session';
+import * as passport from 'passport';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export async function bootstrap(hot: any): Promise<void> {
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
+
   if (process.env.NODE_ENV === 'production') {
     setupAPM(app);
   }
@@ -35,6 +38,23 @@ export async function bootstrap(hot: any): Promise<void> {
   app.use(morgan('dev'));
   app.use(bodyParser.json({ limit: '50mb' }));
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+
+  app.use(
+    expressSession({
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+    }),
+  );
+
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  app.enableCors({
+    origin: '*',
+    allowedHeaders: 'Content-Type, Accept',
+  });
+
   await app.listen(3002);
 
   if (hot) {

@@ -2,6 +2,7 @@
 
 exports[`Profile Integration GET /profile returns the logged-in user profile 1`] = `
 Object {
+  "accountType": "legacy",
   "courses": Array [
     Object {
       "course": Object {

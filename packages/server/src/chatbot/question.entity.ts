@@ -37,10 +37,7 @@ export class ChatbotQuestionModel extends BaseEntity {
   @Column({ default: false })
   suggested: boolean;
 
-  @OneToMany(
-    type => QuestionDocumentModel,
-    document => document.question,
-  )
+  @OneToMany((type) => QuestionDocumentModel, (document) => document.question)
   @JoinColumn({ name: 'question' })
   sourceDocuments: QuestionDocumentModel[];
 }

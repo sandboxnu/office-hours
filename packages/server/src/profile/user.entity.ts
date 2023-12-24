@@ -19,7 +19,7 @@ import { QueueModel } from '../queue/queue.entity';
 import { EventModel } from './event-model.entity';
 import { UserCourseModel } from './user-course.entity';
 import { AlertModel } from '../alerts/alerts.entity';
-import { UserRole } from '@koh/common';
+import { AccountType, UserRole } from '@koh/common';
 import { OrganizationUserModel } from '../organization/organization-user.entity';
 import { InteractionModel } from 'chatbot/interaction.entity';
 
@@ -50,6 +50,9 @@ export class UserModel extends BaseEntity {
 
   @Column({ type: 'boolean', default: true })
   includeDefaultMessage: boolean;
+
+  @Column({ type: 'text', enum: AccountType, default: AccountType.LEGACY })
+  accountType: AccountType;
 
   @Column({ type: 'boolean', default: false })
   accountDeactivated: boolean;

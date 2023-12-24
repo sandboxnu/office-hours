@@ -105,7 +105,6 @@ function RenderTable({
                   avatar={<Avatar src={item.photoURL} />}
                   title={item.name}
                 />
-                <div>{item.email}</div>
               </List.Item>
             )}
             bordered

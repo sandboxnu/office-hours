@@ -20,11 +20,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-// import {
-//   NotificationService,
-//   NotifMsgs,
-// } from '../notification/notification.service';
-// import { Response } from 'express';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { UserModel } from '../profile/user.entity';
@@ -32,7 +27,6 @@ import { AsyncQuestionModel } from './asyncQuestion.entity';
 import { asyncQuestionService } from './asyncQuestion.service';
 import { CourseModel } from 'course/course.entity';
 import { MailService } from 'mail/mail.service';
-import { UserCourseModel } from 'profile/user-course.entity';
 @Controller('asyncQuestions')
 @UseGuards(JwtAuthGuard)
 export class asyncQuestionController {

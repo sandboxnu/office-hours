@@ -16,7 +16,7 @@ import { UserCourseModel } from 'profile/user-course.entity';
 describe('Organization Integration', () => {
   const supertest = setupIntegrationTest(OrganizationModule);
 
-  describe('POST /organization/:oid/add_member/:uid', () => {
+  describe('POST /organization/:oid/add_user/:uid', () => {
     it('should return 403 when user is not logged in', async () => {
       const response = await supertest().post('/organization/1/add_member/1');
 
@@ -57,6 +57,17 @@ describe('Organization Integration', () => {
       );
 
       expect(res.status).toBe(500);
+    });
+  });
+
+  describe('GET /organization', () => {
+    it('should return 200 and list of organizations', async () => {
+      await OrganizationFactory.create();
+      await OrganizationFactory.create();
+
+      const res = await supertest().get('/organization').expect(200);
+
+      expect(res.body).toMatchSnapshot();
     });
   });
 
@@ -1583,7 +1594,7 @@ describe('Organization Integration', () => {
 
       expect(res.status).toBe(400);
       expect(res.body.message).toBe(
-        'Organization name must be at least 4 characters',
+        'Organization name must be at least 3 characters',
       );
     });
 
