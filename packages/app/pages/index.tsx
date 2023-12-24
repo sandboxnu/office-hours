@@ -13,27 +13,19 @@ const Container = styled.div`
 export default function Home(): ReactElement {
   return (
     <Container>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
+      <div className="flex flex-col items-center justify-center">
         <img
           // src="/ubc_logo.png"
           src="/favicon.ico"
           alt="UBC logo"
-          className="mr-4 w-12"
+          className="mb-4 mr-4 w-12 rounded-lg"
         />
-        <h1 style={{ display: 'block', alignItems: 'center' }}>
-          Welcome to HelpMe
-        </h1>
+        <h1>Welcome to HelpMe</h1>
       </div>
 
       <p className="m-3">
         HelpMe Course System
-        <ul style={{ listStyleType: 'circle', textAlign: 'left' }}>
+        <ul className="list-disc text-left">
           <li className="my-2">
             Supports in-person and virtual office hours with instructors and
             teaching assistants
@@ -48,7 +40,7 @@ export default function Home(): ReactElement {
           </li>
         </ul>
       </p>
-      <Button type="primary" href="/login">
+      <Button type="primary" className="rounded-lg" href="/login">
         Login &gt;
       </Button>
     </Container>
