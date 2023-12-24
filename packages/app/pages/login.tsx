@@ -15,9 +15,6 @@ import {
 } from 'antd'
 import styled from 'styled-components'
 import Head from 'next/head'
-import { User } from '@koh/common'
-import { useHomePageRedirect } from '../hooks/useHomePageRedirect'
-import { useProfile } from '../hooks/useProfile'
 import { API } from '@koh/api-client'
 import useSWR from 'swr'
 
