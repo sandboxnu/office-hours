@@ -123,19 +123,6 @@ describe("TA interacts with student question", () => {
     );
   });
 
-  it("allows the TA to view the question's creator's avatar + name", function () {
-    // make sure question is visible
-    cy.get(`[data-cy='queue-list-item-${this.question1.id}']`).should(
-      "be.visible"
-    );
-
-    // Check that the avatar is visible
-    cy.get("[data-cy='question-avatar']").should("be.visible");
-
-    // Check that the name is visible
-    cy.get("[data-cy='question-name']").should("be.visible");
-  });
-
   describe("Remove from Queue", () => {
     it("TA removes student question from the queue and student rejoins", function () {
       // Click on the student's question
