@@ -21,27 +21,28 @@ export default function Home(): ReactElement {
         }}
       >
         <img
-          src="/ubc_logo.png"
+          // src="/ubc_logo.png"
+          src="/favicon.ico"
           alt="UBC logo"
-          style={{ width: '3em', margin: '0 1em 0 0' }}
+          className="mr-4 w-12"
         />
         <h1 style={{ display: 'block', alignItems: 'center' }}>
           Welcome to HelpMe
         </h1>
       </div>
 
-      <p style={{ margin: '15px' }}>
+      <p className="m-3">
         HelpMe Course System
         <ul style={{ listStyleType: 'circle', textAlign: 'left' }}>
-          <li style={{ margin: '10px 0' }}>
+          <li className="my-2">
             Supports in-person and virtual office hours with instructors and
             teaching assistants
           </li>
-          <li style={{ margin: '10px 0' }}>
+          <li className="my-2">
             Chatbot for real-time answers about course content and course
             questions
           </li>
-          <li style={{ margin: '10px 0' }}>
+          <li className="my-2">
             For more information, contact Ramon Lawrence,{' '}
             <a href="mailto:ramon.lawrence@ubc.ca">ramon.lawrence@ubc.ca</a>
           </li>
