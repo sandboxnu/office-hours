@@ -1,4 +1,3 @@
-import Router from 'next/router'
 import { ReactElement } from 'react'
 import { Button, Image, List } from 'antd'
 import styled from 'styled-components'
@@ -12,10 +11,6 @@ const Container = styled.div`
 `
 
 export default function Home(): ReactElement {
-  const login = () => {
-    Router.push('/login')
-  }
-
   return (
     <Container>
       <div
@@ -47,12 +42,13 @@ export default function Home(): ReactElement {
             questions
           </li>
           <li style={{ margin: '10px 0' }}>
-            For more information, contact Ramon Lawrence, ramon.lawrence@ubc.ca.
+            For more information, contact Ramon Lawrence,{' '}
+            <a href="mailto:ramon.lawrence@ubc.ca">ramon.lawrence@ubc.ca</a>
           </li>
         </ul>
       </p>
-      <Button type="primary" onClick={login}>
-        Login
+      <Button type="primary" href="/login">
+        Login &gt;
       </Button>
     </Container>
   )
