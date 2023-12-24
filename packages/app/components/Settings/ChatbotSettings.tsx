@@ -160,8 +160,6 @@ export default function ChatbotSettings(): ReactElement {
           new Blob([JSON.stringify(jsonData)], { type: 'application/json' }),
         )
 
-        console.log(formData)
-
         const uploadedDocument = await fetch(`/chat/${cid}/document`, {
           method: 'POST',
           body: formData,

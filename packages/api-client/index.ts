@@ -32,7 +32,6 @@ import {
   QueuePartial,
   Role,
   GetCourseUserInfoResponse,
-  UBCOuserParam,
   questions,
   CreateAsyncQuestions,
   AsyncQuestionResponse,
@@ -46,12 +45,14 @@ import {
   ChatBotQuestionParams,
   UpdateOrganizationCourseDetailsParams,
   Interaction,
+  OrganizationResponse,
   DocumentParams,
   ChatbotDocument,
   GetLimitedCourseResponse,
   GetOrganizationUserResponse,
   OrganizationCourseResponse,
   OrganizationStatsResponse,
+  UBCOuserParam,
 } from '@koh/common'
 import Axios, { AxiosInstance, Method } from 'axios'
 import { plainToClass } from 'class-transformer'
@@ -107,14 +108,16 @@ class APIClient {
     return responseClass ? plainToClass(responseClass, res) : res
   }
 
-  signup = {
-    registerStudent: async (student: UBCOuserParam) =>
-      this.req('POST', `/api/v1/signup/ubc_signup`, undefined, student),
+  auth = {
+    loginWithGoogle: async (
+      organizationId: number,
+    ): Promise<{ redirectUri: string }> =>
+      this.req('GET', `/api/v1/auth/link/google/${organizationId}`, undefined),
   }
   profile = {
     index: async (): Promise<GetProfileResponse> =>
       this.req('GET', `/api/v1/profile`, GetProfileResponse),
-    patch: async (body: UpdateProfileParams): Promise<GetProfileResponse> =>
+    patch: async (body?: UpdateProfileParams): Promise<GetProfileResponse> =>
       this.req('PATCH', `/api/v1/profile`, undefined, body),
     deleteProfilePicture: async (): Promise<void> =>
       this.req('DELETE', `/api/v1/profile/delete_profile_picture`),
@@ -192,6 +195,19 @@ class APIClient {
   }
 
   course = {
+    addStudent: async (courseId: number, sid: number): Promise<void> =>
+      this.req(
+        'POST',
+        `/api/v1/courses/${courseId}/add_student/${sid}`,
+        undefined,
+      ),
+    enrollByInviteCode: async (student: UBCOuserParam, courseCode: string) =>
+      this.req(
+        'POST',
+        `/api/v1/courses/enroll_by_invite_code/${courseCode}`,
+        undefined,
+        student,
+      ),
     getOrganizationCourses: async (organizationId: number) =>
       this.req('GET', `/api/v1/courses/${organizationId}/organization_courses`),
     getAsyncQuestions: async (cid: number) =>
@@ -464,6 +480,8 @@ class APIClient {
   }
 
   organizations = {
+    getOrganizations: async (): Promise<OrganizationResponse[]> =>
+      this.req('GET', `/api/v1/organization`),
     updateCourse: async (
       organizationId: number,
       courseId: number,

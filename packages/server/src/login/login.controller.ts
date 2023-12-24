@@ -49,10 +49,22 @@ export class LoginController {
   ): Promise<any> {
     const user = await UserModel.findOne({
       where: { email: body.email },
+      relations: ['organizationUser', 'organizationUser.organization'],
     });
 
     if (!user) {
-      return res.status(404).send({ message: 'User Not found' });
+      return res
+        .status(HttpStatus.NOT_FOUND)
+        .send({ message: 'User Not found' });
+    }
+
+    if (
+      user.organizationUser &&
+      user.organizationUser.organization.legacyAuthEnabled === false
+    ) {
+      return res.status(HttpStatus.UNAUTHORIZED).send({
+        message: 'Organization does not allow legacy auth',
+      });
     }
 
     const token = await this.jwtService.signAsync(
@@ -66,6 +78,12 @@ export class LoginController {
         ERROR_MESSAGES.loginController.invalidTempJWTToken,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
+    }
+
+    if (user.password === null || user.password === undefined) {
+      return res.status(HttpStatus.UNAUTHORIZED).send({
+        message: 'User did not sign up with legacy account system',
+      });
     }
 
     bcrypt.compare(body.password, user.password, (err, data) => {

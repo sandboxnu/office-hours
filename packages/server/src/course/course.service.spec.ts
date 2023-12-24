@@ -372,4 +372,24 @@ describe('CourseService', () => {
       expect(resp.users.map((info) => info.name)).toEqual([]);
     });
   });
+
+  describe('addStudentToCourse', () => {
+    it('returns true when student added to course', async () => {
+      const user = await UserFactory.create({ courses: [] });
+      const course = await CourseFactory.create();
+
+      const resp = await service.addStudentToCourse(course, user);
+
+      expect(resp).toEqual(true);
+    });
+
+    it('returns false when student already in course', async () => {
+      const user = await UserFactory.create();
+      const course = await CourseFactory.create();
+
+      const resp = await service.addStudentToCourse(course, user);
+
+      expect(resp).toEqual(false);
+    });
+  });
 });

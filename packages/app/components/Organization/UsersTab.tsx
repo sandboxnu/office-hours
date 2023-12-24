@@ -22,6 +22,7 @@ import { ReactElement, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import useSWR, { mutate } from 'swr'
 import { useProfile } from '../../hooks/useProfile'
+import AvatarWithInitals from '../common/AvatarWithInitials'
 
 const TableBackground = styled.div`
   background-color: white;
@@ -118,6 +119,21 @@ export default function UsersTab({
         await API.organizations.getUsers(organization.id, page, search),
     )
 
+    const getUserProfilePicture = (photoUrl: string) => {
+      if (photoUrl && photoUrl.startsWith('http')) {
+        return <Avatar src={photoUrl} style={{ marginRight: 10 }} />
+      } else if (photoUrl) {
+        return (
+          <Avatar
+            src={'/api/v1/profile/get_picture/' + photoUrl}
+            style={{ marginRight: 10 }}
+          />
+        )
+      } else {
+        return <Avatar style={{ marginRight: 10 }}>N/A</Avatar>
+      }
+    }
+
     if (!users) {
       return (
         <Spin
@@ -189,13 +205,7 @@ export default function UsersTab({
                     ]}
                   >
                     <List.Item.Meta
-                      avatar={
-                        item.photoUrl && (
-                          <Avatar
-                            src={'/api/v1/profile/get_picture/' + item.photoUrl}
-                          />
-                        )
-                      }
+                      avatar={getUserProfilePicture(item.photoUrl)}
                       title={item.firstName + ' ' + item.lastName}
                       description={item.email}
                     />
@@ -225,7 +235,7 @@ export default function UsersTab({
         {organization.ssoEnabled && (
           <Alert
             message="System Notice"
-            description="Organizations with SSO authentication enabled have a limited editing permissions for users. Changes must be made in the SSO provider."
+            description="Organizations with SSO/Shibboleth authentication enabled have a limited editing permissions for users. Changes must be made in the SSO provider."
             type="error"
             style={{ marginBottom: 20 }}
           />

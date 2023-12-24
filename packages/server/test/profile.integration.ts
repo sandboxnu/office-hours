@@ -12,6 +12,7 @@ import { ProfileModule } from '../src/profile/profile.module';
 import { PhoneNotifModel } from 'notification/phone-notif.entity';
 import { DesktopNotifModel } from 'notification/desktop-notif.entity';
 import { OrganizationUserModel } from 'organization/organization-user.entity';
+import { AccountType } from '@koh/common';
 
 describe('Profile Integration', () => {
   const supertest = setupIntegrationTest(ProfileModule);
@@ -133,6 +134,17 @@ describe('Profile Integration', () => {
     });
   });
 
+  describe('DELETE /profile/delete_profile_picture', () => {
+    it("should delete profile picture from database only if it's URL", async () => {
+      const user = await UserFactory.create({
+        photoURL: 'https://www.google.com',
+      });
+      await supertest({ userId: user.id })
+        .delete('/profile/delete_profile_picture')
+        .expect(200);
+    });
+  });
+
   describe('PATCH /profile', () => {
     it('enables desktop notifs', async () => {
       const user = await UserFactory.create({
@@ -144,10 +156,10 @@ describe('Profile Integration', () => {
         .send({ desktopNotifsEnabled: true })
         .expect(200);
       expect(res.body).toMatchObject({
-        desktopNotifsEnabled: true,
-        phoneNotifsEnabled: false,
+        message: 'Profile updated successfully',
       });
     });
+
     it('enables phone notifs', async () => {
       const user = await UserFactory.create({
         desktopNotifsEnabled: false,
@@ -158,11 +170,26 @@ describe('Profile Integration', () => {
         .send({ phoneNotifsEnabled: true, phoneNumber: '911' })
         .expect(200);
       expect(res.body).toMatchObject({
-        desktopNotifsEnabled: false,
-        phoneNotifsEnabled: true,
-        phoneNumber: 'real911',
+        message: 'Profile updated successfully',
       });
     });
+
+    it('should not update profile settings if email is included and account is not legacy', async () => {
+      const user = await UserFactory.create({
+        email: 'test@ubc.ca',
+        accountType: AccountType.GOOGLE,
+      });
+
+      const res = await supertest({ userId: user.id })
+        .patch('/profile')
+        .send({ email: 'test@ubc.ca', firstName: 'test' });
+
+      expect(res.status).toEqual(400);
+      expect(res.body).toEqual({
+        message: 'Email cannot be updated',
+      });
+    });
+
     it('does not let student enable without phone number', async () => {
       const user = await UserFactory.create({
         desktopNotifsEnabled: false,
@@ -173,6 +200,7 @@ describe('Profile Integration', () => {
         .send({ phoneNotifsEnabled: true })
         .expect(400);
     });
+
     it('lets student change phone number', async () => {
       const user = await UserFactory.create({
         desktopNotifsEnabled: false,
@@ -192,6 +220,7 @@ describe('Profile Integration', () => {
       profile = await supertest({ userId: user.id }).get('/profile');
       expect(profile.body?.phoneNumber).toEqual('real0987654321');
     });
+
     it('lets ta change default teams message', async () => {
       const user = await UserFactory.create();
       let profile = await supertest({ userId: user.id }).get('/profile');
@@ -203,6 +232,7 @@ describe('Profile Integration', () => {
       profile = await supertest({ userId: user.id }).get('/profile');
       expect(profile.body?.defaultMessage).toEqual("Hello! It's me :D");
     });
+
     it('lets ta change includeDefaultMessage', async () => {
       const user = await UserFactory.create();
       let profile = await supertest({ userId: user.id }).get('/profile');
@@ -232,10 +262,11 @@ describe('Profile Integration', () => {
 
     it('fails to change user email when email is used by another user', async () => {
       const user = await UserFactory.create();
+      await UserFactory.create({ email: 'test@ubc.ca' });
 
       await supertest({ userId: user.id })
         .patch('/profile')
-        .send({ email: user.email })
+        .send({ email: 'test@ubc.ca' })
         .expect(400);
     });
   });
