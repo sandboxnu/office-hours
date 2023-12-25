@@ -15,10 +15,10 @@ export default function Home(): ReactElement {
     <Container>
       <div className="flex flex-col items-center justify-center">
         <img
-          // src="/ubc_logo.png"
-          src="/favicon.ico"
+          src="/ubc_logo.png"
+          // src="/favicon.ico"
           alt="UBC logo"
-          className="mb-4 mr-4 w-12 rounded-lg"
+          className="mb-4 mr-4 w-12"
         />
         <h1>Welcome to HelpMe</h1>
       </div>
