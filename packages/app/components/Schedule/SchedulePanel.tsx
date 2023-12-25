@@ -105,7 +105,6 @@ export default function SchedulePanel({
   const onOk = async (values: any) => {
     const calendarApi = info.view.calendar
     calendarApi.unselect() // clear date selection
-    console.log(values)
     let e = null
     if (values.repeat) {
       const date = new Date(info.startStr)

@@ -7,14 +7,12 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import React, { ReactElement, useEffect } from 'react'
 import styled from 'styled-components'
-// import GPTChatbotPage from "../../../components/Chatbot/Chatbot";
 import { StandardPageContainer } from '../../../components/common/PageContainer'
 import NavBar from '../../../components/Nav/NavBar'
 import SchedulePanel from '../../../components/Schedule/SchedulePanel'
 import QueueCard, {
   QueueCardSkeleton,
 } from '../../../components/Today/QueueCard'
-import { ChatbotComponent } from '../../../components/Chatbot/Chatbot'
 import TodayPageCheckinButton from '../../../components/Today/QueueCheckInButton'
 import { useCourse } from '../../../hooks/useCourse'
 import { useRoleInCourse } from '../../../hooks/useRoleInCourse'

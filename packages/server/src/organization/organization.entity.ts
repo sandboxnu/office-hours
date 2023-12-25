@@ -33,6 +33,12 @@ export class OrganizationModel extends BaseEntity {
   @Column('boolean', { default: false })
   ssoEnabled: boolean;
 
+  @Column('boolean', { default: false })
+  legacyAuthEnabled: boolean;
+
+  @Column('boolean', { default: true })
+  googleAuthEnabled: boolean;
+
   @Column('text', { nullable: true })
   ssoUrl: string;
 
@@ -42,6 +48,7 @@ export class OrganizationModel extends BaseEntity {
     (type) => OrganizationUserModel,
     (organizationUser) => organizationUser.organization,
   )
+  @JoinColumn({ name: 'organizationId' })
   organizationUsers: OrganizationUserModel[];
 
   @Exclude()

@@ -1,9 +1,14 @@
 import { JwtService } from '@nestjs/jwt';
 import { TestingModuleBuilder } from '@nestjs/testing';
 import { LoginModule } from '../src/login/login.module';
-import { UserCourseFactory, UserFactory } from './util/factories';
+import {
+  OrganizationFactory,
+  UserCourseFactory,
+  UserFactory,
+} from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
 import * as bcrypt from 'bcrypt';
+import { OrganizationUserModel } from 'organization/organization-user.entity';
 
 const mockJWT = {
   signAsync: async (payload) => JSON.stringify(payload),
@@ -104,6 +109,85 @@ describe('Login Integration', () => {
       const token = await mockJWT.signAsync({ token: 'INVALID_TOKEN' });
 
       await supertest().get(`/login/entry?token=${token}`).expect(401);
+    });
+  });
+
+  describe('POST /ubc_login', () => {
+    it('returns 400 if no email is provided', async () => {
+      await supertest()
+        .post('/ubc_login')
+        .send({ password: 'fake_password' })
+        .expect(400);
+    });
+
+    it('returns 404 if user not found', async () => {
+      await supertest()
+        .post('/ubc_login')
+        .send({ email: 'fake_email@ubc.ca', password: 'fake_password' })
+        .expect(404);
+    });
+
+    it('returns 401 if password is incorrect', async () => {
+      const user = await UserFactory.create({ password: 'real_password' });
+      await mockJWT.signAsync({ userId: user.id });
+
+      await supertest()
+        .post('/ubc_login')
+        .send({ email: user.email, password: 'invalid_password' })
+        .expect(401);
+    });
+
+    it('returns 401 when organization does not allow legacy auth', async () => {
+      const organization = await OrganizationFactory.create({
+        legacyAuthEnabled: false,
+      });
+      const user = await UserFactory.create({ password: 'real_password' });
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+      }).save();
+
+      await mockJWT.signAsync({ userId: user.id });
+
+      await supertest()
+        .post('/ubc_login')
+        .send({ email: user.email, password: 'real_password' })
+        .expect(401);
+    });
+
+    it('returns 401 when user did not sign up with legacy account system', async () => {
+      const organization = await OrganizationFactory.create({
+        legacyAuthEnabled: false,
+      });
+      const user = await UserFactory.create({ password: null });
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+      }).save();
+
+      await mockJWT.signAsync({ userId: user.id });
+
+      await supertest()
+        .post('/ubc_login')
+        .send({ email: user.email, password: 'real_password' })
+        .expect(401);
+    });
+
+    it('returns 200 if password is correct', async () => {
+      const salt = await bcrypt.genSalt(10);
+      const password = await bcrypt.hash('realpassword', salt);
+
+      const user = await UserFactory.create({ password: password });
+      await mockJWT.signAsync({ userId: user.id });
+
+      const res = await supertest()
+        .post('/ubc_login')
+        .send({ email: user.email, password: 'realpassword' });
+
+      expect(res.body).toMatchSnapshot();
+      expect(res.status).toBe(200);
     });
   });
 

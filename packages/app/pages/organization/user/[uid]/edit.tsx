@@ -34,7 +34,7 @@ export default function Edit(): ReactElement {
   const profile = useProfile()
   const router = useRouter()
   const uid = router.query['uid']
-  const { organization } = useOrganization(profile?.organization.id)
+  const { organization } = useOrganization(profile?.organization.orgId)
 
   if (
     profile &&
@@ -212,7 +212,7 @@ export default function Edit(): ReactElement {
         {organization?.ssoEnabled && (
           <Alert
             message="System Notice"
-            description="Organizations with SSO authentication enabled have a limited editing permissions for users. Changes must be made in the SSO provider."
+            description="Organizations with SSO/Shibboleth authentication enabled have a limited editing permissions for users. Changes must be made in the SSO provider."
             type="error"
             style={{ marginBottom: 20 }}
           />

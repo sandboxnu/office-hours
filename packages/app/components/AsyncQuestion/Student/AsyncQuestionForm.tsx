@@ -1,6 +1,6 @@
 import { ReactElement, useEffect, useState } from 'react'
 import Modal from 'antd/lib/modal/Modal'
-import { Input, Form, message } from 'antd'
+import { Input, Form, message, Radio } from 'antd'
 import styled from 'styled-components'
 import { API } from '@koh/api-client'
 
@@ -45,10 +45,22 @@ export function AsyncQuestionForm({
   const [selectedImage, setSelectedImage] = useState(null)
 
   const [preview, setPreview] = useState<string>()
-  const [questionTypeInput] = useState<string>(
+  const [questionTypeInput, setQuestionTypeInput] = useState<string>(
     question?.questionType || 'general question',
   )
-
+  const [questionTypes, setQuestionTypes] = useState(null)
+  const onCategoryChange = (e) => {
+    setQuestionTypeInput(e.target.value)
+  }
+  // const courseId=Number(cid);
+  useEffect(() => {
+    getQuestions()
+  }, [])
+  const getQuestions = async () => {
+    await API.questions.questionTypes(Number(cid)).then((result) => {
+      setQuestionTypes(result)
+    })
+  }
   //image stuff
   useEffect(() => {
     if (!selectedImage) {
@@ -56,7 +68,6 @@ export function AsyncQuestionForm({
       return
     }
     const objectURL = window.URL.createObjectURL(selectedImage)
-    console.log(objectURL)
     setPreview(objectURL)
     return () => window.URL.revokeObjectURL(objectURL)
   }, [selectedImage])
@@ -150,11 +161,30 @@ export function AsyncQuestionForm({
             professors manually changes it
           </QuestionCaption>
 
+          <QuestionText>
+            What category does your question fall under?
+          </QuestionText>
+          <Radio.Group
+            value={questionTypeInput}
+            onChange={onCategoryChange}
+            buttonStyle="solid"
+            style={{ marginBottom: 48 }}
+          >
+            {questionTypes !== null ? (
+              questionTypes.map((q) => (
+                <Radio.Button key={q} value={q}>
+                  {' '}
+                  {q}
+                </Radio.Button>
+              ))
+            ) : (
+              <p>Loading...</p>
+            )}
+          </Radio.Group>
           <Form.Item name="images">
             <Input
               type="file"
               onChange={(event) => {
-                console.log(event.target.files[0])
                 setSelectedImage(event.target.files[0])
               }}
               name="questionImage"

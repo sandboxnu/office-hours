@@ -6,8 +6,8 @@ const withTM = require("next-transpile-modules")([
 const withPlugins = require("next-compose-plugins");
 const withOffline = require("next-offline");
 
-// Next doesn't allow node modules to import their own CSS, but the fullcal library does that. 
-// this is a workaround. 
+// Next doesn't allow node modules to import their own CSS, but the fullcal library does that.
+// this is a workaround.
 const { withGlobalCss } = require('next-global-css');
 const { patchWebpackConfig } = require('next-global-css');
 
