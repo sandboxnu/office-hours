@@ -98,16 +98,6 @@ export default function ProfileDrawer({
             >
               Keyboard Shortcuts
             </Menu.Item>
-            <Menu.Item
-              key="1"
-              icon={<QuestionCircleOutlined />}
-              onClick={() => {
-                window.open('http://example.com')
-                setIsPopoverOpen(false)
-              }}
-            >
-              Help Guide
-            </Menu.Item>
             <Menu.Item key="2" icon={<LogoutOutlined />}>
               <Link href={'/api/v1/logout'}>
                 <a data-cy="logout-button">Logout</a>

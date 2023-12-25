@@ -2,13 +2,13 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   HttpException,
   HttpStatus,
   Param,
   Patch,
   Post,
+  Delete,
   Query,
   Res,
   UploadedFile,
@@ -20,6 +20,7 @@ import { Response } from 'express';
 import {
   ERROR_MESSAGES,
   GetOrganizationUserResponse,
+  OrganizationResponse,
   OrganizationRole,
   Role,
   UpdateOrganizationCourseDetailsParams,
@@ -683,6 +684,15 @@ export class OrganizationController {
       });
   }
 
+  @Get()
+  async getAllOrganizations(
+    @Res() res: Response,
+  ): Promise<Response<OrganizationResponse[]>> {
+    const organizations = await OrganizationModel.find();
+
+    return res.status(200).send(organizations);
+  }
+
   @Get(':oid')
   @UseGuards(JwtAuthGuard)
   async get(@Res() res: Response, @Param('oid') oid: string): Promise<void> {
@@ -783,7 +793,7 @@ export class OrganizationController {
       .then((organization) => {
         if (
           !organizationPatch.name ||
-          organizationPatch.name.trim().length < 4
+          organizationPatch.name.trim().length < 3
         ) {
           return res.status(HttpStatus.BAD_REQUEST).send({
             message:

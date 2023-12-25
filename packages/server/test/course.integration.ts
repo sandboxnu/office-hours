@@ -17,6 +17,7 @@ import {
   EventFactory,
   OrganizationCourseFactory,
   OrganizationFactory,
+  OrganizationUserFactory,
   ProfSectionGroupsFactory,
   QueueFactory,
   SemesterFactory,
@@ -26,7 +27,7 @@ import {
   UserFactory,
 } from './util/factories';
 import { setupIntegrationTest } from './util/testUtils';
-import { OrganizationCourseModel } from 'organization/organization-course.entity';
+import { OrganizationUserModel } from 'organization/organization-user.entity';
 
 describe('Course Integration', () => {
   const supertest = setupIntegrationTest(CourseModule);
@@ -1286,6 +1287,293 @@ describe('Course Integration', () => {
       });
       expect(ubw2).toBeDefined();
       expect(life).toBeDefined();
+    });
+  });
+
+  describe('POST /courses/enroll_by_invite_code/:code', () => {
+    it('should return 401 if user is not authorized', async () => {
+      await supertest().post(`/courses/enroll_by_invite_code/123`).expect(401);
+    });
+
+    it('should return 404 if user is not found', async () => {
+      const course = await CourseFactory.create();
+
+      const resp = await supertest({ userId: 1 })
+        .post(`/courses/enroll_by_invite_code/123`)
+        .send({
+          email: 'fake@ubc.ca',
+          first_name: 'user',
+          last_name: 'user',
+          password: 'random_password',
+          selected_course: course.id,
+        });
+
+      expect(resp.status).toBe(404);
+      expect(resp.body.message).toEqual('User not found');
+    });
+
+    it('should return 404 if course is not found', async () => {
+      const user = await UserFactory.create();
+
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserFactory.create({
+        organizationId: organization.id,
+        userId: user.id,
+        organization: organization,
+        organizationUser: user,
+      });
+
+      const resp = await supertest({ userId: user.id })
+        .post(`/courses/enroll_by_invite_code/123`)
+        .send({
+          email: user.email,
+          first_name: user.firstName,
+          last_name: user.lastName,
+          password: 'random_password',
+          selected_course: 1,
+        });
+
+      expect(resp.status).toBe(404);
+      expect(resp.body.message).toEqual('The course was not found');
+    });
+
+    it('should return 400 if course invite code is incorrect', async () => {
+      const user = await UserFactory.create();
+      const course = await CourseFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserFactory.create({
+        organizationId: organization.id,
+        userId: user.id,
+        organization: organization,
+        organizationUser: user,
+      });
+
+      await OrganizationCourseFactory.create({
+        organizationId: organization.id,
+        courseId: course.id,
+        organization: organization,
+        course: course,
+      });
+
+      const resp = await supertest({ userId: user.id })
+        .post(`/courses/enroll_by_invite_code/invalid_course_code`)
+        .send({
+          email: user.email,
+          first_name: user.firstName,
+          last_name: user.lastName,
+          password: 'random_password',
+          selected_course: course.id,
+        });
+
+      expect(resp.status).toBe(400);
+      expect(resp.body.message).toEqual('Invalid invite code');
+    });
+
+    it('should return 400 if user is already enrolled in the course', async () => {
+      const user = await UserFactory.create();
+      const course = await CourseFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserFactory.create({
+        organizationId: organization.id,
+        userId: user.id,
+        organization: organization,
+        organizationUser: user,
+      });
+
+      await OrganizationCourseFactory.create({
+        organizationId: organization.id,
+        courseId: course.id,
+        organization: organization,
+        course: course,
+      });
+
+      await UserCourseFactory.create({
+        user: user,
+        course: course,
+        role: Role.STUDENT,
+      });
+
+      const resp = await supertest({ userId: user.id })
+        .post(`/courses/enroll_by_invite_code/${course.courseInviteCode}`)
+        .send({
+          email: user.email,
+          first_name: user.firstName,
+          last_name: user.lastName,
+          password: 'random_password',
+          selected_course: course.id,
+        });
+
+      expect(resp.status).toBe(400);
+      expect(resp.body.message).toEqual(
+        'User cannot be added to course. Please check if the user is already in the course',
+      );
+    });
+
+    it('should return 200 if user is successfully enrolled in the course', async () => {
+      const user = await UserFactory.create();
+      const course = await CourseFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserFactory.create({
+        organizationId: organization.id,
+        userId: user.id,
+        organization: organization,
+        organizationUser: user,
+      });
+
+      await OrganizationCourseFactory.create({
+        organizationId: organization.id,
+        courseId: course.id,
+        organization: organization,
+        course: course,
+      });
+
+      const resp = await supertest({ userId: user.id })
+        .post(`/courses/enroll_by_invite_code/${course.courseInviteCode}`)
+        .send({
+          email: user.email,
+          first_name: user.firstName,
+          last_name: user.lastName,
+          password: 'random_password',
+          selected_course: course.id,
+        });
+
+      expect(resp.status).toBe(200);
+      expect(resp.body.message).toEqual('User is added to this course');
+    });
+  });
+
+  describe('POST /courses/:id/add_student/:sid', () => {
+    it('should return 401 if user is not a professor', async () => {
+      const course = await CourseFactory.create();
+      const student = await UserFactory.create();
+
+      await UserCourseFactory.create({
+        course: course,
+        user: student,
+        role: Role.STUDENT,
+      });
+
+      await supertest({ userId: student.id })
+        .post(`/courses/${course.id}/add_student/${student.id}`)
+        .expect(401);
+    });
+
+    it('should return 401 if user not authorized', async () => {
+      await supertest().post(`/courses/1/add_student/1`).expect(401);
+    });
+
+    it('should return 404 when user is not found', async () => {
+      const course = await CourseFactory.create();
+      const professor = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        organizationId: organization.id,
+        userId: professor.id,
+      }).save();
+
+      await UserCourseFactory.create({
+        course: course,
+        user: professor,
+        role: Role.PROFESSOR,
+      });
+
+      const resp = await supertest({ userId: professor.id }).post(
+        `/courses/${course.id}/add_student/1`,
+      );
+
+      expect(resp.body.message).toEqual(
+        'User with this student id is not found',
+      );
+      expect(resp.status).toBe(404);
+    });
+
+    it('should return 400 when user adds themselves', async () => {
+      const course = await CourseFactory.create();
+      const professor = await UserFactory.create({ sid: 1 });
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        organizationId: organization.id,
+        userId: professor.id,
+      }).save();
+
+      await UserCourseFactory.create({
+        course: course,
+        user: professor,
+        role: Role.PROFESSOR,
+      });
+
+      const resp = await supertest({ userId: professor.id }).post(
+        `/courses/${course.id}/add_student/${professor.sid}`,
+      );
+
+      expect(resp.body.message).toEqual(
+        'You cannot add yourself to this course',
+      );
+      expect(resp.status).toBe(400);
+    });
+
+    it('should return 400 when user to add is in different organization', async () => {
+      const course = await CourseFactory.create();
+      const professor = await UserFactory.create();
+      const student = await UserFactory.create({ sid: 1 });
+      const organization = await OrganizationFactory.create();
+      const organizationTwo = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        organizationId: organization.id,
+        userId: student.id,
+      }).save();
+
+      await OrganizationUserModel.create({
+        organizationId: organizationTwo.id,
+        userId: professor.id,
+      }).save();
+
+      await UserCourseFactory.create({
+        course: course,
+        user: professor,
+        role: Role.PROFESSOR,
+      });
+
+      const resp = await supertest({ userId: professor.id }).post(
+        `/courses/${course.id}/add_student/${student.sid}`,
+      );
+      expect(resp.body.message).toEqual('User is not in the same organization');
+      expect(resp.status).toBe(400);
+    });
+
+    it('should return 200 when user is added successfully', async () => {
+      const course = await CourseFactory.create();
+      const professor = await UserFactory.create();
+      const student = await UserFactory.create({ sid: 1, courses: [] });
+      const organization = await OrganizationFactory.create();
+
+      await OrganizationUserModel.create({
+        organizationId: organization.id,
+        userId: student.id,
+      }).save();
+
+      await OrganizationUserModel.create({
+        organizationId: organization.id,
+        userId: professor.id,
+      }).save();
+
+      await UserCourseFactory.create({
+        course: course,
+        user: professor,
+        role: Role.PROFESSOR,
+      });
+
+      const resp = await supertest({ userId: professor.id }).post(
+        `/courses/${course.id}/add_student/${student.sid}`,
+      );
+      expect(resp.status).toBe(200);
     });
   });
 });

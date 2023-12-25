@@ -110,6 +110,7 @@ export function AddStudentsModal({
           location: null,
           force: true,
           groupable: false,
+          questionType: selectedQuestionType,
         },
         currentStudent.id,
       )

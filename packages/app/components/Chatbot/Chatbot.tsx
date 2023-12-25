@@ -90,7 +90,6 @@ export const ChatbotComponent: React.FC = () => {
         body: JSON.stringify(data),
       })
       const json = await response.json()
-      console.log(json)
       return json
     } catch (error) {
       console.error('Error fetching from API:', error)
@@ -104,7 +103,6 @@ export const ChatbotComponent: React.FC = () => {
         questionId,
         query,
       }
-      console.log(data)
       const response = await fetch(`/chat/${cid}/question`, {
         method: 'POST',
         headers: {
@@ -124,17 +122,12 @@ export const ChatbotComponent: React.FC = () => {
     setIsLoading(true)
 
     const result = await query()
-    console.log(result)
     const answer = result.answer || "Sorry, I couldn't find the answer"
     const sourceDocuments = result.sourceDocuments || []
 
     let currentInteractionId = interactionId // start with the current state value
 
     if (!interactionId) {
-      console.log({
-        courseId: Number(cid),
-        userId: profile.id,
-      })
       const interaction = await API.chatbot.createInteraction({
         courseId: Number(cid),
         userId: profile.id,
