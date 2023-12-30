@@ -4,7 +4,7 @@ Khoury Office Hours provides a platform for classes at [Khoury College](https://
 
 Khoury Office Hours was developed by [Sandbox](https://www.sandboxnu.com/), Northeastern's student-led software consultancy. The project brought to Sandbox via Will Stenzel and Alex Grob in the Fall of 2019. Funny enough, it started as a Sandbox project in Spring 2020 as a React-Native mobile app. But as the pandemic developed, the team realized we needed a more robust solution to mediate office hours for the entire school. After initially rolling out to 4 classes in the Fall of 2020, the tool has now become a staple at Khoury, supporting about 20 classes semester over semester. The tool is even being used by classes at the University of British Columbia at the Okanagan campus.
 
-As a lot of the original developers have graduated, and feature development slowed down, the school needs to rely on a consistent maintenance team to nurture the applicaiton. So we are archiving this repo, and active development will continue under the software department of Khoury College at [this fork](https://github.com/khouryapps/office-hours).
+As a lot of the original developers have graduated, and feature development slowed down, the school needs to rely on a consistent maintenance team to nurture the application. So we are archiving this repo, and active development will continue under the software department of Khoury College at [this fork](https://github.com/khouryapps/office-hours).
 
 If you choose to build upon the platform, please ensure it will remain open-source. 
 
