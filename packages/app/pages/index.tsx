@@ -1,29 +1,34 @@
-import { User } from '@koh/common'
-import Router from 'next/router'
 import { ReactElement } from 'react'
-import { useHomePageRedirect } from '../hooks/useHomePageRedirect'
-import { useProfile } from '../hooks/useProfile'
-import { Spin } from 'antd'
+import { Button } from 'antd'
 
 export default function Home(): ReactElement {
-  const profile: User = useProfile()
-  const didRedirect = useHomePageRedirect()
-  if (profile && !didRedirect) {
-    Router.push('/courses')
-  } else {
-    return (
-      <div
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: '50%',
-          transform: 'translate(-50%, -50%)',
-        }}
-      >
-        <Spin tip="Loading..." size="large" />
+  return (
+    <div className="ml-auto mr-auto w-[500px] pt-10 text-center">
+      <div className="flex flex-col items-center justify-center">
+        <img src="/ubc_logo.png" alt="UBC logo" className="mb-4 mr-4 w-12" />
+        <h1>Welcome to HelpMe</h1>
       </div>
-    )
-  }
 
-  return <div />
+      <p className="m-3">
+        HelpMe Course System
+        <ul className="list-disc text-left">
+          <li className="my-2">
+            Supports in-person and virtual office hours with instructors and
+            teaching assistants
+          </li>
+          <li className="my-2">
+            Chatbot for real-time answers about course content and course
+            questions
+          </li>
+          <li className="my-2">
+            For more information, contact Ramon Lawrence,{' '}
+            <a href="mailto:ramon.lawrence@ubc.ca">ramon.lawrence@ubc.ca</a>
+          </li>
+        </ul>
+      </p>
+      <Button type="primary" className="rounded-lg" href="/login">
+        Login &gt;
+      </Button>
+    </div>
+  )
 }
