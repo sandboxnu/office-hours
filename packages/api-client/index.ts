@@ -493,6 +493,16 @@ class APIClient {
         undefined,
         body,
       ),
+    createCourse: async (
+      oid: number,
+      body: UpdateOrganizationCourseDetailsParams,
+    ): Promise<void> =>
+      this.req(
+        'POST',
+        `/api/v1/organization/${oid}/create_course`,
+        undefined,
+        body,
+      ),
     getCourse: async (
       organizationId: number,
       courseId: number,
@@ -616,6 +626,8 @@ class APIClient {
         'POST',
         `/api/v1/organization/${organizationId}/add_course/${courseId}`,
       ),
+    getProfessors: async (organizationId: number): Promise<any> =>
+      this.req('GET', `/api/v1/organization/${organizationId}/get_professors`),
   }
 
   constructor(baseURL = '') {

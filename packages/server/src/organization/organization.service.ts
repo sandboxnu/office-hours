@@ -4,7 +4,7 @@ import { UserModel } from 'profile/user.entity';
 import { Brackets, getRepository } from 'typeorm';
 import { OrganizationCourseModel } from './organization-course.entity';
 import { CourseModel } from 'course/course.entity';
-import { GetOrganizationUserResponse, UserRole } from '@koh/common';
+import { GetOrganizationUserResponse, Role, UserRole } from '@koh/common';
 import { UserCourseModel } from 'profile/user-course.entity';
 
 export interface UserResponse {
@@ -32,6 +32,7 @@ export interface OrganizationCourseResponse {
   organizationId: number;
   courseId: number;
   course: CourseModel;
+  profIds: Array<number>;
 }
 
 export interface CourseResponse {
@@ -270,7 +271,23 @@ export class OrganizationService {
       );
     }
 
-    return organizationCourse;
+    const professors = await UserCourseModel.find({
+      where: {
+        courseId,
+        role: Role.PROFESSOR,
+      },
+    });
+
+    let profIds = [];
+
+    if (professors) {
+      profIds = professors.map((professor) => professor.userId);
+    }
+
+    return {
+      ...organizationCourse,
+      profIds,
+    };
   }
 
   public async getOrganizationAndRoleByUserId(
