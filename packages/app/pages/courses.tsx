@@ -30,11 +30,13 @@ export default function Courses(): ReactElement {
         <div style={{ marginTop: 20 }}>
           <h1>My Courses</h1>
           {profile.organization.organizationRole ===
-            OrganizationRole.PROFESSOR && (
-            <Button type="primary" href={`organization/course/add`}>
-              Add New Course
-            </Button>
-          )}
+            OrganizationRole.PROFESSOR ||
+            (profile.organization.organizationRole ===
+              OrganizationRole.ADMIN && (
+              <Button type="primary" href={`organization/course/add`}>
+                Add New Course
+              </Button>
+            ))}
 
           {profile?.courses.length === 0 ? (
             <Empty description="You are not enrolled in any course" />
