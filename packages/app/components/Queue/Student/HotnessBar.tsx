@@ -7,40 +7,40 @@ const BAR_HEIGHT_PX = 50
 
 /**
  * Renders a vertical bar that shows the hotness of a question.
- * @param hotness a number between 0 (least hot) to 100 (most hot)
- * @param hasGreen whether or not to have the variation where the bar goes from green to red (as one colour) vs white to red (as a gradient)
+ * @param {number} hotness a number between 0 (least hot) to 100 (most hot)
+ * @param {boolean} isGreenVariation whether or not to have the variation where the bar goes from green to red (as one colour) vs white to red (as a gradient)
  */
 export default function HotnessBar({
   hotness,
-  hasGreen,
+  isGreenVariation,
 }: {
   hotness: number
-  hasGreen: boolean
+  isGreenVariation: boolean
 }): ReactElement {
   return (
     <EmptyBar>
-      <Fill hotness={hotness} hasGreen={hasGreen} />
+      <Fill hotness={hotness} isGreenVariation={isGreenVariation} />
     </EmptyBar>
   )
 }
 
 // shell of bar fill (width of bar)
 const EmptyBar = styled.div`
-    display: flex;
-    flex-direction: column-reverse;
-    width: ${BAR_WIDTH_PX}px;
-    height: ${BAR_HEIGHT_PX}px};
-    background: transparent;
-    border-radius: 5px;
-    border: 1px solid black;
+  display: flex;
+  flex-direction: column-reverse;
+  width: ${BAR_WIDTH_PX}px;
+  height: ${BAR_HEIGHT_PX}px;
+  background: transparent;
+  border-radius: 5px;
+  border: 1px solid black;
 `
 
 // fill of bar, colour and length is determined by hotness
-const Fill = styled.div<{ hotness: number; hasGreen?: boolean }>`
+const Fill = styled.div<{ hotness: number; isGreenVariation?: boolean }>`
   width: 100%;
   height: ${({ hotness }) => hotness}%;
-  ${({ hotness, hasGreen = true }) =>
-    hasGreen
+  ${({ hotness, isGreenVariation = true }) =>
+    isGreenVariation
       ? `background-color: rgb(${hotness * 2.55}, ${255 - hotness * 2.55}, 0)`
       : `background-image: linear-gradient(rgb(255, ${255 - hotness * 2.55}, ${
           255 - hotness * 2.55

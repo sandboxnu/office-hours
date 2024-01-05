@@ -42,7 +42,8 @@ export default function StudentQueueCard({
   return (
     <HorizontalStudentCard>
       <CenterRow>
-        {/* <Col flex="0 1 auto" style={{ margin: '0 6px 0 0' }}>
+        {/* Temporary removal of hotness bar
+        <Col flex="0 1 auto" style={{ margin: '0 6px 0 0' }}>
           <HotnessBar hotness={Math.floor(Math.random() * 101)} />
         </Col> */}
         {isStaff && ( // only show avatar if staff for now. TODO: fix endpoint to allow queues to access student avatars and names if prof enabled it
