@@ -29,18 +29,18 @@ export default function Courses(): ReactElement {
         <NavBar />
         <div style={{ marginTop: 20, position: 'relative' }}>
           <h1>My Courses</h1>
-          {profile.organization.organizationRole ===
+          {(profile.organization.organizationRole ===
             OrganizationRole.PROFESSOR ||
-            (profile.organization.organizationRole ===
-              OrganizationRole.ADMIN && (
-              <Button
-                type="primary"
-                href={`organization/course/add`}
-                style={{ position: 'absolute', top: 0, right: 0 }}
-              >
-                Add New Course
-              </Button>
-            ))}
+            profile.organization.organizationRole ===
+              OrganizationRole.ADMIN) && (
+            <Button
+              type="primary"
+              href={`organization/course/add`}
+              style={{ position: 'absolute', top: 0, right: 0 }}
+            >
+              Add New Course
+            </Button>
+          )}
 
           {profile?.courses.length === 0 ? (
             <Empty description="You are not enrolled in any course" />
