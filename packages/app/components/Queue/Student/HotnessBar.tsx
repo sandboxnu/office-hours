@@ -40,7 +40,7 @@ const Fill = styled.div<{ hotness: number; isGreenVariation?: boolean }>`
   width: 100%;
   height: ${({ hotness }) => hotness}%;
   ${({ hotness, isGreenVariation = true }) =>
-    isGreenVariation
+    isGreenVariation // doing hotness * 2.55 to convert from 0-100 to 0-255
       ? `background-color: rgb(${hotness * 2.55}, ${255 - hotness * 2.55}, 0)`
       : `background-image: linear-gradient(rgb(255, ${255 - hotness * 2.55}, ${
           255 - hotness * 2.55
