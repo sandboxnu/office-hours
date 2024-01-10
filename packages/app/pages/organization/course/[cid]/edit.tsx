@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import { useProfile } from '../../../../hooks/useProfile'
 // import { useRouter } from "next/router";
 import { useOrganization } from '../../../../hooks/useOrganization'
@@ -25,20 +25,46 @@ import { useRouter } from 'next/router'
 import { useSemester } from '../../../../hooks/useSemester'
 
 export default function Edit(): ReactElement {
-  const profile = useProfile()
   const router = useRouter()
   const { cid } = router.query
 
+  const [isAuthorized, setIsAuthorized] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  const profile = useProfile()
   const { organization } = useOrganization(profile?.organization.orgId)
+
   const isAdmin =
     profile && profile.organization.organizationRole === OrganizationRole.ADMIN
 
-  const isProfessorInCourse = profile?.courses.some(
-    (course) =>
-      course.role === Role.PROFESSOR && course.course.id === Number(cid),
-  )
+  useEffect(() => {
+    if (profile && organization) {
+      const isProfessorInCourse = profile?.courses.some(
+        (course) =>
+          course.role === Role.PROFESSOR && course.course.id === Number(cid),
+      )
 
-  if (!isAdmin && !isProfessorInCourse) {
+      setIsAuthorized(isAdmin || isProfessorInCourse)
+      setIsLoading(false)
+    }
+  }, [profile, organization, cid, isAdmin])
+
+  if (isLoading) {
+    return (
+      <>
+        <Spin
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '100vh',
+          }}
+        />
+      </>
+    )
+  }
+
+  if (!isAuthorized) {
     return <DefaultErrorPage statusCode={401} />
   }
 
@@ -261,7 +287,7 @@ export default function Edit(): ReactElement {
                   </Col>
                   <Col xs={{ span: 24 }} sm={{ span: 12 }}>
                     {profile.organization.organizationRole ===
-                      OrganizationRole.ADMIN && (
+                      OrganizationRole.ADMIN && professors ? (
                       <Form.Item
                         label="Professors"
                         name="professorsUserId"
@@ -278,6 +304,8 @@ export default function Edit(): ReactElement {
                           ))}
                         </Select>
                       </Form.Item>
+                    ) : (
+                      <></>
                     )}
                   </Col>
                 </Row>
@@ -342,7 +370,7 @@ export default function Edit(): ReactElement {
     )
   }
 
-  return profile && (isAdmin || isProfessorInCourse) && organization ? (
+  return profile && isAuthorized && organization ? (
     <>
       <Head>
         <title>{organization?.name} | Admin Panel</title>

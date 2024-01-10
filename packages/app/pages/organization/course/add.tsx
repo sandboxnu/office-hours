@@ -11,7 +11,7 @@ import {
   message,
 } from 'antd'
 import Head from 'next/head'
-import { ReactElement } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import NavBar from '../../../components/Nav/NavBar'
 import { StandardPageContainer } from '../../../components/common/PageContainer'
 import { useSemester } from '../../../hooks/useSemester'
@@ -25,14 +25,41 @@ import useSWR from 'swr'
 
 export default function Add(): ReactElement {
   const profile = useProfile()
-  const router = useRouter()
   const { organization } = useOrganization(profile?.organization.orgId)
-  const isAdmin =
-    profile?.organization.organizationRole === OrganizationRole.ADMIN
-  const isProfessor =
-    profile?.organization.organizationRole === OrganizationRole.PROFESSOR
+  const router = useRouter()
 
-  if (profile && !isAdmin && !isProfessor) {
+  const [isAuthorized, setIsAuthorized] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  const isAdmin =
+    profile && profile.organization.organizationRole === OrganizationRole.ADMIN
+
+  useEffect(() => {
+    if (profile && organization) {
+      const isProfessor =
+        profile?.organization.organizationRole === OrganizationRole.PROFESSOR
+
+      setIsAuthorized(isAdmin || isProfessor)
+      setIsLoading(false)
+    }
+  }, [profile, organization, isAdmin])
+
+  if (isLoading) {
+    return (
+      <>
+        <Spin
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '100vh',
+          }}
+        />
+      </>
+    )
+  }
+
+  if (!isAuthorized) {
     return <DefaultErrorPage statusCode={401} />
   }
 
@@ -84,10 +111,7 @@ export default function Add(): ReactElement {
         })
     }
 
-    return semesters &&
-      profile &&
-      (profile.organization.organizationRole !== OrganizationRole.ADMIN ||
-        professors) ? (
+    return semesters ? (
       <>
         <Row>
           <Col xs={{ span: 24 }} sm={{ span: 24 }}>
@@ -167,7 +191,7 @@ export default function Add(): ReactElement {
 
                   <Col xs={{ span: 24 }} sm={{ span: 12 }}>
                     {profile.organization.organizationRole ===
-                      OrganizationRole.ADMIN && (
+                      OrganizationRole.ADMIN && professors ? (
                       <Form.Item
                         label="Professors"
                         name="professorsUserId"
@@ -184,6 +208,8 @@ export default function Add(): ReactElement {
                           ))}
                         </Select>
                       </Form.Item>
+                    ) : (
+                      <></>
                     )}
                   </Col>
                 </Row>
@@ -212,7 +238,7 @@ export default function Add(): ReactElement {
       />
     )
   }
-  return profile && (isAdmin || isProfessor) && organization ? (
+  return profile && isAuthorized && organization ? (
     <>
       <Head>
         <title>{organization?.name} | Edit Course</title>
