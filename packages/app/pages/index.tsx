@@ -19,8 +19,8 @@ export default function Home(): ReactElement {
     }
   }, [data, error])
 
-  // only show landing page if not logged in
-  if (error?.response?.status === 401) {
+  // only show landing page if there was an error (not logged in, not authorized, api down, etc.)
+  if (error) {
     return (
       <div className="ml-auto mr-auto max-w-[500px] pt-10 text-center">
         <div className="flex flex-col items-center justify-center">
