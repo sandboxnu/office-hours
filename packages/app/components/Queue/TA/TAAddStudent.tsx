@@ -41,6 +41,11 @@ interface EditQueueModalProps {
   visible: boolean
   onClose: () => void
 }
+
+AddStudentsModal.propTypes = {
+  value: PropTypes.any.isRequired,
+}
+
 export function AddStudentsModal({
   queueId,
   visible,
@@ -216,7 +221,7 @@ export function AddStudentsModal({
           </AntdSelect>
         </>
       ) : (
-        <></>
+        <p>There are No Question Types</p>
       )}
       <OverrideCollapse>
         <Collapse defaultActiveKey={[1]} ghost expandIconPosition="right">
@@ -292,7 +297,4 @@ export function AddStudentsModal({
       </OverrideCollapse>
     </Modal>
   )
-}
-AddStudentsModal.propTypes = {
-  value: PropTypes.any.isRequired,
 }

@@ -64,6 +64,11 @@ interface QuestionFormProps {
   cancel: () => void
 }
 
+QuestionForm.propTypes = {
+  value: PropTypes.any.isRequired,
+  onClose: PropTypes.func.isRequired,
+}
+
 export default function QuestionForm({
   visible,
   question,
@@ -263,7 +268,7 @@ export default function QuestionForm({
             </Select>
           </>
         ) : (
-          <></>
+          <p>Loading...</p>
         )}
         <QuestionText>What do you need help with?</QuestionText>
         <Input.TextArea
@@ -306,9 +311,4 @@ export default function QuestionForm({
       </Container>
     </Modal>
   )
-}
-
-QuestionForm.propTypes = {
-  value: PropTypes.any.isRequired,
-  onClose: PropTypes.func.isRequired,
 }

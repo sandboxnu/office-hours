@@ -473,7 +473,6 @@ export class QuestionController {
     @Param('c') course: number,
     @Body() newQuestionType: AddQuestionTypeParams,
   ): Promise<void> {
-    console.log(newQuestionType);
     const questionType = await QuestionTypeModel.findOne({
       where: {
         cid: course,
@@ -509,8 +508,8 @@ export class QuestionController {
       return;
     }
     res.status(200).send(questions);
-    return questions;
   }
+
   @Delete(':c/:questionType')
   async deleteQuestionType(
     @Res() res: Response,
