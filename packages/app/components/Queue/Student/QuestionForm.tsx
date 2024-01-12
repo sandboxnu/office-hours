@@ -268,7 +268,7 @@ export default function QuestionForm({
             </Select>
           </>
         ) : (
-          <p>Loading...</p>
+          <p>No Question types found</p>
         )}
         <QuestionText>What do you need help with?</QuestionText>
         <Input.TextArea

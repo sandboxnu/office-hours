@@ -221,7 +221,10 @@ export function AddStudentsModal({
           </AntdSelect>
         </>
       ) : (
-        <p>There are No Question Types</p>
+        <p>
+          There are no question types. Add them in &apos;Edit Queue
+          Details&apos;
+        </p>
       )}
       <OverrideCollapse>
         <Collapse defaultActiveKey={[1]} ghost expandIconPosition="right">
