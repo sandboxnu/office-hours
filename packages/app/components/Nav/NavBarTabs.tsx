@@ -1,15 +1,15 @@
-import React, { ReactElement } from "react";
-import styled from "styled-components";
-import { Menu } from "antd";
-import { MenuProps } from "antd/lib/menu";
-import Link from "next/link";
-import { QueuePartial } from "@koh/common";
+import React, { ReactElement } from 'react'
+import styled from 'styled-components'
+import { Menu } from 'antd'
+import { MenuProps } from 'antd/lib/menu'
+import Link from 'next/link'
+import { QueuePartial } from '@koh/common'
 
-const { SubMenu } = Menu;
+const { SubMenu } = Menu
 
 const HorizontalMenu = styled(Menu)<MenuProps>`
-  ${(props) => (props.mode === "horizontal" ? "border-bottom: none" : "")}
-`;
+  ${(props) => (props.mode === 'horizontal' ? 'border-bottom: none' : '')}
+`
 
 const QueueMenu = styled(SubMenu)`
   @media (min-width: 650px) {
@@ -26,7 +26,7 @@ const QueueMenu = styled(SubMenu)`
   &&& .ant-menu-submenu-title {
     padding: 10px 50px !important;
   }
-`;
+`
 
 const MenuItem = styled(Menu.Item)`
   @media (min-width: 650px) {
@@ -39,31 +39,32 @@ const MenuItem = styled(Menu.Item)`
     left: 0px;
     right: 0px;
   }
-`;
+`
 
 const QueueMenuItem = styled(Menu.Item)`
   z-index: 1;
   background: #ffffff;
-`;
+`
 
-export type NavBarTabsItem = NavBarGeneralTabItem | NavBarQueueTabItem;
+export type NavBarTabsItem = NavBarGeneralTabItem | NavBarQueueTabItem
 
 interface NavBarGeneralTabItem {
-  href: string;
-  as: string;
-  text: string;
+  href: string
+  as: string
+  text: string
+  className?: string // if you want to add any tailwind styles to the navbar link
 }
 
 interface NavBarQueueTabItem {
-  text: string;
-  queues: QueuePartial[];
-  courseId: number;
+  text: string
+  queues: QueuePartial[]
+  courseId: number
 }
 
 interface NavBarTabsProps {
-  currentHref: string;
-  tabs: NavBarTabsItem[];
-  horizontal?: boolean;
+  currentHref: string
+  tabs: NavBarTabsItem[]
+  horizontal?: boolean
 }
 
 function createQueueTab(queueTabItem: NavBarQueueTabItem) {
@@ -83,17 +84,17 @@ function createQueueTab(queueTabItem: NavBarQueueTabItem) {
         </QueueMenuItem>
       ))}
     </QueueMenu>
-  );
+  )
 }
 
 function createGeneralTab(tabItem: NavBarGeneralTabItem) {
   return (
     <MenuItem key={tabItem.href}>
       <Link href={tabItem.href} as={tabItem.as}>
-        <a>{tabItem.text}</a>
+        <a className={tabItem.className}>{tabItem.text}</a>
       </Link>
     </MenuItem>
-  );
+  )
 }
 
 export default function NavBarTabs({
@@ -104,13 +105,13 @@ export default function NavBarTabs({
   return (
     <HorizontalMenu
       selectedKeys={[currentHref]}
-      mode={horizontal ? "horizontal" : "vertical"}
+      mode={horizontal ? 'horizontal' : 'vertical'}
     >
       {tabs.map((tab) =>
-        tab.text !== "Queue"
+        tab.text !== 'Queue'
           ? createGeneralTab(tab as NavBarGeneralTabItem)
-          : createQueueTab(tab as NavBarQueueTabItem)
+          : createQueueTab(tab as NavBarQueueTabItem),
       )}
     </HorizontalMenu>
-  );
+  )
 }
