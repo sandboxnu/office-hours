@@ -164,6 +164,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
       href: '/course/[cid]/today',
       as: `/course/${courseId}/today`,
       text: course?.name,
+      className: 'font-bold',
     },
   ]
 
