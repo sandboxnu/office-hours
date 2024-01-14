@@ -1,11 +1,11 @@
 import { API } from '@koh/api-client'
 import { Heatmap, QueuePartial, Role } from '@koh/common'
-import { Col, Row, Spin } from 'antd'
+import { Col, Row, Spin, Button } from 'antd'
 import { chunk, mean } from 'lodash'
 import moment from 'moment'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import React, { ReactElement, useEffect } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { StandardPageContainer } from '../../../components/common/PageContainer'
 import NavBar from '../../../components/Nav/NavBar'
@@ -40,6 +40,16 @@ const RoleColorSpan = styled.span`
   font-weight: bold;
 `
 
+export const CreateQueueButton = styled(Button)`
+  background: #1890ff;
+  border-radius: 6px;
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+  margin: auto;
+  padding: 0.25em 1em;
+`
+
 function roleToString(role: Role) {
   switch (role) {
     case Role.TA:
@@ -72,6 +82,7 @@ export default function Today(): ReactElement {
   const { cid } = router.query
   const role = useRoleInCourse(Number(cid))
   const { course, mutateCourse } = useCourse(Number(cid))
+  const [createQueueModalVisible, setCreateQueueModalVisible] = useState(false)
 
   useEffect(() => {
     setOpen(true)
@@ -118,8 +129,11 @@ export default function Today(): ReactElement {
           <Row gutter={64}>
             <TodayCol md={12} xs={24}>
               <Row justify="space-between">
-                <Title>Current Office Hours</Title>
-                <TodayPageCheckinButton />
+                <Title>{course?.name} Help Centre</Title>
+                <TodayPageCheckinButton
+                  createQueueModalVisible={createQueueModalVisible}
+                  setCreateQueueModalVisible={setCreateQueueModalVisible}
+                />
               </Row>
               <Row>
                 <div>
@@ -150,7 +164,13 @@ export default function Today(): ReactElement {
               )}
               {!course && <QueueCardSkeleton />}
               <AsyncQuestionCard></AsyncQuestionCard>
-
+              <Row>
+                <CreateQueueButton
+                  onClick={() => setCreateQueueModalVisible(true)}
+                >
+                  + Create Queue
+                </CreateQueueButton>
+              </Row>
               {
                 // This only works with UTC offsets in the form N:00, to help with other offsets, the size of the array might have to change to a size of 24*7*4 (for every 15 min interval)
                 course && course.heatmap && (
