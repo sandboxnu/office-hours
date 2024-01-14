@@ -27,8 +27,14 @@ const Container = styled.div`
 
 const Title = styled.div`
   font-weight: 500;
-  font-size: 30px;
+  font-size: 1.5em; /* Mobile devices */
   color: #212934;
+  white-space: nowrap;
+  overflow: hidden;
+
+  @media (min-width: 768px) {
+    font-size: 2em; /* Desktop devices */
+  }
 `
 
 const TodayCol = styled(Col)`
