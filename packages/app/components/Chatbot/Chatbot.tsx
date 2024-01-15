@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Input, Button, Card, Avatar, List, Spin } from 'antd'
+import { Input, Button, Card, Avatar, Spin } from 'antd'
 import styled from 'styled-components'
 import { API } from '@koh/api-client'
 import { UserOutlined, RobotOutlined } from '@ant-design/icons'
 import router from 'next/router'
 import { useProfile } from '../../hooks/useProfile'
-import { ThumbsDown, ThumbsUp } from 'lucide-react'
 import { Feedback } from './components/Feedback'
 
 const ChatbotContainer = styled.div`
@@ -46,26 +45,12 @@ export const ChatbotComponent: React.FC = () => {
   const [interactionId, setInteractionId] = useState<number | null>(null)
   const [preDeterminedQuestions, setPreDeterminedQuestions] = useState<
     PreDeterminedQuestion[]
-  >([
-    {
-      question: 'Can each table have have multiple foreigns keys?',
-      answer: 'Yes, each table can have multiple foreign keys.',
-    },
-    {
-      question: 'What is cardinality, explain related information too',
-      answer:
-        'Cardinality refers to the maximum number of relationship instances that an entity can have in a relationship. It can be one-to-one (1:1), one-to-many (1:* or 1:N), or many-to-many (*:* or N:M) depending on the relationship type.',
-    },
-    {
-      question: 'When and where is the final?',
-      answer: 'December 16, 2023 8:30AM	in COM 201',
-    },
-  ])
+  >(null)
 
   const [messages, setMessages] = useState<Message[]>([
     {
       type: 'apiMessage',
-      message: 'Hello, how can I assist you?',
+      message: 'Hello, how can I assist you? I can help with anything course related.',
     },
   ])
   const [isOpen, setIsOpen] = useState(false)
@@ -247,10 +232,9 @@ export const ChatbotComponent: React.FC = () => {
                                   {sourceDocument.parts &&
                                     sourceDocument.parts.map((part) => (
                                       <div
-                                        className={`flex flex-grow items-center justify-center rounded-lg bg-blue-100 px-3 py-2 font-semibold transition ${
-                                          part.source &&
+                                        className={`flex flex-grow items-center justify-center rounded-lg bg-blue-100 px-3 py-2 font-semibold transition ${part.source &&
                                           'cursor-pointer hover:bg-blue-800 hover:text-white'
-                                        }`}
+                                          }`}
                                         key={`${sourceDocument.name}-${part.pageNumber}`}
                                         onClick={() => {
                                           if (part.source) {

@@ -78,6 +78,7 @@ export class ChatbotService {
     questionText: string,
     pageSize: number,
     currentPage: number,
+    cid: number,
   ): Promise<{
     chatQuestions: ChatQuestion[];
     total: number;
@@ -89,8 +90,9 @@ export class ChatbotService {
       .leftJoinAndSelect('q.sourceDocuments', 's')
       .innerJoinAndSelect('q.interaction', 'i')
       .innerJoinAndSelect('i.user', 'u')
-      .where('q.questionText like :questionText', {
+      .where('q.questionText like :questionText and i.course= :cid', {
         questionText: `%${questionText}%`,
+        cid: `${cid}`
       })
       .skip(skip)
       .take(limit)
