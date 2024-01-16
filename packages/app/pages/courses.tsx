@@ -4,7 +4,7 @@ import { StandardPageContainer } from '../components/common/PageContainer'
 import { Button, Card, Empty, Spin, Tag } from 'antd'
 import Meta from 'antd/lib/card/Meta'
 import { useProfile } from '../hooks/useProfile'
-import { User } from '@koh/common'
+import { OrganizationRole, Role, User } from '@koh/common'
 import styled from 'styled-components'
 import NavBar from '../components/Nav/NavBar'
 
@@ -29,6 +29,12 @@ export default function Courses(): ReactElement {
         <NavBar />
         <div style={{ marginTop: 20 }}>
           <h1>My Courses</h1>
+          {profile.organization.organizationRole ===
+            OrganizationRole.PROFESSOR && (
+            <Button type="primary" href={`organization/course/add`}>
+              Add New Course
+            </Button>
+          )}
 
           {profile?.courses.length === 0 ? (
             <Empty description="You are not enrolled in any course" />
@@ -74,6 +80,16 @@ export default function Courses(): ReactElement {
                   >
                     Course page
                   </Button>
+                  {course.role === Role.PROFESSOR && (
+                    <Button
+                      type="primary"
+                      block
+                      style={{ marginTop: 15 }}
+                      href={`organization/course/${course.course.id}/edit`}
+                    >
+                      Edit Course
+                    </Button>
+                  )}
                 </Card>
               ))}
             </CoursesSection>

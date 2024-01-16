@@ -33,7 +33,7 @@ Object {
 `;
 
 exports[`OrganizationService getOrganizationCourse should return organization course 1`] = `
-OrganizationCourseModel {
+Object {
   "course": CourseModel {
     "asyncQuestionDisplayTypes": Array [],
     "coordinator_email": null,
@@ -53,6 +53,7 @@ OrganizationCourseModel {
   "courseId": 1,
   "id": 1,
   "organizationId": 1,
+  "profIds": Array [],
 }
 `;
 

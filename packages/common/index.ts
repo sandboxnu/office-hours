@@ -130,6 +130,21 @@ export type UserCourse = {
   role: Role
 }
 
+export const COURSE_TIMEZONES = [
+  'America/New_York',
+  'America/Los_Angeles',
+  'America/Chicago',
+  'America/Denver',
+  'America/Phoenix',
+  'America/Anchorage',
+  'America/Honolulu',
+  'Europe/London',
+  'Europe/Paris',
+  'Asia/Tokyo',
+  'Asia/Shanghai',
+  'Australia/Sydney',
+]
+
 /**
  * Represents one of three possible user roles in a course.
  */
@@ -768,6 +783,14 @@ export class GetCourseResponse {
 
   asyncQuestionDisplayTypes?: string[]
 
+  timezone?: string
+
+  semesterId?: number
+
+  sectionGroupName?: string
+
+  enabled?: boolean
+
   @Type(() => OrganizationPartial)
   organizationCourse?: OrganizationPartial
   courseInviteCode!: string
@@ -860,7 +883,7 @@ export class UpdateOrganizationCourseDetailsParams {
 
   @IsString()
   @IsOptional()
-  coordinatorEmail?: string
+  coordinator_email?: string
 
   @IsString()
   @IsOptional()
@@ -877,6 +900,10 @@ export class UpdateOrganizationCourseDetailsParams {
   @IsInt()
   @IsOptional()
   semesterId?: number
+
+  @IsArray()
+  @IsOptional()
+  profIds?: Array<number>
 }
 
 export class ChatBotQuestionParams {
@@ -1134,6 +1161,8 @@ export class OrganizationCourseResponse {
   courseId?: number
 
   course?: GetCourseResponse
+
+  profIds?: number[]
 }
 
 export class OrganizationStatsResponse {
