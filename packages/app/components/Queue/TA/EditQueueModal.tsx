@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import Modal from 'antd/lib/modal/Modal'
-import { Switch, Input, Form, Button, message } from 'antd'
+import { Switch, Input, Form, Button, message, Checkbox } from 'antd'
 import styled from 'styled-components'
 import { API } from '@koh/api-client'
 import { useQueue } from '../../../hooks/useQueue'
@@ -11,6 +11,7 @@ import { useRouter } from 'next/router'
 import { useCourse } from '../../../hooks/useCourse'
 import { QuestionType } from '../QueueListSharedComponents'
 import { SketchPicker } from 'react-color'
+import Icon, { BgColorsOutlined } from '@ant-design/icons'
 
 const NotesInput = styled(Input.TextArea)`
   border-radius: 6px;
@@ -40,10 +41,14 @@ export function EditQueueModal({
   const [currentZoomLink, setCurrentZoomLink] = useState(
     course.course?.zoomLink,
   )
-  const [color, setColor] = useState('#fff')
+  const [color, setColor] = useState(
+    '#' + Math.floor(Math.random() * 16777215).toString(16),
+  )
+  const [pickerVisible, setPickerVisible] = useState(false)
   const [isInputEmpty, setIsInputEmpty] = useState(true)
 
   const handleColorChange = (color) => {
+    console.log(color)
     setColor(color.hex)
   }
   const [zoomLink, setZoomLink] = useState('')
@@ -131,7 +136,7 @@ export function EditQueueModal({
             name="allowQuestions"
             valuePropName="checked"
           >
-            <Switch data-cy="allow-questions-toggle" />
+            <Checkbox />
           </Form.Item>
           <h4>Current Question Types: (click to delete)</h4>
           {questionsTypeState.length > 0 ? (
@@ -152,10 +157,31 @@ export function EditQueueModal({
               placeholder="Enter New Question type name"
               value={questionTypeAddState}
               onChange={onAddChange}
+              maxLength={15}
               style={{ marginBottom: '10px' }}
             />
-            <SketchPicker color={color} onChangeComplete={handleColorChange} />
-            <Button onClick={addQuestionType}> Add </Button>
+            <Button onClick={() => setPickerVisible(!pickerVisible)}>
+              <BgColorsOutlined />
+            </Button>
+
+            {pickerVisible && (
+              <SketchPicker
+                color={color}
+                onChangeComplete={handleColorChange}
+              />
+            )}
+
+            <Button
+              onClick={() => {
+                setPickerVisible(false)
+                const randomColor =
+                  '#' + Math.floor(Math.random() * 16777215).toString(16)
+                handleColorChange({ hex: randomColor })
+                addQuestionType()
+              }}
+            >
+              Add
+            </Button>
           </Form.Item>
           <h4 style={{ marginTop: '20px' }}>
             Current Zoom link:{' '}

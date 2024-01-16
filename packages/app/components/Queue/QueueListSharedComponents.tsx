@@ -319,7 +319,8 @@ export function QuestionType({
         backgroundColor: typeColor,
         borderRadius: '15px',
         padding: '0px 7px',
-        marginTop: '2px',
+        //marginTop: '2px',
+        margin: '2px',
         display: 'inline-block',
         cursor: 'pointer',
       }}
