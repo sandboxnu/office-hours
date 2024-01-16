@@ -5,8 +5,8 @@ import {
   PhoneOutlined,
   QuestionOutlined,
   UndoOutlined,
-} from "@ant-design/icons";
-import { API } from "@koh/api-client";
+} from '@ant-design/icons'
+import { API } from '@koh/api-client'
 import {
   AlertType,
   ClosedQuestionStatus,
@@ -15,12 +15,12 @@ import {
   Question,
   QuestionStatus,
   RephraseQuestionPayload,
-} from "@koh/common";
-import { message, Popconfirm, Tooltip } from "antd";
-import React, { ReactElement, useCallback } from "react";
+} from '@koh/common'
+import { message, Popconfirm, Tooltip } from 'antd'
+import React, { ReactElement, useCallback } from 'react'
 //import { useDefaultMessage } from "../../../hooks/useDefaultMessage";
-import { useQuestions } from "../../../hooks/useQuestions";
-import { useTAInQueueInfo } from "../../../hooks/useTAInQueueInfo";
+import { useQuestions } from '../../../hooks/useQuestions'
+import { useTAInQueueInfo } from '../../../hooks/useTAInQueueInfo'
 import {
   BannerDangerButton,
   BannerOrangeButton,
@@ -28,13 +28,13 @@ import {
   CantFindButton,
   FinishHelpingButton,
   RequeueButton,
-} from "../Banner";
+} from '../Banner'
 //import { useTeams } from "../../../hooks/useTeams";
-import { useHotkeys } from "react-hotkeys-hook";
-import { useCourse } from "../../../hooks/useCourse";
+import { useHotkeys } from 'react-hotkeys-hook'
+import { useCourse } from '../../../hooks/useCourse'
 
 const PRORITY_QUEUED_MESSAGE_TEXT =
-  "This student has been temporarily removed from the queue. They must select to rejoin the queue and will then be placed in the Priority Queue.";
+  'This student has been temporarily removed from the queue. They must select to rejoin the queue and will then be placed at the top of the queue'
 
 export default function TAQueueDetailButtons({
   courseId,
@@ -42,23 +42,23 @@ export default function TAQueueDetailButtons({
   question,
   hasUnresolvedRephraseAlert,
 }: {
-  courseId: number;
-  queueId: number;
-  question: Question;
-  hasUnresolvedRephraseAlert: boolean;
+  courseId: number
+  queueId: number
+  question: Question
+  hasUnresolvedRephraseAlert: boolean
 }): ReactElement {
   //const defaultMessage = useDefaultMessage();
-  const { course } = useCourse(courseId);
-  const { mutateQuestions } = useQuestions(queueId);
+  const { course } = useCourse(courseId)
+  const { mutateQuestions } = useQuestions(queueId)
   // const { queue }= useQueue(queueId);
   // eslint-disable-next-line prefer-const
   // let timerCheckout=useRef(null);
   const changeStatus = useCallback(
     async (status: QuestionStatus) => {
-      await API.questions.update(question.id, { status });
-      mutateQuestions();
+      await API.questions.update(question.id, { status })
+      mutateQuestions()
       if (status === ClosedQuestionStatus.Resolved) {
-        message.warning("Your Question is ended");
+        message.warning('Your Question is ended')
       }
       // if (status===LimboQuestionStatus.CantFind||status===ClosedQuestionStatus.Resolved){
       // timerCheckout.current = setTimeout(() => {
@@ -67,9 +67,9 @@ export default function TAQueueDetailButtons({
       //  }, 1000*20);
       // }
     },
-    [question.id, mutateQuestions]
-  );
-  const { isCheckedIn, isHelping } = useTAInQueueInfo(queueId);
+    [question.id, mutateQuestions],
+  )
+  const { isCheckedIn, isHelping } = useTAInQueueInfo(queueId)
 
   // const checkOutTA = async ()=>{
   //     // await API.taStatus.checkOut(courseId, queue?.room);
@@ -87,52 +87,55 @@ export default function TAQueueDetailButtons({
       queueId,
       questionId: question.id,
       courseId,
-    };
+    }
     try {
       await API.alerts.create({
         alertType: AlertType.REPHRASE_QUESTION,
         courseId,
         payload,
         targetUserId: question.creator.id,
-      });
-      await mutateQuestions();
-      message.success("Successfully asked student to rephrase their question.");
+      })
+      await mutateQuestions()
+      message.success('Successfully asked student to rephrase their question.')
     } catch (e) {
       //If the ta creates an alert that already exists the error is caught and nothing happens
     }
-  };
+  }
 
   const helpStudent = () => {
-    changeStatus(OpenQuestionStatus.Helping);
+    changeStatus(OpenQuestionStatus.Helping)
     //delete inactive timer
     // editing: shouldn't log students out after 15 minutes
     // reset timer if help another student
 
     if (course.questionTimer) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars, prefer-const
-      let questionTimer = setTimeout(() => {
-        changeStatus(ClosedQuestionStatus.Resolved);
-      }, course.questionTimer * 60 * 1000);
+      let questionTimer = setTimeout(
+        () => {
+          changeStatus(ClosedQuestionStatus.Resolved)
+        },
+        course.questionTimer * 60 * 1000,
+      )
     }
-  };
+  }
   const deleteQuestion = async () => {
     await changeStatus(
       question.status === OpenQuestionStatus.Drafting
         ? ClosedQuestionStatus.DeletedDraft
-        : LimboQuestionStatus.TADeleted
-    );
-    await API.questions.notify(question.id);
-  };
+        : LimboQuestionStatus.TADeleted,
+    )
+    await API.questions.notify(question.id)
+  }
 
   useHotkeys(
-    "shift+d",
+    'shift+d',
     () => {
       if (isCheckedIn) {
-        deleteQuestion();
+        deleteQuestion()
       }
     },
-    [question]
-  );
+    [question],
+  )
 
   if (question.status === OpenQuestionStatus.Helping) {
     return (
@@ -142,8 +145,8 @@ export default function TAQueueDetailButtons({
           okText="Yes"
           cancelText="No"
           onConfirm={async () => {
-            message.success(PRORITY_QUEUED_MESSAGE_TEXT, 2);
-            await changeStatus(LimboQuestionStatus.ReQueueing);
+            message.success(PRORITY_QUEUED_MESSAGE_TEXT, 2)
+            await changeStatus(LimboQuestionStatus.ReQueueing)
           }}
         >
           <Tooltip title="Requeue Student">
@@ -158,9 +161,9 @@ export default function TAQueueDetailButtons({
           okText="Yes"
           cancelText="No"
           onConfirm={async () => {
-            message.success(PRORITY_QUEUED_MESSAGE_TEXT, 2);
-            await changeStatus(LimboQuestionStatus.CantFind);
-            await API.questions.notify(question.id);
+            message.success(PRORITY_QUEUED_MESSAGE_TEXT, 2)
+            await changeStatus(LimboQuestionStatus.CantFind)
+            await API.questions.notify(question.id)
           }}
         >
           <Tooltip title="Can't Find">
@@ -176,43 +179,43 @@ export default function TAQueueDetailButtons({
             icon={<CheckOutlined />}
             onClick={() => {
               // setCheckOutTimer()
-              changeStatus(ClosedQuestionStatus.Resolved);
+              changeStatus(ClosedQuestionStatus.Resolved)
             }}
             data-cy="finish-helping-button"
           />
         </Tooltip>
       </>
-    );
+    )
   } else {
     const [canHelp, helpTooltip] = ((): [boolean, string] => {
       if (!isCheckedIn) {
-        return [false, "You must check in to help students!"];
+        return [false, 'You must check in to help students!']
       } else if (isHelping) {
-        return [false, "You are already helping a student"];
+        return [false, 'You are already helping a student']
       } else {
-        return [true, "Help Student"];
+        return [true, 'Help Student']
       }
-    })();
+    })()
     const [canRephrase, rephraseTooltip] = ((): [boolean, string] => {
       if (!isCheckedIn) {
         return [
           false,
-          "You must check in to ask this student to rephrase their question",
-        ];
+          'You must check in to ask this student to rephrase their question',
+        ]
       } else if (hasUnresolvedRephraseAlert) {
         return [
           false,
-          "The student has already been asked to rephrase their question",
-        ];
+          'The student has already been asked to rephrase their question',
+        ]
       } else if (question.status === OpenQuestionStatus.Drafting) {
         return [
           false,
-          "The student must finish drafting before they can be asked to rephrase their question",
-        ];
+          'The student must finish drafting before they can be asked to rephrase their question',
+        ]
       } else {
-        return [true, "Ask the student to add more detail to their question"];
+        return [true, 'Ask the student to add more detail to their question']
       }
-    })();
+    })()
     return (
       <>
         <Popconfirm
@@ -221,14 +224,14 @@ export default function TAQueueDetailButtons({
           okText="Yes"
           cancelText="No"
           onConfirm={async () => {
-            await deleteQuestion();
+            await deleteQuestion()
           }}
         >
           <Tooltip
             title={
               isCheckedIn
-                ? "Remove From Queue"
-                : "You must check in to remove students from the queue"
+                ? 'Remove From Queue'
+                : 'You must check in to remove students from the queue'
             }
           >
             <span>
@@ -261,7 +264,7 @@ export default function TAQueueDetailButtons({
               onClick={() => {
                 // message.success("timer cleared")
                 // clearTimeout(timerCheckout.current);
-                helpStudent();
+                helpStudent()
               }}
               disabled={!canHelp}
               data-cy="help-student"
@@ -269,6 +272,6 @@ export default function TAQueueDetailButtons({
           </span>
         </Tooltip>
       </>
-    );
+    )
   }
 }
