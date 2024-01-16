@@ -27,11 +27,17 @@ export default function Courses(): ReactElement {
         </Head>
 
         <NavBar />
-        <div style={{ marginTop: 20 }}>
+        <div style={{ marginTop: 20, position: 'relative' }}>
           <h1>My Courses</h1>
-          {profile.organization.organizationRole ===
-            OrganizationRole.PROFESSOR && (
-            <Button type="primary" href={`organization/course/add`}>
+          {(profile.organization.organizationRole ===
+            OrganizationRole.PROFESSOR ||
+            profile.organization.organizationRole ===
+              OrganizationRole.ADMIN) && (
+            <Button
+              type="primary"
+              href={`organization/course/add`}
+              style={{ position: 'absolute', top: 0, right: 0 }}
+            >
               Add New Course
             </Button>
           )}
