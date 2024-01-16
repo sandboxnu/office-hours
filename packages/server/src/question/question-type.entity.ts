@@ -18,7 +18,7 @@ export class QuestionTypeModel extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   name: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'text', nullable: true, default: '#000000' })
   color: string;
 
   @ManyToMany(() => QuestionModel, (question) => question.questionTypes)
