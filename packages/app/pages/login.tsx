@@ -142,12 +142,12 @@ export default function Login(): ReactElement {
       </Head>
       <Container>
         <Card className="mx-auto max-w-md sm:px-2 md:px-6">
-          <h2 className="text-left">Hey, hello 👋</h2>
+          <h2 className="text-left">Login</h2>
 
           {!loginMenu && (
             <>
               <p className="text-left text-stone-400">
-                Select your organization to log in.
+                Select your organization.
               </p>
 
               <Select
