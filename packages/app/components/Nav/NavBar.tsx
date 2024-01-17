@@ -131,6 +131,11 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
 
   const globalTabs: NavBarTabsItem[] = [
     {
+      href: '/courses',
+      as: `/courses`,
+      text: 'My Courses',
+    },
+    {
       href: '/organization',
       as: `/organization`,
       text: 'My Organization',
