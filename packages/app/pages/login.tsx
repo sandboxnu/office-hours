@@ -141,156 +141,143 @@ export default function Login(): ReactElement {
         <title>Login | HelpMe</title>
       </Head>
       <Container>
-        <Card className="sm:px-2 md:px-6">
-          <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-            <Col xs={{ span: 24 }} sm={{ span: 11 }}>
-              <h2 className="text-left">Hey, hello 👋</h2>
+        <Card className="mx-auto max-w-md sm:px-2 md:px-6">
+          <h2 className="text-left">Hey, hello 👋</h2>
 
-              {!loginMenu && (
-                <>
-                  <p className="text-left text-stone-400">
-                    Select your organization to log in.
-                  </p>
+          {!loginMenu && (
+            <>
+              <p className="text-left text-stone-400">
+                Select your organization to log in.
+              </p>
 
-                  <Select
-                    className="mt-2 w-full text-left"
-                    placeholder="Available Organizations"
-                    options={organizations.map((organization) => {
-                      return {
-                        label: organization.name,
-                        value: organization.id,
-                      }
-                    })}
-                    onChange={(value) => {
-                      showLoginMenu(value)
-                    }}
+              <Select
+                className="mt-2 w-full text-left"
+                placeholder="Available Organizations"
+                options={organizations.map((organization) => {
+                  return {
+                    label: organization.name,
+                    value: organization.id,
+                  }
+                })}
+                onChange={(value) => {
+                  showLoginMenu(value)
+                }}
+              />
+            </>
+          )}
+
+          {loginMenu && (
+            <>
+              <Button
+                className="flex w-full items-center justify-center gap-2 rounded-lg border px-5 py-5 text-left"
+                onClick={() => setLoginMenu(false)}
+              >
+                <LeftOutlined />
+                <span className="font-semibold"> Go Back</span>
+              </Button>
+
+              {organization && organization.googleAuthEnabled && (
+                <Button
+                  className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg border px-5 py-5 text-left"
+                  onClick={() => loginWithGoogle()}
+                >
+                  <img
+                    className="h-6 w-6"
+                    src="https://www.svgrepo.com/show/475656/google-color.svg"
+                    loading="lazy"
+                    alt="google logo"
                   />
-                </>
+                  <span className="font-semibold">Log in with Google</span>
+                </Button>
               )}
 
-              {loginMenu && (
-                <>
-                  <Button
-                    className="flex w-full items-center justify-center gap-2 rounded-lg border px-5 py-5 text-left"
-                    onClick={() => setLoginMenu(false)}
+              {organization && organization.ssoEnabled && (
+                <Button
+                  className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg border px-5 py-5 text-left"
+                  onClick={() => loginWithInstitution()}
+                >
+                  <span className="font-semibold">Log in with Institution</span>
+                </Button>
+              )}
+
+              {organization && organization.legacyAuthEnabled && (
+                <p className="my-5 font-medium uppercase text-stone-400">
+                  Or login with email
+                </p>
+              )}
+
+              {!accountActiveResponse && (
+                <Alert
+                  message="System Notice"
+                  description="Your account has been deactivated. Please contact your organization admin for more information."
+                  type="error"
+                  style={{ marginBottom: 20, textAlign: 'left' }}
+                />
+              )}
+              {organization && organization.legacyAuthEnabled && (
+                <Form
+                  name="normal_login"
+                  className="login-form"
+                  initialValues={{ remember: true }}
+                  onFinish={login}
+                >
+                  <Form.Item
+                    name="username"
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Please enter a valid username.',
+                      },
+                    ]}
                   >
-                    <LeftOutlined />
-                    <span className="font-semibold"> Go Back</span>
-                  </Button>
-
-                  {organization && organization.googleAuthEnabled && (
-                    <Button
-                      className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg border px-5 py-5 text-left"
-                      onClick={() => loginWithGoogle()}
-                    >
-                      <img
-                        className="h-6 w-6"
-                        src="https://www.svgrepo.com/show/475656/google-color.svg"
-                        loading="lazy"
-                        alt="google logo"
-                      />
-                      <span className="font-semibold">Log in with Google</span>
-                    </Button>
-                  )}
-
-                  {organization && organization.ssoEnabled && (
-                    <Button
-                      className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg border px-5 py-5 text-left"
-                      onClick={() => loginWithInstitution()}
-                    >
-                      <span className="font-semibold">
-                        Log in with Institution
-                      </span>
-                    </Button>
-                  )}
-
-                  {organization && organization.legacyAuthEnabled && (
-                    <p className="my-5 font-medium uppercase text-stone-400">
-                      Or login with email
-                    </p>
-                  )}
-
-                  {!accountActiveResponse && (
-                    <Alert
-                      message="System Notice"
-                      description="Your account has been deactivated. Please contact your organization admin for more information."
-                      type="error"
-                      style={{ marginBottom: 20, textAlign: 'left' }}
+                    <Input
+                      prefix={<UserOutlined className="site-form-item-icon" />}
+                      onChange={onUserNameChange}
+                      className="rounded-lg border px-2 py-2"
+                      placeholder="Username"
                     />
-                  )}
-                  {organization && organization.legacyAuthEnabled && (
-                    <Form
-                      name="normal_login"
-                      className="login-form"
-                      initialValues={{ remember: true }}
-                      onFinish={login}
+                  </Form.Item>
+
+                  <Form.Item
+                    name="password"
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Please enter a valid password.',
+                      },
+                    ]}
+                  >
+                    <Input
+                      prefix={<LockOutlined className="site-form-item-icon" />}
+                      onChange={onPassChange}
+                      type="password"
+                      className="rounded-lg border px-2 py-2"
+                      placeholder="Password"
+                    />
+                  </Form.Item>
+
+                  <Form.Item>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      className="h-auto w-full items-center justify-center rounded-lg border px-2 py-2 "
                     >
-                      <Form.Item
-                        name="username"
-                        rules={[
-                          {
-                            required: true,
-                            message: 'Please enter a valid username.',
-                          },
-                        ]}
-                      >
-                        <Input
-                          prefix={
-                            <UserOutlined className="site-form-item-icon" />
-                          }
-                          onChange={onUserNameChange}
-                          className="rounded-lg border px-2 py-2"
-                          placeholder="Username"
-                        />
-                      </Form.Item>
+                      <span className="font-semibold">Log in</span>
+                    </Button>
+                  </Form.Item>
 
-                      <Form.Item
-                        name="password"
-                        rules={[
-                          {
-                            required: true,
-                            message: 'Please enter a valid password.',
-                          },
-                        ]}
-                      >
-                        <Input
-                          prefix={
-                            <LockOutlined className="site-form-item-icon" />
-                          }
-                          onChange={onPassChange}
-                          type="password"
-                          className="rounded-lg border px-2 py-2"
-                          placeholder="Password"
-                        />
-                      </Form.Item>
-
-                      <Form.Item>
-                        <Button
-                          type="primary"
-                          htmlType="submit"
-                          className="h-auto w-full items-center justify-center rounded-lg border px-2 py-2 "
-                        >
-                          <span className="font-semibold">Log in</span>
-                        </Button>
-                      </Form.Item>
-
-                      <Form.Item>
-                        <a
-                          style={{ marginTop: '-10px' }}
-                          href="/forgetpassword/forget"
-                        >
-                          Forgot password
-                        </a>
-                      </Form.Item>
-                    </Form>
-                  )}
-                </>
+                  <Form.Item>
+                    <a
+                      style={{ marginTop: '-10px' }}
+                      href="/forgetpassword/forget"
+                    >
+                      Forgot password
+                    </a>
+                  </Form.Item>
+                </Form>
               )}
-            </Col>
-            <Col xs={{ span: 0 }} sm={{ span: 13 }}>
-              <img src="images/community.svg" style={{ height: '100%' }} />
-            </Col>
-          </Row>
+            </>
+          )}
         </Card>
       </Container>
     </>
