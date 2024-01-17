@@ -54,7 +54,6 @@ export default function StudentQueueCard({
           </Col>
         )}
         <Col flex="1 1">
-          <Text>{truncate(question.text, 150)}</Text>
           <Tooltip // only show tooltip if text is too long
             title={question.text.length > 110 ? question.text : ''}
             overlayStyle={{ maxWidth: '60em' }}
