@@ -5,14 +5,12 @@ import { API } from '@koh/api-client'
 import { UserOutlined, RobotOutlined } from '@ant-design/icons'
 import router from 'next/router'
 import { useProfile } from '../../hooks/useProfile'
-import { Feedback } from './components/Feedback'
-
+import { Feedback } from '../Chatbot/components/Feedback'
 const ChatbotContainer = styled.div`
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 400px;
-  zindex: 9999;
+  width: 80%;
+  height: 80%;
+  display: flex;
+  overflow: hidden;
 `
 
 interface Part {
@@ -37,7 +35,7 @@ export interface Message {
   questionId?: number
 }
 
-export const ChatbotComponent: React.FC = () => {
+export const ChatbotToday: React.FC = () => {
   const [input, setInput] = useState('')
   const { cid } = router.query
   const profile = useProfile()
@@ -45,7 +43,6 @@ export const ChatbotComponent: React.FC = () => {
   const [interactionId, setInteractionId] = useState<number | null>(null)
   const [preDeterminedQuestions, setPreDeterminedQuestions] =
     useState<PreDeterminedQuestion[]>(null)
-
   const [messages, setMessages] = useState<Message[]>([
     {
       type: 'apiMessage',
@@ -53,7 +50,6 @@ export const ChatbotComponent: React.FC = () => {
         'Hello, how can I assist you? I can help with anything course related.',
     },
   ])
-  const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
     return () => {
@@ -180,13 +176,13 @@ export const ChatbotComponent: React.FC = () => {
     return <></>
   }
   return (
-    <ChatbotContainer style={{ zIndex: 1000 }}>
-      {isOpen ? (
+    <>
+      <ChatbotContainer>
         <Card
           title="Course chatbot"
-          extra={<a onClick={() => setIsOpen(false)}>Close</a>}
+          className=" flex h-full max-h-[800px] w-full flex-col overflow-y-auto"
         >
-          <div className="max-h-[700px] overflow-y-auto">
+          <div className="grow-1 overflow-y-auto">
             {messages &&
               messages.map((item) => (
                 <>
@@ -290,32 +286,20 @@ export const ChatbotComponent: React.FC = () => {
               />
             )}
           </div>
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask something..."
-            onPressEnter={handleAsk}
-            suffix={
-              <Button
-                type="primary"
-                className="bg-blue-900"
-                onClick={handleAsk}
-              >
-                Ask
-              </Button>
-            }
-          />
         </Card>
-      ) : (
-        <Button
-          type="primary"
-          icon={<RobotOutlined />}
-          size="large"
-          onClick={() => setIsOpen(true)}
-        >
-          Chat now!
-        </Button>
-      )}
-    </ChatbotContainer>
+      </ChatbotContainer>
+      <Input
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        placeholder="Ask something..."
+        onPressEnter={handleAsk}
+        className="mt-auto w-4/5"
+        suffix={
+          <Button type="primary" className="bg-blue-900" onClick={handleAsk}>
+            Ask
+          </Button>
+        }
+      />
+    </>
   )
 }
