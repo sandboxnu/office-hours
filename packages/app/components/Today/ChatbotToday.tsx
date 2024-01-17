@@ -7,12 +7,22 @@ import router from 'next/router'
 import { useProfile } from '../../hooks/useProfile'
 import { Feedback } from '../Chatbot/components/Feedback'
 const ChatbotContainer = styled.div`
-  width: 80%;
-  height: 80%;
+  width: 100%;
+  @media (min-width: 650px) {
+    width: 80%;
+    height: 80%;
+  }
   display: flex;
   overflow: hidden;
 `
+const StyledInput = styled(Input)`
+  width: 100%;
+  margin-top: auto;
 
+  @media (min-width: 650px) {
+    width: 80%;
+  }
+`
 interface Part {
   pageNumber: number
   source: string
@@ -288,7 +298,7 @@ export const ChatbotToday: React.FC = () => {
           </div>
         </Card>
       </ChatbotContainer>
-      <Input
+      <StyledInput
         value={input}
         onChange={(e) => setInput(e.target.value)}
         placeholder="Ask something..."
