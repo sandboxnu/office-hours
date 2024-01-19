@@ -1,15 +1,15 @@
-import React, { ReactElement } from "react";
-import styled from "styled-components";
-import { Menu } from "antd";
-import { MenuProps } from "antd/lib/menu";
-import Link from "next/link";
-import { QueuePartial } from "@koh/common";
+import React, { ReactElement } from 'react'
+import styled from 'styled-components'
+import { Menu } from 'antd'
+import { MenuProps } from 'antd/lib/menu'
+import Link from 'next/link'
+import { QueuePartial } from '@koh/common'
 
-const { SubMenu } = Menu;
+const { SubMenu } = Menu
 
 const HorizontalMenu = styled(Menu)<MenuProps>`
-  ${(props) => (props.mode === "horizontal" ? "border-bottom: none" : "")}
-`;
+  ${(props) => (props.mode === 'horizontal' ? 'border-bottom: none' : '')}
+`
 
 const QueueMenu = styled(SubMenu)`
   @media (min-width: 650px) {
@@ -26,7 +26,7 @@ const QueueMenu = styled(SubMenu)`
   &&& .ant-menu-submenu-title {
     padding: 10px 50px !important;
   }
-`;
+`
 
 const MenuItem = styled(Menu.Item)`
   @media (min-width: 650px) {
@@ -39,51 +39,64 @@ const MenuItem = styled(Menu.Item)`
     left: 0px;
     right: 0px;
   }
-`;
+`
 
 const QueueMenuItem = styled(Menu.Item)`
   z-index: 1;
   background: #ffffff;
-`;
+`
 
-export type NavBarTabsItem = NavBarGeneralTabItem | NavBarQueueTabItem;
+export type NavBarTabsItem = NavBarGeneralTabItem | NavBarQueueTabItem
 
 interface NavBarGeneralTabItem {
-  href: string;
-  as: string;
-  text: string;
+  href: string
+  as: string
+  text: string
 }
 
 interface NavBarQueueTabItem {
-  text: string;
-  queues: QueuePartial[];
-  courseId: number;
+  text: string
+  queues: QueuePartial[]
+  courseId: number
 }
 
 interface NavBarTabsProps {
-  currentHref: string;
-  tabs: NavBarTabsItem[];
-  horizontal?: boolean;
+  currentHref: string
+  hrefAsPath: string
+  tabs: NavBarTabsItem[]
+  horizontal?: boolean
 }
 
-function createQueueTab(queueTabItem: NavBarQueueTabItem) {
+function createQueueTab(queueTabItem: NavBarQueueTabItem, currentPath: string) {
   return (
-    <QueueMenu data-cy="queue-tab" title="Queue">
-      {queueTabItem.queues?.map((openQueue) => (
-        <QueueMenuItem
-          key={openQueue.id}
-          data-cy={`queue-menu-item-${openQueue.room}`}
-        >
-          <Link
-            href="/course/[cid]/queue/[qid]"
-            as={`/course/${queueTabItem.courseId}/queue/${openQueue.id}`}
+    // need to manually add the ant-menu-item-selected class for this submenu and it's menu items since antd isn't adding it automatically like it should be
+    <QueueMenu
+      data-cy="queue-tab"
+      title="Queue"
+      className={
+        currentPath.includes(`/course/${queueTabItem.courseId}/queue/`)
+          ? 'ant-menu-item-selected'
+          : ''
+      }
+    >
+      {queueTabItem.queues?.map((openQueue) => {
+        const queuePath = `/course/${queueTabItem.courseId}/queue/${openQueue.id}`
+        const isSelected = currentPath === queuePath
+
+        return (
+          <QueueMenuItem
+            key={openQueue.id}
+            data-cy={`queue-menu-item-${openQueue.room}`}
+            className={isSelected ? 'ant-menu-item-selected' : ''}
           >
-            <a>{openQueue.room}</a>
-          </Link>
-        </QueueMenuItem>
-      ))}
+            <Link href="/course/[cid]/queue/[qid]" as={queuePath}>
+              <a>{openQueue.room}</a>
+            </Link>
+          </QueueMenuItem>
+        )
+      })}
     </QueueMenu>
-  );
+  )
 }
 
 function createGeneralTab(tabItem: NavBarGeneralTabItem) {
@@ -93,24 +106,25 @@ function createGeneralTab(tabItem: NavBarGeneralTabItem) {
         <a>{tabItem.text}</a>
       </Link>
     </MenuItem>
-  );
+  )
 }
 
 export default function NavBarTabs({
   currentHref,
+  hrefAsPath,
   tabs,
   horizontal,
 }: NavBarTabsProps): ReactElement {
   return (
     <HorizontalMenu
       selectedKeys={[currentHref]}
-      mode={horizontal ? "horizontal" : "vertical"}
+      mode={horizontal ? 'horizontal' : 'vertical'}
     >
       {tabs.map((tab) =>
-        tab.text !== "Queue"
+        tab.text !== 'Queue'
           ? createGeneralTab(tab as NavBarGeneralTabItem)
-          : createQueueTab(tab as NavBarQueueTabItem)
+          : createQueueTab(tab as NavBarQueueTabItem, hrefAsPath),
       )}
     </HorizontalMenu>
-  );
+  )
 }
