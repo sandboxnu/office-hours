@@ -68,7 +68,9 @@ export function EditQueueModal({
 
   const courseNumber = Number(courseId)
   const getQuestions = async () => {
-    setQuestionsTypeState(await API.questions.questionTypes(courseNumber))
+    const temp = await API.questions.questionTypes(courseNumber)
+    console.log(temp)
+    setQuestionsTypeState(temp)
   }
 
   const onclick = useCallback(
@@ -81,9 +83,13 @@ export function EditQueueModal({
   )
 
   const onAddChange = (e) => {
-    const inputValue = e.target.value
-    setIsInputEmpty(!inputValue)
-    setQuestionTypeAddState(e.target.value)
+    const inputValue = e.target.value.trim()
+    if (inputValue !== '') {
+      setIsInputEmpty(false)
+      setQuestionTypeAddState(inputValue)
+    } else {
+      setIsInputEmpty(true)
+    }
   }
 
   const onZoomLinkChange = (e) => {
