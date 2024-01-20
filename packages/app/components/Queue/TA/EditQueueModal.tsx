@@ -101,10 +101,14 @@ export function EditQueueModal({
       message.error('Please enter a question type name')
       return
     }
-    await API.questions.addQuestionType(courseNumber, {
-      name: questionTypeAddState,
-      color: color,
-    })
+    try {
+      await API.questions.addQuestionType(courseNumber, {
+        name: questionTypeAddState,
+        color: color,
+      })
+    } catch (e) {
+      message.error('Question type already exists')
+    }
     setQuestionsTypeState(await API.questions.questionTypes(courseNumber))
     setQuestionTypeAddState(null)
   }, [courseNumber, questionTypeAddState, color])
@@ -161,7 +165,6 @@ export function EditQueueModal({
             <Input
               allowClear={true}
               placeholder="Enter New Question type name"
-              value={questionTypeAddState}
               onChange={onAddChange}
               maxLength={15}
               style={{ marginBottom: '10px' }}
