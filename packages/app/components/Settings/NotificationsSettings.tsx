@@ -1,58 +1,58 @@
-import { MinusCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
-import { API } from "@koh/api-client";
+import { MinusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons'
+import { API } from '@koh/api-client'
 import {
   DesktopNotifPartial,
   ERROR_MESSAGES,
   UpdateProfileParams,
-} from "@koh/common";
-import { Button, Form, List, message, Switch, Tooltip } from "antd";
-import { pick } from "lodash";
-import { HeaderTitle } from "./Styled";
-import React, { ReactElement, useEffect, useState } from "react";
-import styled from "styled-components";
-import useSWR from "swr";
+} from '@koh/common'
+import { Button, Form, List, message, Switch, Tooltip } from 'antd'
+import { pick } from 'lodash'
+import { HeaderTitle } from './Styled'
+import React, { ReactElement, useEffect, useState } from 'react'
+import styled from 'styled-components'
+import useSWR from 'swr'
 import {
   getEndpoint,
   getNotificationState,
   NotificationStates,
   registerNotificationSubscription,
   requestNotificationPermission,
-} from "../../utils/notification";
+} from '../../utils/notification'
 
 const DeviceAddHeader = styled.div`
   display: flex;
   justify-content: space-between;
-`;
+`
 
 export default function NotificationsSettings(): ReactElement {
   const { data: profile, mutate } = useSWR(`api/v1/profile`, async () =>
-    API.profile.index()
-  );
+    API.profile.index(),
+  )
 
-  const [form] = Form.useForm();
+  const [form] = Form.useForm()
 
   const editProfile = async (updateProfile: UpdateProfileParams) => {
-    const newProfile = { ...profile, ...updateProfile };
-    mutate(newProfile, false);
+    const newProfile = { ...profile, ...updateProfile }
+    mutate(newProfile, false)
     await API.profile.patch(
       pick(newProfile, [
-        "desktopNotifsEnabled",
-        "phoneNotifsEnabled",
-        "phoneNumber",
-      ])
-    );
-    mutate();
-    return newProfile;
-  };
+        'desktopNotifsEnabled',
+        'phoneNotifsEnabled',
+        'phoneNumber',
+      ]),
+    )
+    mutate()
+    return newProfile
+  }
 
   const handleOk = async () => {
-    const value = await form.validateFields();
+    const value = await form.validateFields()
     try {
-      const newProfile = await editProfile(value);
-      form.setFieldsValue(newProfile);
+      const newProfile = await editProfile(value)
+      form.setFieldsValue(newProfile)
       message.success(
-        "Your notification settings have been successfully updated"
-      );
+        'Your notification settings have been successfully updated',
+      )
     } catch (e) {
       if (
         e.response?.status === 400 &&
@@ -60,11 +60,11 @@ export default function NotificationsSettings(): ReactElement {
           ERROR_MESSAGES.notificationService.registerPhone
       ) {
         form.setFields([
-          { name: "phoneNumber", errors: ["Invalid phone number"] },
-        ]);
+          { name: 'phoneNumber', errors: ['Invalid phone number'] },
+        ])
       }
     }
-  };
+  }
 
   return (
     profile && (
@@ -79,21 +79,21 @@ export default function NotificationsSettings(): ReactElement {
             name="desktopNotifsEnabled"
             valuePropName="checked"
           >
-            <Switch />
+            <Switch style={{ backgroundColor: '#1677ff' }} />
           </Form.Item>
           <Form.Item shouldUpdate noStyle>
             {() =>
-              form?.getFieldValue("desktopNotifsEnabled") && (
+              form?.getFieldValue('desktopNotifsEnabled') && (
                 <DeviceNotifPanel />
               )
             }
           </Form.Item>
           <Tooltip title="Notification still doesn't work? Click here!">
             <QuestionCircleOutlined
-              style={{ marginTop: "30px", float: "right", fontSize: "25px" }}
+              style={{ marginTop: '30px', float: 'right', fontSize: '25px' }}
               onClick={() =>
                 window.open(
-                  "https://www.makeuseof.com/google-chrome-notifications-not-working-fixes/"
+                  'https://www.makeuseof.com/google-chrome-notifications-not-working-fixes/',
                 )
               }
             />
@@ -140,42 +140,42 @@ export default function NotificationsSettings(): ReactElement {
           key="submit"
           type="primary"
           onClick={handleOk}
-          style={{ marginTop: "30px", marginBottom: "15px" }}
+          style={{ marginTop: '30px', marginBottom: '15px' }}
         >
           Save
         </Button>
       </>
     )
-  );
+  )
 }
 
 function useThisDeviceEndpoint(): null | string {
-  const [endpoint, setEndpoint] = useState(null);
+  const [endpoint, setEndpoint] = useState(null)
   useEffect(() => {
-    (async () => setEndpoint(await getEndpoint()))();
-  });
-  return endpoint;
+    ;(async () => setEndpoint(await getEndpoint()))()
+  })
+  return endpoint
 }
 
 function renderDeviceInfo(
   device: DesktopNotifPartial,
-  isThisDevice: boolean
+  isThisDevice: boolean,
 ): string {
   if (device.name) {
-    return isThisDevice ? `${device.name} (This Device)` : device.name;
+    return isThisDevice ? `${device.name} (This Device)` : device.name
   } else {
-    return isThisDevice ? "This Device" : "Other Device";
+    return isThisDevice ? 'This Device' : 'Other Device'
   }
 }
 
 function DeviceNotifPanel() {
-  const thisEndpoint = useThisDeviceEndpoint();
+  const thisEndpoint = useThisDeviceEndpoint()
   const { data: profile, mutate } = useSWR(`api/v1/profile`, async () =>
-    API.profile.index()
-  );
+    API.profile.index(),
+  )
   const thisDesktopNotif = profile?.desktopNotifs?.find(
-    (dn) => dn.endpoint === thisEndpoint
-  );
+    (dn) => dn.endpoint === thisEndpoint,
+  )
   return (
     <div>
       <DeviceAddHeader>
@@ -185,24 +185,24 @@ function DeviceNotifPanel() {
             title={
               getNotificationState() ===
                 NotificationStates.browserUnsupported &&
-              "Browser does not support notifications. Please use Chrome or Firefox, and not Incognito Mode."
+              'Browser does not support notifications. Please use Chrome or Firefox, and not Incognito Mode.'
             }
           >
             <Button
               onClick={async () => {
-                const canNotify = await requestNotificationPermission();
+                const canNotify = await requestNotificationPermission()
                 if (canNotify === NotificationStates.notAllowed) {
-                  message.warning("Please allow notifications in this browser");
+                  message.warning('Please allow notifications in this browser')
                 }
                 if (canNotify === NotificationStates.granted) {
-                  await registerNotificationSubscription();
-                  mutate();
+                  await registerNotificationSubscription()
+                  mutate()
                 }
               }}
               disabled={
                 getNotificationState() === NotificationStates.browserUnsupported
               }
-              style={{ marginBottom: "4px" }}
+              style={{ marginBottom: '4px' }}
             >
               Add This Device
             </Button>
@@ -212,16 +212,16 @@ function DeviceNotifPanel() {
       <List
         bordered
         dataSource={profile.desktopNotifs}
-        locale={{ emptyText: "No Devices Registered To Receive Notifications" }}
+        locale={{ emptyText: 'No Devices Registered To Receive Notifications' }}
         renderItem={(device: DesktopNotifPartial) => (
           <List.Item
             actions={[
               <MinusCircleOutlined
-                style={{ fontSize: "20px" }}
+                style={{ fontSize: '20px' }}
                 key={0}
                 onClick={async () => {
-                  await API.notif.desktop.unregister(device.id);
-                  mutate();
+                  await API.notif.desktop.unregister(device.id)
+                  mutate()
                 }}
               />,
             ]}
@@ -234,5 +234,5 @@ function DeviceNotifPanel() {
         )}
       />
     </div>
-  );
+  )
 }
