@@ -182,7 +182,7 @@ export default function Today(): ReactElement {
                 )
               }
             </TodayCol>
-            <TodayCol md={12} sm={24}>
+            <TodayCol md={12} sm={24} className="h-[100vh]">
               <ChatbotToday />
             </TodayCol>
           </Row>
