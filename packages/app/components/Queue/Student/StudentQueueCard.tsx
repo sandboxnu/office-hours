@@ -6,6 +6,7 @@ import { getWaitTime } from '../../../utils/TimeUtil'
 import { CenterRow, Text } from '../QueueCardSharedComponents'
 import { truncate } from '../QueueUtils'
 import TAQueueDetailButtons from '../TA/TAQueueDetailButtons'
+import { QuestionType } from '../QueueListSharedComponents'
 import { KOHAvatar } from '../../common/SelfAvatar'
 import HotnessBar from './HotnessBar'
 
@@ -30,9 +31,6 @@ interface StudentQueueCardProps {
   isStaff: boolean
 }
 
-/**
- * Renders the queue card and its contents for a student viewing.
- */
 export default function StudentQueueCard({
   question,
   cid,
@@ -94,18 +92,14 @@ export default function StudentQueueCard({
               {question.creator.name}
             </Text>
           )}
-          <div //tag for question type
-            style={{
-              backgroundColor: 'lightblue',
-              borderRadius: '15px',
-              padding: '0px 7px',
-              marginTop: '2px',
-              display: 'inline-block',
-            }}
-          >
-            <Text style={{ fontSize: 'smaller' }}>{question.questionType}</Text>{' '}
-            {/* Decreased text size */}
-          </div>
+
+          {question.questionTypes?.map((questionType, index) => (
+            <QuestionType
+              key={index}
+              typeName={questionType.name}
+              typeColor={questionType.color}
+            />
+          ))}
         </Col>
         <Col flex="0 0 80px">
           <Text>{getWaitTime(question)}</Text>

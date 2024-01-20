@@ -1,12 +1,15 @@
 import { ReactElement, useCallback } from 'react'
 import Modal from 'antd/lib/modal/Modal'
-import { Form, Collapse, message, Radio, Checkbox } from 'antd'
+import { Form, Collapse, message, Checkbox } from 'antd'
 import { API } from '@koh/api-client'
 import { default as React, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
+import { AddQuestionTypeParams, OpenQuestionStatus } from '@koh/common'
+import { QuestionType } from '../QueueListSharedComponents'
 import Select from 'react-select'
-import { OpenQuestionStatus } from '@koh/common'
+import { Select as AntdSelect } from 'antd'
+import PropTypes from 'prop-types'
 
 const OverrideCollapse = styled.div`
   & .ant-collapse-header {
@@ -22,7 +25,12 @@ const OverrideCollapse = styled.div`
     padding: 0 !important;
   }
 `
-
+const QuestionText = styled.div`
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 22px;
+  margin-bottom: 4px;
+`
 const Title = styled.div`
   font-size: 16px;
   color: #212934;
@@ -33,6 +41,11 @@ interface EditQueueModalProps {
   visible: boolean
   onClose: () => void
 }
+
+AddStudentsModal.propTypes = {
+  value: PropTypes.any.isRequired,
+}
+
 export function AddStudentsModal({
   queueId,
   visible,
@@ -44,10 +57,14 @@ export function AddStudentsModal({
   const [studentsState, setStudentsState] = useState<
     { value: string; id: number }[]
   >([])
-  const [questionsTypeState, setQuestionsTypeState] = useState<string[]>([])
-  const [selectedQuestionType, setSelectedQuestionType] = useState<string>(
-    'Default grading type',
-  )
+
+  const [questionsTypeState, setQuestionsTypeState] = useState<
+    AddQuestionTypeParams[]
+  >([])
+  const [questionTypeInput, setQuestionTypeInput] = useState<
+    AddQuestionTypeParams[]
+  >([])
+
   const [selectOptions, setSelectOptions] = useState([])
 
   // invert the help status of selected option and set others to false
@@ -61,19 +78,22 @@ export function AddStudentsModal({
     setSelectOptions(newSelectOptions)
   }
 
-  //students store all the students
-  // let students: { value: string; id: number }[] = [];
-  const getQuestions = async () => {
-    setQuestionsTypeState(await API.questions.questionTypes(courseNumber))
+  const onTypeChange = (selectedIds: number[]) => {
+    const newQuestionTypeInput: AddQuestionTypeParams[] =
+      questionsTypeState.filter((questionType) =>
+        selectedIds.includes(questionType.id),
+      )
+
+    setQuestionTypeInput(newQuestionTypeInput)
   }
 
-  useEffect(() => {
-    getQuestions()
-    populateStudents()
-  }, [])
-
   const courseNumber = Number(courseId)
-  const populateStudents = async () => {
+
+  const getQuestions = useCallback(async () => {
+    setQuestionsTypeState(await API.questions.questionTypes(courseNumber))
+  }, [courseNumber])
+
+  const populateStudents = useCallback(async () => {
     const tempS = []
     const students = await API.profile.getAllStudents(courseNumber)
     if (!students) {
@@ -87,7 +107,12 @@ export function AddStudentsModal({
       tempS.push(student)
     })
     setStudentsState(tempS)
-  }
+  }, [courseNumber])
+
+  useEffect(() => {
+    getQuestions()
+    populateStudents()
+  }, [getQuestions, populateStudents])
 
   const handleSubmit = () => {
     selectOptions.forEach((student, i) => {
@@ -110,7 +135,7 @@ export function AddStudentsModal({
           location: null,
           force: true,
           groupable: false,
-          questionType: selectedQuestionType,
+          questionTypes: questionTypeInput,
         },
         currentStudent.id,
       )
@@ -139,13 +164,6 @@ export function AddStudentsModal({
     setSelectOptions(data ?? [])
   }
 
-  const onQTclick = useCallback(
-    async (s: string) => {
-      setSelectedQuestionType(s)
-    },
-    [courseNumber],
-  )
-
   function toObj(arr) {
     const lst = []
     for (let i = 0; i < arr.length; ++i)
@@ -164,35 +182,50 @@ export function AddStudentsModal({
   return (
     <Modal
       title="Add Students to queue"
-      visible={visible}
+      open={visible}
       onCancel={onClose}
       onOk={async () => {
         handleSubmit()
         onClose()
       }}
     >
-      <h3>
-        Current question type:{' '}
-        <strong style={{ color: 'blue' }}> {selectedQuestionType}</strong>
-      </h3>
-      <h3> Change question type: </h3>
-      <Radio.Group buttonStyle="solid">
-        {questionsTypeState.length > 0 ? (
-          questionsTypeState.map((q) => {
-            return (
-              <Radio.Button
-                style={{ color: 'white' }}
-                onClick={() => onQTclick(q)}
-                key={q}
-              >
-                {q}
-              </Radio.Button>
-            )
-          })
-        ) : (
-          <p>There are No Question Types</p>
-        )}
-      </Radio.Group>
+      {questionsTypeState.length > 0 ? (
+        <>
+          <QuestionText>
+            What category(s) does your question fall under?
+          </QuestionText>
+          <AntdSelect
+            mode="multiple"
+            placeholder="Select question types"
+            onChange={onTypeChange}
+            style={{ width: '100%' }}
+            value={questionTypeInput.map((type) => type.id)}
+            tagRender={(props) => {
+              const type = questionsTypeState.find(
+                (type) => type.id === props.value,
+              )
+              return (
+                <QuestionType
+                  typeName={type.name}
+                  typeColor={type.color}
+                  onClick={props.onClose}
+                />
+              )
+            }}
+          >
+            {questionsTypeState.map((type) => (
+              <AntdSelect.Option value={type.id} key={type.id}>
+                {type.name}
+              </AntdSelect.Option>
+            ))}
+          </AntdSelect>
+        </>
+      ) : (
+        <p>
+          There are no question types. Add them in &apos;Edit Queue
+          Details&apos;
+        </p>
+      )}
       <OverrideCollapse>
         <Collapse defaultActiveKey={[1]} ghost expandIconPosition="right">
           <Collapse.Panel
@@ -214,7 +247,7 @@ export function AddStudentsModal({
                   value={selectOptions}
                   onChange={handleSelect}
                   isSearchable={true}
-                  isMulti
+                  isMulti={true}
                 />
                 {/* <Button
                   style={{ marginLeft: 15, marginTop: 15 }}

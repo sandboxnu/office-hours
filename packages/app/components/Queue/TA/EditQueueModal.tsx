@@ -1,14 +1,18 @@
 import { ReactElement } from 'react'
 import Modal from 'antd/lib/modal/Modal'
-import { Switch, Input, Form, Button, Radio, message } from 'antd'
+import { Switch, Input, Form, Button, message, Checkbox } from 'antd'
 import styled from 'styled-components'
 import { API } from '@koh/api-client'
 import { useQueue } from '../../../hooks/useQueue'
-import { UpdateQueueParams } from '@koh/common'
+import { AddQuestionTypeParams, UpdateQueueParams } from '@koh/common'
 import { pick } from 'lodash'
 import { default as React, useEffect, useCallback, useState } from 'react'
 import { useRouter } from 'next/router'
 import { useCourse } from '../../../hooks/useCourse'
+import { QuestionType } from '../QueueListSharedComponents'
+import { SketchPicker } from 'react-color'
+import Icon, { BgColorsOutlined } from '@ant-design/icons'
+
 const NotesInput = styled(Input.TextArea)`
   border-radius: 6px;
   border: 1px solid #b8c4ce;
@@ -27,18 +31,30 @@ export function EditQueueModal({
 }: EditQueueModalProps): ReactElement {
   const { queue, mutateQueue } = useQueue(queueId)
   const [form] = Form.useForm()
-  const [questionsTypeState, setQuestionsTypeState] = useState<string[]>([])
-  const [questionTypeAddState, setQuestionTypeAddState] = useState('')
+  const [questionsTypeState, setQuestionsTypeState] = useState<
+    AddQuestionTypeParams[]
+  >([])
+  const [questionTypeAddState, setQuestionTypeAddState] = useState()
   const router = useRouter()
   const courseId = router.query['cid']
   const course = useCourse(Number(courseId))
   const [currentZoomLink, setCurrentZoomLink] = useState(
     course.course?.zoomLink,
   )
+  const [color, setColor] = useState(
+    '#' + Math.floor(Math.random() * 16777215).toString(16),
+  )
+  const [pickerVisible, setPickerVisible] = useState(false)
+  const [isInputEmpty, setIsInputEmpty] = useState(true)
+
+  const handleColorChange = (color) => {
+    console.log(color)
+    setColor(color.hex)
+  }
   const [zoomLink, setZoomLink] = useState('')
   useEffect(() => {
     getQuestions()
-  }, [])
+  }, [getQuestions])
 
   const editQueue = async (updateQueue: UpdateQueueParams) => {
     const newQueue = { ...queue, ...updateQueue }
@@ -52,7 +68,9 @@ export function EditQueueModal({
 
   const courseNumber = Number(courseId)
   const getQuestions = async () => {
-    setQuestionsTypeState(await API.questions.questionTypes(courseNumber))
+    const temp = await API.questions.questionTypes(courseNumber)
+    console.log(temp)
+    setQuestionsTypeState(temp)
   }
 
   const onclick = useCallback(
@@ -65,15 +83,36 @@ export function EditQueueModal({
   )
 
   const onAddChange = (e) => {
-    setQuestionTypeAddState(e.target.value)
+    const inputValue = e.target.value.trim()
+    if (inputValue !== '') {
+      setIsInputEmpty(false)
+      setQuestionTypeAddState(inputValue)
+    } else {
+      setIsInputEmpty(true)
+    }
   }
+
   const onZoomLinkChange = (e) => {
     setZoomLink(e.target.value)
   }
+
   const addQuestionType = useCallback(async () => {
-    await API.questions.addQuestionType(courseNumber, questionTypeAddState)
+    if (isInputEmpty) {
+      message.error('Please enter a question type name')
+      return
+    }
+    try {
+      await API.questions.addQuestionType(courseNumber, {
+        name: questionTypeAddState,
+        color: color,
+      })
+    } catch (e) {
+      message.error('Question type already exists')
+    }
     setQuestionsTypeState(await API.questions.questionTypes(courseNumber))
-  }, [courseNumber, questionTypeAddState])
+    setQuestionTypeAddState(null)
+  }, [courseNumber, questionTypeAddState, color])
+
   const changeZoomLink = async () => {
     await API.course
       .editCourseInfo(Number(courseId), {
@@ -88,7 +127,7 @@ export function EditQueueModal({
   return (
     <Modal
       title="Edit Queue Details"
-      visible={visible}
+      open={visible}
       onCancel={onClose}
       onOk={async () => {
         const value = await form.validateFields()
@@ -106,33 +145,51 @@ export function EditQueueModal({
             name="allowQuestions"
             valuePropName="checked"
           >
-            <Switch
-              style={{ backgroundColor: '#1677ff' }}
-              data-cy="allow-questions-toggle"
-            />
+            <Checkbox />
           </Form.Item>
           <h4>Current Question Types: (click to delete)</h4>
-          <Radio.Group buttonStyle="solid">
-            {questionsTypeState.length > 0 ? (
-              questionsTypeState.map((q) => (
-                <Radio.Button onClick={() => onclick(q)} key={q} value={q}>
-                  {' '}
-                  {q}
-                </Radio.Button>
-              ))
-            ) : (
-              <p>No Questions types</p>
-            )}
-          </Radio.Group>
-
-          <Form.Item label="Enter a new question type: " name="add">
+          {questionsTypeState.length > 0 ? (
+            questionsTypeState.map((questionType, index) => (
+              <QuestionType
+                key={index}
+                typeName={questionType.name}
+                typeColor={questionType.color}
+                onClick={() => onclick(questionType.name)}
+              />
+            ))
+          ) : (
+            <p>No Questions types</p>
+          )}
+          <Form.Item name="add">
             <Input
               allowClear={true}
-              placeholder={''}
-              value={questionTypeAddState}
+              placeholder="Enter New Question type name"
               onChange={onAddChange}
+              maxLength={15}
+              style={{ marginBottom: '10px' }}
             />
-            <Button onClick={addQuestionType}> Add </Button>
+            <Button onClick={() => setPickerVisible(!pickerVisible)}>
+              <BgColorsOutlined />
+            </Button>
+
+            {pickerVisible && (
+              <SketchPicker
+                color={color}
+                onChangeComplete={handleColorChange}
+              />
+            )}
+
+            <Button
+              onClick={() => {
+                setPickerVisible(false)
+                const randomColor =
+                  '#' + Math.floor(Math.random() * 16777215).toString(16)
+                handleColorChange({ hex: randomColor })
+                addQuestionType()
+              }}
+            >
+              Add
+            </Button>
           </Form.Item>
           <h4 style={{ marginTop: '20px' }}>
             Current Zoom link:{' '}

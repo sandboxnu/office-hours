@@ -1,5 +1,9 @@
-import { OpenQuestionStatus, Question } from '@koh/common'
-import { Alert, Button, Input, Modal, Radio } from 'antd'
+import {
+  AddQuestionTypeParams,
+  OpenQuestionStatus,
+  Question,
+} from '@koh/common'
+import { Alert, Button, Input, Modal, Radio, Select } from 'antd'
 import { RadioChangeEvent } from 'antd/lib/radio'
 import { NextRouter, useRouter } from 'next/router'
 import {
@@ -14,7 +18,8 @@ import { useLocalStorage } from '../../../hooks/useLocalStorage'
 import { toOrdinal } from '../../../utils/ordinal'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { API } from '@koh/api-client'
-//import { createReadStream } from "fs";
+import { QuestionType } from '../QueueListSharedComponents'
+import PropTypes from 'prop-types'
 
 const Container = styled.div`
   max-width: 960px;
@@ -50,14 +55,18 @@ interface QuestionFormProps {
   leaveQueue: () => void
   finishQuestion: (
     text: string,
-    questionType: string,
-    groupable: boolean,
+    questionType: AddQuestionTypeParams[],
     router: NextRouter,
     courseId: number,
     location: string,
   ) => void
   position: number
   cancel: () => void
+}
+
+QuestionForm.propTypes = {
+  value: PropTypes.any.isRequired,
+  onClose: PropTypes.func.isRequired,
 }
 
 export default function QuestionForm({
@@ -77,36 +86,37 @@ export default function QuestionForm({
 
   const drafting = question?.status === OpenQuestionStatus.Drafting
   const helping = question?.status === OpenQuestionStatus.Helping
-  const [questionsTypeState, setQuestionsTypeState] = useState<string[]>([])
-  const [questionTypeInput, setQuestionTypeInput] = useState<string>(
-    question?.questionType || null,
-  )
+  const [questionsTypeState, setQuestionsTypeState] = useState<
+    AddQuestionTypeParams[]
+  >([])
+  const [questionTypeInput, setQuestionTypeInput] = useState<
+    AddQuestionTypeParams[]
+  >(question?.questionTypes || [])
   const [questionText, setQuestionText] = useState<string>(question?.text || '')
-  const [questionGroupable, setQuestionGroupable] = useState<boolean>(
-    question?.groupable !== undefined && question?.groupable,
-  )
 
   const [inperson, setInperson] = useState<boolean>(false)
+
   useEffect(() => {
     if (question && !visible) {
       setQuestionText(question.text)
-      setQuestionTypeInput(question.questionType)
+      setQuestionTypeInput(question.questionTypes)
     }
   }, [question, visible])
-  useEffect(() => {
-    getQuestions()
-  }, [])
 
-  // on question type change, update the question type state
-  const onCategoryChange = (e: RadioChangeEvent) => {
-    setQuestionTypeInput(e.target.value)
+  const onTypeChange = (selectedIds: number[]) => {
+    const newQuestionTypeInput: AddQuestionTypeParams[] =
+      questionsTypeState.filter((questionType) =>
+        selectedIds.includes(questionType.id),
+      )
+
+    setQuestionTypeInput(newQuestionTypeInput)
 
     const questionFromStorage = storageQuestion ?? {}
 
     setStoredQuestion({
       id: question?.id,
       ...questionFromStorage,
-      questionType: e.target.value,
+      questionTypes: newQuestionTypeInput,
     })
   }
 
@@ -124,17 +134,6 @@ export default function QuestionForm({
     })
   }
 
-  // on question groupable change, update the question groupable state
-  const onGroupableChange = (e: RadioChangeEvent) => {
-    setQuestionGroupable(e.target.value)
-    const questionFromStorage = storageQuestion ?? {}
-
-    setStoredQuestion({
-      id: question?.id,
-      ...questionFromStorage,
-      groupable: e.target.value,
-    })
-  }
   const onLocationChange = (e: RadioChangeEvent) => {
     setInperson(e.target.value)
     const questionFromStorage = storageQuestion ?? {}
@@ -150,7 +149,6 @@ export default function QuestionForm({
       finishQuestion(
         questionText,
         questionTypeInput,
-        questionGroupable,
         router,
         Number(courseId),
         inperson ? 'In Person' : 'Online',
@@ -161,19 +159,38 @@ export default function QuestionForm({
   useHotkeys('enter', () => onClickSubmit(), { enableOnTags: ['TEXTAREA'] }, [
     questionTypeInput,
     questionText,
-    questionGroupable,
     router,
     courseId,
   ])
   // all possible questions, use courseId
   const courseNumber = Number(courseId)
-  const getQuestions = useCallback(async () => {
-    setQuestionsTypeState(await API.questions.questionTypes(courseNumber))
-  }, [])
+  const getQuestions = useCallback(() => {
+    let isCancelled = false
 
+    const fetchQuestions = async () => {
+      const questions = await API.questions.questionTypes(courseNumber)
+      if (!isCancelled) {
+        setQuestionsTypeState(questions)
+      }
+    }
+
+    fetchQuestions()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [courseNumber])
+
+  useEffect(() => {
+    const cleanup = getQuestions()
+
+    return () => {
+      cleanup()
+    }
+  }, [getQuestions])
   return (
     <Modal
-      visible={visible}
+      open={visible}
       closable={true}
       onCancel={() => {
         setStoredQuestion(question)
@@ -219,28 +236,40 @@ export default function QuestionForm({
             showIcon
           />
         )}
-
-        <QuestionText>
-          What category does your question fall under?
-        </QuestionText>
-        <Radio.Group
-          value={questionTypeInput}
-          onChange={onCategoryChange}
-          buttonStyle="solid"
-          style={{ marginBottom: 48 }}
-        >
-          {questionsTypeState.length > 0 ? (
-            questionsTypeState.map((q) => (
-              <Radio.Button key={q} value={q}>
-                {' '}
-                {q}
-              </Radio.Button>
-            ))
-          ) : (
-            <p>Loading...</p>
-          )}
-        </Radio.Group>
-
+        {questionsTypeState.length > 0 ? (
+          <>
+            <QuestionText>
+              What category(s) does your question fall under?
+            </QuestionText>
+            <Select
+              mode="multiple"
+              placeholder="Select question types"
+              onChange={onTypeChange}
+              style={{ width: '100%' }}
+              value={questionTypeInput.map((type) => type.id)}
+              tagRender={(props) => {
+                const type = questionsTypeState.find(
+                  (type) => type.id === props.value,
+                )
+                return (
+                  <QuestionType
+                    typeName={type.name}
+                    typeColor={type.color}
+                    onClick={props.onClose}
+                  />
+                )
+              }}
+            >
+              {questionsTypeState.map((type) => (
+                <Select.Option value={type.id} key={type.id}>
+                  {type.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </>
+        ) : (
+          <p>No Question types found</p>
+        )}
         <QuestionText>What do you need help with?</QuestionText>
         <Input.TextArea
           data-cy="questionText"

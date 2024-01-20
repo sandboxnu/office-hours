@@ -129,7 +129,7 @@ export function AsyncQuestionForm({
   return (
     <Modal
       title="Question Form"
-      visible={visible}
+      open={visible}
       onCancel={onClose}
       onOk={async () => {
         const value = await form.validateFields()

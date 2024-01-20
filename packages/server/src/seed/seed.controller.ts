@@ -34,6 +34,7 @@ import { QueueModel } from '../queue/queue.entity';
 import { SeedService } from './seed.service';
 import { OrganizationCourseModel } from 'organization/organization-course.entity';
 import { OrganizationUserModel } from 'organization/organization-user.entity';
+import { QuestionTypeModel } from 'question/question-type.entity';
 
 @UseGuards(NonProductionGuard)
 @Controller('seeds')
@@ -334,85 +335,5 @@ export class SeedController {
     });
 
     return 'Data successfully seeded';
-  }
-
-  @Post('createUser')
-  async createUser(
-    @Body() body: { role: Role; courseId: number },
-  ): Promise<UserCourseModel> {
-    let ta: UserCourseModel;
-    if (body.courseId) {
-      const course = await CourseModel.findOneOrFail(body.courseId);
-      ta = await UserCourseFactory.create({ role: body.role, course: course });
-    } else {
-      ta = await UserCourseFactory.create({ role: body.role });
-    }
-    return ta;
-  }
-
-  @Post('createQueue')
-  async createQueue(
-    @Body()
-    body: {
-      courseId: number;
-      allowQuestions: boolean;
-      // closes in n milliseconds from now
-      closesIn?: number;
-    },
-  ): Promise<QueueModel> {
-    const options = {
-      allowQuestions: body.allowQuestions ?? false,
-    };
-    if (body.courseId) {
-      const course = await CourseModel.findOneOrFail(body.courseId);
-      options['course'] = course;
-    }
-    const queue: QueueModel = await QueueFactory.create(options);
-    return queue;
-  }
-
-  @Post('createQuestion')
-  async createQuestion(
-    @Body()
-    body: {
-      queueId: number;
-      studentId: number;
-      data: CreateQuestionParams;
-    },
-  ): Promise<QuestionModel> {
-    const options = {};
-    if (body.queueId) {
-      const queue = await QueueModel.findOneOrFail(body.queueId);
-      options['queue'] = queue;
-    }
-    if (body.studentId) {
-      const student = await UserModel.findOneOrFail(body.studentId);
-      options['creator'] = student;
-    }
-    const question: QuestionModel = await QuestionFactory.create({
-      ...options,
-      ...body.data,
-      createdAt: new Date(),
-    });
-    return question;
-  }
-
-  @Post('createQueueWithoutOfficeHour')
-  async createQueueWithoutOfficeHour(
-    @Body()
-    body: {
-      courseId: number;
-      allowQuestions: boolean;
-    },
-  ): Promise<QueueModel> {
-    const options = {
-      allowQuestions: body.allowQuestions ?? false,
-      officeHours: [],
-    };
-    if (body.courseId) {
-      const course = await CourseModel.findOneOrFail(body.courseId);
-      options['course'] = course;
-    }
-    return await QueueFactory.create(options);
   }
 }

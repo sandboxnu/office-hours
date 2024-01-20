@@ -17,6 +17,7 @@ import { useQueue } from '../../../hooks/useQueue'
 import { useStudentQuestion } from '../../../hooks/useStudentQuestion'
 import { toOrdinal } from '../../../utils/ordinal'
 import Banner, { BannerButton, BannerDangerButton } from '../Banner'
+import { QuestionType } from '../QueueListSharedComponents'
 
 const BoldNumber = styled.span`
   font-weight: bold;
@@ -252,7 +253,13 @@ function QuestionDetailRow({ studentQuestion }: { studentQuestion: Question }) {
       </ColWithRightMargin>
       <Col flex="0.5 0.5 95px">
         <InfoHeader>type</InfoHeader>
-        <div>{studentQuestion.questionType}</div>
+        {studentQuestion.questionTypes?.map((questionType, index) => (
+          <QuestionType
+            key={index}
+            typeName={questionType.name}
+            typeColor={questionType.color}
+          />
+        ))}
       </Col>
       {/* <Col flex="0 0 89px">
         <InfoHeader>groupable</InfoHeader>

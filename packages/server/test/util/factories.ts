@@ -1,5 +1,5 @@
 import { QuestionGroupModel } from 'question/question-group.entity';
-import { AlertType, OrganizationRole, QuestionType, Role } from '@koh/common';
+import { AlertType, OrganizationRole, Role } from '@koh/common';
 import { AlertModel } from 'alerts/alerts.entity';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { Factory } from 'typeorm-factory';
@@ -15,6 +15,7 @@ import { ProfSectionGroupsModel } from 'login/prof-section-groups.entity';
 import { OrganizationModel } from '../../src/organization/organization.entity';
 import { InteractionModel } from 'chatbot/interaction.entity';
 import { OrganizationCourseModel } from 'organization/organization-course.entity';
+import { QuestionTypeModel } from 'question/question-type.entity';
 import { OrganizationUserModel } from 'organization/organization-user.entity';
 
 export const UserFactory = new Factory(UserModel)
@@ -67,12 +68,18 @@ export const QueueFactory = new Factory(QueueModel)
   .attr('isProfessorQueue', false)
   .attr('isDisabled', false);
 
+export const QuestionTypeFactory = new Factory(QuestionTypeModel)
+  .attr('cid', 1)
+  .attr('name', 'Question Type')
+  .attr('color', '#000000')
+  .attr('questions', []);
+
 // WARNING: DO NOT USE CREATORID. AS YOU SEE HERE, WE ONLY ACCEPT CREATOR
 //TODO: make it accept creatorId as well
 export const QuestionFactory = new Factory(QuestionModel)
   .attr('text', 'question description')
   .attr('status', 'Queued')
-  .attr('questionType', QuestionType.Other)
+  .assocMany('questionTypes', QuestionTypeFactory, 1)
   .attr('groupable', true)
   .assocOne('queue', QueueFactory)
   .assocOne('creator', UserFactory)

@@ -1,15 +1,15 @@
-import { QueuePartial } from "@koh/common";
-import { Modal, Select } from "antd";
-import { ReactElement } from "react";
-import { ReactNode, useState } from "react";
-import styled from "styled-components";
+import { QueuePartial } from '@koh/common'
+import { Modal, Select } from 'antd'
+import { ReactElement } from 'react'
+import { ReactNode, useState } from 'react'
+import styled from 'styled-components'
 
 interface QueueCheckInModalProps {
-  visible: boolean;
-  onSubmit: (queueId: number) => void;
-  onCancel: () => void;
-  button: ReactNode;
-  queues: QueuePartial[];
+  visible: boolean
+  onSubmit: (queueId: number) => void
+  onCancel: () => void
+  button: ReactNode
+  queues: QueuePartial[]
 }
 
 const RoomSelectionContainer = styled.div`
@@ -18,14 +18,14 @@ const RoomSelectionContainer = styled.div`
   justify-content: space-between;
   align-items: flex-end;
   flex-wrap: wrap;
-`;
+`
 
 const CheckInDropdownContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   flex-grow: 7;
-`;
+`
 
 export default function QueueCheckInModal({
   visible,
@@ -34,19 +34,19 @@ export default function QueueCheckInModal({
   button,
   queues,
 }: QueueCheckInModalProps): ReactElement {
-  const [queueToCheckInto, setQueueToCheckInto] = useState(-1);
+  const [queueToCheckInto, setQueueToCheckInto] = useState(-1)
   const onQueueUpdate = (queueIx: number) => {
-    setQueueToCheckInto(queueIx);
-  };
-  const { Option } = Select;
+    setQueueToCheckInto(queueIx)
+  }
+  const { Option } = Select
 
   return (
     <Modal
       title="Check into a queue"
-      visible={visible}
+      open={visible}
       onCancel={() => {
-        onCancel();
-        setQueueToCheckInto(-1);
+        onCancel()
+        setQueueToCheckInto(-1)
       }}
       okText="Check In"
       okButtonProps={{ disabled: queueToCheckInto < 0 }}
@@ -65,7 +65,7 @@ export default function QueueCheckInModal({
             filterOption={(input, option) => {
               return (
                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              );
+              )
             }}
           >
             {queues.map((q, i) => (
@@ -80,5 +80,5 @@ export default function QueueCheckInModal({
         <>{button}</>
       </RoomSelectionContainer>
     </Modal>
-  );
+  )
 }

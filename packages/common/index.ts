@@ -275,7 +275,7 @@ export type Heatmap = Array<number>
  * @param createdAt - The date string for the time that the Ticket was created. Ex: "2020-09-12T12:00:00-04:00"
  * @param helpedAt - The date string for the time that the TA began helping the Student.
  * @param closedAt - The date string for the time that the TA finished helping the Student.
- * @param questionType - The question type helps distinguish question for TA's and data insights.
+ * @param questionTypes - The question types help distinguish questions for TA's and data insights.
  * @param status - The current status of the question in the queue.
  * @param position - The current position of this question in the queue.
  * @param location - The location of the particular student, to help TA's find them.
@@ -302,7 +302,7 @@ export class Question {
   @Type(() => Date)
   closedAt?: Date
 
-  questionType?: string
+  questionTypes?: AddQuestionTypeParams[]
 
   groupable!: boolean
 
@@ -311,15 +311,44 @@ export class Question {
   location?: string
 }
 
-// Question Types
-export enum QuestionType {
-  Concept = 'Concept',
-  Clarification = 'Clarification',
-  Testing = 'Testing',
-  Bug = 'Bug',
-  Setup = 'Setup',
-  Other = 'Other',
-}
+export const QuestionTypes: AddQuestionTypeParams[] = [
+  {
+    id: 1,
+    cid: 1,
+    name: 'Concept',
+    color: '#000000',
+  },
+  {
+    id: 2,
+    cid: 2,
+    name: 'Clarification',
+    color: '#000000',
+  },
+  {
+    id: 3,
+    cid: 3,
+    name: 'Testing',
+    color: '#000000',
+  },
+  {
+    id: 4,
+    cid: 4,
+    name: 'Bug',
+    color: '#000000',
+  },
+  {
+    id: 5,
+    cid: 5,
+    name: 'Setup',
+    color: '#000000',
+  },
+  {
+    id: 6,
+    cid: 6,
+    name: 'Other',
+    color: '#000000',
+  },
+]
 
 // Type of async question events
 export enum asyncQuestionEventType {
@@ -614,8 +643,8 @@ export class questions {
   @IsString()
   text?: string
 
-  @IsString()
-  questionType?: string
+  @IsArray()
+  questionTypes?: AddQuestionTypeParams[]
 
   @IsDate()
   @Type(() => Date)
@@ -962,9 +991,9 @@ export class CreateQuestionParams {
   @IsString()
   text!: string
 
-  @IsString()
+  @IsArray()
   @IsOptional()
-  questionType?: string
+  questionTypes?: AddQuestionTypeParams[]
 
   @IsBoolean()
   groupable!: boolean
@@ -986,9 +1015,9 @@ export class UpdateQuestionParams {
   @IsOptional()
   text?: string
 
-  @IsString()
+  @IsArray()
   @IsOptional()
-  questionType?: string
+  questionTypes?: AddQuestionTypeParams[]
 
   @IsBoolean()
   @IsOptional()
@@ -1043,6 +1072,24 @@ export class UpdateQueueParams {
 
   @IsBoolean()
   allowQuestions?: boolean
+}
+
+export class AddQuestionTypeParams {
+  @IsInt()
+  @IsOptional()
+  id?: number
+
+  @IsInt()
+  @IsOptional()
+  cid?: number
+
+  @IsString()
+  @IsOptional()
+  name?: string
+
+  @IsString()
+  @IsOptional()
+  color?: string
 }
 
 export class TACheckinTimesResponse {
