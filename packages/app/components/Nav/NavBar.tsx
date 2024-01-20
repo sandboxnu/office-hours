@@ -143,13 +143,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     },
   ]
 
-  const globalTabs: NavBarTabsItem[] = [
-    {
-      href: '/organization',
-      as: `/organization`,
-      text: 'My Organization',
-    },
-  ]
+  const globalTabs: NavBarTabsItem[] = []
 
   if (profile?.organization) {
     if (profile?.organization.organizationRole === OrganizationRole.ADMIN) {
