@@ -111,7 +111,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
   const profile = useProfile()
 
   const [visible, setVisible] = useState<boolean>(false)
-  const { pathname } = useRouter()
+  const { pathname, asPath } = useRouter()
   const { course } = useCourse(courseId)
   const role = useRoleInCourse(courseId)
 
@@ -134,11 +134,6 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
       href: '/courses',
       as: `/courses`,
       text: 'My Courses',
-    },
-    {
-      href: '/organization',
-      as: `/organization`,
-      text: 'My Organization',
     },
   ]
 
@@ -229,7 +224,12 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
         )}
         <MenuCon>
           <LeftMenu>
-            <NavBarTabs horizontal currentHref={pathname} tabs={tabs} />
+            <NavBarTabs
+              horizontal
+              currentHref={pathname}
+              hrefAsPath={asPath}
+              tabs={tabs}
+            />
           </LeftMenu>
           <RightMenu>
             <ProfileDrawer courseId={courseId} />

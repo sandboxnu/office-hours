@@ -63,26 +63,39 @@ interface NavBarQueueTabItem {
 
 interface NavBarTabsProps {
   currentHref: string
+  hrefAsPath: string
   tabs: NavBarTabsItem[]
   horizontal?: boolean
 }
 
-function createQueueTab(queueTabItem: NavBarQueueTabItem) {
+function createQueueTab(queueTabItem: NavBarQueueTabItem, currentPath: string) {
   return (
-    <QueueMenu data-cy="queue-tab" title="Queue">
-      {queueTabItem.queues?.map((openQueue) => (
-        <QueueMenuItem
-          key={openQueue.id}
-          data-cy={`queue-menu-item-${openQueue.room}`}
-        >
-          <Link
-            href="/course/[cid]/queue/[qid]"
-            as={`/course/${queueTabItem.courseId}/queue/${openQueue.id}`}
+    // need to manually add the ant-menu-item-selected class for this submenu and it's menu items since antd isn't adding it automatically like it should be
+    <QueueMenu
+      data-cy="queue-tab"
+      title="Queue"
+      className={
+        currentPath.includes(`/course/${queueTabItem.courseId}/queue/`)
+          ? 'ant-menu-item-selected'
+          : ''
+      }
+    >
+      {queueTabItem.queues?.map((openQueue) => {
+        const queuePath = `/course/${queueTabItem.courseId}/queue/${openQueue.id}`
+        const isSelected = currentPath === queuePath
+
+        return (
+          <QueueMenuItem
+            key={openQueue.id}
+            data-cy={`queue-menu-item-${openQueue.room}`}
+            className={isSelected ? 'ant-menu-item-selected' : ''}
           >
-            <a>{openQueue.room}</a>
-          </Link>
-        </QueueMenuItem>
-      ))}
+            <Link href="/course/[cid]/queue/[qid]" as={queuePath}>
+              <a>{openQueue.room}</a>
+            </Link>
+          </QueueMenuItem>
+        )
+      })}
     </QueueMenu>
   )
 }
@@ -99,6 +112,7 @@ function createGeneralTab(tabItem: NavBarGeneralTabItem) {
 
 export default function NavBarTabs({
   currentHref,
+  hrefAsPath,
   tabs,
   horizontal,
 }: NavBarTabsProps): ReactElement {
@@ -110,7 +124,7 @@ export default function NavBarTabs({
       {tabs.map((tab) =>
         tab.text !== 'Queue'
           ? createGeneralTab(tab as NavBarGeneralTabItem)
-          : createQueueTab(tab as NavBarQueueTabItem),
+          : createQueueTab(tab as NavBarQueueTabItem, hrefAsPath),
       )}
     </HorizontalMenu>
   )
