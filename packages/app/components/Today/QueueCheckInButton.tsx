@@ -1,9 +1,8 @@
 import { API } from '@koh/api-client'
 import { QueuePartial, Role } from '@koh/common'
-import { Button, message } from 'antd'
+import { message } from 'antd'
 import { useRouter } from 'next/router'
 import React, { ReactElement, useState } from 'react'
-import styled from 'styled-components'
 import { useCourse } from '../../hooks/useCourse'
 import { useProfile } from '../../hooks/useProfile'
 import { useRoleInCourse } from '../../hooks/useRoleInCourse'
@@ -11,20 +10,17 @@ import QueueCheckInModal from './QueueCheckInModal'
 import QueueCreateModal from './QueueCreateModal'
 import TACheckinButton, { CheckinButton } from './TACheckinButton'
 
-const CreateQueueButton = styled(Button)`
-  color: white;
-  background: #2a9187;
-  &:hover,
-  &:focus {
-    color: white;
-    background: #39aca1;
-  }
-`
+interface TodayPageCheckinButtonProps {
+  createQueueModalVisible: boolean
+  setCreateQueueModalVisible: React.Dispatch<React.SetStateAction<boolean>>
+}
 
-export default function TodayPageCheckinButton(): ReactElement {
+export default function TodayPageCheckinButton({
+  createQueueModalVisible,
+  setCreateQueueModalVisible,
+}: TodayPageCheckinButtonProps): ReactElement {
   // state for check in modal
   const [checkInModalVisible, setCheckInModalVisible] = useState(false)
-  const [createQueueModalVisible, setCreateQueueModalVisible] = useState(false)
 
   const profile = useProfile()
   const router = useRouter()
@@ -55,37 +51,13 @@ export default function TodayPageCheckinButton(): ReactElement {
         !queueRequest.allowTA,
         queueRequest.notes,
       )
-      message.success(
-        `Created a new queue ${queueRequest.officeHourName}. Checking you in...`,
-      )
-      const redirectID = await API.taStatus.checkIn(
-        Number(cid),
-        queueRequest.officeHourName,
-      )
-
+      message.success(`Created a new queue ${queueRequest.officeHourName}`)
       mutateCourse()
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const checkoutTimer = setTimeout(
-        async () => {
-          message.warning('You are checked out automatically after 3 hours')
-          await API.taStatus.checkOut(Number(cid), queueRequest.officeHourName)
-          mutateCourse()
-        },
-        1000 * 60 * 60 * 3,
-      )
-      router.push(
-        '/course/[cid]/queue/[qid]',
-        `/course/${Number(cid)}/queue/${redirectID.id}`,
-      )
+
       setCreateQueueModalVisible(false)
     } catch (err) {
       message.error(err.response?.data?.message)
     }
-  }
-
-  const onCreateQueueButtonClick = () => {
-    setCheckInModalVisible(false)
-    setCreateQueueModalVisible(true)
   }
 
   return (
@@ -124,11 +96,6 @@ export default function TodayPageCheckinButton(): ReactElement {
             }
           }}
           onCancel={() => setCheckInModalVisible(false)}
-          button={
-            <CreateQueueButton onClick={onCreateQueueButtonClick}>
-              + Create Queue
-            </CreateQueueButton>
-          }
           queues={availableQueues}
         />
       )}
