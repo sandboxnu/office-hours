@@ -190,7 +190,7 @@ export const ChatbotToday: React.FC = () => {
       <ChatbotContainer>
         <Card
           title="Course chatbot"
-          className=" flex h-full max-h-[800px] w-full flex-col overflow-y-auto"
+          className=" flex h-full max-h-[90vh] w-full flex-col overflow-y-auto"
         >
           <div className="grow-1 overflow-y-auto">
             {messages &&

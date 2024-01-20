@@ -2,16 +2,18 @@ version: '2'
 
 services:
   postgresql:
-    image: postgres:11.5
+    image: ankane/pgvector
     ports:
       - '5432:5432'
     volumes:
       - ./infrastructure/dev/docker-postgresql-multiple-databases:/docker-entrypoint-initdb.d
       - pg:/var/lib/postgresql/data
     environment:
-      - POSTGRES_MULTIPLE_DATABASES=dev,test
+      - POSTGRES_MULTIPLE_DATABASES=prod,dev,test,chatbot
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_NONROOT_USER=helpme
+      - POSTGRES_NONROOT_PASSWORD=mysecretpassword
     networks:
       - api
   redis:

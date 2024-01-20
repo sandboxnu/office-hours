@@ -39,7 +39,7 @@ const typeorm = {
   type: 'postgres',
   url:
     process.env.DB_URL ||
-    'postgres://helpme:helpme22@cosc304.ok.ubc.ca:5432/helpmedb',
+    'postgres://helpme:mysecretpassword@localhost:5432/dev',
   synchronize: process.env.NODE_ENV !== 'production',
   entities: [
     CourseModel,
