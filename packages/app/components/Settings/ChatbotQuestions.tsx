@@ -1,11 +1,4 @@
-import {
-  Button,
-  Form,
-  Input,
-  Modal,
-  Pagination,
-  Table,
-} from 'antd'
+import { Button, Form, Input, Modal, Pagination, Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import React, { ReactElement, useEffect, useState } from 'react'
 import { API } from '@koh/api-client'
@@ -30,7 +23,12 @@ export interface ChatQuestionResponse {
   total: number
 }
 
-export default function ChatbotQuestions({ courseId }): ReactElement {
+type ChatbotQuestionsProps = {
+  courseId: number
+}
+export default function ChatbotQuestions({
+  courseId,
+}: ChatbotQuestionsProps): ReactElement {
   const [form] = Form.useForm()
   const [addModelOpen, setAddModelOpen] = useState(false)
 
@@ -145,7 +143,7 @@ export default function ChatbotQuestions({ courseId }): ReactElement {
         search,
         pageSize,
         currentPage,
-        courseId
+        courseId,
       )
 
       setChatQuestions(data.chatQuestions)
