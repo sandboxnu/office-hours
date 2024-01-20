@@ -88,27 +88,6 @@ export const ChatbotToday: React.FC = () => {
     }
   }
 
-  const addQuestionVector = async (questionId: number, query: string) => {
-    try {
-      const data = {
-        questionId,
-        query,
-      }
-      const response = await fetch(`/chat/${cid}/question`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      })
-      const json = await response.json()
-      return json
-    } catch (error) {
-      console.error('Error creating vector entry', error)
-      return null
-    }
-  }
-
   const handleAsk = async () => {
     setIsLoading(true)
 
@@ -133,15 +112,13 @@ export const ChatbotToday: React.FC = () => {
       parts: sourceDocument.parts.map((part) => part.pageNumber),
     }))
 
-    // Use currentInteractionId for the createQuestion call
     const question = await API.chatbot.createQuestion({
       interactionId: currentInteractionId,
       questionText: input,
       responseText: answer,
       sourceDocuments: sourceDocumentPages,
+      vectorStoreId: result.questionId,
     })
-
-    await addQuestionVector(question.id, input)
 
     setMessages([
       ...messages,

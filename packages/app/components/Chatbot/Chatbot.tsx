@@ -49,8 +49,7 @@ export const ChatbotComponent: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       type: 'apiMessage',
-      message:
-        'Hello, how can I assist you? I can help with anything course related.',
+      message: 'Hello, how can I assist you?',
     },
   ])
   const [isOpen, setIsOpen] = useState(false)
@@ -86,6 +85,7 @@ export const ChatbotComponent: React.FC = () => {
     setIsLoading(true)
 
     const result = await query()
+
     const answer = result.answer || "Sorry, I couldn't find the answer"
     const sourceDocuments = result.sourceDocuments || []
 
@@ -157,13 +157,13 @@ export const ChatbotComponent: React.FC = () => {
     return <></>
   }
   return (
-    <ChatbotContainer className="max-h-[90vh]" style={{ zIndex: 1000 }}>
+    <ChatbotContainer style={{ zIndex: 1000 }}>
       {isOpen ? (
         <Card
           title="Course chatbot"
           extra={<a onClick={() => setIsOpen(false)}>Close</a>}
         >
-          <div className="max-h-[70vh] overflow-y-auto">
+          <div className="max-h-[700px] overflow-y-auto">
             {messages &&
               messages.map((item) => (
                 <>
