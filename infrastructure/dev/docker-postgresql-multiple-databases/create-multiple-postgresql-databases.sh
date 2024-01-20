@@ -2,23 +2,27 @@
 
 # From https://github.com/mrts/docker-postgresql-multiple-databases
 
-set -e
-set -u
+function create_user_and_databases() {
+    local user=$1
+    local password=$2
+    local databases=$3
 
-function create_user_and_database() {
-	local database=$1
-	echo "  Creating user and database '$database'"
-	psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
-	    CREATE USER $database;
-	    CREATE DATABASE $database;
-	    GRANT ALL PRIVILEGES ON DATABASE $database TO $database;
-EOSQL
+    echo "  Creating user '$user' with password and multiple databases: $databases"
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+        CREATE USER $user WITH PASSWORD '$password';
+		EOSQL
+
+    for db in $(echo $databases | tr ',' ' '); do
+        echo "  Creating database '$db' and granting privileges to user '$user'"
+        psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+            CREATE DATABASE $db;
+            GRANT ALL PRIVILEGES ON DATABASE $db TO $user;
+						ALTER DATABASE $db OWNER TO $user;
+				EOSQL
+    done
 }
 
 if [ -n "$POSTGRES_MULTIPLE_DATABASES" ]; then
-	echo "Multiple database creation requested: $POSTGRES_MULTIPLE_DATABASES"
-	for db in $(echo $POSTGRES_MULTIPLE_DATABASES | tr ',' ' '); do
-		create_user_and_database $db
-	done
-	echo "Multiple databases created"
+    create_user_and_databases "$POSTGRES_NONROOT_USER" "$POSTGRES_NONROOT_PASSWORD" "$POSTGRES_MULTIPLE_DATABASES"
+    echo "User and multiple databases created"
 fi

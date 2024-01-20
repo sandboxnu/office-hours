@@ -1,5 +1,5 @@
-import { CreateQuestionParams, Role } from '@koh/common';
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { CreateQuestionParams, OrganizationRole, Role } from '@koh/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AlertModel } from 'alerts/alerts.entity';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { LastRegistrationModel } from 'login/last-registration-model.entity';
@@ -24,17 +24,20 @@ import {
   UserCourseFactory,
   UserFactory,
   OrganizationFactory,
+  OrganizationUserFactory,
+  OrganizationCourseFactory,
 } from '../../test/util/factories';
 import { CourseModel } from '../course/course.entity';
-//import { NonProductionGuard } from '../guards/non-production.guard';
+import { NonProductionGuard } from '../guards/non-production.guard';
 import { QuestionModel } from '../question/question.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { SeedService } from './seed.service';
 import { OrganizationCourseModel } from 'organization/organization-course.entity';
 import { OrganizationUserModel } from 'organization/organization-user.entity';
+import { QuestionTypeModel } from 'question/question-type.entity';
 
+@UseGuards(NonProductionGuard)
 @Controller('seeds')
-//@UseGuards(NonProductionGuard)
 export class SeedController {
   constructor(
     private _connection: Connection,
@@ -66,6 +69,7 @@ export class SeedController {
     await this.seedService.deleteAll(OrganizationModel);
     const manager = getManager();
     manager.query('ALTER SEQUENCE user_model_id_seq RESTART WITH 1;');
+    manager.query('ALTER SEQUENCE organization_model_id_seq RESTART WITH 1;');
 
     return 'Data successfully reset';
   }
@@ -89,6 +93,7 @@ export class SeedController {
     const courseExists = await CourseModel.findOne({
       where: { name: 'CS 304' },
     });
+
     if (!courseExists) {
       // possible collision:
       // If the dev env is active at midnight, the cron job will rescrape events from the ical which
@@ -111,6 +116,7 @@ export class SeedController {
     });
 
     const userExists = await UserModel.findOne();
+
     if (!userExists) {
       // Student 1
       const user1 = await UserFactory.create({
@@ -119,6 +125,7 @@ export class SeedController {
         lastName: 'wang',
         password: hashedPassword1,
       });
+
       await UserCourseFactory.create({
         user: user1,
         role: Role.STUDENT,
@@ -132,6 +139,7 @@ export class SeedController {
         lastName: 'Schultz',
         password: hashedPassword1,
       });
+
       await UserCourseFactory.create({
         user: user2,
         role: Role.STUDENT,
@@ -146,11 +154,13 @@ export class SeedController {
         lastName: 'Boy',
         password: hashedPassword1,
       });
+
       await UserCourseFactory.create({
         user: user3,
         role: Role.TA,
         course: course,
       });
+
       // TA 2
       const user4 = await UserFactory.create({
         email: 'small@ubc.ca',
@@ -158,11 +168,13 @@ export class SeedController {
         lastName: 'Boy',
         password: hashedPassword1,
       });
+
       await UserCourseFactory.create({
         user: user4,
         role: Role.TA,
         course: course,
       });
+
       // Professor
       const user5 = await UserFactory.create({
         email: 'bigRamon@ubc.ca',
@@ -175,9 +187,61 @@ export class SeedController {
         ],
         password: hashedPassword1,
       });
+
       await UserCourseFactory.create({
         user: user5,
         role: Role.PROFESSOR,
+        course: course,
+      });
+
+      const organization = await OrganizationFactory.create({
+        name: 'UBCO',
+        description: 'UBC Okanagan',
+        legacyAuthEnabled: true,
+        logoUrl:
+          'https://ires.ubc.ca/files/2020/11/cropped-UBC-Okanagan-1-logo.jpg',
+      });
+
+      await OrganizationUserFactory.create({
+        userId: user1.id,
+        organizationId: organization.id,
+        organizationUser: user1,
+        organization: organization,
+      });
+
+      await OrganizationUserFactory.create({
+        userId: user2.id,
+        organizationId: organization.id,
+        organizationUser: user2,
+        organization: organization,
+      });
+
+      await OrganizationUserFactory.create({
+        userId: user3.id,
+        organizationId: organization.id,
+        organizationUser: user3,
+        organization: organization,
+      });
+
+      await OrganizationUserFactory.create({
+        userId: user4.id,
+        organizationId: organization.id,
+        organizationUser: user4,
+        organization: organization,
+      });
+
+      await OrganizationUserFactory.create({
+        userId: user5.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+        organizationUser: user5,
+        organization: organization,
+      });
+
+      await OrganizationCourseFactory.create({
+        organizationId: organization.id,
+        courseId: course.id,
+        organization: organization,
         course: course,
       });
     }
@@ -186,11 +250,6 @@ export class SeedController {
       room: 'Online',
       course: course,
       allowQuestions: true,
-    });
-
-    await OrganizationFactory.create({
-      name: 'UBCO',
-      description: 'UBC Okanagan',
     });
 
     await QuestionFactory.create({
@@ -276,85 +335,5 @@ export class SeedController {
     });
 
     return 'Data successfully seeded';
-  }
-
-  @Post('createUser')
-  async createUser(
-    @Body() body: { role: Role; courseId: number },
-  ): Promise<UserCourseModel> {
-    let ta: UserCourseModel;
-    if (body.courseId) {
-      const course = await CourseModel.findOneOrFail(body.courseId);
-      ta = await UserCourseFactory.create({ role: body.role, course: course });
-    } else {
-      ta = await UserCourseFactory.create({ role: body.role });
-    }
-    return ta;
-  }
-
-  @Post('createQueue')
-  async createQueue(
-    @Body()
-    body: {
-      courseId: number;
-      allowQuestions: boolean;
-      // closes in n milliseconds from now
-      closesIn?: number;
-    },
-  ): Promise<QueueModel> {
-    const options = {
-      allowQuestions: body.allowQuestions ?? false,
-    };
-    if (body.courseId) {
-      const course = await CourseModel.findOneOrFail(body.courseId);
-      options['course'] = course;
-    }
-    const queue: QueueModel = await QueueFactory.create(options);
-    return queue;
-  }
-
-  @Post('createQuestion')
-  async createQuestion(
-    @Body()
-    body: {
-      queueId: number;
-      studentId: number;
-      data: CreateQuestionParams;
-    },
-  ): Promise<QuestionModel> {
-    const options = {};
-    if (body.queueId) {
-      const queue = await QueueModel.findOneOrFail(body.queueId);
-      options['queue'] = queue;
-    }
-    if (body.studentId) {
-      const student = await UserModel.findOneOrFail(body.studentId);
-      options['creator'] = student;
-    }
-    const question: QuestionModel = await QuestionFactory.create({
-      ...options,
-      ...body.data,
-      createdAt: new Date(),
-    });
-    return question;
-  }
-
-  @Post('createQueueWithoutOfficeHour')
-  async createQueueWithoutOfficeHour(
-    @Body()
-    body: {
-      courseId: number;
-      allowQuestions: boolean;
-    },
-  ): Promise<QueueModel> {
-    const options = {
-      allowQuestions: body.allowQuestions ?? false,
-      officeHours: [],
-    };
-    if (body.courseId) {
-      const course = await CourseModel.findOneOrFail(body.courseId);
-      options['course'] = course;
-    }
-    return await QueueFactory.create(options);
   }
 }

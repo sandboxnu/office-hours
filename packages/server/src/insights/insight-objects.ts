@@ -2,7 +2,7 @@ import {
   BarChartOutputType,
   InsightComponent,
   InsightObject,
-  QuestionType,
+  QuestionTypes,
   Role,
   SimpleDisplayOutputType,
   SimpleTableOutputType,
@@ -175,8 +175,7 @@ const getActiveStudents = async (filters: Filter[]): Promise<any[]> => {
       )
       .addSelect('"UserModel"."email"', 'email')
       .addSelect('COUNT(*)', 'questionsAsked')
-      .from(QuestionModel, 'QuestionModel')
-      .where('"QuestionModel"."questionType" IS NOT NULL'),
+      .from(QuestionModel, 'QuestionModel'),
     modelName: QuestionModel.name,
     allowedFilters: ['courseId', 'timeframe'],
     filters,
@@ -204,40 +203,33 @@ export const QuestionTypeBreakdown: InsightObject = {
   async compute(filters): Promise<BarChartOutputType> {
     const info = await addFilters({
       query: createQueryBuilder(QuestionModel)
-        .select('"QuestionModel"."questionType"', 'questionType')
-        .addSelect('COUNT(*)', 'totalQuestions')
-        .andWhere('"QuestionModel"."questionType" IS NOT NULL'),
+        .leftJoinAndSelect('QuestionModel.questionTypes', 'questionType')
+        .select('questionType.name', 'questionTypeName')
+        .addSelect('COUNT(QuestionModel.id)', 'totalQuestions')
+        .andWhere('questionType.name IS NOT NULL'),
       modelName: QuestionModel.name,
       allowedFilters: ['courseId', 'timeframe'],
       filters,
     })
-      .groupBy('"QuestionModel"."questionType"')
-      .having('"QuestionModel"."questionType" IS NOT NULL')
+      .groupBy('questionType.name')
+      .having('questionType.name IS NOT NULL')
       .getRawMany();
-
-    const typesFromInfo = info.map((obj) => obj['questionType']);
 
     info.forEach((pair) => {
       pair['totalQuestions'] = Number.parseInt(pair['totalQuestions']);
     });
 
-    Object.values(QuestionType).forEach((v) => {
-      if (!typesFromInfo.includes(v)) {
-        info.push({ questionType: v, totalQuestions: 0 });
-      }
-    });
-
     const insightObj = {
       data: info.sort((a, b) =>
-        a.questionType === b.questionType
+        a.questionTypeName === b.questionTypeName
           ? 0
-          : a.questionType > b.questionType
+          : a.questionTypeName > b.questionTypeName
           ? 1
           : -1,
       ),
       xField: 'totalQuestions',
-      yField: 'questionType',
-      seriesField: 'questionType',
+      yField: 'questionTypeName',
+      seriesField: 'questionTypeName',
       xAxisName: 'totalQuestions',
       yAxisName: 'questionType',
     };

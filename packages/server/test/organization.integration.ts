@@ -16,7 +16,7 @@ import { UserCourseModel } from 'profile/user-course.entity';
 describe('Organization Integration', () => {
   const supertest = setupIntegrationTest(OrganizationModule);
 
-  describe('POST /organization/:oid/add_member/:uid', () => {
+  describe('POST /organization/:oid/add_user/:uid', () => {
     it('should return 403 when user is not logged in', async () => {
       const response = await supertest().post('/organization/1/add_member/1');
 
@@ -57,6 +57,17 @@ describe('Organization Integration', () => {
       );
 
       expect(res.status).toBe(500);
+    });
+  });
+
+  describe('GET /organization', () => {
+    it('should return 200 and list of organizations', async () => {
+      await OrganizationFactory.create();
+      await OrganizationFactory.create();
+
+      const res = await supertest().get('/organization').expect(200);
+
+      expect(res.body).toMatchSnapshot();
     });
   });
 
@@ -1000,7 +1011,7 @@ describe('Organization Integration', () => {
         .patch(`/organization/${organization.id}/update_course/${course.id}`)
         .send({
           name: 'newName',
-          coordinatorEmail: '        ',
+          coordinator_email: '        ',
         });
 
       expect(res.body.message).toBe(
@@ -1162,9 +1173,10 @@ describe('Organization Integration', () => {
 
     it('should return 200 when course is updated', async () => {
       const user = await UserFactory.create();
+      const professor1 = await UserFactory.create();
+      const professor2 = await UserFactory.create();
       const organization = await OrganizationFactory.create();
       const course = await CourseFactory.create();
-
       const semester = await SemesterFactory.create();
 
       await OrganizationUserModel.create({
@@ -1172,6 +1184,7 @@ describe('Organization Integration', () => {
         organizationId: organization.id,
         role: OrganizationRole.ADMIN,
       }).save();
+
       await OrganizationCourseModel.create({
         courseId: course.id,
         organizationId: organization.id,
@@ -1184,10 +1197,11 @@ describe('Organization Integration', () => {
           timezone: 'America/Los_Angeles',
           sectionGroupName: 'test',
           semesterId: semester.id,
+          profIds: [professor1.id, professor2.id],
         });
 
       expect(res.status).toBe(200);
-      expect(res.body.message).toBe('Course updated');
+      expect(res.body.message).toBe('Course updated successfully');
     });
   });
 
@@ -1583,7 +1597,7 @@ describe('Organization Integration', () => {
 
       expect(res.status).toBe(400);
       expect(res.body.message).toBe(
-        'Organization name must be at least 4 characters',
+        'Organization name must be at least 3 characters',
       );
     });
 
@@ -2130,6 +2144,279 @@ describe('Organization Integration', () => {
       await fs.unlinkSync(
         path.join(process.env.UPLOAD_LOCATION, res.body.fileName),
       );
+    });
+  });
+
+  describe('POST /organization/:oid/create_course', () => {
+    it('should return 401 when user is not logged in', async () => {
+      const organization = await OrganizationFactory.create();
+      const response = await supertest().post(
+        `/organization/${organization.id}/create_course`,
+      );
+
+      expect(response.status).toBe(401);
+    });
+
+    it('should return 401 when user is not an admin', async () => {
+      const user = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+      const course = await CourseFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+      }).save();
+
+      await OrganizationCourseModel.create({
+        courseId: course.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id }).post(
+        `/organization/${organization.id}/create_course`,
+      );
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return 400 when course name is too short', async () => {
+      const user = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+      const course = await CourseFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+      await OrganizationCourseModel.create({
+        courseId: course.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id })
+        .post(`/organization/${organization.id}/create_course`)
+        .send({
+          name: '        ',
+        });
+
+      expect(res.body.message).toBe('Course name must be at least 1 character');
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 when course coordinator email is too short', async () => {
+      const user = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+      const course = await CourseFactory.create({
+        coordinator_email: 'test@ubc.ca',
+      });
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationCourseModel.create({
+        courseId: course.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id })
+        .post(`/organization/${organization.id}/create_course`)
+        .send({
+          name: 'newName',
+          coordinator_email: '        ',
+        });
+
+      expect(res.body.message).toBe(
+        'Coordinator email must be at least 1 character',
+      );
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 when section group name is too short', async () => {
+      const user = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+      const course = await CourseFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationCourseModel.create({
+        courseId: course.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id })
+        .post(`/organization/${organization.id}/create_course`)
+        .send({
+          name: 'newName',
+          sectionGroupName: '        ',
+        });
+
+      expect(res.body.message).toBe(
+        'Section group name must be at least 1 character',
+      );
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 when zoomLink is too short', async () => {
+      const user = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+      const course = await CourseFactory.create({ zoomLink: 'test' });
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+      await OrganizationCourseModel.create({
+        courseId: course.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id })
+        .post(`/organization/${organization.id}/create_course`)
+        .send({
+          name: 'newName',
+          zoomLink: '        ',
+          sectionGroupName: 'test',
+        });
+
+      expect(res.body.message).toBe('Zoom link must be at least 1 character');
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 when course timezone is not valid', async () => {
+      const user = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+      const course = await CourseFactory.create({
+        timezone: 'America/Los_Angeles',
+      });
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+      await OrganizationCourseModel.create({
+        courseId: course.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id })
+        .post(`/organization/${organization.id}/create_course`)
+        .send({
+          name: 'newName',
+          timezone: 'invalid_timezone',
+          sectionGroupName: 'test',
+        });
+
+      expect(res.body.message).toBe(
+        'Timezone field is invalid, must be one of America/New_York, ' +
+          'America/Los_Angeles, America/Chicago, America/Denver, America/Phoenix, ' +
+          'America/Anchorage, America/Honolulu, Europe/London, Europe/Paris, ' +
+          'Asia/Tokyo, Asia/Shanghai, Australia/Sydney',
+      );
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 when semester id is not found', async () => {
+      const user = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+      const course = await CourseFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationCourseModel.create({
+        courseId: course.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id })
+        .post(`/organization/${organization.id}/create_course`)
+        .send({
+          name: 'newName',
+          timezone: 'America/Los_Angeles',
+          sectionGroupName: 'test',
+          semesterId: 230,
+        });
+
+      expect(res.body.message).toBe('Semester not found');
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 when semester id is not an integer', async () => {
+      const user = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+      const course = await CourseFactory.create();
+
+      await SemesterFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationCourseModel.create({
+        courseId: course.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id })
+        .post(`/organization/${organization.id}/create_course`)
+        .send({
+          name: 'newName',
+          timezone: 'America/Los_Angeles',
+          sectionGroupName: 'test',
+          semesterId: 'invalid_integer',
+        });
+
+      expect(res.body.message[0]).toBe('semesterId must be an integer number');
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 200 when course is created', async () => {
+      const user = await UserFactory.create();
+      const professor1 = await UserFactory.create();
+      const professor2 = await UserFactory.create();
+      const organization = await OrganizationFactory.create();
+      const course = await CourseFactory.create();
+      const semester = await SemesterFactory.create();
+
+      await OrganizationUserModel.create({
+        userId: user.id,
+        organizationId: organization.id,
+        role: OrganizationRole.ADMIN,
+      }).save();
+
+      await OrganizationCourseModel.create({
+        courseId: course.id,
+        organizationId: organization.id,
+      }).save();
+
+      const res = await supertest({ userId: user.id })
+        .post(`/organization/${organization.id}/create_course`)
+        .send({
+          name: 'newName',
+          timezone: 'America/Los_Angeles',
+          sectionGroupName: 'test',
+          semesterId: semester.id,
+          profIds: [professor1.id, professor2.id],
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.body.message).toBe('Course created successfully');
     });
   });
 });

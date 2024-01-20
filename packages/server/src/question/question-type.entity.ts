@@ -2,11 +2,10 @@ import {
   BaseEntity,
   Column,
   Entity,
-  JoinColumn,
-  ManyToOne,
+  ManyToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { CourseModel } from '../course/course.entity';
+import { QuestionModel } from './question.entity';
 
 @Entity('question_type_model')
 export class QuestionTypeModel extends BaseEntity {
@@ -17,5 +16,11 @@ export class QuestionTypeModel extends BaseEntity {
   cid: number;
 
   @Column({ type: 'text', nullable: true })
-  question: string;
+  name: string;
+
+  @Column({ type: 'text', nullable: true, default: '#000000' })
+  color: string;
+
+  @ManyToMany(() => QuestionModel, (question) => question.questionTypes)
+  questions: QuestionModel[];
 }

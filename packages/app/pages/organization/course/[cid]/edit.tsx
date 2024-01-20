@@ -1,8 +1,8 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import { useProfile } from '../../../../hooks/useProfile'
 // import { useRouter } from "next/router";
 import { useOrganization } from '../../../../hooks/useOrganization'
-import { OrganizationRole } from '@koh/common'
+import { COURSE_TIMEZONES, OrganizationRole, Role } from '@koh/common'
 import DefaultErrorPage from 'next/error'
 import {
   Breadcrumb,
@@ -25,17 +25,47 @@ import { useRouter } from 'next/router'
 import { useSemester } from '../../../../hooks/useSemester'
 
 export default function Edit(): ReactElement {
-  const profile = useProfile()
   const router = useRouter()
   const { cid } = router.query
 
-  const { organization } = useOrganization(profile?.organization.id)
+  const [isAuthorized, setIsAuthorized] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
-  if (
-    profile &&
-    profile.organization.organizationRole !== OrganizationRole.ADMIN
-  ) {
-    return <DefaultErrorPage statusCode={404} />
+  const profile = useProfile()
+  const { organization } = useOrganization(profile?.organization.orgId)
+
+  const isAdmin =
+    profile && profile.organization.organizationRole === OrganizationRole.ADMIN
+
+  useEffect(() => {
+    if (profile && organization) {
+      const isProfessorInCourse = profile?.courses.some(
+        (course) =>
+          course.role === Role.PROFESSOR && course.course.id === Number(cid),
+      )
+
+      setIsAuthorized(isAdmin || isProfessorInCourse)
+      setIsLoading(false)
+    }
+  }, [profile, organization, cid, isAdmin])
+
+  if (isLoading) {
+    return (
+      <>
+        <Spin
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '100vh',
+          }}
+        />
+      </>
+    )
+  }
+
+  if (!isAuthorized) {
+    return <DefaultErrorPage statusCode={401} />
   }
 
   function RenderCourseInfo(): ReactElement {
@@ -47,19 +77,17 @@ export default function Edit(): ReactElement {
       async () =>
         await API.organizations.getCourse(organization.id, Number(cid)),
     )
-
-    if (error) {
-      router.push('/organization/settings')
-    }
+    const { data: professors } = useSWR(
+      isAdmin ? `/api/v1/organization/[oid]/get_professors` : null,
+      async () => await API.organizations.getProfessors(organization.id),
+    )
 
     const updateCourseAccess = async () => {
       await API.organizations
         .updateCourseAccess(organization.id, Number(cid))
         .then(() => {
           message.success('Course access was updated')
-          setTimeout(() => {
-            router.reload()
-          }, 1750)
+          router.back()
         })
         .catch((error) => {
           const errorMessage = error.response.data.message
@@ -77,14 +105,16 @@ export default function Edit(): ReactElement {
       const zoomLinkField = formValues.zoomLink
       const courseTimezoneField = formValues.courseTimezone
       const semesterIdField = formValues.semesterId
+      const profIdsField = isAdmin ? formValues.professorsUserId : [profile.id]
 
       if (
         courseNameField === courseData.course.name &&
-        coordinatorEmailField === courseData.course.coordinatorEmail &&
+        coordinatorEmailField === courseData.course.coordinator_email &&
         sectionGroupNameField === courseData.course.sectionGroupName &&
         zoomLinkField === courseData.course.zoomLink &&
         courseTimezoneField === courseData.course.timezone &&
-        semesterIdField === courseData.course.semesterId
+        semesterIdField === courseData.course.semesterId &&
+        profIdsField === courseData.profIds
       ) {
         message.info(
           'Course was not updated as information has not been changed',
@@ -98,7 +128,7 @@ export default function Edit(): ReactElement {
       }
 
       if (
-        courseData.course.coordinatorEmail &&
+        courseData.course.coordinator_email &&
         coordinatorEmailField.length < 1
       ) {
         message.error('Coordinator email cannot be empty')
@@ -132,24 +162,35 @@ export default function Edit(): ReactElement {
         return
       }
 
+      if (
+        !Array.isArray(profIdsField) ||
+        (professors &&
+          !profIdsField.every(
+            (profId) =>
+              typeof profId === 'number' &&
+              professors.find((prof) => prof.userId === profId),
+          ))
+      ) {
+        message.error('One or more selected professors are invalid')
+        return
+      }
+
       await API.organizations
         .updateCourse(organization.id, Number(cid), {
           name: courseNameField,
-          coordinatorEmail: coordinatorEmailField ?? '',
+          coordinator_email: coordinatorEmailField ?? '',
           sectionGroupName: sectionGroupNameField,
           zoomLink: zoomLinkField ?? '',
           timezone: courseTimezoneField,
           semesterId: semesterIdField,
+          profIds: profIdsField,
         })
         .then(() => {
           message.success('Course was updated')
-          setTimeout(() => {
-            router.reload()
-          }, 1750)
+          router.reload()
         })
         .catch((error) => {
           const errorMessage = error.response.data.message
-
           message.error(errorMessage)
         })
     }
@@ -158,7 +199,7 @@ export default function Edit(): ReactElement {
       <>
         <Row>
           <Col xs={{ span: 24 }} sm={{ span: 24 }}>
-            <Card bordered={true} title="General">
+            <Card bordered={true} title="Edit Course">
               <Form
                 form={formGeneral}
                 layout="vertical"
@@ -169,6 +210,7 @@ export default function Edit(): ReactElement {
                   zoomLink: courseData.course.zoomLink,
                   courseTimezone: courseData.course.timezone,
                   semesterId: courseData.course.semesterId,
+                  professorsUserId: courseData.profIds,
                 }}
                 onFinish={updateGeneral}
               >
@@ -219,42 +261,11 @@ export default function Edit(): ReactElement {
                       tooltip="Timezone of the course"
                     >
                       <Select>
-                        <Select.Option value="America/New_York">
-                          America/New York
-                        </Select.Option>
-                        <Select.Option value="America/Los_Angeles">
-                          America/Los Angeles
-                        </Select.Option>
-                        <Select.Option value="America/Chicago">
-                          America/Chicago
-                        </Select.Option>
-                        <Select.Option value="America/Denver">
-                          America/Denver
-                        </Select.Option>
-                        <Select.Option value="America/Phoenix">
-                          America/Phoenix
-                        </Select.Option>
-                        <Select.Option value="America/Anchorage">
-                          America/Anchorage
-                        </Select.Option>
-                        <Select.Option value="America/Honolulu">
-                          America/Honolulu
-                        </Select.Option>
-                        <Select.Option value="Europe/London">
-                          Europe/London
-                        </Select.Option>
-                        <Select.Option value="Europe/Paris">
-                          Europe/Paris
-                        </Select.Option>
-                        <Select.Option value="Asia/Tokyo">
-                          Asia/Tokyo
-                        </Select.Option>
-                        <Select.Option value="Asia/Shanghai">
-                          Asia/Shanghai
-                        </Select.Option>
-                        <Select.Option value="Australia/Sydney">
-                          Australia/Sydney
-                        </Select.Option>
+                        {COURSE_TIMEZONES.map((timezone) => (
+                          <Select.Option value={timezone} key={timezone}>
+                            {timezone}
+                          </Select.Option>
+                        ))}
                       </Select>
                     </Form.Item>
                   </Col>
@@ -274,7 +285,31 @@ export default function Edit(): ReactElement {
                       </Select>
                     </Form.Item>
                   </Col>
-
+                  <Col xs={{ span: 24 }} sm={{ span: 12 }}>
+                    {profile.organization.organizationRole ===
+                      OrganizationRole.ADMIN && professors ? (
+                      <Form.Item
+                        label="Professors"
+                        name="professorsUserId"
+                        tooltip="Professors teaching the course"
+                      >
+                        <Select mode="multiple" placeholder="Select professors">
+                          {professors.map((prof) => (
+                            <Select.Option
+                              value={prof.organizationUser.id}
+                              key={prof.organizationUser.id}
+                            >
+                              {prof.organizationUser.name}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    ) : (
+                      <></>
+                    )}
+                  </Col>
+                </Row>
+                <Row>
                   <Col xs={{ span: 24 }} sm={{ span: 12 }}>
                     <Form.Item>
                       <Button type="primary" htmlType="submit">
@@ -324,13 +359,18 @@ export default function Edit(): ReactElement {
         </Row>
       </>
     ) : (
-      <Spin />
+      <Spin
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh',
+        }}
+      />
     )
   }
 
-  return profile &&
-    profile.organization.organizationRole == OrganizationRole.ADMIN &&
-    organization ? (
+  return profile && isAuthorized && organization ? (
     <>
       <Head>
         <title>{organization?.name} | Admin Panel</title>
@@ -338,17 +378,26 @@ export default function Edit(): ReactElement {
 
       <StandardPageContainer>
         <NavBar />
-        <Breadcrumb separator=">" style={{ marginTop: 10, marginBottom: 20 }}>
-          <Breadcrumb.Item href="/organization/settings">
-            Organization Settings
-          </Breadcrumb.Item>
-          <Breadcrumb.Item href="">Course</Breadcrumb.Item>
-        </Breadcrumb>
+        {isAdmin && (
+          <Breadcrumb separator=">" style={{ marginTop: 10, marginBottom: 20 }}>
+            <Breadcrumb.Item href="/organization/settings">
+              Organization Settings
+            </Breadcrumb.Item>
+            <Breadcrumb.Item href="">Course</Breadcrumb.Item>
+          </Breadcrumb>
+        )}
 
         <RenderCourseInfo />
       </StandardPageContainer>
     </>
   ) : (
-    <Spin />
+    <Spin
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+      }}
+    />
   )
 }

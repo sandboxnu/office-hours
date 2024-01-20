@@ -1,7 +1,17 @@
 import { ReactElement, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import useSWR, { mutate } from 'swr'
-import { Button, Card, Input, List, Pagination, Spin } from 'antd'
+import {
+  Button,
+  Card,
+  Col,
+  Input,
+  List,
+  Pagination,
+  Row,
+  Space,
+  Spin,
+} from 'antd'
 import { API } from '@koh/api-client'
 import { SearchOutlined } from '@ant-design/icons'
 
@@ -60,13 +70,25 @@ export default function CoursesTab({
       return (
         <>
           <TableBackground>
-            <Input
-              placeholder="Search Courses"
-              prefix={<SearchOutlined />}
-              value={input}
-              onChange={handleInput}
-              onPressEnter={handleSearch}
-            />
+            <Row>
+              <Col sm={{ span: 18 }}>
+                <Input
+                  placeholder="Search Courses"
+                  prefix={<SearchOutlined />}
+                  value={input}
+                  onChange={handleInput}
+                  onPressEnter={handleSearch}
+                />
+              </Col>
+              <Col sm={{ span: 1 }}>
+                <Space></Space>
+              </Col>
+              <Col>
+                <Button type="primary" href={`/organization/course/add`}>
+                  Add New Course
+                </Button>
+              </Col>
+            </Row>
 
             <List
               style={{ marginTop: 20 }}

@@ -1,5 +1,5 @@
 import { OrganizationRole, Role, UserRole } from '@koh/common'
-import { Modal, Button, Drawer, Image, message } from 'antd'
+import { Button, Drawer, Image } from 'antd'
 import { useRouter } from 'next/router'
 import React, { ReactElement, useState } from 'react'
 import styled from 'styled-components'
@@ -9,7 +9,6 @@ import { useRoleInCourse } from '../../hooks/useRoleInCourse'
 import AlertsContainer from './AlertsContainer'
 import NavBarTabs, { NavBarTabsItem } from './NavBarTabs'
 import ProfileDrawer from './ProfileDrawer'
-import { API } from '@koh/api-client'
 
 const Nav = styled.nav`
   padding: 0px 0px;
@@ -112,23 +111,11 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
   const profile = useProfile()
 
   const [visible, setVisible] = useState<boolean>(false)
-  const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(true)
-  const { pathname } = useRouter()
+  const { pathname, asPath } = useRouter()
   const { course } = useCourse(courseId)
   const role = useRoleInCourse(courseId)
 
   const openQueues = course?.queues?.filter((queue) => queue.isOpen)
-
-  const addMember = async () => {
-    setUpdateModalVisible(false)
-    await API.organizations.addMember(profile.id, 1)
-
-    const courseProfile = profile.courses.find((c) => c.course.id === courseId)
-
-    if (courseProfile.role == 'professor') {
-      await API.organizations.addCourse(courseId, 1)
-    }
-  }
 
   const showDrawer = () => {
     setVisible(true)
@@ -138,29 +125,15 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     setVisible(false)
   }
 
-  const tabs: NavBarTabsItem[] = [
+  //
+  // global tabs navbar (organization)
+  //
+
+  const globalTabs: NavBarTabsItem[] = [
     {
       href: '/courses',
       as: `/courses`,
       text: 'My Courses',
-    },
-    {
-      href: '/course/[cid]/today',
-      as: `/course/${courseId}/today`,
-      text: 'Today',
-    },
-    {
-      href: '/course/[cid]/schedule',
-      as: `/course/${courseId}/schedule`,
-      text: 'Schedule',
-    },
-  ]
-
-  const globalTabs: NavBarTabsItem[] = [
-    {
-      href: '/organization',
-      as: `/organization`,
-      text: 'My Organization',
     },
   ]
 
@@ -173,17 +146,6 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
       })
     }
 
-    if (
-      profile?.organization.organizationRole === OrganizationRole.ADMIN ||
-      profile?.organization.organizationRole === OrganizationRole.PROFESSOR
-    ) {
-      globalTabs.push({
-        href: '/course/add',
-        as: '/course/add',
-        text: 'Add Course',
-      })
-    }
-
     if (profile?.userRole === UserRole.ADMIN) {
       globalTabs.push({
         href: '/admin',
@@ -193,19 +155,38 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     }
   }
 
-  if (role === Role.PROFESSOR || role === Role.TA) {
-    tabs.push({
-      href: '/course/[cid]/course_admin_panel',
-      as: `/course/${courseId}/course_admin_panel`,
-      text: 'Admin Panel',
-    })
-  }
+  //
+  // course tabs navbar (the order shown is the order they appear in the navbar)
+  //
+
+  const tabs: NavBarTabsItem[] = [
+    {
+      href: '/course/[cid]/today',
+      as: `/course/${courseId}/today`,
+      text: course?.name,
+      className: 'font-bold',
+    },
+  ]
 
   if (openQueues?.length > 0) {
     tabs.push({
       text: 'Queue',
       queues: openQueues,
       courseId: courseId,
+    })
+  }
+
+  tabs.push({
+    href: '/course/[cid]/schedule',
+    as: `/course/${courseId}/schedule`,
+    text: 'Schedule',
+  })
+
+  if (role === Role.PROFESSOR || role === Role.TA) {
+    tabs.push({
+      href: '/course/[cid]/course_admin_panel',
+      as: `/course/${courseId}/course_admin_panel`,
+      text: 'Admin Panel',
     })
   }
 
@@ -217,37 +198,38 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     })
   }
 
-  const [messageApi, easterEggHolder] = message.useMessage()
+  tabs.push({
+    href: '/courses',
+    as: `/courses`,
+    text: 'My Courses >',
+  })
 
-  const success = () => {
-    messageApi.open({
-      type: 'success',
-      content: 'Wow.. You found an easter egg.. Do you think there is more? 🤔',
-    })
-  }
   return courseId ? (
     <>
-      {easterEggHolder}
       <NavBG />
       <AlertsContainer courseId={courseId} />
       <Nav>
-        <LogoContainer>
-          <Logo>
-            {course?.organizationCourse && (
-              <a href={`/course/${course?.id}/today`}>
+        {course?.organizationCourse && (
+          <a href={`/course/${course?.id}/today`}>
+            <LogoContainer>
+              <Logo>
                 <Image
                   width={40}
                   preview={false}
-                  src={`/api/v1/organization/${profile?.organization.id}/get_logo/${profile?.organization.organizationLogoUrl}`}
+                  src={`/api/v1/organization/${profile?.organization.orgId}/get_logo/${profile?.organization.organizationLogoUrl}`}
                 />
-              </a>
-            )}
-            <span style={{ marginLeft: 15 }}>{course?.name}</span>
-          </Logo>
-        </LogoContainer>
+              </Logo>
+            </LogoContainer>
+          </a>
+        )}
         <MenuCon>
           <LeftMenu>
-            <NavBarTabs horizontal currentHref={pathname} tabs={tabs} />
+            <NavBarTabs
+              horizontal
+              currentHref={pathname}
+              hrefAsPath={asPath}
+              tabs={tabs}
+            />
           </LeftMenu>
           <RightMenu>
             <ProfileDrawer courseId={courseId} />
@@ -259,7 +241,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
         <Drawer
           title="Course"
           placement="right"
-          visible={visible}
+          open={visible}
           closable={false}
           onClose={onClose}
           bodyStyle={{ padding: '12px' }}
@@ -268,45 +250,6 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
           <ProfileDrawer courseId={courseId} />
         </Drawer>
       </Nav>
-
-      {profile?.organization &&
-        Object.keys(profile?.organization).length === 0 && (
-          <Modal
-            title="[System Message] Exciting News: Introducing Organizations!"
-            open={updateModalVisible}
-            closable={false}
-            footer={[
-              <Button key="ok" type="primary" onClick={addMember}>
-                OK
-              </Button>,
-            ]}
-          >
-            <p>
-              🎉 We&lsquo;re thrilled to announce a new feature that we are
-              working on: Organizations 🏢
-              <br />
-              <br />
-              As part of this work, we need to add your account to one of the
-              existing organizations. <br />
-              <br />
-              Before adding you to your organization, we just wanted to share
-              this update with you before we automatically migrate your account
-              when you click the button below.
-              <br />
-              <br />
-              Once you click the button below, this message will no longer
-              appear.
-              <br />
-              <br />
-              <small
-                style={{ fontSize: '3px', cursor: 'none' }}
-                onClick={success}
-              >
-                No easter eggs here 🥚🥚🥚
-              </small>
-            </p>
-          </Modal>
-        )}
     </>
   ) : (
     <>
@@ -319,7 +262,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
                 <Image
                   width={40}
                   preview={false}
-                  src={`/api/v1/organization/${profile?.organization.id}/get_logo/${profile?.organization.organizationLogoUrl}`}
+                  src={`/api/v1/organization/${profile?.organization.orgId}/get_logo/${profile?.organization.organizationLogoUrl}`}
                 />
               </a>
             )}

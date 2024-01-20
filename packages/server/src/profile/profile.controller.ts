@@ -6,6 +6,7 @@ import {
   QuestionStatusKeys,
   UpdateProfileParams,
   PROD_URL,
+  AccountType,
 } from '@koh/common';
 import {
   BadRequestException,
@@ -319,6 +320,7 @@ export class ProfileController {
       'phoneNotifsEnabled',
       'insights',
       'userRole',
+      'accountType',
     ]);
 
     if (userResponse === null || userResponse === undefined) {
@@ -356,20 +358,45 @@ export class ProfileController {
   @Patch()
   @UseGuards(JwtAuthGuard)
   async patch(
+    @Res() res: Response,
     @Body() userPatch: UpdateProfileParams,
     @User()
     user: UserModel,
-  ): Promise<GetProfileResponse> {
-    if (userPatch.email) {
+  ): Promise<Response<GetProfileResponse>> {
+    if (user.accountType !== AccountType.LEGACY && userPatch.email) {
+      return res
+        .status(HttpStatus.BAD_REQUEST)
+        .send({ message: ERROR_MESSAGES.profileController.cannotUpdateEmail });
+    }
+
+    if (userPatch.email && userPatch.email !== user.email) {
       const email = await UserModel.findOne({
         where: {
           email: userPatch.email,
         },
       });
+
       if (email) {
-        throw new BadRequestException('Email already in db');
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .send({ message: ERROR_MESSAGES.profileController.emailAlreadyInDb });
       }
     }
+
+    if (userPatch.sid && userPatch.sid !== user.sid) {
+      const sid = await UserModel.findOne({
+        where: {
+          sid: userPatch.sid,
+        },
+      });
+
+      if (sid) {
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .send({ message: ERROR_MESSAGES.profileController.sidAlreadyInDb });
+      }
+    }
+
     user = Object.assign(user, userPatch);
     // check that the user is trying to update the phone notifs
     if (userPatch.phoneNotifsEnabled && userPatch.phoneNumber) {
@@ -382,11 +409,16 @@ export class ProfileController {
       }
     }
 
-    await user.save().catch((e) => {
-      console.log(e);
-    });
+    await user
+      .save()
+      .then(() => {
+        return this.get(user);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
 
-    return this.get(user);
+    return res.status(200).send({ message: 'Profile updated successfully' });
   }
 
   @Post('/upload_picture')
@@ -402,7 +434,7 @@ export class ProfileController {
     @Res() response: Response,
   ): Promise<void> {
     try {
-      if (user.photoURL) {
+      if (user.photoURL && !user.photoURL.startsWith('http')) {
         fs.unlinkSync(path.join(process.env.UPLOAD_LOCATION, user.photoURL));
       }
 
@@ -465,23 +497,29 @@ export class ProfileController {
   @UseGuards(JwtAuthGuard)
   async deleteProfilePicture(@User() user: UserModel): Promise<void> {
     if (user.photoURL) {
-      fs.unlink(
-        process.env.UPLOAD_LOCATION + '/' + user.photoURL,
-        async (err) => {
-          if (err) {
-            const errMessage =
-              'Error deleting previous picture at : ' +
-              user.photoURL +
-              'the previous image was at an invalid location?';
-            console.error(errMessage, err);
-            throw new BadRequestException(errMessage);
-          } else {
-            user.photoURL = null;
-            await user.save();
-            return;
-          }
-        },
-      );
+      if (user.photoURL.startsWith('http')) {
+        user.photoURL = null;
+        await user.save();
+        return;
+      } else {
+        fs.unlink(
+          process.env.UPLOAD_LOCATION + '/' + user.photoURL,
+          async (err) => {
+            if (err) {
+              const errMessage =
+                'Error deleting previous picture at : ' +
+                user.photoURL +
+                'the previous image was at an invalid location?';
+              console.error(errMessage, err);
+              throw new BadRequestException(errMessage);
+            } else {
+              user.photoURL = null;
+              await user.save();
+              return;
+            }
+          },
+        );
+      }
     }
   }
 }

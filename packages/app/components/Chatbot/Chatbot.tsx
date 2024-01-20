@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Input, Button, Card, Avatar, List, Spin } from 'antd'
+import { Input, Button, Card, Avatar, Spin } from 'antd'
 import styled from 'styled-components'
 import { API } from '@koh/api-client'
 import { UserOutlined, RobotOutlined } from '@ant-design/icons'
 import router from 'next/router'
 import { useProfile } from '../../hooks/useProfile'
-import { ThumbsDown, ThumbsUp } from 'lucide-react'
 import { Feedback } from './components/Feedback'
 
 const ChatbotContainer = styled.div`
@@ -44,28 +43,14 @@ export const ChatbotComponent: React.FC = () => {
   const profile = useProfile()
   const [isLoading, setIsLoading] = useState(false)
   const [interactionId, setInteractionId] = useState<number | null>(null)
-  const [preDeterminedQuestions, setPreDeterminedQuestions] = useState<
-    PreDeterminedQuestion[]
-  >([
-    {
-      question: 'Can each table have have multiple foreigns keys?',
-      answer: 'Yes, each table can have multiple foreign keys.',
-    },
-    {
-      question: 'What is cardinality, explain related information too',
-      answer:
-        'Cardinality refers to the maximum number of relationship instances that an entity can have in a relationship. It can be one-to-one (1:1), one-to-many (1:* or 1:N), or many-to-many (*:* or N:M) depending on the relationship type.',
-    },
-    {
-      question: 'When and where is the final?',
-      answer: 'December 16, 2023 8:30AM	in COM 201',
-    },
-  ])
+  const [preDeterminedQuestions, setPreDeterminedQuestions] =
+    useState<PreDeterminedQuestion[]>(null)
 
   const [messages, setMessages] = useState<Message[]>([
     {
       type: 'apiMessage',
-      message: 'Hello, how can I assist you?',
+      message:
+        'Hello, how can I assist you? I can help with anything course related.',
     },
   ])
   const [isOpen, setIsOpen] = useState(false)
@@ -101,7 +86,6 @@ export const ChatbotComponent: React.FC = () => {
     setIsLoading(true)
 
     const result = await query()
-
     const answer = result.answer || "Sorry, I couldn't find the answer"
     const sourceDocuments = result.sourceDocuments || []
 
@@ -173,13 +157,13 @@ export const ChatbotComponent: React.FC = () => {
     return <></>
   }
   return (
-    <ChatbotContainer style={{ zIndex: 1000 }}>
+    <ChatbotContainer className="max-h-[90vh]" style={{ zIndex: 1000 }}>
       {isOpen ? (
         <Card
-          title="CS304 chatbot"
+          title="Course chatbot"
           extra={<a onClick={() => setIsOpen(false)}>Close</a>}
         >
-          <div className="max-h-[700px] overflow-y-auto">
+          <div className="max-h-[70vh] overflow-y-auto">
             {messages &&
               messages.map((item) => (
                 <>

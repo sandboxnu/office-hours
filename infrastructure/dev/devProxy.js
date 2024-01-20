@@ -1,10 +1,9 @@
 // proxy requests to server and app so that everything can run on same port
 // On prod, this is handled by NGINX.
 
-const express = require('express')
-const { createProxyMiddleware } = require('http-proxy-middleware')
-
-const app = express()
+const express = require("express");
+const { createProxyMiddleware } = require("http-proxy-middleware");
+const app = express();
 
 const proxy = createProxyMiddleware({
   target: 'http://localhost:3001',

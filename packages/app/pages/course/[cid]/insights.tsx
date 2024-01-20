@@ -207,7 +207,6 @@ function RenderInsight({
 }: RenderInsightProps): ReactElement {
   const router = useRouter()
   const { cid } = router.query
-
   const limit = insightName === 'MostActiveStudents' ? 6 : null
   const offset =
     insightName === 'MostActiveStudents'

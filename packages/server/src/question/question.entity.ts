@@ -6,6 +6,8 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
   SelectQueryBuilder,
@@ -14,6 +16,7 @@ import { UserModel } from '../profile/user.entity';
 import { QueueModel } from '../queue/queue.entity';
 import { canChangeQuestionStatus } from './question-fsm';
 import { QuestionGroupModel } from './question-group.entity';
+import { QuestionTypeModel } from './question-type.entity';
 
 @Entity('question_model')
 export class QuestionModel extends BaseEntity {
@@ -63,9 +66,6 @@ export class QuestionModel extends BaseEntity {
   // When the question leaves the queue
   @Column({ nullable: true })
   closedAt: Date;
-  // change questionType to string
-  @Column('text', { nullable: true })
-  questionType: string;
 
   @Column('text')
   status: QuestionStatus;
@@ -83,6 +83,14 @@ export class QuestionModel extends BaseEntity {
   @Column({ nullable: true })
   @Exclude()
   groupId: number;
+
+  @ManyToMany(() => QuestionTypeModel, { eager: true })
+  @JoinTable({
+    name: 'question_question_type_model',
+    joinColumn: { name: 'questionId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'questionTypeId', referencedColumnName: 'id' },
+  })
+  questionTypes: QuestionTypeModel[];
 
   /**
    * Change the status of the question as the given role
@@ -107,9 +115,7 @@ export class QuestionModel extends BaseEntity {
   ): SelectQueryBuilder<QuestionModel> {
     return this.createQueryBuilder('question')
       .where('question.queueId = :queueId', { queueId })
-      .andWhere('question.status IN (:...statuses)', {
-        statuses,
-      })
+      .andWhere('question.status IN (:...statuses)', { statuses })
       .orderBy('question.createdAt', 'ASC');
   }
 

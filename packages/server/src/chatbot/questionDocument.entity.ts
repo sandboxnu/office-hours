@@ -14,8 +14,8 @@ export class QuestionDocumentModel extends BaseEntity {
   public id: number;
 
   @ManyToOne(
-    type => ChatbotQuestionModel,
-    question => question.sourceDocuments,
+    (type) => ChatbotQuestionModel,
+    (question) => question.sourceDocuments,
   )
   @JoinColumn({ name: 'question' })
   question: ChatbotQuestionModel;

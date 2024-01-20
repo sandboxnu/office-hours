@@ -3,8 +3,8 @@ import styled from 'styled-components'
 import AddStudents from './AddStudents'
 type CourseRosterPageProps = { courseId: number }
 import { API } from '@koh/api-client'
-import { useCourse } from '../../hooks/useCourse'
 import { message } from 'antd'
+
 const CourseRosterPageComponent = styled.div`
   width: 90%;
   margin-left: auto;
@@ -17,10 +17,11 @@ export default function AddStudentsToCourse({
 }: CourseRosterPageProps): ReactElement {
   const [file, setFile] = useState()
   const fileReader = new FileReader()
-  const { course } = useCourse(courseId)
+
   const handleOnChange = (e) => {
     setFile(e.target.files[0])
   }
+
   const handleOnSubmit = (e) => {
     e.preventDefault()
     if (file) {
@@ -33,38 +34,22 @@ export default function AddStudentsToCourse({
   }
   const addStudents = async (students: string) => {
     const lines = students.split('\r\n')
-    lines.forEach(async (student, i) => {
-      //temp[0]=FN, temp[1]=LN, temp[2]=sid
-      const temp = student.split(',')
-      if (i !== 0) {
-        console.log(temp)
-        console.log(course)
-        const tempStudent = {
-          email: temp[2] + '@ubc.ca',
-          password: temp[2],
-          first_name: temp[0],
-          last_name: temp[1],
-          sid: Number(temp[2]),
-          selected_course: course.id,
-        }
-        await API.signup
-          .registerStudent(tempStudent)
-          .then((response) => {
-            console.log(response)
-            if (response === 'exists') {
-              message.warning(
-                'One or more of the students was not registered (already registered)',
-              )
-            }
-          })
-          .catch((e) => {
-            console.log(e)
-            message.warning(
-              temp[0] + ' was not registered (already registered)',
-            )
-          })
+    for (let i = 0; i < lines.length; i++) {
+      const student = lines[i]
+
+      if (student.includes(',')) {
+        message.error(
+          `Error on line ${i + 1}. File can only contain one column.`,
+        )
+        return
       }
-    })
+
+      try {
+        await API.course.addStudent(courseId, Number(student))
+      } catch (err) {
+        message.error(`Error on line ${i + 1}. ${err.response.data.message}`)
+      }
+    }
   }
   return (
     <div>

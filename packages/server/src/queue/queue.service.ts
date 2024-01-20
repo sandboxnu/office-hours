@@ -53,6 +53,7 @@ export class QueueService {
       ...StatusInQueue,
       OpenQuestionStatus.Helping,
     ])
+      .leftJoinAndSelect('question.questionTypes', 'questionTypes')
       .leftJoinAndSelect('question.creator', 'creator')
       .leftJoinAndSelect('question.taHelped', 'taHelped')
       .getMany();

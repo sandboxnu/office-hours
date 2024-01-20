@@ -13,6 +13,7 @@ import {
   Role,
   TACheckinTimesResponse,
   TACheckoutResponse,
+  UBCOuserParam,
   UpdateCourseOverrideBody,
   UpdateCourseOverrideResponse,
 } from '@koh/common';
@@ -30,12 +31,14 @@ import {
   Patch,
   Post,
   Query,
+  Res,
+  Req,
   UnauthorizedException,
   UseGuards,
   UseInterceptors,
-  Res,
 } from '@nestjs/common';
 import async from 'async';
+import { Response, Request } from 'express';
 import { EventModel, EventType } from 'profile/event-model.entity';
 import { UserCourseModel } from 'profile/user-course.entity';
 import { Connection } from 'typeorm';
@@ -53,7 +56,6 @@ import { HeatmapService } from './heatmap.service';
 import { CourseSectionMappingModel } from 'login/course-section-mapping.entity';
 import { AsyncQuestionModel } from 'asyncQuestion/asyncQuestion.entity';
 import { OrganizationCourseModel } from 'organization/organization-course.entity';
-import { Response } from 'express';
 
 @Controller('courses')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -763,5 +765,132 @@ export class CourseController {
     const course = await CourseModel.findOne(courseId);
     course.selfEnroll = !course.selfEnroll;
     await course.save();
+  }
+
+  @Post('enroll_by_invite_code/:code')
+  @UseGuards(JwtAuthGuard)
+  async enrollCourseByInviteCode(
+    @Param('code') code: string,
+    @Body() body: UBCOuserParam,
+    @Res() res: Response,
+  ): Promise<Response<void>> {
+    const user = await UserModel.findOne({
+      where: {
+        email: body.email,
+      },
+      relations: ['organizationUser', 'courses'],
+    });
+
+    if (!user) {
+      res.status(HttpStatus.NOT_FOUND).send({ message: 'User not found' });
+      return;
+    }
+
+    const course = await OrganizationCourseModel.findOne({
+      where: {
+        organizationId: user.organizationUser.organizationId,
+        courseId: body.selected_course,
+      },
+      relations: ['course'],
+    });
+
+    if (!course) {
+      res.status(HttpStatus.NOT_FOUND).send({
+        message: ERROR_MESSAGES.courseController.courseNotFound,
+      });
+      return;
+    }
+
+    if (course.course.courseInviteCode !== code) {
+      res.status(HttpStatus.BAD_REQUEST).send({
+        message: ERROR_MESSAGES.courseController.invalidInviteCode,
+      });
+      return;
+    }
+
+    await this.courseService
+      .addStudentToCourse(course.course, user)
+      .then((resp) => {
+        if (resp) {
+          res
+            .status(HttpStatus.OK)
+            .send({ message: 'User is added to this course' });
+        } else {
+          res.status(HttpStatus.BAD_REQUEST).send({
+            message:
+              'User cannot be added to course. Please check if the user is already in the course',
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(HttpStatus.BAD_REQUEST).send({ message: err.message });
+      });
+    return;
+  }
+
+  @Post(':id/add_student/:sid')
+  @UseGuards(JwtAuthGuard, CourseRolesGuard)
+  @Roles(Role.PROFESSOR)
+  async addStudent(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('id') courseId: number,
+    @Param('sid') studentId: number,
+  ): Promise<Response<void>> {
+    const user = await UserModel.findOne({
+      where: { sid: studentId },
+      relations: ['organizationUser', 'courses'],
+    });
+
+    const professorId: number = (req.user as { userId: number }).userId;
+    const { organizationUser } = await UserModel.findOne({
+      where: { id: professorId },
+      relations: ['organizationUser'],
+    });
+
+    const organizationId = organizationUser.organizationId;
+
+    if (!user) {
+      res
+        .status(HttpStatus.NOT_FOUND)
+        .send({ message: 'User with this student id is not found' });
+      return;
+    }
+
+    if (user.id === professorId) {
+      res
+        .status(HttpStatus.BAD_REQUEST)
+        .send({ message: 'You cannot add yourself to this course' });
+      return;
+    }
+
+    if (user.organizationUser.organizationId !== organizationId) {
+      res
+        .status(HttpStatus.BAD_REQUEST)
+        .send({ message: 'User is not in the same organization' });
+      return;
+    }
+
+    const course = await CourseModel.findOne({ id: courseId });
+
+    await this.courseService
+      .addStudentToCourse(course, user)
+      .then((resp) => {
+        if (resp) {
+          res
+            .status(HttpStatus.OK)
+            .send({ message: 'User is added to this course' });
+        } else {
+          res.status(HttpStatus.BAD_REQUEST).send({
+            message:
+              'User cannot be added to course. Please check if the user is already in the course',
+          });
+        }
+      })
+      .catch((err) => {
+        res.status(HttpStatus.BAD_REQUEST).send({ message: err.message });
+      });
+    return;
   }
 }

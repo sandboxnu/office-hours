@@ -1,4 +1,5 @@
 import {
+  AddQuestionTypeParams,
   ClosedQuestionStatus,
   CreateQuestionParams,
   CreateQuestionResponse,
@@ -90,12 +91,12 @@ export class QuestionController {
     if (questions === undefined) {
       throw new NotFoundException();
     }
-    const questionRes = questions.map(q => {
+    const questionRes = questions.map((q) => {
       const temp = pick(q, [
         'id',
         'queueId',
         'text',
-        'questionType',
+        'questionTypes',
         'createdAt',
         'helpedAt',
         'closedAt',
@@ -115,7 +116,7 @@ export class QuestionController {
     @Body() body: CreateQuestionParams,
     @Param('userId') userId: number,
   ): Promise<any> {
-    const { text, questionType, groupable, queueId, force } = body;
+    const { text, questionTypes, groupable, queueId, force } = body;
 
     const queue = await QueueModel.findOne({
       where: { id: queueId },
@@ -148,7 +149,7 @@ export class QuestionController {
     });
 
     const previousCourseQuestion = previousUserQuestions.find(
-      question => question.queue.courseId === queue.courseId,
+      (question) => question.queue.courseId === queue.courseId,
     );
 
     if (!!previousCourseQuestion) {
@@ -171,7 +172,7 @@ export class QuestionController {
         queueId: queueId,
         creator: user,
         text,
-        questionType,
+        questionTypes,
         groupable,
         status: QuestionStatusKeys.Queued,
         createdAt: new Date(),
@@ -192,7 +193,7 @@ export class QuestionController {
     @Body() body: CreateQuestionParams,
     @User() user: UserModel,
   ): Promise<CreateQuestionResponse> {
-    const { text, questionType, groupable, queueId, force } = body;
+    const { text, questionTypes, groupable, queueId, force } = body;
 
     const queue = await QueueModel.findOne({
       where: { id: queueId },
@@ -225,7 +226,7 @@ export class QuestionController {
     });
 
     const previousCourseQuestion = previousUserQuestions.find(
-      question => question.queue.courseId === queue.courseId,
+      (question) => question.queue.courseId === queue.courseId,
     );
 
     if (!!previousCourseQuestion) {
@@ -244,14 +245,13 @@ export class QuestionController {
         queueId: queueId,
         creator: user,
         text,
-        questionType,
+        questionTypes,
         groupable,
         status: QuestionStatusKeys.Drafting,
         createdAt: new Date(),
       }).save();
       return question;
     } catch (err) {
-      console.error(err);
       throw new HttpException(
         ERROR_MESSAGES.questionController.saveQError,
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -289,6 +289,19 @@ export class QuestionController {
         );
       }
       question = Object.assign(question, body);
+      if (body.questionTypes) {
+        question.questionTypes = body.questionTypes.map(
+          (type: AddQuestionTypeParams) => {
+            const questionType = new QuestionTypeModel();
+            questionType.id = type.id;
+            questionType.cid = type.cid;
+            questionType.name = type.name;
+            questionType.color = type.color;
+            return questionType;
+          },
+        );
+      }
+
       try {
         await question.save();
       } catch (err) {
@@ -386,7 +399,7 @@ export class QuestionController {
       relations: ['taHelped', 'creator'],
     });
 
-    if (!questions.every(q => q.groupable)) {
+    if (!questions.every((q) => q.groupable)) {
       throw new BadRequestException(
         ERROR_MESSAGES.questionController.groupQuestions.notGroupable,
       );
@@ -454,22 +467,23 @@ export class QuestionController {
     return;
   }
 
-  @Post(':c/:questionType')
+  @Post(':c/questionType')
   async addQuestions(
     @Res() res: Response,
     @Param('c') course: number,
-    @Param('questionType') type: string,
+    @Body() newQuestionType: AddQuestionTypeParams,
   ): Promise<void> {
     const questionType = await QuestionTypeModel.findOne({
       where: {
         cid: course,
-        question: type,
+        name: newQuestionType.name,
       },
     });
     if (!questionType) {
       await QuestionTypeModel.create({
         cid: course,
-        question: type,
+        name: newQuestionType.name,
+        color: newQuestionType.color,
       }).save();
       res.status(200).send('success');
       return;
@@ -483,7 +497,7 @@ export class QuestionController {
   async getQuestionType(
     @Res() res: Response,
     @Param('c') course: number,
-  ): Promise<string[]> {
+  ): Promise<QuestionTypeModel[]> {
     const questions = await QuestionTypeModel.find({
       where: {
         cid: course,
@@ -493,30 +507,19 @@ export class QuestionController {
       res.status(400).send('None');
       return;
     }
-    const strQ: string[] = [];
-    for (let i = 0; i < questions.length; i++) {
-      strQ[i] = questions[i].question;
-    }
-    res.status(200).send(strQ);
-    return strQ;
+    res.status(200).send(questions);
   }
+
   @Delete(':c/:questionType')
   async deleteQuestionType(
     @Res() res: Response,
     @Param('c') course: number,
     @Param('questionType') questionType: string,
   ): Promise<void> {
-    const qt = await QuestionTypeModel.findOne({
-      where: {
-        cid: course,
-        question: questionType,
-      },
+    await QuestionTypeModel.delete({
+      cid: course,
+      name: questionType,
     });
-    if (!qt) {
-      res.status(400).send("question or course doesn't exist");
-      return;
-    }
-    qt.remove();
     res.status(200).send('success');
     return;
   }

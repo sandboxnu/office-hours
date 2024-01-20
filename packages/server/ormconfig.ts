@@ -24,7 +24,7 @@ import { CalendarModel } from './src/calendar/calendar.entity';
 import { OrganizationUserModel } from './src/organization/organization-user.entity';
 import { OrganizationModel } from './src/organization/organization.entity';
 import { OrganizationCourseModel } from './src/organization/organization-course.entity';
-import { ChatbotDocumentModel } from 'chatbot/chatbotDocument.entity';
+import { ChatbotDocumentModel } from './src/chatbot/chatbotDocument.entity';
 config();
 
 // Options only used whe run via CLI
@@ -39,7 +39,7 @@ const typeorm = {
   type: 'postgres',
   url:
     process.env.DB_URL ||
-    'postgres://helpme:helpme22@cosc304.ok.ubc.ca:5432/helpmedb',
+    'postgres://helpme:mysecretpassword@localhost:5432/dev',
   synchronize: process.env.NODE_ENV !== 'production',
   entities: [
     CourseModel,

@@ -2,13 +2,13 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   HttpException,
   HttpStatus,
   Param,
   Patch,
   Post,
+  Delete,
   Query,
   Res,
   UploadedFile,
@@ -20,12 +20,15 @@ import { Response } from 'express';
 import {
   ERROR_MESSAGES,
   GetOrganizationUserResponse,
+  OrganizationResponse,
   OrganizationRole,
+  Role,
   UpdateOrganizationCourseDetailsParams,
   UpdateOrganizationDetailsParams,
   UpdateOrganizationUserRole,
   UpdateProfileParams,
   UserRole,
+  COURSE_TIMEZONES,
 } from '@koh/common';
 import * as fs from 'fs';
 import { OrganizationUserModel } from './organization-user.entity';
@@ -48,28 +51,121 @@ import * as sharp from 'sharp';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { SemesterModel } from 'semester/semester.entity';
+import { In } from 'typeorm';
+import { UserCourseModel } from 'profile/user-course.entity';
 
 @Controller('organization')
 export class OrganizationController {
   constructor(private organizationService: OrganizationService) {}
-  private COURSE_TIMEZONES = [
-    'America/New_York',
-    'America/Los_Angeles',
-    'America/Chicago',
-    'America/Denver',
-    'America/Phoenix',
-    'America/Anchorage',
-    'America/Honolulu',
-    'Europe/London',
-    'Europe/Paris',
-    'Asia/Tokyo',
-    'Asia/Shanghai',
-    'Australia/Sydney',
-  ];
+  @Post(':oid/create_course')
+  @UseGuards(JwtAuthGuard, OrganizationRolesGuard, OrganizationGuard)
+  @Roles(OrganizationRole.ADMIN, OrganizationRole.PROFESSOR)
+  async createCourse(
+    @Param('oid') oid: number,
+    @Body() courseDetails: UpdateOrganizationCourseDetailsParams,
+    @Res() res: Response,
+  ): Promise<Response<void>> {
+    if (!courseDetails.name || courseDetails.name.trim().length < 1) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: ERROR_MESSAGES.courseController.courseNameTooShort,
+      });
+    }
+
+    if (
+      courseDetails.coordinator_email &&
+      courseDetails.coordinator_email.trim().length < 1
+    ) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: ERROR_MESSAGES.courseController.coordinatorEmailTooShort,
+      });
+    }
+
+    if (
+      courseDetails.sectionGroupName &&
+      courseDetails.sectionGroupName.trim().length < 1
+    ) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: ERROR_MESSAGES.courseController.sectionGroupNameTooShort,
+      });
+    }
+
+    if (courseDetails.zoomLink && courseDetails.zoomLink.trim().length < 1) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: ERROR_MESSAGES.courseController.zoomLinkTooShort,
+      });
+    }
+
+    if (
+      !courseDetails.timezone ||
+      !COURSE_TIMEZONES.find((timezone) => timezone === courseDetails.timezone)
+    ) {
+      return res.status(HttpStatus.BAD_REQUEST).send({
+        message: `Timezone field is invalid, must be one of ${COURSE_TIMEZONES.join(
+          ', ',
+        )}`,
+      });
+    }
+
+    if (courseDetails.semesterId) {
+      const semesterInfo = await SemesterModel.findOne({
+        where: { id: courseDetails.semesterId },
+      });
+      if (!semesterInfo) {
+        return res.status(HttpStatus.BAD_REQUEST).send({
+          message: ERROR_MESSAGES.courseController.semesterNotFound,
+        });
+      }
+    }
+    const course = {
+      name: courseDetails.name,
+      coordinator_email: courseDetails.coordinator_email,
+      sectionGroupName: courseDetails.sectionGroupName,
+      zoomLink: courseDetails.zoomLink,
+      timezone: courseDetails.timezone,
+      semesterId: courseDetails.semesterId,
+      enabled: true,
+    };
+    try {
+      const newCourse = await CourseModel.create(course).save();
+
+      for (const profId of courseDetails.profIds) {
+        const chosenProfessor = await UserModel.findOne({
+          where: { id: profId },
+        });
+
+        if (!chosenProfessor) {
+          return res.status(HttpStatus.NOT_FOUND).send({
+            message: `Professor with ID ${profId} not found`,
+          });
+        }
+
+        await UserCourseModel.create({
+          userId: profId,
+          course: newCourse,
+          role: Role.PROFESSOR,
+          override: false,
+          expires: false,
+        }).save();
+      }
+
+      await OrganizationCourseModel.create({
+        organizationId: oid,
+        course: newCourse,
+      }).save();
+
+      return res.status(HttpStatus.OK).send({
+        message: 'Course created successfully',
+      });
+    } catch (err) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        message: err,
+      });
+    }
+  }
 
   @Patch(':oid/update_course/:cid')
   @UseGuards(JwtAuthGuard, OrganizationRolesGuard, OrganizationGuard)
-  @Roles(OrganizationRole.ADMIN)
+  @Roles(OrganizationRole.ADMIN, OrganizationRole.PROFESSOR)
   async updateCourse(
     @Res() res: Response,
     @Param('oid') oid: number,
@@ -98,8 +194,8 @@ export class OrganizationController {
 
     if (
       courseInfo.course.coordinator_email &&
-      (!courseDetails.coordinatorEmail ||
-        courseDetails.coordinatorEmail.trim().length < 1)
+      (!courseDetails.coordinator_email ||
+        courseDetails.coordinator_email.trim().length < 1)
     ) {
       return res.status(HttpStatus.BAD_REQUEST).send({
         message: ERROR_MESSAGES.courseController.coordinatorEmailTooShort,
@@ -127,12 +223,10 @@ export class OrganizationController {
 
     if (
       !courseDetails.timezone ||
-      !this.COURSE_TIMEZONES.find(
-        (timezone) => timezone === courseDetails.timezone,
-      )
+      !COURSE_TIMEZONES.find((timezone) => timezone === courseDetails.timezone)
     ) {
       return res.status(HttpStatus.BAD_REQUEST).send({
-        message: `Timezone field is invalid, must be one of ${this.COURSE_TIMEZONES.join(
+        message: `Timezone field is invalid, must be one of ${COURSE_TIMEZONES.join(
           ', ',
         )}`,
       });
@@ -156,8 +250,8 @@ export class OrganizationController {
 
     courseInfo.course.name = courseDetails.name;
 
-    if (courseDetails.coordinatorEmail) {
-      courseInfo.course.coordinator_email = courseDetails.coordinatorEmail;
+    if (courseDetails.coordinator_email) {
+      courseInfo.course.coordinator_email = courseDetails.coordinator_email;
     }
 
     if (courseDetails.sectionGroupName) {
@@ -169,18 +263,65 @@ export class OrganizationController {
     }
     courseInfo.course.timezone = courseDetails.timezone;
 
-    await courseInfo.course
-      .save()
-      .then(() => {
-        return res.status(HttpStatus.OK).send({
-          message: 'Course updated',
-        });
-      })
-      .catch((err) => {
-        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
-          message: err,
-        });
+    try {
+      await courseInfo.course.save();
+      //Remove current profs
+      await UserCourseModel.delete({
+        courseId: cid,
+        role: Role.PROFESSOR,
       });
+
+      for (const profId of courseDetails.profIds) {
+        const chosenProfessor = await UserModel.findOne({
+          where: { id: profId },
+        });
+
+        if (!chosenProfessor) {
+          return res.status(HttpStatus.NOT_FOUND).send({
+            message: ERROR_MESSAGES.profileController.userResponseNotFound,
+          });
+        }
+
+        const userCourse = await UserCourseModel.findOne({
+          where: {
+            userId: profId,
+            courseId: cid,
+          },
+        });
+
+        // user is already in the course
+        if (userCourse) {
+          userCourse.role = Role.PROFESSOR;
+          try {
+            userCourse.save();
+          } catch (err) {
+            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+              message: err,
+            });
+          }
+        } else {
+          try {
+            await UserCourseModel.create({
+              userId: profId,
+              courseId: cid,
+              role: Role.PROFESSOR,
+            }).save();
+          } catch (err) {
+            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+              message: err,
+            });
+          }
+        }
+      }
+    } catch (err) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        message: err,
+      });
+    }
+
+    return res.status(HttpStatus.OK).send({
+      message: 'Course updated successfully',
+    });
   }
 
   @Patch(':oid/update_course_access/:cid')
@@ -218,7 +359,7 @@ export class OrganizationController {
 
   @Get(':oid/get_course/:cid')
   @UseGuards(JwtAuthGuard, OrganizationRolesGuard)
-  @Roles(OrganizationRole.ADMIN)
+  @Roles(OrganizationRole.ADMIN, OrganizationRole.PROFESSOR)
   async getOrganizationCourse(
     @Res() res: Response,
     @Param('oid') oid: number,
@@ -543,6 +684,15 @@ export class OrganizationController {
       });
   }
 
+  @Get()
+  async getAllOrganizations(
+    @Res() res: Response,
+  ): Promise<Response<OrganizationResponse[]>> {
+    const organizations = await OrganizationModel.find();
+
+    return res.status(200).send(organizations);
+  }
+
   @Get(':oid')
   @UseGuards(JwtAuthGuard)
   async get(@Res() res: Response, @Param('oid') oid: string): Promise<void> {
@@ -643,7 +793,7 @@ export class OrganizationController {
       .then((organization) => {
         if (
           !organizationPatch.name ||
-          organizationPatch.name.trim().length < 4
+          organizationPatch.name.trim().length < 3
         ) {
           return res.status(HttpStatus.BAD_REQUEST).send({
             message:
@@ -978,6 +1128,20 @@ export class OrganizationController {
     );
 
     return courses;
+  }
+
+  @Get(':oid/get_professors')
+  @UseGuards(JwtAuthGuard, OrganizationRolesGuard)
+  @Roles(OrganizationRole.ADMIN)
+  async getProfessors(@Param('oid') oid: number): Promise<any> {
+    const orgProfs = OrganizationUserModel.find({
+      where: {
+        organizationId: oid,
+        role: In([OrganizationRole.PROFESSOR, OrganizationRole.ADMIN]),
+      },
+      relations: ['organizationUser'],
+    });
+    return orgProfs;
   }
 
   @Post(':oid/add_member/:uid')

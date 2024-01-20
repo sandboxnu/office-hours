@@ -137,8 +137,8 @@ export default function SettingsTab({
       return
     }
 
-    if (organizationNameField.length < 4) {
-      message.error('Organization name must be at least 4 characters')
+    if (organizationNameField.length < 3) {
+      message.error('Organization name must be at least 3 characters')
       return
     }
 
@@ -338,6 +338,7 @@ export default function SettingsTab({
                 tooltip="Whether users use organization's authentication system"
               >
                 <Switch
+                  style={{ backgroundColor: '#1677ff' }}
                   disabled={true}
                   defaultChecked={organization.ssoEnabled}
                 />

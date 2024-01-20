@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class fixOrganization1699381717454 implements MigrationInterface {
-  name = 'fixOrganization1699381717454';
+export class accountType1699752651183 implements MigrationInterface {
+  name = 'accountType1699752651183';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -12,6 +12,9 @@ export class fixOrganization1699381717454 implements MigrationInterface {
     );
     await queryRunner.query(
       `CREATE TABLE "question_document_model" ("id" SERIAL NOT NULL, "questionId" integer NOT NULL, "name" character varying NOT NULL, "type" character varying NOT NULL, "parts" text array NOT NULL, "question" integer, CONSTRAINT "PK_c8480de4d48b8bd2f557a533346" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "user_model" ADD "accountType" text NOT NULL DEFAULT 'legacy'`,
     );
     await queryRunner.query(
       `ALTER TABLE "chatbot_interactions_model" ADD CONSTRAINT "FK_7df3546203b677c555f27974c25" FOREIGN KEY ("course") REFERENCES "course_model"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
@@ -39,6 +42,9 @@ export class fixOrganization1699381717454 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE "chatbot_interactions_model" DROP CONSTRAINT "FK_7df3546203b677c555f27974c25"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "user_model" DROP COLUMN "accountType"`,
     );
     await queryRunner.query(`DROP TABLE "question_document_model"`);
     await queryRunner.query(`DROP TABLE "chatbot_questions_model"`);

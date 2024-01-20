@@ -1,10 +1,41 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Organization Integration GET /organization should return 200 and list of organizations 1`] = `
+Array [
+  Object {
+    "bannerUrl": null,
+    "description": "UBC Okanagan",
+    "googleAuthEnabled": true,
+    "id": 1,
+    "legacyAuthEnabled": false,
+    "logoUrl": null,
+    "name": "UBCO",
+    "ssoEnabled": false,
+    "ssoUrl": null,
+    "websiteUrl": null,
+  },
+  Object {
+    "bannerUrl": null,
+    "description": "UBC Okanagan",
+    "googleAuthEnabled": true,
+    "id": 2,
+    "legacyAuthEnabled": false,
+    "logoUrl": null,
+    "name": "UBCO",
+    "ssoEnabled": false,
+    "ssoUrl": null,
+    "websiteUrl": null,
+  },
+]
+`;
+
 exports[`Organization Integration GET /organization/:oid should return 200 and response when user is logged in 1`] = `
 Object {
   "bannerUrl": null,
   "description": "UBC Okanagan",
+  "googleAuthEnabled": true,
   "id": 1,
+  "legacyAuthEnabled": false,
   "logoUrl": null,
   "name": "UBCO",
   "ssoEnabled": false,
@@ -34,6 +65,7 @@ Object {
   "courseId": 1,
   "id": 1,
   "organizationId": 1,
+  "profIds": Array [],
 }
 `;
 
