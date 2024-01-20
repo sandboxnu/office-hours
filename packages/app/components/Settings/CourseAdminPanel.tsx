@@ -13,7 +13,7 @@ import { useProfile } from '../../hooks/useProfile'
 import CourseRosterPage from './CourseRosterPage'
 import { SettingsPanelAvatar } from './SettingsSharedComponents'
 import TACheckInCheckOutTimes from './TACheckInCheckOutTimes'
-import AddStudentsToCourse from './AddStudentsToCourse'
+// import AddStudentsToCourse from './AddStudentsToCourse'
 import ExportQuestions from './ExportQuestions'
 import EditQuestions from './EditQuestions'
 import { useRoleInCourse } from '../../hooks/useRoleInCourse'
@@ -106,9 +106,9 @@ export default function CourseAdminPanel({
               >
                 Course Roster
               </Menu.Item>
-              <Menu.Item key={CourseAdminOptions.ADD} icon={<UploadOutlined />}>
+              {/* <Menu.Item key={CourseAdminOptions.ADD} icon={<UploadOutlined />}>
                 Add students to course
-              </Menu.Item>
+              </Menu.Item> */}
               <Menu.Item
                 key={CourseAdminOptions.EDIT_COURSE}
                 icon={<EditOutlined />}
@@ -152,9 +152,9 @@ export default function CourseAdminPanel({
           {currentSettings === CourseAdminOptions.ROSTER && (
             <CourseRosterPage courseId={courseId} />
           )}
-          {currentSettings === CourseAdminOptions.ADD && (
+          {/* {currentSettings === CourseAdminOptions.ADD && (
             <AddStudentsToCourse courseId={courseId} />
-          )}
+          )} */}
           {currentSettings === CourseAdminOptions.EXPORT && (
             <ExportQuestions courseId={courseId} />
           )}

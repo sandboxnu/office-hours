@@ -13,14 +13,13 @@ import { ChatDocument, ChatQuestion, ChatbotService } from './chatbot.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { InteractionModel } from './interaction.entity';
 import { ChatbotQuestionModel } from './question.entity';
-import { ChatBotQuestionParams, InteractionParams } from '@koh/common';
-import { question } from 'readline-sync';
+import { InteractionParams } from '@koh/common';
 import { ChatbotDocumentModel } from './chatbotDocument.entity';
 
 @Controller('chatbot')
 @UseGuards(JwtAuthGuard)
 export class ChatbotController {
-  constructor(private readonly ChatbotService: ChatbotService) {}
+  constructor(private readonly ChatbotService: ChatbotService) { }
 
   @Post('interaction')
   async addInteraction(
@@ -34,11 +33,13 @@ export class ChatbotController {
     @Query('questionText') questionText: string,
     @Query('pageSize') pageSize: number,
     @Query('currentPage') currentPage: number,
+    @Query('cid') cid: number,
   ): Promise<{ chatQuestions: ChatQuestion[]; total: number }> {
     return await this.ChatbotService.getQuestions(
       questionText,
       pageSize,
       currentPage,
+      cid,
     );
   }
 

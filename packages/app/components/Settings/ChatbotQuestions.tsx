@@ -1,15 +1,5 @@
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Modal,
-  Pagination,
-  Table,
-  Tooltip,
-} from 'antd'
-import { FormInstance } from 'antd/es/form'
-import { ColumnType, ColumnsType } from 'antd/es/table'
+import { Button, Form, Input, Modal, Pagination, Table } from 'antd'
+import { ColumnsType } from 'antd/es/table'
 import React, { ReactElement, useEffect, useState } from 'react'
 import { API } from '@koh/api-client'
 import { useDebounce } from '../../hooks/useDebounce'
@@ -33,7 +23,12 @@ export interface ChatQuestionResponse {
   total: number
 }
 
-export default function ChatbotQuestions(): ReactElement {
+type ChatbotQuestionsProps = {
+  courseId: number
+}
+export default function ChatbotQuestions({
+  courseId,
+}: ChatbotQuestionsProps): ReactElement {
   const [form] = Form.useForm()
   const [addModelOpen, setAddModelOpen] = useState(false)
 
@@ -42,7 +37,7 @@ export default function ChatbotQuestions(): ReactElement {
 
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
-  const [loading, setLoading] = useState(false)
+  // const [loading, setLoading] = useState(false)
   const [totalQuestions, setTotalQuestions] = useState(0)
   const [chatQuestions, setChatQuestions] = useState([])
 
@@ -84,70 +79,71 @@ export default function ChatbotQuestions(): ReactElement {
         </>
       ),
     },
-    {
-      title: () => (
-        <>
-          <Tooltip
-            title="Suggest this question to students when they initially start with the chatbot."
-            trigger="click"
-            defaultOpen
-          >
-            <p>Suggested</p>
-          </Tooltip>
-        </>
-      ),
-      dataIndex: 'suggested',
-      key: 'suggested',
-      render: (text, record, index) => {
-        return (
-          <Checkbox
-            disabled={loading}
-            checked={record.suggested}
-            onChange={(e) => {
-              toggleSuggested(e.target.checked, index, record.id)
-            }}
-          />
-        )
-      },
-    },
+    // {
+    //   title: () => (
+    //     <>
+    //       <Tooltip
+    //         title="Suggest this question to students when they initially start with the chatbot."
+    //         trigger="click"
+    //         defaultOpen
+    //       >
+    //         <p>Suggested</p>
+    //       </Tooltip>
+    //     </>
+    //   ),
+    //   dataIndex: 'suggested',
+    //   key: 'suggested',
+    //   render: (text, record, index) => {
+    //     return (
+    //       <Checkbox
+    //         disabled={loading}
+    //         checked={record.suggested}
+    //         onChange={(e) => {
+    //           toggleSuggested(e.target.checked, index, record.id)
+    //         }}
+    //       />
+    //     )
+    //   },
+    // },
   ]
 
   useEffect(() => {
     getQuestions()
   }, [currentPage, pageSize, debouncedValue])
 
-  const toggleSuggested = async (newValue, index, questionId) => {
-    // TODO: Loading & contextual disabling
-    setLoading(true)
-    try {
-      await API.chatbot.editQuestion({
-        data: {
-          suggested: newValue,
-        },
-        questionId,
-      })
+  // const toggleSuggested = async (newValue, index, questionId) => {
+  //   // TODO: Loading & contextual disabling
+  //   setLoading(true)
+  //   try {
+  //     await API.chatbot.editQuestion({
+  //       data: {
+  //         suggested: newValue,
+  //       },
+  //       questionId,
+  //     })
 
-      setChatQuestions((prev) => {
-        const newChatQuestions = [...prev]
-        newChatQuestions[index] = {
-          ...newChatQuestions[index],
-          suggested: newValue,
-        }
-        return newChatQuestions
-      })
-    } catch (e) {
-      console.log(e)
-    }
-    setLoading(false)
-  }
+  //     setChatQuestions((prev) => {
+  //       const newChatQuestions = [...prev]
+  //       newChatQuestions[index] = {
+  //         ...newChatQuestions[index],
+  //         suggested: newValue,
+  //       }
+  //       return newChatQuestions
+  //     })
+  //   } catch (e) {
+  //     console.log(e)
+  //   }
+  //   setLoading(false)
+  // }
 
   const getQuestions = async () => {
-    setLoading(true)
+    // setLoading(true)
     try {
       const data: ChatQuestionResponse = await API.chatbot.getQuestions(
         search,
         pageSize,
         currentPage,
+        courseId,
       )
 
       setChatQuestions(data.chatQuestions)
@@ -155,14 +151,14 @@ export default function ChatbotQuestions(): ReactElement {
     } catch (e) {
       setChatQuestions([])
     }
-    setLoading(false)
+    // setLoading(false)
   }
 
   const addQuestion = async () => {
     const formData = await form.validateFields()
 
     try {
-      const question = await API.chatbot.createQuestion({
+      await API.chatbot.createQuestion({
         questionText: formData.questionText,
         responseText: formData.responseText,
         suggested: formData.suggested,

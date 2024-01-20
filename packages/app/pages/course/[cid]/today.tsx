@@ -19,7 +19,7 @@ import { useRoleInCourse } from '../../../hooks/useRoleInCourse'
 import PopularTimes from '../../../components/Today/PopularTimes/PopularTimes'
 import AsyncQuestionCard from '../../../components/AsyncQuestion/AsyncQuestionCard'
 import { orderBy } from 'lodash'
-import { useChatbotContext } from '../../../providers/chatbotProvider'
+import { ChatbotToday } from '../../../components/Today/ChatbotToday'
 
 const Container = styled.div`
   margin-top: 32px;
@@ -83,20 +83,11 @@ const collapseHeatmap = (heatmap: Heatmap): Heatmap =>
   })
 
 export default function Today(): ReactElement {
-  const { setCid, setOpen } = useChatbotContext()
   const router = useRouter()
   const { cid } = router.query
   const role = useRoleInCourse(Number(cid))
   const { course, mutateCourse } = useCourse(Number(cid))
   const [createQueueModalVisible, setCreateQueueModalVisible] = useState(false)
-
-  useEffect(() => {
-    setOpen(true)
-  }, [])
-
-  useEffect(() => {
-    setCid(cid)
-  }, [cid])
 
   const sortByProfOrder = role == Role.PROFESSOR ? 'desc' : 'asc'
   const sortedQueues =
@@ -191,8 +182,8 @@ export default function Today(): ReactElement {
                 )
               }
             </TodayCol>
-            <TodayCol md={12} sm={24}>
-              <SchedulePanel courseId={Number(cid)} defaultView="timeGridDay" />
+            <TodayCol md={12} sm={24} className="h-[100vh]">
+              <ChatbotToday />
             </TodayCol>
           </Row>
         </Container>
