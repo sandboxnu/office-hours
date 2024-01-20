@@ -1,16 +1,16 @@
-import { Role } from "@koh/common";
-import { Modal, Form, Switch, Radio, Input } from "antd";
-import { FormInstance } from "antd/lib/form";
-import TextArea from "antd/lib/input/TextArea";
-import { ReactElement } from "react";
-import { useState } from "react";
+import { Role } from '@koh/common'
+import { Modal, Form, Switch, Radio, Input } from 'antd'
+import { FormInstance } from 'antd/lib/form'
+import TextArea from 'antd/lib/input/TextArea'
+import { ReactElement } from 'react'
+import { useState } from 'react'
 
 interface QueueCreateModalProps {
-  visible: boolean;
-  onSubmit: (form: FormInstance) => void;
-  onCancel: () => void;
-  role: Role;
-  lastName: string;
+  visible: boolean
+  onSubmit: (form: FormInstance) => void
+  onCancel: () => void
+  role: Role
+  lastName: string
 }
 
 export default function QueueCreateModal({
@@ -20,33 +20,33 @@ export default function QueueCreateModal({
   role,
   lastName,
 }: QueueCreateModalProps): ReactElement {
-  const [form] = Form.useForm();
+  const [form] = Form.useForm()
   const [locEditable, setLocEditable] = useState(
-    !form.getFieldValue("isOnline")
-  );
+    !form.getFieldValue('isOnline'),
+  )
 
   const onIsOnlineUpdate = (isOnline) => {
-    setLocEditable(!isOnline);
+    setLocEditable(!isOnline)
     if (!isOnline) {
       form.setFieldsValue({
-        officeHourName: "",
-      });
+        officeHourName: '',
+      })
     } else {
-      updateRoomName();
+      updateRoomName()
     }
-  };
+  }
 
   const updateRoomName = () => {
-    const online = form.getFieldValue("isOnline");
-    const allowTA = form.getFieldValue("allowTA");
+    const online = form.getFieldValue('isOnline')
+    const allowTA = form.getFieldValue('allowTA')
     if (online) {
       form.setFieldsValue({
         officeHourName: allowTA
           ? `Online`
           : `Online - Professor ${lastName}'s Office Hours`,
-      });
+      })
     }
-  };
+  }
 
   return (
     <Modal
@@ -64,7 +64,11 @@ export default function QueueCreateModal({
           valuePropName="checked"
           tooltip="Online queues automatically open a Teams chat when helping a student"
         >
-          <Switch data-cy="qc-isonline" onChange={onIsOnlineUpdate} />
+          <Switch
+            style={{ backgroundColor: '#1677ff' }}
+            data-cy="qc-isonline"
+            onChange={onIsOnlineUpdate}
+          />
         </Form.Item>
 
         <Form.Item
@@ -89,13 +93,13 @@ export default function QueueCreateModal({
           rules={[
             {
               required: true,
-              message: "Please give this room a name.",
+              message: 'Please give this room a name.',
             },
           ]}
         >
           <Input
             data-cy="qc-location"
-            placeholder={"Ex: ISEC 102"}
+            placeholder={'Ex: ISEC 102'}
             disabled={!locEditable}
             style={{ width: 350 }}
           />
@@ -104,11 +108,11 @@ export default function QueueCreateModal({
         <Form.Item
           label={<strong>Additional Notes (optional)</strong>}
           name="notes"
-          style={{ width: "100%" }}
+          style={{ width: '100%' }}
         >
           <TextArea data-cy="qc-notes" rows={4} placeholder="Notes" />
         </Form.Item>
       </Form>
     </Modal>
-  );
+  )
 }

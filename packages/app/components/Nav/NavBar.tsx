@@ -111,7 +111,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
   const profile = useProfile()
 
   const [visible, setVisible] = useState<boolean>(false)
-  const { pathname } = useRouter()
+  const { pathname, asPath } = useRouter()
   const { course } = useCourse(courseId)
   const role = useRoleInCourse(courseId)
 
@@ -143,13 +143,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     },
   ]
 
-  const globalTabs: NavBarTabsItem[] = [
-    {
-      href: '/organization',
-      as: `/organization`,
-      text: 'My Organization',
-    },
-  ]
+  const globalTabs: NavBarTabsItem[] = []
 
   if (profile?.organization) {
     if (profile?.organization.organizationRole === OrganizationRole.ADMIN) {
@@ -214,7 +208,12 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
         </LogoContainer>
         <MenuCon>
           <LeftMenu>
-            <NavBarTabs horizontal currentHref={pathname} tabs={tabs} />
+            <NavBarTabs
+              horizontal
+              currentHref={pathname}
+              hrefAsPath={asPath}
+              tabs={tabs}
+            />
           </LeftMenu>
           <RightMenu>
             <ProfileDrawer courseId={courseId} />

@@ -124,7 +124,6 @@ export function EditQueueModal({
         setCurrentZoomLink(zoomLink)
       })
   }
-
   return (
     <Modal
       title="Edit Queue Details"
