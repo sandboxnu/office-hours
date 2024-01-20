@@ -195,13 +195,13 @@ export const ChatbotComponent: React.FC = () => {
     return <></>
   }
   return (
-    <ChatbotContainer style={{ zIndex: 1000 }}>
+    <ChatbotContainer className="max-h-[90vh]" style={{ zIndex: 1000 }}>
       {isOpen ? (
         <Card
           title="CS304 chatbot"
           extra={<a onClick={() => setIsOpen(false)}>Close</a>}
         >
-          <div className="max-h-[700px] overflow-y-auto">
+          <div className="max-h-[70vh] overflow-y-auto">
             {messages &&
               messages.map((item) => (
                 <>
