@@ -125,25 +125,17 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     setVisible(false)
   }
 
-  const tabs: NavBarTabsItem[] = [
+  //
+  // global tabs navbar (organization)
+  //
+
+  const globalTabs: NavBarTabsItem[] = [
     {
       href: '/courses',
       as: `/courses`,
       text: 'My Courses',
     },
-    {
-      href: '/course/[cid]/today',
-      as: `/course/${courseId}/today`,
-      text: 'Today',
-    },
-    {
-      href: '/course/[cid]/schedule',
-      as: `/course/${courseId}/schedule`,
-      text: 'Schedule',
-    },
   ]
-
-  const globalTabs: NavBarTabsItem[] = []
 
   if (profile?.organization) {
     if (profile?.organization.organizationRole === OrganizationRole.ADMIN) {
@@ -163,19 +155,38 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     }
   }
 
-  if (role === Role.PROFESSOR || role === Role.TA) {
-    tabs.push({
-      href: '/course/[cid]/course_admin_panel',
-      as: `/course/${courseId}/course_admin_panel`,
-      text: 'Admin Panel',
-    })
-  }
+  //
+  // course tabs navbar (the order shown is the order they appear in the navbar)
+  //
+
+  const tabs: NavBarTabsItem[] = [
+    {
+      href: '/course/[cid]/today',
+      as: `/course/${courseId}/today`,
+      text: course?.name,
+      className: 'font-bold',
+    },
+  ]
 
   if (openQueues?.length > 0) {
     tabs.push({
       text: 'Queue',
       queues: openQueues,
       courseId: courseId,
+    })
+  }
+
+  tabs.push({
+    href: '/course/[cid]/schedule',
+    as: `/course/${courseId}/schedule`,
+    text: 'Schedule',
+  })
+
+  if (role === Role.PROFESSOR || role === Role.TA) {
+    tabs.push({
+      href: '/course/[cid]/course_admin_panel',
+      as: `/course/${courseId}/course_admin_panel`,
+      text: 'Admin Panel',
     })
   }
 
@@ -187,25 +198,30 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
     })
   }
 
+  tabs.push({
+    href: '/courses',
+    as: `/courses`,
+    text: 'My Courses >',
+  })
+
   return courseId ? (
     <>
       <NavBG />
       <AlertsContainer courseId={courseId} />
       <Nav>
-        <LogoContainer>
-          <Logo>
-            {course?.organizationCourse && (
-              <a href={`/course/${course?.id}/today`}>
+        {course?.organizationCourse && (
+          <a href={`/course/${course?.id}/today`}>
+            <LogoContainer>
+              <Logo>
                 <Image
                   width={40}
                   preview={false}
                   src={`/api/v1/organization/${profile?.organization.orgId}/get_logo/${profile?.organization.organizationLogoUrl}`}
                 />
-              </a>
-            )}
-            <span style={{ marginLeft: 15 }}>{course?.name}</span>
-          </Logo>
-        </LogoContainer>
+              </Logo>
+            </LogoContainer>
+          </a>
+        )}
         <MenuCon>
           <LeftMenu>
             <NavBarTabs

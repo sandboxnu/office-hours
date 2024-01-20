@@ -52,6 +52,7 @@ interface NavBarGeneralTabItem {
   href: string
   as: string
   text: string
+  className?: string // if you want to add any tailwind styles to the navbar link
 }
 
 interface NavBarQueueTabItem {
@@ -103,7 +104,7 @@ function createGeneralTab(tabItem: NavBarGeneralTabItem) {
   return (
     <MenuItem key={tabItem.href}>
       <Link href={tabItem.href} as={tabItem.as}>
-        <a>{tabItem.text}</a>
+        <a className={tabItem.className}>{tabItem.text}</a>
       </Link>
     </MenuItem>
   )
