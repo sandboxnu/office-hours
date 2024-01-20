@@ -59,7 +59,7 @@ export class AuthService {
         await OrganizationUserModel.create({
           organizationId,
           userId: userId,
-          role: this.getRole(role),
+          role: OrganizationRole.MEMBER,
         }).save();
 
         return userId;
@@ -129,16 +129,6 @@ export class AuthService {
       throw new InternalServerErrorException('Unexpected error');
     } catch (err) {
       throw new BadRequestException(err.message);
-    }
-  }
-
-  private getRole(role: string): OrganizationRole {
-    const roles = role.split(';');
-
-    if (roles[0].split('@')[0] !== 'student') {
-      return OrganizationRole.PROFESSOR;
-    } else {
-      return OrganizationRole.MEMBER;
     }
   }
 }
