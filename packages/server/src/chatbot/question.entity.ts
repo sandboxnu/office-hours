@@ -15,6 +15,9 @@ export class ChatbotQuestionModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   public id: number;
 
+  @Column({ nullable: true }) // If vectorstore gets reset
+  vectorStoreId: string;
+
   @ManyToOne(() => InteractionModel)
   @JoinColumn({ name: 'interaction' })
   interaction: InteractionModel;
@@ -37,10 +40,7 @@ export class ChatbotQuestionModel extends BaseEntity {
   @Column({ default: false })
   suggested: boolean;
 
-  @OneToMany(
-    type => QuestionDocumentModel,
-    document => document.question,
-  )
+  @OneToMany((type) => QuestionDocumentModel, (document) => document.question)
   @JoinColumn({ name: 'question' })
   sourceDocuments: QuestionDocumentModel[];
 }
