@@ -15,6 +15,9 @@ export class ChatbotQuestionModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   public id: number;
 
+  @Column({ nullable: true }) // If vectorstore gets reset
+  vectorStoreId: string;
+
   @ManyToOne(() => InteractionModel)
   @JoinColumn({ name: 'interaction' })
   interaction: InteractionModel;

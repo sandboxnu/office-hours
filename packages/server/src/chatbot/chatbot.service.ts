@@ -92,7 +92,7 @@ export class ChatbotService {
       .innerJoinAndSelect('i.user', 'u')
       .where('q.questionText like :questionText and i.course= :cid', {
         questionText: `%${questionText}%`,
-        cid: `${cid}`
+        cid: `${cid}`,
       })
       .skip(skip)
       .take(limit)
@@ -129,7 +129,7 @@ export class ChatbotService {
   async createQuestion(
     data: ChatBotQuestionParams,
   ): Promise<ChatbotQuestionModel> {
-    if (!data.questionText || !data.responseText) {
+    if (!data.questionText || !data.responseText || !data.vectorStoreId) {
       throw new HttpException(
         'Missing question properties.',
         HttpStatus.BAD_REQUEST,
@@ -150,6 +150,7 @@ export class ChatbotService {
       questionText: data.questionText,
       responseText: data.responseText,
       suggested: data.suggested,
+      vectorStoreId: data.vectorStoreId,
     });
 
     await question.save();

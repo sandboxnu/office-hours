@@ -230,7 +230,8 @@ class APIClient {
     ): Promise<GetCourseUserInfoResponse> =>
       this.req(
         'GET',
-        `/api/v1/courses/${courseId}/get_user_info/${page}/${role}${search ? `?search=${search}` : ''
+        `/api/v1/courses/${courseId}/get_user_info/${page}/${role}${
+          search ? `?search=${search}` : ''
         }`,
       ),
     getCourseOverrides: async (courseId: number) =>
@@ -605,7 +606,8 @@ class APIClient {
     ): Promise<any> =>
       this.req(
         'GET',
-        `/api/v1/organization/${organizationId}/get_users/${page}${search ? `?search=${search}` : ''
+        `/api/v1/organization/${organizationId}/get_users/${page}${
+          search ? `?search=${search}` : ''
         }`,
       ),
     getCourses: async (
@@ -615,7 +617,8 @@ class APIClient {
     ): Promise<any> =>
       this.req(
         'GET',
-        `/api/v1/organization/${organizationId}/get_courses/${page}${search ? `?search=${search}` : ''
+        `/api/v1/organization/${organizationId}/get_courses/${page}${
+          search ? `?search=${search}` : ''
         }`,
       ),
     addCourse: async (
