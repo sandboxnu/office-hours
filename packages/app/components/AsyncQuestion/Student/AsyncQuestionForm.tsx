@@ -45,22 +45,22 @@ export function AsyncQuestionForm({
   const [selectedImage, setSelectedImage] = useState(null)
 
   const [preview, setPreview] = useState<string>()
-  const [questionTypeInput, setQuestionTypeInput] = useState<string>(
+  const [questionTypeInput] = useState<string>(
     question?.questionType || 'general question',
   )
-  const [questionTypes, setQuestionTypes] = useState(null)
-  const onCategoryChange = (e) => {
-    setQuestionTypeInput(e.target.value)
-  }
+  // const [questionTypes, setQuestionTypes] = useState(null)
+  // const onCategoryChange = (e) => {
+  //   setQuestionTypeInput(e.target.value)
+  // }
   // const courseId=Number(cid);
-  useEffect(() => {
-    getQuestions()
-  }, [])
-  const getQuestions = async () => {
-    await API.questions.questionTypes(Number(cid)).then((result) => {
-      setQuestionTypes(result)
-    })
-  }
+  // useEffect(() => {
+  //   getQuestions()
+  // }, [])
+  // const getQuestions = async () => {
+  //   await API.questions.questionTypes(Number(cid)).then((result) => {
+  //     setQuestionTypes(result)
+  //   })
+  // }
   //image stuff
   useEffect(() => {
     if (!selectedImage) {
@@ -161,10 +161,10 @@ export function AsyncQuestionForm({
             professors manually changes it
           </QuestionCaption>
 
-          <QuestionText>
+          {/* <QuestionText>
             What category does your question fall under?
-          </QuestionText>
-          <Radio.Group
+          </QuestionText> */}
+          {/* <Radio.Group
             value={questionTypeInput}
             onChange={onCategoryChange}
             buttonStyle="solid"
@@ -180,7 +180,7 @@ export function AsyncQuestionForm({
             ) : (
               <p>Loading...</p>
             )}
-          </Radio.Group>
+          </Radio.Group> */}
           <Form.Item name="images">
             <Input
               type="file"
