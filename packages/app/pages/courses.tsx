@@ -43,24 +43,17 @@ export default function Courses(): ReactElement {
   function RenderCourses(): ReactElement {
     return profile ? (
       <>
-        <h1>My Courses</h1>
-        {(profile.organization.organizationRole ===
-          OrganizationRole.PROFESSOR ||
-          profile.organization.organizationRole === OrganizationRole.ADMIN) && (
-          <div
-            style={{
-              position: 'absolute',
-              top: '0',
-              right: '0',
-              marginTop: 100,
-              marginRight: 40,
-            }}
-          >
+        <div className="flex items-center justify-between">
+          <h1>My Courses</h1>
+          {(profile.organization.organizationRole ===
+            OrganizationRole.PROFESSOR ||
+            profile.organization.organizationRole ===
+              OrganizationRole.ADMIN) && (
             <Button type="primary" href={`organization/course/add`}>
               Add New Course
             </Button>
-          </div>
-        )}
+          )}
+        </div>
         {profile?.courses.length === 0 ? (
           <Empty description="You are not enrolled in any course" />
         ) : (
