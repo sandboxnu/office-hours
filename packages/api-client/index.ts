@@ -414,7 +414,7 @@ class APIClient {
     clean: async (queueId: number): Promise<void> =>
       this.req('POST', `/api/v1/queues/${queueId}/clean`),
     disable: async (queueId: number): Promise<void> =>
-      this.req('DELETE', `/api/v1/queues/${queueId}/get`),
+      this.req('DELETE', `/api/v1/queues/${queueId}`),
   }
   notif = {
     desktop: {
