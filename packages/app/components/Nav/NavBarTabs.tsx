@@ -75,7 +75,7 @@ function createQueueTab(queueTabItem: NavBarQueueTabItem, currentPath: string) {
       data-cy="queue-tab"
       title="Queue"
       className={
-        currentPath.includes(`/course/${queueTabItem.courseId}/queue/`)
+        currentPath?.includes(`/course/${queueTabItem.courseId}/queue/`)
           ? 'ant-menu-item-selected'
           : ''
       }

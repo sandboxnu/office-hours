@@ -246,7 +246,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
           onClose={onClose}
           bodyStyle={{ padding: '12px' }}
         >
-          <NavBarTabs currentHref={pathname} tabs={tabs} />
+          <NavBarTabs currentHref={pathname} tabs={tabs} hrefAsPath={asPath} />
           <ProfileDrawer courseId={courseId} />
         </Drawer>
       </Nav>
@@ -273,7 +273,12 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
         </LogoContainer>
         <MenuCon>
           <LeftMenu>
-            <NavBarTabs horizontal currentHref={pathname} tabs={globalTabs} />
+            <NavBarTabs
+              horizontal
+              currentHref={pathname}
+              tabs={globalTabs}
+              hrefAsPath={asPath}
+            />
           </LeftMenu>
           <RightMenu>
             <ProfileDrawer />
@@ -290,7 +295,11 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
           onClose={onClose}
           bodyStyle={{ padding: '12px' }}
         >
-          <NavBarTabs currentHref={pathname} tabs={globalTabs} />
+          <NavBarTabs
+            currentHref={pathname}
+            tabs={globalTabs}
+            hrefAsPath={asPath}
+          />
           <ProfileDrawer courseId={null} />
         </Drawer>
       </Nav>
