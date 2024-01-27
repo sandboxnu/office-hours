@@ -1,19 +1,16 @@
 import {
   Button,
-  Checkbox,
   Form,
   Input,
   Modal,
   Pagination,
   Table,
   Tooltip,
-  Upload,
   UploadProps,
   message,
 } from 'antd'
-import { FormInstance } from 'antd/es/form'
-import { ColumnType, ColumnsType } from 'antd/es/table'
-import React, { ReactElement, useEffect, useRef, useState } from 'react'
+import { ColumnsType } from 'antd/es/table'
+import React, { ReactElement, useEffect, useState } from 'react'
 import { API } from '@koh/api-client'
 import { useDebounce } from '../../hooks/useDebounce'
 import { useRouter } from 'next/router'
@@ -22,13 +19,10 @@ import {
   FileAddOutlined,
   GithubOutlined,
   InboxOutlined,
-  LinkOutlined,
   QuestionCircleOutlined,
-  UploadOutlined,
 } from '@ant-design/icons'
 import { RcFile } from 'antd/lib/upload'
 import Dragger from 'antd/lib/upload/Dragger'
-import { Github } from 'lucide-react'
 
 export interface ChatbotDocument {
   id: number
@@ -138,7 +132,7 @@ export default function ChatbotSettings(): ReactElement {
 
       toast.success('File uploaded.')
     } catch (e) {
-      toast.error('Failed to upload file.')
+      toast.error('Failed to upload file. Make sure the URL is a PDF file.')
     } finally {
       setLoading(false)
     }
@@ -167,7 +161,7 @@ export default function ChatbotSettings(): ReactElement {
 
         const documentJSON = await uploadedDocument.json()
 
-        const response = await API.chatbot.addDocument({
+        await API.chatbot.addDocument({
           data: {
             name: documentJSON.name,
             type: documentJSON.type,
@@ -286,10 +280,14 @@ export default function ChatbotSettings(): ReactElement {
               <Form.Item
                 name="url"
                 rules={[
-                  { required: true, message: 'Please provide a document URL.' },
+                  {
+                    required: true,
+                    message:
+                      'Please provide a document URL. (link to pdf files only)',
+                  },
                 ]}
               >
-                <Input placeholder="Enter URL..." />
+                <Input placeholder="Enter URL for a pdf file..." />
               </Form.Item>
             )}
             {documentType === 'FILE' && (

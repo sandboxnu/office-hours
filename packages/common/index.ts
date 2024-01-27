@@ -922,6 +922,9 @@ export class ChatBotQuestionParams {
   @IsInt()
   userScore?: number
 
+  @IsString()
+  vectorStoreId?: string
+
   @IsArray()
   sourceDocuments?: {
     name: string

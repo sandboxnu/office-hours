@@ -19,7 +19,7 @@ import { ChatbotDocumentModel } from './chatbotDocument.entity';
 @Controller('chatbot')
 @UseGuards(JwtAuthGuard)
 export class ChatbotController {
-  constructor(private readonly ChatbotService: ChatbotService) { }
+  constructor(private readonly ChatbotService: ChatbotService) {}
 
   @Post('interaction')
   async addInteraction(
