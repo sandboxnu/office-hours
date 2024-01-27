@@ -13,6 +13,7 @@ import { AuthService } from './auth.service';
 import { ERROR_MESSAGES } from '@koh/common';
 import { JwtService } from '@nestjs/jwt';
 import { OrganizationModel } from 'organization/organization.entity';
+import { last } from 'lodash';
 
 @Controller('auth')
 export class AuthController {
@@ -29,6 +30,7 @@ export class AuthController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('oid') organizationId: number,
+    @Query('lastVisited') lastVisited: string,
   ): Promise<any> {
     const organization = await OrganizationModel.findOne({
       where: { id: organizationId },
@@ -60,7 +62,7 @@ export class AuthController {
         organizationId,
       );
 
-      this.enter(res, userId);
+      this.enter(res, userId, decodeURIComponent(lastVisited));
     } catch (err) {
       return res.redirect(`/auth/failed/40001`);
     }
@@ -147,7 +149,7 @@ export class AuthController {
     }
   }
 
-  private async enter(res: Response, userId: number) {
+  private async enter(res: Response, userId: number, lastVisited?: string) {
     // Expires in 30 days
     const authToken = await this.jwtService.signAsync({
       userId,
@@ -165,7 +167,7 @@ export class AuthController {
       .startsWith('https://');
     res
       .cookie('auth_token', authToken, { httpOnly: true, secure: isSecure })
-      .redirect(HttpStatus.FOUND, `/courses`);
+      .redirect(HttpStatus.FOUND, lastVisited || `/courses`);
   }
 
   private isSecure(): boolean {

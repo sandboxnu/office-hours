@@ -59,7 +59,11 @@ export default function Login(): ReactElement {
   }
 
   const loginWithInstitution = async () => {
-    Router.push(`/api/v1/auth/shibboleth/${organization.id}`)
+    const lastVisited = encodeURIComponent(localStorage.getItem('lastVisited'))
+    localStorage.removeItem('lastVisited')
+    Router.push(
+      `/api/v1/auth/shibboleth/${organization.id}?lastVisited=${lastVisited}`,
+    )
   }
 
   function login() {
