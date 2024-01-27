@@ -44,6 +44,7 @@ describe('ChatbotController Integration', () => {
       responseText: 'Photosynthesis is the process by which plants...',
       suggested: true,
       userScore: 5,
+      vectorStoreId: '1',
       sourceDocuments: [
         {
           name: 'Botany Textbook',

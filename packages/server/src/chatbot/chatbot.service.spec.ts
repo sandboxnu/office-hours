@@ -55,13 +55,14 @@ describe('ChatbotService', () => {
       );
     });
     it('should create a question with valid properties', async () => {
-      const interaction = await InteractionFactory.create(); // Assuming you have this factory
+      const interaction = await InteractionFactory.create();
       const questionParams: ChatBotQuestionParams = {
         interactionId: interaction.id,
         questionText: "What's the meaning of life?",
         responseText: "It's a philosophical question.",
         suggested: true,
         userScore: 5,
+        vectorStoreId: '1',
         sourceDocuments: [
           {
             name: 'Document1',
@@ -70,7 +71,6 @@ describe('ChatbotService', () => {
           },
         ],
       };
-
       const createdQuestion = await service.createQuestion(questionParams);
       expect(createdQuestion).toBeDefined();
       expect(createdQuestion.questionText).toEqual(questionParams.questionText);
@@ -84,6 +84,7 @@ describe('ChatbotService', () => {
         responseText: "It's a philosophical question.",
         suggested: true,
         userScore: 5,
+        vectorStoreId: '1',
         sourceDocuments: [
           {
             name: 'Document1',
