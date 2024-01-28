@@ -52,7 +52,7 @@ import {
   GetOrganizationUserResponse,
   OrganizationCourseResponse,
   OrganizationStatsResponse,
-  AddQuestionTypeParams,
+  QuestionTypeParams,
   UBCOuserParam,
 } from '@koh/common'
 import Axios, { AxiosInstance, Method } from 'axios'
@@ -378,7 +378,7 @@ class APIClient {
       this.req('GET', `/api/v1/questions/${courseId}/questionType`, undefined),
     addQuestionType: async (
       courseId: number,
-      body: AddQuestionTypeParams,
+      body: QuestionTypeParams,
     ): Promise<any> =>
       this.req(
         'POST',

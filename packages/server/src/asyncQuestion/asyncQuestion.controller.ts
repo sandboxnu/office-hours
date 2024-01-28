@@ -62,7 +62,7 @@ export class asyncQuestionController {
         course: c,
         questionAbstract: body.questionAbstract,
         questionText: body.questionText || null,
-        questionType: body.questionType,
+        questionTypes: body.questionTypes,
         status: asyncQuestionStatus.Waiting,
         visible: body.visible || false,
         createdAt: new Date(),

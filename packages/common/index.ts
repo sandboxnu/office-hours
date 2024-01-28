@@ -302,16 +302,16 @@ export class Question {
   @Type(() => Date)
   closedAt?: Date
 
-  questionTypes?: AddQuestionTypeParams[]
-
-  groupable!: boolean
+  questionTypes?: QuestionTypeParams[]
 
   status!: QuestionStatus
+
+  groupable!: boolean
 
   location?: string
 }
 
-export const QuestionTypes: AddQuestionTypeParams[] = [
+export const QuestionTypes: QuestionTypeParams[] = [
   {
     id: 1,
     cid: 1,
@@ -437,19 +437,8 @@ export class AsyncQuestion {
   creator?: UserPartial
 
   @IsOptional()
-  images?: Image[]
-
-  @IsOptional()
-  @IsString()
-  questionAbstract?: string
-
-  @IsOptional()
   @IsString()
   questionText?: string
-
-  @IsOptional()
-  @IsString()
-  answerText?: string
 
   @IsOptional()
   @IsInt()
@@ -461,16 +450,26 @@ export class AsyncQuestion {
   @Type(() => Date)
   createdAt?: Date
 
-  @Type(() => Date)
-  closedAt?: Date
-
   @IsOptional()
-  @IsString()
-  questionType?: string
+  questionTypes?: QuestionTypeParams[]
 
   @IsOptional()
   @IsString()
   status?: asyncQuestionStatus
+
+  @IsOptional()
+  images?: Image[]
+
+  @IsOptional()
+  @IsString()
+  questionAbstract?: string
+
+  @IsOptional()
+  @IsString()
+  answerText?: string
+
+  @Type(() => Date)
+  closedAt?: Date
 
   @IsOptional()
   @IsBoolean()
@@ -644,7 +643,7 @@ export class questions {
   text?: string
 
   @IsArray()
-  questionTypes?: AddQuestionTypeParams[]
+  questionTypes?: QuestionTypeParams[]
 
   @IsDate()
   @Type(() => Date)
@@ -996,7 +995,7 @@ export class CreateQuestionParams {
 
   @IsArray()
   @IsOptional()
-  questionTypes?: AddQuestionTypeParams[]
+  questionTypes?: QuestionTypeParams[]
 
   @IsBoolean()
   groupable!: boolean
@@ -1020,7 +1019,7 @@ export class UpdateQuestionParams {
 
   @IsArray()
   @IsOptional()
-  questionTypes?: AddQuestionTypeParams[]
+  questionTypes?: QuestionTypeParams[]
 
   @IsBoolean()
   @IsOptional()
@@ -1077,7 +1076,7 @@ export class UpdateQueueParams {
   allowQuestions?: boolean
 }
 
-export class AddQuestionTypeParams {
+export class QuestionTypeParams {
   @IsInt()
   @IsOptional()
   id?: number

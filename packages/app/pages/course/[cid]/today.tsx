@@ -17,7 +17,7 @@ import TodayPageCheckinButton from '../../../components/Today/QueueCheckInButton
 import { useCourse } from '../../../hooks/useCourse'
 import { useRoleInCourse } from '../../../hooks/useRoleInCourse'
 import PopularTimes from '../../../components/Today/PopularTimes/PopularTimes'
-import AsyncQuestionCard from '../../../components/AsyncQuestion/AsyncQuestionCard'
+import AsyncQuestionCard from '../../../components/Questions/AsyncQuestions/AsyncQuestionCard'
 import { orderBy } from 'lodash'
 import { ChatbotToday } from '../../../components/Today/ChatbotToday'
 
