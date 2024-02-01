@@ -26,7 +26,7 @@ const Title = styled.div`
 `
 const ButtonContainer = styled.div`
   display: flex;
-  flex-flow: row wrap;
+  flex-flow: row nowrap;
   margin-right: 10px;
 `
 
