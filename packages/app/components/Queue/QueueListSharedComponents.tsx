@@ -81,10 +81,20 @@ const QueuePropertyText = styled.div`
 
   // to show new lines in the text
   white-space: pre-wrap;
+
+  /* make text smaller on mobile */
+  @media (max-width: 650px) {
+    font-size: 14px;
+  }
 `
 
 const StaffH2 = styled.h2`
   margin-top: 32px;
+
+  // less margin on mobile
+  @media (max-width: 650px) {
+    margin-top: 16px;
+  }
 `
 
 const QueueRoomGroup = styled.div`
@@ -95,6 +105,11 @@ const QueueRoomGroup = styled.div`
 
 const QueueInfo = styled.div`
   margin-bottom: 24px;
+
+  // less margin on mobile
+  @media (max-width: 650px) {
+    margin-bottom: 0px;
+  }
 `
 
 const QueueText = styled.div`

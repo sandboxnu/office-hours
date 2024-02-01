@@ -246,6 +246,7 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
   }, [qid])
 
   const closeEditModal = useCallback(() => {
+    console.log('closeEditModal')
     setPopupEditQuestion(false)
     setIsJoining(false)
   }, [])
@@ -430,7 +431,7 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
     font-weight: 500;
     font-size: 24px;
     color: #212934;
-    margin-bottom: 0;
+    margin-bottom: 0.25em;
   `
 
   const NoQuestionsText = styled.div`
@@ -450,7 +451,6 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
         ) : (
           <>
             <QueueHeader>Queue</QueueHeader>
-            <br></br>
             {/* <StudentHeaderCard bordered={false}>
               <CenterRow>
                 <Col flex="1 1">
@@ -511,7 +511,7 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
                 editQuestion={openEditModal}
                 leaveQueue={leaveQueue}
               />
-              <div style={{ marginTop: '40px' }} />
+              <div className="mt-4" />
             </>
           )}
           <RenderQueueQuestions questions={questions?.queue} />
