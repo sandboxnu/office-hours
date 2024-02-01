@@ -49,7 +49,8 @@ export const ChatbotComponent: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       type: 'apiMessage',
-      message: 'Hello, how can I assist you? I can help with anything course related.',
+      message:
+        'Hello, how can I assist you? I can help with anything course related.',
     },
   ])
   const [isOpen, setIsOpen] = useState(false)
@@ -288,6 +289,7 @@ export const ChatbotComponent: React.FC = () => {
           type="primary"
           icon={<RobotOutlined />}
           size="large"
+          className="mx-5"
           onClick={() => setIsOpen(true)}
         >
           Chat now!
