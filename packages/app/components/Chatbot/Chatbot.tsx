@@ -11,7 +11,8 @@ const ChatbotContainer = styled.div`
   position: fixed;
   bottom: 20px;
   right: 20px;
-  width: 400px;
+  width: 90vw;
+  max-width: 400px;
   zindex: 9999;
 `
 
