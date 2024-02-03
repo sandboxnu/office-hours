@@ -244,13 +244,16 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
           {/* FOR MOBILE ONLY:
           If on a queue, show the queue title,
            else only show the course name */}
-          <h1 className="inline-block sm:hidden">
-            {pathname.includes('queue')
-              ? course?.queues?.find(
-                  (queue) => queue.id === Number(asPath.split('/')[4]),
-                )?.room
-              : course?.name}
-          </h1>
+          <div className="inline-block flex flex-col items-center sm:hidden ">
+            <h1 className="leading-none">{course?.name}</h1>
+            <h2 className="text-base leading-none text-slate-500">
+              {pathname.includes('queue')
+                ? course?.queues?.find(
+                    (queue) => queue.id === Number(asPath.split('/')[4]),
+                  )?.room
+                : ''}
+            </h2>
+          </div>
         </MenuCon>
         {/* BarsMenu is the hamburger menu for mobile */}
         <BarsMenu type="primary" onClick={showDrawer}>
