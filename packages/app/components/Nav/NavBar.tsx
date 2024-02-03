@@ -52,6 +52,12 @@ const MenuCon = styled.div`
   align-items: center;
   justify-content: space-between;
   padding-left: 0px;
+
+  // For centering the queue name or course name on mobile
+  @media (max-width: 650px) {
+    justify-content: center;
+    padding-right: 3em;
+  }
 `
 
 const LeftMenu = styled.div`
@@ -223,6 +229,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
           </a>
         )}
         <MenuCon>
+          {/* Left Menu (navbar tabs) and Right Menu (profile) only get shown on desktop  */}
           <LeftMenu>
             <NavBarTabs
               horizontal
@@ -234,7 +241,18 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
           <RightMenu>
             <ProfileDrawer courseId={courseId} />
           </RightMenu>
+          {/* FOR MOBILE ONLY:
+          If on a queue, show the queue title,
+           else only show the course name */}
+          <h1 className="inline-block sm:hidden">
+            {pathname.includes('queue')
+              ? course?.queues?.find(
+                  (queue) => queue.id === Number(asPath.split('/')[4]),
+                )?.room
+              : course?.name}
+          </h1>
         </MenuCon>
+        {/* BarsMenu is the hamburger menu for mobile */}
         <BarsMenu type="primary" onClick={showDrawer}>
           <BarsButton />
         </BarsMenu>
