@@ -210,16 +210,9 @@ export function QueueInfoColumn({
           )}
         </QueueRoomGroup>
 
-        {queue.staffList.length < 1 ? (
-          <h1>
-            No staff checked in, wait for a staff member to check in to post
-            questions
-          </h1>
-        ) : (
-          <QueueTitle data-cy="room-title">
-            {queue?.room} {queue?.isDisabled && <b>(disabled)</b>}
-          </QueueTitle>
-        )}
+        <QueueTitle data-cy="room-title">
+          {queue?.room} {queue?.isDisabled && <b>(disabled)</b>}
+        </QueueTitle>
       </QueueInfo>
       {queue?.notes && (
         <QueuePropertyRow>
@@ -243,9 +236,21 @@ export function QueueInfoColumn({
         </QueuePropertyRow>
       )}
       <QueueUpToDateInfo queueId={queueId} />
+
       {buttons}
+
       <StaffH2>Staff</StaffH2>
-      <TAStatuses queueId={queueId} />
+      {queue.staffList.length < 1 ? (
+        <div
+          role="alert"
+          className="border-l-4 border-orange-500 bg-orange-100 p-4 text-orange-700"
+        >
+          <p> No staff checked in</p>
+        </div>
+      ) : (
+        <TAStatuses queueId={queueId} />
+      )}
+
       {isStaff && (
         <QueueManagementBox>
           {/* <p>Toggle to indicate away </p>
