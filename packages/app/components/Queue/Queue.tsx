@@ -35,6 +35,7 @@ import { useLocalStorage } from '../../hooks/useLocalStorage'
 import { AddStudentsModal } from './TA/TAAddStudent'
 import { EditQueueModal } from './TA/EditQueueModal'
 import PropTypes from 'prop-types'
+import { PlusOutlined } from '@ant-design/icons'
 
 const EditQueueButton = styled(QueueInfoColumnButton)`
   color: #212934;
@@ -62,6 +63,8 @@ const QueueListContainer = styled.div`
 const JoinButton = styled(QueueInfoColumnButton)`
   background-color: #3684c6;
   color: white;
+  align-items: center;
+  display: flex;
 `
 
 const VerticalDivider = styled.div`
@@ -390,6 +393,7 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
                 onClick={async () =>
                   setShowJoinPopconfirm(!(await joinQueueOpenModal(false)))
                 }
+                icon={<PlusOutlined />}
               >
                 Join Queue
               </JoinButton>
