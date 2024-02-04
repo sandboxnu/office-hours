@@ -114,6 +114,7 @@ export default function TodayPageCheckinButton({
           size="large"
           data-cy="check-in-modal-button"
           onClick={() => renderProperModal()}
+          className="w-1/4"
         >
           Check In
         </CheckinButton>
@@ -123,6 +124,7 @@ export default function TodayPageCheckinButton({
           courseId={Number(cid)}
           room={queueCheckedIn.room}
           state="CheckedIn"
+          className="w-1/4"
         />
       )}
     </>

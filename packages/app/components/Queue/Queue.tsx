@@ -340,17 +340,16 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
                   queue.isDisabled
                 }
                 state={isCheckedIn ? 'CheckedIn' : 'CheckedOut'}
+                className="w-1/3 sm:w-full"
               />
             </Tooltip>
             <EditQueueButton
               data-cy="editQueue"
               onClick={() => setQueueSettingsModal(true)}
             >
+              {/* only show the "Details" part on desktop to keep button small on mobile */}
               <span>
-                {' '}
-                Edit Queue <span className="hidden sm:inline">
-                  Details
-                </span>{' '}
+                Edit Queue <span className="hidden sm:inline">Details</span>
               </span>
             </EditQueueButton>
             <EditQueueButton

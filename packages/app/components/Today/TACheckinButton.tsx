@@ -11,11 +11,9 @@ export const CheckinButton = styled(Button)`
   color: white;
   font-weight: 500;
   font-size: 14px;
-  width: 100%;
   margin-bottom: 12px;
 
   @media (max-width: 650px) {
-    width: 30%;
     margin-bottom: 0px;
   }
 `
@@ -25,11 +23,9 @@ export const CheckOutButton = styled(Button)`
   font-weight: 500;
   font-size: 14px;
   border-radius: 6px;
-  width: 100%;
   margin-bottom: 12px;
 
   @media (max-width: 650px) {
-    width: 30%;
     margin-bottom: 0px;
   }
 `
@@ -44,13 +40,14 @@ interface TACheckinButtonProps {
   room: string // name of room to check into
   state: CheckInButtonState // State of the button
   disabled?: boolean
-  block?: boolean
+  className?: string
 }
 export default function TACheckinButton({
   courseId,
   room,
   state,
   disabled = false,
+  className,
 }: TACheckinButtonProps): ReactElement {
   const router = useRouter()
 
@@ -94,6 +91,7 @@ export default function TACheckinButton({
             await API.taStatus.checkOut(courseId, room)
             mutateCourse()
           }}
+          className={className}
         >
           Check Out
         </CheckOutButton>
@@ -105,6 +103,7 @@ export default function TACheckinButton({
           onClick={() => checkInTA()}
           disabled={disabled || !course}
           data-cy="check-in-button"
+          className={className}
         >
           Check In
         </CheckinButton>
