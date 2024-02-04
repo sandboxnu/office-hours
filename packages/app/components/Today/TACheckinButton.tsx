@@ -12,6 +12,12 @@ export const CheckinButton = styled(Button)`
   font-weight: 500;
   font-size: 14px;
   width: 100%;
+  margin-bottom: 12px;
+
+  @media (max-width: 650px) {
+    width: 30%;
+    margin-bottom: 0px;
+  }
 `
 
 export const CheckOutButton = styled(Button)`
@@ -20,6 +26,12 @@ export const CheckOutButton = styled(Button)`
   font-size: 14px;
   border-radius: 6px;
   width: 100%;
+  margin-bottom: 12px;
+
+  @media (max-width: 650px) {
+    width: 30%;
+    margin-bottom: 0px;
+  }
 `
 
 type CheckInButtonState =

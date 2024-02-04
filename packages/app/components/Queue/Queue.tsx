@@ -327,11 +327,31 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
         isStaff={true}
         buttons={
           <>
+            <Tooltip
+              title={queue.isDisabled && 'Cannot check into a disabled queue!'}
+            >
+              <TACheckinButton
+                courseId={cid}
+                room={queue?.room}
+                disabled={
+                  staffCheckedIntoAnotherQueue ||
+                  isHelping ||
+                  (queue.isProfessorQueue && role !== Role.PROFESSOR) ||
+                  queue.isDisabled
+                }
+                state={isCheckedIn ? 'CheckedIn' : 'CheckedOut'}
+              />
+            </Tooltip>
             <EditQueueButton
               data-cy="editQueue"
               onClick={() => setQueueSettingsModal(true)}
             >
-              Edit Queue Details
+              <span>
+                {' '}
+                Edit Queue <span className="hidden sm:inline">
+                  Details
+                </span>{' '}
+              </span>
             </EditQueueButton>
             <EditQueueButton
               data-cy="addStudents"
@@ -340,26 +360,6 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
             >
               Add Students
             </EditQueueButton>
-
-            <div className="my-3">
-              <Tooltip
-                title={
-                  queue.isDisabled && 'Cannot check into a disabled queue!'
-                }
-              >
-                <TACheckinButton
-                  courseId={cid}
-                  room={queue?.room}
-                  disabled={
-                    staffCheckedIntoAnotherQueue ||
-                    isHelping ||
-                    (queue.isProfessorQueue && role !== Role.PROFESSOR) ||
-                    queue.isDisabled
-                  }
-                  state={isCheckedIn ? 'CheckedIn' : 'CheckedOut'}
-                />
-              </Tooltip>
-            </div>
           </>
         }
       />

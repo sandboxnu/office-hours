@@ -278,7 +278,7 @@ export function QueueInfoColumn({
 
       {/* buttons for staff on mobile */}
       {isStaff && (
-        <div className="mt-3 block flex flex-wrap items-center justify-between sm:hidden">
+        <div className="my-3 block flex flex-wrap items-center justify-between sm:hidden">
           {buttons}
         </div>
       )}
