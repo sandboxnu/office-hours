@@ -34,7 +34,7 @@ export function TAStatuses({ queueId }: StatusRowProps): ReactElement {
   }
 
   return (
-    <Col style={{ marginBottom: '16px' }}>
+    <Col className="mb-3 sm:mb-0">
       {staffList.map((ta) => (
         <Col key={ta.id}>
           <StatusCard

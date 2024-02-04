@@ -72,10 +72,6 @@ const QueueListContainer = styled.div`
 const JoinButton = styled(QueueInfoColumnButton)`
   background-color: #3684c6;
   color: white;
-
-  @media (max-width: 650px) {
-    margin: 0;
-  }
 `
 
 const VerticalDivider = styled.div`
@@ -371,7 +367,7 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
               </HelpNextButton>
             </Tooltip>
 
-            <div style={{ marginBottom: '12px' }}>
+            <div className="my-3">
               <Tooltip
                 title={
                   queue.isDisabled && 'Cannot check into a disabled queue!'
@@ -387,7 +383,6 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
                     queue.isDisabled
                   }
                   state={isCheckedIn ? 'CheckedIn' : 'CheckedOut'}
-                  block
                 />
               </Tooltip>
             </div>

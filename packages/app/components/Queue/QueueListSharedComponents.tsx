@@ -30,6 +30,7 @@ const QueueTitle = styled.h2`
   color: #212934;
   margin-bottom: 0px;
   line-height: 2rem;
+  display: inline-block;
 `
 
 export const NotesText = styled.div`
@@ -58,12 +59,19 @@ const QueueInfoColumnButtonStyle = styled(Button)`
   border: 1px solid #cfd6de;
   border-radius: 6px;
   margin-bottom: 12px;
+  width: 100%;
+
+  // less margin and width on mobile
+  @media (max-width: 650px) {
+    margin-bottom: 0;
+    width: 30%;
+  }
 `
 
 const { confirm } = Modal
 
 export const QueueInfoColumnButton = (props: ButtonProps): ReactElement => (
-  <QueueInfoColumnButtonStyle size="large" block {...props} />
+  <QueueInfoColumnButtonStyle size="large" {...props} />
 )
 
 const QueuePropertyRow = styled.div`
@@ -156,6 +164,11 @@ const QueueManagementBox = styled.div`
   width: 100%;
   height: 100%;
   bottom: 0;
+
+  @media (max-width: 650px) {
+    flex-direction: row;
+    justify-content: space-between;
+  }
 `
 
 interface QueueInfoColumnProps {
@@ -205,7 +218,12 @@ export function QueueInfoColumn({
   // };
   return (
     <InfoColumnContainer>
-      <QueueInfo>
+      {/* only show the queue title and warning here on desktop, move down on mobile */}
+      <QueueInfo className="justify-left hidden items-center sm:flex">
+        <QueueTitle data-cy="room-title">
+          {queue?.room} {queue?.isDisabled && <b>(disabled)</b>}
+        </QueueTitle>
+
         <QueueRoomGroup>
           {!queue.allowQuestions && (
             <Tooltip title="This queue is no longer accepting questions">
@@ -216,10 +234,6 @@ export function QueueInfoColumn({
             </Tooltip>
           )}
         </QueueRoomGroup>
-
-        <QueueTitle className="hidden sm:inline-block" data-cy="room-title">
-          {queue?.room} {queue?.isDisabled && <b>(disabled)</b>}
-        </QueueTitle>
       </QueueInfo>
 
       {queue?.notes && (
@@ -263,7 +277,11 @@ export function QueueInfoColumn({
       )}
 
       {/* buttons for staff on mobile */}
-      {isStaff && <div className="block sm:hidden">{buttons}</div>}
+      {isStaff && (
+        <div className="mt-3 block flex flex-wrap items-center justify-between sm:hidden">
+          {buttons}
+        </div>
+      )}
 
       {isStaff && (
         <QueueManagementBox>
@@ -303,11 +321,7 @@ export function QueueInfoColumn({
           <QueueUpToDateInfo queueId={queueId} />
         </div>
         {/* for 'Join Queue' button for students */}
-        {!isStaff && (
-          <div className="block flex w-1/3 items-center justify-between sm:hidden">
-            {buttons}
-          </div>
-        )}
+        {!isStaff && buttons}
       </div>
     </InfoColumnContainer>
   )

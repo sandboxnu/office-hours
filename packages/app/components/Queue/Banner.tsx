@@ -4,6 +4,9 @@ import styled from 'styled-components'
 
 const BannerContainer = styled.div`
   width: 100%;
+  @media (max-width: 650px) {
+    margin-bottom: 1em;
+  }
 `
 
 const TitleContainer = styled.div`
