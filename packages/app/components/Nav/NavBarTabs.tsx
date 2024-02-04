@@ -4,31 +4,31 @@ import { Menu } from 'antd'
 import { MenuProps } from 'antd/lib/menu'
 import Link from 'next/link'
 import { QueuePartial } from '@koh/common'
-
-const { SubMenu } = Menu
+import './overwriteAntdNavStyes.css'
 
 const HorizontalMenu = styled(Menu)<MenuProps>`
   ${(props) => (props.mode === 'horizontal' ? 'border-bottom: none' : '')}
 `
 
+const { SubMenu } = Menu
 const QueueMenu = styled(SubMenu)`
   @media (min-width: 650px) {
     font-size: 16px !important;
     color: #262626 !important;
     margin: 0 !important;
     padding: 0 !important;
-  }
-  &&&:after {
-    left: 0px;
-    right: 0px;
-  }
-
-  &&& .ant-menu-submenu-title {
-    padding: 10px 50px !important;
+    &&& .ant-menu-submenu-title {
+      padding: 10px 50px !important;
+    }
+    &&&:after {
+      left: 0px;
+      right: 0px;
+    }
   }
 `
 
 const MenuItem = styled(Menu.Item)`
+  // desktop
   @media (min-width: 650px) {
     padding: 10px 50px !important;
     font-size: 16px !important;

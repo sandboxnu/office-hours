@@ -105,7 +105,7 @@ export default function ProfileDrawer({
             </Menu.Item>
           </Menu>
         }
-        placement="bottomRight"
+        placement="bottomLeft"
         trigger="click"
         open={isPopoverOpen}
         onOpenChange={setIsPopoverOpen}
