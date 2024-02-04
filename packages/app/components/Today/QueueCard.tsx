@@ -40,6 +40,7 @@ const QueueInfoRow = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
 `
 
 const RightQueueInfoRow = styled.div`
@@ -113,8 +114,7 @@ const Notes = styled.div`
 `
 
 const StyledKOHAvatar = styled(KOHAvatar)`
-  margin-right: 25px;
-  margin-top: 10px;
+  margin-right: 1rem;
 `
 
 const QueueCardButtonRow = styled(Row)`
@@ -154,7 +154,29 @@ const QueueCard = ({
         borderRadius: '6px 6px 0 0',
       }}
       className={'open-queue-card'}
-      title={<span>{queue.room} </span>}
+      title={
+        <span>
+          {queue.room}{' '}
+          <QueueInfoTags>
+            {queue?.isProfessorQueue && (
+              <Tag color="#337589" style={{ margin: 0 }}>
+                Professor Queue
+              </Tag>
+            )}
+            {queue.isOpen && !queue.allowQuestions && (
+              <Tooltip title="This queue is no longer accepting questions">
+                <Tag
+                  icon={<StopOutlined />}
+                  color="#6C2526"
+                  style={{ margin: 0 }}
+                >
+                  Not Accepting Questions
+                </Tag>
+              </Tooltip>
+            )}
+          </QueueInfoTags>{' '}
+        </span>
+      }
       extra={
         <span>
           <QueueSizeSpan>{queue.queueSize}</QueueSizeSpan> in queue
@@ -168,24 +190,6 @@ const QueueCard = ({
         </HeaderDiv>
         <RightQueueInfoRow>
           <Space direction="vertical" align="end" size="middle">
-            <QueueInfoTags>
-              {queue?.isProfessorQueue && (
-                <Tag color="blue" style={{ margin: 0 }}>
-                  Professor Queue
-                </Tag>
-              )}
-              {queue.isOpen && !queue.allowQuestions && (
-                <Tooltip title="This queue is no longer accepting questions">
-                  <Tag
-                    icon={<StopOutlined />}
-                    color="error"
-                    style={{ margin: '0px 0px 0px 8px' }}
-                  >
-                    Not Accepting Questions
-                  </Tag>
-                </Tooltip>
-              )}
-            </QueueInfoTags>
             <Link
               href="/course/[cid]/queue/[qid]"
               as={`/course/${cid}/queue/${queue.id}`}
