@@ -200,7 +200,7 @@ const QueueCard = ({
               <OpenQueueButton
                 size="large"
                 data-cy="open-queue-button"
-                type={(queue.staffList.length >= 1 ? 'primary' : 'secondary')}
+                type={queue.staffList.length >= 1 ? 'primary' : 'default'}
               >
                 Open Queue ＞
               </OpenQueueButton>
