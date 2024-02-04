@@ -32,7 +32,7 @@ const PaddedCard = styled(Card)`
 `
 
 const HeaderDiv = styled.div`
-  font-size: 18px;
+  font-size: 14px;
   color: #212934;
 `
 
@@ -53,7 +53,7 @@ const QueueInfoTags = styled.div`
 `
 
 const QuestionNumberSpan = styled.span`
-  font-size: 24px;
+  font-size: 18px;
 `
 
 const QueueSizeSpan = styled.span`
@@ -212,7 +212,7 @@ const QueueCard = ({
           {staffList.map((staffMember) => (
             <Tooltip key={staffMember.id} title={staffMember.name}>
               <StyledKOHAvatar
-                size={96}
+                size={48}
                 photoURL={staffMember.photoURL}
                 name={staffMember.name}
               />
