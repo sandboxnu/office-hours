@@ -66,9 +66,14 @@ interface NavBarTabsProps {
   hrefAsPath: string
   tabs: NavBarTabsItem[]
   horizontal?: boolean
+  onClose?: () => void
 }
 
-function createQueueTab(queueTabItem: NavBarQueueTabItem, currentPath: string) {
+function createQueueTab(
+  queueTabItem: NavBarQueueTabItem,
+  currentPath: string,
+  onClose?: () => void,
+) {
   return (
     // need to manually add the ant-menu-item-selected class for this submenu and it's menu items since antd isn't adding it automatically like it should be
     <QueueMenu
@@ -89,6 +94,7 @@ function createQueueTab(queueTabItem: NavBarQueueTabItem, currentPath: string) {
             key={openQueue.id}
             data-cy={`queue-menu-item-${openQueue.room}`}
             className={isSelected ? 'ant-menu-item-selected' : ''}
+            onClick={onClose} // close the mobile drawer when clicked
           >
             <Link href="/course/[cid]/queue/[qid]" as={queuePath}>
               <a>{openQueue.room}</a>
@@ -115,6 +121,7 @@ export default function NavBarTabs({
   hrefAsPath,
   tabs,
   horizontal,
+  onClose,
 }: NavBarTabsProps): ReactElement {
   return (
     <HorizontalMenu
@@ -124,7 +131,7 @@ export default function NavBarTabs({
       {tabs.map((tab) =>
         tab.text !== 'Queue'
           ? createGeneralTab(tab as NavBarGeneralTabItem)
-          : createQueueTab(tab as NavBarQueueTabItem, hrefAsPath),
+          : createQueueTab(tab as NavBarQueueTabItem, hrefAsPath, onClose),
       )}
     </HorizontalMenu>
   )
