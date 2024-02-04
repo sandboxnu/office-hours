@@ -29,9 +29,7 @@ const RightQueueInfoRow = styled.div`
 `
 
 const OpenQueueButton = styled(Button)`
-  color: #5f6b79;
   border-radius: 6px;
-  font-weight: 500;
   font-size: 14px;
   margin-left: 16px;
 `
@@ -69,7 +67,7 @@ const AsyncQuestionCard = (): ReactElement => {
               href="/course/[cid]/async_question"
               as={`/course/${cid}/async_question`}
             >
-              <OpenQueueButton style={{}} size="large">
+              <OpenQueueButton type="primary" size="large">
                 Open Queue
               </OpenQueueButton>
             </Link>
