@@ -68,7 +68,7 @@ const AsyncQuestionCard = (): ReactElement => {
               as={`/course/${cid}/async_question`}
             >
               <OpenQueueButton type="primary" size="large">
-                Open Queue
+                Open Queue ＞
               </OpenQueueButton>
             </Link>
           </Space>

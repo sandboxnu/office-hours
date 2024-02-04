@@ -199,7 +199,7 @@ const QueueCard = ({
                 data-cy="open-queue-button"
                 type="primary"
               >
-                Open Queue
+                Open Queue ＞
               </OpenQueueButton>
             </Link>
           </Space>
