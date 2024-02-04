@@ -247,11 +247,7 @@ const QueueCard = ({
               </Notes>
             </Linkify>
           </div>
-        ) : (
-          <div>
-            <i> no notes provided</i>
-          </div>
-        )}
+        ) : null}
         <RightQueueNotesRow>
           {editingNotes && (
             <SaveButton onClick={handleUpdate} size="large">
