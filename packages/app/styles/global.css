@@ -126,3 +126,34 @@ body {
         visibility: hidden;
     }
 }
+
+.glowy:before, .glowy:after {
+	content: '';
+	position: absolute;
+	left: -1.5px;
+	top: -1.5px;
+	background: linear-gradient(45deg, #fb0094, #0000ff, #00ff00,#ffff00, #ff0000, #fb0094, 
+		#0000ff, #00ff00,#ffff00, #ff0000);
+	background-size: 400%;
+	width: calc(100% + 3px);
+	height: calc(100% + 3px);
+	z-index: -1;
+	animation: steam 20s linear infinite;
+    border-radius: 6px;
+}
+
+@keyframes steam {
+	0% {
+		background-position: 0 0;
+	}
+	50% {
+		background-position: 400% 0;
+	}
+	100% {
+		background-position: 0 0;
+	}
+}
+
+.glowy:after {
+	filter: blur(1.5px);
+}

@@ -153,7 +153,10 @@ const QueueCard = ({
         color: '#FFFFFF',
         borderRadius: '6px 6px 0 0',
       }}
-      className={'open-queue-card'}
+      // make the card glow if there are staff members in the queue
+      className={
+        'open-queue-card ' + (queue.staffList.length >= 1 ? 'glowy' : '')
+      }
       title={
         <span>
           {queue.room}{' '}
@@ -197,7 +200,7 @@ const QueueCard = ({
               <OpenQueueButton
                 size="large"
                 data-cy="open-queue-button"
-                type="primary"
+                type={(queue.staffList.length >= 1 ? 'primary' : 'secondary')}
               >
                 Open Queue ＞
               </OpenQueueButton>
