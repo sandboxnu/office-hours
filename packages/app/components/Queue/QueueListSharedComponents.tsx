@@ -24,10 +24,12 @@ export const Container = styled.div`
   align-items: center;
 `
 
-const QueueTitle = styled.div`
-  font-weight: 500;
-  font-size: 24px;
+const QueueTitle = styled.h2`
+  font-weight: 700;
+  font-size: 1.5rem;
   color: #212934;
+  margin-bottom: 0px;
+  line-height: 2rem;
 `
 
 export const NotesText = styled.div`
@@ -38,13 +40,15 @@ export const NotesText = styled.div`
 // New queue styled components start here
 const InfoColumnContainer = styled.div`
   flex-shrink: 0;
-  padding-bottom: 30px;
   position: relative;
   display: flex;
   flex-direction: column;
+  padding-bottom: 0.75em;
+
   @media (min-width: 650px) {
     margin-top: 32px;
     width: 290px;
+    padding-bottom: 30px;
   }
 `
 
@@ -69,6 +73,11 @@ const QueuePropertyRow = styled.div`
   margin-bottom: 20px;
   color: #5f6b79;
   font-size: 20px;
+
+  // less margin on mobile
+  @media (max-width: 650px) {
+    margin-bottom: 0;
+  }
 `
 
 const QueuePropertyText = styled.div`
@@ -88,13 +97,11 @@ const QueuePropertyText = styled.div`
   }
 `
 
-const StaffH2 = styled.h2`
-  margin-top: 32px;
-
-  // less margin on mobile
-  @media (max-width: 650px) {
-    margin-top: 16px;
-  }
+const CustomH3 = styled.h3`
+  margin-bottom: 0;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
 `
 
 const QueueRoomGroup = styled.div`
@@ -104,7 +111,7 @@ const QueueRoomGroup = styled.div`
 `
 
 const QueueInfo = styled.div`
-  margin-bottom: 24px;
+  margin-bottom: 8px;
 
   // less margin on mobile
   @media (max-width: 650px) {
@@ -210,10 +217,11 @@ export function QueueInfoColumn({
           )}
         </QueueRoomGroup>
 
-        <QueueTitle data-cy="room-title">
+        <QueueTitle className="hidden sm:inline-block" data-cy="room-title">
           {queue?.room} {queue?.isDisabled && <b>(disabled)</b>}
         </QueueTitle>
       </QueueInfo>
+
       {queue?.notes && (
         <QueuePropertyRow>
           <NotificationOutlined />
@@ -235,11 +243,14 @@ export function QueueInfoColumn({
           </QueueText>
         </QueuePropertyRow>
       )}
-      <QueueUpToDateInfo queueId={queueId} />
 
-      {buttons}
+      {/* buttons and queueUpToDateInfo for desktop (has different order than mobile)*/}
+      <div className="hidden sm:block">
+        <QueueUpToDateInfo queueId={queueId} />
+        {buttons}
+      </div>
 
-      <StaffH2>Staff</StaffH2>
+      <CustomH3 className="mt-0 sm:mt-10">Staff</CustomH3>
       {queue.staffList.length < 1 ? (
         <div
           role="alert"
@@ -250,6 +261,9 @@ export function QueueInfoColumn({
       ) : (
         <TAStatuses queueId={queueId} />
       )}
+
+      {/* buttons for staff on mobile */}
+      {isStaff && <div className="block sm:hidden">{buttons}</div>}
 
       {isStaff && (
         <QueueManagementBox>
@@ -281,6 +295,20 @@ export function QueueInfoColumn({
           </DisableQueueButton>
         </QueueManagementBox>
       )}
+
+      {/* mobile only */}
+      <div className="mt-3 block flex items-center justify-between sm:hidden">
+        <div className="flex flex-col">
+          <CustomH3 className="mt-0">Queue</CustomH3>
+          <QueueUpToDateInfo queueId={queueId} />
+        </div>
+        {/* for 'Join Queue' button for students */}
+        {!isStaff && (
+          <div className="block flex w-1/3 items-center justify-between sm:hidden">
+            {buttons}
+          </div>
+        )}
+      </div>
     </InfoColumnContainer>
   )
 }

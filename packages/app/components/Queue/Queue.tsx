@@ -72,6 +72,10 @@ const QueueListContainer = styled.div`
 const JoinButton = styled(QueueInfoColumnButton)`
   background-color: #3684c6;
   color: white;
+
+  @media (max-width: 650px) {
+    margin: 0;
+  }
 `
 
 const VerticalDivider = styled.div`
@@ -450,7 +454,8 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
           <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
         ) : (
           <>
-            <QueueHeader>Queue</QueueHeader>
+            {/* only show this queue header on desktop */}
+            <QueueHeader className="hidden sm:block">Queue</QueueHeader>
             {/* <StudentHeaderCard bordered={false}>
               <CenterRow>
                 <Col flex="1 1">
@@ -501,8 +506,6 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
                   />
                 )
               })}
-              <br></br>
-              <br></br>
             </>
           ) : (
             <>
@@ -511,7 +514,6 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
                 editQuestion={openEditModal}
                 leaveQueue={leaveQueue}
               />
-              <div className="mt-4" />
             </>
           )}
           <RenderQueueQuestions questions={questions?.queue} />
