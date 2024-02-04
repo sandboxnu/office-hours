@@ -36,16 +36,6 @@ import { AddStudentsModal } from './TA/TAAddStudent'
 import { EditQueueModal } from './TA/EditQueueModal'
 import PropTypes from 'prop-types'
 
-const HelpNextButton = styled(QueueInfoColumnButton)`
-  color: white;
-  background: #2a9187;
-  &:hover,
-  &:focus {
-    color: white;
-    background: #39aca1;
-  }
-`
-
 const EditQueueButton = styled(QueueInfoColumnButton)`
   color: #212934;
 `
@@ -235,11 +225,6 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
     [mutateQuestions, qid, questions],
   )
 
-  const helpNext = async () => {
-    await onHelpQuestion(nextQuestion.id)
-    mutateQuestions()
-  }
-
   const openEditModal = useCallback(async () => {
     mutate(`/api/v1/queues/${qid}/questions`)
     setPopupEditQuestion(true)
@@ -355,17 +340,6 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
             >
               Add Students
             </EditQueueButton>
-            <Tooltip
-              title={!isCheckedIn && 'You must check in to help students!'}
-            >
-              <HelpNextButton
-                onClick={helpNext}
-                disabled={!isCheckedIn || !nextQuestion || isHelping}
-                data-cy="help-next"
-              >
-                Help Next
-              </HelpNextButton>
-            </Tooltip>
 
             <div className="my-3">
               <Tooltip
