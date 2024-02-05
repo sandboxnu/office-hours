@@ -24,6 +24,12 @@ const NoPaddingPopover: typeof Popover = styled(StyleablePopover)`
 
 const AvatarButton = styled.div`
   cursor: pointer;
+
+  // give it a bit of margins in the mobile navbar drawer
+  @media (max-width: 650px) {
+    margin-left: 1em;
+    margin-top: 1em;
+  }
 `
 
 interface ProfileDrawerProps {
@@ -111,7 +117,9 @@ export default function ProfileDrawer({
         onOpenChange={setIsPopoverOpen}
       >
         <AvatarButton>
-          <SelfAvatar size={40} />
+          {/* show a larger avatar icon for mobile */}
+          <SelfAvatar className="hidden sm:inline-block" size={40} />
+          <SelfAvatar className="inline-block sm:hidden" size={50} />
         </AvatarButton>
       </NoPaddingPopover>
     </>

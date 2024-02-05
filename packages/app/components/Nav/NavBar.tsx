@@ -76,7 +76,6 @@ const RightMenu = styled.div`
 const BarsMenu = styled(Button)`
   height: 32px;
   padding: 6px;
-  margin-top: 8px;
   display: none;
   background: none;
 
@@ -91,6 +90,7 @@ const BarsButton = styled.span`
   height: 2px;
   background: #1890ff;
   position: relative;
+  margin-bottom: 5px;
 
   &:after,
   :before {
@@ -260,7 +260,25 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
           <BarsButton />
         </BarsMenu>
         <Drawer
-          title="Course"
+          // put the organisation logo and name into the drawer title
+          title={
+            course?.organizationCourse && (
+              <span className="flex items-center ">
+                <LogoContainer>
+                  <Logo>
+                    <Image
+                      width={30}
+                      preview={false}
+                      src={`/api/v1/organization/${profile?.organization.orgId}/get_logo/${profile?.organization.organizationLogoUrl}`}
+                    />
+                  </Logo>
+                </LogoContainer>
+                <h1 className="text-2xl leading-none">
+                  {profile?.organization.organizationName}
+                </h1>
+              </span>
+            )
+          }
           placement="right"
           open={visible}
           closable={false}
@@ -325,6 +343,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
             currentHref={pathname}
             tabs={globalTabs}
             hrefAsPath={asPath}
+            onClose={onClose}
           />
           <ProfileDrawer courseId={null} />
         </Drawer>
