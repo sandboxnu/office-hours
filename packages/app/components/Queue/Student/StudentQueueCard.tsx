@@ -20,6 +20,10 @@ const HorizontalStudentCard = styled(Card)`
   color: #595959;
   .ant-card-body {
     padding: 10px 8px;
+
+    @media (max-width: 650px) {
+      padding: 10px 0px;
+    }
   }
 `
 
@@ -45,7 +49,7 @@ export default function StudentQueueCard({
           <HotnessBar hotness={Math.floor(Math.random() * 101)} />
         </Col> */}
         {isStaff && ( // only show avatar if staff for now. TODO: fix endpoint to allow queues to access student avatars and names if prof enabled it
-          <Col flex="0 1 auto" style={{ margin: '0 12px 0 0' }}>
+          <Col flex="0 1 auto" className="mr-2">
             <KOHAvatar
               size={46}
               name={question.creator.name}
@@ -54,7 +58,7 @@ export default function StudentQueueCard({
           </Col>
         )}
         <Col flex="1 1">
-          <Tooltip // only show tooltip if text is too long
+          <Tooltip // only show tooltip if text is too long TODO: replace with expand card details feature
             title={question.text.length > 110 ? question.text : ''}
             overlayStyle={{ maxWidth: '60em' }}
           >
@@ -105,12 +109,13 @@ export default function StudentQueueCard({
           <Text>{getWaitTime(question)}</Text>
         </Col>
         {isStaff && (
-          <Col>
+          <Col className="w-full sm:w-auto">
             <TAQueueDetailButtons
               courseId={cid}
               queueId={qid}
               question={question}
               hasUnresolvedRephraseAlert={false}
+              className="flex items-center justify-around sm:block"
             />
           </Col>
         )}

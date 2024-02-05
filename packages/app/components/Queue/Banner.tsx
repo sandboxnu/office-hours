@@ -71,9 +71,14 @@ export const BannerButton = styled(Button).attrs({
   size: 'large',
   shape: 'circle',
 })`
-  margin-left: 16px;
+  margin-left: 0.75rem;
   border: 0;
   background: #fff;
+
+  @media (max-width: 650px) {
+    margin-left: 0.5rem;
+    margin-top: 0.35rem;
+  }
 `
 
 export const BannerPrimaryButton = styled(BannerButton)`
