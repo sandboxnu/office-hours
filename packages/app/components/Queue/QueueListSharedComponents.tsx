@@ -137,7 +137,7 @@ const QueueText = styled.div`
   width: 100%;
 `
 
-const DisableQueueButton = styled(QueueInfoColumnButton)`
+export const DisableQueueButton = styled(QueueInfoColumnButton)`
   color: white;
   background: #da3236;
   &:hover,
@@ -148,7 +148,7 @@ const DisableQueueButton = styled(QueueInfoColumnButton)`
   }
 `
 
-const ClearQueueButton = styled(QueueInfoColumnButton)`
+export const ClearQueueButton = styled(QueueInfoColumnButton)`
   color: #d4380d;
   background: #fff;
   border-color: #d4380d;
@@ -168,11 +168,6 @@ const QueueManagementBox = styled.div`
   width: 100%;
   height: 100%;
   bottom: 0;
-
-  @media (max-width: 650px) {
-    flex-direction: row;
-    justify-content: space-between;
-  }
 `
 
 interface QueueInfoColumnProps {
@@ -188,31 +183,6 @@ export function QueueInfoColumn({
 }: QueueInfoColumnProps): ReactElement {
   const { queue, mutateQueue } = useQueue(queueId)
   // const [away, setAway] = useState(false);
-  const disableQueue = async () => {
-    await API.queues.disable(queueId)
-    await mutateQueue()
-    message.success('Successfully disabled queue: ' + queue.room)
-    await Router.push('/')
-  }
-
-  const clearQueue = async () => {
-    await API.queues.clean(queueId)
-    await mutateQueue()
-    message.success('Successfully cleaned queue: ' + queue.room)
-  }
-
-  const confirmDisable = () => {
-    confirm({
-      title: `Please Confirm!`,
-      icon: <ExclamationCircleOutlined />,
-      style: { whiteSpace: 'pre-wrap' },
-      content: `Please confirm that you want to disable the queue: ${queue.room}.\n
-      This queue will no longer appear in the app, and any students currently in the queue will be removed.`,
-      onOk() {
-        disableQueue()
-      },
-    })
-  }
   // const checkAway = (checked: boolean) => {
   //   if (!checked) {
   //     setAway(true);
@@ -288,7 +258,8 @@ export function QueueInfoColumn({
       )}
 
       {isStaff && (
-        <QueueManagementBox>
+        // "Clear Queue" and "Delete Queue" buttons for DESKTOP ONLY - mobile is in EditQueueModal.tsx
+        <QueueManagementBox className="!hidden sm:!flex">
           {/* <p>Toggle to indicate away </p>
           <Switch
             onChange={checkAway}
@@ -304,12 +275,16 @@ export function QueueInfoColumn({
             cancelText="No"
             placement="top"
             arrowPointAtCenter={true}
-            onConfirm={clearQueue}
+            onConfirm={() => clearQueue(queueId, queue)}
           >
-            <ClearQueueButton>Clear Queue</ClearQueueButton>
+            {/* Hide button on mobile (it gets moved to edit queue modal) */}
+            <ClearQueueButton className="hidden sm:flex">
+              Clear Queue
+            </ClearQueueButton>
           </Popconfirm>
+          {/* Hide button on mobile (it gets moved to edit queue modal) */}
           <DisableQueueButton
-            onClick={confirmDisable}
+            onClick={() => confirmDisable(queueId, queue)}
             data-cy="queue-disable-button"
             disabled={queue?.isDisabled}
           >
@@ -358,6 +333,33 @@ function QueueUpToDateInfo({ queueId }: { queueId: number }): ReactElement {
       </QueuePropertyText>
     </QueuePropertyRow>
   )
+}
+
+export const clearQueue = async (queueId: number, queue: { room: string }) => {
+  await API.queues.clean(queueId)
+  message.success('Successfully cleaned queue: ' + queue.room)
+}
+
+export const confirmDisable = (queueId: number, queue: { room: string }) => {
+  confirm({
+    title: `Please Confirm!`,
+    icon: <ExclamationCircleOutlined />,
+    style: { whiteSpace: 'pre-wrap' },
+    content: `Please confirm that you want to disable the queue: ${queue.room}.\n
+    This queue will no longer appear in the app, and any students currently in the queue will be removed.`,
+    onOk() {
+      disableQueue(queueId, queue)
+    },
+  })
+}
+
+export const disableQueue = async (
+  queueId: number,
+  queue: { room: string },
+) => {
+  await API.queues.disable(queueId)
+  message.success('Successfully disabled queue: ' + queue.room)
+  await Router.push('/')
 }
 
 interface QuestionTypeProps {

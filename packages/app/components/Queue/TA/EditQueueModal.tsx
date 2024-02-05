@@ -1,6 +1,14 @@
 import { ReactElement } from 'react'
 import Modal from 'antd/lib/modal/Modal'
-import { Switch, Input, Form, Button, message, Checkbox } from 'antd'
+import {
+  Switch,
+  Input,
+  Form,
+  Button,
+  message,
+  Popconfirm,
+  Checkbox,
+} from 'antd'
 import styled from 'styled-components'
 import { API } from '@koh/api-client'
 import { useQueue } from '../../../hooks/useQueue'
@@ -9,7 +17,13 @@ import { pick } from 'lodash'
 import { default as React, useEffect, useCallback, useState } from 'react'
 import { useRouter } from 'next/router'
 import { useCourse } from '../../../hooks/useCourse'
-import { QuestionType } from '../QueueListSharedComponents'
+import {
+  QuestionType,
+  DisableQueueButton,
+  ClearQueueButton,
+  clearQueue,
+  confirmDisable,
+} from '../QueueListSharedComponents'
 import { SketchPicker } from 'react-color'
 import { BgColorsOutlined } from '@ant-design/icons'
 
@@ -25,11 +39,18 @@ const CustomFormItem = styled(Form.Item)`
   @media (max-width: 650px) {
     padding-bottom: 1rem;
     margin-bottom: 1rem;
+    &:last-child {
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
   }
 
-  &:last-child {
-    padding-bottom: 0;
-    margin-bottom: 0;
+  @media (min-width: 650px) {
+    // the last child on desktop is actually the second last child (since the last child is the delete and clear queue buttons)
+    &:nth-last-child(2) {
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
   }
 `
 
@@ -241,6 +262,33 @@ export function EditQueueModal({
             <Button className="my-1" onClick={changeZoomLink}>
               Change Link
             </Button>
+          </CustomFormItem>
+          {/* Delete Queue and Clear Queue buttons for mobile only (normally shown on QueueListShareComponents.tsx) */}
+          <CustomFormItem className="block sm:hidden">
+            <div className="flex flex-row space-x-4">
+              <DisableQueueButton
+                onClick={() => confirmDisable(queueId, queue)}
+                data-cy="queue-disable-button"
+                disabled={queue?.isDisabled}
+                className="!w-fit"
+              >
+                {queue?.isDisabled ? `Queue deleted` : `Delete Queue`}
+              </DisableQueueButton>
+              <Popconfirm
+                title={
+                  'Are you sure you want to clear all students from the queue?'
+                }
+                okText="Yes"
+                cancelText="No"
+                placement="top"
+                arrowPointAtCenter={true}
+                onConfirm={() => clearQueue(queueId, queue)}
+              >
+                <ClearQueueButton className="!w-fit">
+                  Clear Queue
+                </ClearQueueButton>
+              </Popconfirm>
+            </div>
           </CustomFormItem>
         </Form>
       )}
