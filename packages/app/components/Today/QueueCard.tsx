@@ -162,7 +162,7 @@ const QueueCard = ({
           {queue.room}{' '}
           <QueueInfoTags>
             {queue?.isProfessorQueue && (
-              <Tag color="#337589" style={{ margin: 0 }}>
+              <Tag color="#337589" className="m-0 text-gray-200">
                 Professor Queue
               </Tag>
             )}
@@ -170,8 +170,8 @@ const QueueCard = ({
               <Tooltip title="This queue is no longer accepting questions">
                 <Tag
                   icon={<StopOutlined />}
-                  color="#6C2526"
-                  style={{ margin: 0 }}
+                  color="#591e40"
+                  className="m-0 text-gray-300"
                 >
                   Not Accepting Questions
                 </Tag>
