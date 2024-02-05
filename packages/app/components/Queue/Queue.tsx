@@ -35,7 +35,7 @@ import { useLocalStorage } from '../../hooks/useLocalStorage'
 import { AddStudentsModal } from './TA/TAAddStudent'
 import { EditQueueModal } from './TA/EditQueueModal'
 import PropTypes from 'prop-types'
-import { LoginOutlined } from '@ant-design/icons'
+import { EditOutlined, LoginOutlined, PlusOutlined } from '@ant-design/icons'
 
 const EditQueueButton = styled(QueueInfoColumnButton)`
   color: #212934;
@@ -349,6 +349,7 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
             <EditQueueButton
               data-cy="editQueue"
               onClick={() => setQueueSettingsModal(true)}
+              icon={<EditOutlined />}
             >
               {/* only show the "Details" part on desktop to keep button small on mobile */}
               <span>
@@ -359,8 +360,13 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
               data-cy="addStudents"
               disabled={!isCheckedIn}
               onClick={() => setAddStudentsModal(true)}
+              icon={<PlusOutlined />}
             >
-              Add Students
+              {/* "+ Add Students to Queue" on desktop, "+ Students" on mobile */}
+              <span>
+                <span className="hidden sm:inline">Add</span> Students{' '}
+                <span className="hidden sm:inline">to Queue</span>
+              </span>
             </EditQueueButton>
           </>
         }

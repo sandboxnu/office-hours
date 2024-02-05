@@ -227,7 +227,7 @@ export function EditQueueModal({
           <h4 className="mt-2 font-medium">Current Zoom link:</h4>
           {currentZoomLink ? (
             <a className="block text-sky-800" href={currentZoomLink}>
-              {currentZoomLink}{' '}
+              {currentZoomLink}
             </a>
           ) : (
             <p> Zoomlink not Available</p>
@@ -239,8 +239,7 @@ export function EditQueueModal({
               onChange={onZoomLinkChange}
             />
             <Button className="my-1" onClick={changeZoomLink}>
-              {' '}
-              Change Link{' '}
+              Change Link
             </Button>
           </CustomFormItem>
         </Form>

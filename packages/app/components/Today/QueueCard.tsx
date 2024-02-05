@@ -166,7 +166,7 @@ const QueueCard = ({
           {queue.room}{' '}
           <QueueInfoTags>
             {queue?.isProfessorQueue && (
-              <Tag color="#337589" className="m-0 text-gray-200">
+              <Tag color="#337589" className="m-0 mr-1 text-gray-200">
                 Professor Queue
               </Tag>
             )}

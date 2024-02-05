@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import styled from 'styled-components'
 import { useCourse } from '../../hooks/useCourse'
+import { LoginOutlined, LogoutOutlined } from '@ant-design/icons'
 
 export const CheckinButton = styled(Button)`
   background: #1890ff;
@@ -12,6 +13,9 @@ export const CheckinButton = styled(Button)`
   font-weight: 500;
   font-size: 14px;
   margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   @media (max-width: 650px) {
     margin-bottom: 0px;
@@ -24,6 +28,9 @@ export const CheckOutButton = styled(Button)`
   font-size: 14px;
   border-radius: 6px;
   margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   @media (max-width: 650px) {
     margin-bottom: 0px;
@@ -92,6 +99,7 @@ export default function TACheckinButton({
             mutateCourse()
           }}
           className={className}
+          icon={<LogoutOutlined />}
         >
           Check Out
         </CheckOutButton>
@@ -104,6 +112,7 @@ export default function TACheckinButton({
           disabled={disabled || !course}
           data-cy="check-in-button"
           className={className}
+          icon={<LoginOutlined />}
         >
           Check In
         </CheckinButton>

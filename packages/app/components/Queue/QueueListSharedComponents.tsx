@@ -60,6 +60,9 @@ const QueueInfoColumnButtonStyle = styled(Button)`
   border-radius: 6px;
   margin-bottom: 12px;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   // less margin and width on mobile
   @media (max-width: 650px) {
