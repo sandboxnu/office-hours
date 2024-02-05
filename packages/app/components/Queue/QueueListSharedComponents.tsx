@@ -91,6 +91,7 @@ const QueuePropertyRow = styled.div`
 const QueuePropertyText = styled.div`
   margin-left: 12px;
   font-size: 16px;
+  font-style: italic;
 
   // To break text in flexbox
   min-width: 0;
