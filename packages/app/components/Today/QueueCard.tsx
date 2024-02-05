@@ -1,4 +1,8 @@
-import { NotificationOutlined, StopOutlined } from '@ant-design/icons'
+import {
+  EditOutlined,
+  NotificationOutlined,
+  StopOutlined,
+} from '@ant-design/icons'
 import {
   Button,
   Card,
@@ -227,6 +231,10 @@ const QueueCard = ({
           ))}
         </div>
         <QueueCardDivider />
+        {/* If notes being edited, show input box.
+          Else if there are notes, show the notes.
+          Else if you're a TA, show placeholder.
+          Else show nothing */}
         {editingNotes ? (
           <NotesDiv>
             <NotesInput
@@ -254,6 +262,8 @@ const QueueCard = ({
               </Notes>
             </Linkify>
           </div>
+        ) : isTA ? (
+          <i className="text-gray-400"> no notes provided </i>
         ) : null}
         <RightQueueNotesRow>
           {editingNotes && (
@@ -265,13 +275,11 @@ const QueueCard = ({
             <QueueCardButtonRow>
               {isTA && (
                 <EditNotesButton
-                  size="large"
                   onClick={() => {
                     setEditingNotes(true)
                   }}
-                >
-                  Edit Notes
-                </EditNotesButton>
+                  icon={<EditOutlined />}
+                />
               )}
             </QueueCardButtonRow>
           )}

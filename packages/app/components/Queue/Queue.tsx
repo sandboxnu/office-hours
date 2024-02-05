@@ -35,7 +35,7 @@ import { useLocalStorage } from '../../hooks/useLocalStorage'
 import { AddStudentsModal } from './TA/TAAddStudent'
 import { EditQueueModal } from './TA/EditQueueModal'
 import PropTypes from 'prop-types'
-import { LoginOutlined, PlusOutlined } from '@ant-design/icons'
+import { LoginOutlined } from '@ant-design/icons'
 
 const EditQueueButton = styled(QueueInfoColumnButton)`
   color: #212934;
