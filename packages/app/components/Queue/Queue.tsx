@@ -447,6 +447,8 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
           </>
         )}
         {questions?.map((question: Question, index: number) => {
+          const background_color =
+            question.id === studentQuestionId ? 'bg-teal-200/25' : 'bg-white'
           return (
             <StudentQueueCard
               key={question.id}
@@ -455,6 +457,7 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
               cid={cid}
               qid={qid}
               isStaff={isStaff}
+              className={background_color}
             />
           )
         })}

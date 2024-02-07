@@ -4,7 +4,6 @@ import { ReactElement } from 'react'
 import styled from 'styled-components'
 import { getWaitTime } from '../../../utils/TimeUtil'
 import { CenterRow, Text } from '../QueueCardSharedComponents'
-import { truncate } from '../QueueUtils'
 import TAQueueDetailButtons from '../TA/TAQueueDetailButtons'
 import { QuestionType } from '../QueueListSharedComponents'
 import { KOHAvatar } from '../../common/SelfAvatar'
@@ -13,7 +12,6 @@ import HotnessBar from './HotnessBar'
 const HorizontalStudentCard = styled(Card)`
   margin-bottom: 8px;
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
-  background: #ffffff;
   border-radius: 6px;
   padding-left: 8px;
   padding-right: 8px;
@@ -33,6 +31,7 @@ interface StudentQueueCardProps {
   cid: number
   qid: number
   isStaff: boolean
+  className?: string // used to highlight questions or add other classes
 }
 
 export default function StudentQueueCard({
@@ -40,9 +39,10 @@ export default function StudentQueueCard({
   cid,
   qid,
   isStaff,
+  className,
 }: StudentQueueCardProps): ReactElement {
   return (
-    <HorizontalStudentCard>
+    <HorizontalStudentCard className={className}>
       <CenterRow>
         {/* Temporary removal of hotness bar
         <Col flex="0 1 auto" style={{ margin: '0 6px 0 0' }}>
