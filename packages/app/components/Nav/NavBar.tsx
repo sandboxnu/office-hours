@@ -239,7 +239,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
             />
           </LeftMenu>
           <RightMenu>
-            <ProfileDrawer courseId={courseId} />
+            <ProfileDrawer />
           </RightMenu>
           {/* FOR MOBILE ONLY:
           If on a queue, show the queue title,
@@ -291,7 +291,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
             tabs={tabs}
             hrefAsPath={asPath}
           />
-          <ProfileDrawer courseId={courseId} />
+          <ProfileDrawer />
         </Drawer>
       </Nav>
     </>
@@ -345,7 +345,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
             hrefAsPath={asPath}
             onClose={onClose}
           />
-          <ProfileDrawer courseId={null} />
+          <ProfileDrawer />
         </Drawer>
       </Nav>
     </>
