@@ -1,37 +1,50 @@
+import { RightOutlined } from '@ant-design/icons'
 import { Button, Card, Divider, Row, Skeleton, Space } from 'antd'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { ReactElement } from 'react'
 import styled from 'styled-components'
 
-const PaddedCard = styled(Card)`
+const CustomCard = styled(Card)`
   margin-top: 32px;
   margin-bottom: 25px;
   border-radius: 6px;
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
-`
 
-const HeaderDiv = styled.div`
-  font-size: 18px;
-  color: #212934;
+  // make the box shadow more pronounced on mobile to make it look more clickable
+  @media (max-width: 650px) {
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .ant-card-body {
+    padding-top: 16px;
+  }
+
+  // hover effect
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+  &:hover {
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.45);
+    // background: rgba(235, 235, 235);
+
+    .ant-card-head {
+      background: rgb(47, 76, 128) !important;
+      transition: color 0.3s ease-in-out !important;
+    }
+
+    // make the green arrow right on hover (still uncertain on whether to keep this)
+    .anticon.anticon-right {
+      color: lightgreen;
+      transition: color 0.3s ease-in-out;
+    }
+  }
 `
 
 const QueueInfoRow = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-`
-
-const RightQueueInfoRow = styled.div`
-  display: flex;
-  flex-direction: row;
   align-items: center;
-`
-
-const OpenQueueButton = styled(Button)`
-  border-radius: 6px;
-  font-size: 14px;
-  margin-left: 16px;
 `
 
 const QueueCardDivider = styled(Divider)`
@@ -47,36 +60,30 @@ const AsyncQuestionCard = (): ReactElement => {
   const router = useRouter()
   const { cid } = router.query
   return (
-    <PaddedCard
-      headStyle={{
-        background: '#25426C',
-        color: '#FFFFFF',
-        borderRadius: '6px 6px 0 0',
-      }}
-      className={'open-queue-card'}
-      title="Async Question Centre"
-      extra={<span>Ask your questions any time!</span>}
+    <Link
+      href="/course/[cid]/async_question"
+      as={`/course/${cid}/async_question`}
     >
-      <QueueInfoRow>
-        <HeaderDiv>
-          {/* <QuestionNumberSpan>{queue.staffList.length}</QuestionNumberSpan>{" "} */}
-        </HeaderDiv>
-        <RightQueueInfoRow>
-          <Space direction="vertical" align="end" size="middle">
-            <Link
-              href="/course/[cid]/async_question"
-              as={`/course/${cid}/async_question`}
-            >
-              <OpenQueueButton type="primary" size="large">
-                Open Queue ＞
-              </OpenQueueButton>
-            </Link>
-          </Space>
-        </RightQueueInfoRow>
-      </QueueInfoRow>
+      <CustomCard
+        headStyle={{
+          background: '#25426C',
+          color: '#FFFFFF',
+          borderRadius: '6px 6px 0 0',
+        }}
+        className={'open-queue-card'}
+        title="Async Question Centre"
+        extra={<RightOutlined className=" text-3xl text-gray-100" />}
+      >
+        <QueueInfoRow>
+          <h4 className="italic text-gray-600">
+            {' '}
+            Ask your questions any time!
+          </h4>
+        </QueueInfoRow>
 
-      <Row justify="space-between" align="middle"></Row>
-    </PaddedCard>
+        <Row justify="space-between" align="middle"></Row>
+      </CustomCard>
+    </Link>
   )
 }
 
@@ -84,7 +91,7 @@ export default AsyncQuestionCard
 
 export function QueueCardSkeleton(): ReactElement {
   return (
-    <PaddedCard
+    <CustomCard
       headStyle={{
         background: '#25426C',
         color: '#FFFFFF',
@@ -103,6 +110,6 @@ export function QueueCardSkeleton(): ReactElement {
         <NotesSkeleton title={false} paragraph={{ rows: 1 }} />
         <Skeleton.Button size="large" style={{ marginTop: '12px' }} />
       </Row>
-    </PaddedCard>
+    </CustomCard>
   )
 }
