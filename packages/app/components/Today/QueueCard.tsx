@@ -38,7 +38,6 @@ const CustomCard = styled(Card)`
   transition: box-shadow 0.3s ease;
   &:hover {
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.45);
-    // background: rgba(235, 235, 235);
 
     .ant-card-head {
       background: rgb(47, 76, 128) !important;

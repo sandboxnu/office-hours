@@ -1,5 +1,5 @@
 import { RightOutlined } from '@ant-design/icons'
-import { Button, Card, Divider, Row, Skeleton, Space } from 'antd'
+import { Card, Divider, Row, Skeleton } from 'antd'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { ReactElement } from 'react'
@@ -25,10 +25,9 @@ const CustomCard = styled(Card)`
   transition: box-shadow 0.3s ease;
   &:hover {
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.45);
-    // background: rgba(235, 235, 235);
 
     .ant-card-head {
-      background: rgb(47, 76, 128) !important;
+      background: rgb(70, 76, 121) !important;
       transition: color 0.3s ease-in-out !important;
     }
 
@@ -66,7 +65,7 @@ const AsyncQuestionCard = (): ReactElement => {
     >
       <CustomCard
         headStyle={{
-          background: '#25426C',
+          background: 'rgb(60, 66, 111)',
           color: '#FFFFFF',
           borderRadius: '6px 6px 0 0',
         }}
@@ -75,10 +74,7 @@ const AsyncQuestionCard = (): ReactElement => {
         extra={<RightOutlined className=" text-3xl text-gray-100" />}
       >
         <QueueInfoRow>
-          <h4 className="italic text-gray-600">
-            {' '}
-            Ask your questions any time!
-          </h4>
+          <h4 className="italic text-gray-600">Ask your questions any time!</h4>
         </QueueInfoRow>
 
         <Row justify="space-between" align="middle"></Row>
