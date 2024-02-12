@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import Modal from 'antd/lib/modal/Modal'
-import { Switch, Input, Form, Button, message, Checkbox } from 'antd'
+import { Input, Form, Button, message, Checkbox } from 'antd'
 import styled from 'styled-components'
 import { API } from '@koh/api-client'
 import { useQueue } from '../../../hooks/useQueue'
@@ -11,7 +11,7 @@ import { useRouter } from 'next/router'
 import { useCourse } from '../../../hooks/useCourse'
 import { QuestionType } from '../Shared/QuestionType'
 import { SketchPicker } from 'react-color'
-import Icon, { BgColorsOutlined } from '@ant-design/icons'
+import { BgColorsOutlined } from '@ant-design/icons'
 
 const NotesInput = styled(Input.TextArea)`
   border-radius: 6px;
@@ -48,7 +48,6 @@ export function EditQueueModal({
   const [isInputEmpty, setIsInputEmpty] = useState(true)
 
   const handleColorChange = (color) => {
-    console.log(color)
     setColor(color.hex)
   }
   const [zoomLink, setZoomLink] = useState('')

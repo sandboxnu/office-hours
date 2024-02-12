@@ -184,6 +184,7 @@ export default function QuestionForm({
       cleanup()
     }
   }, [getQuestions])
+
   return (
     <Modal
       open={visible}

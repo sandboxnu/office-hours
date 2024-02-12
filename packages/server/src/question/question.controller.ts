@@ -1,5 +1,4 @@
 import {
-  AddQuestionTypeParams,
   ClosedQuestionStatus,
   CreateQuestionParams,
   CreateQuestionResponse,

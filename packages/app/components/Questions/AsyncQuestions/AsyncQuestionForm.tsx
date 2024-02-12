@@ -1,6 +1,6 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import Modal from 'antd/lib/modal/Modal'
-import { Input, Form, message, Select } from 'antd'
+import { Input, Form, message, Select, Checkbox } from 'antd'
 import styled from 'styled-components'
 import { API } from '@koh/api-client'
 
@@ -46,30 +46,17 @@ export function AsyncQuestionForm({
   onClose,
 }: EditQueueModalProps): ReactElement {
   const router = useRouter()
-  const cid = router.query['cid']
+  const courseId = Number(router.query['cid'])
   const [form] = Form.useForm()
-  // image stuff
   const [selectedImage, setSelectedImage] = useState(null)
-
   const [preview, setPreview] = useState<string>()
-
-  const [questionsTypeState] = useState<QuestionTypeParams[]>([])
+  const [questionsTypeState, setQuestionsTypeState] = useState<
+    QuestionTypeParams[]
+  >([])
   const [questionTypeInput, setQuestionTypeInput] = useState<
     QuestionTypeParams[]
   >(question?.questionTypes || [])
-  // const [questionTypes, setQuestionTypes] = useState(null)
-  // const onCategoryChange = (e) => {
-  //   setQuestionTypeInput(e.target.value)
-  // }
-  // const courseId=Number(cid);
-  // useEffect(() => {
-  //   getQuestions()
-  // }, [])
-  // const getQuestions = async () => {
-  //   await API.questions.questionTypes(Number(cid)).then((result) => {
-  //     setQuestionTypes(result)
-  //   })
-  // }
+
   //image stuff
   useEffect(() => {
     if (!selectedImage) {
@@ -89,7 +76,7 @@ export function AsyncQuestionForm({
           questionText: value.questionText,
           questionAbstract: value.QuestionAbstract,
         },
-        Number(cid),
+        courseId,
       )
       .then((response) => {
         if (selectedImage && response) {
@@ -146,6 +133,31 @@ export function AsyncQuestionForm({
     setQuestionTypeInput(newQuestionTypeInput)
   }
 
+  const getQuestions = useCallback(() => {
+    let isCancelled = false
+
+    const fetchQuestions = async () => {
+      const questions = await API.questions.questionTypes(courseId)
+      if (!isCancelled) {
+        setQuestionsTypeState(questions)
+      }
+    }
+
+    fetchQuestions()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [courseId])
+
+  useEffect(() => {
+    const cleanup = getQuestions()
+
+    return () => {
+      cleanup()
+    }
+  }, [getQuestions])
+
   return (
     <Modal
       title="Question Form"
@@ -176,10 +188,6 @@ export function AsyncQuestionForm({
               autoSize={{ minRows: 3, maxRows: 6 }}
             />
           </Form.Item>
-          <QuestionCaption>
-            Your question will not be visible to other students unless
-            professors manually changes it
-          </QuestionCaption>
           {questionsTypeState.length > 0 ? (
             <>
               <QuestionText>
@@ -214,26 +222,6 @@ export function AsyncQuestionForm({
           ) : (
             <p>No Question types found</p>
           )}
-          {/* <QuestionText>
-            What category does your question fall under?
-          </QuestionText> */}
-          {/* <Radio.Group
-            value={questionTypeInput}
-            onChange={onCategoryChange}
-            buttonStyle="solid"
-            style={{ marginBottom: 48 }}
-          >
-            {questionTypes !== null ? (
-              questionTypes.map((q) => (
-                <Radio.Button key={q} value={q}>
-                  {' '}
-                  {q}
-                </Radio.Button>
-              ))
-            ) : (
-              <p>Loading...</p>
-            )}
-          </Radio.Group> */}
           <Form.Item name="images">
             <Input
               type="file"
@@ -251,6 +239,18 @@ export function AsyncQuestionForm({
             ) : (
               <></>
             )}
+          </Form.Item>
+          <QuestionCaption>
+            Your question will be anonymous. Other students will not see your
+            name.
+          </QuestionCaption>
+          <QuestionText>Hide your question from other students.</QuestionText>
+          <Form.Item
+            name="isAnonymous"
+            label="Anonymous Queue"
+            valuePropName="checked"
+          >
+            <Checkbox />
           </Form.Item>
         </Form>
       </Container>
