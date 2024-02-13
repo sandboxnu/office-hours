@@ -16,6 +16,8 @@ import { AsyncQuestionForm } from './AsyncQuestionForm'
 import PropTypes from 'prop-types'
 import { EditAsyncQuestionsModal } from './EditAsyncQuestions'
 import { QuestionType } from '../Shared/QuestionType'
+import { useProfile } from '../../../hooks/useProfile'
+import { useCourse } from '../../../hooks/useCourse'
 
 const Container = styled.div`
   flex: 1;
@@ -49,9 +51,11 @@ export default function AsyncQuestionsPage({
   courseId: number
 }): ReactElement {
   const role = useRoleInCourse(courseId)
+  const isStaff = role === Role.TA || role === Role.PROFESSOR
   const [studentQuestionModal, setStudentQuestionModal] = useState(false)
   const [editAsyncQuestionsModal, setEditAsyncQuestionsModal] = useState(false)
-  const [filter, setFilter] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [visibleFilter, setVisibleFilter] = useState('all')
 
   const [questionTypeInput, setQuestionTypeInput] = useState([])
 
@@ -62,6 +66,8 @@ export default function AsyncQuestionsPage({
   const [displayedQuestions, setDisplayedQuestions] = useState<AsyncQuestion[]>(
     [],
   )
+
+  const profile = useProfile()
 
   const onTypeChange = (selectedTypes) => {
     setQuestionTypeInput(selectedTypes)
@@ -75,13 +81,32 @@ export default function AsyncQuestionsPage({
       : []
 
     let displayedQuestions = []
-
-    if (filter === 'helped') {
-      displayedQuestions = questions.helpedQuestions
-    } else if (filter === 'unhelped') {
-      displayedQuestions = questions.waitingQuestions
-    } else {
+    if (isStaff) {
       displayedQuestions = allQuestionsList
+    } else {
+      displayedQuestions = allQuestionsList.filter(
+        (question) => question.visible || question.creatorId === profile?.id,
+      )
+    }
+
+    if (statusFilter === 'helped') {
+      displayedQuestions = displayedQuestions.filter(
+        (question) => question.status === 'Resolved',
+      )
+    } else if (statusFilter === 'unhelped') {
+      displayedQuestions = displayedQuestions.filter(
+        (question) => question.status === 'Waiting',
+      )
+    }
+
+    if (visibleFilter === 'visible') {
+      displayedQuestions = displayedQuestions.filter(
+        (question) => question.visible,
+      )
+    } else if (visibleFilter === 'hidden') {
+      displayedQuestions = displayedQuestions.filter(
+        (question) => !question.visible,
+      )
     }
 
     if (questionTypeInput.length > 0) {
@@ -95,9 +120,7 @@ export default function AsyncQuestionsPage({
       .map((question) => question.questionTypes)
       .flat()
     setQuestionsTypeState(shownQuestionTypes)
-  }, [filter, questions, questionTypeInput])
-
-  const isStaff = role === Role.TA || role === Role.PROFESSOR
+  }, [visibleFilter, statusFilter, questions, questionTypeInput])
 
   function RenderQueueInfoCol(): ReactElement {
     return (
@@ -149,6 +172,7 @@ export default function AsyncQuestionsPage({
             cid={courseId}
             qid={undefined}
             isStaff={isStaff}
+            userId={profile?.id}
             onQuestionTypeClick={(questionType) => {
               setQuestionTypeInput((prevInput) => {
                 const index = prevInput.indexOf(questionType)
@@ -197,25 +221,74 @@ export default function AsyncQuestionsPage({
     )
   }
 
+  const RenderQuestionStatusFilter = () => {
+    return (
+      <>
+        <Select
+          id="status-filter-select"
+          value={statusFilter}
+          onChange={(value) => setStatusFilter(value)}
+          className="select-filter"
+        >
+          <Select.Option value="all">Question Status</Select.Option>
+          <Select.Option value="helped">Answered</Select.Option>
+          <Select.Option value="unhelped">Unanswered</Select.Option>
+        </Select>
+      </>
+    )
+  }
+
+  const RenderVisibleFilter = () => {
+    return (
+      <>
+        <Select
+          id="visible-filter-select"
+          value={visibleFilter}
+          onChange={(value) => setVisibleFilter(value)}
+          className="select-filter"
+        >
+          <Select.Option value="all">Question Visibility</Select.Option>
+          <Select.Option value="visible">Visible Only</Select.Option>
+          <Select.Option value="hidden">Hidden Only</Select.Option>
+        </Select>
+      </>
+    )
+  }
+
+  const RenderCreatorFilter = () => {
+    return (
+      <>
+        <Select
+          id="creator-filter-select"
+          value={creatorFilter}
+          onChange={(value) => setCreatorFilter(value)}
+          className="select-filter"
+        ></Select>
+      </>
+    )
+  }
+
+  const RenderFilters = () => {
+    return (
+      <>
+        <h2 className="flex-shrink-0">Filter Questions</h2>
+        <div className="mb-4 flex items-center gap-x-4">
+          <RenderQuestionStatusFilter />
+          <RenderVisibleFilter />
+          <RenderQuestionTypeFilter />
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       <Container>
         <RenderQueueInfoCol />
         <VerticalDivider />
         <QueueListContainer>
-          <div className="mb-4">
-            <Select
-              id="filter-select"
-              value={filter}
-              onChange={(value) => setFilter(value)}
-              className="select-filter"
-            >
-              <Select.Option value="all">All Questions</Select.Option>
-              <Select.Option value="helped">Answered</Select.Option>
-              <Select.Option value="unhelped">Unanswered</Select.Option>
-            </Select>
-            <RenderQuestionTypeFilter />
-          </div>
+          <RenderFilters />
+
           <RenderQuestionList questions={displayedQuestions} />
         </QueueListContainer>
       </Container>

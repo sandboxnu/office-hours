@@ -57,6 +57,8 @@ export function AsyncQuestionForm({
     QuestionTypeParams[]
   >(question?.questionTypes || [])
 
+  const [isVisible, setIsVisible] = useState(true)
+
   //image stuff
   useEffect(() => {
     if (!selectedImage) {
@@ -75,6 +77,7 @@ export function AsyncQuestionForm({
           questionTypes: questionTypeInput,
           questionText: value.questionText,
           questionAbstract: value.QuestionAbstract,
+          visible: isVisible,
         },
         courseId,
       )
@@ -100,6 +103,7 @@ export function AsyncQuestionForm({
         questionTypes: questionTypeInput,
         questionText: value.questionText,
         questionAbstract: value.QuestionAbstract,
+        visible: isVisible,
       })
       .then((response) => {
         if (selectedImage && response) {
@@ -118,6 +122,7 @@ export function AsyncQuestionForm({
   }
 
   const onFinish = (value) => {
+    console.log(value)
     if (!question) {
       createQuestion(value)
     } else {
@@ -240,18 +245,19 @@ export function AsyncQuestionForm({
               <></>
             )}
           </Form.Item>
-          <QuestionCaption>
-            Your question will be anonymous. Other students will not see your
-            name.
-          </QuestionCaption>
-          <QuestionText>Hide your question from other students.</QuestionText>
           <Form.Item
-            name="isAnonymous"
-            label="Anonymous Queue"
+            name="isHidden"
+            label="Only visible to me and teaching staff"
             valuePropName="checked"
           >
-            <Checkbox />
+            <Checkbox onChange={(e) => setIsVisible(!e.target.checked)} />
           </Form.Item>
+          <br></br>
+          <br></br>
+          <QuestionText>Your question will be anonymous.</QuestionText>
+          <QuestionText>
+            Other students will not see your name or profile image.
+          </QuestionText>
         </Form>
       </Container>
     </Modal>

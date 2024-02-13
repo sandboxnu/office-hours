@@ -92,11 +92,6 @@ export function AnswerQuestionModal({
             placeholder={'Your response to the question'}
           />
         </Form.Item>
-        <Form.Item name="visible" valuePropName="checked">
-          <Checkbox onChange={(e) => setVisibleStatus(e.target.checked)}>
-            Make visible to all students
-          </Checkbox>
-        </Form.Item>
       </Form>
     </Modal>
   )

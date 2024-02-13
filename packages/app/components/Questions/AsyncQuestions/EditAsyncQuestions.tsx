@@ -39,7 +39,7 @@ export function EditAsyncQuestionsModal({
 
   useEffect(() => {
     getQuestions()
-  })
+  }, [])
 
   const onAddChange = (e) => {
     const inputValue = e.target.value.trim()
@@ -82,7 +82,6 @@ export function EditAsyncQuestionsModal({
   }, [course, questionTypeAddState, color])
 
   const editAsyncQueue = async (updateQueue: any) => {
-    console.log(updateQueue)
     message.success('Queue updated successfully')
   }
 
@@ -91,7 +90,6 @@ export function EditAsyncQuestionsModal({
       title="Edit Queue"
       open={visible}
       onCancel={onClose}
-      footer={null}
       onOk={async () => {
         const value = await form.validateFields()
         await editAsyncQueue(value)
@@ -101,20 +99,6 @@ export function EditAsyncQuestionsModal({
       <Form form={form} initialValues={{ courseId: courseId }}>
         <Form.Item name="courseId" hidden>
           <Input />
-        </Form.Item>
-        <Form.Item
-          name="isPrivate"
-          label="Private Queue"
-          valuePropName="checked"
-        >
-          <Checkbox />
-        </Form.Item>
-        <Form.Item
-          name="isAnonymous"
-          label="Anonymous Queue"
-          valuePropName="checked"
-        >
-          <Checkbox />
         </Form.Item>
         <h4>Current Question Types: (click to delete)</h4>
         {questionsTypeState.length > 0 ? (
@@ -155,11 +139,6 @@ export function EditAsyncQuestionsModal({
             }}
           >
             Add
-          </Button>
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Save
           </Button>
         </Form.Item>
       </Form>
