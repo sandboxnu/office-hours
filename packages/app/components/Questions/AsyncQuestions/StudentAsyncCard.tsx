@@ -27,7 +27,6 @@ export default function StudentAsyncCard({
   onQuestionTypeClick,
 }: StudentAsyncCardProps): ReactElement {
   const [isExpanded, setIsExpanded] = useState(false)
-  const profile = useProfile()
 
   const handleImageClick = (event) => {
     event.stopPropagation() // Prevents the click from closing the card
@@ -95,13 +94,14 @@ export default function StudentAsyncCard({
                 />
               )
             })}
-            <Text>{question.questionText}</Text>
-            {question.answerText && (
+            {question.questionText && <Text>{question.questionText}</Text>}
+
+            {question.aiAnswerText && (
               <>
                 <br />
                 <div>
                   <strong>AI Answer:</strong>
-                  <Text>{question.answerText}</Text>
+                  <Text>{question.aiAnswerText}</Text>
                 </div>
               </>
             )}

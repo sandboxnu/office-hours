@@ -42,6 +42,9 @@ export class AsyncQuestionModel extends BaseEntity {
   questionText: string;
 
   @Column('text', { nullable: true })
+  aiAnswerText: string;
+
+  @Column('text', { nullable: true })
   answerText: string;
 
   @ManyToOne((type) => UserModel)

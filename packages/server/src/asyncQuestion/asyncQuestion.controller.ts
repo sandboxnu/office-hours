@@ -27,6 +27,11 @@ import { AsyncQuestionModel } from './asyncQuestion.entity';
 import { asyncQuestionService } from './asyncQuestion.service';
 import { CourseModel } from 'course/course.entity';
 import { MailService } from 'mail/mail.service';
+
+import OpenAI from 'openai';
+import * as dotenv from 'dotenv';
+dotenv.config({ path: '../../.env' });
+
 @Controller('asyncQuestions')
 @UseGuards(JwtAuthGuard)
 export class asyncQuestionController {
@@ -53,6 +58,25 @@ export class asyncQuestionController {
         ERROR_MESSAGES.questionController.createQuestion.invalidQueue,
       );
     }
+
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+      organization: 'org-XRu80OJxG7Dc5Pb73vTkTyRf',
+    });
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo-0125',
+      messages: [
+        { role: 'system', content: 'You are a helpful assistant' },
+        {
+          role: 'user',
+          content: body.questionAbstract + ' ' + body.questionText,
+        },
+      ],
+    });
+
+    const aiAnswerText = completion.choices[0].message.content ?? '';
+
     //check whether there are images to be added
     try {
       const question = await AsyncQuestionModel.create({
@@ -62,6 +86,7 @@ export class asyncQuestionController {
         course: c,
         questionAbstract: body.questionAbstract,
         questionText: body.questionText || null,
+        aiAnswerText: aiAnswerText,
         questionTypes: body.questionTypes,
         status: asyncQuestionStatus.Waiting,
         visible: body.visible || false,
@@ -101,6 +126,26 @@ export class asyncQuestionController {
     if (question === undefined) {
       throw new NotFoundException();
     }
+
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+      organization: 'org-XRu80OJxG7Dc5Pb73vTkTyRf',
+    });
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo-0125',
+      messages: [
+        { role: 'system', content: 'You are a helpful assistant' },
+        {
+          role: 'user',
+          content: body.questionAbstract + ' ' + body.questionText,
+        },
+      ],
+    });
+
+    const aiAnswerText = completion.choices[0].message.content ?? '';
+
+    question.aiAnswerText = aiAnswerText;
 
     //If not creator, check if user is TA/PROF of course of question
 

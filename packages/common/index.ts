@@ -468,6 +468,10 @@ export class AsyncQuestion {
   @IsString()
   answerText?: string
 
+  @IsOptional()
+  @IsString()
+  aiAnswerText?: string
+
   @Type(() => Date)
   closedAt?: Date
 
