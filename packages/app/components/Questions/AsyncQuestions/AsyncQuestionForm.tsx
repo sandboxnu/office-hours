@@ -179,6 +179,7 @@ export function AsyncQuestionForm({
           form={form}
           initialValues={{
             QuestionAbstract: question?.questionAbstract,
+            questionText: question?.questionText,
             images: question?.images[0],
           }}
         >

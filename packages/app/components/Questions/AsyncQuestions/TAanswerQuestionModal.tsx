@@ -61,7 +61,10 @@ export function AnswerQuestionModal({
       ]}
     >
       <span>
-        <h2>Question:</h2>
+        <h3>Question:</h3>
+        <p>
+          <strong>{question.questionAbstract}</strong>
+        </p>
         <p> {question.questionText}</p>
         {question?.images.map((i) => {
           return (
@@ -73,8 +76,12 @@ export function AnswerQuestionModal({
             />
           )
         })}
+        <br></br>
+        <h3>Ai Answer:</h3>
+        <p>{question.aiAnswerText}</p>
       </span>
-      <h2>Your response:</h2>
+      <br></br>
+      <h3>Your response:</h3>
       <Form
         form={form}
         initialValues={{
