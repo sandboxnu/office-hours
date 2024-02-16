@@ -1,0 +1,8 @@
+
+
+/* Overwrite antd Nav styles to specifically move the navbar over to the right */
+.ant-menu-submenu.ant-menu-submenu-popup.ant-menu {
+    @media (max-width: 650px) {
+        left: 50vw !important;
+    }
+}

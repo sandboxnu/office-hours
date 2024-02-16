@@ -52,6 +52,12 @@ const MenuCon = styled.div`
   align-items: center;
   justify-content: space-between;
   padding-left: 0px;
+
+  // For centering the queue name or course name on mobile
+  @media (max-width: 650px) {
+    justify-content: center;
+    padding-right: 3em;
+  }
 `
 
 const LeftMenu = styled.div`
@@ -70,7 +76,6 @@ const RightMenu = styled.div`
 const BarsMenu = styled(Button)`
   height: 32px;
   padding: 6px;
-  margin-top: 8px;
   display: none;
   background: none;
 
@@ -85,6 +90,7 @@ const BarsButton = styled.span`
   height: 2px;
   background: #1890ff;
   position: relative;
+  margin-bottom: 5px;
 
   &:after,
   :before {
@@ -223,6 +229,7 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
           </a>
         )}
         <MenuCon>
+          {/* Left Menu (navbar tabs) and Right Menu (profile) only get shown on desktop  */}
           <LeftMenu>
             <NavBarTabs
               horizontal
@@ -232,22 +239,59 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
             />
           </LeftMenu>
           <RightMenu>
-            <ProfileDrawer courseId={courseId} />
+            <ProfileDrawer />
           </RightMenu>
+          {/* FOR MOBILE ONLY:
+          If on a queue, show the queue title,
+           else only show the course name */}
+          <div className="inline-block flex flex-col items-center sm:hidden ">
+            <h1 className="leading-none">{course?.name}</h1>
+            <h2 className="text-base leading-none text-slate-500">
+              {pathname.includes('queue')
+                ? course?.queues?.find(
+                    (queue) => queue.id === Number(asPath.split('/')[4]),
+                  )?.room
+                : ''}
+            </h2>
+          </div>
         </MenuCon>
+        {/* BarsMenu is the hamburger menu for mobile */}
         <BarsMenu type="primary" onClick={showDrawer}>
           <BarsButton />
         </BarsMenu>
         <Drawer
-          title="Course"
+          // put the organisation logo and name into the drawer title
+          title={
+            course?.organizationCourse && (
+              <span className="flex items-center ">
+                <LogoContainer>
+                  <Logo>
+                    <Image
+                      width={30}
+                      preview={false}
+                      src={`/api/v1/organization/${profile?.organization.orgId}/get_logo/${profile?.organization.organizationLogoUrl}`}
+                    />
+                  </Logo>
+                </LogoContainer>
+                <h1 className="text-2xl leading-none">
+                  {profile?.organization.organizationName}
+                </h1>
+              </span>
+            )
+          }
           placement="right"
           open={visible}
           closable={false}
           onClose={onClose}
           bodyStyle={{ padding: '12px' }}
         >
-          <NavBarTabs currentHref={pathname} tabs={tabs} hrefAsPath={asPath} />
-          <ProfileDrawer courseId={courseId} />
+          <NavBarTabs
+            onClose={onClose}
+            currentHref={pathname}
+            tabs={tabs}
+            hrefAsPath={asPath}
+          />
+          <ProfileDrawer />
         </Drawer>
       </Nav>
     </>
@@ -299,8 +343,9 @@ export default function NavBar({ courseId }: NavBarProps): ReactElement {
             currentHref={pathname}
             tabs={globalTabs}
             hrefAsPath={asPath}
+            onClose={onClose}
           />
-          <ProfileDrawer courseId={null} />
+          <ProfileDrawer />
         </Drawer>
       </Nav>
     </>

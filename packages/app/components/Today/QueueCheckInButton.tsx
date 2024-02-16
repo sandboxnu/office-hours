@@ -9,6 +9,7 @@ import { useRoleInCourse } from '../../hooks/useRoleInCourse'
 import QueueCheckInModal from './QueueCheckInModal'
 import QueueCreateModal from './QueueCreateModal'
 import TACheckinButton, { CheckinButton } from './TACheckinButton'
+import { LoginOutlined } from '@ant-design/icons'
 
 interface TodayPageCheckinButtonProps {
   createQueueModalVisible: boolean
@@ -114,6 +115,8 @@ export default function TodayPageCheckinButton({
           size="large"
           data-cy="check-in-modal-button"
           onClick={() => renderProperModal()}
+          className="w-fit"
+          icon={<LoginOutlined />}
         >
           Check In
         </CheckinButton>
@@ -123,6 +126,7 @@ export default function TodayPageCheckinButton({
           courseId={Number(cid)}
           room={queueCheckedIn.room}
           state="CheckedIn"
+          className="w-fit"
         />
       )}
     </>

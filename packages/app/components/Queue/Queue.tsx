@@ -35,16 +35,7 @@ import { useLocalStorage } from '../../hooks/useLocalStorage'
 import { AddStudentsModal } from './TA/TAAddStudent'
 import { EditQueueModal } from './TA/EditQueueModal'
 import PropTypes from 'prop-types'
-
-const HelpNextButton = styled(QueueInfoColumnButton)`
-  color: white;
-  background: #2a9187;
-  &:hover,
-  &:focus {
-    color: white;
-    background: #39aca1;
-  }
-`
+import { EditOutlined, LoginOutlined, PlusOutlined } from '@ant-design/icons'
 
 const EditQueueButton = styled(QueueInfoColumnButton)`
   color: #212934;
@@ -72,6 +63,8 @@ const QueueListContainer = styled.div`
 const JoinButton = styled(QueueInfoColumnButton)`
   background-color: #3684c6;
   color: white;
+  align-items: center;
+  display: flex;
 `
 
 const VerticalDivider = styled.div`
@@ -235,17 +228,13 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
     [mutateQuestions, qid, questions],
   )
 
-  const helpNext = async () => {
-    await onHelpQuestion(nextQuestion.id)
-    mutateQuestions()
-  }
-
   const openEditModal = useCallback(async () => {
     mutate(`/api/v1/queues/${qid}/questions`)
     setPopupEditQuestion(true)
   }, [qid])
 
   const closeEditModal = useCallback(() => {
+    console.log('closeEditModal')
     setPopupEditQuestion(false)
     setIsJoining(false)
   }, [])
@@ -341,51 +330,44 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
         isStaff={true}
         buttons={
           <>
+            <Tooltip
+              title={queue.isDisabled && 'Cannot check into a disabled queue!'}
+            >
+              <TACheckinButton
+                courseId={cid}
+                room={queue?.room}
+                disabled={
+                  staffCheckedIntoAnotherQueue ||
+                  isHelping ||
+                  (queue.isProfessorQueue && role !== Role.PROFESSOR) ||
+                  queue.isDisabled
+                }
+                state={isCheckedIn ? 'CheckedIn' : 'CheckedOut'}
+                className="w-1/3 sm:w-full"
+              />
+            </Tooltip>
             <EditQueueButton
               data-cy="editQueue"
               onClick={() => setQueueSettingsModal(true)}
+              icon={<EditOutlined />}
             >
-              Edit Queue Details
+              {/* only show the "Details" part on desktop to keep button small on mobile */}
+              <span>
+                Edit Queue <span className="hidden sm:inline">Details</span>
+              </span>
             </EditQueueButton>
             <EditQueueButton
               data-cy="addStudents"
               disabled={!isCheckedIn}
               onClick={() => setAddStudentsModal(true)}
+              icon={<PlusOutlined />}
             >
-              Add Students
+              {/* "+ Add Students to Queue" on desktop, "+ Students" on mobile */}
+              <span>
+                <span className="hidden sm:inline">Add</span> Students{' '}
+                <span className="hidden sm:inline">to Queue</span>
+              </span>
             </EditQueueButton>
-            <Tooltip
-              title={!isCheckedIn && 'You must check in to help students!'}
-            >
-              <HelpNextButton
-                onClick={helpNext}
-                disabled={!isCheckedIn || !nextQuestion || isHelping}
-                data-cy="help-next"
-              >
-                Help Next
-              </HelpNextButton>
-            </Tooltip>
-
-            <div style={{ marginBottom: '12px' }}>
-              <Tooltip
-                title={
-                  queue.isDisabled && 'Cannot check into a disabled queue!'
-                }
-              >
-                <TACheckinButton
-                  courseId={cid}
-                  room={queue?.room}
-                  disabled={
-                    staffCheckedIntoAnotherQueue ||
-                    isHelping ||
-                    (queue.isProfessorQueue && role !== Role.PROFESSOR) ||
-                    queue.isDisabled
-                  }
-                  state={isCheckedIn ? 'CheckedIn' : 'CheckedOut'}
-                  block
-                />
-              </Tooltip>
-            </div>
           </>
         }
       />
@@ -417,6 +399,7 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
                 onClick={async () =>
                   setShowJoinPopconfirm(!(await joinQueueOpenModal(false)))
                 }
+                icon={<LoginOutlined />}
               >
                 Join Queue
               </JoinButton>
@@ -430,7 +413,7 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
     font-weight: 500;
     font-size: 24px;
     color: #212934;
-    margin-bottom: 0;
+    margin-bottom: 0.25em;
   `
 
   const NoQuestionsText = styled.div`
@@ -449,8 +432,8 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
           <NoQuestionsText>There are no questions in the queue</NoQuestionsText>
         ) : (
           <>
-            <QueueHeader>Queue</QueueHeader>
-            <br></br>
+            {/* only show this queue header on desktop */}
+            <QueueHeader className="hidden sm:block">Queue</QueueHeader>
             {/* <StudentHeaderCard bordered={false}>
               <CenterRow>
                 <Col flex="1 1">
@@ -464,6 +447,8 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
           </>
         )}
         {questions?.map((question: Question, index: number) => {
+          const background_color =
+            question.id === studentQuestionId ? 'bg-teal-200/25' : 'bg-white'
           return (
             <StudentQueueCard
               key={question.id}
@@ -472,6 +457,7 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
               cid={cid}
               qid={qid}
               isStaff={isStaff}
+              className={background_color}
             />
           )
         })}
@@ -501,8 +487,6 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
                   />
                 )
               })}
-              <br></br>
-              <br></br>
             </>
           ) : (
             <>
@@ -511,7 +495,6 @@ export default function QueuePage({ qid, cid }: QueuePageProps): ReactElement {
                 editQuestion={openEditModal}
                 leaveQueue={leaveQueue}
               />
-              <div style={{ marginTop: '40px' }} />
             </>
           )}
           <RenderQueueQuestions questions={questions?.queue} />
