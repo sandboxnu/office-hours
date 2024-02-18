@@ -1,5 +1,5 @@
 import { Role } from '@koh/common'
-import { Modal, Form, Switch, Radio, Input } from 'antd'
+import { Modal, Form, Radio, Input, Switch } from 'antd'
 import { FormInstance } from 'antd/lib/form'
 import TextArea from 'antd/lib/input/TextArea'
 import { ReactElement } from 'react'
@@ -64,11 +64,7 @@ export default function QueueCreateModal({
           valuePropName="checked"
           tooltip="Online queues automatically open a Teams chat when helping a student"
         >
-          <Switch
-            style={{ backgroundColor: '#1677ff' }}
-            data-cy="qc-isonline"
-            onChange={onIsOnlineUpdate}
-          />
+          <Switch data-cy="qc-isonline" onChange={onIsOnlineUpdate} />
         </Form.Item>
 
         <Form.Item
