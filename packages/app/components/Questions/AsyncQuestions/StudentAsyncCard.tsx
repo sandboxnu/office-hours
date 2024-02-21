@@ -96,21 +96,20 @@ export default function StudentAsyncCard({
             })}
             {question.questionText && <Text>{question.questionText}</Text>}
 
-            {question.aiAnswerText && (
+            {question.answerText ? (
               <>
                 <br />
                 <div>
-                  <strong>AI Answer:</strong>
-                  <Text>{question.aiAnswerText}</Text>
+                  <strong>Answer:</strong>
+                  <Text>{question.answerText}</Text>
                 </div>
               </>
-            )}
-            {question.answerText && (
+            ) : (
               <>
                 <br />
                 <div>
-                  <strong>Staff Answer:</strong>
-                  <Text>{question.answerText}</Text>
+                  <strong>Answer:</strong>
+                  <Text>{question.aiAnswerText}</Text>
                 </div>
               </>
             )}

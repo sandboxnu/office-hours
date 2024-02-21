@@ -77,11 +77,9 @@ export function AnswerQuestionModal({
           )
         })}
         <br></br>
-        <h3>Ai Answer:</h3>
-        <p>{question.aiAnswerText}</p>
       </span>
       <br></br>
-      <h3>Your response:</h3>
+      <h3>Response:</h3>
       <Form
         form={form}
         initialValues={{

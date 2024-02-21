@@ -48,7 +48,6 @@ export class asyncQuestionController {
     @User() user: UserModel,
   ): Promise<any> {
     // const { text, questionType, groupable, queueId, force } = body;
-    console.log(body);
     const c = await CourseModel.findOne({
       where: { id: cid },
     });
@@ -59,24 +58,6 @@ export class asyncQuestionController {
       );
     }
 
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-      organization: 'org-XRu80OJxG7Dc5Pb73vTkTyRf',
-    });
-
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo-0125',
-      messages: [
-        { role: 'system', content: 'You are a helpful assistant' },
-        {
-          role: 'user',
-          content: body.questionAbstract + ' ' + body.questionText,
-        },
-      ],
-    });
-
-    const aiAnswerText = completion.choices[0].message.content ?? '';
-
     //check whether there are images to be added
     try {
       const question = await AsyncQuestionModel.create({
@@ -86,7 +67,8 @@ export class asyncQuestionController {
         course: c,
         questionAbstract: body.questionAbstract,
         questionText: body.questionText || null,
-        aiAnswerText: aiAnswerText,
+        answerText: body.answerText || null,
+        aiAnswerText: body.aiAnswerText,
         questionTypes: body.questionTypes,
         status: asyncQuestionStatus.Waiting,
         visible: body.visible || false,
@@ -127,25 +109,8 @@ export class asyncQuestionController {
       throw new NotFoundException();
     }
 
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-      organization: 'org-XRu80OJxG7Dc5Pb73vTkTyRf',
-    });
-
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo-0125',
-      messages: [
-        { role: 'system', content: 'You are a helpful assistant' },
-        {
-          role: 'user',
-          content: body.questionAbstract + ' ' + body.questionText,
-        },
-      ],
-    });
-
-    const aiAnswerText = completion.choices[0].message.content ?? '';
-
-    question.aiAnswerText = aiAnswerText;
+    question.aiAnswerText = body.aiAnswerText;
+    question.answerText = body.answerText;
 
     //If not creator, check if user is TA/PROF of course of question
 

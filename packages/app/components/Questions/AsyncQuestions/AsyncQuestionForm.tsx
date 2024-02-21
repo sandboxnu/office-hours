@@ -70,12 +70,33 @@ export function AsyncQuestionForm({
     return () => window.URL.revokeObjectURL(objectURL)
   }, [selectedImage])
   //create function to update question. if question undefined create, if question, update. if question and has new image, update image too.
+  const getAiAnswer = async (questionText: string) => {
+    const data = {
+      question: questionText,
+      history: [],
+    }
+    const response = await fetch(`/chat/${courseId}/ask`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+    const json = await response.json()
+    return json.answer
+  }
+
   const createQuestion = async (value) => {
+    const aiAnswer = await getAiAnswer(
+      value.QuestionAbstract + ' ' + value.questionText,
+    )
     await API.asyncQuestions
       .create(
         {
           questionTypes: questionTypeInput,
           questionText: value.questionText,
+          aiAnswerText: aiAnswer,
+          answerText: aiAnswer,
           questionAbstract: value.QuestionAbstract,
           visible: isVisible,
         },
@@ -98,10 +119,16 @@ export function AsyncQuestionForm({
   }
 
   const updateQuestion = async (value) => {
+    const aiAnswer = await getAiAnswer(
+      value.QuestionAbstract + ' ' + value.questionText,
+    )
+
     await API.asyncQuestions
       .update(question.id, {
         questionTypes: questionTypeInput,
         questionText: value.questionText,
+        aiAnswerText: aiAnswer,
+        answerText: aiAnswer,
         questionAbstract: value.QuestionAbstract,
         visible: isVisible,
       })
