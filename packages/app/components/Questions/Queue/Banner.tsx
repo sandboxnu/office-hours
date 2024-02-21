@@ -4,6 +4,9 @@ import styled from 'styled-components'
 
 const BannerContainer = styled.div`
   width: 100%;
+  @media (max-width: 650px) {
+    margin-bottom: 1em;
+  }
 `
 
 const TitleContainer = styled.div`
@@ -26,7 +29,7 @@ const Title = styled.div`
 `
 const ButtonContainer = styled.div`
   display: flex;
-  flex-flow: row wrap;
+  flex-flow: row nowrap;
   margin-right: 10px;
 `
 
@@ -44,9 +47,6 @@ interface BannerProps {
   buttons?: ReactNode
 }
 
-interface CircleButtonProps {
-  [x: string]: any
-}
 /**
  * Presentation-only component
  */
@@ -64,17 +64,21 @@ export default function Banner(props: BannerProps): ReactElement {
   )
 }
 
-export function CircleButton({ ...props }: CircleButtonProps): ReactElement {
-  return <Button size="large" shape="circle" {...props} />
-}
-
 /**
  * Buttons to be used in the banner
  */
-export const BannerButton = styled(CircleButton)`
-  margin-left: 16px;
+export const BannerButton = styled(Button).attrs({
+  size: 'large',
+  shape: 'circle',
+})`
+  margin-left: 0.75rem;
   border: 0;
   background: #fff;
+
+  @media (max-width: 650px) {
+    margin-left: 0.5rem;
+    margin-top: 0.35rem;
+  }
 `
 
 export const BannerPrimaryButton = styled(BannerButton)`

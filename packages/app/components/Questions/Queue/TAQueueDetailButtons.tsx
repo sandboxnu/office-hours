@@ -41,11 +41,13 @@ export default function TAQueueDetailButtons({
   queueId,
   question,
   hasUnresolvedRephraseAlert,
+  className,
 }: {
   courseId: number
   queueId: number
   question: Question
   hasUnresolvedRephraseAlert: boolean
+  className?: string
 }): ReactElement {
   //const defaultMessage = useDefaultMessage();
   const { course } = useCourse(courseId)
@@ -218,59 +220,61 @@ export default function TAQueueDetailButtons({
     })()
     return (
       <>
-        <Popconfirm
-          title="Are you sure you want to delete this question from the queue?"
-          disabled={!isCheckedIn}
-          okText="Yes"
-          cancelText="No"
-          onConfirm={async () => {
-            await deleteQuestion()
-          }}
-        >
-          <Tooltip
-            title={
-              isCheckedIn
-                ? 'Remove From Queue'
-                : 'You must check in to remove students from the queue'
-            }
+        <div className={className}>
+          <Popconfirm
+            title="Are you sure you want to delete this question from the queue?"
+            disabled={!isCheckedIn}
+            okText="Yes"
+            cancelText="No"
+            onConfirm={async () => {
+              await deleteQuestion()
+            }}
           >
-            <span>
-              {/* This span is a workaround for tooltip-on-disabled-button 
+            <Tooltip
+              title={
+                isCheckedIn
+                  ? 'Remove From Queue'
+                  : 'You must check in to remove students from the queue'
+              }
+            >
+              <span>
+                {/* This span is a workaround for tooltip-on-disabled-button 
               https://github.com/ant-design/ant-design/issues/9581#issuecomment-599668648 */}
-              <BannerDangerButton
+                <BannerDangerButton
+                  shape="circle"
+                  icon={<DeleteOutlined />}
+                  data-cy="remove-from-queue"
+                  disabled={!isCheckedIn}
+                />
+              </span>
+            </Tooltip>
+          </Popconfirm>
+          <Tooltip title={rephraseTooltip}>
+            <span>
+              <BannerOrangeButton
                 shape="circle"
-                icon={<DeleteOutlined />}
-                data-cy="remove-from-queue"
-                disabled={!isCheckedIn}
+                icon={<QuestionOutlined />}
+                onClick={sendRephraseAlert}
+                data-cy="request-rephrase-question"
+                disabled={!canRephrase}
               />
             </span>
           </Tooltip>
-        </Popconfirm>
-        <Tooltip title={rephraseTooltip}>
-          <span>
-            <BannerOrangeButton
-              shape="circle"
-              icon={<QuestionOutlined />}
-              onClick={sendRephraseAlert}
-              data-cy="request-rephrase-question"
-              disabled={!canRephrase}
-            />
-          </span>
-        </Tooltip>
-        <Tooltip title={helpTooltip}>
-          <span>
-            <BannerPrimaryButton
-              icon={<PhoneOutlined />}
-              onClick={() => {
-                // message.success("timer cleared")
-                // clearTimeout(timerCheckout.current);
-                helpStudent()
-              }}
-              disabled={!canHelp}
-              data-cy="help-student"
-            />
-          </span>
-        </Tooltip>
+          <Tooltip title={helpTooltip}>
+            <span>
+              <BannerPrimaryButton
+                icon={<PhoneOutlined />}
+                onClick={() => {
+                  // message.success("timer cleared")
+                  // clearTimeout(timerCheckout.current);
+                  helpStudent()
+                }}
+                disabled={!canHelp}
+                data-cy="help-student"
+              />
+            </span>
+          </Tooltip>
+        </div>
       </>
     )
   }

@@ -1,6 +1,6 @@
 import { ReactElement, useCallback } from 'react'
 import Modal from 'antd/lib/modal/Modal'
-import { Form, Collapse, message, Checkbox } from 'antd'
+import { Form, Collapse, message, Checkbox, Input } from 'antd'
 import { API } from '@koh/api-client'
 import { default as React, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
@@ -258,11 +258,9 @@ export function AddStudentsModal({
                 </Button> */}
               </Form.Item>
             </Form>
-            {studentsState.length > 0 ? (
-              <p>Search for students to be added</p>
-            ) : (
+            {studentsState.length == 0 ? (
               <p>There are no students or all students are in queue</p>
-            )}
+            ) : null}
             {selectOptions.length > 0 ? (
               <>
                 <br />
@@ -273,7 +271,7 @@ export function AddStudentsModal({
                         <p>{option.value}</p>
                       </strong>
                       <Form.Item>
-                        <input
+                        <Input
                           placeholder={`Enter ${option.value}'s question`}
                           style={{ width: '100%', height: '40px' }}
                           onChange={(e) =>

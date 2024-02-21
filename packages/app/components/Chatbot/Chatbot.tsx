@@ -11,7 +11,8 @@ const ChatbotContainer = styled.div`
   position: fixed;
   bottom: 20px;
   right: 20px;
-  width: 400px;
+  width: 90vw;
+  max-width: 400px;
   zindex: 9999;
 `
 
@@ -43,13 +44,13 @@ export const ChatbotComponent: React.FC = () => {
   const profile = useProfile()
   const [isLoading, setIsLoading] = useState(false)
   const [interactionId, setInteractionId] = useState<number | null>(null)
-  const [preDeterminedQuestions, setPreDeterminedQuestions] =
-    useState<PreDeterminedQuestion[]>(null)
+  const [preDeterminedQuestions] = useState<PreDeterminedQuestion[]>(null)
 
   const [messages, setMessages] = useState<Message[]>([
     {
       type: 'apiMessage',
-      message: 'Hello, how can I assist you? I can help with anything course related.',
+      message:
+        'Hello, how can I assist you? I can help with anything course related.',
     },
   ])
   const [isOpen, setIsOpen] = useState(false)
@@ -288,6 +289,7 @@ export const ChatbotComponent: React.FC = () => {
           type="primary"
           icon={<RobotOutlined />}
           size="large"
+          className="mx-5"
           onClick={() => setIsOpen(true)}
         >
           Chat now!

@@ -7,6 +7,7 @@ import AvatarWithInitals from './AvatarWithInitials'
 type SelfAvatarProps = {
   size: number
   style?: any
+  className?: string
 }
 
 type KOHAvatarProps = {
@@ -20,6 +21,7 @@ type KOHAvatarProps = {
 export default function SelfAvatar({
   size,
   style,
+  className,
 }: SelfAvatarProps): ReactElement {
   const profile = useProfile()
 
@@ -29,6 +31,7 @@ export default function SelfAvatar({
       photoURL={profile?.photoURL}
       name={profile?.name}
       style={style}
+      className={className}
     />
   )
 }

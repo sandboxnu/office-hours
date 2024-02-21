@@ -6,7 +6,6 @@ import {
   StopOutlined,
 } from '@ant-design/icons'
 import { Button, message, Modal, Popconfirm, Tooltip } from 'antd'
-import { ButtonProps } from 'antd/lib/button'
 import Linkify from 'react-linkify'
 import moment from 'moment'
 import React, { ReactElement, ReactNode, useState } from 'react'
@@ -16,24 +15,29 @@ import { RenderEvery } from '../../RenderEvery'
 import { TAStatuses } from './TAStatuses'
 import { API } from '@koh/api-client'
 import Router from 'next/router'
-import { QueueInfoColumnButton } from '../Shared/SharedComponents'
+import { QueueInfoColumnButton, Text } from '../Shared/SharedComponents'
 
-const QueueTitle = styled.div`
-  font-weight: 500;
-  font-size: 24px;
+const QueueTitle = styled.h2`
+  font-weight: 700;
+  font-size: 1.5rem;
   color: #212934;
+  margin-bottom: 0px;
+  line-height: 2rem;
+  display: inline-block;
 `
 
 // New queue styled components start here
 const InfoColumnContainer = styled.div`
   flex-shrink: 0;
-  padding-bottom: 30px;
   position: relative;
   display: flex;
   flex-direction: column;
+  padding-bottom: 0.75em;
+
   @media (min-width: 650px) {
     margin-top: 32px;
     width: 290px;
+    padding-bottom: 30px;
   }
 `
 
@@ -46,11 +50,17 @@ const QueuePropertyRow = styled.div`
   margin-bottom: 20px;
   color: #5f6b79;
   font-size: 20px;
+
+  // less margin on mobile
+  @media (max-width: 650px) {
+    margin-bottom: 0;
+  }
 `
 
 const QueuePropertyText = styled.div`
   margin-left: 12px;
   font-size: 16px;
+  font-style: italic;
 
   // To break text in flexbox
   min-width: 0;
@@ -58,10 +68,18 @@ const QueuePropertyText = styled.div`
 
   // to show new lines in the text
   white-space: pre-wrap;
+
+  /* make text smaller on mobile */
+  @media (max-width: 650px) {
+    font-size: 14px;
+  }
 `
 
-const StaffH2 = styled.h2`
-  margin-top: 32px;
+const CustomH3 = styled.h3`
+  margin-bottom: 0;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
 `
 
 const QueueRoomGroup = styled.div`
@@ -71,7 +89,12 @@ const QueueRoomGroup = styled.div`
 `
 
 const QueueInfo = styled.div`
-  margin-bottom: 24px;
+  margin-bottom: 8px;
+
+  // less margin on mobile
+  @media (max-width: 650px) {
+    margin-bottom: 0px;
+  }
 `
 
 const QueueText = styled.div`
@@ -80,7 +103,7 @@ const QueueText = styled.div`
   width: 100%;
 `
 
-const DisableQueueButton = styled(QueueInfoColumnButton)`
+export const DisableQueueButton = styled(QueueInfoColumnButton)`
   color: white;
   background: #da3236;
   &:hover,
@@ -91,7 +114,7 @@ const DisableQueueButton = styled(QueueInfoColumnButton)`
   }
 `
 
-const ClearQueueButton = styled(QueueInfoColumnButton)`
+export const ClearQueueButton = styled(QueueInfoColumnButton)`
   color: #d4380d;
   background: #fff;
   border-color: #d4380d;
@@ -124,33 +147,8 @@ export function QueueInfoColumn({
   isStaff,
   buttons,
 }: QueueInfoColumnProps): ReactElement {
-  const { queue, mutateQueue } = useQueue(queueId)
+  const { queue } = useQueue(queueId)
   // const [away, setAway] = useState(false);
-  const disableQueue = async () => {
-    await API.queues.disable(queueId)
-    await mutateQueue()
-    message.success('Successfully disabled queue: ' + queue.room)
-    await Router.push('/')
-  }
-
-  const clearQueue = async () => {
-    await API.queues.clean(queueId)
-    await mutateQueue()
-    message.success('Successfully cleaned queue: ' + queue.room)
-  }
-
-  const confirmDisable = () => {
-    confirm({
-      title: `Please Confirm!`,
-      icon: <ExclamationCircleOutlined />,
-      style: { whiteSpace: 'pre-wrap' },
-      content: `Please confirm that you want to disable the queue: ${queue.room}.\n
-      This queue will no longer appear in the app, and any students currently in the queue will be removed.`,
-      onOk() {
-        disableQueue()
-      },
-    })
-  }
   // const checkAway = (checked: boolean) => {
   //   if (!checked) {
   //     setAway(true);
@@ -160,7 +158,12 @@ export function QueueInfoColumn({
   // };
   return (
     <InfoColumnContainer>
-      <QueueInfo>
+      {/* only show the queue title and warning here on desktop, move down on mobile */}
+      <QueueInfo className="justify-left hidden items-center sm:flex">
+        <QueueTitle data-cy="room-title">
+          {queue?.room} {queue?.isDisabled && <b>(disabled)</b>}
+        </QueueTitle>
+
         <QueueRoomGroup>
           {!queue.allowQuestions && (
             <Tooltip title="This queue is no longer accepting questions">
@@ -171,18 +174,8 @@ export function QueueInfoColumn({
             </Tooltip>
           )}
         </QueueRoomGroup>
-
-        {queue.staffList.length < 1 ? (
-          <h1>
-            No staff checked in, wait for a staff member to check in to post
-            questions
-          </h1>
-        ) : (
-          <QueueTitle data-cy="room-title">
-            {queue?.room} {queue?.isDisabled && <b>(disabled)</b>}
-          </QueueTitle>
-        )}
       </QueueInfo>
+
       {queue?.notes && (
         <QueuePropertyRow>
           <NotificationOutlined />
@@ -204,12 +197,35 @@ export function QueueInfoColumn({
           </QueueText>
         </QueuePropertyRow>
       )}
-      <QueueUpToDateInfo queueId={queueId} />
-      {buttons}
-      <StaffH2>Staff</StaffH2>
-      <TAStatuses queueId={queueId} />
+
+      {/* buttons and queueUpToDateInfo for desktop (has different order than mobile)*/}
+      <div className="hidden sm:block">
+        <QueueUpToDateInfo queueId={queueId} />
+        {buttons}
+      </div>
+
+      <CustomH3 className="mt-0 sm:mt-10">Staff</CustomH3>
+      {queue.staffList.length < 1 ? (
+        <div
+          role="alert"
+          className="border-l-4 border-orange-500 bg-orange-100 p-4 text-orange-700"
+        >
+          <p> No staff checked in</p>
+        </div>
+      ) : (
+        <TAStatuses queueId={queueId} />
+      )}
+
+      {/* buttons for staff on mobile */}
       {isStaff && (
-        <QueueManagementBox>
+        <div className="my-3 block flex flex-wrap items-center justify-between sm:hidden">
+          {buttons}
+        </div>
+      )}
+
+      {isStaff && (
+        // "Clear Queue" and "Delete Queue" buttons for DESKTOP ONLY - mobile is in EditQueueModal.tsx
+        <QueueManagementBox className="!hidden sm:!flex">
           {/* <p>Toggle to indicate away </p>
           <Switch
             onChange={checkAway}
@@ -225,12 +241,16 @@ export function QueueInfoColumn({
             cancelText="No"
             placement="top"
             arrowPointAtCenter={true}
-            onConfirm={clearQueue}
+            onConfirm={() => clearQueue(queueId, queue)}
           >
-            <ClearQueueButton>Clear Queue</ClearQueueButton>
+            {/* Hide button on mobile (it gets moved to edit queue modal) */}
+            <ClearQueueButton className="hidden sm:flex">
+              Clear Queue
+            </ClearQueueButton>
           </Popconfirm>
+          {/* Hide button on mobile (it gets moved to edit queue modal) */}
           <DisableQueueButton
-            onClick={confirmDisable}
+            onClick={() => confirmDisable(queueId, queue)}
             data-cy="queue-disable-button"
             disabled={queue?.isDisabled}
           >
@@ -238,6 +258,16 @@ export function QueueInfoColumn({
           </DisableQueueButton>
         </QueueManagementBox>
       )}
+
+      {/* mobile only */}
+      <div className="mt-3 block flex items-center justify-between sm:hidden">
+        <div className="flex flex-col">
+          <CustomH3 className="mt-0">Queue</CustomH3>
+          <QueueUpToDateInfo queueId={queueId} />
+        </div>
+        {/* for 'Join Queue' button for students */}
+        {!isStaff && buttons}
+      </div>
     </InfoColumnContainer>
   )
 }
@@ -268,5 +298,69 @@ function QueueUpToDateInfo({ queueId }: { queueId: number }): ReactElement {
         )}
       </QueuePropertyText>
     </QueuePropertyRow>
+  )
+}
+
+export const clearQueue = async (queueId: number, queue: { room: string }) => {
+  await API.queues.clean(queueId)
+  message.success('Successfully cleaned queue: ' + queue.room)
+}
+
+export const confirmDisable = (queueId: number, queue: { room: string }) => {
+  confirm({
+    title: `Please Confirm!`,
+    icon: <ExclamationCircleOutlined />,
+    style: { whiteSpace: 'pre-wrap' },
+    content: `Please confirm that you want to disable the queue: ${queue.room}.\n
+    This queue will no longer appear in the app, and any students currently in the queue will be removed.`,
+    onOk() {
+      disableQueue(queueId, queue)
+    },
+  })
+}
+
+export const disableQueue = async (
+  queueId: number,
+  queue: { room: string },
+) => {
+  await API.queues.disable(queueId)
+  message.success('Successfully disabled queue: ' + queue.room)
+  await Router.push('/')
+}
+
+interface QuestionTypeProps {
+  typeName: string
+  typeColor: string
+  onClick: () => void
+}
+export function QuestionType({
+  typeName,
+  typeColor,
+  onClick,
+}: QuestionTypeProps): ReactElement {
+  function getBrightness(color: string): number {
+    const rgb = parseInt(color.slice(1), 16)
+    const r = (rgb >> 16) & 0xff
+    const g = (rgb >> 8) & 0xff
+    const b = (rgb >> 0) & 0xff
+    return (r * 299 + g * 587 + b * 114) / 1000
+  }
+  const textColor = getBrightness(typeColor) < 128 ? 'white' : 'black'
+
+  return (
+    <div
+      style={{
+        backgroundColor: typeColor,
+        borderRadius: '15px',
+        padding: '0px 7px',
+        //marginTop: '2px',
+        margin: '2px',
+        display: 'inline-block',
+        cursor: 'pointer',
+      }}
+      onClick={onClick}
+    >
+      <Text style={{ fontSize: 'smaller', color: textColor }}>{typeName}</Text>{' '}
+    </div>
   )
 }

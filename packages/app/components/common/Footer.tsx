@@ -1,18 +1,10 @@
 import { ReactElement } from 'react'
-import styled from 'styled-components'
-
-const FullWidth = styled.footer`
-  width: 100%;
-  background: #ebebeb;
-
-  flex-shrink: 0;
-  padding: 12px 64px;
-`
 
 export function Footer(): ReactElement {
   return (
-    <FullWidth>
-      <div>Maintained by UBC Okanagan students with ❤️</div>
-    </FullWidth>
+    // Hide footer on mobile since screen space is more valuable
+    <footer className="hidden w-full flex-shrink-0 bg-[#ebebeb] px-6 py-3 md:block">
+      Maintained by UBC Okanagan students with ❤️
+    </footer>
   )
 }

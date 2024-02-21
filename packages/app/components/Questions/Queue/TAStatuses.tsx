@@ -34,7 +34,7 @@ export function TAStatuses({ queueId }: StatusRowProps): ReactElement {
   }
 
   return (
-    <Col style={{ marginBottom: '16px' }}>
+    <Col className="mb-3 sm:mb-0">
       {staffList.map((ta) => (
         <Col key={ta.id}>
           <StatusCard
@@ -57,6 +57,12 @@ const StyledCard = styled.div`
   padding: 16px;
   display: flex;
   margin-bottom: 16px;
+
+  /* decrease margins and padding on mobile */
+  @media (max-width: 650px) {
+    padding: 12px;
+    margin-bottom: 8px;
+  }
 `
 
 const CardContent = styled.div`
