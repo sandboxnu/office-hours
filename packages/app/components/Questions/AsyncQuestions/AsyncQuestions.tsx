@@ -145,7 +145,7 @@ export default function AsyncQuestionsPage({
                 <EditQueueButton
                   onClick={() => setEditAsyncQuestionsModal(true)}
                 >
-                  Edit Queue
+                  Settings
                 </EditQueueButton>
                 <div style={{ marginBottom: '12px' }}></div>
               </>
