@@ -32,6 +32,11 @@ export default function StudentAsyncCard({
     event.stopPropagation() // Prevents the click from closing the card
   }
 
+  const setIsExpandedTrue = (event) => {
+    event.stopPropagation()
+    setIsExpanded(true)
+  }
+
   return (
     <Card
       className="mb-2 rounded-lg bg-white p-2 shadow-lg"
@@ -62,6 +67,7 @@ export default function StudentAsyncCard({
                 queueId={qid}
                 question={question}
                 hasUnresolvedRephraseAlert={false}
+                setIsExpandedTrue={setIsExpandedTrue}
               />
             </>
           )}
@@ -72,6 +78,7 @@ export default function StudentAsyncCard({
                 queueId={qid}
                 question={question}
                 hasUnresolvedRephraseAlert={false}
+                setIsExpandedTrue={setIsExpandedTrue}
               />
             </>
           ) : (

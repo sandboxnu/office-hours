@@ -28,10 +28,6 @@ import { asyncQuestionService } from './asyncQuestion.service';
 import { CourseModel } from 'course/course.entity';
 import { MailService } from 'mail/mail.service';
 
-import OpenAI from 'openai';
-import * as dotenv from 'dotenv';
-dotenv.config({ path: '../../.env' });
-
 @Controller('asyncQuestions')
 @UseGuards(JwtAuthGuard)
 export class asyncQuestionController {

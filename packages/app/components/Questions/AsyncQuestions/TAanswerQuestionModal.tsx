@@ -93,7 +93,6 @@ export function AnswerQuestionModal({
         >
           <Input.TextArea
             style={{ height: 150, marginBottom: 24 }}
-            allowClear={true}
             placeholder={'Your response to the question'}
           />
         </Form.Item>

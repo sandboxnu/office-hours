@@ -8,8 +8,10 @@ import { CantFindButton, FinishHelpingButton } from '../Queue/Banner'
 
 export function TAquestionDetailButtons({
   question,
+  setIsExpandedTrue,
 }: {
   question: AsyncQuestion
+  setIsExpandedTrue: (event) => void
 }): ReactElement {
   const [answerQuestionVisible, setAnswerQuestionVisbile] = useState(false)
 
@@ -31,13 +33,17 @@ export function TAquestionDetailButtons({
             shape="circle"
             icon={<CloseOutlined />}
             data-cy="cant-find-button"
+            onClick={(event) => setIsExpandedTrue(event)}
           />
         </Tooltip>
       </Popconfirm>
       <Tooltip title="Post response">
         <FinishHelpingButton
           icon={<EditOutlined />}
-          onClick={() => setAnswerQuestionVisbile(true)}
+          onClick={(event) => {
+            setAnswerQuestionVisbile(true)
+            setIsExpandedTrue(event)
+          }}
           data-cy="finish-helping-button"
         />
       </Tooltip>

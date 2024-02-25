@@ -10,8 +10,10 @@ import { AsyncQuestionForm } from './AsyncQuestionForm'
 
 export default function StudentQuestionDetailButtons({
   question,
+  setIsExpandedTrue,
 }: {
   question: AsyncQuestion
+  setIsExpandedTrue: (event) => void
 }): ReactElement {
   const [answerQuestionVisible, setAnswerQuestionVisbile] = useState(false)
   // const handleCancel = () => {
@@ -40,13 +42,17 @@ export default function StudentQuestionDetailButtons({
             shape="circle"
             icon={<CloseOutlined />}
             data-cy="cant-find-button"
+            onClick={(event) => setIsExpandedTrue(event)}
           />
         </Tooltip>
       </Popconfirm>
       <Tooltip title="Edit Your Question">
         <FinishHelpingButton
           icon={<EditOutlined />}
-          onClick={() => setAnswerQuestionVisbile(true)}
+          onClick={(event) => {
+            setAnswerQuestionVisbile(true)
+            setIsExpandedTrue(event)
+          }}
           data-cy="edit-question-button"
         />
       </Tooltip>
@@ -55,38 +61,6 @@ export default function StudentQuestionDetailButtons({
         visible={answerQuestionVisible}
         onClose={() => setAnswerQuestionVisbile(false)}
       />
-      {/* <Modal
-        visible={answerQuestionVisible}
-        onCancel={handleCancel}
-        footer={[
-          <Button key="back" onClick={handleCancel}>
-            Return
-          </Button>,
-          <Button
-            key="submit"
-            type="primary"
-            onClick={async () => {
-              const value = await form.validateFields();
-              await API.asyncQuestions
-                .update(question.id, { questionText: value.text })
-                .then(() => message.success("Updated"))
-                .catch(e => message.error(e));
-              handleCancel();
-            }}
-          >
-            Submit
-          </Button>
-        ]}
-      >
-        <Form form={form}>
-          <Form.Item
-            name="text"
-            rules={[{ required: true, message: "Please input your response." }]}
-          >
-            <Input.TextArea placeholder="Change your response"></Input.TextArea>
-          </Form.Item>
-        </Form>
-      </Modal> */}
     </>
   )
 }
