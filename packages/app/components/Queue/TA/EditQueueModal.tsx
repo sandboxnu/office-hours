@@ -1,14 +1,6 @@
 import { ReactElement } from 'react'
 import Modal from 'antd/lib/modal/Modal'
-import {
-  Switch,
-  Input,
-  Form,
-  Button,
-  message,
-  Popconfirm,
-  Checkbox,
-} from 'antd'
+import { Switch, Input, Form, Button, message, Popconfirm } from 'antd'
 import styled from 'styled-components'
 import { API } from '@koh/api-client'
 import { useQueue } from '../../../hooks/useQueue'
@@ -191,7 +183,7 @@ export function EditQueueModal({
             name="allowQuestions"
             valuePropName="checked"
           >
-            <Checkbox />
+            <Switch />
           </CustomFormItem>
           <h4 className="font-medium">
             Current Question Types: (click to delete)
