@@ -71,19 +71,23 @@ export function AsyncQuestionForm({
   }, [selectedImage])
   //create function to update question. if question undefined create, if question, update. if question and has new image, update image too.
   const getAiAnswer = async (questionText: string) => {
-    const data = {
-      question: questionText,
-      history: [],
+    try {
+      const data = {
+        question: questionText,
+        history: [],
+      }
+      const response = await fetch(`/chat/${courseId}/ask`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+      const json = await response.json()
+      return json.answer
+    } catch (e) {
+      return ''
     }
-    const response = await fetch(`/chat/${courseId}/ask`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
-    const json = await response.json()
-    return json.answer
   }
 
   const createQuestion = async (value) => {

@@ -112,13 +112,7 @@ export default function StudentAsyncCard({
                 </div>
               </>
             ) : (
-              <>
-                <br />
-                <div>
-                  <strong>Answer:</strong>
-                  <Text>{question.aiAnswerText}</Text>
-                </div>
-              </>
+              <></>
             )}
           </div>
         )}
