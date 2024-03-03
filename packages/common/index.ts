@@ -478,6 +478,28 @@ export class AsyncQuestion {
   @IsOptional()
   @IsBoolean()
   visible?: boolean
+
+  @IsOptional()
+  votes?: AsyncQuestionVotes[]
+
+  @IsOptional()
+  @IsInt()
+  votesSum?: number
+}
+
+export class AsyncQuestionVotes {
+  @IsOptional()
+  @IsInt()
+  id?: number
+
+  @IsInt()
+  questionId!: number
+
+  @IsInt()
+  userId!: number
+
+  @IsInt()
+  vote!: number
 }
 
 export class Image {

@@ -4,6 +4,7 @@ import { Exclude } from 'class-transformer';
 import { CourseModel } from '../course/course.entity';
 import { ImageModel } from '../images/image.entity';
 import {
+  AfterLoad,
   BaseEntity,
   Column,
   Entity,
@@ -16,6 +17,7 @@ import {
 } from 'typeorm';
 import { UserModel } from '../profile/user.entity';
 import { QuestionTypeModel } from '../question/question-type.entity';
+import { AsyncQuestionVotesModel } from './asyncQuestionVotes.entity';
 
 @Entity('async_question_model')
 export class AsyncQuestionModel extends BaseEntity {
@@ -83,4 +85,16 @@ export class AsyncQuestionModel extends BaseEntity {
 
   @Column('boolean', { nullable: true })
   visible: boolean;
+
+  @OneToMany(() => AsyncQuestionVotesModel, (vote) => vote.question, {
+    eager: true,
+  })
+  votes: AsyncQuestionVotesModel[];
+
+  votesSum: number;
+
+  @AfterLoad()
+  sumVotes() {
+    this.votesSum = this.votes.reduce((acc, vote) => acc + vote.vote, 0);
+  }
 }

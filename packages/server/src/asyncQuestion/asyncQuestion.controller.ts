@@ -17,6 +17,7 @@ import {
   Param,
   Patch,
   Post,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
@@ -27,6 +28,8 @@ import { AsyncQuestionModel } from './asyncQuestion.entity';
 import { asyncQuestionService } from './asyncQuestion.service';
 import { CourseModel } from 'course/course.entity';
 import { MailService } from 'mail/mail.service';
+import { Response } from 'express';
+import { AsyncQuestionVotesModel } from './asyncQuestionVotes.entity';
 
 @Controller('asyncQuestions')
 @UseGuards(JwtAuthGuard)
@@ -35,6 +38,46 @@ export class asyncQuestionController {
     private mailService: MailService,
     private questionService: asyncQuestionService,
   ) {}
+
+  @Post(':qid/:vote')
+  @Roles(Role.STUDENT, Role.TA, Role.PROFESSOR)
+  async voteQuestion(
+    @Param('qid') qid: number,
+    @Param('vote') vote: number,
+    @User() user: UserModel,
+    @Res() res: Response,
+  ): Promise<AsyncQuestion> {
+    const thisUserThisQuestionVote = await AsyncQuestionVotesModel.findOne({
+      where: { userId: user.id, questionId: qid },
+    });
+
+    const hasVoted = thisUserThisQuestionVote !== undefined;
+    const sumVotes = thisUserThisQuestionVote?.vote ?? 0;
+
+    const newValue = sumVotes + vote;
+
+    const canVote = newValue <= 1 && newValue >= -1;
+
+    if (canVote) {
+      if (hasVoted) {
+        thisUserThisQuestionVote.vote = newValue;
+        await thisUserThisQuestionVote.save();
+      } else {
+        const vote = new AsyncQuestionVotesModel();
+        vote.user = user;
+        vote.userId = user.id;
+        vote.questionId = qid;
+        vote.vote = newValue;
+        await vote.save();
+      }
+    }
+    const question = await AsyncQuestionModel.findOne({
+      where: { id: qid },
+      relations: ['votes'],
+    });
+    res.status(200).send(question);
+    return;
+  }
 
   @Post(':cid')
   @Roles(Role.STUDENT)
