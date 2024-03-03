@@ -73,9 +73,11 @@ export class asyncQuestionController {
     }
     const question = await AsyncQuestionModel.findOne({
       where: { id: qid },
-      relations: ['votes'],
     });
-    res.status(200).send(question);
+
+    res
+      .status(200)
+      .send({ question: question, vote: thisUserThisQuestionVote?.vote ?? 0 });
     return;
   }
 

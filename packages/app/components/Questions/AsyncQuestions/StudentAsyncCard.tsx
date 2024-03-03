@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import { Button, Card, Image } from 'antd'
 import { Text } from '../Shared/SharedComponents'
 import { QuestionType } from '../Shared/QuestionType'
@@ -30,6 +30,7 @@ export default function StudentAsyncCard({
 }: StudentAsyncCardProps): ReactElement {
   const [isExpanded, setIsExpanded] = useState(false)
   const [voteCount, setVoteCount] = useState(question.votesSum)
+  const [thisUserThisQuestionVote, setThisUserThisQuestionVote] = useState(0)
 
   const handleImageClick = (event) => {
     event.stopPropagation() // Prevents the click from closing the card
@@ -39,30 +40,42 @@ export default function StudentAsyncCard({
     event.stopPropagation()
     setIsExpanded(true)
   }
-
   const handleVote = async (questionId: number, vote: number) => {
     const resp = await API.asyncQuestions.vote(questionId, vote)
-    setVoteCount(resp.votesSum)
+    setVoteCount(resp.question.votesSum)
   }
+
+  useEffect(() => {
+    async function getVoteForuser() {
+      const resp = await API.asyncQuestions.vote(question.id, 0)
+      setThisUserThisQuestionVote(resp.vote)
+    }
+    if (question) {
+      getVoteForuser()
+    }
+  }, [voteCount])
+
+  const upVoteStyle = thisUserThisQuestionVote === 1 ? { color: 'green' } : {}
+  const downVoteStyle = thisUserThisQuestionVote === -1 ? { color: 'red' } : {}
 
   return (
     <div
-      className="mb-2 flex rounded-lg bg-white p-2 shadow-lg"
+      className="mb-2 flex rounded-lg bg-white p-4 shadow-lg"
       onClick={() => setIsExpanded(!isExpanded)}
     >
-      <div className="mr-4 flex flex-col justify-center">
+      <div className="mr-4 flex flex-col items-center justify-center">
         <Button
           type="text"
-          icon={<UpOutlined />}
+          icon={<UpOutlined style={upVoteStyle} />}
           onClick={(e) => {
             e.stopPropagation() // Prevent card expansion
             handleVote(question.id, 1)
           }}
         />
-        {voteCount}
+        <div className="my-2 flex items-center justify-center">{voteCount}</div>
         <Button
           type="text"
-          icon={<DownOutlined />}
+          icon={<DownOutlined style={downVoteStyle} />}
           onClick={(e) => {
             e.stopPropagation() // Prevent card expansion
             handleVote(question.id, -1)
